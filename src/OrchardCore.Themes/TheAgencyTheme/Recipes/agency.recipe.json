@@ -1252,7 +1252,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
                   "Title": "E-Commerce"
@@ -1275,7 +1275,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
                   "Title": "Responsive Design"
@@ -1298,7 +1298,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
                 },
                 "TitlePart": {
                   "Title": "Web Security"
@@ -1330,7 +1330,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Threads"
@@ -1358,7 +1358,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Explore"
@@ -1386,7 +1386,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Finish"
@@ -1414,7 +1414,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Lines"
@@ -1442,7 +1442,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Southwest"
@@ -1470,7 +1470,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
                 },
                 "TitlePart": {
                   "Title": "Window"
@@ -1502,7 +1502,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
                 },
                 "TitlePart": {
                   "Title": "Our Humble Beginnings"
@@ -1530,7 +1530,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
                 },
                 "TitlePart": {
                   "Title": "An Agency is Born"
@@ -1558,7 +1558,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
                 },
                 "TitlePart": {
                   "Title": "Transition to Full Service"
@@ -1586,7 +1586,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
                 },
                 "TitlePart": {
                   "Title": "Phase Two Expansion"
