@@ -1160,8 +1160,8 @@
           "ModifiedUtc": "2017-08-16T00:32:59.1057293Z",
           "PublishedUtc": "2017-08-16T00:32:59.1287452Z",
           "CreatedUtc": "2017-08-16T00:32:59.1287452Z",
-          "Owner": null,
-          "Author": null,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
             "Title": "Main Menu"
@@ -1223,8 +1223,8 @@
           "ModifiedUtc": "2017-08-16T23:21:36.8836967Z",
           "PublishedUtc": "2017-08-16T23:21:37.1612415Z",
           "CreatedUtc": "2017-08-16T00:49:29.6251921Z",
-          "Owner": null,
-          "Author": "admin",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {
             "Path": "home-page",
@@ -1245,7 +1245,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Service": {
                   "IconClass": {
                     "Text": "fa-shopping-cart"
@@ -1268,7 +1268,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Service": {
                   "IconClass": {
                     "Text": "fa-laptop"
@@ -1291,7 +1291,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Service": {
                   "IconClass": {
                     "Text": "fa-lock"
@@ -1318,7 +1318,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1346,7 +1346,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1374,7 +1374,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1402,7 +1402,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1430,7 +1430,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1458,7 +1458,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Project": {
                   "Image": {
                     "Paths": [
@@ -1490,7 +1490,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
                     "Text": "2009-2011"
@@ -1518,7 +1518,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
                     "Text": "MARCH 2011"
@@ -1546,7 +1546,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
                     "Text": "DECEMBER 2012"
@@ -1574,7 +1574,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
                     "Text": "JULY 2014"
@@ -1606,7 +1606,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "TeamMember": {
                   "Occupation": {
                     "Text": "Lead Designer"
@@ -1640,7 +1640,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "TeamMember": {
                   "Occupation": {
                     "Text": "Lead Marketer"
@@ -1674,7 +1674,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "TeamMember": {
                   "Occupation": {
                     "Text": "Lead Developer"
@@ -1712,7 +1712,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Client": {
                   "Logo": {
                     "Paths": [
@@ -1737,7 +1737,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Client": {
                   "Logo": {
                     "Paths": [
@@ -1762,7 +1762,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Client": {
                   "Logo": {
                     "Paths": [
@@ -1787,7 +1787,7 @@
                 "PublishedUtc": null,
                 "CreatedUtc": null,
                 "Owner": null,
-                "Author": "admin",
+                "Author": "[js: parameters('AdminUsername')]",
                 "Client": {
                   "Logo": {
                     "Paths": [
