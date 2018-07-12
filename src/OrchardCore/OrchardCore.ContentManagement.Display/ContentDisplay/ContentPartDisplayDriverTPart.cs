@@ -127,20 +127,20 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return EditAsync(part, buildEditorContext);
         }
 
-        Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
+        async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
             var part = contentPart as TPart;
 
             if(part == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
             var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
-            var result = UpdateAsync(part, context.Updater, updateEditorContext);
+            var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
             part.ContentItem.Apply(typePartDefinition.Name, part);
             
