@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
@@ -66,11 +68,28 @@ namespace OrchardCore.OpenId.Drivers
                 model.Audience = settings.Audience;
                 model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings().AsParallel()
-                                          let provider = _shellHost.GetOrCreateShellContext(tenant).ServiceProvider
-                                          let descriptor = provider.GetRequiredService<ShellDescriptor>()
-                                          where descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server)
-                                          select tenant.Name).ToList();
+                var availableTenants = new List<string>();
+                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running);
+
+                foreach (var tenant in tenants)
+                {
+                    using (var scope = _shellHost.EnterServiceScope(tenant, throwIfDisabled: false))
+                    {
+                        if (scope == null)
+                        {
+                            continue;
+                        }
+
+                        var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
+                        if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        {
+                            availableTenants.Add(tenant.Name);
+                        }
+                    }
+                }
+
+                model.AvailableTenants = availableTenants;
+
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
