@@ -57,7 +57,7 @@ namespace OrchardCore.Data.Migration
                 if (_dataMigrationRecord == null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
-                    _session.Save(_dataMigrationRecord);
+                    _session?.Save(_dataMigrationRecord);
                 }
             }
 
