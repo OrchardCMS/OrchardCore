@@ -1,0 +1,21 @@
+@model OrchardCore.ContentFields.ViewModels.EditVideoFieldViewModel;
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<VideoFieldSettings>();
+}
+
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as OrchardCore.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "VideoField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"VideoField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)

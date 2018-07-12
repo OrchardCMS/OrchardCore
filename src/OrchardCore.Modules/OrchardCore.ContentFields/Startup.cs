@@ -86,6 +86,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
+
+            // Video field
+            services.AddSingleton<ContentField, VideoField>();
+            services.AddScoped<IContentFieldDisplayDriver, VideoFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, VideoFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, VideoFieldIndexHandler>();
         }
     }
 }
