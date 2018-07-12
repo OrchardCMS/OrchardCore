@@ -52,7 +52,7 @@ namespace OrchardCore.Data.Migration
         {
             if (_dataMigrationRecord == null)
             {
-                _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
+                _dataMigrationRecord = await _session?.Query<DataMigrationRecord>().FirstOrDefaultAsync();
 
                 if (_dataMigrationRecord == null)
                 {
