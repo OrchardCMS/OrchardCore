@@ -1,14 +1,11 @@
 @model OrchardCore.ContentFields.Settings.VideoFieldSettings
+@using OrchardCore.ContentFields.Settings;
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
-
 @{
-    var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("TextField_Option__", StringComparison.OrdinalIgnoreCase));
-}
 
+}
 <fieldset class="form-group">
     <div class="row col-sm-6">
         <label asp-for="Hint">@T["Hint"]</label>
@@ -19,18 +16,21 @@
 <fieldset class="form-group">
     <div class="row col-sm-6">
         <label asp-for="Width">@T["Width"]</label>
-        <input type="number" asp-for="Width" class="form-control"/>
+        <input type="number" asp-for="Width" class="form-control" />
         <span class="hint">@T["The width of the Videobox"]</span>
     </div>
     <div class="row col-sm-6">
         <label asp-for="Height">@T["Height"]</label>
-        <input type="number" asp-for="Height" class="form-control"/>
+        <input type="number" asp-for="Height" class="form-control" />
         <span class="hint">@T["The height of the Videobox"]</span>
     </div>
 </fieldset>
 <fieldset class="form-check">
     <div class="row col-sm-6">
-        <input type="checkbox" class="form-check-input" asp-for="IsYoutubeVideo" checked="@Model.IsYoutubeVideo"/>
-        <label class="form-check-label" asp-for="IsYoutubeVideo">@T["Is Youtube Video"]</label>
+        <label asp-for="Height">@T["Streaming Type"]</label>
+        <select asp-for="StreamingType" class="form-control">
+            <option value="@VideoStreamingType.SelfHosted" selected="@(Model.StreamingType == VideoStreamingType.SelfHosted)">@T["Self-hosted Video"]</option>
+            <option value="@VideoStreamingType.Youtube" selected="@(Model.StreamingType == VideoStreamingType.Youtube)">@T["Youtube Video"]</option>
+        </select>
     </div>
 </fieldset>

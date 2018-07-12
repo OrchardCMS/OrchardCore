@@ -13,7 +13,7 @@
     {
         <span class="hint">@settings.Hint</span>
     }
-    @if (settings.IsYoutubeVideo)
+    @if (settings.StreamingType == VideoStreamingType.Youtube)
     {
         <div>
             <span class="hint">@T["For Youtube videos, in the page of the video in Youtube website, click on the Share button, then select 'Embed', then copy the src value and paste it into the above Textbox"]</span>

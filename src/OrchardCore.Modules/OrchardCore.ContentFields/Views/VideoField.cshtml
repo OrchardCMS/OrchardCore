@@ -11,7 +11,7 @@
 
 <div class="field field-type-textfield field-name-@name">
     @{
-        if (settings.IsYoutubeVideo)
+        if (settings.StreamingType == VideoStreamingType.Youtube)
         {
             <iframe width="@width" height="@height" src="@Model.Field.Address" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         }
