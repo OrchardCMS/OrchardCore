@@ -11,6 +11,10 @@
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
 
+<nav class="admin-toolbar">
+    @await Component.InvokeAsync("FilterBox", new { vm = Model.FilterBoxViewModel })
+</nav>
+
 @using (Html.BeginForm())
 {
     @*<fieldset class="bulk-actions">
@@ -33,9 +37,8 @@
                 }
             </select>
     </fieldset>*@
-    <fieldset class="container-fluid">
-            @await Component.InvokeAsync("FilterBox",  new { vm = Model.FilterBoxViewModel  })
-    </fieldset>
+
+    
     @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group">
