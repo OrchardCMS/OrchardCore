@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -62,6 +63,7 @@ namespace OrchardCore.BackgroundTasks
         {
             // DoWork needs to be re-entrant as Timer may call the callback before the previous callback has returned.
             // So, because a task may take longer than the period itself, DoWork needs to check if it's still running.
+            ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
 
             var groupName = group as string ?? "";
 
@@ -69,13 +71,8 @@ namespace OrchardCore.BackgroundTasks
             {
                 var taskName = task.GetType().FullName;
 
-                using (var scope = _orchardHost.EnterServiceScope(_shellSettings, throwIfDisabled: false))
+                using (var scope = shellContext.EnterServiceScope())
                 {
-                    if (scope == null)
-                    {
-                        return;
-                    }
-
                     try
                     {
                         if (_states[task] != BackgroundTaskState.Idle)

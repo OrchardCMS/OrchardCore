@@ -39,8 +39,10 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
+                var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
+
                 var hasPendingTasks = false;
-                using (var scope = _orchardHost.EnterServiceScope(shellSettings, out var shellContext))
+                using (var scope = shellContext.EnterServiceScope())
                 {
                     // Register the shell context as a custom feature.
                     httpContext.Features.Set(shellContext);
@@ -92,14 +94,13 @@ namespace OrchardCore.Modules
                 // Create a new scope only if there are pending tasks
                 if (hasPendingTasks)
                 {
-                    using (var scope = _orchardHost.EnterServiceScope(shellSettings))
+                    shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
+
+                    using (var scope = shellContext.EnterServiceScope())
                     {
-                        if (scope != null)
-                        {
-                            var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                            var context = new DeferredTaskContext(scope.ServiceProvider);
-                            await deferredTaskEngine.ExecuteTasksAsync(context);
-                        }
+                        var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+                        var context = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(context);
                     }
                 }
             }

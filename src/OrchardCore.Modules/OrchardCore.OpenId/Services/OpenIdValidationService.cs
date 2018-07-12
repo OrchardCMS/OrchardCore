@@ -130,7 +130,8 @@ namespace OrchardCore.OpenId.Services
                 }
                 else
                 {
-                    using (var scope = _shellHost.EnterServiceScope(tenant))
+                    var context = _shellHost.GetOrCreateShellContext(tenant);
+                    using (var scope = context.EnterServiceScope())
                     {
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)

@@ -45,7 +45,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (currentDescriptor != null)
             {
-                describedContext.Release();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
