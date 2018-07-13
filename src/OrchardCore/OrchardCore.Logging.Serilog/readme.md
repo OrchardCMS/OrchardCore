@@ -10,9 +10,9 @@ add a reference to `OrchardCore.Logging.Serilog`
 ```
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Information",
+      "Default": "Warning",
       "Override": {
-        "Default": "Information",
+        "Default": "Warning",
         "Microsoft": "Error",
         "System": "Error"
       }
@@ -31,7 +31,7 @@ add a reference to `OrchardCore.Logging.Serilog`
         "Args": {
           "pathFormat": "app_data/logs/orchard-log-{Date}.txt",
           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.ffff}|{TenantName}|{RequestId}|{SourceContext}|{Level:u3}|{Message:lj}{NewLine}{Exception}",
-          "restrictedToMinimumLevel": "Error"
+          "restrictedToMinimumLevel": "Warning"
         }
       }
     ]
