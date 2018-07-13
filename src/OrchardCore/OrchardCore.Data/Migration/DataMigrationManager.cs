@@ -64,6 +64,7 @@ namespace OrchardCore.Data.Migration
                 }
                 catch
                 {
+                    // just for testing
                     _dataMigrationRecord = new DataMigrationRecord();
                 }
             }
