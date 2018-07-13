@@ -52,16 +52,12 @@ namespace OrchardCore.Data.Migration
         {
             if (_dataMigrationRecord == null)
             {
-                try
-                {
-                    _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
-                }
-                catch { }
+                _dataMigrationRecord = await _session?.Query<DataMigrationRecord>()?.FirstOrDefaultAsync();
 
                 if (_dataMigrationRecord == null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
-                    _session.Save(_dataMigrationRecord);
+                    _session?.Save(_dataMigrationRecord);
                 }
             }
 
