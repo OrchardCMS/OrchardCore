@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\*.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

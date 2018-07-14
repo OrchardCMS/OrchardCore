@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Context
         public TestContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
-
+            Site.ShellsContainerName = "Sites_" + GetType().FullName;
             Client = new OrchardGraphQLClient(Site.CreateClient());
         }
 

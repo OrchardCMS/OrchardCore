@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Apis.JsonApi.Context
         public TestContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
-
+            Site.ShellsContainerName = "Sites_" + GetType().FullName;
             Client = new OrchardJsonApiClient(Site.CreateClient());
         }
 
