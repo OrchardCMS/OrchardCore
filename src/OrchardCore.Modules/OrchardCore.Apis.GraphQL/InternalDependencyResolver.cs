@@ -1,5 +1,6 @@
 using System;
 using GraphQL;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -8,9 +9,9 @@ namespace OrchardCore.Apis.GraphQL
         private readonly IServiceProvider _serviceProvider;
 
         public InternalDependencyResolver(
-            IServiceProvider serviceProvider)
+            IHttpContextAccessor httpContextAccessor)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = httpContextAccessor.HttpContext.RequestServices;
         }
 
         public T Resolve<T>()
