@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Context
 
             var options = new WebApplicationFactoryClientOptions();
             var builder = new UriBuilder(options.BaseAddress);
-            builder.Port = 5000 + new Random().Next(100);
+            builder.Host = Site.ShellsContainerName;
             options.BaseAddress = builder.Uri;
 
             Client = new OrchardGraphQLClient(Site.CreateClient(options));
