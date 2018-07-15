@@ -23,6 +23,7 @@ namespace OrchardCore.Tests.Apis
         {
             services.AddOrchardCms(builder =>
                 builder.AddGlobalFeatures(
+                    "OrchardCore.Setup",
                     "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Apis.JsonApi",
                     "OrchardCore.Apis.OpenApi"
