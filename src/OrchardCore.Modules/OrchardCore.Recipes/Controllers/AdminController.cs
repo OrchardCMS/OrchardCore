@@ -71,7 +71,7 @@ namespace OrchardCore.Recipes.Controllers
             return View(model);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult> Execute(string basePath, string fileName)
         {
             if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))

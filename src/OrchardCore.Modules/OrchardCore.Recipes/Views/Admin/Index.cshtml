@@ -45,7 +45,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 text-right">
-                                        <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" role="button">@T["Run"]</a>
+                                        <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-message="@T["Are you sure you want to run the recipe?"]" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
                                     </div>
                                 </div>
                             </li>
