@@ -20,10 +20,10 @@ namespace OrchardCore.Tests.Apis.JsonApi.Context
 
             var options = new WebApplicationFactoryClientOptions();
             var builder = new UriBuilder(options.BaseAddress);
-            builder.Port = 5000 + Site.ShellsContainerName.Length;
+            builder.Path = '/' + Site.ShellsContainerName;
             options.BaseAddress = builder.Uri;
 
-            Client = new OrchardJsonApiClient(Site.CreateClient());
+            Client = new OrchardJsonApiClient(Site.CreateClient(options));
         }
 
         public void Dispose()
