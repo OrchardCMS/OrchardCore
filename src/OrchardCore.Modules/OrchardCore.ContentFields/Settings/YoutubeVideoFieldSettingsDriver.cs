@@ -6,11 +6,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class VideoFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<VideoField>
+    public class YoutubeVideoFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeVideoField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<VideoFieldSettings>("VideoFieldSetting_Edit", model =>
+            return Initialize<YoutubeVideoFieldSettings>("YoutubeVideoFieldSetting_Edit", model =>
              {
                  partFieldDefinition.Settings.Populate(model);
                  model.Height = model.Height != default(int) ? model.Height : 315;
@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Settings
 
         public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            var model = new VideoFieldSettings();
+            var model = new YoutubeVideoFieldSettings();
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             context.Builder.MergeSettings(model);

@@ -11,12 +11,12 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class VideoFieldDisplayDriver : ContentFieldDisplayDriver<VideoField>
+    public class YoutubeVideoFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeVideoField>
     {
 
-        public override IDisplayResult Display(VideoField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(YoutubeVideoField field, BuildFieldDisplayContext context)
         {
-            return Initialize<VideoFieldDisplayViewModel>("VideoField", model =>
+            return Initialize<YoutubeVideoFieldDisplayViewModel>("YoutubeVideoField", model =>
            {
                model.Field = field;
                model.Part = context.ContentPart;
@@ -24,9 +24,9 @@ namespace OrchardCore.ContentFields.Fields
            }).Location("Content").Location("SummaryAdmin", "");
         }
 
-        public override IDisplayResult Edit(VideoField field, BuildFieldEditorContext context)
+        public override IDisplayResult Edit(YoutubeVideoField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditVideoFieldViewModel>("VideoField_Edit", model =>
+            return Initialize<EditYoutubeVideoFieldViewModel >("YoutubeVideoField_Edit", model =>
             {
                 model.Address = field.Address;
                 model.Field = field;
@@ -35,7 +35,7 @@ namespace OrchardCore.ContentFields.Fields
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(VideoField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(YoutubeVideoField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Address);
             return Edit(field, context);

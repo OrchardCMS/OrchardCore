@@ -88,10 +88,10 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
 
             // Video field
-            services.AddSingleton<ContentField, VideoField>();
-            services.AddScoped<IContentFieldDisplayDriver, VideoFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, VideoFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, VideoFieldIndexHandler>();
+            services.AddSingleton<ContentField, YoutubeVideoField>();
+            services.AddScoped<IContentFieldDisplayDriver, YoutubeVideoFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeVideoFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, YoutubeVideoFieldIndexHandler>();
         }
     }
 }

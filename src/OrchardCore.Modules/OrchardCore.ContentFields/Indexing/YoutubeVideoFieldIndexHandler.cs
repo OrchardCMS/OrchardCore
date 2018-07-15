@@ -5,9 +5,9 @@ using OrchardCore.Indexing;
 namespace OrchardCore.ContentFields.Indexing
 {
 
-    public class VideoFieldIndexHandler : ContentFieldIndexHandler<VideoField>
+    public class YoutubeVideoFieldIndexHandler : ContentFieldIndexHandler<YoutubeVideoField>
     {
-        public override Task BuildIndexAsync(VideoField field, BuildFieldIndexContext context)
+        public override Task BuildIndexAsync(YoutubeVideoField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
             context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Address, DocumentIndex.Types.Text, options));

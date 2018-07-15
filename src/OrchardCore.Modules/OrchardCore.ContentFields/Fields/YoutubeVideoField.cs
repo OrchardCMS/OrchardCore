@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class VideoField : ContentField
+    public class YoutubeVideoField : ContentField
     {
         public string Address { get; set; }
     }
