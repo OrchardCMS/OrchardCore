@@ -6,7 +6,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.JsonApi.Context
 {
-    public class TestContext : IAsyncLifetime, IDisposable
+    public class TestContext // : IAsyncLifetime, IDisposable
     {
         public OrchardTestFixture<SiteStartup> Site { get; }
 
