@@ -45,6 +45,8 @@ namespace OrchardCore.Apis.JsonApi.Client
 
             response.EnsureSuccessStatusCode();
 
+            await _client.GetAsync("");
+
             return await response.Content.ReadAsAsync<string>();
         }
     }

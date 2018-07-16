@@ -44,6 +44,8 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var result = JObject.Parse(await response.Content.ReadAsStringAsync());
 
+            await _client.GetAsync("");
+
             return result["data"]["createTenant"]["executionId"].ToString();
         }
     }
