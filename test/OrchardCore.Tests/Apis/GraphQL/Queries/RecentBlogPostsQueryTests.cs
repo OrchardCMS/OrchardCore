@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Assent;
 using Xunit;
@@ -7,22 +6,30 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
     public class RecentBlogPostsQueryTests
     {
-        private static Lazy<BlogContext> _context;
+        private static BlogContext _context;
+        private static object _sync = new object();
 
         static RecentBlogPostsQueryTests()
         {
-            _context = new Lazy<BlogContext>(() =>
-            {
-                var siteContext = new BlogContext();
-                siteContext.InitializeAsync().GetAwaiter().GetResult();
-                return siteContext;
-            });
         }
 
         [Fact(Skip = "Lucene Require rewriting")]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
-            var blogPostContentItemId = await _context.Value
+            if (_context == null)
+            {
+                lock (_sync)
+                {
+                    if (_context == null)
+                    {
+                        var context = new BlogContext();
+                        context.InitializeAsync().GetAwaiter().GetResult();
+                        _context = context;
+                    }
+                }
+            }
+
+            var blogPostContentItemId = await _context
                 .Client
                 .Content
                 .Create("BlogPost", builder =>
@@ -38,10 +45,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.Value.BlogContentItemId);
+                        .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
 
-            var result = await _context.Value
+            var result = await _context
                 .Client
                 .Content
                 .Query("RecentBlogPosts", builder =>
