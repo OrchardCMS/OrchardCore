@@ -4,13 +4,14 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
-    public class RecentBlogPostsQueryTests : IClassFixture<BlogContext>
+    public class RecentBlogPostsQueryTests // : IClassFixture<BlogContext>
     {
-        private readonly BlogContext _context;
+        private static readonly BlogContext _context;
 
-        public RecentBlogPostsQueryTests(BlogContext context)
+        static RecentBlogPostsQueryTests(/*BlogContext context*/)
         {
-            _context = context;
+            _context = new BlogContext();// context;
+            _context.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Fact(Skip = "Lucene Require rewriting")]

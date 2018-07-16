@@ -4,13 +4,14 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogTests : IClassFixture<SiteContext>
+    public class BlogTests // : IClassFixture<SiteContext>
     {
-        private SiteContext _siteContext;
+        private static SiteContext _siteContext;
 
-        public BlogTests(SiteContext siteContext)
+        static BlogTests(/*SiteContext siteContext*/)
         {
-            _siteContext = siteContext;
+            _siteContext = new SiteContext(); // siteContext;
+            _siteContext.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Fact]
