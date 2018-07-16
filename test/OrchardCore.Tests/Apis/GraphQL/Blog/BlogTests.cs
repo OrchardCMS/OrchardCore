@@ -1,22 +1,27 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Tests.Apis.GraphQL.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogTests // : IClassFixture<SiteContext>
+    public class BlogTests
     {
-        private static SiteContext _siteContext;
+        private static Lazy<SiteContext> _siteContext;
 
-        static BlogTests(/*SiteContext siteContext*/)
+        static BlogTests()
         {
-            _siteContext = new SiteContext(); // siteContext;
-            _siteContext.InitializeAsync().GetAwaiter().GetResult();
+            _siteContext = new Lazy<SiteContext>(() =>
+            {
+                var siteContext = new SiteContext();
+                siteContext.InitializeAsync().GetAwaiter().GetResult();
+                return siteContext;
+            });
         }
 
         [Fact]
         public async Task ShouldCreateABlog() {
-            var contentItemId = await _siteContext
+            var contentItemId = await _siteContext.Value
                 .Client
                 .Content
                 .Create("Blog", builder => builder
