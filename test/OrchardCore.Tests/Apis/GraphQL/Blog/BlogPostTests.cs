@@ -9,6 +9,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
     {
         private static BlogContext _context;
         private static object _sync = new object();
+        private static bool _initialize;
 
         static BlogPostTests()
         {
@@ -17,17 +18,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldListAllBlogs()
         {
-            if (_context == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_context == null)
+                    if (!_initialize)
                     {
-                        var context = new BlogContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _context = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new BlogContext();
+                await context.InitializeAsync();
+                _context = context;
+            }
+
+            while (_context == null)
+            {
+                await Task.Delay(5000);
             }
 
             var result = await _context
@@ -45,17 +60,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldCreateBlogPost()
         {
-            if (_context == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_context == null)
+                    if (!_initialize)
                     {
-                        var context = new BlogContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _context = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new BlogContext();
+                await context.InitializeAsync();
+                _context = context;
+            }
+
+            while (_context == null)
+            {
+                await Task.Delay(5000);
             }
 
             var blogPostContentItemId = await _context
@@ -91,17 +120,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
-            if (_context == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_context == null)
+                    if (!_initialize)
                     {
-                        var context = new BlogContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _context = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new BlogContext();
+                await context.InitializeAsync();
+                _context = context;
+            }
+
+            while (_context == null)
+            {
+                await Task.Delay(5000);
             }
 
             var blogPostContentItemId1 = await _context
@@ -159,17 +202,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldDeleteBlogPost()
         {
-            if (_context == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_context == null)
+                    if (!_initialize)
                     {
-                        var context = new BlogContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _context = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new BlogContext();
+                await context.InitializeAsync();
+                _context = context;
+            }
+
+            while (_context == null)
+            {
+                await Task.Delay(5000);
             }
 
             var blogPostContentItemId = await _context

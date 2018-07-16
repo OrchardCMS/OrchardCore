@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
     {
         private static BlogContext _context;
         private static object _sync = new object();
+        private static bool _initialize;
 
         static RecentBlogPostsQueryTests()
         {
@@ -16,17 +17,31 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
         [Fact(Skip = "Lucene Require rewriting")]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
-            if (_context == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_context == null)
+                    if (!_initialize)
                     {
-                        var context = new BlogContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _context = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new BlogContext();
+                await context.InitializeAsync();
+                _context = context;
+            }
+
+            while (_context == null)
+            {
+                await Task.Delay(5000);
             }
 
             var blogPostContentItemId = await _context

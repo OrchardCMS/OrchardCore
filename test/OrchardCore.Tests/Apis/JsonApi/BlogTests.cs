@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Apis.JsonApi
     {
         private static SiteContext _siteContext;
         private static object _sync = new object();
+        private static bool _initialize;
 
         public BlogTests()
         {
@@ -16,17 +17,31 @@ namespace OrchardCore.Tests.Apis.JsonApi
         [Fact]
         public async Task ShouldCreateABlog() {
 
-            if (_siteContext == null)
+            var initialize = false;
+
+            if (!_initialize)
             {
                 lock (_sync)
                 {
-                    if (_siteContext == null)
+                    if (!_initialize)
                     {
-                        var context = new SiteContext();
-                        context.InitializeAsync().GetAwaiter().GetResult();
-                        _siteContext = context;
+
+                        initialize = true;
+                        _initialize = true;
                     }
                 }
+            }
+
+            if (initialize)
+            {
+                var context = new SiteContext();
+                await context.InitializeAsync();
+                _siteContext = context;
+            }
+
+            while (_siteContext == null)
+            {
+                await Task.Delay(5000);
             }
 
             var contentItemId = await _siteContext
