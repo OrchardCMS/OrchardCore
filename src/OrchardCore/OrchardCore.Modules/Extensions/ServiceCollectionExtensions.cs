@@ -40,9 +40,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 AddStaticFiles(builder);
 
-                AddAntiForgery(builder);
-                AddAuthentication(builder);
-                AddDataProtection(builder);
+                //AddAntiForgery(builder);
+                //AddAuthentication(builder);
+                //AddDataProtection(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
