@@ -23,13 +23,15 @@ namespace OrchardCore.Tests.Apis
         {
             services.AddOrchardCms(builder =>
                 builder.AddGlobalFeatures(
-                    "OrchardCore.Setup",
                     "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Apis.JsonApi",
                     "OrchardCore.Apis.OpenApi"
+                )
+                .ConfigureServices(collection =>
+                    collection.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>()
                 ));
 
-            services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
+            //services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
 
             services
                 .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.ShellsContainerName);
