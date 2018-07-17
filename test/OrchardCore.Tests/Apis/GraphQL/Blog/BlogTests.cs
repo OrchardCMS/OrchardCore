@@ -35,6 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             if (initialize)
             {
                 var context = new SiteContext();
+                context.Initialize();
                 await context.InitializeAsync();
                 _siteContext = context;
             }

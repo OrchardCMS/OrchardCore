@@ -6,13 +6,20 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Context
 {
-    public class TestContext // : IAsyncLifetime, IDisposable
+    public class TestContext : IAsyncLifetime, IDisposable
     {
-        public OrchardTestFixture<SiteStartup> Site { get; }
+        public OrchardTestFixture<SiteStartup> Site { get; private set; }
 
-        public OrchardGraphQLClient Client { get; }
+        public OrchardGraphQLClient Client { get; private set; }
 
         public TestContext()
+        {
+            // Site = new OrchardTestFixture<SiteStartup>();
+            // Site.ShellsContainerName = "Sites_" + GetType().FullName;
+            // Client = new OrchardGraphQLClient(Site.CreateClient());
+        }
+
+        public void Initialize()
         {
             Site = new OrchardTestFixture<SiteStartup>();
             Site.ShellsContainerName = "Sites_" + GetType().FullName;

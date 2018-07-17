@@ -36,6 +36,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             if (initialize)
             {
                 var context = new BlogContext();
+                context.Initialize();
                 await context.InitializeAsync();
                 _context = context;
             }
@@ -78,6 +79,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             if (initialize)
             {
                 var context = new BlogContext();
+                context.Initialize();
                 await context.InitializeAsync();
                 _context = context;
             }
@@ -138,6 +140,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             if (initialize)
             {
                 var context = new BlogContext();
+                context.Initialize();
                 await context.InitializeAsync();
                 _context = context;
             }
@@ -220,6 +223,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             if (initialize)
             {
                 var context = new BlogContext();
+                context.Initialize();
                 await context.InitializeAsync();
                 _context = context;
             }

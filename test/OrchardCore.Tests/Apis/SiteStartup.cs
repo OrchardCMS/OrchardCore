@@ -29,12 +29,10 @@ namespace OrchardCore.Tests.Apis
                 )
                 .ConfigureServices(collection =>
                     collection.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>()
-                ));
-
-            //services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
-
-            services
-                .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.ShellsContainerName);
+                )
+                .ApplicationServices
+                    .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.ShellsContainerName)
+                );
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
