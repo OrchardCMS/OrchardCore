@@ -8,7 +8,7 @@
   "sourceName": "OrchardCore.Templates.Cms.Web",
   "preferNameDirectory": true,
   "symbols": {
-    "Logger": {
+    "logger": {
       "type": "parameter",
       "dataType": "choice",
       "choices": [
@@ -37,17 +37,11 @@
     },
     "UseNLog": {
       "type": "computed",
-      "value": "(Logger == \"nlog\")"
+      "value": "(logger == \"nlog\")"
     },
     "UseSerilog": {
       "type": "computed",
-      "value": "(Logger == \"serilog\")"
-    },
-    "LoggerDependency": {
-      "type": "computed",
-      "datatype": "string",
-      "replaces": "$(LoggerDependency)",
-      "value": "(Logger == \"serilog\" ? \"OrchardCore.Logging.Serilog\" : )"
+      "value": "(logger == \"serilog\")"
     }
   },
   "sources": [
@@ -58,23 +52,6 @@
           "exclude": [
             "NLog.config"
           ]
-        },
-        {
-          "condition": "(!UseSerilog)",
-          "exclude": [
-            "appsettings.serilog.json"
-          ]
-        },
-        {
-          "condition": "(UseSerilog)",
-          "exclude": [
-            "NLog.config",
-            "appsettings.json"
-          ],
-          "rename": {
-            "key": "appsettings.serilog.json",
-            "value": "appsettings.json"
-          }
         }
       ]
     }
