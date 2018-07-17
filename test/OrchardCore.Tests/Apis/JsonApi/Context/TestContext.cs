@@ -23,7 +23,9 @@ namespace OrchardCore.Tests.Apis.JsonApi.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             Site.ShellsContainerName = "Sites_" + GetType().FullName;
-            Client = new OrchardJsonApiClient(Site.CreateClient());
+            var client = Site.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(5);
+            Client = new OrchardJsonApiClient(client);
         }
 
         public void Dispose()
