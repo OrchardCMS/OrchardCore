@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Context
             Site = new OrchardTestFixture<SiteStartup>();
             Site.ShellsContainerName = "Sites_" + GetType().FullName;
             var client = Site.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(5);
+            client.Timeout = TimeSpan.FromMinutes(10);
             Client = new OrchardGraphQLClient(client);
         }
 

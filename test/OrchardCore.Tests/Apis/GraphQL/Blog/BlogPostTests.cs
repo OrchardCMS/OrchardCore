@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
         }
 
-        [Fact(Skip = "For testing")]
+        [Fact]
         public async Task ShouldListAllBlogs()
         {
             var initialize = false;
@@ -58,7 +58,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             Assert.NotEmpty(result["data"]["blog"].Children()["contentItemId"]);
         }
 
-        [Fact(Skip = "For testing")]
+        [Fact]
         public async Task ShouldCreateBlogPost()
         {
             var initialize = false;
@@ -119,7 +119,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             this.Assent(result.ToString());
         }
 
-        [Fact(Skip = "For testing")]
+        [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
             var initialize = false;
@@ -202,7 +202,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             this.Assent(result.ToString());
         }
 
-        [Fact(Skip = "For testing")]
+        [Fact]
         public async Task ShouldDeleteBlogPost()
         {
             var initialize = false;
