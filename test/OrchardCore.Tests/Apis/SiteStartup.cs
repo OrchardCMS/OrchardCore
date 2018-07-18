@@ -26,12 +26,13 @@ namespace OrchardCore.Tests.Apis
                     "OrchardCore.Apis.GraphQL",
                     "OrchardCore.Apis.JsonApi",
                     "OrchardCore.Apis.OpenApi"
-                ));
-
-            services.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>();
-
-            services
-                .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.SiteName);
+                )
+                .ConfigureServices(collection =>
+                    collection.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>()
+                )
+                .ApplicationServices
+                    .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.ShellsContainerName)
+                );
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

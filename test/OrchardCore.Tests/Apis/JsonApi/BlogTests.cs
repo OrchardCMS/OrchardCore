@@ -4,17 +4,47 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.JsonApi
 {
-    public class BlogTests : IClassFixture<SiteContext>
+    public class BlogTests
     {
-        private SiteContext _siteContext;
+        private static SiteContext _siteContext;
+        private static object _sync = new object();
+        private static bool _initialize;
 
-        public BlogTests(SiteContext siteContext)
+        public BlogTests()
         {
-            _siteContext = siteContext;
         }
 
         [Fact]
         public async Task ShouldCreateABlog() {
+
+            var initialize = false;
+
+            if (!_initialize)
+            {
+                lock (_sync)
+                {
+                    if (!_initialize)
+                    {
+
+                        initialize = true;
+                        _initialize = true;
+                    }
+                }
+            }
+
+            if (initialize)
+            {
+                var context = new SiteContext();
+                context.Initialize();
+                await context.InitializeAsync();
+                _siteContext = context;
+            }
+
+            while (_siteContext == null)
+            {
+                await Task.Delay(5000);
+            }
+
             var contentItemId = await _siteContext
                 .Client
                 .Content
