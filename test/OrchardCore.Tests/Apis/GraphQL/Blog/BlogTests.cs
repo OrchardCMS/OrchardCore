@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
         }
 
-        [Fact(Skip = "For testing")]
+        [Fact]
         public async Task ShouldCreateABlog() {
 
             var initialize = false;
