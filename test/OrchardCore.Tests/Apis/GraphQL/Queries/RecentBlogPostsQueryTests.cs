@@ -12,12 +12,13 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
         public RecentBlogPostsQueryTests()
         {
             _context = new BlogContext();
-            _context.InitializeBlogAsync().GetAwaiter().GetResult();
         }
 
         [Fact(Skip = "Lucene Require rewriting")]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
+            await _context.InitializeBlogAsync();
+
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient
                 .Content
@@ -34,7 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext

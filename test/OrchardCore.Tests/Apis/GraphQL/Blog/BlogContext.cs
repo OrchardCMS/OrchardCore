@@ -5,7 +5,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
     public class BlogContext : SiteContext
     {
-        public string BlogContentItemId { get; private set; }
+        private static bool _initializing;
+        private static object _sync = new object();
+
+        public static string BlogContentItemId { get; private set; }
 
         static BlogContext()
         {
@@ -15,14 +18,37 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
         {
             await InitializeSiteAsync();
 
-            var result = await GraphQLClient
+            var initialize = false;
+
+            if (BlogContentItemId == null && !_initializing)
+            {
+                lock (_sync)
+                {
+                    if (BlogContentItemId == null && !_initializing)
+                    {
+                        initialize = true;
+                        _initializing = true;
+                    }
+                }
+            }
+
+            if (initialize)
+            {
+                var result = await GraphQLClient
                 .Content
-                .Query("Blog", builder => {
+                .Query("Blog", builder =>
+                {
                     builder
                         .AddField("contentItemId");
                 });
 
-            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+                BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            }
+
+            while (BlogContentItemId == null)
+            {
+                await Task.Delay(5000);
+            }
         }
     }
 }

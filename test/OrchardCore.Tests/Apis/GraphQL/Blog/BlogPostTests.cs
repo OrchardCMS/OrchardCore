@@ -14,12 +14,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public BlogPostTests()
         {
             _context = new BlogContext();
-            _context.InitializeBlogAsync().GetAwaiter().GetResult();
         }
 
         [Fact]
         public async Task ShouldListAllBlogs()
         {
+            await _context.InitializeBlogAsync();
+
             var result = await BlogContext
                 .GraphQLClient
                 .Content
@@ -29,12 +30,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 });
 
             Assert.Single(result["data"]["blog"].Children()["contentItemId"]
-                .Where(b => b.ToString() == _context.BlogContentItemId));
+                .Where(b => b.ToString() == BlogContext.BlogContentItemId));
         }
 
         [Fact]
         public async Task ShouldCreateBlogPost()
         {
+            await _context.InitializeBlogAsync();
+
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient
                 .Content
@@ -46,7 +49,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
             
             var result = await BlogContext
@@ -68,6 +71,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
+            await _context.InitializeBlogAsync();
+
             var blogPostContentItemId1 = await BlogContext
                 .GraphQLClient
                 .Content
@@ -83,7 +88,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var blogPostContentItemId2 = await BlogContext
@@ -101,7 +106,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext
@@ -123,6 +128,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldDeleteBlogPost()
         {
+            await _context.InitializeBlogAsync();
+
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient
                 .Content
@@ -134,7 +141,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext
