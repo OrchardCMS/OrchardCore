@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.Apis.JsonApi.Client;
@@ -14,8 +15,15 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             Site.ShellsContainerName = "Sites_ApiTests";
-            GraphQLClient = new OrchardGraphQLClient(Site.CreateClient());
-            JsonApiClient = new OrchardJsonApiClient(Site.CreateClient());
+
+            var client = Site.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(10);
+            GraphQLClient = new OrchardGraphQLClient(client);
+
+            client = Site.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(10);
+            JsonApiClient = new OrchardJsonApiClient(client);
+
             CreateTenant();
         }
 
