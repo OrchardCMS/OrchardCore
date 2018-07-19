@@ -7,14 +7,14 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogPostTests : IClassFixture<BlogContext>
+    public class BlogPostTests
     {
         private BlogContext _context;
 
-        public BlogPostTests(BlogContext context)
+        public BlogPostTests()
         {
-            _context = context;
-            _context.InitializeAsync().GetAwaiter().GetResult();
+            _context = new BlogContext();
+            _context.InitializeBlogAsync().GetAwaiter().GetResult();
         }
 
         [Fact]

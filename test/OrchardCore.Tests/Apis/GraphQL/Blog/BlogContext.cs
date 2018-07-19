@@ -11,8 +11,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
         {
         }
 
-        public async Task InitializeAsync()
+        public async Task InitializeBlogAsync()
         {
+            await InitializeSiteAsync();
+
             var result = await GraphQLClient
                 .Content
                 .Query("Blog", builder => {

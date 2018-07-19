@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
     {
         public BlogTests()
         {
+            new SiteContext().InitializeSiteAsync().GetAwaiter().GetResult();
         }
 
         [Fact]
