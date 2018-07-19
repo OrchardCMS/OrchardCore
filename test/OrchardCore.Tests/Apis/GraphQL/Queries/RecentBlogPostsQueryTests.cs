@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Assent;
-using OrchardCore.Tests.Apis.GraphQL.Blog;
+using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Queries

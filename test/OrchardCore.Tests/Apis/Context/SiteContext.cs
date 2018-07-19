@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.FunctionalTests;
 using OrchardCore.Apis.GraphQL.Client;
@@ -20,14 +19,8 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             Site.ShellsContainerName = "Sites_ApiTests";
-
-            var client = Site.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(10);
-            GraphQLClient = new OrchardGraphQLClient(client);
-
-            client = Site.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(10);
-            JsonApiClient = new OrchardJsonApiClient(client);
+            GraphQLClient = new OrchardGraphQLClient(Site.CreateClient());
+            JsonApiClient = new OrchardJsonApiClient(Site.CreateClient());
         }
 
         public async Task InitializeSiteAsync()

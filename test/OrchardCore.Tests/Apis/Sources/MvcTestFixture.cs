@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
     public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
     {
-        public string ShellsContainerName { get; set; }
+        public string ShellsContainerName { get; internal set; }
         public string ShellsContainerPath => Path.Combine(Directory.GetCurrentDirectory(), "App_Data", ShellsContainerName);
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.Tests.Apis.Context;
 
-namespace OrchardCore.Tests.Apis.GraphQL.Blog
+namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext
     {
