@@ -4,7 +4,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.JsonApi
 {
-    public class BlogTests : SiteContext
+    public class BlogTests
     {
         public BlogTests()
         {
@@ -12,7 +12,8 @@ namespace OrchardCore.Tests.Apis.JsonApi
 
         [Fact]
         public async Task ShouldCreateABlog() {
-            var contentItemId = await JsonApiClient                
+            var contentItemId = await SiteContext
+                .JsonApiClient                
                 .Content
                 .Create("Blog", builder => builder
                         .WithContentPart("TitlePart", partBuilder => partBuilder

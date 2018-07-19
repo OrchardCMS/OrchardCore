@@ -4,7 +4,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogTests : SiteContext
+    public class BlogTests
     {
         public BlogTests()
         {
@@ -12,7 +12,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         [Fact]
         public async Task ShouldCreateABlog() {
-            var contentItemId = await GraphQLClient
+            var contentItemId = await SiteContext
+                .GraphQLClient
                 .Content
                 .Create("Blog", builder => builder
                         .WithContentPart("TitlePart")
