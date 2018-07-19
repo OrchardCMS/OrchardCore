@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
             _context = new BlogContext();
         }
 
-        [Fact(Skip = "Lucene Require rewriting")]
+        [Fact]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
             await _context.InitializeBlogAsync();
