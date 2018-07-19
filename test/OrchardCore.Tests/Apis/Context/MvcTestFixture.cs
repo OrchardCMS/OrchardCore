@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Tests.Apis;
 
-namespace Microsoft.AspNetCore.Mvc.FunctionalTests
+namespace OrchardCore.Tests.Apis.Context
 {
     public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
@@ -32,7 +31,7 @@ namespace Microsoft.AspNetCore.Mvc.FunctionalTests
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
-                typeof(OrchardCore.Cms.Web.Startup).Assembly, Array.Empty<string>())
+                typeof(Cms.Web.Startup).Assembly, Array.Empty<string>())
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<SiteStartup>();
         }
