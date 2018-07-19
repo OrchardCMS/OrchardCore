@@ -1,17 +1,20 @@
 using System.Threading.Tasks;
-using OrchardCore.Tests.Apis.GraphQL.Context;
+using OrchardCore.Tests.Apis.Context;
+using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
-    public class BlogContext : SiteContext
+    public class BlogContext : SiteContext, IAsyncLifetime
     {
         public string BlogContentItemId { get; private set; }
 
-        public override async Task InitializeAsync()
+        static BlogContext()
         {
-            await base.InitializeAsync();
+        }
 
-            var result = await Client
+        public async Task InitializeAsync()
+        {
+            var result = await GraphQLClient
                 .Content
                 .Query("Blog", builder => {
                     builder
@@ -19,6 +22,11 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

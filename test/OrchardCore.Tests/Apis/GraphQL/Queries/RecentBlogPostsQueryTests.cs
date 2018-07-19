@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
     public class RecentBlogPostsQueryTests : IClassFixture<BlogContext>
     {
-        private readonly BlogContext _context;
+        private BlogContext _context;
 
         public RecentBlogPostsQueryTests(BlogContext context)
         {
@@ -17,8 +17,8 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
         [Fact(Skip = "Lucene Require rewriting")]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
-            var blogPostContentItemId = await _context
-                .Client
+            var blogPostContentItemId = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -36,8 +36,8 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
 
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("RecentBlogPosts", builder =>
                 {

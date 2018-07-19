@@ -1,4 +1,5 @@
 
+using System.Linq;
 using System.Threading.Tasks;
 using Assent;
 using OrchardCore.Tests.Apis.GraphQL.Blog;
@@ -18,23 +19,23 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldListAllBlogs()
         {
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("Blog", builder => {
                     builder
                         .AddField("contentItemId");
                 });
 
-            Assert.Single(result["data"]["blog"].Children());
-            Assert.NotEmpty(result["data"]["blog"].Children()["contentItemId"]);
+            Assert.Single(result["data"]["blog"].Children()["contentItemId"]
+                .Where(b => b.ToString() == _context.BlogContentItemId));
         }
 
         [Fact]
         public async Task ShouldCreateBlogPost()
         {
-            var blogPostContentItemId = await _context
-                .Client
+            var blogPostContentItemId = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -47,8 +48,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
             
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("BlogPost", builder =>
                 {
@@ -66,8 +67,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
-            var blogPostContentItemId1 = await _context
-                .Client
+            var blogPostContentItemId1 = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -84,8 +85,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
 
-            var blogPostContentItemId2 = await _context
-                .Client
+            var blogPostContentItemId2 = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -102,8 +103,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
 
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("BlogPost", builder =>
                 {
@@ -121,8 +122,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldDeleteBlogPost()
         {
-            var blogPostContentItemId = await _context
-                .Client
+            var blogPostContentItemId = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -135,8 +136,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .AddField("ListContentItemId", _context.BlogContentItemId);
                 });
 
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("BlogPost", builder =>
                 {
@@ -150,13 +151,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.True(result["data"]["blogPost"].HasValues);
 
-            await _context
-                .Client
+            await BlogContext
+                .GraphQLClient
                 .Content
                 .Delete(blogPostContentItemId);
 
-            var result2 = await _context
-                .Client
+            var result2 = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("BlogPost", builder =>
                 {
