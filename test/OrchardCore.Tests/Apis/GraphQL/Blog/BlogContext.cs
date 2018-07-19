@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
-    public class BlogContext : SiteContext, IAsyncLifetime
+    public class BlogContext : SiteContext
     {
         public string BlogContentItemId { get; private set; }
 
@@ -22,11 +21,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
-        }
-
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
         public RecentBlogPostsQueryTests(BlogContext context)
         {
             _context = context;
+            _context.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Fact(Skip = "Lucene Require rewriting")]

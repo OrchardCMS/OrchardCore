@@ -14,6 +14,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public BlogPostTests(BlogContext context)
         {
             _context = context;
+            _context.InitializeAsync().GetAwaiter().GetResult();
         }
 
         [Fact]
