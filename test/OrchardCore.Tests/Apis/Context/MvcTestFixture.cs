@@ -25,7 +25,6 @@ namespace OrchardCore.Tests.Apis.Context
         {
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
                 typeof(Cms.Web.Startup).Assembly, Array.Empty<string>())
-                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<TStartup>();
         }
     }

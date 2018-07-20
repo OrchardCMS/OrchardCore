@@ -34,7 +34,6 @@ namespace OrchardCore.Tests.Apis.Context
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             context.Succeed(requirement);
-
             return Task.CompletedTask;
         }
     }

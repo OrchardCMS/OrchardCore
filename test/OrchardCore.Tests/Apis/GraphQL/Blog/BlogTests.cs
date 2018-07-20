@@ -6,17 +6,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogTests
     {
-        private SiteContext _context;
-
-        public BlogTests()
-        {
-            _context = new SiteContext();
-        }
-
         [Fact]
         public async Task ShouldCreateABlog() {
 
-            await _context.InitializeSiteAsync();
+            await SiteContext.InitializeSiteAsync();
 
             var contentItemId = await SiteContext
                 .GraphQLClient

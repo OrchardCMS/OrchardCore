@@ -4,50 +4,29 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext
     {
-        private static bool _initializing;
-        private static object _sync = new object();
-
         public static string BlogContentItemId { get; private set; }
+        private static Task _initialize;
 
         static BlogContext()
         {
+            _initialize = InitializeAsync();
         }
 
-        public async Task InitializeBlogAsync()
+        public static Task InitializeBlogAsync() => _initialize;
+
+        private static async Task InitializeAsync()
         {
             await InitializeSiteAsync();
 
-            var initialize = false;
-
-            if (BlogContentItemId == null && !_initializing)
+            var result = await GraphQLClient
+            .Content
+            .Query("Blog", builder =>
             {
-                lock (_sync)
-                {
-                    if (BlogContentItemId == null && !_initializing)
-                    {
-                        initialize = true;
-                        _initializing = true;
-                    }
-                }
-            }
+                builder
+                    .AddField("contentItemId");
+            });
 
-            if (initialize)
-            {
-                var result = await GraphQLClient
-                .Content
-                .Query("Blog", builder =>
-                {
-                    builder
-                        .AddField("contentItemId");
-                });
-
-                BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
-            }
-
-            while (BlogContentItemId == null)
-            {
-                await Task.Delay(1 * 1000);
-            }
+            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
         }
     }
 }

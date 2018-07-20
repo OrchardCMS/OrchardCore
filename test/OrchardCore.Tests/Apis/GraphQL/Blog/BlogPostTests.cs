@@ -8,17 +8,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogPostTests
     {
-        private BlogContext _context;
-
-        public BlogPostTests()
-        {
-            _context = new BlogContext();
-        }
-
         [Fact]
         public async Task ShouldListAllBlogs()
         {
-            await _context.InitializeBlogAsync();
+            await BlogContext.InitializeBlogAsync();
 
             var result = await BlogContext
                 .GraphQLClient
@@ -35,7 +28,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldCreateBlogPost()
         {
-            await _context.InitializeBlogAsync();
+            await BlogContext.InitializeBlogAsync();
 
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient
@@ -70,7 +63,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
-            await _context.InitializeBlogAsync();
+            await BlogContext.InitializeBlogAsync();
 
             var blogPostContentItemId1 = await BlogContext
                 .GraphQLClient
@@ -127,7 +120,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldDeleteBlogPost()
         {
-            await _context.InitializeBlogAsync();
+            await BlogContext.InitializeBlogAsync();
 
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient

@@ -7,17 +7,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
     public class RecentBlogPostsQueryTests
     {
-        private BlogContext _context;
-
-        public RecentBlogPostsQueryTests()
-        {
-            _context = new BlogContext();
-        }
-
         [Fact]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
-            await _context.InitializeBlogAsync();
+            await BlogContext.InitializeBlogAsync();
 
             var blogPostContentItemId = await BlogContext
                 .GraphQLClient
