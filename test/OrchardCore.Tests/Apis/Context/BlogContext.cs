@@ -46,7 +46,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             while (BlogContentItemId == null)
             {
-                await Task.Delay(5000);
+                await Task.Delay(1 * 1000);
             }
         }
     }

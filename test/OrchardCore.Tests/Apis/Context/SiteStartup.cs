@@ -4,20 +4,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
-        private readonly TestSiteConfiguration _configuration;
-
-        public SiteStartup(TestSiteConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
@@ -28,10 +20,7 @@ namespace OrchardCore.Tests.Apis.Context
                 )
                 .ConfigureServices(collection =>
                     collection.AddScoped<IAuthorizationHandler, AlwaysLoggedInAuthHandler>()
-                )
-                .ApplicationServices
-                    .Configure<ShellOptions>(options => options.ShellsContainerName = _configuration.ShellsContainerName)
-                );
+                ));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -17,7 +17,6 @@ namespace OrchardCore.Tests.Apis.Context
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
-            Site.ShellsContainerName = "Sites_ApiTests";
             GraphQLClient = new OrchardGraphQLClient(Site.CreateClient());
             JsonApiClient = new OrchardJsonApiClient(Site.CreateClient());
         }
@@ -56,7 +55,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             while (!_initialized)
             {
-                await Task.Delay(5000);
+                await Task.Delay(1 * 1000);
             }
         }
     }

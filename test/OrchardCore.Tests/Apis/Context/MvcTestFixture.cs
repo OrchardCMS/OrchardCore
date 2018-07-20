@@ -3,29 +3,22 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class
     {
-        public string ShellsContainerName { get; internal set; }
-        public string ShellsContainerPath => Path.Combine(Directory.GetCurrentDirectory(), "App_Data", ShellsContainerName);
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            if (Directory.Exists(ShellsContainerPath))
+            var shellsApplicationDataPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+
+            if (Directory.Exists(shellsApplicationDataPath))
             {
-                Directory.Delete(ShellsContainerPath, true);
+                Directory.Delete(shellsApplicationDataPath, true);
             }
 
             builder.UseContentRoot(Directory.GetCurrentDirectory());
-
-            builder
-                .ConfigureServices(services => {
-                    services.AddSingleton(new TestSiteConfiguration { ShellsContainerName = ShellsContainerName });
-                });
         }
 
         protected override IWebHostBuilder CreateWebHostBuilder()
@@ -33,12 +26,7 @@ namespace OrchardCore.Tests.Apis.Context
             return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
                 typeof(Cms.Web.Startup).Assembly, Array.Empty<string>())
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<SiteStartup>();
+                .UseStartup<TStartup>();
         }
-    }
-
-    public class TestSiteConfiguration
-    {
-        public string ShellsContainerName { get; set; }
     }
 }
