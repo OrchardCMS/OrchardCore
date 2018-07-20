@@ -6,10 +6,11 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext
     {
+        private static Task _initialize;
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static OrchardGraphQLClient GraphQLClient { get; }
         public static OrchardJsonApiClient JsonApiClient { get; }
-        private static Task _initialize;
+        public static Task InitializeSiteAsync() => _initialize;
 
         static SiteContext()
         {
@@ -18,8 +19,6 @@ namespace OrchardCore.Tests.Apis.Context
             JsonApiClient = new OrchardJsonApiClient(Site.CreateClient());
             _initialize = InitializeAsync();
         }
-
-        public static Task InitializeSiteAsync() => _initialize;
 
         private static Task InitializeAsync()
         {

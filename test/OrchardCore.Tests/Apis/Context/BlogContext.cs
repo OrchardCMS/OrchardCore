@@ -4,15 +4,14 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext
     {
-        public static string BlogContentItemId { get; private set; }
         private static Task _initialize;
+        public static string BlogContentItemId { get; private set; }
+        public static Task InitializeBlogAsync() => _initialize;
 
         static BlogContext()
         {
             _initialize = InitializeAsync();
         }
-
-        public static Task InitializeBlogAsync() => _initialize;
 
         private static async Task InitializeAsync()
         {
