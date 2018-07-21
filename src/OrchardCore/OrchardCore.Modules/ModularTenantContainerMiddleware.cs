@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
@@ -36,8 +37,14 @@ namespace OrchardCore.Modules
 
             var shellSettings = _runningShellTable.Match(httpContext);
 
+            if (shellSettings?.State == TenantState.Initializing)
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
+            }
+
             // We only serve the next request if the tenant has been resolved.
-            if (shellSettings != null)
+            else if (shellSettings != null)
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
 
