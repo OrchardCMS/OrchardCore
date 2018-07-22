@@ -76,10 +76,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
             if (!allTaskNames.SequenceEqual(stateNames))
             {
                 await _backgroundService.UpdateAsync(_tenant);
-                states = (await _backgroundService.GetStatesAsync(_tenant));
+                states = await _backgroundService.GetStatesAsync(_tenant);
             }
 
-            var settings = (await _backgroundService.GetSettingsAsync(_tenant));
+            var settings = await _backgroundService.GetSettingsAsync(_tenant);
 
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
             {
