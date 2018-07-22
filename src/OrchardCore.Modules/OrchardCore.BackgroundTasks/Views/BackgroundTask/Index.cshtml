@@ -1,4 +1,5 @@
 @model BackgroundTaskIndexViewModel
+@inject OrchardCore.Modules.ILocalClock LocalClock
 
 <h1>@RenderTitleSegments(T["Background Tasks"])</h1>
 
@@ -76,11 +77,13 @@ else
 
                         if (entry.Settings.Enable && entry.State.Status == BackgroundTaskStatus.Idle)
                         {
+                            var nextStartTime = (await LocalClock.ConvertToLocalAsync(entry.State.NextStartTime)).DateTime;
+
                             <span class="badge badge-info" title="@T["Idle"]">
                                 <i class="fa fa-coffee" aria-hidden="true"></i> @T["Idle"]
                             </span>
                             <span class="badge badge-light" title="@T["Next Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @entry.State.NextStartTime.ToShortDateString() @entry.State.NextStartTime.ToShortTimeString()
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @nextStartTime.ToShortDateString() @nextStartTime.ToShortTimeString()
                             </span>
                         }
                         else if (entry.State.Status == BackgroundTaskStatus.Running)
@@ -98,8 +101,10 @@ else
 
                         if (entry.State.StartCount > 0)
                         {
+                            var lastStartTime = (await LocalClock.ConvertToLocalAsync(entry.State.LastStartTime)).DateTime;
+                            
                             <span class="badge badge-success" title="@T["Last Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @entry.State.LastStartTime.ToShortDateString() @entry.State.LastStartTime.ToShortTimeString()
+                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @lastStartTime.ToShortDateString() @lastStartTime.ToShortTimeString()
                             </span>
                             <span class="badge badge-light" title="@T["Last Execution Time"]">
                                 <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.LastExecutionTime.ToString(@"hh\:mm\:ss\.fff")

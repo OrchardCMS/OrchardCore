@@ -117,7 +117,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 }
 
                 // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
-                // then we need to dispose it right away
+                // then we need to dispose it right away.
                 if (_refCount == 0)
                 {
                     Dispose();
@@ -130,15 +130,16 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
+            // If the dependent is released, nothing to do.
             if (shellContext.Released)
             {
                 return;
             }
 
-            // If already released.
+            // If the dependency is already released.
             if (_released)
             {
-                // The dependent is released.
+                // The dependent is released immediately.
                 shellContext.Release();
                 return;
             }
@@ -202,6 +203,8 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 _shellContext = shellContext;
 
+                // The service provider is null if we try to create
+                // a scope on a disabled shell or already disposed.
                 if (_shellContext.ServiceProvider == null)
                 {
                     return;
@@ -225,36 +228,36 @@ namespace OrchardCore.Hosting.ShellBuilders
             public IServiceProvider ServiceProvider { get; }
 
             /// <summary>
-            /// Returns true is the shell context should be disposed consequently to this scope being released.
+            /// Returns true if the shell context should be disposed consequently to this scope being released.
             /// </summary>
             private bool ScopeReleased()
             {
-                var refCount = Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1);
-
-                if (refCount == 1)
+                // A disabled shell still in use is released by its last scope.
+                if (_shellContext.Settings.State == TenantState.Disabled)
                 {
-                    // A disabled shell still in use is released by its last scope.
-                    if (_shellContext.Settings.State == TenantState.Disabled)
+                    if (Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1) == 1)
                     {
                         _shellContext.Release();
                     }
+                }
 
-                    if (_shellContext._released)
+                // If the context is still being released, it will be disposed if the ref counter is equal to 0.
+                // To prevent this while executing the terminating events, the ref counter is not decremented here.
+                if (_shellContext._released && Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1) == 1)
+                {
+                    var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
-                        }
-
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
-                        }
-
-                        return true;
+                        tenantEvent.TerminatingAsync().GetAwaiter().GetResult();
                     }
+
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        tenantEvent.TerminatedAsync().GetAwaiter().GetResult();
+                    }
+
+                    return true;
                 }
 
                 return false;
@@ -262,6 +265,8 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public void Dispose()
             {
+                // The service scope is null if we tried to create
+                // a scope on a disabled shell or already disposed.
                 if (_serviceScope != null)
                 {
                     var disposeShellContext = ScopeReleased();
@@ -275,6 +280,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                     }
                 }
 
+                // Decrement the counter at the very end of the scope
                 Interlocked.Decrement(ref _shellContext._refCount);
             }
         }

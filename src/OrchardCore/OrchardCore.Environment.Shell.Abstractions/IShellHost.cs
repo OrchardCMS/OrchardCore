@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Shell
         /// <remarks>
         /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
         /// </remarks>
-        IServiceScope EnterServiceScope(ShellSettings settings);
+        IServiceScope EnterServiceScope(ShellSettings settings, bool throwIfDisabled = true);
 
         /// <summary>
         /// Creates a standalone service scope that can be used to resolve local services and
@@ -38,7 +38,7 @@ namespace OrchardCore.Environment.Shell
         /// <remarks>
         /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
         /// </remarks>
-        IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context);
+        IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context, bool throwIfDisabled = true);
 
         /// <summary>
         /// Updates an existing shell configuration.
