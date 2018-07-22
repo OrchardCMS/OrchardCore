@@ -82,8 +82,8 @@
 
     iframe.onload = function () {
         if (previewRendering) {
-            $(this.contentWindow).scrollTop(scrollTop);
             this.style.display = 'block';
+            $(this.contentWindow).scrollTop(scrollTop);
 
             if (iframe2 && iframe2.contentWindow) {
                 iframe2.style.display = 'none';
@@ -127,8 +127,8 @@
                         // Then, we use 2 frames to cancel the flicker that this deferring causes.
 
                         scrollTop = $(iframe.contentWindow).scrollTop();
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
                         iframe2.style.display = 'block';
+                        $(iframe2.contentWindow).scrollTop(scrollTop);
 
                         iframe.style.display = 'none';
                         iframe.contentWindow.document.open();

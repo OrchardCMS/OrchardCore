@@ -1,21 +1,21 @@
-# Orchard Core Templates
+# Code Generation Templates
 
-Orchard Core Templates uses `dotnet new` templates configurations for creating new websites, themes and modules from command shell. Our configurations have been implemented by using examples that you can find there :  
-<https://github.com/dotnet/dotnet-template-samples>
+Orchard Core Templates uses `dotnet new` templates configurations for creating new websites, themes and modules from the command shell. 
 
-`dotnet new` documentation :  
-<https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new>
+More information about `dotnet new` can be found at <https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new>
 
 ## Installing the Orchard Cms templates
 
+Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core Cms web applications.
+
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2
+dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-*
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest __dev__ branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2 --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
 ```
 
 ## Create a new website
@@ -25,13 +25,13 @@ dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2 --nuget-source https://www.
 #### Generate an Orchard Cms Web Application
 
 ```CMD
-dotnet new ocweb  
+dotnet new occms  
 ```
 
 Logging can be ignored with this command:
 
 ```CMD
-dotnet new ocweb --nlog false
+dotnet new occms --nlog false
 ```
 
 ### From Visual Studio (manual way)
@@ -125,9 +125,6 @@ using OrchardCore.Modules.Manifest;
 )]
 
 ```
-
-Please refer to Orchard Core documentation about `Manifest.cs` files for further details.  
-<http://docs.orchardproject.net/en/latest/Documentation/Manifest-files/>
 
 For this module to start we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
 [OrchardCore.Templates.Module/Startup.cs](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.Cms.Templates/content/OrchardCore.Templates.Module/Startup.cs)
