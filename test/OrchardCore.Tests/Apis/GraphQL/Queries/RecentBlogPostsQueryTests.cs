@@ -1,24 +1,19 @@
 using System.Threading.Tasks;
 using Assent;
-using OrchardCore.Tests.Apis.GraphQL.Blog;
+using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Queries
 {
-    public class RecentBlogPostsQueryTests : IClassFixture<BlogContext>
+    public class RecentBlogPostsQueryTests
     {
-        private readonly BlogContext _context;
-
-        public RecentBlogPostsQueryTests(BlogContext context)
-        {
-            _context = context;
-        }
-
-        [Fact(Skip = "Lucene Require rewriting")]
+        [Fact]
         public async Task ShouldListBlogPostWhenCallingAQuery()
         {
-            var blogPostContentItemId = await _context
-                .Client
+            await BlogContext.InitializeBlogAsync();
+
+            var blogPostContentItemId = await BlogContext
+                .GraphQLClient
                 .Content
                 .Create("BlogPost", builder =>
                 {
@@ -33,11 +28,11 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 
                     builder
                         .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", _context.BlogContentItemId);
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
-            var result = await _context
-                .Client
+            var result = await BlogContext
+                .GraphQLClient
                 .Content
                 .Query("RecentBlogPosts", builder =>
                 {

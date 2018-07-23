@@ -48,7 +48,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
                 if (contentItemFabrication.Published)
                 {
                     // TODO : Auth check for publish
-                    await contentManager.PublishAsync(contentItem);
+                    await contentManager.CreateAsync(contentItem, VersionOptions.Published);
                 }
                 else
                 {

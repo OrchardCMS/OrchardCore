@@ -1,22 +1,18 @@
 using System.Threading.Tasks;
-using OrchardCore.Tests.Apis.GraphQL.Context;
+using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogTests : IClassFixture<SiteContext>
+    public class BlogTests
     {
-        private SiteContext _siteContext;
-
-        public BlogTests(SiteContext siteContext)
-        {
-            _siteContext = siteContext;
-        }
-
         [Fact]
         public async Task ShouldCreateABlog() {
-            var contentItemId = await _siteContext
-                .Client
+
+            await SiteContext.InitializeSiteAsync();
+
+            var contentItemId = await SiteContext
+                .GraphQLClient
                 .Content
                 .Create("Blog", builder => builder
                         .WithContentPart("TitlePart")
