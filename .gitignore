@@ -189,5 +189,5 @@ node_modules/
 wwwroot
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
-!src/Templates/**/wwwroot
+!src/Templates/**/content/**
 .template.config/
