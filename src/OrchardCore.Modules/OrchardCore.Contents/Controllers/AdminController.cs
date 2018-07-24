@@ -383,6 +383,12 @@ namespace OrchardCore.Contents.Controllers
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                adminRouteValues.Add("returnUrl", returnUrl);
+            }
+
             return RedirectToRoute(adminRouteValues);
         }
 
