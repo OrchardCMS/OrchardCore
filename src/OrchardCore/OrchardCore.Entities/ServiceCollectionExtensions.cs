@@ -10,7 +10,7 @@ namespace OrchardCore.Entities
         public static IServiceCollection AddIdGeneration(this IServiceCollection services)
         {
             services.TryAddSingleton<IIdGenerator, DefaultIdGenerator>();
-            services.TryAddSingleton<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IGlobalMethodProvider, IdGeneratorMethod>());
             return services;
         }
     }
