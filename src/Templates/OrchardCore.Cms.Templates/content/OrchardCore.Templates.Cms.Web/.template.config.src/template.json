@@ -18,7 +18,7 @@
         },
         {
           "choice": "serilog",
-          "description": "Configures NLog as the logger component."
+          "description": "Configures Serilog as the logger component."
         },
         {
           "choice": "none",
