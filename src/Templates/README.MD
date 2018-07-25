@@ -27,8 +27,9 @@ dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-* --nuget-source https://ww
 ```CMD
 dotnet new occms  
 ```
+The above command will use the default options.
 
-You can use the following options to configure the Orchard Core version and a logger of your choice
+You can pass the following CLI parameters to setup options
 
 ```CMD
 Orchard Core Cms Web App (C#)
