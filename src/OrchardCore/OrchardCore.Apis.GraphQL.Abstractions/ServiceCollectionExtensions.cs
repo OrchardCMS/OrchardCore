@@ -7,23 +7,23 @@ namespace OrchardCore.Apis
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddGraphMutationType<T>(this IServiceCollection services) where T : MutationFieldType
+        public static void AddGraphMutationType<TMutation>(this IServiceCollection services) where TMutation : MutationFieldType
         {
-            services.AddScoped<T>();
-            services.AddScoped<MutationFieldType, T>();
+            services.AddScoped<TMutation>();
+            services.AddScoped<MutationFieldType, TMutation>();
         }
 
-        public static void AddGraphQueryType<T>(this IServiceCollection services) where T : QueryFieldType
+        public static void AddGraphQueryType<TQuery>(this IServiceCollection services) where TQuery : QueryFieldType
         {
-            services.AddScoped<T>();
-            services.AddScoped<QueryFieldType, T>();
+            services.AddScoped<TQuery>();
+            services.AddScoped<QueryFieldType, TQuery>();
         }
 
-        public static void AddGraphQLInputType<TContenPart, TInputType>(this IServiceCollection services) 
-            where TContenPart : class 
-            where TInputType : InputObjectGraphType<TContenPart>
+        public static void AddGraphQLInputType<TInput, TInputType>(this IServiceCollection services) 
+            where TInput : class 
+            where TInputType : InputObjectGraphType<TInput>
         {
-            services.AddScoped<InputObjectGraphType<TContenPart>, TInputType>();
+            services.AddScoped<InputObjectGraphType<TInput>, TInputType>();
             services.AddScoped<IInputObjectGraphType, TInputType>();
         }
 
@@ -33,11 +33,11 @@ namespace OrchardCore.Apis
             services.AddScoped<IQueryArgumentObjectGraphType, TInputType>();
         }
 
-        public static void AddGraphQLQueryType<TContenPart, TInputType>(this IServiceCollection services)
-            where TContenPart : class
-            where TInputType : ObjectGraphType<TContenPart>
+        public static void AddGraphQLQueryType<TInput, TInputType>(this IServiceCollection services)
+            where TInput : class
+            where TInputType : ObjectGraphType<TInput>
         {
-            services.AddScoped<ObjectGraphType<TContenPart>, TInputType>();
+            services.AddScoped<ObjectGraphType<TInput>, TInputType>();
             services.AddScoped<IObjectGraphType, TInputType>();
         }
 
