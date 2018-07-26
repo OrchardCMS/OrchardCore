@@ -1,22 +1,19 @@
 @model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using OrchardCore.ContentFields.Settings;
-@using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
-    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
+    string required = settings.Required ? "required" : "";
 }
 
 
 <fieldset class="form-group">
-
-
-    @foreach (var option in options)
+    @foreach (var option in Model.Options)
     {
-        if (string.IsNullOrWhiteSpace(option))
+        if (string.IsNullOrWhiteSpace(option.Value))
         {
             <div class="form-check" asp-for="Value">
                 <label class="form-check-label">
-                    @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Value), settings.Required ? new { required = "required", @class = "form-check-input" } : null)<i>@T["unset"]</i>
+                    @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Value), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
                 </label>
             </div>
         }
@@ -24,7 +21,7 @@
         {
             <div class="form-check" asp-for="Value">
                 <label class="form-check-label">
-                    @Html.RadioButton("Value", option, (option == Model.Value), settings.Required ? new { required = "required", @class = "form-check-input" } : null)@option
+                    @Html.RadioButton("Value", option.Value, (option.Value == Model.Value), new { @required = required, @class = "form-check-input" })@option.Value
                 </label>
             </div>
         }
@@ -34,6 +31,5 @@
     {
         <span class="hint">@T["— {0}", settings.Hint]</span>
     }
-
 </fieldset>
 

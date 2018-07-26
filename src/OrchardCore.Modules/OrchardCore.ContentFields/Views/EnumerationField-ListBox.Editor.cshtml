@@ -1,17 +1,15 @@
 @model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using OrchardCore.ContentFields.Settings;
-@using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
-    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
+    string required = settings.Required ? "required" : "";
 }
 
 <div class="row">
     <fieldset class="form-group form-check">
-        <label class="form-check-label" asp-for="Value">
+        <label class="form-check-label">
 
-            <input asp-for="SelectedValues" type="hidden" />
-            @Html.ListBoxFor(m => m.SelectedValues, new MultiSelectList(options, Model.SelectedValues), settings.Required ? new { required = "required", @class = "form-control" } : null)
+            <select class="form-control" asp-for="Values" asp-items="@(new SelectList(Model.Options,"Value","Value", Model.Values))"></select>
 
             @if (!String.IsNullOrEmpty(settings.Hint))
             {
