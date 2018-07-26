@@ -21,6 +21,12 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="NLog.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <!-- Necessary as we reference the Project and not the Package -->
   <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" />
   <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
