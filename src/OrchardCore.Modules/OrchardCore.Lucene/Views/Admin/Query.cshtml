@@ -55,6 +55,8 @@
 
 @if (Model.Documents.Any())
 {
+    var fieldNames = Model.Documents.SelectMany(d => d.Fields.Select(f => f.Name)).Distinct();
+
     <div class="form-group">
         <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
     </div>
@@ -63,9 +65,9 @@
         <thead>
             <tr>
                 <th>#</th>
-                @foreach (var field in Model.Documents.First())
+                @foreach (var name in fieldNames)
                 {
-                <th>@field.Name</th>
+                <th>@name</th>
                 }
             </tr>
         </thead>
@@ -75,9 +77,9 @@
             {
             <tr>
                 <th scope="row">@(row++)</th>
-                @foreach (var field in document)
+                @foreach (var name in fieldNames)
                 {
-                    <td>@field.GetStringValue()</td>
+                    <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
                 }
             </tr>
             }

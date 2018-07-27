@@ -32,13 +32,13 @@ namespace OrchardCore.Media.Recipes
 
             var model = context.Step.ToObject<MediaStepModel>();
 
-            foreach(JObject item in model.Files)
+            foreach (JObject item in model.Files)
             {
                 var file = item.ToObject<MediaStepFile>();
                 using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
                 {
-                    await _mediaFileStore.CreateFileFromStream(file.Path, stream);
-                }                    
+                    await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
+                }
             }
         }
     }

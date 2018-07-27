@@ -86,7 +86,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     default:
-                        site.Properties.Add(property);
+                        site.Properties[property.Name] = property.Value;
                         break;
                 }
             }

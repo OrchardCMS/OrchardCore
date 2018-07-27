@@ -34,7 +34,7 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Draftable(model.Draftable);
                 context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
-                context.Builder.Stereotype(model.Stereotype);
+                context.Builder.Stereotype(model.Stereotype?.Trim());
             }
 
             return Edit(contentTypeDefinition, context.Updater);

@@ -54,7 +54,7 @@ namespace OrchardCore.Entities.DisplayManagement
             return EditAsync(model, section, context);
         }
 
-        public override Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
         {
             JToken property;
             TSection section;
@@ -70,11 +70,11 @@ namespace OrchardCore.Entities.DisplayManagement
                 section = property.ToObject<TSection>();
             }
             
-            var result = UpdateAsync(model, section, context.Updater, context);
+            var result = await UpdateAsync(model, section, context.Updater, context);
 
             if (result == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             if (context.Updater.ModelState.IsValid)

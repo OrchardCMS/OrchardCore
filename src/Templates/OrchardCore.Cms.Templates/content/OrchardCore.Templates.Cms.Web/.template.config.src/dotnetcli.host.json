@@ -1,9 +1,9 @@
 {
   "$schema": "http://json.schemastore.org/dotnetcli.host",
   "symbolInfo": {
-    "UseNLog": {
-      "longName": "nlog",
-      "shortName": "nl"
+    "Logger": {
+      "longName": "logger",
+      "shortName": "lg"
     },
     "OrchardVersion": {
       "longName": "orchard-version",
