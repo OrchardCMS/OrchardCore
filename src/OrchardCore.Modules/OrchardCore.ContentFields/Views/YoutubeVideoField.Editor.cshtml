@@ -7,8 +7,8 @@
 }
 
 <fieldset class="form-group">
-    <label asp-for="Address">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Address" class="form-control content-preview-text" />
+    <label asp-for="RawAddress">@Model.PartFieldDefinition.DisplayName()</label>
+    <input asp-for="RawAddress" class="form-control content-preview-text" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
     <span class="hint">@settings.Hint</span>
