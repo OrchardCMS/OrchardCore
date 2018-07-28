@@ -4,6 +4,7 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class YoutubeVideoField : ContentField
     {
-        public string Address { get; set; }
+        public string EmbededAddress { get; set; }
+        public string RawAddress { get; set; }
     }
 }

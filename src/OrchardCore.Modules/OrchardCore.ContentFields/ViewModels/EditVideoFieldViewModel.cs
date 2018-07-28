@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -9,6 +10,9 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class EditYoutubeVideoFieldViewModel : YoutubeVideoFieldDisplayViewModel
     {
-        public string Address { get; set; }
+        [Required]
+        [DataType(DataType.Url)]
+        public string RawAddress { get; set; }
+        public string EmbededAddress { get; set; }
     }
 }
