@@ -30,7 +30,7 @@ namespace OrchardCore.ContentFields.Fields
             return Initialize<EditYoutubeVideoFieldViewModel>("YoutubeVideoField_Edit", model =>
            {
                model.RawAddress = field.RawAddress;
-               model.EmbededAddress = field.EmbededAddress;
+               model.EmbeddedAddress = field.EmbeddedAddress;
                model.Field = field;
                model.Part = context.ContentPart;
                model.PartFieldDefinition = context.PartFieldDefinition;
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.Fields
                 var query = QueryHelpers.ParseQuery(uri.Query);
                 if (query.ContainsKey("v"))
                 {
-                    model.EmbededAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                    model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
                 }
                 else
                 {
@@ -61,11 +61,11 @@ namespace OrchardCore.ContentFields.Fields
             else
             {
                 string path = uri.AbsolutePath.Split('?')[0];
-                model.EmbededAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
+                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
             }
 
             field.RawAddress = model.RawAddress;
-            field.EmbededAddress = model.EmbededAddress;
+            field.EmbeddedAddress = model.EmbeddedAddress;
 
             return Edit(field, context);
         }

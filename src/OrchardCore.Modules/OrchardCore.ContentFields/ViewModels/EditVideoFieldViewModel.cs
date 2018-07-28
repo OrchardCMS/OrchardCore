@@ -13,6 +13,6 @@ namespace OrchardCore.ContentFields.ViewModels
         [Required]
         [DataType(DataType.Url)]
         public string RawAddress { get; set; }
-        public string EmbededAddress { get; set; }
+        public string EmbeddedAddress { get; set; }
     }
 }
