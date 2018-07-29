@@ -63,8 +63,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
 
-            services.AddScoped<IUserContentTypesProvider, UserContentTypesProvider>();
-            services.AddScoped<IQueryFromFilterBox, QueryFromFilterBox>();
+            services.AddScoped<FilterBoxService>();
 
             services.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
         }

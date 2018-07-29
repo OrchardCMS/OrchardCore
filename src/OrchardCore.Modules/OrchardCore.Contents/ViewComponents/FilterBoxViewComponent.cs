@@ -26,21 +26,21 @@ namespace OrchardCore.Contents.ViewComponents
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IUserContentTypesProvider _userContentTypesProvider;
+        private readonly FilterBoxService _filterBoxService;
 
         public FilterBoxViewComponent(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
-            IUserContentTypesProvider userContentTypesProvider,
+            FilterBoxService filterBoxService,
             IStringLocalizer<FilterBoxViewComponent> localizer)
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _userContentTypesProvider = userContentTypesProvider;
+            _filterBoxService = filterBoxService;
 
             T = localizer;
         }
@@ -116,7 +116,7 @@ namespace OrchardCore.Contents.ViewComponents
         {
             var result = new List<SelectListItem>();
 
-            IEnumerable<ContentTypeDefinition> listable = (await _userContentTypesProvider.GetListableTypesAsync(user)).ToList().OrderBy(ctd => ctd.Name);
+            IEnumerable<ContentTypeDefinition> listable = (await _filterBoxService.GetListableTypesAsync()).ToList().OrderBy(ctd => ctd.Name);
             result.Add(new SelectListItem() { Text = T["All content types"], Value = "" });
             foreach (ContentTypeDefinition t in listable)
             {

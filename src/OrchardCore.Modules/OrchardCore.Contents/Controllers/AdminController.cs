@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IQueryFromFilterBox _queryFromFilterBox;
+        private readonly FilterBoxService _filterBoxService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
         
         public AdminController(
@@ -51,8 +51,7 @@ namespace OrchardCore.Contents.Controllers
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
             IEnumerable<IContentAdminFilter> contentAdminFilters,
-            IQueryFromFilterBox queryFromFilterBox
-            )
+            FilterBoxService filterBoxService)
         {
             _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
@@ -62,8 +61,8 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _queryFromFilterBox = queryFromFilterBox;            
-
+            _filterBoxService= filterBoxService;
+            
             T = localizer;
             New = shapeFactory;
             Logger = logger;
@@ -78,7 +77,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var query = await _queryFromFilterBox.ApplyFilterBoxOptionsToQuery(_session.Query<ContentItem, ContentItemIndex>(), filterBoxModel);
+            var query = await _filterBoxService.ApplyFilterBoxOptionsToQuery(_session.Query<ContentItem, ContentItemIndex>(), filterBoxModel);
 
             // Invoke any service that could alter the query            
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);

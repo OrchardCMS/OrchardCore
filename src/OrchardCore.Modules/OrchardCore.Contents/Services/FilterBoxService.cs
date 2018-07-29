@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -6,24 +9,19 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Navigation;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
 {
-    public class QueryFromFilterBox : IQueryFromFilterBox
+    public class FilterBoxService
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public QueryFromFilterBox(
+        public FilterBoxService(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IAuthorizationService authorizationService,
@@ -34,6 +32,8 @@ namespace OrchardCore.Contents.Services
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
+
+
         public async Task<IQuery<ContentItem, ContentItemIndex>> ApplyFilterBoxOptionsToQuery(
                                 IQuery<ContentItem, ContentItemIndex> query,
                                 FilterBoxViewModel filterBoxModel)
@@ -70,7 +70,7 @@ namespace OrchardCore.Contents.Services
                 }
             }
 
-            
+
 
             switch (filterBoxModel.Options.ContentsStatus)
             {
@@ -118,21 +118,45 @@ namespace OrchardCore.Contents.Services
         }
 
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
+        public async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
         {
-            var currentUser = _httpContextAccessor.HttpContext?.User;
+            var creatable = new List<ContentTypeDefinition>();
 
-            if (currentUser == null)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null)
             {
-                return null;
+                return creatable;
             }
 
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    if (authorized)
+                    {
+                        creatable.Add(ctd);
+                    }
+                }
+            }
+            return creatable;
+        }
+
+        public async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
+        {
             var listable = new List<ContentTypeDefinition>();
+
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null)
+            {
+                return listable;
+            }
+
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
                 if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(currentUser, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    var authorized = await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
                     {
                         listable.Add(ctd);
@@ -140,6 +164,8 @@ namespace OrchardCore.Contents.Services
                 }
             }
             return listable;
+
         }
+
     }
 }
