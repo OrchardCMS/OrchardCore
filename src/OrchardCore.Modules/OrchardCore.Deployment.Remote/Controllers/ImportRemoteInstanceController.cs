@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -10,9 +11,6 @@ using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Services;
-using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -23,24 +21,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteClientService _remoteClientService;
-        private readonly INotifier _notifier;
-        private readonly IRecipeExecutor _recipeExecutor;
+        private readonly IEnumerable<IDeploymentTargetHandler> _deploymentTargetHandlers;
 
         public ImportRemoteInstanceController(
             IAuthorizationService authorizationService,
             ISession session,
             RemoteClientService remoteClientService,
             IDeploymentManager deploymentManager,
-            INotifier notifier,
-            IRecipeExecutor recipeExecutor,
+            IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers,
             IHtmlLocalizer<ExportRemoteInstanceController> h)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
             _remoteClientService = remoteClientService;
-            _notifier = notifier;
-            _recipeExecutor = recipeExecutor;
+            _deploymentTargetHandlers = deploymentTargetHandlers;
             H = h;
         }
 
@@ -69,16 +64,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
-                var executionId = Guid.NewGuid().ToString("n");
                 var fileProvider = new PhysicalFileProvider(tempArchiveFolder);
-                var recipeDescriptor = new RecipeDescriptor
-                {
-                    FileProvider = fileProvider,
-                    BasePath = "",
-                    RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
-                };
 
-                await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());
+                foreach(var deploymentTargetHandler in _deploymentTargetHandlers)
+                {
+                    // Don't trigger in parallel to avoid potential race conditions in the handlers
+                    await deploymentTargetHandler.ImportFromFileAsync(fileProvider);
+                }
             }
             finally
             {
