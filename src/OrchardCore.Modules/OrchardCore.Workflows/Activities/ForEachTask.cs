@@ -37,7 +37,7 @@ namespace OrchardCore.Workflows.Activities
         /// </summary>
         public string LoopVariableName
         {
-            get => GetProperty(() => "x");
+            get => GetProperty<string>();
             set => SetProperty(value);
         }
 
