@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -189,11 +190,33 @@ namespace Microsoft.Extensions.DependencyInjection
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                services.Add(new ServiceCollection()
+                var collection = new ServiceCollection()
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .Services);
+                    .Services;
+
+                // Retrieve the implementation type of the newly startup filter registered as a singleton
+                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
+
+                if (startupFilterType != null)
+                {
+                    // Remove the data protection startup filter registered at the host level.
+                    // Knowing that a host singleton is cloned through an implementation instance.
+                    var descriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter) &&
+                        s.ImplementationInstance?.GetType() == startupFilterType);
+
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+                }
+
+                // Remove options setups registered at the host level.
+                services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+
+                services.Add(collection);
             });
         }
     }
