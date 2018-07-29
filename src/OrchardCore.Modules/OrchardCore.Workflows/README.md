@@ -12,7 +12,7 @@ A workflow is essentially a visual script, where each activity is a statement of
 There are two types of activities: **Task** and **Event**.
 A Task activity typically performs an action, such as publishing a content item, while an Event activity typically listens for an event to happen before execution continues.
 
-In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event actiivty is _Content Created_, which executes whenever a content item is created.
+In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event activity is _Content Created_, which executes whenever a content item is created.
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
@@ -48,7 +48,7 @@ A step in a workflow definition. An activity performs an action and provides zer
 
 ### Task
 
-A specialized type of activity. Tasks perform actions such as sending emails, publishing content and making HTP requests.
+A specialized type of activity. Tasks perform actions such as sending emails, publishing content and making HTTP requests.
 
 ### Event
 
