@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
@@ -15,11 +16,10 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : Internal.BackgroundService, IModularBackgroundService
+    internal class ModularBackgroundService : BackgroundService, IModularBackgroundService
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
-        private static readonly object _synLock = new object();
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
