@@ -37,7 +37,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<HttpResponseMessage> PatchAsJsonAsync<T>(
+        public static Task<HttpResponseMessage> PatchAsJsonAsync<T>(
             this HttpClient client,
             string requestUri,
             T value,
@@ -48,7 +48,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 Encoding.UTF8,
                 "application/json");
 
-            return await client.PatchAsync(requestUri, content).ConfigureAwait(false);
+            return client.PatchAsync(requestUri, content);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<HttpResponseMessage> PatchAsync(
+        public static Task<HttpResponseMessage> PatchAsync(
             this HttpClient client,
             string requestUri,
             HttpContent content)
@@ -78,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 Content = content
             };
             client.DefaultRequestHeaders.ExpectContinue = false;
-            return await client.SendAsync(request).ConfigureAwait(false);
+            return client.SendAsync(request);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static async Task<HttpResponseMessage> PutAsJsonAsync<T>(
+        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(
             this HttpClient client,
             string requestUri,
             T value,
@@ -112,7 +112,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 Encoding.UTF8,
                 "application/json");
 
-            return await client.PutAsync(requestUri, content).ConfigureAwait(false);
+            return client.PutAsync(requestUri, content);
         }
 
         /// <summary>
