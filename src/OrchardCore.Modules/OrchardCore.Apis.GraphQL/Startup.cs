@@ -5,6 +5,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Services;
@@ -37,7 +38,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<IGraphQLSchemaHashService, NullGraphQLSchemaHashService>();
+            services.TryAddScoped<IGraphQLSchemaHashService, NullGraphQLSchemaHashService>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

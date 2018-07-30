@@ -1,36 +1,36 @@
 using System;
 using System.Threading.Tasks;
 using GraphQL.Types;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
     public class SchemaService : ISchemaService
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly IGraphQLSchemaHashService _hashService;
         private readonly IServiceProvider _serviceProvider;
-        private int? _lastHash;
-        private ISchema _schema;
 
         public SchemaService(
+            IMemoryCache memoryCache,
             IGraphQLSchemaHashService hashService,
             IServiceProvider serviceProvider)
         {
+            _memoryCache = memoryCache;
             _hashService = hashService;
             _serviceProvider = serviceProvider;
         }
 
         public async Task<ISchema> GetSchema()
         {
-            var hash = await _hashService.GetHash();
+            var schemaHash = await _hashService.GetHash();
 
-            if (_lastHash != hash)
+            return _memoryCache.GetOrCreate("GraphQL.Schema_" + schemaHash, f =>
             {
-                _schema = _serviceProvider.GetService<ISchema>();
-                _lastHash = hash;
-            }
-
-            return _schema;
+                f.SetSlidingExpiration(TimeSpan.FromHours(1));
+                return _serviceProvider.GetService<ISchema>();
+            });
         }
     }
 }

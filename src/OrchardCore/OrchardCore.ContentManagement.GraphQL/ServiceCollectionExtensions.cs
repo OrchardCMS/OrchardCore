@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddScoped<IQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 
-            services.AddSingleton<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
+            services.AddScoped<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
 

@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Subscriptions;
@@ -12,16 +10,18 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class ContentSchema : Schema
     {
-        public ContentSchema(IServiceProvider serviceProvider,
+        public ContentSchema(MutationsSchema mutationsSchema,
+            QueriesSchema queriesSchema,
+            SubscriptionSchema subscriptionSchema,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,
             IEnumerable<IObjectGraphType> queryGraphTypes,
             IDependencyResolver dependencyResolver)
             : base(dependencyResolver)
         {
-            Mutation = serviceProvider.GetService<MutationsSchema>();
-            Query = serviceProvider.GetService<QueriesSchema>();
+            Mutation = mutationsSchema;
+            Query = queriesSchema;
 
-            var subscription = serviceProvider.GetService<SubscriptionSchema>();
+            var subscription = subscriptionSchema;
 
             if (subscription.Fields.Any())
             {
