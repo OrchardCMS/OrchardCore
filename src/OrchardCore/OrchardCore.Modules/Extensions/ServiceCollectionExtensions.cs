@@ -118,11 +118,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     fileProvider = new ModuleEmbeddedStaticFileProvider(env);
                 }
 
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "",
-                    FileProvider = fileProvider
-                });
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+
+                options.RequestPath = "";
+                options.FileProvider = fileProvider;
+                app.UseStaticFiles(options);
             });
         }
 
