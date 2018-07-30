@@ -24,8 +24,8 @@ namespace OrchardCore.Contents.Drivers
                 Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before"),
                 Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:10"),
                 Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
-                Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),
-                Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:20")
+                Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:20"),
+                Shape("Contents_SummaryAdmin__Status", new ContentItemViewModel(model)).Location("SummaryAdmin", "Status:10")
             );
         }
 

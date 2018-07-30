@@ -1,0 +1,92 @@
+@using OrchardCore.ContentManagement
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+}
+@* STYLE 0 *@
+
+@*@if ((hasPublished) && (hasDraft))
+    {
+        <i class="fa fa-circle mr-2" style="color:green;"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;"></i>
+        @T["published with draft"]
+    }
+    else if (hasPublished)
+    {
+        <i class="fa fa-circle mr-2" style="color:green;"></i>
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+        @T["published"]
+
+    }
+    else if (hasDraft)
+    {
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;"></i>
+        @T["draft"]
+
+    }*@
+
+
+@* STYLE 1 *@
+
+@if ((hasPublished) && (hasDraft))
+{
+    <span title="@T["published with draft"]">
+        <i class="fa fa-circle mr-2" style="color:green;"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;"></i>
+    </span>
+}
+else if (hasPublished)
+{
+    <span title="@T["published without draft"]">
+        <i class="fa fa-circle mr-2" style="color:green;"></i>
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+    </span>
+
+}
+else if (hasDraft)
+{
+    <span title="@T["draft not published"]">
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;"></i>
+    </span>
+}
+
+
+
+@* STYLE 2 *@
+@*@if (hasPublished)
+    {
+        <i class="fa fa-circle mr-1" style="color:green;"></i><span class="mr-4"> @T["published"] </span>
+    }
+
+    @if (hasDraft)
+    {
+        <i class="fa fa-circle mr-1" style="color:dodgerblue;"></i> @T["draft"]
+    }*@
+
+
+
+
+@* STYLE 3 *@
+
+@*@if (hasPublished)
+    {
+        <span class="badge badge-success mr-3" title="@T["published"]">
+            <i class="fa fa-pencil" aria-hidden="true"></i> @T["published"]
+        </span>
+
+    }
+
+    @if (hasDraft)
+    {
+        <span class="badge badge-primary" title="@T["draft"]">
+            <i class="fa fa-pencil" aria-hidden="true"></i> @T["draft"]
+        </span>
+    }*@
+
+
+
