@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
@@ -21,6 +20,8 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         private readonly IDocumentWriter _writer;
+
+        private readonly static JsonSerializer _serializer = new JsonSerializer();
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -66,16 +67,18 @@ namespace OrchardCore.Apis.GraphQL
         {
             var schema = await schemaService.GetSchema();
 
-            string body;
-            using (var streamReader = new StreamReader(context.Request.Body))
+            GraphQLRequest request;
+
+            using (var sr = new StreamReader(context.Request.Body))
             {
-                body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
+                using (var jsonTextReader = new JsonTextReader(sr))
+                {
+                    request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
+                }
             }
 
-            var request = JsonConvert.DeserializeObject<GraphQLRequest>(body);
-
             var queryToExecute = request.Query;
-            if (!String.IsNullOrWhiteSpace(request.NamedQuery))
+            if (!String.IsNullOrEmpty(request.NamedQuery))
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
 
