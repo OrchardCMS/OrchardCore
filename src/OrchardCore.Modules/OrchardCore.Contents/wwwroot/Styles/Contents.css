@@ -3,6 +3,15 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+html, body, .ta-wrapper {
+  height: 100%;
+  margin-bottom: 0px;
+  overflow: auto; }
+
+.ta-content {
+  height: calc(100% - 59px);
+  margin-bottom: 0px; }
+
 .edit-container {
   display: table;
   border-collapse: separate;
@@ -28,3 +37,100 @@
   vertical-align: top;
   display: table-cell;
   padding-left: 15px; }
+
+.nav.ocf {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  /* not-used yet */ }
+  .nav.ocf label {
+    font-size: 0.875rem; }
+  .nav.ocf .form-control, .nav.ocf .btn, .nav.ocf .button {
+    border-radius: 0;
+    border-color: #ced4da; }
+    .nav.ocf .form-control:focus, .nav.ocf .btn:focus, .nav.ocf .button:focus {
+      border-color: #495057;
+      outline: none;
+      box-shadow: none !important; }
+  .nav.ocf .nav-bar-divider {
+    background-color: #6c757d;
+    margin: 2px 4px 0 4px;
+    width: 1px;
+    min-width: 1px;
+    height: 22px;
+    align-self: center; }
+
+h1.ocf {
+  font-size: 1.5rem;
+  font-weight: normal;
+  height: 42px; }
+
+.list-header, .list-row {
+  height: 40px;
+  border-bottom: solid 1px #ccc;
+  display: flex;
+  align-items: stretch;
+  cursor: default; }
+  .list-header .list-col, .list-row .list-col {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    white-space: nowrap; }
+  .list-header .list-col-checkbox, .list-row .list-col-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+
+.list-header {
+  font-size: 0.75rem;
+  font-weight: 500;
+  overflow-x: hidden; }
+  .list-header .list-col {
+    padding-left: 4px; }
+  .list-header .list-col:hover {
+    background-color: #f8f9fa; }
+  .list-header .list-col-checkbox {
+    padding-left: 0; }
+
+.list-row {
+  font-size: 0.875rem; }
+  .list-row .list-col {
+    /*padding-left: 14px;*/
+    /*border:solid 1px gray;*/ }
+  .list-row:hover {
+    background-color: #f8f9fa; }
+    .list-row:hover .action-toggle {
+      opacity: 1; }
+
+.action-buttons-in-list {
+  position: relative;
+  align-self: stretch; }
+  .action-buttons-in-list .dropdown-menu {
+    border-radius: 0; }
+
+.action-toggle {
+  color: #adb5bd;
+  display: flex;
+  height: 100%;
+  width: 40px;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  font-size: 0.75rem; }
+  .action-toggle:hover {
+    transition: ease-in-out all;
+    background-color: #e9ecef;
+    color: #adb5bd; }
+
+#footer-pager {
+  position: fixed;
+  bottom: 0;
+  height: 68px; }
+  #footer-pager .pager {
+    margin-top: 8px; }
+
+.no-results {
+  border-radius: 0;
+  font-size: 0.875rem; }
+
+.ocf-pager-wrapper ul.pager li a {
+  border-radius: 0; }
