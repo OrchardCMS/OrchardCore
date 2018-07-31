@@ -9,9 +9,7 @@ namespace OrchardCore.OpenId.ViewModels
         public string ClientId { get; set; }
         [Required]
         public string DisplayName { get; set; }
-        [Url]
         public string RedirectUris { get; set; }
-        [Url]
         public string PostLogoutRedirectUris { get; set; }
         public string Type { get; set; }
         public string ConsentType { get; set; }
