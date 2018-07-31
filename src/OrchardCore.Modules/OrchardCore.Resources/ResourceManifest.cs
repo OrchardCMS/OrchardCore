@@ -31,9 +31,9 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery.slim")
-                .SetCdn("https://code.jquery.com/jquery-3.2.1.slim.min.js", "https://code.jquery.com/jquery-3.2.1.slim.js")
-                .SetCdnIntegrity("sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", "sha384-x3iX8AdaBWgXWuBkuyLrg/s5FqjPdFGcfbEuYEFQiQTBs8uX3XX7gkj0BkFhHu7a")
-                .SetVersion("3.2.1")
+                .SetCdn("https://code.jquery.com/jquery-3.3.1.slim.min.js", "https://code.jquery.com/jquery-3.3.1.slim.js")
+                .SetCdnIntegrity("sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo", "sha384-sh6iinGECmk2oNezd0GDVuXqoHrZzF3PTML2nyt/lC61v2p1W7hGll/JkRFCOcMf")
+                .SetVersion("3.3.1")
                 ;
 
             manifest
