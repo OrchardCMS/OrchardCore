@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL.Mutations;
+using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.Subscriptions;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
@@ -29,7 +34,15 @@ namespace OrchardCore.Apis.GraphQL.Services
             return _memoryCache.GetOrCreate("GraphQL.Schema_" + schemaHash, f =>
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
-                return _serviceProvider.GetService<ISchema>();
+
+                return new ContentSchema(
+                    _serviceProvider.GetService<MutationsSchema>(),
+                    _serviceProvider.GetService<QueriesSchema>(),
+                    _serviceProvider.GetService<SubscriptionSchema>(),
+                    _serviceProvider.GetService<IEnumerable<IInputObjectGraphType>>(),
+                    _serviceProvider.GetService<IEnumerable<IObjectGraphType>>(),
+                    _serviceProvider.GetService<IDependencyResolver>()
+                    );
             });
         }
     }

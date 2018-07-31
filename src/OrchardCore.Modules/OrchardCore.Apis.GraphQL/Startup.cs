@@ -31,7 +31,6 @@ namespace OrchardCore.Apis.GraphQL
             services.AddGraphQLSubscriptions();
 
             // Schema
-            services.AddScoped<ISchema, ContentSchema>();
 
             services.AddScoped<ISchemaService, SchemaService>();
 
