@@ -55,14 +55,12 @@
         {
             <div class="list-header">
                 <div class="list-col list-col-checkbox" style="width:@(colCheckboxWidth)px;"><input type="checkbox" /></div>
-                <div class="list-col content-item-title" style="width:@(colTitleWidth)px;">@T["title"]</div>
-                <div class="list-col" style="width:@(colTypeWidth)px;">@T["type"]</div>
-                <div class="list-col" style="width:@(colStatusWidth)px;">@T["published | draft"]</div>
-                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["owner"]</div>
-                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["author"]</div>
-                <div class="list-col" style="width:@(colDateWidth)px;">@T["created date"]</div>
-                <div class="list-col" style="width:@(colDateWidth)px;">@T["modified date"]</div>
-                <div class="list-col" style="width:@(colDateWidth)px;">@T["modified date"]</div>
+                <div class="list-col content-item-title" style="width:@(colTitleWidth)px;">@T["Title"]</div>
+                <div class="list-col" style="width:@(colTypeWidth)px;">@T["Type"]</div>
+                <div class="list-col" style="width:@(colStatusWidth)px;">@T["Status"]</div>
+                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["Owner"]</div>
+                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["Author"]</div>
+                <div class="list-col" style="width:@(colDateWidth)px;">@T["Created"]</div>
             </div>
             <div id="content-items-list-body">
                 @foreach (var contentItemSummary in Model.ContentItems)
@@ -96,14 +94,8 @@
                         <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">
                             @contentItemSummary.ContentItem.Author
                         </div>
-                        <div class="list-col" style="width:@(colDateWidth)px;">
-                            @(await DisplayAsync(await New.DateTime(Utc: contentItemSummary.ContentItem.ModifiedUtc, Format: "g")))
-                        </div>
-                        <div class="list-col" style="width:@(colDateWidth)px;">
-                            @(await DisplayAsync(await New.DateTime(Utc: contentItemSummary.ContentItem.ModifiedUtc, Format: "g")))
-                        </div>
-                        <div class="list-col" style="width:@(colDateWidth)px;">
-                            @(await DisplayAsync(await New.DateTime(Utc: contentItemSummary.ContentItem.ModifiedUtc, Format: "g")))
+                        <div class="list-col" style="width:@(colDateWidth)px;" title="@(await DisplayAsync(await New.DateTime(Utc: contentItemSummary.ContentItem.CreatedUtc, Format: "g")))">
+                            @(await DisplayAsync(await New.TimeSpan(Utc: contentItemSummary.ContentItem.CreatedUtc)))
                         </div>
                     </div>
                 }
