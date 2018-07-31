@@ -28,7 +28,7 @@ namespace OrchardCore.Workflows.Drivers
                 section.Title = viewModel.Title?.Trim();
             }
 
-            return Edit(section, context);
+            return await EditAsync(section, context);
         }
     }
 }
