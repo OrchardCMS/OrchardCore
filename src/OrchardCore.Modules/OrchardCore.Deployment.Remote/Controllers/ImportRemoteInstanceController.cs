@@ -1,41 +1,30 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Services;
-using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     public class ImportRemoteInstanceController : Controller
     {
-        private readonly IDeploymentManager _deploymentManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
         private readonly RemoteClientService _remoteClientService;
-        private readonly IEnumerable<IDeploymentTargetHandler> _deploymentTargetHandlers;
+        private readonly IDeploymentManager _deploymentManager;
 
         public ImportRemoteInstanceController(
-            IAuthorizationService authorizationService,
-            ISession session,
             RemoteClientService remoteClientService,
             IDeploymentManager deploymentManager,
-            IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers,
             IHtmlLocalizer<ExportRemoteInstanceController> h)
         {
-            _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
-            _session = session;
             _remoteClientService = remoteClientService;
-            _deploymentTargetHandlers = deploymentTargetHandlers;
+
             H = h;
         }
 
@@ -64,13 +53,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
-                var fileProvider = new PhysicalFileProvider(tempArchiveFolder);
-
-                foreach(var deploymentTargetHandler in _deploymentTargetHandlers)
-                {
-                    // Don't trigger in parallel to avoid potential race conditions in the handlers
-                    await deploymentTargetHandler.ImportFromFileAsync(fileProvider);
-                }
+                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
             }
             finally
             {
