@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
+using OrchardCore.Security;
 
 namespace OrchardCore.Recipes
 {
@@ -24,7 +25,7 @@ namespace OrchardCore.Recipes
             builder.Add(T["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
                 .Add(T["Recipes"], "1", recipes => recipes
-                    .Permission(Permissions.RecipeExecutor)
+                    .Permission(StandardPermissions.SiteOwner)
                     .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
                     .LocalNav())
                 );

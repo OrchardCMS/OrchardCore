@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Recipes.ViewModels;
+using OrchardCore.Security;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Recipes.Controllers
@@ -48,7 +49,7 @@ namespace OrchardCore.Recipes.Controllers
 
         public async Task<ActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.RecipeExecutor))
+            if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
             {
                 return Unauthorized();
             }
@@ -77,7 +78,7 @@ namespace OrchardCore.Recipes.Controllers
         [HttpPost]
         public async Task<ActionResult> Execute(string basePath, string fileName)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.RecipeExecutor))
+            if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
             {
                 return Unauthorized();
             }
