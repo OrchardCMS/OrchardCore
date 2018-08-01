@@ -1,0 +1,36 @@
+@model OrchardCore.Contents.ViewModels.FilterBoxViewModel;
+
+<form asp-page="" method="get">
+    <nav class="nav filter-box ocf align-items-stretch form-inline ">
+        <div class="nav-item">
+            <div class="form-group mr-4 mb-2 ">
+                <label for="filterContentTypes" class="label mr-2">@T["Filter"]</label>
+                <select id="filterContentTypes" class="form-control form-control-sm" name="Options.TypeName" asp-items="@Model.ContentTypes"></select>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="form-group mr-4 mb-2">
+                <label for="filterStatuses" class="label mr-2">@T["Show"]</label>
+                <select id="filterStatuses" class="form-control form-control-sm" name="Options.ContentsStatus" asp-items="@Model.ContentStatuses"></select>
+            </div>
+        </div>
+        <div class="nav-item form-inline">
+            <div class="form-check mr-4 mb-2">
+                <input id="filterOwnedByMe" class="form-check-input" asp-for="@Model.Options.OwnedByMe" />
+                <label for="filterOwnedByMe" class="form-check-label"> @T["Owned by me"]</label>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="form-group mr-4 mb-2">
+                <label for="filterSorts" class="label mr-2">@T["Sort by"]</label>
+                <select id="filterSorts" class="form-control form-control-sm" name="Options.OrderBy" asp-items="@Model.ContentSorts"></select>
+            </div>
+        </div>
+        <div class="nav-item">
+            <div class="form-group mr-4 mb-2">
+                <label for="filterSortDirection" class="label mr-2">@T["Sort Direction"]</label>
+                <select id="filterSortDirection" class="form-control form-control-sm" name="Options.SortDirection" asp-items="@Model.SortDirections"></select>
+            </div>
+        </div>
+    </nav>
+</form>

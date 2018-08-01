@@ -8,12 +8,18 @@
     var hasDraft = contentItem.HasDraft();
 }
 
-<div class="btn-group">
-    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        @T["Actions"]
-    </button>
+<div class="action-buttons-in-list">
+    <a href="javascript();" class="action-toggle"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+        <i class="fa fa-ellipsis-h"></i>
+    </a>
     <div class="dropdown-menu dropdown-menu-right">
+        <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn-sm">@T["Edit"]</a>
 
+        @if (hasPublished)
+        {
+            <a display-for="@contentItem" itemprop="" class="dropdown-item btn-sm">@T["View"]</a>
+            <div class="dropdown-divider"></div>
+        }
         @if (hasDraft)
         {
             <a asp-action="Publish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
@@ -39,4 +45,3 @@
 
     </div>
 </div>
-

@@ -1,0 +1,27 @@
+.nav.ocf {
+    border-bottom: $normal-border;
+
+    label {
+        font-size: 0.875rem;
+    }
+
+    .form-control, .btn, .button {
+        border-radius: 0;
+        border-color: $gray-400;
+        // hide glow on inputs
+        &:focus {
+            border-color: $gray-700;
+            outline: none;
+            box-shadow: none !important;
+        }
+    }
+    /* not-used yet */
+    .nav-bar-divider {
+        background-color: $gray-600;
+        margin: 2px 4px 0 4px;
+        width: 1px;
+        min-width: 1px;
+        height: 22px;
+        align-self: center;
+    }
+}

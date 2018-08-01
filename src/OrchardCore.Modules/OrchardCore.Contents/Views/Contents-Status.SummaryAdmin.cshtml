@@ -1,0 +1,34 @@
+@using OrchardCore.ContentManagement
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+
+    var publishedDate = await DisplayAsync( await New.DateTime(Utc: contentItem.PublishedUtc, Format: "g"));
+    var modifiedDate = await DisplayAsync( await New.DateTime(Utc: contentItem.ModifiedUtc, Format: "g"));
+}
+
+@if ((hasPublished) && (hasDraft))
+{
+    <span title="@T["published with draft"]">
+        <i class="fa fa-circle mr-2" style="color:green;" title="@publishedDate"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;" title="@modifiedDate"></i>
+    </span>
+}
+else if (hasPublished)
+{
+    <span title="@T["published without draft"]">
+        <i class="fa fa-circle mr-2" style="color:green;" title="@publishedDate"></i>
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+    </span>
+
+}
+else if (hasDraft)
+{
+    <span title="@T["draft not published"]">
+        <i class="fa fa-dot-circle mr-2" style="color:lightgray;"></i>
+        <i class="fa fa-circle mr-2" style="color:dodgerblue;" title="@modifiedDate"></i>
+    </span>
+}

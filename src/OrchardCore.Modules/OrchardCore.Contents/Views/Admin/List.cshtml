@@ -1,120 +1,116 @@
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
+@using OrchardCore.DisplayManagement.Shapes;
 @inject IContentManager ContentManager
 @{
-    var typeDisplayName = Model.TypeDisplayName;
+    var typeDisplayName = Model.FilterBoxViewModel.Options.TypeDisplayName;
+
     var pageTitle = T["Manage Content"];
-    var createLinkText = T["Create New Content"];
+
+    var colCheckboxWidth = 40;
+    var colTitleWidth = 300;
+    var colTypeWidth = 200;
+    var colStatusWidth = 120;
+    var colOwnerAuthorWidth = 100;
+    var colDateWidth = 120;
+
     if (!string.IsNullOrWhiteSpace(typeDisplayName))
     {
         pageTitle = T["Manage {0} Content", (string)typeDisplayName];
-        createLinkText = T["Create New {0}", (string)typeDisplayName];
     }
-
-    IEnumerable<string> cultures = Model.Options.Cultures;
-    List<SelectListItem> contentStatuses = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-        new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-        new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-        new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-        new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
-    };    
-    List<SelectListItem> contentSorts = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-        new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() }
-    };
 }
-<h1>@RenderTitleSegments(pageTitle)</h1>
+<style asp-src="/OrchardCore.Contents/Styles/Contents.min.css" debug-src="/OrchardCore.Contents/Styles/Contents.css"></style>
+<script asp-src="/OrchardCore.Contents/Scripts/contents.js" asp-name="contents" at="Foot" depends-on="admin"></script>
+
+<h1 class="ocf">@RenderTitleSegments(pageTitle)</h1>
+
+@await Component.InvokeAsync("FilterBox", new { vm = Model.FilterBoxViewModel })
 
 @using (Html.BeginForm())
 {
     @*<fieldset class="bulk-actions">
-            <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
-            <label for="publishActions">@T["Actions:"]</label>
-            <select id="publishActions" name="Options.BulkAction">
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.None, T("Choose action...").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.PublishNow, T("Publish Now").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Unpublish, T("Unpublish").ToString())
-                @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Remove, T("Delete").ToString())
-            </select>
-            <button type="submit" name="submit.BulkEdit" value="yes">@T["Apply")</button>
-        </fieldset>
-    <fieldset class="bulk-actions container-fluid">
-        <label for="filterResults" class="bulk-filter">@T["Show"]</label>
-            <select id="filterResults" name="Options.SelectedFilter">
-                @Html.SelectOption((string)Model.Options.SelectedFilter, "", T["any (show all)"])
-                @foreach (var filterOption in Model.Options.FilterOptions) {
-                    @Html.SelectOption((string)Model.Options.SelectedFilter, (string)filterOption.Key, (string)filterOption.Value)
+                <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
+                <label for="publishActions">@T["Actions:"]</label>
+                <select id="publishActions" name="Options.BulkAction">
+                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.None, T("Choose action...").ToString())
+                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.PublishNow, T("Publish Now").ToString())
+                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Unpublish, T("Unpublish").ToString())
+                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Remove, T("Delete").ToString())
+                </select>
+                <button type="submit" name="submit.BulkEdit" value="yes">@T["Apply")</button>
+            </fieldset>
+        <fieldset class="bulk-actions container-fluid">
+            <label for="filterResults" class="bulk-filter">@T["Show"]</label>
+                <select id="filterResults" name="Options.SelectedFilter">
+                    @Html.SelectOption((string)Model.Options.SelectedFilter, "", T["any (show all)"])
+                    @foreach (var filterOption in Model.Options.FilterOptions) {
+                        @Html.SelectOption((string)Model.Options.SelectedFilter, (string)filterOption.Key, (string)filterOption.Value)
+                    }
+                </select>
+        </fieldset>*@
+
+<div class="d-flex flex-column justify-content-end">
+    <div>
+        @if (Model.ContentItems.Count > 0)
+        {
+            <div class="list-header">
+                <div class="list-col list-col-checkbox" style="width:@(colCheckboxWidth)px;"><input type="checkbox" /></div>
+                <div class="list-col content-item-title" style="width:@(colTitleWidth)px;">@T["Title"]</div>
+                <div class="list-col" style="width:@(colTypeWidth)px;">@T["Type"]</div>
+                <div class="list-col" style="width:@(colStatusWidth)px;">@T["Status"]</div>
+                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["Owner"]</div>
+                <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">@T["Author"]</div>
+                <div class="list-col" style="width:@(colDateWidth)px;">@T["Created"]</div>
+            </div>
+            <div id="content-items-list-body">
+                @foreach (var contentItemSummary in Model.ContentItems)
+                {
+                    <div class="list-row">
+                        <div class="list-col list-col-checkbox" style="width:@(colCheckboxWidth)px;"><input type="checkbox" value="@contentItemSummary.ContentItem.Id" name="itemIds" /></div>
+                        <div class="list-col content-item-title" style="width:@(colTitleWidth)px;">
+                            <div class="mr-auto">
+                                <a admin-for="@contentItemSummary.ContentItem"
+                                   asp-route-returnUrl="@FullRequestPath"
+                                   style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; max-width:@(colTitleWidth - 50)px " />
+                            </div>
+
+                            @if (contentItemSummary.Actions != null)
+                            {
+                                @await DisplayAsync(contentItemSummary.Actions)
+                            }
+                        </div>
+                        <div class="list-col" style="width:@(colTypeWidth)px;">
+                            @contentItemSummary.ContentItem.ContentType
+                        </div>
+                        <div class="list-col statusclass" style="width:@(colStatusWidth)px;">
+                            @if (contentItemSummary.Status != null)
+                            {
+                                @await DisplayAsync(contentItemSummary.Status)
+                            }
+                        </div>
+                        <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">
+                            @contentItemSummary.ContentItem.Owner
+                        </div>
+                        <div class="list-col" style="width:@(colOwnerAuthorWidth)px;">
+                            @contentItemSummary.ContentItem.Author
+                        </div>
+                        <div class="list-col" style="width:@(colDateWidth)px;" title="@(await DisplayAsync(await New.DateTime(Utc: contentItemSummary.ContentItem.CreatedUtc, Format: "g")))">
+                            @(await DisplayAsync(await New.TimeSpan(Utc: contentItemSummary.ContentItem.CreatedUtc)))
+                        </div>
+                    </div>
                 }
-            </select>
-    </fieldset>*@
-    <fieldset class="filter-options container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="contentResults" class="form-control" name="Id">
-                    <option value="">@T["All content types"]</option>
-                    @foreach (var option in Model.Options.FilterOptions)
-                    {
-                        string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="@option.Key">@option.Value</!option>
-                    }
-                </select>
-            </div>   
-            @*@if (cultures.Count() > 1) {
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
+        }
+        else
+        {
+            <div class="no-results alert alert-info">
+                @T["No result found."]
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                    <option value="">@T["All cultures"]</option>
-                    @foreach (string culture in cultures) {
-                        string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                    }
-                </select>
-            </div>   
-            }*@
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses">
-                </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
-            </div>
-            <div class="col-md-4 col-xl-3 form-group">
-                <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts">
-                </select>
-            </div>        
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>
-        </div>
-    </fieldset>
-
-    @if (Model.ContentItems.Count > 0)
-    {
-        <ul class="list-group">
-            @foreach (var contentItemSummary in Model.ContentItems)
-            {
-                <li class="list-group-item">
-                    @await DisplayAsync(contentItemSummary)
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            @T["No result found."]
-        </div>
-    }
-
-    @await DisplayAsync(Model.Pager)
+        }
+    </div>
+    <div id="footer-pager" class="ocf-pager-wrapper">
+        @await DisplayAsync(Model.Pager)
+    </div>
+        
+</div>
 }

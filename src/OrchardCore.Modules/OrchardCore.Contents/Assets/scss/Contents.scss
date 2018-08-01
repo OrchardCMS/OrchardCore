@@ -1,29 +1,12 @@
-﻿.edit-container {
-    display: table;
-    border-collapse: separate;
-    border-spacing: 8px; 
-    width: 100%;
-}
+// variables 
+@import "variables.scss";
 
-.edit-body {
-    vertical-align: top;
-    display: table-cell;
-}
+// shared
+@import "main-layout.scss";
 
-.edit-sidebar-handler {
-    display: table-cell;
-    border:0;
-    border-left: 1px solid lightgray;
-    border-right: 1px solid lightgray;
-    cursor: col-resize;
-    padding-left: 1px;
-    padding-right:1px;
-    width: 3px;
-}
+// pages and components
+@import "content-edit.scss";
+@import "filter-box.scss";
+@import "list.scss";
+@import "pager.scss";
 
-.edit-sidebar {
-    visibility: hidden;
-    vertical-align: top;
-    display: table-cell;
-    padding-left: 15px;
-}

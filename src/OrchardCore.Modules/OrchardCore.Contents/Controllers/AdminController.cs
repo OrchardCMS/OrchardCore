@@ -36,8 +36,9 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly FilterBoxService _filterBoxService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-
+        
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
@@ -49,8 +50,8 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters
-            )
+            IEnumerable<IContentAdminFilter> contentAdminFilters,
+            FilterBoxService filterBoxService)
         {
             _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
@@ -60,7 +61,8 @@ namespace OrchardCore.Contents.Controllers
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-
+            _filterBoxService= filterBoxService;
+            
             T = localizer;
             New = shapeFactory;
             Logger = logger;
@@ -71,84 +73,13 @@ namespace OrchardCore.Contents.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, FilterBoxViewModel filterBoxModel)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var query = await _filterBoxService.ApplyFilterBoxOptionsToQuery(_session.Query<ContentItem, ContentItemIndex>(), filterBoxModel);
 
-            var query = _session.Query<ContentItem, ContentItemIndex>();
-
-            switch (model.Options.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query = query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
-
-            if (!string.IsNullOrEmpty(model.TypeName))
-            {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
-                if (contentTypeDefinition == null)
-                    return NotFound();
-
-                model.TypeDisplayName = contentTypeDefinition.ToString();
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
-            }
-            else
-            {
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
-                }
-            }
-
-            switch (model.Options.OrderBy)
-            {
-                case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
-                    break;
-                case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
-                    break;
-                case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
-                    break;
-                default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
-                    break;
-            }
-
-            //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
-            //{
-            //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
-            //}
-
-            //if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            //{
-            //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
-            //}
-
-            model.Options.SelectedFilter = model.TypeName;
-            model.Options.FilterOptions = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
-            //model.Options.Cultures = _cultureManager.ListCultures();
-
-            // Invoke any service that could alter the query
+            // Invoke any service that could alter the query            
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
@@ -167,45 +98,11 @@ namespace OrchardCore.Contents.Controllers
             var viewModel = (await New.ViewModel())
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
-                .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+                .FilterBoxViewModel(filterBoxModel);
 
             return View(viewModel);
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
-        {
-            var creatable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        creatable.Add(ctd);
-                    }
-                }
-            }
-            return creatable;
-        }
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
-        }
 
         //[HttpPost, ActionName("List")]
         //[Mvc.FormValueRequired("submit.Filter")]
