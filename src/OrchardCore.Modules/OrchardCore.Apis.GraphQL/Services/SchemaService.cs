@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Apis.GraphQL.Subscriptions;
+using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
@@ -31,18 +30,78 @@ namespace OrchardCore.Apis.GraphQL.Services
         {
             var schemaHash = await _hashService.GetHash();
 
-            return _memoryCache.GetOrCreate("GraphQL.Schema_" + schemaHash, f =>
+            return await _memoryCache.GetOrCreateAsync("GraphQL.Schema_" + schemaHash, async f =>
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
-                return new ContentSchema(
-                    _serviceProvider.GetService<MutationsSchema>(),
-                    _serviceProvider.GetService<QueriesSchema>(),
-                    _serviceProvider.GetService<SubscriptionSchema>(),
-                    _serviceProvider.GetService<IEnumerable<IInputObjectGraphType>>(),
-                    _serviceProvider.GetService<IEnumerable<IObjectGraphType>>(),
-                    _serviceProvider.GetService<IDependencyResolver>()
-                    );
+                var schema = new Schema();
+
+                var query = new ObjectGraphType { Name = "Query" };
+
+                // TODO: Remove QueryFieldType and create an interface that will populate the query fields directly
+                // This service should also return a Token for when it's content is invalidated
+                var queryFieldTypes = _serviceProvider.GetServices<QueryFieldType>();
+
+                foreach (var field in queryFieldTypes)
+                {
+                    query.AddField(field);
+                }
+
+                var queryFieldTypeProviders = _serviceProvider.GetServices<IQueryFieldTypeProvider>();
+
+                foreach (var p in queryFieldTypeProviders)
+                {
+                    foreach (var field in await p.GetFields(query))
+                    {
+                        query.AddField(field);
+                    }
+                }
+
+                schema.Query = query;
+
+                // TODO: Remove SubscriptionFieldType and create an interface that will populate the subscription fields directly
+                var subscriptionFieldTypes = _serviceProvider.GetServices<SubscriptionFieldType>();
+
+                if (subscriptionFieldTypes.Any())
+                {
+                    var subscription = new ObjectGraphType() { Name = "Subscription" };
+
+                    foreach(var field in subscriptionFieldTypes)
+                    {
+                        subscription.AddField(field);
+                    }
+
+                    schema.Subscription = subscription;
+                }
+
+                // TODO: Remove MutationFieldType and create an interface that will populate the mutation fields directly
+                var mutationFieldTypes = _serviceProvider.GetServices<MutationFieldType>();
+
+                if (mutationFieldTypes.Any())
+                {
+                    var mutation = new ObjectGraphType() { Name = "Mutations" };
+
+                    foreach (var field in mutationFieldTypes)
+                    {
+                        mutation.AddField(field);
+                    }
+
+                    schema.Mutation = mutation;
+                }
+
+                foreach (var type in _serviceProvider.GetServices<IInputObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
+
+                foreach (var type in _serviceProvider.GetServices<IObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
+
+                schema.DependencyResolver = _serviceProvider.GetService<IDependencyResolver>();
+
+                return schema;
             });
         }
     }

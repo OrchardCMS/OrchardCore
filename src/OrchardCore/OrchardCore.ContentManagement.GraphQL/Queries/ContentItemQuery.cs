@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 

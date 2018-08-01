@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
-using YesSql;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
 {
@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
         private readonly ITypeActivatorFactory<ContentPart> _typeActivator;
         private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
         private readonly IEnumerable<IGraphQLFilter<ContentItem>> _graphQLFilters;
-        private readonly ISession _session;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContentItemFieldTypeProvider(
             IServiceProvider serviceProvider,
@@ -27,7 +27,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
             ITypeActivatorFactory<ContentPart> typeActivator,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,
             IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            ISession session)
+            IHttpContextAccessor httpContextAccessor
+            )
         {
             _serviceProvider = serviceProvider;
             _contentManager = contentManager;
@@ -35,7 +36,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
             _typeActivator = typeActivator;
             _inputGraphTypes = inputGraphTypes;
             _graphQLFilters = graphQLFilters;
-            _session = session;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
@@ -91,9 +92,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
                 }
 
                 var query = new ContentItemsQuery(
-                    _contentManager, 
-                    _graphQLFilters,
-                    _session)
+                    _httpContextAccessor, 
+                    _graphQLFilters
+                    )
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)

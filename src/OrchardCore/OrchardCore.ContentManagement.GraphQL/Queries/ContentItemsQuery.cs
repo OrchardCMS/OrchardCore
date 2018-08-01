@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
@@ -14,9 +15,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public class ContentItemsQuery : QueryFieldType
     {
-        public ContentItemsQuery(IContentManager contentManager,
-            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            ISession session)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ContentItemsQuery(
+            IHttpContextAccessor httpContextAccessor,
+            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters)
         {
             Name = "ContentItems";
 
@@ -31,6 +34,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             );
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(async context => {
+
+                var httpContext = _httpContextAccessor.HttpContext;
+
+                var contentManager = httpContext.RequestServices.GetService<IContentManager>();
+
                 var versionOptions = GetVersionOptions(context);
 
                 if (context.HasPopulatedArgument("contentItemId"))
@@ -57,6 +65,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     return new[] { contentItem };
                 }
                 
+                var session = httpContext.RequestServices.GetService<YesSql.ISession>();
+
                 var query = session.Query<ContentItem, ContentItemIndex>();
 
                 if (versionOptions.IsPublished)
@@ -96,6 +106,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 
                 return contentItems.ToList();
             });
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private VersionOptions GetVersionOptions(ResolveFieldContext context)
