@@ -10,6 +10,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery-1.12.4.min.js", "/OrchardCore.Resources/Scripts/jquery-1.12.4.js")
                 .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.js")
                 .SetCdnIntegrity("sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ", "sha384-KcyRSlC9FQog/lJsT+QA8AUIFBgnwKM7bxm7/YaX+NTr4D00npYawrX0h+oXI3a2")
                 .SetVersion("1.12.4")
@@ -17,6 +18,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery-2.2.4.min.js", "/OrchardCore.Resources/Scripts/jquery-2.2.4.js")
                 .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.js")
                 .SetCdnIntegrity("sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB", "sha384-TlQc6091kl7Au04dPgLW7WK3iey+qO8dAi/LdwxaGBbszLxnizZ4xjPyNrEf+aQt")
                 .SetVersion("2.2.4")
@@ -24,6 +26,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery-3.3.1.min.js", "/OrchardCore.Resources/Scripts/jquery-3.3.1.js")
                 .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js")
                 .SetCdnIntegrity("sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT", "sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH")
                 .SetVersion("3.3.1")
@@ -31,6 +34,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery.slim")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery-3.2.1.slim.min.js", "/OrchardCore.Resources/Scripts/jquery-3.2.1.slim.js")
                 .SetCdn("https://code.jquery.com/jquery-3.2.1.slim.min.js", "https://code.jquery.com/jquery-3.2.1.slim.js")
                 .SetCdnIntegrity("sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN", "sha384-x3iX8AdaBWgXWuBkuyLrg/s5FqjPdFGcfbEuYEFQiQTBs8uX3XX7gkj0BkFhHu7a")
                 .SetVersion("3.2.1")
@@ -56,6 +60,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/bootstrap-3.3.7.min.js", "/OrchardCore.Resources/Scripts/bootstrap-3.3.7.js")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js")
                 .SetCdnIntegrity("sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", "sha384-OkuKCCwNNAv3fnqHH7lwPY3m5kkvCIUnsHbjdU7sN022wAYaQUfXkqyIZLlL0xQ/")
                 .SetVersion("3.3.7")
@@ -63,6 +68,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("bootstrap")
+                .SetUrl("/OrchardCore.Resources/Styles/bootstrap-3.3.7.min.css", "/OrchardCore.Resources/Styles/bootstrap-3.3.7.css")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css")
                 .SetCdnIntegrity("sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", "sha384-yzOI+AGOH+8sPS29CtL/lEWNFZ+HKVVyYxU0vjId0pMG6xn7UMDo9waPX5ImV0r6")
                 .SetVersion("3.3.7")
@@ -70,6 +76,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("bootstrap-theme")
+                .SetUrl("/OrchardCore.Resources/Styles/bootstrap-theme-3.3.7.min.css", "/OrchardCore.Resources/Styles/bootstrap-theme-3.3.7.css")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.css")
                 .SetCdnIntegrity("sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", "sha384-87IgyAZ7ZPkMKNvliJR8lR09U+LMadREF430SkYRoNaFd+l2lhZnI1cXRdWnAZ+3")
                 .SetVersion("3.3.7")
@@ -110,6 +117,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("font-awesome")
+                .SetUrl("/OrchardCore.Resources/Styles/all.css")
                 .SetCdn("https://use.fontawesome.com/releases/v5.1.0/css/all.css")
                 .SetCdnIntegrity("sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt")
                 .SetVersion("5.1.0")
@@ -117,6 +125,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("font-awesome")
+                .SetUrl("/OrchardCore.Resources/Scripts/all.js")
                 .SetCdn("https://use.fontawesome.com/releases/v5.1.0/js/all.js")
                 .SetCdnIntegrity("sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9")
                 .SetVersion("5.1.0")
@@ -124,6 +133,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
+                .SetUrl("/OrchardCore.Resources/Scripts/v4-shims.js")
                 .SetCdn("https://use.fontawesome.com/releases/v5.1.0/js/v4-shims.js")
                 .SetCdnIntegrity("sha384-3qT9zZfeo1gcy2NmVv5dAhtOYkj91cMLXRkasOiRB/v+EU3G+LZUyk5uqZQdIPsV")
                 .SetVersion("5.1.0")
