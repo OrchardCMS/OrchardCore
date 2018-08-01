@@ -24,10 +24,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Views\RegistrationSettings.Edit.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
-  </ItemGroup>
-
 </Project>

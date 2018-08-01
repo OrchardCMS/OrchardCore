@@ -19,6 +19,7 @@
       "datatype": "string",
       "description": "Add all files required for a part",
       "replaces": "MyTest",
+      "fileRename": "MyTest",
       "defaultValue": ""
     },
     "OrchardVersion": {

@@ -8,11 +8,25 @@
   "sourceName": "OrchardCore.Templates.Cms.Web",
   "preferNameDirectory": true,
   "symbols": {
-    "UseNLog": {
+    "logger": {
       "type": "parameter",
-      "dataType": "bool",
-      "description": "Configures NLog as the logger component.",
-      "defaultValue": "true"
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "nlog",
+          "description": "Configures NLog as the logger component."
+        },
+        {
+          "choice": "serilog",
+          "description": "Configures Serilog as the logger component."
+        },
+        {
+          "choice": "none",
+          "description": "Do not configure logger."
+        }
+      ],
+      "description": "Configures the logger component.",
+      "defaultValue": "nlog"
     },
     "OrchardVersion": {
       "type": "parameter",
@@ -20,6 +34,14 @@
       "description": "Specifies which version of Orchard Core packages to use.",
       "replaces": "$(TemplateOrchardPackageVersion)",
       "defaultValue": "${TemplateOrchardVersion}"
+    },
+    "UseNLog": {
+      "type": "computed",
+      "value": "(logger == \"nlog\")"
+    },
+    "UseSerilog": {
+      "type": "computed",
+      "value": "(logger == \"serilog\")"
     }
   },
   "sources": [
