@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Apis.GraphQL.Services;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -35,7 +34,7 @@ namespace OrchardCore.Apis.GraphQL
             _writer = writer;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, ISchemaService schemaService)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, ISchemaFactory schemaService)
         {
             if (!IsGraphQLRequest(context))
             {
@@ -63,7 +62,7 @@ namespace OrchardCore.Apis.GraphQL
                 && String.Equals(context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchemaService schemaService)
+        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
         {
             var schema = await schemaService.GetSchema();
 

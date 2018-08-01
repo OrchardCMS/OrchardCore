@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using GraphQL.Types;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {

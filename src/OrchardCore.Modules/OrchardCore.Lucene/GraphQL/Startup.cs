@@ -16,8 +16,6 @@ namespace OrchardCore.Lucene.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IQueryFieldTypeProvider, LuceneQueryFieldTypeProvider>();
-
             services.AddGraphMutationType<CreateQueryMutation<LuceneQuery>>();
             services.AddScoped<CreateQueryOutcomeType<LuceneQuery>>();
         }

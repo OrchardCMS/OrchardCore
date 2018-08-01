@@ -24,12 +24,10 @@ namespace OrchardCore.Apis.GraphQL
             services.AddGraphQLMutations();
 
             // Schema
-            services.AddScoped<ISchemaService, SchemaService>();
+            services.AddScoped<ISchemaFactory, SchemaService>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
-
-            services.TryAddScoped<IGraphQLSchemaHashService, NullGraphQLSchemaHashService>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

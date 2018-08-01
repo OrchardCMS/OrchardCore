@@ -2,33 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Apis.GraphQL.Types;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
-    public class SqlQueryFieldTypeProvider : IQueryFieldTypeProvider
+    /// <summary>
+    /// This implementation of <see cref="ISchemaBuilder"/> registers 
+    /// all SQL Qeries as GraphQL queries.
+    /// </summary>
+    public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IQueryManager _queryManager;
-        private readonly IEnumerable<QueryFieldType> _queryFieldTypes;
-        private readonly IDependencyResolver _dependencyResolver;
 
-        public SqlQueryFieldTypeProvider(IQueryManager queryManager,
-            IEnumerable<QueryFieldType> queryFieldTypes,
-            IDependencyResolver dependencyResolver)
+        public SqlQueryFieldTypeProvider(IQueryManager queryManager)
         {
             _queryManager = queryManager;
-            _queryFieldTypes = queryFieldTypes;
-            _dependencyResolver = dependencyResolver;
         }
 
-        public async Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
+        public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var queries = await _queryManager.ListQueriesAsync();
 
@@ -42,32 +39,32 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 var name = query.Name;
                 var source = query.Source;
 
-                var schema = JObject.Parse(query.Schema);
+                var querySchema = JObject.Parse(query.Schema);
 
-                var type = schema["type"].ToString();
+                var type = querySchema["type"].ToString();
 
-                if (type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
+                if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                 {
                     var contentType = type.Remove(0, 12);
-                    fieldTypes.Add(BuildContentTypeFieldType(state, contentType, query));
+                    schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
                 }
                 else
                 {
-                    fieldTypes.Add(BuildSchemaBasedFieldType(state, query, schema));
+                    schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
                 }
             }
 
-            return fieldTypes;
+            return _queryManager.ChangeToken;
         }
 
-        private FieldType BuildSchemaBasedFieldType(ObjectGraphType state, SqlQuery query, JToken schema)
+        private FieldType BuildSchemaBasedFieldType(ISchema schema, SqlQuery query, JToken querySchema)
         {
             var typetype = new ObjectGraphType<JObject>
             {
                 Name = query.Name
             };
 
-            var properties = schema["Properties"];
+            var properties = querySchema["Properties"];
 
             foreach (var child in properties.Children())
             {
@@ -126,9 +123,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ObjectGraphType state, string contentType, SqlQuery query)
+        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query)
         {
-            var typetype = state.Fields.OfType<ContentItemsQuery>().First(x => x.Name == contentType);
+            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().First(x => x.Name == contentType);
 
             var fieldType = new FieldType
             {

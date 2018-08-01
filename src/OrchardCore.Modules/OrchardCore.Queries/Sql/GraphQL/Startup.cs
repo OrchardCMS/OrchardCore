@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Queries.GraphQL.Mutations;
 using OrchardCore.Queries.GraphQL.Mutations.Types;
@@ -17,7 +17,7 @@ namespace OrchardCore.Queries.Sql.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IQueryFieldTypeProvider, SqlQueryFieldTypeProvider>();
+            services.AddSingleton<ISchemaBuilder, SqlQueryFieldTypeProvider>();
 
             services.AddGraphMutationType<CreateQueryMutation<SqlQuery>>();
             services.AddScoped<CreateQueryOutcomeType<SqlQuery>>();

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.ContentManagement.Metadata.Records;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -22,6 +23,8 @@ namespace OrchardCore.ContentManagement
 
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+
+        public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
 
         public ContentDefinitionManager(
             ISession session,

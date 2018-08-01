@@ -13,12 +13,6 @@ namespace OrchardCore.Apis
             services.AddScoped<MutationFieldType, TMutation>();
         }
 
-        public static void AddGraphQueryType<TQuery>(this IServiceCollection services) where TQuery : QueryFieldType
-        {
-            services.AddScoped<TQuery>();
-            services.AddScoped<QueryFieldType, TQuery>();
-        }
-
         public static void AddGraphQLInputType<TInput, TInputType>(this IServiceCollection services) 
             where TInput : class 
             where TInputType : InputObjectGraphType<TInput>
