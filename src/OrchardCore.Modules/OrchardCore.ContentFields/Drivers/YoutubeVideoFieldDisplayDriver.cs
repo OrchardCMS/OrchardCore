@@ -43,6 +43,11 @@ namespace OrchardCore.ContentFields.Fields
 
             await updater.TryUpdateModelAsync(model, Prefix);
 
+            if (string.IsNullOrEmpty(model.RawAddress))
+            {
+                return Edit(field, context);
+            }
+
             var uri = new Uri(model.RawAddress);
 
             // if it is a url with QueryString
