@@ -279,6 +279,7 @@ namespace OrchardCore.Navigation
                 {
                     if (p == currentPage)
                     {
+                        routeData[pageKey] = currentPage;
                         Shape.Add(await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
                     }
                     else {
