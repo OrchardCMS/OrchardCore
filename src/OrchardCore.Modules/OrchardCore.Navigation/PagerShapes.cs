@@ -174,7 +174,6 @@ namespace OrchardCore.Navigation
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
         {
-
             var currentPage = Page;
             if (currentPage < 1)
                 currentPage = 1;
@@ -186,6 +185,14 @@ namespace OrchardCore.Navigation
                 numberOfPagesToShow = 7;
 
             var totalPageCount = pageSize > 0 ? (int)Math.Ceiling(TotalItemCount / pageSize) : 1;
+
+            // return shape early if pager is not needed.
+            if (totalPageCount < 2)
+            {
+                Shape.Metadata.Type = "List";
+                return await DisplayAsync(Shape);
+            }
+
 
             var firstText = FirstText ?? T["<<"];
             var previousText = PreviousText ?? T["<"];
@@ -244,22 +251,20 @@ namespace OrchardCore.Navigation
             Shape.Metadata.Type = "List";
 
             // first and previous pages
-            if (Page > 1)
+            if ((Page > 1) && (routeData.ContainsKey(pageKey)))
             {
-                if (routeData.ContainsKey(pageKey))
-                {
-                    routeData.Remove(pageKey); // to keep from having "page=1" in the query string
-                }
-                // first
-                Shape.Add(await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
-
-                // previous
-                if (currentPage > 2)
-                { // also to keep from having "page=1" in the query string
-                    routeData[pageKey] = currentPage - 1;
-                }
-                Shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
+                routeData.Remove(pageKey); // to keep from having "page=1" in the query string
             }
+            // first
+            Shape.Add(await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape, Disabled: Page < 2));
+
+            // previous
+            if ((Page > 1) && (currentPage > 2))
+            { // also to keep from having "page=1" in the query string
+                routeData[pageKey] = currentPage - 1;
+            }
+            Shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape, Disabled: Page < 2));
+
 
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)
@@ -274,6 +279,7 @@ namespace OrchardCore.Navigation
                 {
                     if (p == currentPage)
                     {
+                        routeData[pageKey] = currentPage;
                         Shape.Add(await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
                     }
                     else {
@@ -293,19 +299,12 @@ namespace OrchardCore.Navigation
             }
 
             // Next
-            if (Page < totalPageCount || ShowNext)
-            {
-                // next
-                routeData[pageKey] = Page + 1;
-                Shape.Add(await New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
-            }
+            routeData[pageKey] = Page + 1;
+            Shape.Add(await New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape, Disabled: Page >= totalPageCount && !ShowNext));
 
             // Last
-            if (Page < totalPageCount)
-            { 
-                routeData[pageKey] = totalPageCount;
-                Shape.Add(await New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
-            }
+            routeData[pageKey] = totalPageCount;
+            Shape.Add(await New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape, Disabled: Page >= totalPageCount));
 
             return await DisplayAsync(Shape);
         }
@@ -406,9 +405,15 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public IHtmlContent ActionLink(UrlHelper Url, Shape Shape, object Value)
+        public IHtmlContent ActionLink(UrlHelper Url, Shape Shape, object Value, bool Disabled = false)
         {
-            var RouteValues = (object) ((dynamic)Shape).RouteValues;
+            if (Disabled)
+            {
+                TagBuilder parentLiTag = (TagBuilder)((dynamic)Shape).Tag;
+                parentLiTag.AddCssClass("disabled");                
+            }
+
+            var RouteValues = (object)((dynamic)Shape).RouteValues;
             RouteValueDictionary rvd;
             if (RouteValues == null)
             {
