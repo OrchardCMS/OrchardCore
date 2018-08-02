@@ -15,8 +15,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {
     public class CreateContentItemMutation : MutationFieldType
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         public CreateContentItemMutation(
             IHttpContextAccessor httpContextAccessor,
             IClock clock)
@@ -61,7 +59,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 
                 return contentItem;
             });
-            _httpContextAccessor = httpContextAccessor;
         }
 
         private class ContentItemInput
