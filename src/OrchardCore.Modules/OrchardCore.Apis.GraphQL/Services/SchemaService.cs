@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -33,9 +34,9 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 var schema = new Schema();
 
-                schema.Query = new ObjectGraphType { Name = "Query" }; ;
-                schema.Mutation = new ObjectGraphType { Name = "Mutation" }; ;
-                schema.Subscription = new ObjectGraphType { Name = "Subscription" }; ;
+                schema.Query = new ObjectGraphType { Name = "Query" };
+                schema.Mutation = new ObjectGraphType { Name = "Mutation" };
+                schema.Subscription = new ObjectGraphType { Name = "Subscription" };
 
                 schema.DependencyResolver = _serviceProvider.GetService<IDependencyResolver>();
 
@@ -65,6 +66,24 @@ namespace OrchardCore.Apis.GraphQL.Services
                 foreach (var type in _serviceProvider.GetServices<IObjectGraphType>())
                 {
                     schema.RegisterType(type);
+                }
+                
+                // Clean Query, Mutation and Subscription if they have no fields
+                // to prevent GraphQL configuration errors.
+
+                if (!schema.Query.Fields.Any())
+                {
+                    schema.Query = null;
+                }
+
+                if (!schema.Mutation.Fields.Any())
+                {
+                    schema.Mutation = null;
+                }
+
+                if (!schema.Subscription.Fields.Any())
+                {
+                    schema.Subscription = null;
                 }
 
                 return schema;
