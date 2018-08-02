@@ -20,6 +20,12 @@
             result += "/" + tenantShellSettings.RequestUrlPrefix;
         }
 
+        if (!string.IsNullOrEmpty(tenantShellSettings.SaasToken))
+        {
+            result += "?token=" + tenantShellSettings.SaasToken;
+
+        }
+
         return result;
     }
 }

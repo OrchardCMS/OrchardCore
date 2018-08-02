@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Saas;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -23,6 +24,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
+        private readonly ISaasTokenManager _saasTokenManager;
         private readonly INotifier _notifier;
 
         public AdminController(
@@ -32,9 +34,11 @@ namespace OrchardCore.Tenants.Controllers
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             INotifier notifier,
+            ISaasTokenManager saasTokenManager,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
+            _saasTokenManager = saasTokenManager;
             _orchardHost = orchardHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
@@ -112,7 +116,8 @@ namespace OrchardCore.Tenants.Controllers
                     ConnectionString = model.ConnectionString,
                     TablePrefix = model.TablePrefix,
                     DatabaseProvider = model.DatabaseProvider,
-                    State = TenantState.Uninitialized
+                    State = TenantState.Uninitialized,
+                    SaasToken = _saasTokenManager.Generate()
                 };
 
                 _shellSettingsManager.SaveSettings(shellSettings);
