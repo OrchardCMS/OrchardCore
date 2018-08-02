@@ -213,3 +213,64 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `day(_date_)`    | Returns the days part of a date    |
 | `month(_date_)`  | Returns the months part of a date  |
 | `year(_date_)`   | Returns the years part of a date   |
+## GraphQL
+
+### Schemas
+
+Schemas help tell apis what they are serving up. There are two properties within a schema, both are mutually exclusive to one another.
+
+The `Type` property tells the api engine what it is, in the instance below, a content item. The second property, a `properties` array, tells which fields to serve up.
+
+When a Type of `ContentItem/*` is specified, the properties section is ignored, though this might change if a Type starts with comething other then `ContentItem/`
+
+Whilst we conform to the [Json Schema](http://json-schema.org/examples.html), we only use a subset as shown below.
+
+```json
+{
+    "type": "ContentItem/Blog",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "position": {
+            "type": "integer",
+        }
+    }
+}
+```
+
+### Mutations
+
+#### Create Query
+
+All create queries will have the naming convention `CreateQUERYNAME` i.e. a SqlQuery will be `CreateSqlQuery`.
+
+```json
+{ 
+	mutation { 
+		CreateLuceneQuery { 
+			createLuceneQuery(
+				Name: ""
+				Index: ""
+				Template: ""
+				ReturnContentItems: true/false
+				Schema: ""
+			) 
+		}  
+	} 
+}
+```
+
+Returns a fully populate query object.
+
+#### Delete Query
+
+{ 
+	mutation { 
+		DeleteQuery { 
+			deleteQuery(
+				Name: ""
+			) 
+		}  
+	} 
+}

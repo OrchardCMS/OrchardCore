@@ -1,4 +1,4 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "omnisharp.projectLoadTimeout": 600
+  "omnisharp.projectLoadTimeout": 1000
 }

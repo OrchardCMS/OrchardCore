@@ -64,7 +64,7 @@ namespace OrchardCore.Lucene
                 allIndices.Add(indexName, taskId);
             }
 
-            if (!allIndices.Any())
+            if (allIndices.Count == 0)
             {
                 return;
             }

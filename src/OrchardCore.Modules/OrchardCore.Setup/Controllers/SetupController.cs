@@ -73,6 +73,58 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
+            var setupContext = await PrepareSetupContext(model);
+
+            if (setupContext == null)
+            {
+                return View(model);
+            }
+
+            var executionId = await _setupService.SetupAsync(setupContext);
+
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                foreach (var error in setupContext.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(model);
+            }
+
+            return Redirect("~/");
+        }
+
+        [HttpPost, Route("api/setup")]
+        [Produces("application/json")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> ApiIndexPOST([FromBody] SetupViewModel model)
+        {
+            var setupContext = await PrepareSetupContext(model);
+
+            if (setupContext == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var executionId = await _setupService.SetupAsync(setupContext);
+
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                foreach (var error in setupContext.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            return Created("~/", executionId);
+        }
+
+        private async Task<SetupContext> PrepareSetupContext(SetupViewModel model) {
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
@@ -105,7 +157,7 @@ namespace OrchardCore.Setup.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return null;
             }
 
             var setupContext = new SetupContext
@@ -133,20 +185,7 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.DatabaseTablePrefix = model.TablePrefix;
             }
 
-            var executionId = await _setupService.SetupAsync(setupContext);
-
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
-            {
-                foreach (var error in setupContext.Errors)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-
-                return View(model);
-            }
-
-            return Redirect("~/");
+            return setupContext;
         }
     }
 }

@@ -182,6 +182,7 @@
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.1" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.1.1" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.1.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.1.1" />
   </ItemGroup>
 
   <PropertyGroup>

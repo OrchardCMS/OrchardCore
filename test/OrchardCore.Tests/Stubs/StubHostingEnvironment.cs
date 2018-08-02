@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 
@@ -23,7 +24,7 @@ namespace OrchardCore.Tests.Stubs
 
         public string ContentRootPath
         {
-            get { return _rootPath; }
+            get { return _rootPath ?? Directory.GetCurrentDirectory(); }
             set
             {
                 _contentRootFileProvider = new PhysicalFileProvider(value);

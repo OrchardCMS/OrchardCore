@@ -4,7 +4,8 @@ using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.Handlers
 {
-    public class MenuContentHandler : ContentHandlerBase
+    public class 
+        MenuContentHandler : ContentHandlerBase
     {
         public override Task ActivatingAsync(ActivatingContentContext context)
         {

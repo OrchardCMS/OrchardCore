@@ -1,0 +1,16 @@
+{
+  "data": {
+    "recentBlogPosts": [
+      {
+        "titlePart": {
+          "title": "Some sorta blogpost in a Query!"
+        }
+      },
+      {
+        "titlePart": {
+          "title": "Man must explore, and this is exploration at its greatest"
+        }
+      }
+    ]
+  }
+}

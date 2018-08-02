@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
@@ -32,6 +33,7 @@ namespace OrchardCore.Mvc
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton(new ApplicationPartManager());
 
             var builder = services.AddMvcCore(options =>
