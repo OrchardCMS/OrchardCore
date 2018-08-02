@@ -17,10 +17,10 @@ namespace OrchardCore.Queries.Sql.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IQueryFieldTypeProvider, SqlQueryFieldTypeProvider>();
+            services.AddTransient<IQueryFieldTypeProvider, SqlQueryFieldTypeProvider>();
 
             services.AddGraphMutationType<CreateQueryMutation<SqlQuery>>();
-            services.AddScoped<CreateQueryOutcomeType<SqlQuery>>();
+            services.AddTransient<CreateQueryOutcomeType<SqlQuery>>();
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Arguments;
 using OrchardCore.Apis.GraphQL.Types;
@@ -17,22 +18,15 @@ namespace OrchardCore.Setup.GraphQL
 {
     public class CreateTenantMutation : MutationFieldType
     {
-        private readonly ISetupService _setupService;
-        private readonly ShellSettings _shellSettings;
         private const string DefaultRecipe = "Default";
-        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-
         public IStringLocalizer T { get; set; }
 
-        public CreateTenantMutation(ISetupService setupService,
+        public CreateTenantMutation(
+            IHttpContextAccessor httpContextAccessor,
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<CreateTenantMutation> t)
         {
-            _setupService = setupService;
-            _shellSettings = shellSettings;
-            _databaseProviders = databaseProviders;
-
             T = t;
 
             Name = "CreateTenant";
@@ -41,11 +35,14 @@ namespace OrchardCore.Setup.GraphQL
 
             Type = typeof(CreateTenantOutcomeType);
 
-            Resolver = new AsyncFieldResolver<object, object>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, object>(async (context) =>
+            {
                 var model = context.MapArgumentsTo<SetupViewModel>();
 
-                model.DatabaseProviders = _databaseProviders;
-                model.Recipes = await _setupService.GetSetupRecipesAsync();
+                model.DatabaseProviders = databaseProviders;
+
+                var setupService = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ISetupService>();
+                model.Recipes = await setupService.GetSetupRecipesAsync();
 
                 var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
@@ -71,22 +68,22 @@ namespace OrchardCore.Setup.GraphQL
                     context.Errors.Add(new ExecutionError(T["Invalid recipe."]));
                 }
 
-                if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+                if (!String.IsNullOrEmpty(shellSettings.ConnectionString))
                 {
                     model.DatabaseConfigurationPreset = true;
-                    model.ConnectionString = _shellSettings.ConnectionString;
+                    model.ConnectionString = shellSettings.ConnectionString;
                 }
 
-                if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+                if (!String.IsNullOrEmpty(shellSettings.DatabaseProvider))
                 {
                     model.DatabaseConfigurationPreset = true;
-                    model.DatabaseProvider = _shellSettings.DatabaseProvider;
+                    model.DatabaseProvider = shellSettings.DatabaseProvider;
                 }
 
-                if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+                if (!String.IsNullOrEmpty(shellSettings.TablePrefix))
                 {
                     model.DatabaseConfigurationPreset = true;
-                    model.TablePrefix = _shellSettings.TablePrefix;
+                    model.TablePrefix = shellSettings.TablePrefix;
                 }
 
                 if (context.Errors.Count > 0)
@@ -112,7 +109,7 @@ namespace OrchardCore.Setup.GraphQL
                     setupContext.DatabaseTablePrefix = model.TablePrefix;
                 }
 
-                var executionId = await _setupService.SetupAsync(setupContext);
+                var executionId = await setupService.SetupAsync(setupContext);
 
                 if (setupContext.Errors.Any())
                 {

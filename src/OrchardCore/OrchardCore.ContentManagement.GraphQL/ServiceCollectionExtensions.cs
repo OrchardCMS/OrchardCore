@@ -20,12 +20,12 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddGraphQueryType<ContentItemQuery>();
             services.AddGraphQueryType<ContentItemsQuery>();
-            services.AddScoped<ContentItemType>();
-            services.AddScoped<DeletionStatusObjectGraphType>();
-            services.AddScoped<CreateContentItemInputType>();
-            services.AddScoped<ContentPartsInputType>();
+            services.AddTransient<ContentItemType>();
+            services.AddTransient<DeletionStatusObjectGraphType>();
+            services.AddTransient<CreateContentItemInputType>();
+            services.AddTransient<ContentPartsInputType>();
 
-            services.AddScoped<IQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
+            services.AddTransient<IQueryFieldTypeProvider, ContentItemFieldTypeProvider>();
 
             services.AddScoped<IGraphQLSchemaHashService, GraphQLSchemaHashService>();
 

@@ -1,17 +1,14 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Apis.GraphQL;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {
     public class DeleteContentItemMutation : MutationFieldType
     {
-        public DeleteContentItemMutation(IContentManager contentManager,
-            IAuthorizationService authorizationService)
+        public DeleteContentItemMutation(IHttpContextAccessor httpContextAccessor)
         {
             Name = "DeleteContentItem";
 
@@ -24,6 +21,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
             Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) => {
                 var contentItemId = context.GetArgument<string>("ContentItemId");
 
+                var contentManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
                 var contentItem = await contentManager.GetAsync(contentItemId);
 
                 //if (!await authorizationService.AuthorizeAsync((context.UserContext as GraphQLUserContext)?.User, Permissions.DeleteContent, contentItem))

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using GraphQL.Types;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {
@@ -24,7 +22,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
     public class ContentPartsInputType : InputObjectGraphType
     {
         public ContentPartsInputType(
-            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<ContentPart> contentParts,
             ITypeActivatorFactory<ContentPart> typeActivator)
         {
@@ -38,7 +36,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                 var inputGraphType =
                     typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
 
-                var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
+                var inputGraphTypeResolved = (IInputObjectGraphType)httpContextAccessor.HttpContext
+                    .RequestServices.GetService(inputGraphType);
 
                 if (inputGraphTypeResolved != null)
                 {

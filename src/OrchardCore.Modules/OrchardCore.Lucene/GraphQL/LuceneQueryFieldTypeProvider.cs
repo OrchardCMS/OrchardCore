@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Apis.GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lucene;
 
@@ -16,22 +17,21 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
     public class LuceneQueryFieldTypeProvider : IQueryFieldTypeProvider
     {
-        private readonly IQueryManager _queryManager;
-        private readonly IEnumerable<QueryFieldType> _queryFieldTypes;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IDependencyResolver _dependencyResolver;
 
-        public LuceneQueryFieldTypeProvider(IQueryManager queryManager,
-            IEnumerable<QueryFieldType> queryFieldTypes,
+        public LuceneQueryFieldTypeProvider(
+            IHttpContextAccessor httpContextAccessor,
             IDependencyResolver dependencyResolver)
         {
-            _queryManager = queryManager;
-            _queryFieldTypes = queryFieldTypes;
+            _httpContextAccessor = httpContextAccessor;
             _dependencyResolver = dependencyResolver;
         }
 
         public async Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
         {
-            var queries = await _queryManager.ListQueriesAsync();
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
+            var queries = await queryManager.ListQueriesAsync();
 
             var fieldTypes = new List<FieldType>();
 
@@ -111,8 +111,11 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new AsyncFieldResolver<object, object>(async context => {
-                    var iquery = await _queryManager.GetQueryAsync(context.FieldName);
+
+                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");
 
@@ -120,7 +123,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
@@ -140,8 +143,10 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new AsyncFieldResolver<object, object>(async context => {
-                    var iquery = await _queryManager.GetQueryAsync(context.FieldName);
+                Resolver = new AsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");
 
@@ -149,7 +154,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typetype.Type
             };

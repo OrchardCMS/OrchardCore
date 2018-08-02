@@ -1,16 +1,17 @@
 using System;
 using GraphQL;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Apis.GraphQL
 {
     internal class InternalDependencyResolver : IDependencyResolver
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public InternalDependencyResolver(
-            IServiceProvider serviceProvider)
+            IHttpContextAccessor httpContextAccessor)
         {
-            _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public T Resolve<T>()
@@ -20,7 +21,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public object Resolve(Type type)
         {
-            var serviceType =  _serviceProvider.GetService(type);
+            var serviceType = _httpContextAccessor.HttpContext.RequestServices.GetService(type);
 
             if (serviceType == null)
             {

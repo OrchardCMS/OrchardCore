@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Mutations
     {
         public static void AddGraphQLMutations(this IServiceCollection services) {
             services.AddScoped<IApiUpdateModel, ApiUpdateModel>();
-            services.AddScoped<MutationsSchema>();
+            services.AddTransient<MutationsSchema>();
         }
     }
 }

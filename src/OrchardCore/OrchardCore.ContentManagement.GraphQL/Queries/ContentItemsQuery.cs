@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Types;
@@ -14,9 +15,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public class ContentItemsQuery : QueryFieldType
     {
-        public ContentItemsQuery(IContentManager contentManager,
-            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            ISession session)
+        public ContentItemsQuery(IHttpContextAccessor httpContextAccessor)
         {
             Name = "ContentItems";
 
@@ -30,7 +29,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
             );
 
-            Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(async context => {
+            Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(async context =>
+            {
+                var contentManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
+
                 var versionOptions = GetVersionOptions(context);
 
                 if (context.HasPopulatedArgument("contentItemId"))
@@ -56,7 +58,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                     return new[] { contentItem };
                 }
-                
+
+                var session = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<YesSql.ISession>();
+
                 var query = session.Query<ContentItem, ContentItemIndex>();
 
                 if (versionOptions.IsPublished)
@@ -81,6 +85,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 }
 
                 IQuery<ContentItem> contentItemsQuery = query;
+
+                var graphQLFilters = httpContextAccessor.HttpContext.RequestServices.GetServices<IGraphQLFilter<ContentItem>>();
 
                 foreach (var filter in graphQLFilters)
                 {

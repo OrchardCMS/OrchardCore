@@ -35,14 +35,15 @@ namespace OrchardCore.Apis.GraphQL.Services
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
-                return new ContentSchema(
+                return new ContentSchema
+                (
                     _serviceProvider.GetService<MutationsSchema>(),
                     _serviceProvider.GetService<QueriesSchema>(),
                     _serviceProvider.GetService<SubscriptionSchema>(),
-                    _serviceProvider.GetService<IEnumerable<IInputObjectGraphType>>(),
-                    _serviceProvider.GetService<IEnumerable<IObjectGraphType>>(),
+                    _serviceProvider.GetServices<IInputObjectGraphType>(),
+                    _serviceProvider.GetServices<IObjectGraphType>(),
                     _serviceProvider.GetService<IDependencyResolver>()
-                    );
+                );
             });
         }
     }

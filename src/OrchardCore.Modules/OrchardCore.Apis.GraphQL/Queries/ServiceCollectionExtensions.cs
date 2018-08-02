@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
     {
         public static void AddGraphQLQueries(this IServiceCollection services)
         {
-            services.AddScoped<QueriesSchema>();
+            services.AddTransient<QueriesSchema>();
         }
     }
 }

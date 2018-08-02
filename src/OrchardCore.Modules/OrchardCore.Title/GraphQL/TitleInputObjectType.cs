@@ -1,4 +1,3 @@
-using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Title.Model;
 

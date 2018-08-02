@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Subscriptions
     {
         public static void AddGraphQLSubscriptions(this IServiceCollection services)
         {
-            services.AddScoped<SubscriptionSchema>();
+            services.AddTransient<SubscriptionSchema>();
         }
     }
 }

@@ -1,48 +1,35 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
-using YesSql;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
 {
     public class ContentItemFieldTypeProvider : IQueryFieldTypeProvider
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITypeActivatorFactory<ContentPart> _typeActivator;
-        private readonly IEnumerable<IInputObjectGraphType> _inputGraphTypes;
-        private readonly IEnumerable<IGraphQLFilter<ContentItem>> _graphQLFilters;
-        private readonly ISession _session;
 
         public ContentItemFieldTypeProvider(
-            IServiceProvider serviceProvider,
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            ITypeActivatorFactory<ContentPart> typeActivator,
-            IEnumerable<IInputObjectGraphType> inputGraphTypes,
-            IEnumerable<IGraphQLFilter<ContentItem>> graphQLFilters,
-            ISession session)
+            IHttpContextAccessor httpContextAccessor,
+            ITypeActivatorFactory<ContentPart> typeActivator)
         {
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
+            _httpContextAccessor = httpContextAccessor;
             _typeActivator = typeActivator;
-            _inputGraphTypes = inputGraphTypes;
-            _graphQLFilters = graphQLFilters;
-            _session = session;
         }
 
         public Task<IEnumerable<FieldType>> GetFields(ObjectGraphType state)
         {
             var fieldTypes = new List<FieldType>();
 
-            foreach (var typeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+            var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentDefinitionManager>();
+
+            foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
                 var typeType = new ContentItemType
                 {
@@ -63,12 +50,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
                     var inputGraphType =
                         typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
 
-                    var queryGraphTypeResolved = (IObjectGraphType)_serviceProvider.GetService(queryGraphType);
+                    var queryGraphTypeResolved = (IObjectGraphType)_httpContextAccessor.HttpContext.RequestServices.GetService(queryGraphType);
 
                     if (queryGraphTypeResolved != null)
                     {
                         typeType.Field(
-                            queryGraphType,
+                            queryGraphTypeResolved.GetType(),
                             partName,
                             resolve: context =>
                             {
@@ -79,7 +66,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
                             });
                     }
 
-                    var inputGraphTypeResolved = _serviceProvider.GetService(inputGraphType) as IQueryArgumentObjectGraphType;
+                    var inputGraphTypeResolved = _httpContextAccessor.HttpContext.RequestServices.GetService(inputGraphType) as IQueryArgumentObjectGraphType;
 
                     if (inputGraphTypeResolved != null)
                     {
@@ -90,10 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Providers
                     }
                 }
 
-                var query = new ContentItemsQuery(
-                    _contentManager, 
-                    _graphQLFilters,
-                    _session)
+                var query = new ContentItemsQuery(_httpContextAccessor)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)

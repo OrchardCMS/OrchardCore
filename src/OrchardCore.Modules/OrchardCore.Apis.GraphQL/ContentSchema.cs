@@ -10,7 +10,8 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class ContentSchema : Schema
     {
-        public ContentSchema(MutationsSchema mutationsSchema,
+        public ContentSchema(
+            MutationsSchema mutationsSchema,
             QueriesSchema queriesSchema,
             SubscriptionSchema subscriptionSchema,
             IEnumerable<IInputObjectGraphType> inputGraphTypes,

@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Arguments;
 using OrchardCore.Apis.GraphQL.Types;
@@ -12,7 +13,7 @@ namespace OrchardCore.Queries.GraphQL.Mutations
         public IStringLocalizer T { get; set; }
 
         public CreateQueryMutation(
-            IQueryManager queryManager,
+            IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<CreateQueryMutation<TSourceType>> t)
         {
             T = t;
@@ -25,7 +26,10 @@ namespace OrchardCore.Queries.GraphQL.Mutations
 
             Type = typeof(CreateQueryOutcomeType<TSourceType>);
 
-            Resolver = new AsyncFieldResolver<object, object>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, object>(async (context) =>
+            {
+                var queryManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
+
                 var query = context.MapArgumentsTo<TSourceType>();
 
                 await queryManager.SaveQueryAsync(query.Name , query);
