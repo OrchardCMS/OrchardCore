@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     if (queryGraphTypeResolved != null)
                     {
                         typeType.Field(
-                            queryGraphType,
+                            queryGraphTypeResolved.GetType(),
                             partName,
                             resolve: context =>
                             {

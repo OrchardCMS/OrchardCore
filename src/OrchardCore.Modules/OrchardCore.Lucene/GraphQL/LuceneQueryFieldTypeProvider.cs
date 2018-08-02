@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,16 +17,18 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
-        private readonly IQueryManager _queryManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LuceneQueryFieldTypeProvider(IQueryManager queryManager)
+        public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor)
         {
-            _queryManager = queryManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
-            var queries = await _queryManager.ListQueriesAsync();
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            
+            var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<LuceneQuery>())
             {
@@ -39,7 +43,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 var type = querySchema["type"].ToString();
 
                 if (query.ReturnContentItems &&
-                    type.StartsWith("ContentItem/", System.StringComparison.OrdinalIgnoreCase))
+                    type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                 {
                     var contentType = type.Remove(0, 12);
                     schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
@@ -50,7 +54,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 }
             }
 
-            return _queryManager.ChangeToken;
+            return queryManager.ChangeToken;
         }
 
         private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken schema)
@@ -102,8 +106,10 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new AsyncFieldResolver<object, object>(async context => {
-                    var iquery = await _queryManager.GetQueryAsync(context.FieldName);
+                Resolver = new AsyncFieldResolver<object, object>(async context => 
+                {
+                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");
 
@@ -111,7 +117,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
@@ -131,8 +137,10 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new AsyncFieldResolver<object, object>(async context => {
-                    var iquery = await _queryManager.GetQueryAsync(context.FieldName);
+                Resolver = new AsyncFieldResolver<object, object>(async context => 
+                {
+                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("Parameters");
 
@@ -140,7 +148,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await _queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 }),
                 Type = typetype.Type
             };

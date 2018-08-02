@@ -9,37 +9,37 @@ namespace OrchardCore.Apis
     {
         public static void AddGraphMutationType<TMutation>(this IServiceCollection services) where TMutation : MutationFieldType
         {
-            services.AddScoped<TMutation>();
-            services.AddScoped<MutationFieldType, TMutation>();
+            services.AddTransient<TMutation>();
+            services.AddTransient<MutationFieldType, TMutation>();
         }
 
         public static void AddGraphQLInputType<TInput, TInputType>(this IServiceCollection services) 
             where TInput : class 
             where TInputType : InputObjectGraphType<TInput>
         {
-            services.AddScoped<InputObjectGraphType<TInput>, TInputType>();
-            services.AddScoped<IInputObjectGraphType, TInputType>();
+            services.AddTransient<InputObjectGraphType<TInput>, TInputType>();
+            services.AddTransient<IInputObjectGraphType, TInputType>();
         }
 
         public static void AddGraphQLQueryArgumentInputType<TInputType>(this IServiceCollection services)
             where TInputType : class, IQueryArgumentObjectGraphType
         {
-            services.AddScoped<IQueryArgumentObjectGraphType, TInputType>();
+            services.AddTransient<IQueryArgumentObjectGraphType, TInputType>();
         }
 
         public static void AddGraphQLQueryType<TInput, TInputType>(this IServiceCollection services)
             where TInput : class
             where TInputType : ObjectGraphType<TInput>
         {
-            services.AddScoped<ObjectGraphType<TInput>, TInputType>();
-            services.AddScoped<IObjectGraphType, TInputType>();
+            services.AddTransient<ObjectGraphType<TInput>, TInputType>();
+            services.AddTransient<IObjectGraphType, TInputType>();
         }
 
         public static void AddGraphQLFilterType<TObjectTypeToFilter, TFilterType>(this IServiceCollection services)
             where TObjectTypeToFilter : class
             where TFilterType : GraphQLFilter<TObjectTypeToFilter>
         {
-            services.AddScoped<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
+            services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
         }
     }
 }

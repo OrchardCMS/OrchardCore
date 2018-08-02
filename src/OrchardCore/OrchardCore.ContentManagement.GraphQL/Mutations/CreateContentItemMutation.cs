@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Mutations;
 using OrchardCore.Apis.GraphQL.Types;
@@ -15,11 +15,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {
     public class CreateContentItemMutation : MutationFieldType
     {
-        public CreateContentItemMutation(IContentManager contentManager,
-            IContentItemDisplayManager contentDisplay,
-            IAuthorizationService authorizationService,
-            IClock clock,
-            IApiUpdateModel apiUpdateModel)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CreateContentItemMutation(
+            IHttpContextAccessor httpContextAccessor,
+            IClock clock)
         {
             Name = "CreateContentItem";
 
@@ -30,19 +30,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 
             Type = typeof(ContentItemType);
 
-            Resolver = new AsyncFieldResolver<object, object>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, object>(async (context) =>
+            {
                 var contentItemFabrication = context.GetArgument<ContentItemInput>("ContentItem");
-                
+
                 var contentParts = JObject.FromObject(contentItemFabrication.ContentParts);
 
+                var contentManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
                 var contentItem = await contentManager.NewAsync(contentItemFabrication.ContentType);
 
                 contentItem.Author = contentItemFabrication.Author;
                 contentItem.Owner = contentItemFabrication.Owner;
                 contentItem.CreatedUtc = clock.UtcNow;
 
+                var apiUpdateModel = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IApiUpdateModel>();
                 var updateModel = apiUpdateModel.WithModel(contentParts);
 
+                var contentDisplay = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentItemDisplayManager>();
                 await contentDisplay.UpdateEditorAsync(contentItem, updateModel, true);
 
                 if (contentItemFabrication.Published)
@@ -57,6 +61,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 
                 return contentItem;
             });
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private class ContentItemInput

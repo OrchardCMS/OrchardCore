@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Queries.GraphQL.Mutations;
 using OrchardCore.Queries.GraphQL.Mutations.Types;
@@ -16,8 +16,10 @@ namespace OrchardCore.Lucene.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ISchemaBuilder, LuceneQueryFieldTypeProvider>();
+
             services.AddGraphMutationType<CreateQueryMutation<LuceneQuery>>();
-            services.AddScoped<CreateQueryOutcomeType<LuceneQuery>>();
+            services.AddTransient<CreateQueryOutcomeType<LuceneQuery>>();
         }
     }
 }

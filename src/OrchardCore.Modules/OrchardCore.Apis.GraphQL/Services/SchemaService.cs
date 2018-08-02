@@ -5,6 +5,7 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
@@ -32,9 +33,10 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 var schema = new Schema();
 
-                var query = new ObjectGraphType { Name = "Query" };
+                schema.Query = new ObjectGraphType { Name = "Query" }; ;
+                schema.Mutation = new ObjectGraphType { Name = "Mutation" }; ;
+                schema.Subscription = new ObjectGraphType { Name = "Subscription" }; ;
 
-                schema.Query = query;
                 schema.DependencyResolver = _serviceProvider.GetService<IDependencyResolver>();
 
                 foreach (var builder in _schemaBuilders)
@@ -45,6 +47,14 @@ namespace OrchardCore.Apis.GraphQL.Services
                     {
                         f.AddExpirationToken(token);
                     }
+                }
+
+                // TODO: Remove MutationFieldType and convert types to ISchemaBuilder
+                var mutationFields = _serviceProvider.GetServices<MutationFieldType>();
+
+                foreach (var field in mutationFields)
+                {
+                    schema.Mutation.AddField(field);
                 }
 
                 foreach (var type in _serviceProvider.GetServices<IInputObjectGraphType>())

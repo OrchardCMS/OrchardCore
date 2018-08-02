@@ -1,21 +1,15 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Types;
 
 namespace OrchardCore.Queries.GraphQL.Mutations
 {
     public class DeleteQueryMutation : MutationFieldType
     {
-        public IStringLocalizer T { get; set; }
-
-        public DeleteQueryMutation(
-            IQueryManager queryManager,
-            IStringLocalizer<DeleteQueryMutation> t)
+        public DeleteQueryMutation(IHttpContextAccessor httpContextAccessor)
         {
-            T = t;
-
             Name = "DeleteQuery";
 
             Arguments = new QueryArguments(
@@ -24,9 +18,11 @@ namespace OrchardCore.Queries.GraphQL.Mutations
 
             Type = typeof(DeletionStatusObjectGraphType);
 
-            Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) => {
+            Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) =>
+            {
                 var name = context.GetArgument<string>("Name");
 
+                var queryManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
                 await queryManager.DeleteQueryAsync(name);
 
                 return new DeletionStatus { Status = "Ok" };

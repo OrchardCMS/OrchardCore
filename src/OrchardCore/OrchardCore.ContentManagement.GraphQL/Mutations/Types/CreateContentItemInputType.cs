@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {
@@ -21,8 +21,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 
     public class ContentPartsInputType : InputObjectGraphType
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public ContentPartsInputType(
-            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<ContentPart> contentParts,
             ITypeActivatorFactory<ContentPart> typeActivator)
         {
@@ -36,7 +38,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                 var inputGraphType =
                     typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
 
-                var inputGraphTypeResolved = (IInputObjectGraphType)serviceProvider.GetService(inputGraphType);
+                var inputGraphTypeResolved = (IInputObjectGraphType)httpContextAccessor.HttpContext
+                    .RequestServices.GetService(inputGraphType);
 
                 if (inputGraphTypeResolved != null)
                 {
@@ -45,6 +48,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                         partName);
                 }
             }
+
+            _httpContextAccessor = httpContextAccessor;
         }
     }
 }
