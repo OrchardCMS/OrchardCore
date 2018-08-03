@@ -11,7 +11,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
-    <ProjectReference Include="..\OrchardCore.Saas\OrchardCore.Saas.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenants.Abstractions\OrchardCore.Tenants.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

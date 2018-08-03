@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrchardCore.Saas
+namespace OrchardCore.Tenants.Abstractions
 {
     public interface ISaasTokenManager
     {

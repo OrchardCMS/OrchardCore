@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using OrchardCore.Tenants.Abstractions;
 
-namespace OrchardCore.Saas
+namespace OrchardCore.Tenants.Services
 {
     class SaasTokenManager : ISaasTokenManager
     {

@@ -67,6 +67,7 @@ namespace OrchardCore.Environment.Shell
             configurationProvider.Set($"{name}:TablePrefix", ObtainValue(configuration,$"{name}:TablePrefix"));
             configurationProvider.Set($"{name}:ConnectionString", ObtainValue(configuration,$"{name}:ConnectionString"));
             configurationProvider.Set($"{name}:State", ObtainValue(configuration,$"{name}:State"));
+            configurationProvider.Set($"{name}:SaasToken", ObtainValue(configuration, $"{name}:SaasToken"));
 
             configurationProvider.Commit();
         }

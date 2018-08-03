@@ -38,9 +38,9 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken) && _shellSettings.SaasToken.Equals(token, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken) && !_shellSettings.SaasToken.Equals(token, StringComparison.OrdinalIgnoreCase))
             {
-                View("InvalidToken");
+                return View("InvalidToken");
             }
 
             var model = new SetupViewModel

@@ -74,6 +74,11 @@ namespace OrchardCore.Environment.Shell
             set { _values["ConnectionString"] = value; }
         }
 
+        public string SaasToken
+        {
+            get { return this["SaasToken"]; }
+            set { _values["SaasToken"] = value; }
+        }
         public TenantState State
         {
             get => _tenantState;
