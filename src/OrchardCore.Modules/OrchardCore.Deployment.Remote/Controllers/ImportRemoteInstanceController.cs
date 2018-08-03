@@ -1,13 +1,13 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -30,26 +30,35 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         public IHtmlLocalizer H { get; }
 
+        /// <remarks>
+        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and 
+        /// we use a private API key to secure its calls.
+        /// </remarks>
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Import([FromBody] ArchiveContainer archive)
+        public async Task<IActionResult> Import(ImportViewModel model)
         {
             var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
 
-            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == archive.ClientName);
+            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
-            if (remoteClient == null || archive.ApiKey != remoteClient.ApiKey || archive.ClientName != remoteClient.ClientName)
+            if (remoteClient == null || model.ApiKey != remoteClient.ApiKey || model.ClientName != remoteClient.ClientName)
             {
-                return StatusCode(403, "The Api Key was not recognized");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }
 
+            // Create a temporary filename to save the archive
             var tempArchiveName = Path.GetTempFileName() + ".zip";
+
+            // Create a temporary folder to extract the archive to
             var tempArchiveFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
             {
-                byte[] content = Convert.FromBase64String(archive.ArchiveBase64);
-                System.IO.File.WriteAllBytes(tempArchiveName, content);
+                using (var fs = System.IO.File.Create(tempArchiveName))
+                {
+                    await model.Content.CopyToAsync(fs);
+                }
 
                 ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
@@ -57,7 +66,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
             finally
             {
-                if(System.IO.File.Exists(tempArchiveName))
+                if (System.IO.File.Exists(tempArchiveName))
                 {
                     System.IO.File.Delete(tempArchiveName);
                 }
