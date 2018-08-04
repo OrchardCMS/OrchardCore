@@ -20,7 +20,7 @@ namespace OrchardCore.Recipes.Controllers
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IRecipeHarvester _recipeHarvester;
+        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
@@ -31,15 +31,15 @@ namespace OrchardCore.Recipes.Controllers
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
-            IRecipeHarvester recipeHarvester,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IRecipeExecutor recipeExecutor,
             INotifier notifier)
         {
             _siteService = siteService;
             _recipeExecutor = recipeExecutor;
-            _recipeHarvester = recipeHarvester;
             _extensionManager = extensionManager;
             _authorizationService = authorizationService;
+            _recipeHarvesters = recipeHarvesters;
             _notifier = notifier;
 
             T = localizer;
@@ -54,8 +54,11 @@ namespace OrchardCore.Recipes.Controllers
                 return Unauthorized();
             }
 
-            var recipes = await _recipeHarvester.HarvestRecipesAsync();
-            recipes = recipes.Where(c => c.IsSetupRecipe == false);
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x);
+
+            recipes = recipes.Where(c => !c.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase));
+
             var features = _extensionManager.GetFeatures();
 
             var model = recipes.Select(recipe => new RecipeViewModel
@@ -64,6 +67,7 @@ namespace OrchardCore.Recipes.Controllers
                 FileName = recipe.RecipeFileInfo.Name,
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
+                IsSetupRecipe = recipe.IsSetupRecipe,
                 Feature = features.FirstOrDefault(f=>recipe.BasePath.Contains(f.Extension.SubPath))?.Name,
                 Description = recipe.Description
             }).ToArray();
@@ -79,7 +83,8 @@ namespace OrchardCore.Recipes.Controllers
                 return Unauthorized();
             }
 
-            var recipes = await _recipeHarvester.HarvestRecipesAsync();
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x);
 
             var recipe = recipes.FirstOrDefault(c => c.RecipeFileInfo.Name == fileName && c.BasePath == basePath);
 

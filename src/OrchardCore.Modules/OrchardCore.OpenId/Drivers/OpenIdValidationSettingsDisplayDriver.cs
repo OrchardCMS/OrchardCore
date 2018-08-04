@@ -74,7 +74,7 @@ namespace OrchardCore.OpenId.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
@@ -82,11 +82,11 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (groupId == SettingsGroupId)
+            if (context.GroupId == SettingsGroupId)
             {
                 var model = new OpenIdValidationSettingsViewModel();
 
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.Authority = model.Authority?.Trim();
                 settings.Audience = model.Audience?.Trim();
@@ -97,18 +97,18 @@ namespace OrchardCore.OpenId.Drivers
                     if (result != ValidationResult.Success)
                     {
                         var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        updater.ModelState.AddModelError(key, result.ErrorMessage);
+                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }
 
                 // If the settings are valid, reload the current tenant.
-                if (updater.ModelState.IsValid)
+                if (context.Updater.ModelState.IsValid)
                 {
                     _shellHost.ReloadShellContext(_shellSettings);
                 }
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

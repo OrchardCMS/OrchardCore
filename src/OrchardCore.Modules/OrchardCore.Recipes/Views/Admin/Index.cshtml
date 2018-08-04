@@ -33,6 +33,13 @@
 
                                         <p class="text-muted">@recipe.Description</p>
                                         <div>
+                                            @if (recipe.IsSetupRecipe)
+                                            {
+                                                <span class="badge badge-warning">
+                                                    @T["Setup Recipe"]
+                                                </span>
+                                            }
+
                                             @if (recipe.Tags != null && recipe.Tags.Any())
                                             {
                                                 @foreach (var tag in recipe.Tags)
