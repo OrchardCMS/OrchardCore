@@ -60,7 +60,8 @@ namespace OrchardCore.Settings.Services
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId
+                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                                UseCdn = false
                             };
 
                             session.Save(site);
