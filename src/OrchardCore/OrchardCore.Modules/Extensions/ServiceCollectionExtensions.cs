@@ -117,11 +117,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     fileProvider = new ModuleEmbeddedStaticFileProvider(env);
                 }
 
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "",
-                    FileProvider = fileProvider
-                });
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+
+                options.RequestPath = "";
+                options.FileProvider = fileProvider;
+                app.UseStaticFiles(options);
             });
         }
 
@@ -201,18 +201,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (startupFilterType != null)
                 {
-                    // Remove the data protection startup filter registered at the host level.
-                    // Knowing that a host singleton is cloned through an implementation instance.
-                    var descriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter) &&
-                        s.ImplementationInstance?.GetType() == startupFilterType);
+                    // Remove any previously registered data protection startup filters.
+                    var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
+                        (s.ImplementationInstance?.GetType() == startupFilterType ||
+                        s.ImplementationType == startupFilterType)).ToArray();
 
-                    if (descriptor != null)
+                    foreach (var descriptor in descriptors)
                     {
                         services.Remove(descriptor);
                     }
                 }
 
-                // Remove options setups registered at the host level.
+                // Remove any previously registered options setups.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
                 services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
 
