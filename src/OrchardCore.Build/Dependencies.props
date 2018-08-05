@@ -27,6 +27,11 @@
     <PackageManagement Include="OpenIddict" Version="2.0.0-rc3-final" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.0-rc3-final" />
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rc3-final" />
+    <PackageManagement Include="Serilog" Version="2.7.1" />
+    <PackageManagement Include="Serilog.AspNetCore" Version="2.1.1" />
+    <PackageManagement Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-beta0004" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0003" />
     <PackageManagement Include="WindowsAzure.Storage" Version="9.2.0" />
