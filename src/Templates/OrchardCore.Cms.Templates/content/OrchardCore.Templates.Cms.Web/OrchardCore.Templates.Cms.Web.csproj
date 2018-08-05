@@ -11,7 +11,12 @@
 
   <ItemGroup>
     <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#if (UseNLog) -->
     <PackageReference Include="OrchardCore.Logging.NLog" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#endif -->
+    <!--#if (UseSerilog) -->
+    <PackageReference Include="OrchardCore.Logging.Serilog" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#endif -->
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="$(TemplateOrchardPackageVersion)" />
   </ItemGroup>
   
