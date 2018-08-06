@@ -35,22 +35,6 @@ namespace OrchardCore.Features.Recipes.Executors
 
             var features = _extensionManager.GetFeatures();
 
-            foreach (var featureId in step.Disable)
-            {
-                if (features.Any(x => x.Id == featureId))
-                {
-                    throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureId));
-                }
-            }
-
-            foreach (var featureId in step.Enable)
-            {
-                if (!features.Any(x => x.Id == featureId))
-                {
-                    throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureId));
-                }
-            }
-
             if (step.Disable.Any())
             {
                 var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
