@@ -11,9 +11,10 @@
         // Label
         tag = new TagBuilder("label");
         tag.Attributes["data-toggle"] = "collapse";
-        tag.Attributes["data-target"] = "#" + Model.GetHashCode().ToString();
+        tag.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
         tag.Attributes["aria-expanded"] = "false";
-        tag.Attributes["aria-controls"] = Model.GetHashCode().ToString();
+        tag.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
+        tag.Attributes["role"] = "button";
 
         if ((bool)Model.Selected)
         {

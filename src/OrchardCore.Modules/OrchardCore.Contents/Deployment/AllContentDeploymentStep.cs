@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using OrchardCore.Deployment;
 
-namespace OrchardCore.Deployment.Steps
+namespace OrchardCore.Contents.Deployment
 {
     /// <summary>
     /// Adds all content items to a <see cref="DeploymentPlanResult"/>. 
