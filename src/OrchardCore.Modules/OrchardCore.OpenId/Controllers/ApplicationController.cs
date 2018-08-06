@@ -339,6 +339,17 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.ClientSecret = null;
             }
 
+            var openIdServerSettings = await GetServerSettingsAsync();
+
+            if (openIdServerSettings.EnableLogoutEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
+
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
