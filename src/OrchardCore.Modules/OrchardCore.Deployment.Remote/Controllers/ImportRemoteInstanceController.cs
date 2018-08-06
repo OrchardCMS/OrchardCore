@@ -2,7 +2,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
@@ -16,15 +18,17 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private readonly RemoteClientService _remoteClientService;
         private readonly IDeploymentManager _deploymentManager;
+        private readonly IDataProtector _dataProtector;
 
         public ImportRemoteInstanceController(
+            IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
             IDeploymentManager deploymentManager,
             IHtmlLocalizer<ExportRemoteInstanceController> h)
         {
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;
-
+            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
             H = h;
         }
 
@@ -42,7 +46,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
-            if (remoteClient == null || model.ApiKey != remoteClient.ApiKey || model.ClientName != remoteClient.ClientName)
+            var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+
+            if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }
