@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Services;
 
 namespace OrchardCore.Deployment.Core.Services
@@ -8,13 +9,16 @@ namespace OrchardCore.Deployment.Core.Services
     {
         private readonly IEnumerable<IDeploymentSource> _deploymentSources;
         private readonly IEnumerable<IDeploymentTargetProvider> _deploymentTargetProviders;
+        private readonly IEnumerable<IDeploymentTargetHandler> _deploymentTargetHandlers;
 
         public DeploymentManager(
             IEnumerable<IDeploymentSource> deploymentSources,
-            IEnumerable<IDeploymentTargetProvider> deploymentTargetProviders)
+            IEnumerable<IDeploymentTargetProvider> deploymentTargetProviders,
+            IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers)
         {
             _deploymentSources = deploymentSources;
             _deploymentTargetProviders = deploymentTargetProviders;
+            _deploymentTargetHandlers = deploymentTargetHandlers;
         }
 
         public async Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result)
@@ -40,6 +44,15 @@ namespace OrchardCore.Deployment.Core.Services
             }
 
             return tasks;
+        }
+
+        public async Task ImportDeploymentPackageAsync(IFileProvider deploymentPackage)
+        {
+            foreach (var deploymentTargetHandler in _deploymentTargetHandlers)
+            {
+                // Don't trigger in parallel to avoid potential race conditions in the handlers
+                await deploymentTargetHandler.ImportFromFileAsync(deploymentPackage);
+            }
         }
     }
 }

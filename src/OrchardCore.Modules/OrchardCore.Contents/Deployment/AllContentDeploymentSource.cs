@@ -2,9 +2,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Deployment;
 using YesSql;
 
-namespace OrchardCore.Deployment.Steps
+namespace OrchardCore.Contents.Deployment
 {
     public class AllContentDeploymentSource : IDeploymentSource
     {
