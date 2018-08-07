@@ -145,9 +145,6 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
             }
 
-            ValidateUris(model.PostLogoutRedirectUris, nameof(model.PostLogoutRedirectUris));
-            ValidateUris(model.RedirectUris, nameof(model.RedirectUris));
-
             if (!ModelState.IsValid)
             {
                 ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
@@ -291,9 +288,6 @@ namespace OrchardCore.OpenId.Controllers
             {
                 ModelState.AddModelError(string.Empty, "At least one flow must be enabled.");
             }
-
-            ValidateUris(model.PostLogoutRedirectUris, nameof(model.PostLogoutRedirectUris));
-            ValidateUris(model.RedirectUris, nameof(model.RedirectUris));
 
             object application = null;
 
@@ -455,21 +449,6 @@ namespace OrchardCore.OpenId.Controllers
             await _applicationManager.DeleteAsync(application);
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private void ValidateUris(string uris, string propertyName)
-        {
-            if (String.IsNullOrEmpty(uris))
-                return;
-
-            foreach (string uri in uris.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>())
-            {
-                if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                {
-                    ModelState.AddModelError(propertyName, T["Uri is not well formed"]);
-                    return;
-                }
-            }
         }
 
         private async Task<OpenIdServerSettings> GetServerSettingsAsync()
