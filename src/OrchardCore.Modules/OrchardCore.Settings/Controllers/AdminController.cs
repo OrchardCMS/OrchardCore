@@ -1,16 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Localization.Services;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
@@ -21,7 +21,6 @@ namespace OrchardCore.Settings.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ICultureManager _cultureManager;
 
         public AdminController(
             ISiteService siteService,
@@ -29,17 +28,19 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
-            ICultureManager cultureManager)
+            IStringLocalizer<AdminController> s
+            )
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = h;
-            _cultureManager = cultureManager;
+            S = s;
         }
 
         IHtmlLocalizer H { get; set; }
+        IStringLocalizer S { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {
@@ -100,10 +101,12 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+
             var model = new SiteCulturesViewModel
             {
-                CurrentCulture = _cultureManager.GetCurrentCulture(),
-                SiteCultures = _cultureManager.ListCultures().Result.Select(x => x.CultureName)
+                CurrentCulture = siteSettings.Culture,
+                SiteCultures = siteSettings.SupportedCultures
             };
 
             model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != String.Empty)
@@ -116,6 +119,8 @@ namespace OrchardCore.Settings.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCulture(string systemCultureName, string cultureName)
         {
+            // // 
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
             {
                 return Unauthorized();
@@ -123,10 +128,17 @@ namespace OrchardCore.Settings.Controllers
 
             cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
 
-            if (!String.IsNullOrWhiteSpace(cultureName) && _cultureManager.IsValidCulture(cultureName))
+            if (!String.IsNullOrWhiteSpace(cultureName) && Regex.IsMatch(cultureName, "^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
             {
-                _cultureManager.AddCulture(cultureName);
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+                await _siteService.UpdateSiteSettingsAsync(siteSettings);
             }
+            else
+            {
+                ModelState.AddModelError(nameof(cultureName), S["Invalid culture name"]);
+            }
+
             return RedirectToAction("Culture");
         }
 
@@ -138,7 +150,10 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            _cultureManager.DeleteCulture(cultureName);
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+
             return RedirectToAction("Culture");
         }
     }

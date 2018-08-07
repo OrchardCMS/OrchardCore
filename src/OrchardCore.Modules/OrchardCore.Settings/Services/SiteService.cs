@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -62,7 +61,7 @@ namespace OrchardCore.Settings.Services
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
                                 TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                                Culture = CultureInfo.InvariantCulture.Name
+                                Culture = "en-us"
                             };
 
                             session.Save(site);
@@ -91,6 +90,7 @@ namespace OrchardCore.Settings.Services
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
             existing.Culture = site.Culture;
+            existing.SupportedCultures = site.SupportedCultures;
             existing.HomeRoute = site.HomeRoute;
             existing.MaxPagedCount = site.MaxPagedCount;
             existing.MaxPageSize = site.MaxPageSize;

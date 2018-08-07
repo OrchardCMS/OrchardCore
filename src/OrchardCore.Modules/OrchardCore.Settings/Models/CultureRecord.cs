@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.Localization.Models
+namespace OrchardCore.Settings.Models
 {
     public class CultureRecord
     {

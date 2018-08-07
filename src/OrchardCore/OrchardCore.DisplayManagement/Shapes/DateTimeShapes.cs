@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Modules.Services;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -14,18 +13,15 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
-        private readonly ILocalCulture _localCulture;
 
         public DateTimeShapes(
             IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
-            ILocalClock localClock,
-            ILocalCulture localCulture
+            ILocalClock localClock
             )
         {
             _localClock = localClock;
             _clock = clock;
-            _localCulture = localCulture;
             T = localizer;
         }
 
@@ -84,9 +80,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             Utc = Utc ?? _clock.UtcNow;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
-            var currentCulture = await _localCulture.GetLocalCultureAsync();
 
-            return Html.Raw(Html.Encode(zonedTime.ToString("F", currentCulture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString("F", CultureInfo.CurrentUICulture)));
         }
     }
 

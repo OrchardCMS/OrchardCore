@@ -9,10 +9,10 @@
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
-    <PackageReference Include="YesSql.Core" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
     <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
   </ItemGroup>

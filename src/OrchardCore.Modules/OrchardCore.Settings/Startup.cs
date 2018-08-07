@@ -6,8 +6,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
-using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -40,10 +38,6 @@ namespace OrchardCore.Settings
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
-            services.AddScoped<ICultureStore, CultureStore>();
-            services.AddScoped<ICultureManager, CultureManager>();
-
-            services.AddOrderedRequestCultureProvider(new DefaultRequestCultureProvider(), -10);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

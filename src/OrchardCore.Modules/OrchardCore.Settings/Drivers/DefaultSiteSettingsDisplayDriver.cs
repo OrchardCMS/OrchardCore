@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Localization.Services;
-using OrchardCore.Modules.Services;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
@@ -13,16 +11,6 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
-        private readonly ICultureManager _cultureManager;
-        private readonly ILocalCulture _localCulture;
-
-        public DefaultSiteSettingsDisplayDriver(
-            ICultureManager cultureManager,
-            ILocalCulture localCulture)
-        {
-            _cultureManager = cultureManager;
-            _localCulture = localCulture;
-        }
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
@@ -33,8 +21,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.Culture = site.Culture;
-                        model.SiteCultures = _cultureManager.ListCultures().Result?.Select(x => CultureInfo.GetCultureInfo(x.CultureName));
-                        model.LocalizationEnabled = _localCulture.IsLocalizationEnabled();
+                        model.SiteCultures = site.SupportedCultures.Select(x => CultureInfo.GetCultureInfo(x));
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
@@ -50,10 +37,7 @@ namespace OrchardCore.Settings.Drivers
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    if (_localCulture.IsLocalizationEnabled())
-                    {
-                        site.Culture = model.Culture;
-                    }
+                    site.Culture = model.Culture;
                 }
             }
 
