@@ -25,11 +25,20 @@ namespace OrchardCore.Localization
         {
             var siteSettings = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-            var options = new RequestLocalizationOptions()
-                .SetDefaultCulture(siteSettings.Culture)
-                .AddSupportedCultures(siteSettings.SupportedCultures)
-                .AddSupportedUICultures(siteSettings.SupportedCultures)
-                ;
+            var options = new RequestLocalizationOptions();
+
+            if (!String.IsNullOrEmpty(siteSettings.Culture))
+            {
+                options.SetDefaultCulture(siteSettings.Culture);
+            }
+
+            if (siteSettings.SupportedCultures.Length > 0)
+            {
+                options
+                    .AddSupportedCultures(siteSettings.SupportedCultures)
+                    .AddSupportedUICultures(siteSettings.SupportedCultures)
+                    ;
+            }
 
             app.UseRequestLocalization(options);
         }

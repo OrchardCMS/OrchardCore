@@ -61,7 +61,7 @@ namespace OrchardCore.Settings.Services
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
                                 TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                                Culture = "en-us"
+                                Culture = ""
                             };
 
                             session.Save(site);
