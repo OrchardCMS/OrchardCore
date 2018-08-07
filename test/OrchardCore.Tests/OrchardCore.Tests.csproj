@@ -41,6 +41,7 @@
   <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
@@ -53,7 +54,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj">
+      <Aliases></Aliases>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
