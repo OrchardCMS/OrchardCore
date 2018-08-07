@@ -27,6 +27,7 @@ namespace OrchardCore.Localization
 
             var options = new RequestLocalizationOptions();
 
+            // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
             if (!String.IsNullOrEmpty(siteSettings.Culture))
             {
                 options.SetDefaultCulture(siteSettings.Culture);

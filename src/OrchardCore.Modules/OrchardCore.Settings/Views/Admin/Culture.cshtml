@@ -14,10 +14,8 @@
                 <select name="SystemCultureName" class="form-control">
                     @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
                     {
-                        <option value="@culture.Name" selected="@(Model.CurrentCulture == culture.Name)">
-                            @if (!String.IsNullOrEmpty(culture.Name))
-                            {<text>@culture.Name | </text>}
-                            @culture.DisplayName
+                        <option value="@culture.Name" selected="@String.Equals(Model.CurrentCulture, culture.Name, StringComparison.OrdinalIgnoreCase)">
+                            @culture.Name | @culture.DisplayName
                         </option>
                     }
                 </select>
