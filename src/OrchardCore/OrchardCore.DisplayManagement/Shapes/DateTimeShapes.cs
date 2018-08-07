@@ -11,6 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class DateTimeShapes : IShapeAttributeProvider
     {
+        private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
 
@@ -81,7 +82,14 @@ namespace OrchardCore.DisplayManagement.Shapes
             Utc = Utc ?? _clock.UtcNow;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
 
-            return Html.Raw(Html.Encode(zonedTime.ToString("F", CultureInfo.CurrentUICulture)));
+            if (Format == null)
+            {
+                // We use the Plural localizer so we don't need to resolve another one.
+                // Internally it will use the string localizer by passing 0 as count.
+                Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
+            }
+
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
         }
     }
 
