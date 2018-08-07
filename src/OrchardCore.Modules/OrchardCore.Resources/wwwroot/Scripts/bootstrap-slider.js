@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  10.0.2              
+                      VERSION  10.2.0              
 ========================================================= */
 "use strict";
 
@@ -293,11 +293,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			logarithmic: {
 				/* Based on http://stackoverflow.com/questions/846221/logarithmic-slider */
 				toValue: function toValue(percentage) {
-					var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
-					var max = Math.log(this.options.max);
-					var value = Math.exp(min + (max - min) * percentage / 100);
-					if (Math.round(value) === this.options.max) {
-						return this.options.max;
+					var offset = 1 - this.options.min;
+					var min = Math.log(this.options.min + offset);
+					var max = Math.log(this.options.max + offset);
+					var value = Math.exp(min + (max - min) * percentage / 100) - offset;
+					if (Math.round(value) === max) {
+						return max;
 					}
 					value = this.options.min + Math.round((value - this.options.min) / this.options.step) * this.options.step;
 					/* Rounding to the nearest step could exceed the min or
@@ -314,9 +315,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					if (this.options.max === this.options.min) {
 						return 0;
 					} else {
-						var max = Math.log(this.options.max);
-						var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
-						var v = value === 0 ? 0 : Math.log(value);
+						var offset = 1 - this.options.min;
+						var max = Math.log(this.options.max + offset);
+						var min = Math.log(this.options.min + offset);
+						var v = Math.log(value + offset);
 						return 100 * (v - min) / (max - min);
 					}
 				}
