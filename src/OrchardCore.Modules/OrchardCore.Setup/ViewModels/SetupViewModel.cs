@@ -41,6 +41,8 @@ namespace OrchardCore.Setup.ViewModels
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
+        public bool RecipeNamePreset { get; set; }
+
         public string RecipeName { get; set; }
 
         public string SiteTimeZone { get; set; }

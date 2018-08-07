@@ -85,7 +85,9 @@
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
-        <fieldset class="form-group col-md-4">
+        @if (!Model.RecipeNamePreset)
+        {
+            <fieldset class="form-group col-md-4">
             <input type="hidden" asp-for="RecipeName" required />
             <nav>
                 <div asp-validation-class-for="RecipeName">
@@ -117,6 +119,7 @@
                 </div>
             </nav>
         </fieldset>
+        }
         <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone">@T["Default Time Zone"] <span asp-validation-for="SiteTimeZone"></span></label>
             <select asp-for="SiteTimeZone" class="form-control">

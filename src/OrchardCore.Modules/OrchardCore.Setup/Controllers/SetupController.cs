@@ -56,6 +56,12 @@ namespace OrchardCore.Setup.Controllers
                 model.ConnectionString = _shellSettings.ConnectionString;
             }
 
+            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                model.RecipeNamePreset = true;
+                model.RecipeName = _shellSettings.RecipeName;
+            }
+
             if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
             {
                 model.DatabaseConfigurationPreset = true;
@@ -102,8 +108,15 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-
-            if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName);
+                if (selectedRecipe == null)
+                {
+                    ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                }
+            }
+            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
             }
@@ -125,7 +138,7 @@ namespace OrchardCore.Setup.Controllers
                 SiteTimeZone = model.SiteTimeZone
             };
 
-            if (model.DatabaseConfigurationPreset)
+            if (!string.IsNullOrEmpty(_shellSettings.ConnectionString))
             {
                 setupContext.DatabaseProvider = _shellSettings.DatabaseProvider;
                 setupContext.DatabaseConnectionString = _shellSettings.ConnectionString;
