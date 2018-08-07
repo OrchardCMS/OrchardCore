@@ -34,6 +34,14 @@ namespace OrchardCore.OpenId.ViewModels
                 .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
         }
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var validator = new OpenIdUrlValidator();
+
+            return validator.ValidateUrls(nameof(RedirectUris), RedirectUris)
+                .Union(validator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
+        }
+
         public class RoleEntry
         {
             public string Name { get; set; }
