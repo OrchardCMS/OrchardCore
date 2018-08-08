@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
@@ -13,12 +14,18 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
         private readonly INotifier _notifier;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
 
         public DefaultSiteSettingsDisplayDriver(
             INotifier notifier,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             IHtmlLocalizer<DefaultSiteSettingsDisplayDriver> h)
         {
             _notifier = notifier;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             H = h;
         }
 
@@ -54,10 +61,10 @@ namespace OrchardCore.Settings.Drivers
                     site.Culture = model.Culture;
                 }
 
-                if (site.Culture != previousCulture)
-                {
-                    _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
-                }
+                // We always reset the tenant for the default culture and supported cultures to take effect
+                _shellHost.ReloadShellContext(_shellSettings);
+
+                _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
             }
 
             return Edit(site);
