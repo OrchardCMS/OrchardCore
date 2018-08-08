@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
-using OrchardCore.Localization.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

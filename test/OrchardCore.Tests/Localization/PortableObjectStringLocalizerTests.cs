@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
-using OrchardCore.Localization.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Localization

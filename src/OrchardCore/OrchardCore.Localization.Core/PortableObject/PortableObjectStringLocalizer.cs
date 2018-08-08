@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Localization.Services;
 
 namespace OrchardCore.Localization.PortableObject
 {
