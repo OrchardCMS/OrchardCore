@@ -49,8 +49,6 @@ namespace OrchardCore.Settings.Drivers
         {
             if (context.GroupId == GroupId)
             {
-                var previousCulture = site.Culture;
-
                 var model = new SiteSettingsViewModel();
 
                 if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone, t => t.Culture))
