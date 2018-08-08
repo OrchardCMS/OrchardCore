@@ -50,27 +50,7 @@ namespace OrchardCore.Setup.Controllers
                 RecipeName = defaultRecipe?.Name
             };
 
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
-            {
-                model.RecipeNamePreset = true;
-                model.RecipeName = _shellSettings.RecipeName;
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
-            }
-            else
-            {
-                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
-            }
+            CopyShellSettingsValues(model);
 
             if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
             {
@@ -110,7 +90,7 @@ namespace OrchardCore.Setup.Controllers
             RecipeDescriptor selectedRecipe = null;
             if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
             {
-                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName);
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings.RecipeName);
                 if (selectedRecipe == null)
                 {
                     ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
@@ -123,6 +103,7 @@ namespace OrchardCore.Setup.Controllers
 
             if (!ModelState.IsValid)
             {
+                CopyShellSettingsValues(model);
                 return View(model);
             }
 
@@ -166,5 +147,31 @@ namespace OrchardCore.Setup.Controllers
 
             return Redirect("~/");
         }
+
+        private void CopyShellSettingsValues(SetupViewModel model)
+        {
+            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.ConnectionString = _shellSettings.ConnectionString;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                model.RecipeNamePreset = true;
+                model.RecipeName = _shellSettings.RecipeName;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+            }
+            else
+            {
+                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            }
+        }
+
     }
 }
