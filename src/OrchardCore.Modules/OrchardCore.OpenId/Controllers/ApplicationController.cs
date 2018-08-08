@@ -169,7 +169,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var openIdServerSettings = await GetServerSettingsAsync();
 
-            if (openIdServerSettings.EnableLogoutEndpoint)
+            if (model.AllowLogoutEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
@@ -252,6 +252,7 @@ namespace OrchardCore.OpenId.Controllers
                 AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit),
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
+                AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
                 ClientId = await _applicationManager.GetClientIdAsync(application),
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
@@ -350,9 +351,7 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.ClientSecret = null;
             }
 
-            var openIdServerSettings = await GetServerSettingsAsync();
-
-            if (openIdServerSettings.EnableLogoutEndpoint)
+            if (model.AllowLogoutEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
             }

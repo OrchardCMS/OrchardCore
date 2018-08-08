@@ -64,6 +64,10 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
+            if (model.AllowRefreshTokenFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
             if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
                 model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
             {
