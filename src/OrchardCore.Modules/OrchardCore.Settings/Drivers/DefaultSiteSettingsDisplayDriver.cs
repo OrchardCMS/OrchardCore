@@ -61,7 +61,7 @@ namespace OrchardCore.Settings.Drivers
                     site.Culture = model.Culture;
                 }
 
-                // We always reset the tenant for the default culture and supported cultures to take effect
+                // We always reset the tenant for the default culture and also supported cultures to take effect
                 _shellHost.ReloadShellContext(_shellSettings);
 
                 _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
