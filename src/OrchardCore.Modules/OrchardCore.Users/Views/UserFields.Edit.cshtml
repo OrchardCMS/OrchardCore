@@ -1,11 +1,9 @@
 @model EditUserViewModel
 @using OrchardCore.Entities
-@using OrchardCore.Settings
 @using OrchardCore.Users.Models
-@inject ISiteService Site
 
 @{
-    var usersMustValidateEmail = (await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail;
+    var usersMustValidateEmail = (await Site).As<RegistrationSettings>().UsersMustValidateEmail;
 }
 
 <input asp-for="Id" type="hidden" />
@@ -34,7 +32,7 @@
         </div>
     </div>
 </div>
-@if ((await Site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
+@if ((await Site).As<RegistrationSettings>().UsersMustValidateEmail)
 {
     <div class="form-group col-md-3">
         <div class="form-check">
