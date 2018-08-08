@@ -10,6 +10,8 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.ReCaptcha.Core;
+using OrchardCore.ReCaptcha.Core.ActionFilters;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -56,6 +58,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateReCaptcha]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
@@ -107,6 +110,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [ValidateReCaptcha]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
