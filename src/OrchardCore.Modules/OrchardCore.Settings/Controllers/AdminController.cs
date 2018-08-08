@@ -119,8 +119,6 @@ namespace OrchardCore.Settings.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCulture(string systemCultureName, string cultureName)
         {
-            // // 
-
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
             {
                 return Unauthorized();
@@ -133,6 +131,8 @@ namespace OrchardCore.Settings.Controllers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
+
+                _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
             }
             else
             {
@@ -153,6 +153,8 @@ namespace OrchardCore.Settings.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
+
+            _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
 
             return RedirectToAction("Culture");
         }

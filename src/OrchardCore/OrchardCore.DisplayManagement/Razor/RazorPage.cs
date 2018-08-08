@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -31,6 +32,7 @@ namespace OrchardCore.DisplayManagement.Razor
         Task<IHtmlContent> RenderSectionAsync(string name, bool required);
         object OrDefault(object text, object other);
         string FullRequestPath { get; }
+        Task<ISite> Site { get; }
     }
 
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
@@ -38,6 +40,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private OrchardRazorHelper _orchardHelper;
+        private Task<ISite> _site;
 
         private void EnsureDisplayHelper()
         {
@@ -62,6 +65,14 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 EnsureDisplayHelper();
                 _orchardHelper = new OrchardRazorHelper(Context, _displayHelper);
+            }
+        }
+
+        private void EnsureSite()
+        {
+            if (_site == null)
+            {
+                _site = Context.RequestServices.GetService<ISiteService>().GetSiteSettingsAsync();
             }
         }
 
@@ -301,6 +312,18 @@ namespace OrchardCore.DisplayManagement.Razor
         /// Returns the full path of the current request.
         /// </summary>
         public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
+
+        /// <summary>
+        /// Gets the <see cref="ISite"/> instance.
+        /// </summary>
+        public Task<ISite> Site
+        {
+            get
+            {
+                EnsureSite();
+                return _site;
+            }
+        }
     }
 
     public abstract class RazorPage : RazorPage<dynamic>
