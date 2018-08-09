@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Razor
         Task<IHtmlContent> RenderSectionAsync(string name, bool required);
         object OrDefault(object text, object other);
         string FullRequestPath { get; }
-        Task<ISite> Site { get; }
+        ISite Site { get; }
     }
 
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
@@ -40,7 +40,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private OrchardRazorHelper _orchardHelper;
-        private Task<ISite> _site;
+        private ISite _site;
 
         private void EnsureDisplayHelper()
         {
@@ -65,14 +65,6 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 EnsureDisplayHelper();
                 _orchardHelper = new OrchardRazorHelper(Context, _displayHelper);
-            }
-        }
-
-        private void EnsureSite()
-        {
-            if (_site == null)
-            {
-                _site = Context.RequestServices.GetService<ISiteService>().GetSiteSettingsAsync();
             }
         }
 
@@ -316,11 +308,15 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <summary>
         /// Gets the <see cref="ISite"/> instance.
         /// </summary>
-        public Task<ISite> Site
+        public ISite Site
         {
             get
             {
-                EnsureSite();
+                if (_site == null)
+                {
+                    _site = (ISite)Context.Items[typeof(ISite)];
+                }
+
                 return _site;
             }
         }
