@@ -6,7 +6,7 @@ namespace OrchardCore.Modules
     /// <summary>
     /// Adds the X-Powered-By header with values OrchardCore.
     /// </summary>
-    internal class PoweredByMiddleware
+    public class PoweredByMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IPoweredByMiddlewareOptions _options;

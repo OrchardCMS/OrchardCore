@@ -28,8 +28,4 @@
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Settings\" />
-  </ItemGroup>
-
 </Project>
