@@ -22,7 +22,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;

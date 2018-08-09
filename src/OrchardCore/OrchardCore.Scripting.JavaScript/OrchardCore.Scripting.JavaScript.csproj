@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Scripting.Abstractions\OrchardCore.Scripting.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Jint" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

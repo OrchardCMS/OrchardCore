@@ -5,8 +5,4 @@
     <RootNamespace>OrchardCore.Users</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -8,7 +8,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
 using OrchardCore.Lucene.Recipes;

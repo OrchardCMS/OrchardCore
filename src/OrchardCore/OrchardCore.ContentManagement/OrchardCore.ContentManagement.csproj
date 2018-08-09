@@ -5,10 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Environment.Cache.Abstractions\OrchardCore.Environment.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
   </ItemGroup>
 

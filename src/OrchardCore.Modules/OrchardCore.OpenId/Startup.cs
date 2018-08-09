@@ -15,7 +15,7 @@ using OpenIddict.Validation;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;

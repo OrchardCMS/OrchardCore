@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 
 namespace OrchardCore.Recipes

@@ -1,4 +1,4 @@
-﻿using OrchardCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting.JavaScript;
 

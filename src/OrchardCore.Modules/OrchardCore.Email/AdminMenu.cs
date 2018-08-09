@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Email
 {

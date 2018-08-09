@@ -14,7 +14,7 @@ using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Mvc;
 using OrchardCore.Mvc.RazorPages;

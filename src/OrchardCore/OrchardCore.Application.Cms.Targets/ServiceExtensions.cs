@@ -1,4 +1,7 @@
 using System;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.ResourceManagement.Filters;
+using OrchardCore.ResourceManagement.TagHelpers;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -33,9 +36,21 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 .AddTheming()
                 .AddLiquidViews()
-                .AddResourceManagement()
-                .AddGeneratorTagFilter()
                 .AddCaching();
+
+            // OrchardCoreBuilder is not available in OrchardCore.ResourceManagement as it has to
+            // remain independent from OrchardCore.
+            builder.ConfigureServices(s =>
+            {
+                s.AddResourceManagement();
+                s.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
+
+                s.Configure<MvcOptions>((options) =>
+                {
+                    options.Filters.Add(typeof(MetaGeneratorFilter));
+                });
+            });
+
 
             configure?.Invoke(builder);
 

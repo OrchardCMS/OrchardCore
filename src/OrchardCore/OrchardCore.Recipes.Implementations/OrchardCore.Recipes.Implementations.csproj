@@ -6,12 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.DeferredTasks.Abstractions\OrchardCore.DeferredTasks.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Environment.Shell.Abstractions\OrchardCore.Environment.Shell.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Scripting.Abstractions\OrchardCore.Scripting.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

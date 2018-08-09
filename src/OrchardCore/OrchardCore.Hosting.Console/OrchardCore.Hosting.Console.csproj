@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Environment.Commands\OrchardCore.Environment.Commands.csproj" />
+    <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
