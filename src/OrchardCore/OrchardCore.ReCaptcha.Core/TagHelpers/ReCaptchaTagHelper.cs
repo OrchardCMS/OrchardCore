@@ -61,7 +61,7 @@ namespace OrchardCore.ReCaptcha.Core.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             var builder = new TagBuilder("script");
-            builder.Attributes.Add("src", Constants.ReCaptchaScriptUri);
+            builder.Attributes.Add("src", _settings.ReCaptchaScriptUri);
             _resourceManager.RegisterFootScript(builder);
         }
     }

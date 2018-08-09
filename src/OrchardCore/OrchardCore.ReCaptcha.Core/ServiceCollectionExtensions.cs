@@ -12,18 +12,24 @@ namespace OrchardCore.ReCaptcha.Core
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddReCaptcha(this IServiceCollection services)
+        public static IServiceCollection AddReCaptcha(this IServiceCollection services, Action<ReCaptchaSettings> configure = null)
         {
             services.AddHttpClient<IReCaptchaClient, ReCaptchaClient>(client =>
-                {
-                    const string noCaptchaUrl = Constants.ReCaptchaApiUri;
-                    client.BaseAddress = new Uri(noCaptchaUrl);
-                })
-                .AddTransientHttpErrorPolicy(policy => 
-                    policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
+            {
+                var settings = services
+                    .BuildServiceProvider()
+                    .GetRequiredService<IOptions<ReCaptchaSettings>>();
+
+                client.BaseAddress = new Uri(settings.Value.ReCaptchaApiUri);
+            })
+            .AddTransientHttpErrorPolicy(policy => 
+                policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
 
             services.AddTransient<IDetectAbuse, IpAddressAbuseDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
+
+            if (configure != null)
+                services.Configure(configure);
 
             return services;
         }

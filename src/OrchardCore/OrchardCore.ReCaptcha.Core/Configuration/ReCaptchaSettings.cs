@@ -6,6 +6,10 @@ namespace OrchardCore.ReCaptcha.Core.Configuration
         
         public string SecretKey { get; set; }
 
+        public string ReCaptchaScriptUri { get; set; } = Constants.ReCaptchaScriptUri;
+
+        public string ReCaptchaApiUri { get; set; } = Constants.ReCaptchaApiUri;
+
         public bool IsValid()
         {
             return !string.IsNullOrWhiteSpace(SiteKey) && !string.IsNullOrWhiteSpace(SecretKey);
