@@ -12,7 +12,7 @@
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "landingContentItemId": "[js:uuid()]"
-    // "now": "[js: Date().toISOString()]"
+    // "now": "[js: new Date().toISOString()]"
   },
 
   "steps": [
