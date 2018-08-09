@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -11,19 +12,17 @@ namespace OrchardCore.DisplayManagement.Razor
     /// </summary>
     public class SiteViewResultFilter : IAsyncResultFilter
     {
-        private readonly ISiteService _siteService;
-
-        public SiteViewResultFilter(ISiteService siteService)
-        {
-            _siteService = siteService;
-        }
-
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-
             if (!context.HttpContext.Items.ContainsKey(typeof(ISite)))
             {
-                context.HttpContext.Items.Add(typeof(ISite), await _siteService.GetSiteSettingsAsync());
+                var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
+
+                // siteService can be null during Setup
+                if (siteService != null)
+                {
+                    context.HttpContext.Items.Add(typeof(ISite), await siteService.GetSiteSettingsAsync());
+                }
             }
 
             await next();
