@@ -3,7 +3,7 @@
 @using OrchardCore.Users.Models
 
 @{
-    var usersMustValidateEmail = (await Site).As<RegistrationSettings>().UsersMustValidateEmail;
+    var usersMustValidateEmail = Site.As<RegistrationSettings>().UsersMustValidateEmail;
 }
 
 <input asp-for="Id" type="hidden" />
@@ -32,7 +32,7 @@
         </div>
     </div>
 </div>
-@if ((await Site).As<RegistrationSettings>().UsersMustValidateEmail)
+@if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
     <div class="form-group col-md-3">
         <div class="form-check">
