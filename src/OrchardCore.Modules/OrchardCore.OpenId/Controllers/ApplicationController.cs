@@ -167,8 +167,6 @@ namespace OrchardCore.OpenId.Controllers
                 Type = model.Type
             };
 
-            var openIdServerSettings = await GetServerSettingsAsync();
-
             if (model.AllowLogoutEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
