@@ -2,7 +2,7 @@
 @using OpenIddict.Abstractions;
 @using OrchardCore.OpenId.ViewModels;
 @using OrchardCore.OpenId.Settings;
-@{ 
+@{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
 <h1>@RenderTitleSegments(T["Create a new application"])</h1>
@@ -95,60 +95,61 @@
             <span asp-validation-for="RedirectUris" class="text-danger">@T["The Redirect Uri is required."]</span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
-        <div class="form-check">
-            <div asp-validation-class-for="AllowLogoutEndpoint">
-                <label class="form-check-label">
-                    <input asp-for="AllowLogoutEndpoint" type="checkbox" data-toggle="collapse" data-target="#postLogoutRedirectUrisGroup" class="form-check-input" checked="@Model.AllowLogoutEndpoint" />
-                    @T["Enable Logout Endpoint"]
-                </label>
-            </div>
-        </div>
-            <div class="form-group collapse" id="postLogoutRedirectUrisGroup" name="postLogoutRedirectUrisGroup">
-                <div asp-validation-class-for="PostLogoutRedirectUris">
+        <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
+            <fieldset class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input asp-for="AllowLogoutEndpoint" type="checkbox" data-toggle="collapse" data-target="#postLogoutRedirectUris" class="form-check-input" checked="@Model.AllowLogoutEndpoint" />
+                        @T["Allow Logout Endpoint"]
+                    </label>
+                </div>
+            </fieldset>
+            <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
+                <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
                     <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uri"]</label>
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                 </div>
             </div>
-
-            <div class="form-group" asp-validation-class-for="ConsentType">
-                <label asp-for="ConsentType">@T["Consent type"]</label>
-                <select asp-for="ConsentType" class="form-control">
-                    <option value="@OpenIddictConstants.ConsentTypes.Explicit">@T["Explicit consent"]</option>
-                    <option value="@OpenIddictConstants.ConsentTypes.Implicit">@T["Implicit consent"]</option>
-                    <option value="@OpenIddictConstants.ConsentTypes.External">@T["External consent"]</option>
-                </select>
-                <div class="hint">
-                    @T["The consent type affects the way authorization requests are handled."]
-                    <ul>
-                        <li>When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong></li>
-                        <li>When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed.</li>
-                        <li>When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programatically) already exists.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group collapse" id="RoleGroup" name="RoleGroup">
-            <h6>@T["Client Credentials Roles"]</h6>
-            @for (var i = 0; i < Model.RoleEntries.Count; i++)
-            {
-                <div class="form-check">
-                    <label class="form-check-label" asp-for="RoleEntries[i].Selected">
-                        <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
-                        <input type="hidden" asp-for="RoleEntries[i].Name" />
-                        @Model.RoleEntries[i].Name
-                    </label>
-                </div>
-            }
-        </div>
-
-        <fieldset>
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit">@T["Save"]</button>
-                <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-            </div>
         </fieldset>
+        <div class="form-group" asp-validation-class-for="ConsentType">
+            <label asp-for="ConsentType">@T["Consent type"]</label>
+            <select asp-for="ConsentType" class="form-control">
+                <option value="@OpenIddictConstants.ConsentTypes.Explicit">@T["Explicit consent"]</option>
+                <option value="@OpenIddictConstants.ConsentTypes.Implicit">@T["Implicit consent"]</option>
+                <option value="@OpenIddictConstants.ConsentTypes.External">@T["External consent"]</option>
+            </select>
+            <div class="hint">
+                @T["The consent type affects the way authorization requests are handled."]
+                <ul>
+                    <li>When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong></li>
+                    <li>When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed.</li>
+                    <li>When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programatically) already exists.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group collapse" id="RoleGroup" name="RoleGroup">
+        <h6>@T["Client Credentials Roles"]</h6>
+        @for (var i = 0; i < Model.RoleEntries.Count; i++)
+        {
+            <div class="form-check">
+                <label class="form-check-label" asp-for="RoleEntries[i].Selected">
+                    <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
+                    <input type="hidden" asp-for="RoleEntries[i].Name" />
+                    @Model.RoleEntries[i].Name
+                </label>
+            </div>
+        }
+    </div>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </fieldset>
 </form>
 <script at="Foot" type="text/javascript">
     //<![CDATA[
@@ -157,8 +158,6 @@
         refreshClientSecret('@OpenIddictConstants.ClientTypes.Confidential');
         refreshFlows();
         refreshOfflineAccessTip(false);
-        refreshEnableLogoutEndpointVisibility();
-
 
         function refreshForbiddenFlows() {
             @if (settings == null)
@@ -169,7 +168,6 @@
                     $("#AllowPasswordFlowFieldSet").collapse("show");
                     $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
 
             }
@@ -216,13 +214,12 @@
                         $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
                         $("#AllowRefreshTokenFlow").prop("checked", false);
                     }
-
                     if (@(settings.EnableLogoutEndpoint.ToString().ToLower()) == true) {
                         $("#AllowLogoutEndpointFieldSet").collapse("show");
                     }
                     else {
                         $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                        $("#AllowLogoutEndpoint").prop("checked", false);
+                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
                     }
                 </text>
             }
@@ -302,28 +299,25 @@
                 refreshOfflineAccessTip();
             }
         }
-        function refreshEnableLogoutEndpointVisibility() {
-            var allowLogoutEndpoint = $("#AllowLogoutEndpoint");
-
-            if ($("AllowLogoutEndpoint").prop('checked') ) {
-                allowLogoutEndpoint.removeAttr("disabled");
-            }
-            else {
-                allowLogoutEndpoint.attr('disabled', true);
-                allowLogoutEndpoint.prop("checked", false);
-            }
-        }
         function refreshRedirectSettings() {
-            refreshEnableLogoutEndpointVisibility();
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
+            var postLogoutRedirecUris = $("#postLogoutRedirectUris")
 
             if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 redirectSection.collapse("show");
+                if ($("#AllowLogoutEndpoint").prop('checked')) {
+                    postLogoutRedirecUris.collapse("show");
+                }
+                else {
+                    postLogoutRedirecUris.collapse("hide");
+                }
             }
             else {
                 skipConsent.prop("checked", false);
                 redirectSection.collapse("hide");
+                $("#AllowLogoutEndpoint").prop('checked', false);
+                postLogoutRedirecUris.collapse("hide");
             }
         }
     };
