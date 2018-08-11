@@ -74,7 +74,7 @@ namespace OrchardCore.Lucene
             );
 
             var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
-            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
+            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer, new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 
