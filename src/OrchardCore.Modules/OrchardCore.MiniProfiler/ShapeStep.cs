@@ -8,25 +8,33 @@ namespace OrchardCore.MiniProfiler
 {
     public class ShapeStep : IShapeDisplayEvents
     {
-        private Stack<IDisposable> _timings = new Stack<IDisposable>();
+        private Dictionary<object, IDisposable> _timings = new Dictionary<object, IDisposable>();
 
         public Task DisplayedAsync(ShapeDisplayContext context)
         {
+            if (_timings.TryGetValue(context, out IDisposable timing))
+            {
+                _timings.Remove(context);
+                timing.Dispose();
+            }
+
             return Task.CompletedTask;
         }
 
         public Task DisplayingAsync(ShapeDisplayContext context)
         {
             var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.ShapeMetadata.Type}");
-            _timings.Push(timing);
+            _timings.Add(context, timing);
             return Task.CompletedTask;
         }
 
         public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
         {
-            var timing = _timings.Pop();
-
-            timing?.Dispose();
+            if(_timings.TryGetValue(context, out IDisposable timing))
+            {
+                _timings.Remove(context);
+                timing.Dispose();
+            }
 
             return Task.CompletedTask;
         }
