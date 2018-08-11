@@ -58,13 +58,6 @@ namespace OrchardCore.Lucene
 
         public void CreateIndex(string indexName)
         {
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            if (!path.Exists)
-            {
-                path.Create();
-            }
-
             Write(indexName, _ => { }, true);
         }
 
@@ -302,8 +295,6 @@ namespace OrchardCore.Lucene
         {
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
                 var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(directory);
                 return new IndexReaderPool(reader);
