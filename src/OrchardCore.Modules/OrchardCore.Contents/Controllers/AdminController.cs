@@ -434,7 +434,7 @@ namespace OrchardCore.Contents.Controllers
         {            
             if (submitSave == "submit.SaveAndContinue")
             {
-                returnUrl = Request.Path.Add(Request.QueryString);
+                returnUrl = Request.PathBase + Request.Path.Add(Request.QueryString);
             }
 
             return EditPOST(contentItemId, returnUrl, contentItem =>
@@ -468,7 +468,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (submitPublish == "submit.PublishAndContinue")
             {
-                returnUrl = Request.Path.Add(Request.QueryString);
+                returnUrl = Request.PathBase + Request.Path.Add(Request.QueryString);
             }
 
 
