@@ -1,20 +1,20 @@
-@model OrchardCore.ContentFields.ViewModels.EditYoutubeVideoFieldViewModel;
+@model OrchardCore.ContentFields.ViewModels.EditYoutubeFieldViewModel;
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeVideoFieldSettings>();
+    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
 }
 
 @{
     // Morph the current shape to the correct editor shape based on its Editor property
     var shape = Model as OrchardCore.DisplayManagement.IShape;
     shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "YoutubeVideoField_Editor";
+    shape.Metadata.Type = "YoutubeField_Editor";
 
     if (!String.IsNullOrEmpty(settings.Editor))
     {
-        shape.Metadata.Alternates.Add($"YoutubeVideoField_Editor__{settings.Editor}");
+        shape.Metadata.Alternates.Add($"YoutubeField_Editor__{settings.Editor}");
     }
 }
 

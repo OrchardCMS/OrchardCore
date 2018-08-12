@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentFields.Settings
 {
-    public class YoutubeVideoFieldSettings
+    public class YoutubeFieldSettings
     {
         public string Hint { get; set; }
         public string Label { get; set; }

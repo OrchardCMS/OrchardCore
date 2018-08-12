@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.ViewModels
 {
-    public class EditYoutubeVideoFieldViewModel : YoutubeVideoFieldDisplayViewModel
+    public class EditYoutubeFieldViewModel : YoutubeFieldDisplayViewModel
     {
         [Required(ErrorMessage = "Youtube field is required")]
         [DataType(DataType.Url, ErrorMessage = "The field only accepts Urls")]

@@ -7,9 +7,9 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.ViewModels
 {
-    public class YoutubeVideoFieldDisplayViewModel
+    public class YoutubeFieldDisplayViewModel
     {
-        public YoutubeVideoField Field { get; set; }
+        public YoutubeField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     }

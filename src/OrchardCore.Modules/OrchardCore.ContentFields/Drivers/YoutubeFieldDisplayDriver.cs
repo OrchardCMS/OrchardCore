@@ -12,12 +12,12 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class YoutubeVideoFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeVideoField>
+    public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
 
-        public override IDisplayResult Display(YoutubeVideoField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
-            return Initialize<YoutubeVideoFieldDisplayViewModel>("YoutubeVideoField", model =>
+            return Initialize<YoutubeFieldDisplayViewModel>("YoutubeField", model =>
            {
                model.Field = field;
                model.Part = context.ContentPart;
@@ -25,9 +25,9 @@ namespace OrchardCore.ContentFields.Fields
            }).Location("Content").Location("SummaryAdmin", "");
         }
 
-        public override IDisplayResult Edit(YoutubeVideoField field, BuildFieldEditorContext context)
+        public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditYoutubeVideoFieldViewModel>("YoutubeVideoField_Edit", model =>
+            return Initialize<EditYoutubeFieldViewModel>("YoutubeField_Edit", model =>
            {
                model.RawAddress = field.RawAddress;
                model.EmbeddedAddress = field.EmbeddedAddress;
@@ -37,9 +37,9 @@ namespace OrchardCore.ContentFields.Fields
            });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(YoutubeVideoField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            EditYoutubeVideoFieldViewModel model = new EditYoutubeVideoFieldViewModel();
+            EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
 
             await updater.TryUpdateModelAsync(model, Prefix);
 

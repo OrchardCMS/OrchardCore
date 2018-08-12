@@ -1,9 +1,9 @@
-@model OrchardCore.ContentFields.ViewModels.YoutubeVideoFieldDisplayViewModel
+@model OrchardCore.ContentFields.ViewModels.YoutubeFieldDisplayViewModel
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentFields.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeVideoFieldSettings>();
+    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
     int width = settings.Width != default(int) ? settings.Width : 640;
     int height = settings.Height != default(int) ? settings.Height : 640;

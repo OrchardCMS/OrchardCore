@@ -1,9 +1,9 @@
-@model OrchardCore.ContentFields.ViewModels.EditYoutubeVideoFieldViewModel;
+@model OrchardCore.ContentFields.ViewModels.EditYoutubeFieldViewModel;
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeVideoFieldSettings>();
+    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
 }
 
 <fieldset class="form-group">
