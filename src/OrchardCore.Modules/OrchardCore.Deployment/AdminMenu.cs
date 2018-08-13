@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using System;
 
@@ -26,6 +26,11 @@ namespace OrchardCore.Deployment
                         .Add(T["Deployment Plans"], "5", deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Export)
+                            .LocalNav()
+                        )
+                        .Add(T["Package Import"], "5", deployment => deployment
+                            .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
+                            .Permission(Permissions.Import)
                             .LocalNav()
                         )
                     )

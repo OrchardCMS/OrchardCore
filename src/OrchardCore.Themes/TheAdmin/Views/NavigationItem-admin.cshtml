@@ -19,11 +19,11 @@
 
         if ((bool)Model.Selected)
         {
-            tag.InnerHtml.AppendHtml("<ul id=\"" + Model.GetHashCode() + "\" class=\"collapse show\" >");
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse show\" >");
         }
         else
         {
-            tag.InnerHtml.AppendHtml("<ul id=\"" + Model.GetHashCode() + "\" class=\"collapse\" >");
+            tag.InnerHtml.AppendHtml("<ul id=\"m" + Model.GetHashCode() + "\" class=\"collapse\" >");
         }
 
         foreach (var item in Model)

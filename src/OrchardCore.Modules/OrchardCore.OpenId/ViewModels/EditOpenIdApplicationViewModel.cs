@@ -26,6 +26,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
+        public bool AllowLogoutEndpoint { get; set; }
 
         public class RoleEntry
         {
