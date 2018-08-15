@@ -47,6 +47,11 @@ namespace OrchardCore.ContentFields.Fields
                     optionsSelected.Add(new OptionViewModel { DisplayName = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected });
                 }
 
+                if (settings.Editor == null)
+                {
+                    optionsSelected.Insert(0, new OptionViewModel { DisplayName = T["Select an option"].Value, Value = "null", Selected = false });
+                }
+
                 model.Value = field.Value;
                 model.Values = field.SelectedValues;
                 model.Options = optionsSelected;
@@ -64,17 +69,12 @@ namespace OrchardCore.ContentFields.Fields
             {
                 if (model.Value != null)
                 {
-                    field.Value = model.Value;
+                    field.Value = model.Value != "null" ? model.Value : null;
                 }
 
                 if (model.Options != null)
                 {
-                    field.SelectedValues = model.Options.Where(x => x.Selected == true)?.Select(s => s.Value).ToArray();
-                }
-
-                if (model.Values != null)
-                {
-                    field.SelectedValues = model.Values;
+                    field.SelectedValues = model.Options.Where(x => x.Selected == true).Count() > 0 ? model.Options.Where(x => x.Selected == true).Select(s => s.Value).ToArray() : null;
                 }
             }
 

@@ -1,5 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
     string required = settings.Required ? "required" : "";
@@ -7,6 +8,7 @@
 
 
 <fieldset class="form-group">
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
     @foreach (var option in Model.Options)
     {
         if (string.IsNullOrWhiteSpace(option.Value))

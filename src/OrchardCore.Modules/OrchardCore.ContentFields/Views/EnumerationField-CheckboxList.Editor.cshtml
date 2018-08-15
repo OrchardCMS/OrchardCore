@@ -1,24 +1,26 @@
 @model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
 }
 
 <fieldset class="form-group">
-
-    @for (var i = 0; i < Model.Options.Count(); i++)
-    {
-        if (!string.IsNullOrWhiteSpace(Model.Options[i].Value))
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+    <div>
+        @for (var i = 0; i < Model.Options.Count(); i++)
         {
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input type="hidden" asp-for="@Model.Options[i].Value" />
-                    <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].DisplayName]
-                </label>
-            </div>
+            if (!string.IsNullOrWhiteSpace(Model.Options[i].Value))
+            {
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="hidden" asp-for="@Model.Options[i].Value" />
+                        <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].DisplayName]
+                    </label>
+                </div>
+            }
         }
-    }
-
+    </div>
 
     @if (!String.IsNullOrEmpty(settings.Hint))
     {

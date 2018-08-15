@@ -1,19 +1,18 @@
 @model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
     string required = settings.Required ? "required" : "";
 }
 
+<fieldset class="form-group">
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
 
-    <fieldset class="form-group">
-        <label class="form-check-label">@settings.DisplayName</label>
-        <div asp-for="Value">
-            @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "DisplayName", Model.Value), new { @required = required, @class = "form-control" })
+    @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "DisplayName", Model.Value), new { @class = "form-control" })
 
-            @if (!String.IsNullOrEmpty(settings.Hint))
-            {
-                <span class="hint">@T["— {0}", settings.Hint]</span>
-            }
-        </div>
-    </fieldset>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>
