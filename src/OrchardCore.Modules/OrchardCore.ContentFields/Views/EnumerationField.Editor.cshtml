@@ -5,15 +5,15 @@
     string required = settings.Required ? "required" : "";
 }
 
-<div class="row">
-    <fieldset class="form-group form-check">
-        <label class="form-check-label" asp-for="Value">
+
+    <fieldset class="form-group">
+        <label class="form-check-label">@settings.DisplayName</label>
+        <div asp-for="Value">
             @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "DisplayName", Model.Value), new { @required = required, @class = "form-control" })
 
             @if (!String.IsNullOrEmpty(settings.Hint))
             {
                 <span class="hint">@T["— {0}", settings.Hint]</span>
             }
-        </label>
+        </div>
     </fieldset>
-</div>

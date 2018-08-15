@@ -5,10 +5,9 @@
     string required = settings.Required ? "required" : "";
 }
 
-<div class="row">
-    <fieldset class="form-group form-check">
-        <label class="form-check-label">
-
+    <fieldset class="form-group">
+        <label>@settings.DisplayName</label>
+        <div>
             <select class="form-control" asp-for="Values" asp-items="@(new SelectList(Model.Options,"Value","DisplayName", Model.Values))"></select>
 
             @if (!String.IsNullOrEmpty(settings.Hint))
@@ -17,4 +16,3 @@
             }
         </label>
     </fieldset>
-</div>
