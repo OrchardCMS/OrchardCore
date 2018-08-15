@@ -43,8 +43,8 @@ namespace OrchardCore.ContentFields.Fields
                 var optionsSelected = new List<OptionViewModel>();
                 foreach (var option in options)
                 {
-                    bool selected = field.SelectedValues.Contains(option);
-                    optionsSelected.Add(new OptionViewModel { Value = option, Selected = selected });
+                    bool selected = field.SelectedValues.Contains(option.Split('|').Last());
+                    optionsSelected.Add(new OptionViewModel { DisplayName = option.Split('|').First(), Value = option.Split('|').Last(), Selected = selected });
                 }
 
                 model.Value = field.Value;

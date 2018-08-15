@@ -9,7 +9,7 @@
     <fieldset class="form-group form-check">
         <label class="form-check-label">
 
-            <select class="form-control" asp-for="Values" asp-items="@(new SelectList(Model.Options,"Value","Value", Model.Values))"></select>
+            <select class="form-control" asp-for="Values" asp-items="@(new SelectList(Model.Options,"Value","DisplayName", Model.Values))"></select>
 
             @if (!String.IsNullOrEmpty(settings.Hint))
             {

@@ -21,7 +21,7 @@
         {
             <div class="form-check" asp-for="Value">
                 <label class="form-check-label">
-                    @Html.RadioButton("Value", option.Value, (option.Value == Model.Value), new { @required = required, @class = "form-check-input" })@option.Value
+                    @Html.RadioButton("Value", option.Value, (option.Value == Model.Value), new { @required = required, @class = "form-check-input" })@option.DisplayName
                 </label>
             </div>
         }

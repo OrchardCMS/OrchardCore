@@ -8,7 +8,7 @@
 <div class="row">
     <fieldset class="form-group form-check">
         <label class="form-check-label" asp-for="Value">
-            @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "Value", Model.Value), new { @required = required, @class = "form-control" })
+            @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "DisplayName", Model.Value), new { @required = required, @class = "form-control" })
 
             @if (!String.IsNullOrEmpty(settings.Hint))
             {

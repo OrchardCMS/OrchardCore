@@ -13,7 +13,7 @@
             <div class="form-check">
                 <label class="form-check-label">
                     <input type="hidden" asp-for="@Model.Options[i].Value" />
-                    <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].Value]
+                    <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].DisplayName]
                 </label>
             </div>
         }

@@ -16,6 +16,7 @@ namespace OrchardCore.ContentFields.ViewModels
     }
     public class OptionViewModel
     {
+        public string DisplayName { get; set; }
         public string Value { get; set; }
         public bool Selected { get; set; }
     }
