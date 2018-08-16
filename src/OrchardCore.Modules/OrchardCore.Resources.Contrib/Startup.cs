@@ -9,6 +9,7 @@ namespace OrchardCore.Resources.Contrib
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IResourceManifestProvider, AngularJs>();
+            serviceCollection.AddScoped<IResourceManifestProvider, jQueryExt>();
         }
     }
 }

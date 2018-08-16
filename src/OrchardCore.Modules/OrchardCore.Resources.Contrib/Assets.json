@@ -1,70 +1,74 @@
 [
-    
-    {
-        "inputs": [ "Assets/Js/jQuery/jquery.utils.js" ],
-        "output": "Scripts/jquery.utils.js"
-    },
-    {
-        "inputs": [ "Assets/Js/jQuery/jquery.plugin.js" ],
-        "output": "Scripts/jquery.plugin.js"
-    },
-    {
-        "inputs": [ "Assets/Js/jQuery/jquery.cookie.js" ],
-        "output": "Scripts/jquery.cookie.js"
-    },
-    {
-        "inputs": [ "Assets/Js/jQuery/jquery.iframe-transport.js" ],
-        "output": "Scripts/jquery.iframe-transport.js"
-    },
-    {
-        "inputs": [
-            "Assets/Js/FileUpload/jquery.iframe-transport.js",
-            "Assets/Js/FileUpload/jquery.fileupload.js",
-            "Assets/Js/FileUpload/jquery.fileupload-process.js",
-            "Assets/Js/FileUpload/jquery.fileupload-validate.js"
-        ],
-        "output": "Scripts/jquery.fileupload-full.js"
-    },
-    {
-        "inputs": [
-            "Assets/Js/Calendars/*.js"
-        ],
-        "output": "Scripts/Calendars/@.js"
-    },
-    {
-        "inputs": [
-            "Assets/Js/Calendars/jquery.calendars.picker.js",
-            "Assets/Js/Calendars/jquery.calendars.picker.ext.js"
-        ],
-        "output": "Scripts/Calendars/jquery.calendars.picker.full.js"
-    },
-    {
-        "inputs": [
-            "Assets/Css/Calendars/jquery.calendars.picker.css",
-            "Assets/Css/Calendars/ui.calendars.picker.css"
-        ],
-        "output": "Styles/Calendars/jquery.calendars.picker.full.css"
-    },
-    {
-        "inputs": [ "Assets/Css/TimeEntry/jquery.timeentry.css" ],
-        "output": "Styles/TimeEntry/jquery.timeentry.css"
-    },
-    {
-        "inputs": [ "Assets/Js/TimeEntry/jquery.timeentry.js" ],
-        "output": "Scripts/TimeEntry/jquery.timeentry.js"
-    },
-    {
-        "inputs": [ "Assets/Css/DateTimeEditor/jquery-datetime-editor.css" ],
-        "output": "Styles/jquery-datetime-editor.css"
-    },
-    {
-        "inputs": [ "Assets/Css/Colorbox/colorbox.css" ],
-        "output": "Styles/jquery.colorbox.css"
-    },
-    {
-        "inputs": [ "Assets/Js/Colorbox/jquery.colorbox.js" ],
-        "output": "Scripts/jquery.colorbox.js"
-    },
+
+  {
+    "inputs": [ "Assets/Js/jQuery/jquery.utils.js" ],
+    "output": "wwwroot/Scripts/jquery.utils.js"
+  },
+  {
+    "inputs": [ "Assets/Js/jQuery/jquery.plugin.js" ],
+    "output": "wwwroot/Scripts/jquery.plugin.js"
+  },
+  {
+    "inputs": [ "Assets/Js/jQuery/jquery.cookie.js" ],
+    "output": "wwwroot/Scripts/jquery.cookie.js"
+  },
+  {
+    "inputs": [ "Assets/Js/jQuery/jquery.iframe-transport.js" ],
+    "output": "wwwroot/Scripts/jquery.iframe-transport.js"
+  },
+  {
+    "inputs": [
+      "Assets/Js/FileUpload/jquery.iframe-transport.js",
+      "Assets/Js/FileUpload/jquery.fileupload.js",
+      "Assets/Js/FileUpload/jquery.fileupload-process.js",
+      "Assets/Js/FileUpload/jquery.fileupload-validate.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.fileupload-full.js"
+  },
+  {
+    "inputs": [
+      "Assets/Js/Calendars/*.js"
+    ],
+    "output": "wwwroot/Scripts/Calendars/@.js"
+  },
+  {
+    "inputs": [
+      "Assets/Js/Calendars/jquery.calendars.picker.js",
+      "Assets/Js/Calendars/jquery.calendars.picker.ext.js"
+    ],
+    "output": "wwwroot/Scripts/Calendars/jquery.calendars.picker.full.js"
+  },
+  {
+    "inputs": [
+      "Assets/Css/Calendars/jquery.calendars.picker.css",
+      "Assets/Css/Calendars/ui.calendars.picker.css"
+    ],
+    "output": "wwwroot/Styles/Calendars/jquery.calendars.picker.full.css"
+  },
+  {
+    "inputs": [ "Assets/Css/TimeEntry/jquery.timeentry.css" ],
+    "output": "wwwroot/Styles/TimeEntry/jquery.timeentry.css"
+  },
+  {
+    "inputs": [ "Assets/Js/TimeEntry/jquery.timeentry.js" ],
+    "output": "wwwroot/Scripts/TimeEntry/jquery.timeentry.js"
+  },
+  {
+    "inputs": [ "Assets/Css/DateTimeEditor/datetime-editor.css" ],
+    "output": "wwwroot/Styles/datetime-editor.css"
+  },
+  {
+    "inputs": [ "Assets/Css/DateTimeEditor/jquery-datetime-editor.css" ],
+    "output": "wwwroot/Styles/jquery-datetime-editor.css"
+  },
+  {
+    "inputs": [ "Assets/Css/Colorbox/colorbox.css" ],
+    "output": "wwwroot/Styles/jquery.colorbox.css"
+  },
+  {
+    "inputs": [ "Assets/Js/Colorbox/jquery.colorbox.js" ],
+    "output": "wwwroot/Scripts/jquery.colorbox.js"
+  },
   {
     "inputs": [ "Assets/Js/Angular/angular.js" ],
     "output": "wwwroot/Scripts/angular.js"
@@ -81,30 +85,30 @@
     "inputs": [ "Assets/Js/Angular/sortable.js" ],
     "output": "wwwroot/Scripts/angular-sortable.js"
   },
-    {
-        "inputs": [ "Assets/Js/Underscore/underscore.js" ],
-        "output": "Scripts/underscore.js"
-    },
+  {
+    "inputs": [ "Assets/Js/Underscore/underscore.js" ],
+    "output": "wwwroot/Scripts/underscore.js"
+  },
 
-   
-    {
-        "inputs": [ "Assets/Js/History/history.js" ],
-        "output": "Scripts/history.js"
-    },
-    {
-        "inputs": [ "Assets/Js/Knockout/knockout-3.4.0.js" ],
-        "output": "Scripts/knockout.js"
-    },
-    {
-        "inputs": [ "Assets/Js/Moment/moment.js" ],
-        "output": "Scripts/moment.js"
-    },
-    {
-        "inputs": [ "Assets/Js/BlockUI/jquery.blockui.js" ],
-        "output": "Scripts/jquery.blockui.js"
-    },
-    {
-        "inputs": [ "Assets/Js/Uri/uri.js" ],
-        "output": "Scripts/uri.js"
-    }
+
+  {
+    "inputs": [ "Assets/Js/History/history.js" ],
+    "output": "wwwroot/Scripts/history.js"
+  },
+  {
+    "inputs": [ "Assets/Js/Knockout/knockout-3.4.0.js" ],
+    "output": "wwwroot/Scripts/knockout.js"
+  },
+  {
+    "inputs": [ "Assets/Js/Moment/moment.js" ],
+    "output": "wwwroot/Scripts/moment.js"
+  },
+  {
+    "inputs": [ "Assets/Js/BlockUI/jquery.blockui.js" ],
+    "output": "wwwroot/Scripts/jquery.blockui.js"
+  },
+  {
+    "inputs": [ "Assets/Js/Uri/uri.js" ],
+    "output": "wwwroot/Scripts/uri.js"
+  }
 ]
