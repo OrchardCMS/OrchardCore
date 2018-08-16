@@ -44,12 +44,21 @@ namespace OrchardCore.ContentFields.Fields
                 var editorType = settings.Editor.Split('|').Last();
 
                 var optionsSelected = new List<SelectListItem>();
+                var optionsGroup = new List<SelectListGroup>();
                 if (context.IsNew)
                 {
                     foreach (var option in options)
                     {
                         var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
-                        optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected });
+
+                        if (option[0] == '#')
+                        {
+                            optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
+                        }
+                        else
+                        {
+                            optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                        }
                     }
                 }
                 else
@@ -57,6 +66,7 @@ namespace OrchardCore.ContentFields.Fields
                     foreach (var option in options)
                     {
                         var selected = false;
+
                         if (editorType == "multi")
                         {
                             selected = field.SelectedValues != null ? field.SelectedValues.Contains(option.Split('|').Last().Trim()) : false;
@@ -66,7 +76,14 @@ namespace OrchardCore.ContentFields.Fields
                             selected = field.Value != null ? field.Value.Contains(option.Split('|').Last().Trim()) : false;
                         }
 
-                        optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected });
+                        if (option[0] == '#')
+                        {
+                            optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
+                        }
+                        else
+                        {
+                            optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                        }
                     }
                 }
 
