@@ -6,7 +6,7 @@
 }
 
 <fieldset class="form-group">
-    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Options">@Model.PartFieldDefinition.DisplayName()</label>
     <div>
         @for (var i = 0; i < Model.Options.Count(); i++)
         {
@@ -15,7 +15,7 @@
                 <div class="form-check">
                     <label class="form-check-label">
                         <input type="hidden" asp-for="@Model.Options[i].Value" />
-                        <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].DisplayName]
+                        <input type="checkbox" class="form-check-input" asp-for="Options[i].Selected">@T[Model.Options[i].Text]
                     </label>
                 </div>
             }

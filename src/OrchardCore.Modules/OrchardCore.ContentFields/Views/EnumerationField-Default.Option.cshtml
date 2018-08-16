@@ -1,4 +1,4 @@
 @{
     string currentEditor = Model.Editor;
 }
-<option value="" selected="@String.IsNullOrEmpty(currentEditor)">@T["Dropdown List"]</option>
+<option value="DropdownList|single" selected="@(currentEditor == "DropdownList|single")">@T["Dropdown List"]</option>

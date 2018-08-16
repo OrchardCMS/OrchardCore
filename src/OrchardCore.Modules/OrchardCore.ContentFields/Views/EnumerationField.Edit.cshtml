@@ -14,7 +14,7 @@
 
     if (!String.IsNullOrEmpty(settings.Editor))
     {
-        shape.Metadata.Alternates.Add($"EnumerationField_Editor__{settings.Editor}");
+        shape.Metadata.Alternates.Add($"EnumerationField_Editor__{settings.Editor.Split('|').First()}");
     }
 }
 

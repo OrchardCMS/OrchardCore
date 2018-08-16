@@ -8,8 +8,7 @@
 
 <fieldset class="form-group">
     <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
-
-    @Html.DropDownListFor(m => m.Value, new SelectList(Model.Options, "Value", "DisplayName", Model.Value), new { @class = "form-control" })
+    <select class="form-control" asp-for="Value" asp-items="Model.Options"></select>
 
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
