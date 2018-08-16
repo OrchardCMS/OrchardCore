@@ -12,7 +12,7 @@ namespace OrchardCore.OpenId.Validators
             {
                 foreach (var url in member.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) || !Uri.TryCreate(url, UriKind.Absolute, out var createdUri))
+                    if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
                     {
                         yield return new ValidationResult($"{url} is not wellformed", new[] { memberName });
                     }
