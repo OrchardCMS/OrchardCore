@@ -16,6 +16,10 @@ Returns the URL of a media based on its location in the media library.
 
 `{{ 'animals/kittens.jpg' | asset_url }}`
 
+or when using your added content
+
+`{{ Model.ContentItem.Content.YourContentType.YourMediaField.Paths.first | asset_url }}`
+
 #### Output
 
 `/media/animals/kittens.jpg`
@@ -46,7 +50,7 @@ Convert the input URL to create a dynamic image with the specified size argument
 
 #### Input
 
-`{{ 'animals/kittens.jpg' | asset_url | resize_url: 100, 240 | img_tag }}`
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240 | img_tag }}`
 
 #### Output
 
@@ -91,6 +95,13 @@ Resizes the image until the shortest side reaches the given dimension. Upscaling
 
 Stretches the resized image to fit the bounds of its container.
 
+### Input
+
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop' }}`
+
+### Output
+
+`<img src="/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
 
 ## Razor Helpers
 

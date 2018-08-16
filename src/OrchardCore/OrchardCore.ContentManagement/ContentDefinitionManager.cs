@@ -47,7 +47,7 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionRecord = _session
                 .Query<ContentDefinitionRecord>()
                 .FirstOrDefaultAsync()
-                .Result;
+                .GetAwaiter().GetResult();
 
             if (_contentDefinitionRecord == null)
             {

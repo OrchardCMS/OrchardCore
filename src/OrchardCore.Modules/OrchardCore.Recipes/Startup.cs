@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
@@ -26,6 +27,8 @@ namespace OrchardCore.Recipes
 
             services.AddRecipeExecutionStep<CommandStep>();
             services.AddRecipeExecutionStep<RecipesStep>();
+
+            services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
         }
     }
 }

@@ -161,7 +161,7 @@ namespace OrchardCore.Data.Migration
                 var tempMigration = migration;
 
                 // get current version for this migration
-                var dataMigrationRecord = GetDataMigrationRecordAsync(tempMigration).Result;
+                var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var current = 0;
                 if (dataMigrationRecord != null)
