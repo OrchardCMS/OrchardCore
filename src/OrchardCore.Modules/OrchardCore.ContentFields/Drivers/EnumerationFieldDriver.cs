@@ -43,7 +43,6 @@ namespace OrchardCore.ContentFields.Fields
                 var options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
                 var editorType = settings.Editor.Split('|').Last();
 
-
                 var optionsSelected = new List<SelectListItem>();
                 if (context.IsNew)
                 {
@@ -53,7 +52,8 @@ namespace OrchardCore.ContentFields.Fields
                         optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected });
                     }
                 }
-                else {
+                else
+                {
                     foreach (var option in options)
                     {
                         var selected = false;
