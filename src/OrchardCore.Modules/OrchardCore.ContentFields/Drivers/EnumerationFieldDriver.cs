@@ -48,7 +48,7 @@ namespace OrchardCore.ContentFields.Fields
                 {
                     foreach (var option in options)
                     {
-                        var selected = !String.IsNullOrEmpty(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
+                        var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
                         optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected });
                     }
                 }
@@ -94,7 +94,7 @@ namespace OrchardCore.ContentFields.Fields
 
                 if (editorType == "single")
                 {
-                    if (settings.Required && String.IsNullOrEmpty(model.Value))
+                    if (settings.Required && String.IsNullOrWhiteSpace(model.Value))
                     {
                         updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                     }
