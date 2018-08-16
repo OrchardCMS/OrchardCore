@@ -49,14 +49,14 @@ namespace OrchardCore.ContentFields.Fields
                 {
                     foreach (var option in options)
                     {
-                        var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
-
                         if (option[0] == '#')
                         {
                             optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
                         }
                         else
                         {
+                            var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
+
                             optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
                         }
                     }
@@ -65,23 +65,23 @@ namespace OrchardCore.ContentFields.Fields
                 {
                     foreach (var option in options)
                     {
-                        var selected = false;
-
-                        if (editorType == "multi")
-                        {
-                            selected = field.SelectedValues != null ? field.SelectedValues.Contains(option.Split('|').Last().Trim()) : false;
-                        }
-                        else if (editorType == "single")
-                        {
-                            selected = field.Value != null ? field.Value.Contains(option.Split('|').Last().Trim()) : false;
-                        }
-
                         if (option[0] == '#')
                         {
                             optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
                         }
                         else
                         {
+                            var selected = false;
+
+                            if (editorType == "multi")
+                            {
+                                selected = field.SelectedValues != null ? field.SelectedValues.Contains(option.Split('|').Last().Trim()) : false;
+                            }
+                            else if (editorType == "single")
+                            {
+                                selected = field.Value != null ? field.Value.Contains(option.Split('|').Last().Trim()) : false;
+                            }
+
                             optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
                         }
                     }
