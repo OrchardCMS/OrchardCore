@@ -1,0 +1,37 @@
+@model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string required = settings.Required ? "required" : "";
+}
+
+
+<fieldset class="form-group">
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+    @foreach (var option in Model.Options)
+    {
+        if (string.IsNullOrWhiteSpace(option.Value))
+        {
+            <div class="form-check" asp-for="Value">
+                <label class="form-check-label">
+                    @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Value), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
+                </label>
+            </div>
+        }
+        else
+        {
+            <div class="form-check" asp-for="Value">
+                <label class="form-check-label">
+                    @Html.RadioButton("Value", option.Value, (option.Value == Model.Value), new { @required = required, @class = "form-check-input" })@option.Text
+                </label>
+            </div>
+        }
+    }
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>
+

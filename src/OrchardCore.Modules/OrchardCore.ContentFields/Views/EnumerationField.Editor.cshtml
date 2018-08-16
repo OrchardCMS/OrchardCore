@@ -1,0 +1,17 @@
+@model OrchardCore.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string required = settings.Required ? "required" : "";
+}
+
+<fieldset class="form-group">
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+    <select class="form-control" asp-for="Value" asp-items="Model.Options"></select>
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>
