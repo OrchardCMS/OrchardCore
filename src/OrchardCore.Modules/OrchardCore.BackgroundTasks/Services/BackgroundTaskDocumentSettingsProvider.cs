@@ -23,13 +23,14 @@ namespace OrchardCore.BackgroundTasks.Services
 
             var document = await backgroundTaskManager.GetDocumentAsync();
 
-            if (document.Tasks.TryGetValue(type.FullName, out var task))
+            if (document.Tasks.TryGetValue(type.FullName, out var settings))
             {
                 return new BackgroundTaskSettings()
                 {
                     Name = type.FullName,
-                    Enable = task.Enable,
-                    Schedule = task.Schedule
+                    Enable = settings.Enable,
+                    Schedule = settings.Schedule,
+                    Description = settings.Description
                 };
             }
 

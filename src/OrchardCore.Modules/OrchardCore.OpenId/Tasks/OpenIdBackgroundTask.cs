@@ -10,7 +10,7 @@ using OrchardCore.OpenId.Services.Managers;
 
 namespace OrchardCore.OpenId.Tasks
 {
-    [BackgroundTask(Schedule = "*/30 * * * *")]
+    [BackgroundTask(Schedule = "*/30 * * * *", Description = "Remove orphaned tokens / authorizations.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger<OpenIdBackgroundTask> _logger;

@@ -59,41 +59,12 @@ namespace OrchardCore.BackgroundTasks
             {
                 State.Status = BackgroundTaskStatus.Idle;
             }
-
-            State.LastExecutionTime = DateTime.UtcNow - State.LastStartTime;
-            State.TotalExecutionTime += State.LastExecutionTime;
         }
 
         public void Fault(Exception exception)
         {
             Idle();
-            State.Status = BackgroundTaskStatus.Locked;
             State.FaultMessage = DateTime.UtcNow.ToString() + ' ' + exception.Message;
-        }
-
-        public void Command(CommandCode code)
-        {
-            if (code == CommandCode.Lock)
-            {
-                State.Status = BackgroundTaskStatus.Locked;
-            }
-            else if (code == CommandCode.Unlock)
-            {
-                if (State.Status == BackgroundTaskStatus.Locked)
-                {
-                    State.Status = BackgroundTaskStatus.Idle;
-                }
-            }
-            else if (code == CommandCode.ResetCount)
-            {
-                State.StartCount = 0;
-                State.LastExecutionTime = new TimeSpan();
-                State.TotalExecutionTime = new TimeSpan();
-            }
-            else if (code == CommandCode.ResetFault)
-            {
-                State.FaultMessage = String.Empty;
-            }
         }
 
         public BackgroundTaskScheduler Clone()
@@ -110,14 +81,6 @@ namespace OrchardCore.BackgroundTasks
             var scheduler = Clone();
             action(scheduler);
             return scheduler;
-        }
-
-        public enum CommandCode
-        {
-            Lock,
-            Unlock,
-            ResetCount,
-            ResetFault
         }
     }
 }

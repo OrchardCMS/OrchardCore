@@ -84,7 +84,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
             {
                 Name = kvp.Key,
-                Description = kvp.Value.Description,
                 Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
                 State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined,
                 HasDocumentSettings = true
@@ -92,7 +91,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             .Concat(otherTaskNames.Select(name => new BackgroundTaskEntry
             {
                 Name = name,
-                Description = String.Empty,
                 Settings = settings.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskSettings.None,
                 State = states.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskState.Undefined,
                 HasDocumentSettings = false
@@ -106,7 +104,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var model = new BackgroundTaskIndexViewModel
             {
-                IsRunning = _backgroundService.IsRunning,
                 Tasks = taskEntries,
                 Pager = pagerShape
             };
@@ -128,6 +125,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 model.Enable = settings.Enable;
                 model.Schedule = settings.Schedule;
+                model.DefaultSchedule = settings.Schedule;
+                model.Description = settings.Description;
             }
 
             return View(model);
@@ -156,6 +155,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
+                    DefaultSchedule = model.DefaultSchedule?.Trim(),
                     Description = model.Description
                 };
 
@@ -190,6 +190,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Name = name,
                 Enable = task.Enable,
                 Schedule = task.Schedule,
+                DefaultSchedule = task.DefaultSchedule,
                 Description = task.Description
             };
 
@@ -221,6 +222,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
+                    DefaultSchedule = model.DefaultSchedule?.Trim(),
                     Description = model.Description
                 };
 
@@ -256,53 +258,47 @@ namespace OrchardCore.BackgroundTasks.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Lock(string name)
+        public async Task<IActionResult> Enable(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Unauthorized();
             }
 
-            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.Lock);
+            var document = await _backgroundTaskManager.GetDocumentAsync();
+
+            if (!document.Tasks.TryGetValue(name, out var task))
+            {
+                task = new BackgroundTask();
+            }
+
+            task.Enable = true;
+
+            await _backgroundTaskManager.UpdateAsync(name, task);
+            await _backgroundService.UpdateAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Unlock(string name)
+        public async Task<IActionResult> Disable(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Unauthorized();
             }
 
-            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.Unlock);
+            var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ResetCount(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+            if (!document.Tasks.TryGetValue(name, out var task))
             {
-                return Unauthorized();
+                task = new BackgroundTask();
             }
 
-            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.ResetCount);
+            task.Enable = false;
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> ResetFault(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Unauthorized();
-            }
-
-            _backgroundService.Command(_tenant, name, BackgroundTaskScheduler.CommandCode.ResetFault);
+            await _backgroundTaskManager.UpdateAsync(name, task);
+            await _backgroundService.UpdateAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }

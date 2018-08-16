@@ -14,6 +14,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
+
 namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService, IModularBackgroundService
@@ -37,7 +38,6 @@ namespace OrchardCore.Modules
             Logger = logger;
         }
 
-        public bool IsRunning { get; private set; }
         public ILogger Logger { get; set; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -52,8 +52,6 @@ namespace OrchardCore.Modules
                 await Task.Delay(MinIdleTime, stoppingToken);
             }
 
-            IsRunning = true;
-
             var previousShells = Enumerable.Empty<ShellContext>();
 
             while (!stoppingToken.IsCancellationRequested)
@@ -67,8 +65,6 @@ namespace OrchardCore.Modules
                 await RunAsync(runningShells, stoppingToken);
                 await WaitAsync(pollingDelay, stoppingToken);
             }
-
-            IsRunning = false;
         }
 
         private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
@@ -79,8 +75,6 @@ namespace OrchardCore.Modules
 
                 var schedulers = GetSchedulersToRun(tenant);
 
-                _httpContextAccessor.HttpContext = shell.GetHttpContext();
-
                 foreach (var scheduler in schedulers)
                 {
                     if (stoppingToken.IsCancellationRequested)
@@ -90,6 +84,8 @@ namespace OrchardCore.Modules
 
                     using (var scope = _shellHost.EnterServiceScope(shell.Settings, out var context))
                     {
+                        _httpContextAccessor.HttpContext.Update(shell);
+
                         if (scope == null || !context.IsActivated)
                         {
                             break;
@@ -234,14 +230,6 @@ namespace OrchardCore.Modules
             return UpdateAsync(tenant);
         }
 
-        public void Command(string tenant, string taskName, BackgroundTaskScheduler.CommandCode code)
-        {
-            if (_schedulers.TryRemove(tenant + taskName, out BackgroundTaskScheduler scheduler))
-            {
-                _schedulers[tenant + taskName] = scheduler.Clone(s => s.Command(code));
-            }
-        }
-
         public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
         {
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
@@ -355,15 +343,13 @@ namespace OrchardCore.Modules
         }
     }
 
-    internal static class ShellExtensions
+    internal static class HttpContextExtensions
     {
-        public static HttpContext GetHttpContext(this ShellContext shell)
+        public static void Update(this HttpContext httpContext, ShellContext shell)
         {
-            var httpContext = new DefaultHttpContext();
             httpContext.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
             httpContext.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             httpContext.Items["IsBackground"] = true;
-            return httpContext;
         }
     }
 

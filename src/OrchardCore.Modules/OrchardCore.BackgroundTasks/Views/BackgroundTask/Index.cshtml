@@ -3,22 +3,7 @@
 
 <h1>@RenderTitleSegments(T["Background Tasks"])</h1>
 
-@if (Model.IsRunning)
-{
-    <div class="alert alert-success" role="alert">
-        <span><i class="fa fa-refresh fa-spin" aria-hidden="true"></i></span>
-        @T["The Background Service is running."]
-    </div>
-}
-else
-{
-    <div class="alert alert-warning" role="alert">
-        <span><i class="fa fa-refresh" aria-hidden="true"></i></span>
-        @T["The Background Service is stopped or waiting for available tenants."]
-    </div>
-}
-
-<form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
+<form asp-action="Index"> @* the form is necessary to generate an antiforgery token for the delete action *@
 
     @if (Model.Tasks.Any())
     {
@@ -28,95 +13,22 @@ else
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                            @if (entry.HasDocumentSettings)
-                            {
-                                <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                                <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            }
-                            else
-                            {
-                                <a asp-action="Create" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Add Settings"]</a>
-                            }
-                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Actions"]
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a asp-action="Lock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Lock "]</a>
-                                <a asp-action="Unlock" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Unlock"]</a>
-                                <div class="dropdown-divider"></div>
-                                <a asp-action="ResetCount" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Count "]</a>
-                                <a asp-action="ResetFault" asp-route-name="@entry.Name" class="dropdown-item btn-sm" itemprop="UnsafeUrl">@T["Reset Fault"]</a>
-                            </div>
-                        </div>
-                        @if (entry.HasDocumentSettings)
+                        @if (@entry.Settings.Enable)
                         {
-                            <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
-                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
-                            <span class="hint">@T["— {0}", entry.Description]</span>
+                            <a asp-action="Disable" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
                         else
                         {
-                            <span class="text-secondary">@entry.Name</span>
+                            <a asp-action="Enable" asp-route-name="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                         }
+
+                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        </div>
+                        <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
+                        <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
+                        <span class="hint">@T["— {0}", entry.Settings.Description]</span>
                     </div>
 
-                    @if (entry.State == BackgroundTaskState.Undefined)
-                    {
-                        <span class="badge badge-secondary" title="@T["Not Available"]">
-                            <i class="fa fa-question" aria-hidden="true"></i> @T["Not Available"]
-                        </span>
-                    }
-                    else
-                    {
-                        if (!entry.Settings.Enable)
-                        {
-                            <span class="badge badge-warning" title="@T["Disabled"]">
-                                <i class="fa fa-ban" aria-hidden="true"></i> @T["Disabled"]
-                            </span>
-                        }
-
-                        if (entry.Settings.Enable && entry.State.Status == BackgroundTaskStatus.Idle)
-                        {
-                            var nextStartTime = (await LocalClock.ConvertToLocalAsync(entry.State.NextStartTime)).DateTime;
-
-                            <span class="badge badge-info" title="@T["Idle"]">
-                                <i class="fa fa-coffee" aria-hidden="true"></i> @T["Idle"]
-                            </span>
-                            <span class="badge badge-light" title="@T["Next Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Next"] @nextStartTime.ToShortDateString() @nextStartTime.ToShortTimeString()
-                            </span>
-                        }
-                        else if (entry.State.Status == BackgroundTaskStatus.Running)
-                        {
-                            <span class="badge badge-success" title="@T["Running"]">
-                                <i class="fa fa-refresh fa-spin" aria-hidden="true"></i> @T["Running"]
-                            </span>
-                        }
-                        else if (entry.State.Status == BackgroundTaskStatus.Locked)
-                        {
-                            <span class="badge badge-warning" title="@T["Locked"]">
-                                <i class="fa fa-lock" aria-hidden="true"></i> @T["Locked"]
-                            </span>
-                        }
-
-                        if (entry.State.StartCount > 0)
-                        {
-                            var lastStartTime = (await LocalClock.ConvertToLocalAsync(entry.State.LastStartTime)).DateTime;
-                            
-                            <span class="badge badge-success" title="@T["Last Start Time"]">
-                                <i class="fa fa-clock-o" aria-hidden="true"></i> @T["Last"] @lastStartTime.ToShortDateString() @lastStartTime.ToShortTimeString()
-                            </span>
-                            <span class="badge badge-light" title="@T["Last Execution Time"]">
-                                <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.LastExecutionTime.ToString(@"hh\:mm\:ss\.fff")
-                            </span>
-                           <span class="badge badge-success" title="@T["Start Count"]">
-                                <i class="fa fa-refresh" aria-hidden="true"></i> @entry.State.StartCount
-                            </span>
-                            <span class="badge badge-light" title="@T["Total Execution Time"]">
-                                <i class="fa fa-stopwatch" aria-hidden="true"></i> @entry.State.TotalExecutionTime.ToString(@"hh\:mm\:ss\.fff")
-                            </span>
-                        }
-                    }
                 </li>
 
                 if (!string.IsNullOrWhiteSpace(entry.State.FaultMessage))
@@ -131,7 +43,7 @@ else
             }
         </ul>
     }
-    else if (Model.IsRunning)
+    else
     {
         <div class="alert alert-info" role="alert">
             @T["<strong>Nothing here!</strong> There are no background task for the moment."]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
@@ -32,6 +33,8 @@ namespace OrchardCore.BackgroundTasks.Services
             _signal = signal;
             _session = session;
         }
+
+        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
 
         public IEnumerable<string> TaskNames => _backgroundTasks.Select(t => t.GetType().FullName);
 
