@@ -29,7 +29,7 @@ namespace OrchardCore.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.GetSiteSettingsAsync();
 
-            foreach(JProperty property in model.Properties())
+            foreach (JProperty property in model.Properties())
             {
                 switch (property.Name)
                 {
@@ -43,6 +43,10 @@ namespace OrchardCore.Settings.Recipes
 
                     case "Culture":
                         site.Culture = property.Value.ToString();
+                        break;
+
+                    case "SupportedCultures":
+                        site.SupportedCultures = property.Value<string[]>();
                         break;
 
                     case "MaxPagedCount":
@@ -89,7 +93,7 @@ namespace OrchardCore.Settings.Recipes
                         site.Properties[property.Name] = property.Value;
                         break;
                 }
-            }            
+            }
 
             await _siteService.UpdateSiteSettingsAsync(site);
         }

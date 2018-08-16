@@ -2,7 +2,7 @@
 @using OpenIddict.Abstractions;
 @using OrchardCore.OpenId.ViewModels;
 @using OrchardCore.OpenId.Settings;
-@{ 
+@{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
 <h1>@RenderTitleSegments(T["Create a new application"])</h1>
@@ -95,11 +95,23 @@
             <span asp-validation-for="RedirectUris" class="text-danger">@T["At least one Redirect Uri is required."]</span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
-        <div asp-validation-class-for="PostLogoutRedirectUris">
-            <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
-            <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["At least one Logout Redirect Uri is required."]</span>
-            <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
-        </div>
+        <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
+            <fieldset class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input asp-for="AllowLogoutEndpoint" type="checkbox" data-toggle="collapse" data-target="#postLogoutRedirectUris" class="form-check-input" checked="@Model.AllowLogoutEndpoint" />
+                        @T["Allow Logout Endpoint"]
+                    </label>
+                </div>
+            </fieldset>
+            <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
+                <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
+                    <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["At least on logout Redirect Uri is required."]</span>
+                    <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
+                </div>
+            </div>
+        </fieldset>
         <div class="form-group" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-control">
@@ -202,6 +214,13 @@
                         $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
                         $("#AllowRefreshTokenFlow").prop("checked", false);
                     }
+                    if (@(settings.EnableLogoutEndpoint.ToString().ToLower()) == true) {
+                        $("#AllowLogoutEndpointFieldSet").collapse("show");
+                    }
+                    else {
+                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+                    }
                 </text>
             }
         }
@@ -283,13 +302,22 @@
         function refreshRedirectSettings() {
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
+            var postLogoutRedirecUris = $("#postLogoutRedirectUris")
 
             if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 redirectSection.collapse("show");
+                if ($("#AllowLogoutEndpoint").prop('checked')) {
+                    postLogoutRedirecUris.collapse("show");
+                }
+                else {
+                    postLogoutRedirecUris.collapse("hide");
+                }
             }
             else {
                 skipConsent.prop("checked", false);
                 redirectSection.collapse("hide");
+                $("#AllowLogoutEndpoint").prop('checked', false);
+                postLogoutRedirecUris.collapse("hide");
             }
         }
     };

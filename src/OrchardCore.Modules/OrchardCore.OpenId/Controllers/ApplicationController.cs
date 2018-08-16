@@ -161,6 +161,15 @@ namespace OrchardCore.OpenId.Controllers
                 Type = model.Type
             };
 
+            if (model.AllowLogoutEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
+
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
@@ -235,6 +244,7 @@ namespace OrchardCore.OpenId.Controllers
                 AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit),
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
+                AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
                 ClientId = await _applicationManager.GetClientIdAsync(application),
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
@@ -331,6 +341,15 @@ namespace OrchardCore.OpenId.Controllers
             if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 descriptor.ClientSecret = null;
+            }
+
+            if (model.AllowLogoutEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
 
             if (model.AllowAuthorizationCodeFlow)
