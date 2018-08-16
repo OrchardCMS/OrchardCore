@@ -192,11 +192,11 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             descriptor.PostLogoutRedirectUris.UnionWith(
-                from uri in model.PostLogoutRedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
 
             descriptor.RedirectUris.UnionWith(
-                from uri in model.RedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                from uri in model.RedirectUris?.Split(new[] { " ","," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
 
             descriptor.Roles.UnionWith(model.RoleEntries
@@ -408,7 +408,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.PostLogoutRedirectUris.Clear();
             foreach (Uri uri in
-            (from uri in model.PostLogoutRedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+            (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
              select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.PostLogoutRedirectUris.Add(uri);
@@ -416,7 +416,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.RedirectUris.Clear();
             foreach (Uri uri in
-           (from uri in model.RedirectUris?.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+           (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
             select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.RedirectUris.Add(uri);

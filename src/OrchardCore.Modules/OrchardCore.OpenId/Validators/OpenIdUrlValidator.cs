@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace OrchardCore.OpenId.Validators
 {
@@ -9,12 +8,11 @@ namespace OrchardCore.OpenId.Validators
     {
         public IEnumerable<ValidationResult> ValidateUrls(string memberName, string member)
         {
-            var attribute = new UrlAttribute();
-            foreach (var url in member.Split(' '))
+            foreach (var url in member.Split(new []{ ' ',','},StringSplitOptions.RemoveEmptyEntries))
             {
-                if (!attribute.IsValid(url))
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) || !Uri.TryCreate(url, UriKind.Absolute, out var createdUri))
                 {
-                    yield return new ValidationResult(attribute.FormatErrorMessage($"{memberName} ({url})"), new []{ memberName });
+                    yield return new ValidationResult($"{url} is not wellformed", new[] { memberName });
                 }
             }
         }
