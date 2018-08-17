@@ -13,18 +13,21 @@ namespace OrchardCore.ContentTypes.Editors
         private readonly IEnumerable<IContentTypePartDefinitionDisplayDriver> _typePartDisplayDrivers;
         private readonly IEnumerable<IContentPartDefinitionDisplayDriver> _partDisplayDrivers;
         private readonly IEnumerable<IContentPartFieldDefinitionDisplayDriver> _partFieldDisplayDrivers;
+        private readonly IEnumerable<IContentPartFieldEditorSettingsDisplayDriver> _partFieldEditorSettingsDisplayDrivers;
 
         public ContentDefinitionDisplayCoordinator(
             IEnumerable<IContentTypeDefinitionDisplayDriver> typeDisplayDrivers,
             IEnumerable<IContentTypePartDefinitionDisplayDriver> typePartDisplayDrivers,
             IEnumerable<IContentPartDefinitionDisplayDriver> partDisplayDrivers,
             IEnumerable<IContentPartFieldDefinitionDisplayDriver> partFieldDisplayDrivers,
+            IEnumerable<IContentPartFieldEditorSettingsDisplayDriver> partFieldEditorSettingsDisplayDrivers,
             ILogger<IContentDefinitionDisplayHandler> logger)
         {
             _partFieldDisplayDrivers = partFieldDisplayDrivers;
             _partDisplayDrivers = partDisplayDrivers;
             _typePartDisplayDrivers = typePartDisplayDrivers;
             _typeDisplayDrivers = typeDisplayDrivers;
+            _partFieldEditorSettingsDisplayDrivers = partFieldEditorSettingsDisplayDrivers;
             Logger = logger;
         }
 
@@ -90,9 +93,16 @@ namespace OrchardCore.ContentTypes.Editors
             }, Logger);
         }
 
-        public Task BuildPartFieldEditorAsync(ContentPartFieldDefinition model, BuildEditorContext context)
+        public async Task BuildPartFieldEditorAsync(ContentPartFieldDefinition model, BuildEditorContext context)
         {
-            return _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            await _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            {
+                var result = await contentDisplay.BuildEditorAsync(model, context);
+                if (result != null)
+                    await result.ApplyAsync(context);
+            }, Logger);
+
+            await _partFieldEditorSettingsDisplayDrivers.InvokeAsync(async contentDisplay =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
@@ -100,9 +110,16 @@ namespace OrchardCore.ContentTypes.Editors
             }, Logger);
         }
 
-        public Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
+        public async Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
         {
-            return _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            await _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            {
+                var result = await contentDisplay.UpdateEditorAsync(model, context);
+                if (result != null)
+                    await result.ApplyAsync(context);
+            }, Logger);
+
+            await _partFieldEditorSettingsDisplayDrivers.InvokeAsync(async contentDisplay =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)

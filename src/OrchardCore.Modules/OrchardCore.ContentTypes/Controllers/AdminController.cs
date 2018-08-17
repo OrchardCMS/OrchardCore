@@ -596,9 +596,10 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new EditFieldViewModel
             {
                 Name = partFieldDefinition.Name,
+                Editor = partFieldDefinition.Editor(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
-                Editor = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
             };
 
             return View(viewModel);
@@ -609,10 +610,14 @@ namespace OrchardCore.ContentTypes.Controllers
         public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            {
                 return Unauthorized();
+            }
 
             if (viewModel == null)
+            {
                 return NotFound();
+            }
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -628,7 +633,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (field.DisplayName() != viewModel.DisplayName)
+            if (field.DisplayName() != viewModel.DisplayName || field.Editor() != viewModel.Editor)
             {
                 // prevent null reference exception in validation
                 viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
@@ -654,7 +659,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Information(T["Display name changed to {0}.", viewModel.DisplayName]);
             }
 
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (!ModelState.IsValid)
             {

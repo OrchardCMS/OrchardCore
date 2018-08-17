@@ -25,7 +25,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(DateField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditDateFieldViewModel>("DateField_Edit", model =>
+            return Initialize<EditDateFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Value = field.Value;
                 model.Field = field;
