@@ -13,21 +13,18 @@ namespace OrchardCore.ContentTypes.Editors
         private readonly IEnumerable<IContentTypePartDefinitionDisplayDriver> _typePartDisplayDrivers;
         private readonly IEnumerable<IContentPartDefinitionDisplayDriver> _partDisplayDrivers;
         private readonly IEnumerable<IContentPartFieldDefinitionDisplayDriver> _partFieldDisplayDrivers;
-        private readonly IEnumerable<IContentPartFieldEditorSettingsDisplayDriver> _partFieldEditorSettingsDisplayDrivers;
 
         public ContentDefinitionDisplayCoordinator(
             IEnumerable<IContentTypeDefinitionDisplayDriver> typeDisplayDrivers,
             IEnumerable<IContentTypePartDefinitionDisplayDriver> typePartDisplayDrivers,
             IEnumerable<IContentPartDefinitionDisplayDriver> partDisplayDrivers,
             IEnumerable<IContentPartFieldDefinitionDisplayDriver> partFieldDisplayDrivers,
-            IEnumerable<IContentPartFieldEditorSettingsDisplayDriver> partFieldEditorSettingsDisplayDrivers,
             ILogger<IContentDefinitionDisplayHandler> logger)
         {
             _partFieldDisplayDrivers = partFieldDisplayDrivers;
             _partDisplayDrivers = partDisplayDrivers;
             _typePartDisplayDrivers = typePartDisplayDrivers;
             _typeDisplayDrivers = typeDisplayDrivers;
-            _partFieldEditorSettingsDisplayDrivers = partFieldEditorSettingsDisplayDrivers;
             Logger = logger;
         }
 
@@ -101,25 +98,11 @@ namespace OrchardCore.ContentTypes.Editors
                 if (result != null)
                     await result.ApplyAsync(context);
             }, Logger);
-
-            await _partFieldEditorSettingsDisplayDrivers.InvokeAsync(async contentDisplay =>
-            {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, Logger);
         }
 
         public async Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
         {
             await _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
-            {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, Logger);
-
-            await _partFieldEditorSettingsDisplayDrivers.InvokeAsync(async contentDisplay =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)

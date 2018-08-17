@@ -7,19 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Mvc.Utilities;
 using YesSql;
-using System.Reflection;
-using OrchardCore.Mvc.ActionConstraints;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
@@ -633,7 +632,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            if (field.DisplayName() != viewModel.DisplayName || field.Editor() != viewModel.Editor)
+            if (field.DisplayName() != viewModel.DisplayName)
             {
                 // prevent null reference exception in validation
                 viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
@@ -654,10 +653,13 @@ namespace OrchardCore.ContentTypes.Controllers
                     return View(viewModel);
                 }
 
-                _contentDefinitionService.AlterField(partViewModel, viewModel);
-
                 _notifier.Information(T["Display name changed to {0}.", viewModel.DisplayName]);
             }
+
+            _contentDefinitionService.AlterField(partViewModel, viewModel);
+
+            // Refresh the local field variable in case it has been altered
+            field = _contentDefinitionManager.GetPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 

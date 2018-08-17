@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.ContentFields.Settings
 {
 
-    public class TextFieldTextAreaEditorSettingsDriver : ContentPartFieldEditorSettingsDisplayDriver<TextField>
+    public class TextFieldTextAreaEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {

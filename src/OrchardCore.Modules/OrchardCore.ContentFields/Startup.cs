@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
-            services.AddScoped<IContentPartFieldEditorSettingsDisplayDriver, TextFieldTextAreaEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldTextAreaEditorSettingsDriver>();
 
             // Html Field
             services.AddSingleton<ContentField, HtmlField>();
