@@ -60,6 +60,7 @@ pages:
         - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
+        - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
         - Recipes: OrchardCore.Modules/OrchardCore.Recipes/README.md
         - Resources: OrchardCore.Modules/OrchardCore.Resources/README.md
