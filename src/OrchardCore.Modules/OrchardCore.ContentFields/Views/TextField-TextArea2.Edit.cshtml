@@ -4,11 +4,11 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
-    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldTextArea2EditorSettingsViewModel>();
+    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldTextArea2EditorSettings>();
 }
 
 <fieldset class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Text" class="form-control content-preview-text" style="color:@editorSettings.TextFieldTextArea2EditorSettings.Color"></textarea>
+    <textarea asp-for="Text" class="form-control content-preview-text" style="color:@editorSettings.Color"></textarea>
     <span class="hint">@settings.Hint</span>
 </fieldset>

@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(model);
+                context.Builder.WithSettings(model.TextFieldTextArea2EditorSettings);
             }
 
             return Edit(partFieldDefinition);
