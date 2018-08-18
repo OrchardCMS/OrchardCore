@@ -65,15 +65,13 @@ namespace OrchardCore.Settings.Services
                             };
 
                             session.Save(site);
-                            _memoryCache.Set(SiteCacheKey, site);
-                            _signal.SignalToken(SiteCacheKey);
+                            _memoryCache.Set(SiteCacheKey, site, ChangeToken);
                         }
                     }
                 }
                 else
                 {
-                    _memoryCache.Set(SiteCacheKey, site);
-                    _signal.SignalToken(SiteCacheKey);
+                    _memoryCache.Set(SiteCacheKey, site, ChangeToken);
                 }
             }
 
@@ -105,8 +103,8 @@ namespace OrchardCore.Settings.Services
 
             session.Save(existing);
 
-            _memoryCache.Set(SiteCacheKey, site);
             _signal.SignalToken(SiteCacheKey);
+            _memoryCache.Set(SiteCacheKey, site, ChangeToken);
 
             return;
         }
