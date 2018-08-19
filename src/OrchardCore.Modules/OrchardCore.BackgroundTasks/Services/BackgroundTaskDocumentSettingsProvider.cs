@@ -1,27 +1,22 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
     public class BackgroundTaskDocumentSettingsProvider : IBackgroundTaskSettingsProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BackgroundTaskManager _backgroundTaskManager;
 
-        public BackgroundTaskDocumentSettingsProvider(IHttpContextAccessor httpContextAccessor)
+        public BackgroundTaskDocumentSettingsProvider(BackgroundTaskManager backgroundTaskManager)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _backgroundTaskManager = backgroundTaskManager;
         }
 
         public int Order => 50;
 
         public async Task<BackgroundTaskSettings> GetSettingsAsync(Type type)
         {
-            var backgroundTaskManager = _httpContextAccessor.HttpContext
-                .RequestServices.GetRequiredService<BackgroundTaskManager>();
-
-            var document = await backgroundTaskManager.GetDocumentAsync();
+            var document = await _backgroundTaskManager.GetDocumentAsync();
 
             if (document.Tasks.TryGetValue(type.FullName, out var settings))
             {

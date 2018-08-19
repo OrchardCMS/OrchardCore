@@ -93,8 +93,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ApplicationServices
                 .AddSingleton<ModularBackgroundService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IModularBackgroundService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddBackgroundTaskAttributes();
+                .AddSingleton<IModularBackgroundService>(sp => sp.GetRequiredService<ModularBackgroundService>());
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskAttributeSettingsProvider>();
+            });
 
             return builder;
         }

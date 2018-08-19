@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -348,7 +347,7 @@ namespace OrchardCore.Modules
 
         public static async Task<BackgroundTaskSettings> GetTaskSettingsAsync(this IServiceScope scope, Type type)
         {
-            var providers = scope.ServiceProvider.GetService<IOptions<BackgroundTaskOptions>>().Value.SettingsProviders;
+            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
 
             foreach (var provider in providers.OrderBy(p => p.Order))
             {

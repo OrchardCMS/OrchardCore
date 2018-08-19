@@ -14,7 +14,7 @@ namespace OrchardCore.BackgroundTasks
                 .AddScoped<BackgroundTaskManager>()
                 .AddScoped<IPermissionProvider, Permissions>()
                 .AddScoped<INavigationProvider, AdminMenu>()
-                .AddBackgroundTaskDocument();
+                .AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskDocumentSettingsProvider>();
         }
     }
 }
