@@ -54,15 +54,13 @@ namespace OrchardCore.BackgroundTasks.Services
                             document = new BackgroundTaskDocument();
 
                             _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
+                            _memoryCache.Set(CacheKey, document, ChangeToken);
                         }
                     }
                 }
                 else
                 {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
+                    _memoryCache.Set(CacheKey, document, ChangeToken);
                 }
             }
 
@@ -76,8 +74,8 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Tasks.Remove(name);
             _session.Save(document);
 
-            _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
+            _memoryCache.Set(CacheKey, document, ChangeToken);
         }
         
         public async Task UpdateAsync(string name, BackgroundTask task)
@@ -87,8 +85,8 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Tasks[name] = task;
             _session.Save(document);
 
-            _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
+            _memoryCache.Set(CacheKey, document, ChangeToken);
         }
     }
 }
