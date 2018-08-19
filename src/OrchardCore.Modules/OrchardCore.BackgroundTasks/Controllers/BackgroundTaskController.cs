@@ -70,29 +70,18 @@ namespace OrchardCore.BackgroundTasks.Controllers
             var document = await _backgroundTaskManager.GetDocumentAsync();
             var otherTaskNames = allTaskNames.Except(document.Tasks.Keys);
 
-            var states = (await _backgroundService.GetStatesAsync(_tenant));
-            var stateNames = states.Select(s => s.Name).OrderBy(s => s);
-
-            if (!allTaskNames.SequenceEqual(stateNames))
-            {
-                await _backgroundService.UpdateAsync(_tenant);
-                states = await _backgroundService.GetStatesAsync(_tenant);
-            }
-
             var settings = await _backgroundService.GetSettingsAsync(_tenant);
 
             var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
             {
                 Name = kvp.Key,
                 Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
-                State = states.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskState.Undefined,
                 HasDocumentSettings = true
             })
             .Concat(otherTaskNames.Select(name => new BackgroundTaskEntry
             {
                 Name = name,
                 Settings = settings.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskSettings.None,
-                State = states.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskState.Undefined,
                 HasDocumentSettings = false
             }))
             .OrderBy(entry => entry.Name)

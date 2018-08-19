@@ -103,20 +103,17 @@ namespace OrchardCore.Modules
                         try
                         {
                             Logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-
                             scheduler.Run();
 
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
                             scheduler.Idle();
-
                             Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
                         catch (Exception e)
                         {
                             scheduler.Fault(e);
-
                             Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     }
@@ -244,22 +241,6 @@ namespace OrchardCore.Modules
         {
             return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
                 .Select(kv => kv.Value.Settings.Clone()).ToArray().AsEnumerable());
-        }
-
-        public Task<BackgroundTaskState> GetStateAsync(string tenant, string taskName)
-        {
-            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler) && !scheduler.Released)
-            {
-                return Task.FromResult(scheduler.State.Clone());
-            }
-
-            return Task.FromResult(BackgroundTaskState.Undefined);
-        }
-
-        public Task<IEnumerable<BackgroundTaskState>> GetStatesAsync(string tenant)
-        {
-            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant && !kv.Value.Released)
-                .Select(kv => kv.Value.State.Clone()).ToArray().AsEnumerable());
         }
 
         private IEnumerable<ShellContext> GetRunningShells()

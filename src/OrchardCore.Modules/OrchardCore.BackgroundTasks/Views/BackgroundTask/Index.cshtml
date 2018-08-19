@@ -30,16 +30,6 @@
                     </div>
 
                 </li>
-
-                if (!string.IsNullOrWhiteSpace(entry.State.FaultMessage))
-                {
-                    <li class="alert alert-danger" role="alert">
-                        @entry.State.FaultMessage
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </li>
-                }
             }
         </ul>
     }
