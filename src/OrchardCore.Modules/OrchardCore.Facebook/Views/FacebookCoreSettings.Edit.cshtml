@@ -1,0 +1,19 @@
+@using OrchardCore.Facebook.ViewModels;
+@using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+@model FacebookCoreSettingsViewModel;
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<h3>@T["Core Settings"]</h3>
+
+<fieldset class="form-group" asp-validation-class-for="AppId">
+    <label>@T["AppId"] <span asp-validation-for="AppId"></span></label>
+    <input asp-for="AppId" class="form-control" />
+    <span class="hint">@T["application id"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="AppSecret">
+    <label>@T["Client Secret"] <span asp-validation-for="AppSecret"></span></label>
+    <input asp-for="AppSecret" class="form-control" type="password" />
+    <span class="hint">@T["set application secret."]</span>
+</fieldset>
