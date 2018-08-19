@@ -65,25 +65,20 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            var allTaskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
-            var document = await _backgroundTaskManager.GetDocumentAsync();
-            var otherTaskNames = allTaskNames.Except(document.Tasks.Keys);
-
+            var taskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
             var settings = await _backgroundService.GetSettingsAsync(_tenant);
 
-            var taskEntries = document.Tasks.Select(kvp => new BackgroundTaskEntry
+            if (!settings.Any())
             {
-                Name = kvp.Key,
-                Settings = settings.FirstOrDefault(s => kvp.Key == s.Name) ?? BackgroundTaskSettings.None,
-                HasDocumentSettings = true
-            })
-            .Concat(otherTaskNames.Select(name => new BackgroundTaskEntry
+                await _backgroundService.UpdateAsync(_tenant);
+                settings = await _backgroundService.GetSettingsAsync(_tenant);
+            }
+
+            var taskEntries = taskNames.Select(name => new BackgroundTaskEntry
             {
                 Name = name,
                 Settings = settings.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskSettings.None,
-                HasDocumentSettings = false
-            }))
+            })
             .OrderBy(entry => entry.Name)
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
