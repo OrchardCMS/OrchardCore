@@ -103,15 +103,29 @@
 
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris">@T["Redirect Uri"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger">@T["The Redirect Uri is required."]</span>
+            <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
+            <span asp-validation-for="RedirectUris" class="text-danger">@T["At least one Redirect Uri is required."]</span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
-        <div asp-validation-class-for="PostLogoutRedirectUris">
-            <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uri"]</label>
-            <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
-            <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
-        </div>
+
+
+        <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
+            <fieldset class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input asp-for="AllowLogoutEndpoint" type="checkbox" data-toggle="collapse" data-target="#postLogoutRedirectUris" class="form-check-input" checked="@Model.AllowLogoutEndpoint" />
+                        @T["Allow Logout Endpoint"]
+                    </label>
+                </div>
+            </fieldset>
+            <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
+                <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
+                    <label asp-for="PostLogoutRedirectUris">@T["Post Logout Redirect Uris"]</label>
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["At least one Post Logout Redirect Uri is required."]</span>
+                    <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
+                </div>
+            </div>
+        </fieldset>
         <div class="form-group" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-control">
@@ -168,6 +182,7 @@
                     $("#AllowPasswordFlowFieldSet").collapse("show");
                     $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                    $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
 
             }
@@ -213,6 +228,14 @@
                     else {
                         $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
                         $("#AllowRefreshTokenFlow").prop("checked", false);
+                    }
+
+                    if (@(settings.EnableLogoutEndpoint.ToString().ToLower()) == true) {
+                        $("#AllowLogoutEndpointFieldSet").collapse("show");
+                    }
+                    else {
+                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
                     }
                 </text>
             }
@@ -293,13 +316,22 @@
         function refreshRedirectSettings() {
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
+            var postLogoutRedirecUris = $("#postLogoutRedirectUris")
 
             if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 redirectSection.collapse("show");
+                if ($("#AllowLogoutEndpoint").prop('checked')) {
+                    postLogoutRedirecUris.collapse("show");
+                }
+                else {
+                    postLogoutRedirecUris.collapse("hide");
+                }
             }
             else {
                 skipConsent.prop("checked", false);
                 redirectSection.collapse("hide");
+                $("#AllowLogoutEndpoint").prop('checked', false);
+                postLogoutRedirecUris.collapse("hide");
             }
         }
     };

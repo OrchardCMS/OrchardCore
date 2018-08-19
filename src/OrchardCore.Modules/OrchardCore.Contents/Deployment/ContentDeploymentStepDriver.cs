@@ -1,11 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Deployment.ViewModels;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Deployment.Steps
+namespace OrchardCore.Contents.Deployment
 {
     public class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDeploymentStep>
     {

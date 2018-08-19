@@ -1,7 +1,8 @@
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Deployment.Steps
+namespace OrchardCore.Contents.Deployment
 {
     public class AllContentDeploymentStepDriver : DisplayDriver<DeploymentStep, AllContentDeploymentStep>
     {

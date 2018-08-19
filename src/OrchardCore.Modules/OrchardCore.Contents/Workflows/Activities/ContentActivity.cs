@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -48,7 +49,10 @@ namespace OrchardCore.Contents.Workflows.Activities
             // Try and evaluate a content item from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
-                return await ScriptEvaluator.EvaluateAsync(Content, workflowContext);
+                var expression = new WorkflowExpression<object> { Expression = Content.Expression };
+                var contentItemJson = JsonConvert.SerializeObject(await ScriptEvaluator.EvaluateAsync(expression, workflowContext));
+                var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
+                return res;
             }
 
             // If no expression was provided, see if the content item was provided as an input or as a property using the "Content" key.

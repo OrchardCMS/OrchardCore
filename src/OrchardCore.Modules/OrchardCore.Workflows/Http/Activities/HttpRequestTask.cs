@@ -172,7 +172,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 {
                     var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
                     var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext);
-                    var content = new StringContent(body, Encoding.UTF8, contentType);
+                    request.Content = new StringContent(body, Encoding.UTF8, contentType);
                 }
 
                 var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);

@@ -34,6 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<LiquidTagHelperFactory>();
 
                 services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
+                services.AddScoped<ILiquidTemplateEventHandler, CultureLiquidTemplateEventHandler>();
             });
 
             return builder;

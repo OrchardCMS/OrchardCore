@@ -1,0 +1,27 @@
+@model OrchardCore.ContentFields.Settings.YoutubeFieldSettings
+@using OrchardCore.ContentFields.Settings;
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@{
+
+}
+<fieldset class="form-group">
+    <div class="row col-sm-6">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-sm-6">
+        <label asp-for="Width">@T["Width"]</label>
+        <input type="number" asp-for="Width" class="form-control" />
+        <span class="hint">@T["The width of the Videobox"]</span>
+    </div>
+    <div class="row col-sm-6">
+        <label asp-for="Height">@T["Height"]</label>
+        <input type="number" asp-for="Height" class="form-control" />
+        <span class="hint">@T["The height of the Videobox"]</span>
+    </div>
+</fieldset>
