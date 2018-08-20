@@ -45,6 +45,7 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplay>();
             services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplay>();
             services.AddActivity<HttpRequestTask, HttpRequestTaskDisplay>();
+            services.AddActivity<HttpResponseTask, HttpResponseTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
 
             services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
