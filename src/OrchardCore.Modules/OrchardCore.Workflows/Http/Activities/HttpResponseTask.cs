@@ -42,9 +42,9 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public HttpStatusCode HttpStatusCode
+        public int HttpStatusCode
         {
-            get => GetProperty(() => HttpStatusCode.OK);
+            get => GetProperty(() => 200);
             set => SetProperty(value);
         }
 
@@ -73,16 +73,11 @@ namespace OrchardCore.Workflows.Http.Activities
             var headers = ParseHeaders(headersString);
             var response = _httpContextAccessor.HttpContext.Response;
 
-            response.StatusCode = (int)HttpStatusCode;
+            response.StatusCode = HttpStatusCode;
 
             foreach (var header in headers)
             {
                 response.Headers.Add(header);
-            }
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                response.Body = new MemoryStream(Encoding.UTF8.GetBytes(content));
             }
 
             if (!string.IsNullOrWhiteSpace(contentType))
@@ -90,6 +85,12 @@ namespace OrchardCore.Workflows.Http.Activities
                 response.ContentType = contentType;
             }
 
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                await response.WriteAsync(content);
+            }
+
+            _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
             return Outcomes("Done");
         }
 
