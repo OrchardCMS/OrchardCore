@@ -52,10 +52,12 @@ public class Migrations : DataMigration
 
 ### Creating a new Content Type
 
-The following example creates a new Content Type named `Product`.
+The following example creates a new Content Type named `Product` with a `Product` part.
 
 ```csharp
-_contentDefinitionManager.AlterTypeDefinition("Product");
+_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+                .WithPart("Product")
+);
 ```
 
 ### Changing the metadata of a Content Type
@@ -103,19 +105,17 @@ For a list of all the settings each type can use, please refer to their respecti
 
 ### Adding Content Fields to a part
 
-Fields can not be attached directly to a Content Type. To add fields to a content type, create a part using with the same name as the type and add fields to this part. 
+Fields can not be attached directly to a Content Type. To add fields to a content type, create a part using the same name as the type and add fields to this part. 
 
 ```csharp
- _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
-        .WithField("Image", field => field
-            .OfType("MediaField")
-            .WithDisplayName("Main image"))
-        .WithField("Price", field => field
-            .OfType("NumericField")
-            .WithDisplayName("Price"))
-    )
+_contentDefinitionManager.AlterPartDefinition("Product", part => part
+                    .WithField("Image", field => field
+                        .OfType("MediaField")
+                        .WithDisplayName("Main image"))
+                    .WithField("Price", field => field
+                        .OfType("NumericField")
+                        .WithDisplayName("Price"))
 );
 ```
 
-When added to a part, fields can also have custom settings which for instance will define how the editor will behave, or validation rules. Also refer to their respective documentation pages for a list of possible settings.
+Fields can also have custom settings which for instance will define how the editor will behave, or validation rules. Also refer to their respective documentation pages for a list of possible settings.
