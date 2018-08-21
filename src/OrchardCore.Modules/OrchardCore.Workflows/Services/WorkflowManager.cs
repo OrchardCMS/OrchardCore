@@ -10,6 +10,7 @@ using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Specifications;
 
 namespace OrchardCore.Workflows.Services
 {
@@ -122,7 +123,7 @@ namespace OrchardCore.Workflows.Services
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
 
             // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListAsync(name, correlationId);
+            var haltedWorkflows = await _workflowStore.ListPendingWorkflowsAsync(name, correlationId);
 
             // If no workflow matches the event, do nothing.
             if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())

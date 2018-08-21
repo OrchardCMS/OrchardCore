@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Specifications;
+using YesSql.Indexes;
 
 namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowStore
     {
         Task<int> CountAsync();
-        Task<IEnumerable<Workflow>> ListAsync(int? skip = null, int? take = null);
-        Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
-        Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null);
+        Task<int> CountAsync<TIndex>(Specification<TIndex> specification) where TIndex : class, IIndex;
+        Task<IEnumerable<Workflow>> ListAsync<TIndex>(Specification<TIndex> specification, int? skip = null, int? take = null) where TIndex : class, IIndex;
+        Task<IEnumerable<Workflow>> ListPendingWorkflowsAsync(string activityName, string correlationId = null);
         Task<Workflow> GetAsync(int id);
-        Task<Workflow> GetAsync(string uid);
-        Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids);
-        Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> uids);
+        Task<Workflow> GetAsync<TIndex>(Specification<TIndex> specification) where TIndex : class, IIndex;
         Task SaveAsync(Workflow workflow);
         Task DeleteAsync(Workflow workflow);
     }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Specifications;
 
 namespace OrchardCore.Workflows.Http.Controllers
 {
@@ -122,7 +123,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             else
             {
                 // Otherwise, we need to resume a halted workflow.
-                var workflow = (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId })).FirstOrDefault();
+                var workflow = await _workflowStore.GetAsync(new ManyWorkflowsBlockedByActivitiesAndByTypeSpecification(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId }));
 
                 if (workflow == null)
                 {
@@ -156,7 +157,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If a specific workflow was provided, then resume that workflow.
             if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
             {
-                var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
+                var workflow = await _workflowStore.GetAsync(new SingleWorkflowSpecification(payload.WorkflowId));
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
                 if (signalActivities == null)

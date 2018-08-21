@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Specifications;
 using OrchardCore.Workflows.UserTasks.Activities;
 using OrchardCore.Workflows.UserTasks.ViewModels;
 
@@ -30,7 +31,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserTaskEventContentDriver(
-            IContentDefinitionManager contentDefinitionManager, 
+            IContentDefinitionManager contentDefinitionManager,
             IWorkflowStore workflowStore,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -59,7 +60,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     model.Actions = actions;
                 }).Location("Actions:30"),
             };
-            
+
             return Combine(results.ToArray());
         }
 
@@ -73,7 +74,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
                 var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
 
-                if(!availableActions.Contains(action))
+                if (!availableActions.Contains(action))
                 {
                     _notifier.Error(T["Not authorized to trigger '{0}'", action]);
                 }
@@ -86,10 +87,10 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
             return await EditAsync(model, updater);
         }
-        
+
         private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
         {
-            var workflows = await _workflowStore.ListAsync(nameof(UserTaskEvent), contentItemId);
+            var workflows = await _workflowStore.ListAsync(new ManyWorkflowsBlockedByActivityNameSpecification(nameof(UserTaskEvent), contentItemId));
             var user = _httpContextAccessor.HttpContext.User;
             var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
             var actionsQuery =
@@ -105,7 +106,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
         private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)
         {
-            if(workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
+            if (workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
             {
                 var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 
