@@ -1,0 +1,36 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+    string required = editorSettings.Required ? "required" : "";
+}
+
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    @foreach (var option in Model.Options)
+    {
+        if (string.IsNullOrWhiteSpace(option.Value))
+        {
+    <div class="form-check" asp-for="Text">
+        <label class="form-check-label">
+            @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Text), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
+        </label>
+    </div>
+        }
+        else
+        {
+    <div class="form-check" asp-for="Text">
+        <label class="form-check-label">
+            @Html.RadioButton("Value", option.Value, (option.Value == Model.Text), new { @required = required, @class = "form-check-input" })@option.Text
+        </label>
+    </div>
+        }
+    }
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+    <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>

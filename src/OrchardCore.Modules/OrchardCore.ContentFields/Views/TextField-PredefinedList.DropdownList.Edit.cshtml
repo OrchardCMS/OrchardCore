@@ -1,0 +1,18 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+    string required = editorSettings.Required ? "required" : "";
+}
+
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <select class="form-control" asp-for="Text" asp-items="Model.Options"></select>
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+    <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>
