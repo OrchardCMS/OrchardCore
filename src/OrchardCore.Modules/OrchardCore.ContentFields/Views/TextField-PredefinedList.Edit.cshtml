@@ -1,36 +1,23 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+
     var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
-    string required = editorSettings.Required ? "required" : "";
+
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as OrchardCore.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "TextField_Editor__PredefinedList";
+
+    if (!String.IsNullOrEmpty(editorSettings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"TextField_Edit__PredefinedList_{editorSettings.Editor}");
+    }
 }
 
-<fieldset class="form-group">
-    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-    @foreach (var option in Model.Options)
-    {
-        if (string.IsNullOrWhiteSpace(option.Value))
-        {
-            <div class="form-check" asp-for="Text">
-                <label class="form-check-label">
-                    @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Text), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
-                </label>
-            </div>
-        }
-        else
-        {
-            <div class="form-check" asp-for="Text">
-                <label class="form-check-label">
-                    @Html.RadioButton("Value", option.Value, (option.Value == Model.Text), new { @required = required, @class = "form-check-input" })@option.Text
-                </label>
-            </div>
-        }
-    }
-
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@T["— {0}", settings.Hint]</span>
-    }
-</fieldset>
+@await DisplayAsync(Model)

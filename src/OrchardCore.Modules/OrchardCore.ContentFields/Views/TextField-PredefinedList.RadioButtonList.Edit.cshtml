@@ -3,8 +3,9 @@
 @using OrchardCore.ContentFields.Settings;
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
-    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
-    string required = editorSettings.Required ? "required" : "";
+    string required = settings.Required ? "required" : "";
+
+    Model.Options.Insert(0, new SelectListItem { Text = T["Unset"].Value, Value = "", Selected = false });
 }
 
 <fieldset class="form-group">
@@ -13,24 +14,24 @@
     {
         if (string.IsNullOrWhiteSpace(option.Value))
         {
-    <div class="form-check" asp-for="Text">
-        <label class="form-check-label">
-            @Html.RadioButton("Value", "", string.IsNullOrWhiteSpace(Model.Text), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
-        </label>
-    </div>
+            <div class="form-check" asp-for="Text">
+                <label class="form-check-label">
+                    @Html.RadioButton("Text", "", string.IsNullOrWhiteSpace(Model.Text), new { @required = required, @class = "form-check-input" })<i>@T["unset"]</i>
+                </label>
+            </div>
         }
         else
         {
-    <div class="form-check" asp-for="Text">
-        <label class="form-check-label">
-            @Html.RadioButton("Value", option.Value, (option.Value == Model.Text), new { @required = required, @class = "form-check-input" })@option.Text
-        </label>
-    </div>
+            <div class="form-check" asp-for="Text">
+                <label class="form-check-label">
+                    @Html.RadioButton("Text", option.Value, (option.Value == Model.Text), new { @required = required, @class = "form-check-input" })@option.Text
+                </label>
+            </div>
         }
     }
 
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
-    <span class="hint">@T["— {0}", settings.Hint]</span>
+        <span class="hint">@T["— {0}", settings.Hint]</span>
     }
 </fieldset>

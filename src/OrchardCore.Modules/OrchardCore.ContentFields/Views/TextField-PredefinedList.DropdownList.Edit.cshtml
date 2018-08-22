@@ -3,8 +3,9 @@
 @using OrchardCore.ContentFields.Settings;
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
-    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
-    string required = editorSettings.Required ? "required" : "";
+    string required = settings.Required ? "required" : "";
+
+    Model.Options.Insert(0, new SelectListItem { Text = T["Select an option"].Value, Value = "", Selected = false });
 }
 
 <fieldset class="form-group">

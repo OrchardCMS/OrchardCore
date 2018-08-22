@@ -8,6 +8,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -78,11 +79,6 @@ namespace OrchardCore.ContentFields.Fields
                     }
                 }
 
-                //if (editorType == "single")
-                //{
-                //    optionsSelected.Insert(0, new SelectListItem { Text = T["Select an option"].Value, Value = "", Selected = false });
-                //}
-
                 model.Options = optionsSelected;
                 model.Text = field.Text;
 
@@ -94,7 +90,18 @@ namespace OrchardCore.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
+            {
+                var settings = context.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+                if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
+                {
+                    updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                }
+                else
+                {
+                    field.Text = field.Text != "" ? field.Text : null;
+                }
+            }
 
             return Edit(field, context);
         }

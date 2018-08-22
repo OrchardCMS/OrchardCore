@@ -25,15 +25,6 @@
     </div>
 
     <fieldset class="form-group">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="Required" type="checkbox" class="form-check-input" />
-                <span class="hint">@T["Check to ensure the user is providing an option for this field."]</span>
-            </label>
-        </div>
-    </fieldset>
-
-    <fieldset class="form-group">
         <div class="row col-md">
             <label asp-for="Options">@T["Options"]</label>
             <textarea asp-for="Options" rows="5" class="form-control"></textarea>
