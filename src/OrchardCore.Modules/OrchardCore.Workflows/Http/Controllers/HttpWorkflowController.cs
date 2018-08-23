@@ -185,7 +185,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         /// </summary>
         private IActionResult GetWorkflowActionResult()
         {
-            if (Response.StatusCode != 0 && Response.StatusCode != (int)HttpStatusCode.OK)
+            if (HttpContext.Items.ContainsKey(WorkflowHttpResult.Instance))
             {
                 return new EmptyResult();
             }
