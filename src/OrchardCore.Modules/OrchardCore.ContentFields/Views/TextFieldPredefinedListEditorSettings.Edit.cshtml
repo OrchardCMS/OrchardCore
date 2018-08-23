@@ -34,7 +34,7 @@
 
     <fieldset class="form-group">
         <div class="row col">
-            <label for="DefaultValue">@T["Default value"]</label>
+            <label asp-for="DefaultValue">@T["Default value"]</label>
             <input asp-for="DefaultValue" class="form-control" type="text" />
             <span class="hint">@T["The default option proposed when creating a content item. If there is no equivalent choice among Options, it will not be used. (optional) When using the Listbox or Checkbox List mode, you can define multiple options separated by a semicolon."]</span>
         </div>

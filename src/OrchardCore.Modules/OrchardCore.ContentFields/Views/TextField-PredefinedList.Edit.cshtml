@@ -1,22 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
-
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@using OrchardCore.ContentFields.Settings
 
 @{
-
-    var editorSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     // Morph the current shape to the correct editor shape based on its Editor property
     var shape = Model as OrchardCore.DisplayManagement.IShape;
     shape.Metadata.Alternates.Clear();
     shape.Metadata.Type = "TextField_Editor__PredefinedList";
 
-    if (!String.IsNullOrEmpty(editorSettings.Editor))
+    if (!String.IsNullOrEmpty(settings.Editor))
     {
-        shape.Metadata.Alternates.Add($"TextField_Edit__PredefinedList_{editorSettings.Editor}");
+        shape.Metadata.Alternates.Add($"TextField_Edit__PredefinedList_{settings.Editor}");
     }
 }
 
