@@ -48,11 +48,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
 
-                    services.Configure<RazorViewEngineOptions>(options =>
-                    {
-                        options.FileProviders.Add(new ThemingFileProvider());
-                    });
-
                     services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
                     services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
