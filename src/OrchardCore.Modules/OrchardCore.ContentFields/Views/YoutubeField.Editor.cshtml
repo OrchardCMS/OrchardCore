@@ -1,0 +1,16 @@
+@model OrchardCore.ContentFields.ViewModels.EditYoutubeFieldViewModel;
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <label asp-for="RawAddress">@Model.PartFieldDefinition.DisplayName()</label>
+    <input asp-for="RawAddress" class="form-control content-preview-text" />
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+    <span class="hint">@settings.Hint</span>
+    }
+</fieldset>
