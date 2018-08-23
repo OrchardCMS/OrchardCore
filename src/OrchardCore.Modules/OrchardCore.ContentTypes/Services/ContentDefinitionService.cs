@@ -303,6 +303,7 @@ namespace OrchardCore.ContentTypes.Services
                 partBuilder.WithField(fieldViewModel.Name, fieldBuilder =>
                 {
                     fieldBuilder.WithDisplayName(fieldViewModel.DisplayName);
+                    fieldBuilder.WithEditor(fieldViewModel.Editor);
                 });
             });
         }

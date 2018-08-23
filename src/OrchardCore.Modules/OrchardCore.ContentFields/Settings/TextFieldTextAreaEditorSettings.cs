@@ -2,8 +2,8 @@ using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class TextFieldSettings
+    public class TextFieldTextAreaEditorSettings
     {
-        public string Hint { get; set; }
+        public string Color { get; set; }
     }
 }

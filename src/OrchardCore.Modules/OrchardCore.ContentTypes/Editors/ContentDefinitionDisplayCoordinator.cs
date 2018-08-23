@@ -90,9 +90,9 @@ namespace OrchardCore.ContentTypes.Editors
             }, Logger);
         }
 
-        public Task BuildPartFieldEditorAsync(ContentPartFieldDefinition model, BuildEditorContext context)
+        public async Task BuildPartFieldEditorAsync(ContentPartFieldDefinition model, BuildEditorContext context)
         {
-            return _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            await _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
                 if (result != null)
@@ -100,9 +100,9 @@ namespace OrchardCore.ContentTypes.Editors
             }, Logger);
         }
 
-        public Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
+        public async Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
         {
-            return _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
+            await _partFieldDisplayDrivers.InvokeAsync(async contentDisplay =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
                 if (result != null)

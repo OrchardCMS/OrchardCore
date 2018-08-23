@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditYoutubeFieldViewModel>("YoutubeField_Edit", model =>
+            return Initialize<EditYoutubeFieldViewModel>(GetEditorShapeType(context), model =>
            {
                model.RawAddress = field.RawAddress;
                model.EmbeddedAddress = field.EmbeddedAddress;
