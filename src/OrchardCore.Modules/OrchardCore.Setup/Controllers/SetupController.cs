@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
@@ -9,6 +10,9 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
+using Newtonsoft.Json;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -16,14 +20,23 @@ namespace OrchardCore.Setup.Controllers
     {
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
+        private readonly IShellHost _shellHost;
+        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+        private readonly IClock _clock;
 
         public SetupController(
+            IClock clock,
             ISetupService setupService,
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
+            IShellHost shellHost,
+            IShellSettingsManager shellSettingsManager,
             IStringLocalizer<SetupController> t)
         {
+            _clock = clock;
+            _shellSettingsManager = shellSettingsManager;
+            _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
@@ -38,9 +51,12 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken) && !_shellSettings.SaasToken.Equals(token, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
             {
-                return View("InvalidToken");
+                if (!IsTokenValid(token))
+                {
+                    return View("InvalidToken");
+                }
             }
 
             var model = new SetupViewModel
@@ -59,6 +75,26 @@ namespace OrchardCore.Setup.Controllers
             }
 
             return View(model);
+        }
+
+        private bool IsTokenValid(string token)
+        {
+            var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
+            var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
+            ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+            var json = dataProtector.Unprotect(token, out var expiration);
+
+            if (_clock.UtcNow < expiration.ToUniversalTime())
+            {
+                var providedToken = JsonConvert.DeserializeObject<string>(json);
+                if (_shellSettings.SaasToken.Equals(providedToken, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         [HttpPost, ActionName("Index")]
