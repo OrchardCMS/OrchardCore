@@ -7,7 +7,7 @@ namespace OrchardCore.Localization
     {
         public string CultureName { get; private set; }
 
-        public PluralizationRuleDelegate PluralRule { get; private set; }
+        public PluralizationRule PluralRule { get; private set; }
 
         public string this[string key] => this[key, null];
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Localization
 
         public IDictionary<string, string[]> Translations { get; private set; }
 
-        public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
+        public CultureDictionary(string cultureName, PluralizationRule pluralRule)
         {
             Translations = new Dictionary<string, string[]>();
             CultureName = cultureName;

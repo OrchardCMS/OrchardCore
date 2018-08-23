@@ -4,8 +4,9 @@ namespace OrchardCore.Localization
 {
     public class CultureDictionaryRecord
     {
-        public string Key { get; private set; }
-        public string[] Translations { get; private set; }
+        public string Key { get; }
+ 
+        public string[] Translations { get; }
 
         public CultureDictionaryRecord(string messageId, string context, string[] translations)
         {
