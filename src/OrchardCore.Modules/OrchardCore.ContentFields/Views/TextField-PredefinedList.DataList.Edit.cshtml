@@ -1,0 +1,21 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    string required = settings.Required ? "required" : "";
+
+    Model.Options.Insert(0, new SelectListItem { Text = T["Select an option"].Value, Value = "", Selected = false });
+}
+
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+
+    <datalist class="form-control" asp-for="Text" asp-items="Model.Options" style="display:none;"></datalist>
+    <input class="form-control" asp-for="Text" list="@(Model.PartFieldDefinition.PartDefinition.Name + "_" + @Model.PartFieldDefinition.Name + "_Text")">
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+</fieldset>
