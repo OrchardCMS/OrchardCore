@@ -81,32 +81,6 @@ namespace OrchardCore.Setup.Controllers
             return View(model);
         }
 
-        private bool IsTokenValid(string token)
-        {
-            try
-            {
-                var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
-                var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
-                ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-
-                var tokenValue = dataProtector.Unprotect(token, out var expiration);
-
-                if (_clock.UtcNow < expiration.ToUniversalTime())
-                {
-                    if (_shellSettings.SaasToken.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in decrypting the token");
-            }
-
-            return false;
-        }
-
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
@@ -227,5 +201,30 @@ namespace OrchardCore.Setup.Controllers
             }
         }
 
+        private bool IsTokenValid(string token)
+        {
+            try
+            {
+                var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
+                var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
+                ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                var tokenValue = dataProtector.Unprotect(token, out var expiration);
+
+                if (_clock.UtcNow < expiration.ToUniversalTime())
+                {
+                    if (_shellSettings.SaasToken.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in decrypting the token");
+            }
+
+            return false;
+        }
     }
 }
