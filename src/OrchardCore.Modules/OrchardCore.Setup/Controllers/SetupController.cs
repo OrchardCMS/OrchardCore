@@ -12,7 +12,7 @@ using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -24,8 +24,10 @@ namespace OrchardCore.Setup.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
+        private readonly ILogger<SetupController> _logger;
 
         public SetupController(
+            ILogger<SetupController> logger,
             IClock clock,
             ISetupService setupService,
             ShellSettings shellSettings,
@@ -34,6 +36,7 @@ namespace OrchardCore.Setup.Controllers
             IShellSettingsManager shellSettingsManager,
             IStringLocalizer<SetupController> t)
         {
+            _logger = logger;
             _clock = clock;
             _shellSettingsManager = shellSettingsManager;
             _shellHost = shellHost;
@@ -53,7 +56,7 @@ namespace OrchardCore.Setup.Controllers
 
             if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
             {
-                if (!IsTokenValid(token))
+                if (string.IsNullOrEmpty(token) || !IsTokenValid(token))
                 {
                     return View("InvalidToken");
                 }
@@ -63,7 +66,8 @@ namespace OrchardCore.Setup.Controllers
             {
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
-                RecipeName = defaultRecipe?.Name
+                RecipeName = defaultRecipe?.Name,
+                SaasToken = token
             };
 
             CopyShellSettingsValues(model);
@@ -79,19 +83,25 @@ namespace OrchardCore.Setup.Controllers
 
         private bool IsTokenValid(string token)
         {
-            var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
-            var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
-            ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-
-            var json = dataProtector.Unprotect(token, out var expiration);
-
-            if (_clock.UtcNow < expiration.ToUniversalTime())
+            try
             {
-                var providedToken = JsonConvert.DeserializeObject<string>(json);
-                if (_shellSettings.SaasToken.Equals(providedToken, StringComparison.OrdinalIgnoreCase))
+                var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
+                var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
+                ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                var tokenValue = dataProtector.Unprotect(token, out var expiration);
+
+                if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
-                    return true;
+                    if (_shellSettings.SaasToken.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in decrypting the token");
             }
 
             return false;
@@ -100,6 +110,14 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
+            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
+            {
+                if (string.IsNullOrEmpty(model.SaasToken) || !IsTokenValid(model.SaasToken))
+                {
+                    return View("InvalidToken");
+                }
+            }
+
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 

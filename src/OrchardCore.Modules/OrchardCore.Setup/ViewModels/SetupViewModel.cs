@@ -46,5 +46,7 @@ namespace OrchardCore.Setup.ViewModels
         public string RecipeName { get; set; }
 
         public string SiteTimeZone { get; set; }
+
+        public string SaasToken { get; set; }
     }
 }

@@ -77,7 +77,7 @@ namespace OrchardCore.Tenants.Controllers
                         IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                     };
 
-                    if (x.Settings.State == TenantState.Initializing && !string.IsNullOrEmpty(x.Settings.SaasToken))
+                    if (x.Settings.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings.SaasToken))
                     {
                         entry.Token = dataProtector.Protect(x.Settings.SaasToken, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                     }
