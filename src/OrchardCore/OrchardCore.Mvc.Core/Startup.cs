@@ -30,7 +30,7 @@ namespace OrchardCore.Mvc
         {
             var builder = services.AddMvc(options =>
             {
-                // AntiForgery Token Valide should be on by default
+                // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
 
                 // Custom model binder to testing purpose
