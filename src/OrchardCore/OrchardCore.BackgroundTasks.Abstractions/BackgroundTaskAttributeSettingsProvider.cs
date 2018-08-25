@@ -1,12 +1,16 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskAttributeSettingsProvider : IBackgroundTaskSettingsProvider
     {
         public int Order => 100;
+
+        public IChangeToken ChangeToken => NullChangeToken.Singleton;
 
         public Task<BackgroundTaskSettings> GetSettingsAsync(Type type)
         {

@@ -6,13 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
-
 
 namespace OrchardCore.Modules
 {
@@ -23,6 +24,9 @@ namespace OrchardCore.Modules
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
+
+        private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens =
+            new ConcurrentDictionary<string, IChangeToken>();
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -148,6 +152,8 @@ namespace OrchardCore.Modules
                         return;
                     }
 
+                    _changeTokens[tenant] = scope.GetTaskSettingsChangeToken();
+
                     foreach (var taskType in taskTypes)
                     {
                         var taskName = taskType.FullName;
@@ -206,7 +212,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public async Task UpdateAsync(string tenant)
+        private async Task UpdateAsync(string tenant)
         {
             var shell = GetRunningShells().FirstOrDefault(s => s.Settings.Name == tenant);
 
@@ -216,30 +222,24 @@ namespace OrchardCore.Modules
             }
         }
 
-        public Task UpdateAsync(string tenant, string taskName)
+        public async Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
         {
+            await UpdateAsync(tenant);
+
             if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
             {
-                _schedulers[tenant + taskName] = scheduler.Clone(s => s.Updated = false);
+                return scheduler.Settings.Clone();
             }
 
-            return UpdateAsync(tenant);
+            return BackgroundTaskSettings.None;
         }
 
-        public Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
+        public async Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
         {
-            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
-            {
-                return Task.FromResult(scheduler.Settings.Clone());
-            }
+            await UpdateAsync(tenant);
 
-            return Task.FromResult(BackgroundTaskSettings.None);
-        }
-
-        public Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
-        {
-            return Task.FromResult(_schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.Settings.Clone()).ToArray().AsEnumerable());
+            return _schedulers.Where(kv => kv.Value.Tenant == tenant)
+                .Select(kv => kv.Value.Settings.Clone()).ToArray().AsEnumerable();
         }
 
         private IEnumerable<ShellContext> GetRunningShells()
@@ -255,17 +255,24 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetShellsToUpdate(IEnumerable<ShellContext> previousShells, IEnumerable<ShellContext> runningShells)
         {
-            var tenantsToRelease = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
+            var released = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
 
-            if (tenantsToRelease.Any())
+            if (released.Any())
             {
-                ReleaseSchedulers(tenantsToRelease);
+                UpdateSchedulers(released, s => s.Released = true);
             }
 
-            var validTenants = previousShells.Select(s => s.Settings.Name).Except(tenantsToRelease);
-            var tenantsToadd = runningShells.Select(s => s.Settings.Name).Except(validTenants).ToArray();
+            var changed = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
 
-            return runningShells.Where(s => tenantsToadd.Contains(s.Settings.Name)).ToArray();
+            if (changed.Any())
+            {
+                UpdateSchedulers(changed, s => s.Updated = false);
+            }
+
+            var valid = previousShells.Select(s => s.Settings.Name).Except(released).Except(changed);
+            var tenantsToUpdate = runningShells.Select(s => s.Settings.Name).Except(valid).ToArray();
+
+            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings.Name)).ToArray();
         }
 
         private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
@@ -273,7 +280,7 @@ namespace OrchardCore.Modules
             return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value).ToArray();
         }
 
-        private void ReleaseSchedulers(IEnumerable<string> tenants)
+        private void UpdateSchedulers(IEnumerable<string> tenants, Action<BackgroundTaskScheduler> action)
         {
             var keys = _schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
 
@@ -281,7 +288,7 @@ namespace OrchardCore.Modules
             {
                 if (_schedulers.TryGetValue(key, out BackgroundTaskScheduler scheduler))
                 {
-                    _schedulers[key] = scheduler.Clone(s => s.Released = true);
+                    _schedulers[key] = scheduler.Clone(s => action(s));
                 }
             }
         }
@@ -360,6 +367,28 @@ namespace OrchardCore.Modules
             }
 
             return new BackgroundTaskSettings() { Name = type.FullName };
+        }
+
+        public static IChangeToken GetTaskSettingsChangeToken(this IServiceScope scope)
+        {
+            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
+
+            var changeTokens = new List<IChangeToken>();
+            foreach (var provider in providers.OrderBy(p => p.Order))
+            {
+                var changeToken = provider.ChangeToken;
+                if (changeToken != null)
+                {
+                    changeTokens.Add(changeToken);
+                }
+            }
+
+            if (changeTokens.Count == 0)
+            {
+                return NullChangeToken.Singleton;
+            }
+
+            return new CompositeChangeToken(changeTokens);
         }
     }
 }

@@ -65,19 +65,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var taskNames = _backgroundTaskManager.TaskNames.OrderBy(n => n);
             var settings = await _backgroundService.GetSettingsAsync(_tenant);
 
-            if (!settings.Any())
+            var taskEntries = settings.Select(s => new BackgroundTaskEntry
             {
-                await _backgroundService.UpdateAsync(_tenant);
-                settings = await _backgroundService.GetSettingsAsync(_tenant);
-            }
-
-            var taskEntries = taskNames.Select(name => new BackgroundTaskEntry
-            {
-                Name = name,
-                Settings = settings.FirstOrDefault(s => name == s.Name) ?? BackgroundTaskSettings.None,
+                Name = s.Name,
+                Settings = s,
             })
             .OrderBy(entry => entry.Name)
             .Skip(pager.GetStartIndex())
@@ -144,7 +137,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-                await _backgroundService.UpdateAsync(_tenant, model.Name);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -211,7 +203,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, task);
-                await _backgroundService.UpdateAsync(_tenant, model.Name);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -236,7 +227,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             await _backgroundTaskManager.RemoveAsync(name);
-            await _backgroundService.UpdateAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }
@@ -259,7 +249,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             task.Enable = true;
 
             await _backgroundTaskManager.UpdateAsync(name, task);
-            await _backgroundService.UpdateAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }
@@ -282,7 +271,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             task.Enable = false;
 
             await _backgroundTaskManager.UpdateAsync(name, task);
-            await _backgroundService.UpdateAsync(_tenant, name);
 
             return RedirectToAction(nameof(Index));
         }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
@@ -13,7 +11,6 @@ namespace OrchardCore.BackgroundTasks.Services
     public class BackgroundTaskManager
     {
         private readonly IModularBackgroundService _backgroundService;
-        private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly ISession _session;
@@ -22,21 +19,17 @@ namespace OrchardCore.BackgroundTasks.Services
 
         public BackgroundTaskManager(
             IModularBackgroundService backgroundService,
-            IEnumerable<IBackgroundTask> backgroundTasks,
             IMemoryCache memoryCache,
             ISignal signal,
             ISession session)
         {
             _backgroundService = backgroundService;
-            _backgroundTasks = backgroundTasks;
             _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
-
-        public IEnumerable<string> TaskNames => _backgroundTasks.Select(t => t.GetType().FullName);
 
         /// <inheritdoc/>
         public async Task<BackgroundTaskDocument> GetDocumentAsync()

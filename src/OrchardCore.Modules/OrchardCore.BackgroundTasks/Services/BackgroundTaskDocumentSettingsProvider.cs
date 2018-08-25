@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
@@ -13,6 +14,8 @@ namespace OrchardCore.BackgroundTasks.Services
         }
 
         public int Order => 50;
+
+        public IChangeToken ChangeToken => _backgroundTaskManager.ChangeToken;
 
         public async Task<BackgroundTaskSettings> GetSettingsAsync(Type type)
         {
