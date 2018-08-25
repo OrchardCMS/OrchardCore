@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Settings;

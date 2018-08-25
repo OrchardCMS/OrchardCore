@@ -55,16 +55,7 @@ namespace OrchardCore.BackgroundTasks
 
         public void Idle()
         {
-            if (State.Status == BackgroundTaskStatus.Running)
-            {
-                State.Status = BackgroundTaskStatus.Idle;
-            }
-        }
-
-        public void Fault(Exception exception)
-        {
-            Idle();
-            State.FaultMessage = DateTime.UtcNow.ToString() + ' ' + exception.Message;
+            State.Status = BackgroundTaskStatus.Idle;
         }
 
         public BackgroundTaskScheduler Clone()

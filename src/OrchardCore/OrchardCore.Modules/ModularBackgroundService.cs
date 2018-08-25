@@ -116,7 +116,6 @@ namespace OrchardCore.Modules
 
                         catch (Exception e)
                         {
-                            scheduler.Fault(e);
                             Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     }
@@ -187,7 +186,6 @@ namespace OrchardCore.Modules
 
                         catch (Exception e)
                         {
-                            scheduler.Fault(e);
                             Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
