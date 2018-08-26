@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Provides support for UI localization.",
-    Category = "Infrastructure"
+    Category = "Internationalization",
+    Dependencies = new[] { "OrchardCore.Settings" }
 )]

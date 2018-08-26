@@ -43,14 +43,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Filters.Add(typeof(ModelBinderAccessorFilter));
                         options.Filters.Add(typeof(NotifyFilter));
+                        options.Filters.Add(typeof(SiteViewResultFilter));
                     });
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
-
-                    services.Configure<RazorViewEngineOptions>(options =>
-                    {
-                        options.FileProviders.Add(new ThemingFileProvider());
-                    });
 
                     services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();

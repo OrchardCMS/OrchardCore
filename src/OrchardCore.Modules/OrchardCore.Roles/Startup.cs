@@ -14,6 +14,9 @@ using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
+using OrchardCore.Deployment;
+using OrchardCore.Roles.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Roles
 {
@@ -31,6 +34,11 @@ namespace OrchardCore.Roles
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+
+            // Deployment
+            services.AddTransient<IDeploymentSource, AllRolesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllRolesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

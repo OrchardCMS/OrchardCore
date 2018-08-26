@@ -42,7 +42,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
                 await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
             }            
 
-            return Edit(userTimeZone, context);
+            return await EditAsync(userTimeZone, context);
         }
     }
 }

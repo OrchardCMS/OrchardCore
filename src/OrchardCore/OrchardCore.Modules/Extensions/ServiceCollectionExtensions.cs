@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -117,11 +118,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     fileProvider = new ModuleEmbeddedStaticFileProvider(env);
                 }
 
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "",
-                    FileProvider = fileProvider
-                });
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+
+                options.RequestPath = "";
+                options.FileProvider = fileProvider;
+                app.UseStaticFiles(options);
             });
         }
 
@@ -190,11 +191,33 @@ namespace Microsoft.Extensions.DependencyInjection
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                services.Add(new ServiceCollection()
+                var collection = new ServiceCollection()
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .Services);
+                    .Services;
+
+                // Retrieve the implementation type of the newly startup filter registered as a singleton
+                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
+
+                if (startupFilterType != null)
+                {
+                    // Remove any previously registered data protection startup filters.
+                    var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
+                        (s.ImplementationInstance?.GetType() == startupFilterType ||
+                        s.ImplementationType == startupFilterType)).ToArray();
+
+                    foreach (var descriptor in descriptors)
+                    {
+                        services.Remove(descriptor);
+                    }
+                }
+
+                // Remove any previously registered options setups.
+                services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+
+                services.Add(collection);
             });
         }
     }

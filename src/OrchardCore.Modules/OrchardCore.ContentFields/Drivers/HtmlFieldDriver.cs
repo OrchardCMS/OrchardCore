@@ -43,7 +43,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditHtmlFieldViewModel>("HtmlField_Edit", model =>
+            return Initialize<EditHtmlFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Html = field.Html;
                 model.Field = field;

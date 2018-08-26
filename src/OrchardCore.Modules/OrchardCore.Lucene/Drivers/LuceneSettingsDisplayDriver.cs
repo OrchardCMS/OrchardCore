@@ -28,19 +28,19 @@ namespace OrchardCore.Lucene.Drivers
                 }).Location("Content:2").OnGroup("search");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section,  BuildEditorContext context)
         {
-            if (groupId == "search")
+            if (context.GroupId == "search")
             {
                 var model = new LuceneSettingsViewModel();
 
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 section.SearchIndex = model.SearchIndex;
                 section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

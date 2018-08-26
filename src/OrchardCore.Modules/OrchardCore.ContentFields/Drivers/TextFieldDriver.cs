@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTextFieldViewModel>("TextField_Edit", model =>
+            return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Text = field.Text;
 

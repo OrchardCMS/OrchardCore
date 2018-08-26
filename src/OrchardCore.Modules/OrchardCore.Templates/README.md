@@ -264,7 +264,7 @@ This template is called when a content field shape type is rendered for a given 
 The differentiator uniquely identifies a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
 all the shapes provided by content display drivers, including the ones for content parts and content fields.
 
-Differentiators can be used to configure the placement information (c.f. [Placement documentation page](#)), or to access specific shapes in a zone using these template helpers:
+Differentiators can be used to configure the placement information (c.f. [Placement documentation page](../../OrchardCore/OrchardCore.DisplayManagement/README)), or to access specific shapes in a zone using these template helpers:
 
 ### Content Part differentiator
 

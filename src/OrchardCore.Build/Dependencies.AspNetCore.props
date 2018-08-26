@@ -36,6 +36,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.1.1" /> 
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.1" />

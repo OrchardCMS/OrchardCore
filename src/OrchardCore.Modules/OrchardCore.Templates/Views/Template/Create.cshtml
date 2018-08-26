@@ -38,7 +38,16 @@
 
     <fieldset>
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <div class="btn-group">
+                <button type="submit" name="submit" class="btn btn-secondary">@T["Save"]</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["Save And Continue"]</button>
+                </div>
+            </div>
+
             @if (Url.IsLocalUrl(returnUrl))
             {                
                 <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>

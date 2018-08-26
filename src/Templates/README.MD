@@ -27,11 +27,29 @@ dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-* --nuget-source https://ww
 ```CMD
 dotnet new occms  
 ```
+The above command will use the default options.
+
+You can pass the following CLI parameters to setup options
+
+```CMD
+Orchard Core Cms Web App (C#)
+Author: Orchard Project
+Options:
+  -lo|--logger           Configures the logger component.
+                             nlog       - Configures NLog as the logger component.
+                             serilog    - Configures Serilog as the logger component.
+                             none       - Do not configure logger.
+                         Default: nlog
+
+  -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
+                         string - Optional
+                         Default: 1.0.0-beta3
+```
 
 Logging can be ignored with this command:
 
 ```CMD
-dotnet new occms --nlog false
+dotnet new occms --logger none
 ```
 
 ### From Visual Studio (manual way)
