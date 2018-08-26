@@ -25,13 +25,13 @@ namespace OrchardCore.Apis.GraphQL.Client
             var requestJson = new JObject(
                 new JProperty("query", "mutation CreateTenant { " +
                 "createTenant(" +
-                @" SiteName: """ + siteName + @"""," +
-                @" DatabaseProvider: """ + databaseProvider + @"""," +
-                @" UserName: """ + userName + @"""," +
-                @" Email: """ + email + @"""," +
-                @" Password: """ + password + @"""," +
-                @" PasswordConfirmation: """ + password + @"""," +
-                @" RecipeName: """ + recipeName + @"""" +
+                @" siteName: """ + siteName + @"""," +
+                @" databaseProvider: """ + databaseProvider + @"""," +
+                @" userName: """ + userName + @"""," +
+                @" email: """ + email + @"""," +
+                @" password: """ + password + @"""," +
+                @" passwordConfirmation: """ + password + @"""," +
+                @" recipeName: """ + recipeName + @"""" +
                 " ) { executionId } }")
                 );
 

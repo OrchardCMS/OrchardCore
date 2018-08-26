@@ -23,14 +23,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
 
             Arguments = new QueryArguments
             {
-                new QueryArgument<NonNullGraphType<CreateContentItemInputType>> { Name = "ContentItem" }
+                new QueryArgument<NonNullGraphType<CreateContentItemInputType>> { Name = "contentItem" }
             };
 
             Type = typeof(ContentItemType);
 
             Resolver = new AsyncFieldResolver<object, object>(async (context) =>
             {
-                var contentItemFabrication = context.GetArgument<ContentItemInput>("ContentItem");
+                var contentItemFabrication = context.GetArgument<ContentItemInput>("contentItem");
 
                 var contentParts = JObject.FromObject(contentItemFabrication.ContentParts);
 

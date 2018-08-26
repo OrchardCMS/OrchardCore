@@ -140,9 +140,9 @@ namespace OrchardCore.Apis.JsonApi
 
                         // Handle path combinations such as "" + "Property", "Parent" + "Property", or "Parent" + "[12]".
                         var key = eventArgs.ErrorContext.Path;
-                        if (!string.IsNullOrEmpty(context.ModelName))
+                        if (!String.IsNullOrEmpty(context.ModelName))
                         {
-                            if (string.IsNullOrEmpty(eventArgs.ErrorContext.Path))
+                            if (String.IsNullOrEmpty(eventArgs.ErrorContext.Path))
                             {
                                 key = context.ModelName;
                             }

@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
             Field(ci => ci.Published, true);
             Field(ci => ci.Latest, true);
 
-            Field<ContentPartsInputType>("ContentParts");
+            Field<ContentPartsInputType>("contentParts");
         }
     }
 

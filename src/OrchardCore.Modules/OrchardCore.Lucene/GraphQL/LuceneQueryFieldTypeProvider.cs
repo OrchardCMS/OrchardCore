@@ -101,7 +101,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "Parameters" }
+                    new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
                 Name = query.Name,
@@ -111,7 +111,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
-                    var parameters = context.GetArgument<string>("Parameters");
+                    var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
@@ -132,7 +132,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "Parameters" }
+                    new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
                 Name = query.Name,
@@ -142,7 +142,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
-                    var parameters = context.GetArgument<string>("Parameters");
+                    var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)

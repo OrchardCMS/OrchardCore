@@ -21,7 +21,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             var variables = contentTypeBuilder.Build();
 
             var requestJson = new JObject(
-                new JProperty("query", "mutation { createContentItem( ContentItem: { " + variables + " } ) { contentItemId } }"));
+                new JProperty("query", "mutation { createContentItem( contentItem: { " + variables + " } ) { contentItemId } }"));
 
             var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
 
@@ -58,7 +58,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         public async Task Delete(string blogPostContentItemId)
         {
             var requestJson = new JObject(
-                new JProperty("query", @"mutation DeleteContentItem { deleteContentItem( ContentItemId: """+ blogPostContentItemId + @""") { status } }")
+                new JProperty("query", @"mutation DeleteContentItem { deleteContentItem( contentItemId: """+ blogPostContentItemId + @""") { status } }")
                 );
 
             var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());

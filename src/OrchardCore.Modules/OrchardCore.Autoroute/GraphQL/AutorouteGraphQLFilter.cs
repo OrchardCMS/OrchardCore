@@ -11,12 +11,12 @@ namespace OrchardCore.Autoroute.GraphQL
     {
         public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
         {
-            if (!context.HasArgument("AutoroutePart"))
+            if (!context.HasArgument("autoroutePart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<AutoroutePart>("AutoroutePart");
+            var part = context.GetArgument<AutoroutePart>("autoroutePart");
 
             if (part == null)
             {

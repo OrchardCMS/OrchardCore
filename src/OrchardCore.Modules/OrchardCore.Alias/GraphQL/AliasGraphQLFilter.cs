@@ -11,12 +11,12 @@ namespace OrchardCore.Alias.GraphQL
     {
         public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
         {
-            if (!context.HasArgument("AliasPart"))
+            if (!context.HasArgument("aliasPart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<AliasPart>("AliasPart");
+            var part = context.GetArgument<AliasPart>("aliasPart");
 
             if (part == null)
             {

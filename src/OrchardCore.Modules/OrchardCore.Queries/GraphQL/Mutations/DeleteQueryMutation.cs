@@ -13,14 +13,14 @@ namespace OrchardCore.Queries.GraphQL.Mutations
             Name = "DeleteQuery";
 
             Arguments = new QueryArguments(
-                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "Name" }
+                new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "name" }
                 );
 
             Type = typeof(DeletionStatusObjectGraphType);
 
             Resolver = new AsyncFieldResolver<object, DeletionStatus>(async (context) =>
             {
-                var name = context.GetArgument<string>("Name");
+                var name = context.GetArgument<string>("name");
 
                 var queryManager = httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IQueryManager>();
                 await queryManager.DeleteQueryAsync(name);

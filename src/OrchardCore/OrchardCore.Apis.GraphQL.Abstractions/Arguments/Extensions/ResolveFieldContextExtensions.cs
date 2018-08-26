@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using GraphQL.Types;
@@ -16,15 +17,25 @@ namespace OrchardCore.Apis.GraphQL.Arguments
 
             foreach (var propertyInfo in properties)
             {
-                if (resolveFieldContext.HasPopulatedArgument(propertyInfo.Name))
+                var name = FirstCharacterToLower(propertyInfo.Name);
+
+                if (resolveFieldContext.HasPopulatedArgument(name))
                 {
                     propertyInfo.SetValue(
                         value,
-                        resolveFieldContext.GetArgument(propertyInfo.PropertyType, propertyInfo.Name));
+                        resolveFieldContext.GetArgument(propertyInfo.PropertyType, name));
                 }
             }
 
             return value;
+        }
+
+        private static string FirstCharacterToLower(string str)
+        {
+            if (String.IsNullOrEmpty(str) || Char.IsLower(str, 0))
+                return str;
+
+            return Char.ToLowerInvariant(str[0]) + str.Substring(1);
         }
     }
 }

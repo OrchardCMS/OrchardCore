@@ -84,7 +84,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
-                query.Arguments.AddRange(queryArguments);
+                foreach (var qa in queryArguments) {
+                    query.Arguments.Add(qa);
+                }
 
                 schema.Query.AddField(query);
             }

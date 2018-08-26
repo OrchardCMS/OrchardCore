@@ -11,12 +11,12 @@ namespace OrchardCore.Lists.GraphQL
     {
         public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
         {
-            if (!context.HasArgument("ContainedPart"))
+            if (!context.HasArgument("containedPart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<ContainedPart>("ContainedPart");
+            var part = context.GetArgument<ContainedPart>("containedPart");
 
             if (part == null)
             {
