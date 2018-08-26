@@ -18,17 +18,17 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                 .Create("BlogPost", builder =>
                 {
                     builder
-                        .WithField("Published", true);
+                        .WithField("published", true);
                     builder
-                        .WithField("Latest", true);
+                        .WithField("latest", true);
 
                     builder
-                        .WithContentPart("TitlePart")
-                        .AddField("Title", "Some sorta blogpost in a Query!");
+                        .WithContentPart("titlePart")
+                        .AddField("title", "Some sorta blogpost in a Query!");
 
                     builder
-                        .WithContentPart("ContainedPart")
-                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
+                        .WithContentPart("containedPart")
+                        .AddField("listContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext
@@ -37,8 +37,8 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                 .Query("RecentBlogPosts", builder =>
                 {
                     builder
-                        .WithNestedField("TitlePart")
-                        .AddField("Title");
+                        .WithNestedField("titlePart")
+                        .AddField("title");
                 });
 
             this.Assent(result.ToString());

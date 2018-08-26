@@ -15,8 +15,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .GraphQLClient
                 .Content
                 .Create("Blog", builder => builder
-                        .WithContentPart("TitlePart")
-                        .AddField("Title", "Hi There!")
+                        .WithContentPart("titlePart")
+                        .AddField("title", "Hi There!")
                 );
 
             Assert.NotEmpty(contentItemId);
