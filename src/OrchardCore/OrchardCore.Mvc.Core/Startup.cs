@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -28,6 +29,8 @@ namespace OrchardCore.Mvc
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
             var builder = services.AddMvc(options =>
             {
                 // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
