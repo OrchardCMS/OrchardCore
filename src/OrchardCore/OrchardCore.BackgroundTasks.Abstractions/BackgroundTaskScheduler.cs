@@ -33,7 +33,7 @@ namespace OrchardCore.BackgroundTasks
 
             if (DateTime.UtcNow >= State.NextStartTime)
             {
-                if (Settings.Enable && !Released && State.Status == BackgroundTaskStatus.Idle)
+                if (Settings.Enable && !Released && Updated)
                 {
                     return true;
                 }
@@ -47,31 +47,8 @@ namespace OrchardCore.BackgroundTasks
 
         public void Run()
         {
-            State.Status = BackgroundTaskStatus.Running;
             State.LastStartTime = ReferenceTime = DateTime.UtcNow;
             State.NextStartTime = GetNextStartTime();
-            State.StartCount += 1;
-        }
-
-        public void Idle()
-        {
-            State.Status = BackgroundTaskStatus.Idle;
-        }
-
-        public BackgroundTaskScheduler Clone()
-        {
-            return new BackgroundTaskScheduler(Tenant, State.Name, ReferenceTime)
-            {
-                Settings = Settings.Clone(),
-                State = State.Clone()
-            };
-        }
-
-        public BackgroundTaskScheduler Clone(Action<BackgroundTaskScheduler> action)
-        {
-            var scheduler = Clone();
-            action(scheduler);
-            return scheduler;
         }
     }
 }

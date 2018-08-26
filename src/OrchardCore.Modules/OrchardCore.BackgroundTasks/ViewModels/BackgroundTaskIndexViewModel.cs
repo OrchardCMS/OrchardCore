@@ -10,7 +10,6 @@ namespace OrchardCore.BackgroundTasks.ViewModels
 
     public class BackgroundTaskEntry
     {
-        public string Name { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
     }
 }

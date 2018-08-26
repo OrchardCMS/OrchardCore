@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -17,7 +16,7 @@ using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : BackgroundService, IModularBackgroundService
+    internal class ModularBackgroundService : BackgroundService
     {
         private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -96,7 +95,7 @@ namespace OrchardCore.Modules
 
                         var taskName = scheduler.Name;
 
-                        var task = scope.GetTaskByTypeName(taskName);
+                        var task = scope.ServiceProvider.GetServices<IBackgroundTask>().LastOrDefault(t => t.GetType().FullName == taskName);
 
                         if (task == null)
                         {
@@ -106,11 +105,10 @@ namespace OrchardCore.Modules
                         try
                         {
                             Logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-                            scheduler.Run();
 
+                            scheduler.Run();
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                            scheduler.Idle();
                             Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
@@ -143,7 +141,8 @@ namespace OrchardCore.Modules
                         return;
                     }
 
-                    var taskTypes = scope.GetTaskTypes();
+                    var taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>().Select(t => t.GetType()).ToArray();
+
                     CleanSchedulers(tenant, taskTypes);
 
                     if (!taskTypes.Any())
@@ -151,7 +150,9 @@ namespace OrchardCore.Modules
                         return;
                     }
 
-                    _changeTokens[tenant] = scope.GetTaskSettingsChangeToken();
+                    var _settingsProviders = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
+
+                    _changeTokens[tenant] = _settingsProviders.GetChangeToken();
 
                     foreach (var taskType in taskTypes)
                     {
@@ -167,21 +168,11 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        scheduler = scheduler.Clone();
+                        var settings = new BackgroundTaskSettings() { Name = taskName };
 
                         try
                         {
-                            var settings = await scope.GetTaskSettingsAsync(taskType);
-
-                            if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
-                            {
-                                scheduler.ReferenceTime = referenceTime;
-                            }
-
-                            scheduler.Settings = settings.Clone();
-                            scheduler.Released = false;
-                            scheduler.Updated = true;
-                            scheduler.CanRun();
+                            settings = await _settingsProviders.GetSettingsAsync(taskType);
                         }
 
                         catch (Exception e)
@@ -189,10 +180,14 @@ namespace OrchardCore.Modules
                             Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
-                        finally
+                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
-                            _schedulers[tenant + taskName] = scheduler;
+                            scheduler.ReferenceTime = referenceTime;
                         }
+
+                         scheduler.Settings = settings;
+                         scheduler.Released = false;
+                         scheduler.Updated = true;
                     }
                 }
             });
@@ -208,36 +203,6 @@ namespace OrchardCore.Modules
             catch (OperationCanceledException)
             {
             }
-        }
-
-        private async Task UpdateAsync(string tenant)
-        {
-            var shell = GetRunningShells().FirstOrDefault(s => s.Settings.Name == tenant);
-
-            if (shell != null)
-            {
-                await UpdateAsync(Enumerable.Empty<ShellContext>(), new [] { shell }, CancellationToken.None);
-            }
-        }
-
-        public async Task<BackgroundTaskSettings> GetSettingsAsync(string tenant, string taskName)
-        {
-            await UpdateAsync(tenant);
-
-            if (_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
-            {
-                return scheduler.Settings.Clone();
-            }
-
-            return BackgroundTaskSettings.None;
-        }
-
-        public async Task<IEnumerable<BackgroundTaskSettings>> GetSettingsAsync(string tenant)
-        {
-            await UpdateAsync(tenant);
-
-            return _schedulers.Where(kv => kv.Value.Tenant == tenant)
-                .Select(kv => kv.Value.Settings.Clone()).ToArray().AsEnumerable();
         }
 
         private IEnumerable<ShellContext> GetRunningShells()
@@ -286,14 +251,14 @@ namespace OrchardCore.Modules
             {
                 if (_schedulers.TryGetValue(key, out BackgroundTaskScheduler scheduler))
                 {
-                    _schedulers[key] = scheduler.Clone(s => action(s));
+                    action(scheduler);
                 }
             }
         }
 
         private void CleanSchedulers(string tenant, IEnumerable<Type> taskTypes)
         {
-            var validKeys = taskTypes.Select(type => tenant + type.FullName).ToArray();
+            var validKeys = taskTypes.Select(task => tenant + task.FullName).ToArray();
 
             var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 
@@ -307,27 +272,6 @@ namespace OrchardCore.Modules
         }
     }
 
-    internal static class EnumerableExtensions
-    {
-        public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
-        {
-            var partitionCount = System.Environment.ProcessorCount;
-
-            return Task.WhenAll(
-                from partition in Partitioner.Create(source).GetPartitions(partitionCount)
-                select Task.Run(async delegate
-                {
-                    using (partition)
-                    {
-                        while (partition.MoveNext())
-                        {
-                            await body(partition.Current);
-                        }
-                    }
-                }));
-        }
-    }
-
     internal static class HttpContextExtensions
     {
         public static void Update(this HttpContext httpContext, ShellContext shell)
@@ -335,58 +279,6 @@ namespace OrchardCore.Modules
             httpContext.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
             httpContext.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             httpContext.Items["IsBackground"] = true;
-        }
-    }
-
-    internal static class ServiceScopeExtensions
-    {
-        public static IEnumerable<Type> GetTaskTypes(this IServiceScope scope)
-        {
-            return scope.ServiceProvider.GetServices<IBackgroundTask>().Select(t => t.GetType());
-        }
-
-        public static IBackgroundTask GetTaskByTypeName(this IServiceScope scope, string type)
-        {
-            return scope.ServiceProvider.GetServices<IBackgroundTask>().FirstOrDefault(t => t.GetType().FullName == type);
-        }
-
-        public static async Task<BackgroundTaskSettings> GetTaskSettingsAsync(this IServiceScope scope, Type type)
-        {
-            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
-
-            foreach (var provider in providers.OrderBy(p => p.Order))
-            {
-                var settings = await provider.GetSettingsAsync(type);
-
-                if (settings != null && settings != BackgroundTaskSettings.None)
-                {
-                    return settings;
-                }
-            }
-
-            return new BackgroundTaskSettings() { Name = type.FullName };
-        }
-
-        public static IChangeToken GetTaskSettingsChangeToken(this IServiceScope scope)
-        {
-            var providers = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
-
-            var changeTokens = new List<IChangeToken>();
-            foreach (var provider in providers.OrderBy(p => p.Order))
-            {
-                var changeToken = provider.ChangeToken;
-                if (changeToken != null)
-                {
-                    changeTokens.Add(changeToken);
-                }
-            }
-
-            if (changeTokens.Count == 0)
-            {
-                return NullChangeToken.Singleton;
-            }
-
-            return new CompositeChangeToken(changeTokens);
         }
     }
 }

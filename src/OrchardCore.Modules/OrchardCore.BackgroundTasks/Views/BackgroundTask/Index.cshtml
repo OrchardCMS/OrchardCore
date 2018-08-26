@@ -8,25 +8,25 @@
     @if (Model.Tasks.Any())
     {
         <ul class="list-group">
-            @foreach (var entry in Model.Tasks)
+            @foreach (var settings in Model.Tasks.Select(t => t.Settings))
             {
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="related">
-                        @if (@entry.Settings.Enable)
+                        @if (@settings.Enable)
                         {
-                            <a asp-action="Disable" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
                         else
                         {
-                            <a asp-action="Enable" asp-route-name="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                            <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                         }
 
-                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         </div>
                         <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
-                        <span class="text-primary"><a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a></span>
-                        <span class="hint">@T["— {0}", entry.Settings.Description]</span>
+                        <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Name</a></span>
+                        <span class="hint">@T["— {0}", settings.Description]</span>
                     </div>
 
                 </li>

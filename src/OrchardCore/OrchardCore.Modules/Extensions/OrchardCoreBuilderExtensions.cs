@@ -92,8 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices
                 .AddSingleton<ModularBackgroundService>()
-                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>())
-                .AddSingleton<IModularBackgroundService>(sp => sp.GetRequiredService<ModularBackgroundService>());
+                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>());
 
             builder.ConfigureServices(services =>
             {

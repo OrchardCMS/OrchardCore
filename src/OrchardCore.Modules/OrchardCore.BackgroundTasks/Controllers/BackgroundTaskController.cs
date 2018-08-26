@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +14,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 
@@ -24,7 +24,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
     {
         private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IModularBackgroundService _backgroundService;
+        private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
+        private readonly IEnumerable<IBackgroundTaskSettingsProvider> _settingsProviders;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
@@ -32,7 +33,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
         public BackgroundTaskController(
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,
-            IModularBackgroundService backgroundService,
+            IEnumerable<IBackgroundTask> backgroundTasks,
+            IEnumerable<IBackgroundTaskSettingsProvider> settingsProviders,
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
@@ -42,7 +44,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
-            _backgroundService = backgroundService;
+            _backgroundTasks = backgroundTasks;
+            _settingsProviders = settingsProviders;
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
             _siteService = siteService;
@@ -65,14 +68,15 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var settings = await _backgroundService.GetSettingsAsync(_tenant);
+
+            var taskTypes = _backgroundTasks.Select(t => t.GetType()).ToArray();
+            var settings = await _settingsProviders.GetSettingsAsync(taskTypes);
 
             var taskEntries = settings.Select(s => new BackgroundTaskEntry
             {
-                Name = s.Name,
                 Settings = s,
             })
-            .OrderBy(entry => entry.Name)
+            .OrderBy(entry => entry.Settings.Name)
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
             .ToList();
@@ -95,11 +99,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return Unauthorized();
             }
 
-            var settings = await _backgroundService.GetSettingsAsync(_tenant, name);
             var model = new BackgroundTaskViewModel() { Name = name };
 
-            if (settings != BackgroundTaskSettings.None)
+            var task = _backgroundTasks.LastOrDefault(t => t.GetType().FullName == name);
+
+            if (task != null)
             {
+                var settings = await _settingsProviders.GetSettingsAsync(task.GetType());
+
                 model.Enable = settings.Enable;
                 model.Schedule = settings.Schedule;
                 model.DefaultSchedule = settings.Schedule;

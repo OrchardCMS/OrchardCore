@@ -3,14 +3,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
     public class BackgroundTaskManager
     {
-        private readonly IModularBackgroundService _backgroundService;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly ISession _session;
@@ -18,12 +16,10 @@ namespace OrchardCore.BackgroundTasks.Services
         private const string CacheKey = nameof(BackgroundTaskManager);
 
         public BackgroundTaskManager(
-            IModularBackgroundService backgroundService,
             IMemoryCache memoryCache,
             ISignal signal,
             ISession session)
         {
-            _backgroundService = backgroundService;
             _memoryCache = memoryCache;
             _signal = signal;
             _session = session;
