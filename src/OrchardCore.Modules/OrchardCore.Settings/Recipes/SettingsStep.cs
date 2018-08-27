@@ -77,7 +77,7 @@ namespace OrchardCore.Settings.Recipes
                         site.SuperUser = property.ToString();
                         break;
 
-                    case "TimeZone":
+                    case "TimeZoneId":
                         site.TimeZoneId = property.ToString();
                         break;
 
