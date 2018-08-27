@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields
         {
             // Registering both field types and shape types are necessary as they can 
             // be accessed from inner properties.
-            
+
             TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
@@ -93,6 +93,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, YoutubeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
+
+            // Content picker field
+            services.AddSingleton<ContentField, ContentPickerField>();
+            services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
         }
     }
 }
