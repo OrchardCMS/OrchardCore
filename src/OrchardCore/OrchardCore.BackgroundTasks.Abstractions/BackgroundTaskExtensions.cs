@@ -9,6 +9,7 @@ namespace OrchardCore.BackgroundTasks
         public static BackgroundTaskSettings GetDefaultSettings(this IBackgroundTask task)
         {
             var type = task.GetType();
+
             var attribute = type.GetCustomAttribute<BackgroundTaskAttribute>();
 
             if (attribute != null)

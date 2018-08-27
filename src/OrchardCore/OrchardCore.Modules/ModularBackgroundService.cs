@@ -152,6 +152,7 @@ namespace OrchardCore.Modules
                     }
 
                     var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
+
                     _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
 
                     foreach (var task in tasks)
@@ -172,7 +173,10 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            settings = await settingsProvider?.GetSettingsAsync(task);
+                            if (settingsProvider != null)
+                            {
+                                settings = await settingsProvider.GetSettingsAsync(task);
+                            }
                         }
 
                         catch (Exception e)
