@@ -7,7 +7,7 @@ using OrchardCore.Modules.Manifest;
     Version = "0.0.1",
     Description = "OrchardCore.Templates.Module",
 #if (AddPart)
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = new[] { "OrchardCore.Contents" },
 #endif
     Category = "Content Management"
 )]
