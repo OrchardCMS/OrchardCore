@@ -6,11 +6,6 @@ namespace OrchardCore.BackgroundTasks.Models
     {
         public int Id { get; set; } // An identifier so that updates don't create new documents
 
-        public Dictionary<string, BackgroundTask> Tasks { get; } = new Dictionary<string, BackgroundTask>();
-    }
-
-    public class BackgroundTask : BackgroundTaskSettings
-    {
-        public string DefaultSchedule { get; set; } = "* * * * *";
+        public Dictionary<string, BackgroundTaskSettings> Settings { get; } = new Dictionary<string, BackgroundTaskSettings>();
     }
 }

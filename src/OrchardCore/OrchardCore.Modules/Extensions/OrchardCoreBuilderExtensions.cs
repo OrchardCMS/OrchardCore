@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -93,11 +92,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ApplicationServices
                 .AddSingleton<ModularBackgroundService>()
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>());
-
-            builder.ConfigureServices(services =>
-            {
-                services.AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskAttributeSettingsProvider>();
-            });
 
             return builder;
         }

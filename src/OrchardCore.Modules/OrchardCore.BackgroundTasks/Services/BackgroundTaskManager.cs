@@ -60,18 +60,18 @@ namespace OrchardCore.BackgroundTasks.Services
         {
             var document = await GetDocumentAsync();
 
-            document.Tasks.Remove(name);
+            document.Settings.Remove(name);
             _session.Save(document);
 
             _signal.SignalToken(CacheKey);
             _memoryCache.Set(CacheKey, document, ChangeToken);
         }
         
-        public async Task UpdateAsync(string name, BackgroundTask task)
+        public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
             var document = await GetDocumentAsync();
 
-            document.Tasks[name] = task;
+            document.Settings[name] = settings;
             _session.Save(document);
 
             _signal.SignalToken(CacheKey);

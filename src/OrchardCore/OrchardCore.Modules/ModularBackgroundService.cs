@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -95,7 +96,7 @@ namespace OrchardCore.Modules
 
                         var taskName = scheduler.Name;
 
-                        var task = scope.ServiceProvider.GetServices<IBackgroundTask>().LastOrDefault(t => t.GetType().FullName == taskName);
+                        var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
 
                         if (task == null)
                         {
@@ -141,22 +142,21 @@ namespace OrchardCore.Modules
                         return;
                     }
 
-                    var taskTypes = scope.ServiceProvider.GetServices<IBackgroundTask>().Select(t => t.GetType()).ToArray();
+                    var tasks = scope.ServiceProvider.GetServices<IBackgroundTask>();
 
-                    CleanSchedulers(tenant, taskTypes);
+                    CleanSchedulers(tenant, tasks);
 
-                    if (!taskTypes.Any())
+                    if (!tasks.Any())
                     {
                         return;
                     }
 
-                    var _settingsProviders = scope.ServiceProvider.GetServices<IBackgroundTaskSettingsProvider>();
+                    var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
+                    _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
 
-                    _changeTokens[tenant] = _settingsProviders.GetChangeToken();
-
-                    foreach (var taskType in taskTypes)
+                    foreach (var task in tasks)
                     {
-                        var taskName = taskType.FullName;
+                        var taskName = task.GetTaskName();
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
                         {
@@ -168,11 +168,11 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        var settings = new BackgroundTaskSettings() { Name = taskName };
+                        BackgroundTaskSettings settings = null;
 
                         try
                         {
-                            settings = await _settingsProviders.GetSettingsAsync(taskType);
+                            settings = await settingsProvider?.GetSettingsAsync(task);
                         }
 
                         catch (Exception e)
@@ -180,14 +180,16 @@ namespace OrchardCore.Modules
                             Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
+                        settings = settings ?? task.GetDefaultSettings();
+
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
                             scheduler.ReferenceTime = referenceTime;
                         }
 
-                         scheduler.Settings = settings;
-                         scheduler.Released = false;
-                         scheduler.Updated = true;
+                        scheduler.Settings = settings;
+                        scheduler.Released = false;
+                        scheduler.Updated = true;
                     }
                 }
             });
@@ -256,9 +258,9 @@ namespace OrchardCore.Modules
             }
         }
 
-        private void CleanSchedulers(string tenant, IEnumerable<Type> taskTypes)
+        private void CleanSchedulers(string tenant, IEnumerable<IBackgroundTask> tasks)
         {
-            var validKeys = taskTypes.Select(task => tenant + task.FullName).ToArray();
+            var validKeys = tasks.Select(task => tenant + task.GetTaskName()).ToArray();
 
             var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
 

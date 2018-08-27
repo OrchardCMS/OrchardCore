@@ -22,16 +22,11 @@ namespace OrchardCore.BackgroundTasks
         public bool Released { get; set; }
         public bool Updated { get; set; }
 
-        public DateTime GetNextStartTime()
-        {
-            return CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
-        }
-
         public bool CanRun()
         {
-            State.NextStartTime = GetNextStartTime();
+            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(ReferenceTime);
 
-            if (DateTime.UtcNow >= State.NextStartTime)
+            if (DateTime.UtcNow >= nextStartTime)
             {
                 if (Settings.Enable && !Released && Updated)
                 {
@@ -39,7 +34,6 @@ namespace OrchardCore.BackgroundTasks
                 }
 
                 ReferenceTime = DateTime.UtcNow;
-                State.NextStartTime = GetNextStartTime();
             }
 
             return false;
@@ -48,7 +42,6 @@ namespace OrchardCore.BackgroundTasks
         public void Run()
         {
             State.LastStartTime = ReferenceTime = DateTime.UtcNow;
-            State.NextStartTime = GetNextStartTime();
         }
     }
 }

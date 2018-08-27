@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
-using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -25,7 +24,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
-        private readonly IEnumerable<IBackgroundTaskSettingsProvider> _settingsProviders;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
@@ -34,7 +32,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,
             IEnumerable<IBackgroundTask> backgroundTasks,
-            IEnumerable<IBackgroundTaskSettingsProvider> settingsProviders,
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
@@ -45,7 +42,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
             _backgroundTasks = backgroundTasks;
-            _settingsProviders = settingsProviders;
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
             _siteService = siteService;
@@ -68,13 +64,16 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            var taskTypes = _backgroundTasks.Select(t => t.GetType()).ToArray();
-            var settings = await _settingsProviders.GetSettingsAsync(taskTypes);
-
-            var taskEntries = settings.Select(s => new BackgroundTaskEntry
+            var taskEntries = _backgroundTasks.Select(t =>
             {
-                Settings = s,
+                if (!document.Settings.TryGetValue(t.GetTaskName(), out var settings))
+                {
+                    settings = t.GetDefaultSettings();
+                }
+
+                return new BackgroundTaskEntry() { Settings = settings };
             })
             .OrderBy(entry => entry.Settings.Name)
             .Skip(pager.GetStartIndex())
@@ -101,11 +100,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var model = new BackgroundTaskViewModel() { Name = name };
 
-            var task = _backgroundTasks.LastOrDefault(t => t.GetType().FullName == name);
+            var task = _backgroundTasks.GetTaskByName(name);
 
             if (task != null)
             {
-                var settings = await _settingsProviders.GetSettingsAsync(task.GetType());
+                var settings = task.GetDefaultSettings();
 
                 model.Enable = settings.Enable;
                 model.Schedule = settings.Schedule;
@@ -134,21 +133,19 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var task = new BackgroundTask
+                var settings = new BackgroundTaskSettings
                 {
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
-                    DefaultSchedule = model.DefaultSchedule?.Trim(),
                     Description = model.Description
                 };
 
-                await _backgroundTaskManager.UpdateAsync(model.Name, task);
+                await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 
                 return RedirectToAction(nameof(Index));
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -161,20 +158,22 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            if (!document.Tasks.ContainsKey(name))
+            if (!document.Settings.ContainsKey(name))
             {
                 return RedirectToAction("Create", new { name });
             }
 
-            var task = document.Tasks[name];
+            var task = _backgroundTasks.GetTaskByName(name);
+
+            var settings = document.Settings[name];
 
             var model = new BackgroundTaskViewModel
             {
                 Name = name,
-                Enable = task.Enable,
-                Schedule = task.Schedule,
-                DefaultSchedule = task.DefaultSchedule,
-                Description = task.Description
+                Enable = settings.Enable,
+                Schedule = settings.Schedule,
+                DefaultSchedule = task?.GetDefaultSettings().Schedule,
+                Description = settings.Description
             };
 
             return View(model);
@@ -200,16 +199,15 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (ModelState.IsValid)
             {
-                var task = new BackgroundTask
+                var settings = new BackgroundTaskSettings
                 {
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
-                    DefaultSchedule = model.DefaultSchedule?.Trim(),
                     Description = model.Description
                 };
 
-                await _backgroundTaskManager.UpdateAsync(model.Name, task);
+                await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -228,7 +226,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            if (!document.Tasks.ContainsKey(name))
+            if (!document.Settings.ContainsKey(name))
             {
                 return NotFound();
             }
@@ -248,14 +246,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            if (!document.Tasks.TryGetValue(name, out var task))
+            if (!document.Settings.TryGetValue(name, out var settings))
             {
-                task = new BackgroundTask();
+                settings = new BackgroundTaskSettings();
             }
 
-            task.Enable = true;
+            settings.Enable = true;
 
-            await _backgroundTaskManager.UpdateAsync(name, task);
+            await _backgroundTaskManager.UpdateAsync(name, settings);
 
             return RedirectToAction(nameof(Index));
         }
@@ -270,14 +268,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            if (!document.Tasks.TryGetValue(name, out var task))
+            if (!document.Settings.TryGetValue(name, out var settings))
             {
-                task = new BackgroundTask();
+                settings = new BackgroundTaskSettings();
             }
 
-            task.Enable = false;
+            settings.Enable = false;
 
-            await _backgroundTaskManager.UpdateAsync(name, task);
+            await _backgroundTaskManager.UpdateAsync(name, settings);
 
             return RedirectToAction(nameof(Index));
         }
