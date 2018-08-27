@@ -1,10 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
 @using OrchardCore.Mvc.Utilities
 
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
 <div class="field field-type-textfield field-name-@name">
-    @Model.Field.ContentItemIds
+    @foreach (var item in Model.ContentItems)
+    {
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.Updater, "Summary");
+
+        @await DisplayAsync(itemContent)
+    }
 </div>
