@@ -1,0 +1,19 @@
+@model OrchardCore.DisplayManagement.Views.ShapeViewModel<OrchardCore.Settings.Deployment.SiteSettingsDeploymentStep>
+
+@{
+    var settings = Model.Value.Settings;
+}
+
+<h5>@T["Site Settings"]</h5>
+
+@if (settings != null && settings.Length > 0)
+{
+    @foreach (var setting in settings)
+    {
+        <span class="badge badge-info">@setting</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No settings selected."]</span>
+}
