@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Indexing
             if (body != null)
             {
                 context.DocumentIndex.Entries.Add(
-                "Content.BodyAspect.Body",
+                IndexingConstants.BodyAspectBodyKey,
                 new DocumentIndex.DocumentIndexEntry(
                     body.Body,
                     DocumentIndex.Types.Text,
@@ -33,14 +33,14 @@ namespace OrchardCore.Contents.Indexing
             if (contentItemMetadata?.DisplayText != null)
             {
                 context.DocumentIndex.Entries.Add(
-                "Content.ContentItemMetadata.DisplayText.Analyzed",
+                IndexingConstants.DisplayTextAnalyzedKey,
                 new DocumentIndex.DocumentIndexEntry(
                     contentItemMetadata.DisplayText,
                     DocumentIndex.Types.Text,
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
 
                 context.DocumentIndex.Entries.Add(
-                "Content.ContentItemMetadata.DisplayText",
+                IndexingConstants.DisplayTextKey,
                 new DocumentIndex.DocumentIndexEntry(
                     contentItemMetadata.DisplayText,
                     DocumentIndex.Types.Text,
