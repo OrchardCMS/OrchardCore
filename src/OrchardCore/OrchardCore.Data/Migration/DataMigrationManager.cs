@@ -192,23 +192,12 @@ namespace OrchardCore.Data.Migration
 
                     while (lookupTable.ContainsKey(current))
                     {
-                        try
+                        if (_logger.IsEnabled(LogLevel.Information))
                         {
-                            if (_logger.IsEnabled(LogLevel.Information))
-                            {
-                                _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
-                            }
-                            current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                            _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
                         }
-                        catch (Exception ex)
-                        {
-                            if (ex.IsFatal())
-                            {
-                                throw;
-                            }
-                            _logger.LogError(0, "An unexpected error occurred while applying migration on '{FeatureName}' from version {Version}.", featureId, current);
-                            throw;
-                        }
+
+                        current = (int)lookupTable[current].Invoke(migration, new object[0]);
                     }
 
                     // if current is 0, it means no upgrade/create method was found or succeeded
@@ -221,13 +210,9 @@ namespace OrchardCore.Data.Migration
                 }
                 catch (Exception ex)
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-                    _logger.LogError(0, "Error while running migration version {Version} for '{FeatureName}'.", current, featureId);
+                    _logger.LogError(ex, "Error while running migration version {Version} for '{FeatureName}'.", current, featureId);
+
                     _session.Cancel();
-                    throw new Exception(T["Error while running migration version {Version} for '{FeatureName}'.", current, featureId], ex);
                 }
                 finally
                 {
@@ -337,7 +322,7 @@ namespace OrchardCore.Data.Migration
                         throw;
                     }
 
-                    _logger.LogError(ex, "Could not run migrations automatically on " + featureId);
+                    _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }
         }
