@@ -1,6 +1,6 @@
 using Lucene.Net.Analysis;
 
-namespace OrchardCore.Lucene.Services
+namespace OrchardCore.Lucene
 {
     /// <summary>
     /// Represents an <see cref="Analyzer"/> instance that is available in the system.
