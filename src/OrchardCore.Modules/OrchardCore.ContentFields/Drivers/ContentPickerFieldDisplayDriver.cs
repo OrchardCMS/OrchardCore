@@ -1,9 +1,12 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -16,10 +19,13 @@ namespace OrchardCore.ContentFields.Fields
     {
         private readonly ISession _session;
 
-        public ContentPickerFieldDisplayDriver(ISession session)
+        public ContentPickerFieldDisplayDriver(ISession session, IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
         {
             _session = session;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
         {
@@ -54,9 +60,27 @@ namespace OrchardCore.ContentFields.Fields
         {
             var viewModel = new EditContentPickerFieldViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds);
+            var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds);
 
-            field.ContentItemIds = viewModel.ContentItemIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            if (!modelUpdated)
+            {
+                return Edit(field, context);
+            }
+
+            field.ContentItemIds = viewModel.ContentItemIds == null
+                ? new string[0] : viewModel.ContentItemIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var settings = context.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
+
+            if (settings.Required && field.ContentItemIds.Length == 0)
+            {
+                updater.ModelState.AddModelError(Prefix, T[$"The {context.PartFieldDefinition.DisplayName()} field is required."]);
+            }
+
+            if (!settings.Multiple && field.ContentItemIds.Length > 1)
+            {
+                updater.ModelState.AddModelError(Prefix, T[$"The {context.PartFieldDefinition.DisplayName()} field cannot contain multiple items."]);
+            }
 
             return Edit(field, context);
         }
