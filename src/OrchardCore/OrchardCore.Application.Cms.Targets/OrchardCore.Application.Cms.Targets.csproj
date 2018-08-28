@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -65,6 +65,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Markdown\OrchardCore.Markdown.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Media.Azure\OrchardCore.Media.Azure.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId.EntityFrameworkCore\OrchardCore.OpenId.EntityFrameworkCore.csproj" PrivateAssets="none" />

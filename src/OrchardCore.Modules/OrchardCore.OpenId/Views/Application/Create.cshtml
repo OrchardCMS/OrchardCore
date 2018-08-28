@@ -91,8 +91,8 @@
 
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris">@T["Redirect Uri"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger">@T["The Redirect Uri is required."]</span>
+            <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
+            <span asp-validation-for="RedirectUris" class="text-danger">@T["At least one Redirect Uri is required."]</span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
         <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
@@ -106,8 +106,8 @@
             </fieldset>
             <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
-                    <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uri"]</label>
-                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
+                    <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["At least on logout Redirect Uri is required."]</span>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                 </div>
             </div>
