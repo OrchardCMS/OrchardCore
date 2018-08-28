@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
@@ -143,8 +142,6 @@ namespace OrchardCore.Setup.Controllers
                 {
                     ModelState.AddModelError(error.Key, error.Value);
                 }
-
-                _shellSettings.State = TenantState.Uninitialized;
 
                 return View(model);
             }
