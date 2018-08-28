@@ -38,6 +38,10 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
 
+            services.Configure<LuceneOptions>(o =>
+                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
+                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
@@ -72,9 +76,6 @@ namespace OrchardCore.Lucene
                 template: "api/lucene/documents",
                 defaults: new { controller = "Api", action = "Documents" }
             );
-
-            var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
-            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer, new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 
