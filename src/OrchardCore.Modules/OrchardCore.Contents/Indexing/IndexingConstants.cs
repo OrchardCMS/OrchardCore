@@ -1,4 +1,4 @@
-namespace OrchardCore.Indexing
+namespace OrchardCore.Contents.Indexing
 {
     public static class IndexingConstants
     {
