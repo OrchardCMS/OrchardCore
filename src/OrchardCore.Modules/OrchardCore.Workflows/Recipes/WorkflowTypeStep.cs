@@ -42,16 +42,6 @@ namespace OrchardCore.Workflows.Recipes
                     workflow.Id = 0;
                     await _workflowTypeStore.SaveAsync(workflow);
                 }
-                else
-                {
-                    existing.WorkflowTypeId = workflow.WorkflowTypeId;
-                    existing.Transitions = workflow.Transitions;
-                    existing.Name = workflow.Name;
-                    existing.IsSingleton = workflow.IsSingleton;
-                    existing.IsEnabled = workflow.IsEnabled;
-                    existing.Activities = workflow.Activities;
-                    await _workflowTypeStore.SaveAsync(existing);
-                }
             }
 
             return;
