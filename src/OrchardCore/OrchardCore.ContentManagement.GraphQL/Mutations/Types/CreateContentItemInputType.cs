@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {
@@ -25,26 +26,48 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 
         public ContentPartsInputType(
             IHttpContextAccessor httpContextAccessor,
-            IEnumerable<ContentPart> contentParts,
-            ITypeActivatorFactory<ContentPart> typeActivator)
+            IContentDefinitionManager contentDefinitionManager,
+            ITypeActivatorFactory<ContentPart> partTypeActivator,
+            ITypeActivatorFactory<ContentField> fieldTypeActivator)
         {
             Name = "ContentPartsInput";
 
-            foreach (var part in contentParts)
+            var requestServices = httpContextAccessor.HttpContext
+                           .RequestServices;
+
+            foreach (var partDefinition in contentDefinitionManager.ListPartDefinitions())
             {
-                var partName = part.GetType().Name;
-                var activator = typeActivator.GetTypeActivator(partName);
+                var partName = partDefinition.Name;
+                var partActivator = partTypeActivator.GetTypeActivator(partName);
 
-                var inputGraphType =
-                    typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
+                var partInputGraphType =
+                    typeof(InputObjectGraphType<>).MakeGenericType(partActivator.Type);
 
-                var inputGraphTypeResolved = (IInputObjectGraphType)httpContextAccessor.HttpContext
-                    .RequestServices.GetService(inputGraphType);
+                var partInputGraphTypeResolved = 
+                    (IInputObjectGraphType)requestServices.GetService(partInputGraphType);
 
-                if (inputGraphTypeResolved != null)
+                if (partInputGraphTypeResolved != null)
                 {
+                    var arguments = new List<QueryArgument>();
+
+                    foreach (var fieldDefinition in partDefinition.Fields)
+                    {
+                        var fieldName = fieldDefinition.Name;
+                        var fieldActivator = fieldTypeActivator.GetTypeActivator(fieldName);
+
+                        var fieldInputGraphType =
+                            typeof(InputObjectGraphType<>).MakeGenericType(fieldActivator.Type);
+
+                        var fieldInputGraphTypeResolved =
+                            (IInputObjectGraphType)requestServices.GetService(partInputGraphType);
+
+                        if (fieldInputGraphTypeResolved != null) {
+
+                        }
+                    }
+
                     Field(
-                        inputGraphTypeResolved.GetType(),
+                        partInputGraphTypeResolved.GetType(),
                         partName);
                 }
             }
