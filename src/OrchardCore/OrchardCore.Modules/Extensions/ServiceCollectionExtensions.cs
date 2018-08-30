@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -182,6 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<OrchardCoreBuilder>>();
 
                 DirectoryInfo directory = null;
 
@@ -192,8 +194,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Value.ShellsContainerName,
                         settings.Name, "DataProtection-Keys"));
                 }
-                catch (UnauthorizedAccessException)
+                catch (UnauthorizedAccessException e)
                 {
+                    logger.LogError(e, "Access denied when creating the 'DataProtection-Keys' folder for '{TenantName}'", settings.Name);
                 }
 
                 // Re-register the data protection services to be tenant-aware so that modules that internally
@@ -202,7 +205,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
                 var dpBuilder = new ServiceCollection()
                     .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name);
 
                 if (directory != null)
