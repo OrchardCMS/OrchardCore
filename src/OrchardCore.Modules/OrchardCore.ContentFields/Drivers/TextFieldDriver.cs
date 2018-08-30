@@ -40,46 +40,50 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                var settings = context.PartFieldDefinition.Settings["TextFieldPredefinedListEditorSettings"].ToObject<TextFieldPredefinedListEditorSettings>();
-                var options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
-
-                var optionsSelected = new List<SelectListItem>();
-                var optionsGroup = new List<SelectListGroup>();
-                if (context.IsNew)
+                var settings = context.PartFieldDefinition.Settings["TextFieldPredefinedListEditorSettings"]?.ToObject<TextFieldPredefinedListEditorSettings>();
+                if (settings != null)
                 {
-                    foreach (var option in options)
-                    {
-                        if (option[0] == '#')
-                        {
-                            optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
-                        }
-                        else
-                        {
-                            var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
+                    var options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].Value };
 
-                            optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                    var optionsSelected = new List<SelectListItem>();
+                    var optionsGroup = new List<SelectListGroup>();
+                    if (context.IsNew)
+                    {
+                        foreach (var option in options)
+                        {
+                            if (option[0] == '#')
+                            {
+                                optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
+                            }
+                            else
+                            {
+                                var selected = !String.IsNullOrWhiteSpace(settings.DefaultValue) ? settings.DefaultValue.Split(',').Contains(option.Split('|').Last().Trim()) : false;
+
+                                optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                            }
                         }
                     }
-                }
-                else
-                {
-                    foreach (var option in options)
+                    else
                     {
-                        if (option[0] == '#')
+                        foreach (var option in options)
                         {
-                            optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
-                        }
-                        else
-                        {
-                            var selected = false;
+                            if (option[0] == '#')
+                            {
+                                optionsGroup.Add(new SelectListGroup { Name = option.Substring(1) });
+                            }
+                            else
+                            {
+                                var selected = false;
 
-                            selected = field.Text != null ? field.Text.Contains(option.Split('|').Last().Trim()) : false;
-                            optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                                selected = field.Text != null ? field.Text.Contains(option.Split('|').Last().Trim()) : false;
+                                optionsSelected.Add(new SelectListItem { Text = option.Split('|').First().Trim(), Value = option.Split('|').Last().Trim(), Selected = selected, Group = optionsGroup.Count() > 0 ? optionsGroup.Last() : null });
+                            }
                         }
                     }
+
+                    model.Options = optionsSelected;
                 }
 
-                model.Options = optionsSelected;
                 model.Text = field.Text;
 
                 model.Field = field;
