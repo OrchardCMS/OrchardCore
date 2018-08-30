@@ -78,7 +78,6 @@ namespace OrchardCore.Modules
             }
 
             var path = NormalizePath(subpath);
-
             var index = path.IndexOf('/');
 
             if (index != -1)
