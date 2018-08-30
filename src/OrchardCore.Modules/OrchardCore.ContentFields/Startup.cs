@@ -1,7 +1,11 @@
+using System;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
@@ -99,6 +103,18 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
+
+            services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "ContentPicker",
+                areaName: "OrchardCore.ContentFields",
+                template: "ContentPicker",
+                defaults: new { controller = "ContentPicker", action = "List" }
+            );
         }
     }
 }

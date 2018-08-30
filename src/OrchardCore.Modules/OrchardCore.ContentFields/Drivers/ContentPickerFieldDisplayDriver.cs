@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Settings;
@@ -17,10 +18,15 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
+        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
-        public ContentPickerFieldDisplayDriver(ISession session, IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
+        public ContentPickerFieldDisplayDriver(
+            IContentManager contentManager,
+            ISession session,
+            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
         {
+            _contentManager = contentManager;
             _session = session;
             T = localizer;
         }
@@ -46,13 +52,26 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(ContentPickerField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), model =>
+            return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 model.ContentItemIds = string.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
+
+                model.SelectedItems = new List<ContentPickerItemViewModel>();
+
+                foreach (var contentItemId in field.ContentItemIds)
+                {
+                    var contentItem = await _contentManager.GetAsync(contentItemId);
+                    var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                    model.SelectedItems.Add(new ContentPickerItemViewModel
+                    {
+                        ContentItemId = contentItemId,
+                        DisplayText = contentItemMetadata.DisplayText
+                    });
+                }
             });
         }
 
