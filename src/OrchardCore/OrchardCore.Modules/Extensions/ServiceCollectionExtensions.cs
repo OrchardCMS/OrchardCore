@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -182,20 +183,34 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
-                var directory = Directory.CreateDirectory(Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                settings.Name, "DataProtection-Keys"));
+                DirectoryInfo directory = null;
+
+                try
+                {
+                    directory = Directory.CreateDirectory(Path.Combine(
+                        options.Value.ShellsApplicationDataPath,
+                        options.Value.ShellsContainerName,
+                        settings.Name, "DataProtection-Keys"));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
 
                 // Re-register the data protection services to be tenant-aware so that modules that internally
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                var collection = new ServiceCollection()
+                var dpBuilder = new ServiceCollection()
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .Services;
+                    .SetApplicationName(settings.Name);
+
+                if (directory != null)
+                {
+                    dpBuilder.PersistKeysToFileSystem(directory);
+                }
+
+                var collection = dpBuilder.Services;
 
                 // Retrieve the implementation type of the newly startup filter registered as a singleton
                 var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
