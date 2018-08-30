@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,14 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Configuration;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
@@ -23,8 +19,6 @@ namespace OrchardCore.Facebook.Drivers
 {
     public class FacebookCoreSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookCoreSettings>
     {
-        private const string SettingsGroupId = "OrchardCore.Facebook";
-
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -67,7 +61,7 @@ namespace OrchardCore.Facebook.Drivers
                 model.AppId = settings.AppId;
                 model.AppSecret = settings.AppSecret;
 
-            }).Location("Content:0").OnGroup(SettingsGroupId);
+            }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookCoreSettings settings, BuildEditorContext context)
@@ -78,7 +72,7 @@ namespace OrchardCore.Facebook.Drivers
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId == FacebookConstants.Features.Core)
             {
                 var previousClientSecret = settings.AppSecret;
                 var model = new FacebookCoreSettingsViewModel();

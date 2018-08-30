@@ -33,14 +33,21 @@ namespace OrchardCore.Facebook
                 category.AddClass("facebook").Id("facebook");
 
                 var features = _shellDescriptor.Features.Select(feature => feature.Id).ToImmutableArray();
-                if (features.Contains(FacebookConstants.Features.Core))
+                if (features.Contains(FacebookConstants.Features.Core) || features.Contains(FacebookConstants.Features.Login))
                 {
                     category.Add(T["Settings"], "1", settings =>
                     {
                         if (features.Contains(FacebookConstants.Features.Core))
                         {
-                            settings.Add(T["Facebook application"], "1", client => client
+                            settings.Add(T["Core"], "1", client => client
                                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
+                                    .Permission(Permissions.ManageFacebookApp)
+                                    .LocalNav());
+                        }
+                        if (features.Contains(FacebookConstants.Features.Login))
+                        {
+                            settings.Add(T["Login"], "1", client => client
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
                                     .Permission(Permissions.ManageFacebookApp)
                                     .LocalNav());
                         }

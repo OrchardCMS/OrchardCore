@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-
 namespace OrchardCore.Facebook.Settings
 {
     public class FacebookCoreSettings

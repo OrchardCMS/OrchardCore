@@ -1,31 +1,16 @@
-using AspNet.Security.OAuth.Validation;
-using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Facebook;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OpenIddict.Abstractions;
-using OpenIddict.Mvc;
-using OpenIddict.Server;
-using OpenIddict.Validation;
-using OrchardCore.BackgroundTasks;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
-using OrchardCore.Modules;
 using OrchardCore.Facebook.Configuration;
 using OrchardCore.Facebook.Drivers;
-using OrchardCore.Facebook.Recipes;
 using OrchardCore.Facebook.Services;
-using OrchardCore.Recipes;
-using OrchardCore.Security;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using YesSql.Indexes;
 
 namespace OrchardCore.Facebook
 {
@@ -69,6 +54,4 @@ namespace OrchardCore.Facebook
             });
         }
     }
-
-
 }

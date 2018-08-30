@@ -5,7 +5,8 @@ using OrchardCore.Facebook;
     Name = "Facebook",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
-    Version = "2.0.0"
+    Version = "2.0.0",
+    Category = "Facebook"
 )]
 
 [assembly: Feature(
