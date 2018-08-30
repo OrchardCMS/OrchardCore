@@ -51,7 +51,6 @@ namespace OrchardCore.Modules
                         if (assets.Any())
                         {
                             var path = assets.First().ProjectAssetPath;
-
                             var index = path.IndexOf('/' + Module.WebRoot);
 
                             if (index != -1)
