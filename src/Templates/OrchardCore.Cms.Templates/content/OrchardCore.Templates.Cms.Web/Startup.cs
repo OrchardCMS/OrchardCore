@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+#if (UseSerilog)
+using OrchardCore.Logging;
+#endif
+
 
 namespace OrchardCore.Templates.Cms.Web
 {
@@ -19,8 +23,11 @@ namespace OrchardCore.Templates.Cms.Web
             }
 
             app.UseStaticFiles();
-
-            app.UseOrchardCore(); 
+#if (UseSerilog)
+            app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
+#else
+            app.UseOrchardCore();
+#endif
         }
     }
 }

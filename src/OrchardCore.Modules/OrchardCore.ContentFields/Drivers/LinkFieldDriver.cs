@@ -34,7 +34,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditLinkFieldViewModel>("LinkField_Edit", model =>
+            return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
                 model.Url = context.IsNew ? settings.DefaultUrl : field.Url;

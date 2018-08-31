@@ -15,8 +15,8 @@ namespace OrchardCore.Workflows.Http.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
         public HttpRedirectTask(
-            IStringLocalizer<HttpRedirectTask> localizer, 
-            IHttpContextAccessor httpContextAccessor, 
+            IStringLocalizer<HttpRedirectTask> localizer,
+            IHttpContextAccessor httpContextAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
@@ -52,6 +52,8 @@ namespace OrchardCore.Workflows.Http.Activities
             var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext);
 
             _httpContextAccessor.HttpContext.Response.Redirect(location, Permanent);
+            _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+
             return Outcomes("Done");
         }
     }

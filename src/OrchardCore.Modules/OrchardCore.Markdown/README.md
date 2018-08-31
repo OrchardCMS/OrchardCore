@@ -43,7 +43,7 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Markdown` | `string` | The Markdown value once all tokens have been processed |
-| `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `Html` | `string` | The HTML content resulting from the Markdown source |
 | `Field` | `MarkdownField` | The `MarkdownField` instance|
 | `Part` | `ContentPart` | The part this field attached to |
 | `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition |

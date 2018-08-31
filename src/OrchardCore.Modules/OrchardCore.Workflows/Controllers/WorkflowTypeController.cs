@@ -294,8 +294,18 @@ namespace OrchardCore.Workflows.Controllers
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
-            var activityThumbnailShapes = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
-            var activityDesignShapes = activityDesignDisplayTasks.Select(x => x.Result).ToList();
+            var activityThumbnailShapes = new List<dynamic>();
+            foreach (var thumbnailTask in activityThumbnailDisplayTasks)
+            {
+                activityThumbnailShapes.Add(await thumbnailTask);
+            }
+
+            var activityDesignShapes = new List<dynamic>();
+            foreach (var designDisplayTask in activityDesignDisplayTasks)
+            {
+                activityDesignShapes.Add(await designDisplayTask);
+            }
+
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,

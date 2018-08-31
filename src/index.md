@@ -9,14 +9,14 @@ Orchard Core consists of two different targets:
 
 It’s important to note the differences between the framework and the CMS. Some developers who want to develop SaaS applications will only be interested in the modular framework. Others who want to build administrable websites will focus on the CMS and build modules to enhance their sites or the whole ecosystem.
 
-[![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE.txt)
+[![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
 It’s very important to understand the Orchard Core Framework is distributed independently from the CMS on nuget.org. We’ve made some sample applications on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications using just Orchard Core Framework without any of the CMS specific features.
 
-One of our goals is to enable community-based ecosytems of hosted applications which can be extended with modules, like e-commerce systems, blog engines and more. The Orchard Core Framework enables a modular environment that allows different teams to work on separate parts of an application and make components reusable across projects.
+One of our goals is to enable community-based ecosystems of hosted applications which can be extended with modules, like e-commerce systems, blog engines and more. The Orchard Core Framework enables a modular environment that allows different teams to work on separate parts of an application and make components reusable across projects.
 
 ## Building Website with Orchard Core CMS
 
@@ -34,7 +34,7 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 - **Liquid templates support**. Editors can safely change the HTML templates with the Liquid template language. It was chosen as it’s both very well documented (Jekyll, Shopify, …) and secure.
 
-- **Custom queries**. We wanted to provide a way to developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL, and Lucene queries that can be re-used to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
+- **Custom queries**. We wanted to provide a way for developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL, and Lucene queries that can be re-used to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
 
 - **Recipes**. Recipes are scripts that can contain content and metadata to build a website. You can now include binary files, and even use them to deploy your sites remotely from a staging to a production environment for instance. They can also be part of NuGet Packages, allowing you to ship predefined websites.
 
@@ -75,4 +75,4 @@ You can also read the [Code Generation Templates documentation](Templates/README
 
 ### Contributing
 
-We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
+We currently follow these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
