@@ -7,16 +7,16 @@ namespace OrchardCore.Lucene.Services
 {
     public class SearchQueryService : ISearchQueryService
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
         private readonly IContentManager _contentManager;
 
         private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
 
         public SearchQueryService(
             IContentManager contentManager,
-            LuceneIndexManager luceneIndexProvider)
+            LuceneIndexManager luceneIndexManager)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
             _contentManager = contentManager;
 
         }
@@ -24,7 +24,7 @@ namespace OrchardCore.Lucene.Services
         {
             var contentItemIds = new List<string>();
 
-            await _luceneIndexProvider.SearchAsync(indexName, searcher =>
+            await _luceneIndexManager.SearchAsync(indexName, searcher =>
             {                
                 var collector = TopScoreDocCollector.Create(end, true);
 
