@@ -22,6 +22,7 @@ namespace OrchardCore.ContentFields.Settings
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             context.Builder.MergeSettings(model);
+            context.Builder.WithSetting(nameof(ContentPickerFieldSettings.DisplayedContentTypes), model.DisplayedContentTypes);
 
             return Edit(partFieldDefinition);
         }
