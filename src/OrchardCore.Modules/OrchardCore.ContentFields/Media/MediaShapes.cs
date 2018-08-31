@@ -12,10 +12,9 @@ namespace OrchardCore.ContentFields.Media
                 {
                     IShape editor = displaying.Shape;
 
-                    if (editor.Metadata.Type == "HtmlField_Edit__Wysiwyg" ||
-                        editor.Metadata.Alternates.Contains("HtmlField_Edit__Wysiwyg"))
+                    if (editor.Metadata.Type == "HtmlField_Edit__Wysiwyg")
                     {
-                        //editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlField");
                     }
                 });
         }

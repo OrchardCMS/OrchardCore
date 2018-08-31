@@ -12,8 +12,7 @@ namespace OrchardCore.Html.Media
                 {
                     IShape editor = displaying.Shape;
 
-                    if (editor.Metadata.Type == "HtmlBodyPart_Edit__Wysiwyg" ||
-                        editor.Metadata.Alternates.Contains("HtmlBodyPart_Edit__Wysiwyg"))
+                    if (editor.Metadata.Type == "HtmlBodyPart_Edit__Wysiwyg")
                     {
                         editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
                     }
