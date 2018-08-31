@@ -37,12 +37,12 @@ namespace OrchardCore.Email.Services
             {
                 message.From = new MailAddress(_options.DefaultSender);
             }
-            
+
             try
             {
                 using (var client = GetClient())
                 {
-                    await client.SendMailAsync(message);
+                    await Task.Run(() => client.Send(message));
                     return SmtpResult.Success;
                 }
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Email.Services
             {
                 DeliveryMethod = _options.DeliveryMethod
             };
-            
+
             switch (smtp.DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
