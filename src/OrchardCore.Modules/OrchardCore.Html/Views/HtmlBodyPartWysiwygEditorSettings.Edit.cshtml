@@ -1,0 +1,11 @@
+@model OrchardCore.Html.Settings.HtmlBodyPartWysiwygEditorSettings
+
+<div class="type-part-editor type-part-editor-wysiwyg">
+    <fieldset class="form-group">
+        <div class="row col-sm-6">
+            <label asp-for="Color">@T["Color"]</label>
+            <input asp-for="Color" class="form-control" />
+            <span class="hint">@T["The color of the wysiwyg."]</span>
+        </div>
+    </fieldset>
+</div>

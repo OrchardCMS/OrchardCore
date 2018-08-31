@@ -192,6 +192,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return Task.FromResult<IDisplayResult>(null);
         }
 
+        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
+        {
+            var editor = context.TypePartDefinition.Editor();
+            return !String.IsNullOrEmpty(editor)
+                ? shapeType + "__" + editor
+                : shapeType;
+        }
+
+        protected string GetEditorShapeType(BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(typeof(TPart).Name + "_Edit", context);
+        }
+
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
         {
             Prefix = typePartDefinition.Name;

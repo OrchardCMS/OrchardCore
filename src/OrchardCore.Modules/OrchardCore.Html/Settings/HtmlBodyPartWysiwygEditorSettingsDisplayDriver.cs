@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class HtmlBodyPartWysiwygEditorSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -17,8 +17,8 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.Settings.Populate(model))
-                .Location("Content");
+            return Initialize<HtmlBodyPartWysiwygEditorSettings>("HtmlBodyPartWysiwygEditorSettings_Edit", model => contentTypePartDefinition.Settings.Populate<HtmlBodyPartWysiwygEditorSettings>(model))
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -28,7 +28,7 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new HtmlBodyPartSettings();
+            var model = new HtmlBodyPartWysiwygEditorSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
