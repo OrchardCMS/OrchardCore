@@ -19,7 +19,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly ISearchQueryService _searchQueryService;
-        private readonly IContentManager _contentManager;     
+        private readonly IContentManager _contentManager;
 
         public SearchController(
             ISiteService siteService,
@@ -87,10 +87,11 @@ namespace OrchardCore.Lucene.Controllers
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, pager);
+            int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, start, end);
 
             var contentItems = new List<ContentItem>();
-            foreach (var contentItemId in contentItemIds.Take(pager.PageSize))
+            foreach (var contentItemId in contentItemIds.Take(size))
             {
                 var contentItem = await _contentManager.GetAsync(contentItemId);
                 if (contentItem != null)
@@ -98,9 +99,10 @@ namespace OrchardCore.Lucene.Controllers
                     contentItems.Add(contentItem);
                 }
             }
+
             var model = new SearchIndexViewModel
             {
-                HasMoreResults = contentItemIds.Count > pager.PageSize,
+                HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
                 IndexName = id,

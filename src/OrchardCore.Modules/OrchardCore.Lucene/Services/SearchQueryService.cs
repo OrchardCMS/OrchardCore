@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
 using OrchardCore.ContentManagement;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Lucene.Services
 {
@@ -21,17 +20,16 @@ namespace OrchardCore.Lucene.Services
             _contentManager = contentManager;
 
         }
-        public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, Pager pager)
+        public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)
         {
             var contentItemIds = new List<string>();
 
             await _luceneIndexProvider.SearchAsync(indexName, searcher =>
-            {
-                // Fetch one more result than PageSize to generate "More" links
-                var collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
+            {                
+                var collector = TopScoreDocCollector.Create(end, true);
 
                 searcher.Search(query, collector);
-                var hits = collector.GetTopDocs(pager.GetStartIndex(), pager.PageSize + 1);
+                var hits = collector.GetTopDocs(start, end);
 
                 foreach (var hit in hits.ScoreDocs)
                 {
@@ -43,7 +41,7 @@ namespace OrchardCore.Lucene.Services
             });
 
             return contentItemIds;
-            
+
         }
     }
 }
