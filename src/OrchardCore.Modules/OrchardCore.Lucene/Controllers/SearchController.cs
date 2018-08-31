@@ -10,6 +10,7 @@ using OrchardCore.Lucene;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using System.Collections.Generic;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -87,15 +88,24 @@ namespace OrchardCore.Lucene.Controllers
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
-            var result = await _searchQueryService.ExecuteQueryAsync(query, indexName, pager);
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, pager);
 
+            var contentItems = new List<ContentItem>();
+            foreach (var contentItemId in contentItemIds.Take(pager.PageSize))
+            {
+                var contentItem = await _contentManager.GetAsync(contentItemId);
+                if (contentItem != null)
+                {
+                    contentItems.Add(contentItem);
+                }
+            }
             var model = new SearchIndexViewModel
             {
-                HasMoreResults = result.ContentItemIds.Count > pager.PageSize,
+                HasMoreResults = contentItemIds.Count > pager.PageSize,
                 Query = q,
                 Pager = pager,
                 IndexName = id,
-                ContentItems = result.ContentItems
+                ContentItems = contentItems
             };
 
             return View(model);
