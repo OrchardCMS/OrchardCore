@@ -43,7 +43,7 @@ namespace OrchardCore.ContentFields.Fields
                 model.Updater = context.Updater;
                 model.SelectedContentItemIds = string.Join(",", field.ContentItemIds);
                 model.ContentItems = await _session.Query<ContentItem, ContentItemIndex>()
-                    .With<ContentItemIndex>(x => x.ContentItemId.IsIn(field.ContentItemIds))
+                    .With<ContentItemIndex>(x => x.ContentItemId.IsIn(field.ContentItemIds) && x.Published)
                     .ListAsync();
             })
             .Location("Content")
