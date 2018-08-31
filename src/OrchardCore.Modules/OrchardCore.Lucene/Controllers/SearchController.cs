@@ -1,16 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Lucene.Services;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.Lucene;
+using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using System.Collections.Generic;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -112,7 +111,3 @@ namespace OrchardCore.Lucene.Controllers
         }
     }
 }
-
-
-
-
