@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentFields.Services;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Navigation;
@@ -25,18 +26,26 @@ namespace OrchardCore.Content.Controllers
             _resultProviders = resultProviders;
         }
 
-        public async Task<IActionResult> List(string[] contentTypes, string searchTerm, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(string part, string field, string searchTerm, PagerParameters pagerParameters)
         {
-            // TODO: get content types from the field settings instead of having to pass them in?
-            if (!contentTypes.Any())
+            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
             {
-                return BadRequest("At least one content type is required");
+                return BadRequest("Part and field are required parameters");
+            }
+
+            var fieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+                .FirstOrDefault(f => f.Name == field);
+
+            var fieldSettings = fieldDefinition?.Settings.ToObject<ContentPickerFieldSettings>();
+            if (fieldSettings == null)
+            {
+                return BadRequest("Unable to find field definition");
             }
 
             var searchResults = new List<ContentPickerResult>();
             foreach (var resultProvider in _resultProviders)
             {
-                searchResults.AddRange(await resultProvider.GetContentItems(searchTerm, contentTypes));
+                searchResults.AddRange(await resultProvider.GetContentItems(searchTerm, fieldSettings.DisplayedContentTypes));
             }
 
             // TODO: handle pagination

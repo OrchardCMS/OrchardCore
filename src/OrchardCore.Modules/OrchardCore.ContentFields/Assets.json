@@ -1,0 +1,8 @@
+[
+  {
+    "inputs": [
+      "Assets/js/*.js"
+    ],
+    "output": "wwwroot/Scripts/contentPicker.js"
+  }
+]

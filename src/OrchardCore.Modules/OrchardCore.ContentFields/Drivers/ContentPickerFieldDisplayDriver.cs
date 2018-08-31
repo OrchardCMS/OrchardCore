@@ -54,7 +54,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = string.Join(",", field.ContentItemIds);
+                model.ContentItemIds = field.ContentItemIds == null ? string.Empty : string.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -62,7 +62,7 @@ namespace OrchardCore.ContentFields.Fields
 
                 model.SelectedItems = new List<ContentPickerItemViewModel>();
 
-                foreach (var contentItemId in field.ContentItemIds)
+                foreach (var contentItemId in field.ContentItemIds ?? new string[0])
                 {
                     var contentItem = await _contentManager.GetAsync(contentItemId);
                     var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
