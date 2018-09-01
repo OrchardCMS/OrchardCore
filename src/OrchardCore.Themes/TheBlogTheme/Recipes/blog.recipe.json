@@ -136,9 +136,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "HtmlBodyPartSettings": {
-                  "Editor": "Wysiwyg"
-                },
+                "Editor": "Wysiwyg",
                 "Position": "3"
               }
             },
@@ -264,9 +262,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "MarkdownBodyPartSettings": {
-                  "Editor": "Wysiwyg"
-                }
+                "Editor": "Wysiwyg"
               }
             },
             {

@@ -5,7 +5,6 @@
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
-    var editorSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartWysiwygEditorSettings>();
 }
 
 <script asp-name="trumbowyg" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
@@ -13,7 +12,7 @@
 
 <fieldset class="form-group">
     <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control" style="color:@editorSettings.Color"></textarea>
+    <textarea asp-for="Source" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </fieldset>
 
