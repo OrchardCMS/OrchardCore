@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Workflows.Services;
@@ -7,6 +8,8 @@ namespace OrchardCore.Contents.Workflows.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
+        public const string ContentItemInputKey = "ContentItem";
+
         private readonly IWorkflowManager _workflowManager;
 
         public ContentsHandler(IWorkflowManager workflowManager)
@@ -16,17 +19,25 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         public override async Task CreatedAsync(CreateContentContext context)
         {
-            await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            await TriggerWorkflowEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
+        public override async Task PublishedAsync(PublishContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentPublishedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            await TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
         }
 
-        public override Task RemovedAsync(RemoveContentContext context)
+        public override async Task RemovedAsync(RemoveContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentDeletedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            await TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
+        }
+
+        private async Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
+        {
+            await _workflowManager.TriggerEventAsync(name,
+                input: new { ContentItem = contentItem },
+                correlationId: contentItem.ContentItemId
+            );
         }
     }
 }
