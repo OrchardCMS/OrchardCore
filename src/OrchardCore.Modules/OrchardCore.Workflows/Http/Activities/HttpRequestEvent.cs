@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -42,6 +43,12 @@ namespace OrchardCore.Workflows.Http.Activities
         public bool ValidateAntiforgeryToken
         {
             get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
+        public TimeSpan? TokenLifetime
+        {
+            get => GetProperty(() => TimeSpan.FromDays(7));
             set => SetProperty(value);
         }
 

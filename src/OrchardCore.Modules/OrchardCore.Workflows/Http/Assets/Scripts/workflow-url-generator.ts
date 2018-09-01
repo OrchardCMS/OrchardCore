@@ -4,7 +4,8 @@ $(() => {
     const generateWorkflowUrl = function () {
         const workflowTypeId: string = $('[data-workflow-type-id]').data('workflow-type-id');
         const activityId: string = $('[data-activity-id]').data('activity-id');
-        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowTypeId=${workflowTypeId}&activityId=${activityId}`;
+        const tokenLifetime: string = <string>$($('[data-token-lifetime-input]').data('data-token-lifetime-input')).val();
+        const generateUrl: string = $('[data-generate-url]').data('generate-url') + `?workflowTypeId=${workflowTypeId}&activityId=${activityId}&${tokenLifetime}`;
         const antiforgeryHeaderName: string = $('[data-antiforgery-header-name]').data('antiforgery-header-name');
         const antiforgeryToken: string = $('[data-antiforgery-token]').data('antiforgery-token');
         const headers: any = {};

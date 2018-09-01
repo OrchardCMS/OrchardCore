@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ namespace OrchardCore.Workflows.Http.ViewModels
         public string HttpMethod { get; set; }
         public string Url { get; set; }
         public bool ValidateAntiforgeryToken { get; set; }
+        public TimeSpan? TokenLifetime { get; set; }
 
         public IList<SelectListItem> GetAvailableHttpMethods()
         {

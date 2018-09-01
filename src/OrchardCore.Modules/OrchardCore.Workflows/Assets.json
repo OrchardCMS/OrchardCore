@@ -32,7 +32,6 @@
   {
     "inputs": [
       "Assets/Scripts/activity-picker.ts",
-      "Assets/Scripts/workflow-url-generator.ts",
       "Assets/Scripts/workflow-canvas.ts",
       "Assets/Scripts/workflow-editor.ts"
     ],
@@ -40,7 +39,7 @@
   },
   {
     "inputs": [
-      "HTTP/Assets/Scripts/workflow-url-generator.ts"
+      "Http/Assets/Scripts/workflow-url-generator.ts"
     ],
     "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
   },
