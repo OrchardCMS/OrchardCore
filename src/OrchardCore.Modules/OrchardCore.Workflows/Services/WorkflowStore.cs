@@ -5,8 +5,9 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Specifications;
 using YesSql;
-using YesSql.Services;
+using YesSql.Indexes;
 
 namespace OrchardCore.Workflows.Services
 {
@@ -28,26 +29,45 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow>().CountAsync();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(int? skip = null, int? take = null)
+        public Task<int> CountAsync<TIndex>(Specification<TIndex> specification) where TIndex : class, IIndex
         {
-            var query = (IQuery<Workflow>)_session.Query<Workflow, WorkflowIndex>().OrderByDescending(x => x.CreatedUtc);
+            return _session.Query<Workflow, TIndex>(specification.PredicateExpression).CountAsync();
+        }
+
+        public async Task<IEnumerable<Workflow>> ListAsync<TIndex>(Specification<TIndex> specification, int? skip = null, int? take = null) where TIndex : class, IIndex
+        {
+            var query = _session.Query<Workflow, TIndex>();
+
+            if (specification.PredicateExpression != null)
+            {
+                query = query.Where(specification.PredicateExpression);
+            }
+
+            if (specification.OrderByExpression != null)
+            {
+                query = query.OrderBy(specification.OrderByExpression);
+            }
+            else if (specification.OrderByDescendingExpression != null)
+            {
+                query = query.OrderByDescending(specification.OrderByDescendingExpression);
+            }
 
             if (skip != null)
             {
-                query = query.Skip(skip.Value);
+                query = (IQuery<Workflow, TIndex>)query.Skip(skip.Value);
             }
 
             if (take != null)
             {
-                query = query.Take(take.Value);
+                query = (IQuery<Workflow, TIndex>)query.Take(take.Value);
             }
-            
-            return query.ListAsync();
+
+            return await query.ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds)
+        public Task<Workflow> GetAsync<TIndex>(Specification<TIndex> specification) where TIndex : class, IIndex
         {
-            return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
+            return _session.Query<Workflow, TIndex>(specification.PredicateExpression).FirstOrDefaultAsync();
         }
 
         public Task<Workflow> GetAsync(int id)
@@ -55,46 +75,12 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<Workflow>(id);
         }
 
-        public Task<Workflow> GetAsync(string workflowId)
-        {
-            return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId == workflowId).FirstOrDefaultAsync();
-        }
-
-        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> workflowIds)
-        {
-            var workflowIdList = workflowIds.ToList();
-            return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowCorrelationId.IsIn(workflowIdList)).ListAsync();
-        }
-
         public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids)
         {
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
-        {
-            var query = await _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds)
-                ).ListAsync();
-
-            return query.ToList();
-        }
-
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
-        {
-            var query = await _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityName == activityName &&
-                    index.WorkflowCorrelationId == (correlationId ?? ""))
-                .ListAsync();
-
-            return query.ToList();
-        }
-
-        public async Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null)
+        public async Task<IEnumerable<Workflow>> ListPendingWorkflowsAsync(string activityName, string correlationId = null)
         {
             var query = await _session
                 .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
@@ -104,7 +90,7 @@ namespace OrchardCore.Workflows.Services
 
             var pendingWorkflowIndexes = query.ToList();
             var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
-            var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
+            var pendingWorkflows = await ListAsync(new ManyWorkflowsSpecification(pendingWorkflowIds));
 
             return pendingWorkflows.ToList();
         }

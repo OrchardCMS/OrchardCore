@@ -26,6 +26,7 @@ namespace OrchardCore.Workflows
             SchemaBuilder.CreateMapIndexTable(nameof(WorkflowIndex), table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("WorkflowId")
+                .Column<string>("WorkflowCorrelationId")
                 .Column<DateTime>("CreatedUtc")
             );
 

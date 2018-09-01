@@ -18,6 +18,7 @@ using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Specifications;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Controllers
@@ -77,9 +78,10 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var count = await _workflowStore.CountAsync();
+            var specification = new ManyWorkflowsByTypeSpecification(workflowType.WorkflowTypeId);
+            var count = await _workflowStore.CountAsync(specification);
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var records = await _workflowStore.ListAsync(pager.GetStartIndex(), pager.PageSize);
+            var records = await _workflowStore.ListAsync(specification, pager.GetStartIndex(), pager.PageSize);
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var viewModel = new WorkflowIndexViewModel

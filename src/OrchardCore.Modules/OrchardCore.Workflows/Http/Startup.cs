@@ -19,6 +19,7 @@ using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Http.WorkflowContextProviders;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Specifications;
 
 namespace OrchardCore.Workflows.Http
 {
@@ -64,7 +65,7 @@ namespace OrchardCore.Workflows.Http
             var workflowTypeStore = serviceProvider.GetRequiredService<IWorkflowTypeStore>();
             var workflowStore = serviceProvider.GetRequiredService<IWorkflowStore>();
             var workflowTypeDictionary = workflowTypeStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.WorkflowTypeId);
-            var workflowDictionary = workflowStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
+            var workflowDictionary = workflowStore.ListAsync(new AllWorkflowsSpecification()).GetAwaiter().GetResult().ToDictionary(x => x.Id);
 
             ConfigureWorkflowRouteEntries(serviceProvider, workflowTypeDictionary, workflowDictionary);
         }

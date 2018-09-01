@@ -9,17 +9,15 @@ namespace OrchardCore.Workflows.Indexes
     {
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
+        public string WorkflowCorrelationId { get; set; }
         public DateTime CreatedUtc { get; set; }
     }
 
-    public class WorkflowBlockingActivitiesIndex : MapIndex
+    public class WorkflowBlockingActivitiesIndex : WorkflowIndex
     {
         public string ActivityId { get; set; }
         public string ActivityName { get; set; }
         public bool ActivityIsStart { get; set; }
-        public string WorkflowTypeId { get; set; }
-        public string WorkflowId { get; set; }
-        public string WorkflowCorrelationId { get; set; }
     }
 
     public class WorkflowIndexProvider : IndexProvider<Workflow>
