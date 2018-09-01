@@ -23,16 +23,6 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
-        {
-            if (workflowTypeId != null)
-            {
-                query = query.Where(x => x.WorkflowTypeId == workflowTypeId);
-            }
-
-            return query;
-        }
-
         public Task<int> CountAsync(string workflowTypeId = null)
         {
             return FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId).CountAsync();
@@ -143,6 +133,16 @@ namespace OrchardCore.Workflows.Services
 
             var context = new WorkflowDeletedContext(workflow);
             await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
+        }
+
+        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
+        {
+            if (workflowTypeId != null)
+            {
+                query = query.Where(x => x.WorkflowTypeId == workflowTypeId);
+            }
+
+            return query;
         }
     }
 }
