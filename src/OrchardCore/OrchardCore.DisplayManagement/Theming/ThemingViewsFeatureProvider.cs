@@ -13,6 +13,7 @@ namespace OrchardCore.DisplayManagement.Theming
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+        public static string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
 
         public ThemingViewsFeatureProvider(IHostingEnvironment hostingEnvironment)
         {
@@ -37,8 +38,8 @@ namespace OrchardCore.DisplayManagement.Theming
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = ViewPath.NormalizePath("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension),
-                ViewAttribute = new RazorViewAttribute("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension, typeof(ThemeLayout)),
+                RelativePath = ViewPath.NormalizePath(ThemeLayoutFileName),
+                ViewAttribute = new RazorViewAttribute(ThemeLayoutFileName, typeof(ThemeLayout)),
                 IsPrecompiled = true,
             });
         }

@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public override Task ExecuteAsync()
         {
-            Layout = "~/Views/Shared/_Layout" + RazorViewEngine.ViewExtension;
+            Layout = ThemingViewsFeatureProvider.ThemeLayoutFileName;
             return Task.CompletedTask;
         }
     }
