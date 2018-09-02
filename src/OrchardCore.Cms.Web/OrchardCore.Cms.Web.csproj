@@ -6,6 +6,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
   </PropertyGroup>
 
   <ItemGroup>

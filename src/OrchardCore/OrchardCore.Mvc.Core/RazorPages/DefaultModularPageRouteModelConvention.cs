@@ -52,16 +52,9 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var name = _hostingEnvironment.GetModule(module).ModuleInfo.Name;
-
-                    if (!String.IsNullOrWhiteSpace(name))
-                    {
-                        module = name;
-                    }
-
                     var attributeRouteModel = new AttributeRouteModel();
 
-                    if (module != Application.ModuleName)
+                    if (module != _hostingEnvironment.ApplicationName)
                     {
                         attributeRouteModel.Template = module + pageName.Substring(pathIndex + "Pages".Length);
                         attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');

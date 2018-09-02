@@ -19,13 +19,13 @@ namespace OrchardCore.Mvc
         {
             options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
 
-            /*
-             * 1- ModuleProjectRazorFileProvider (Development only, to provide files from the file system)
-             * 2- ContentRootFileProvider
-             * 3- ModuleEmbeddedFileProvider (to provide files from embedded resources)
-             */
-
-            options.FileProviders.Add(new ModuleEmbeddedFileProvider(_hostingEnvironment));
+            for (var i = 0; i < options.FileProviders.Count; i++)
+            {
+                if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
+                {
+                    options.FileProviders[i] = new ModuleEmbeddedFileProvider(_hostingEnvironment);
+                }
+            }
 
             if (_hostingEnvironment.IsDevelopment())
             {
