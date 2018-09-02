@@ -1,0 +1,1 @@
+!function(t){"use strict"}(jQuery);

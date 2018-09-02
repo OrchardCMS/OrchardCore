@@ -1,0 +1,54 @@
+// Global styling for this theme
+
+html {
+  height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @include heading-font;
+}
+
+body {
+  height: 100%;
+  min-height: 35rem;
+  position: relative;
+  @include body-font;
+}
+
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 0;
+}
+
+@media (pointer: coarse) and (hover: none) {
+  body {
+    background: url('../img/bg-mobile-fallback.jpg') $primary no-repeat center center scroll;
+    background-position: cover;
+  }
+  body video {
+    display: none;
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: $secondary;
+  opacity: 0.7;
+  z-index: 1;
+}
