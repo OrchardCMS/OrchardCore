@@ -43,11 +43,14 @@ namespace OrchardCore.Content.Controllers
                 return new ObjectResult(new List<ContentPickerResult>());
             }
 
-            return new ObjectResult(await resultProvider.Search(new ContentPickerSearchContext
+            var results = await resultProvider.Search(new ContentPickerSearchContext
             {
                 Query = query,
-                ContentTypes = fieldSettings.DisplayedContentTypes
-            }));
+                ContentTypes = fieldSettings.DisplayedContentTypes,
+                IndexName = fieldSettings.SearchIndex
+            });
+
+            return new ObjectResult(results);
         }
     }
 }
