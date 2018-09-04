@@ -17,7 +17,7 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private static Dictionary<string, IFileProvider> _rootFileProviders;
+        private static IList<IFileProvider> _pageFileProviders;
         private static Dictionary<string, string> _roots;
         private static object _synLock = new object();
 
@@ -34,7 +34,7 @@ namespace OrchardCore.Mvc
                 {
                     var application = environment.GetApplication();
 
-                    _rootFileProviders = new Dictionary<string, IFileProvider>();
+                    _pageFileProviders = new List<IFileProvider>();
                     var roots = new Dictionary<string, string>();
 
                     foreach (var name in application.ModuleNames)
@@ -62,7 +62,7 @@ namespace OrchardCore.Mvc
 
                             if (page != null)
                             {
-                                _rootFileProviders[name] = (new PhysicalFileProvider(root));
+                                _pageFileProviders.Add(new PhysicalFileProvider(root + "Pages"));
                             }
 
                             roots[name] = root;
@@ -181,9 +181,9 @@ namespace OrchardCore.Mvc
             {
                 var changeTokens = new List<IChangeToken>();
 
-                foreach (var provider in _rootFileProviders.Values)
+                foreach (var provider in _pageFileProviders)
                 {
-                    var changeToken = provider.Watch("Pages/**/*.cshtml");
+                    var changeToken = provider.Watch("**/*.cshtml");
 
                     if (changeToken != null)
                     {

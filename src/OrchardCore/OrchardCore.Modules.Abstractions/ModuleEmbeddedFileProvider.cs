@@ -17,7 +17,7 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private static IFileProvider _rootFileProvider;
+        private static IFileProvider _pageFileProvider;
         private static object _synLock = new object();
 
         private readonly IHostingEnvironment _environment;
@@ -26,16 +26,16 @@ namespace OrchardCore.Modules
         {
             _environment = hostingEnvironment;
 
-            if (_rootFileProvider != null)
+            if (_pageFileProvider != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_rootFileProvider == null)
+                if (_pageFileProvider == null)
                 {
-                    _rootFileProvider = new PhysicalFileProvider(_environment.ContentRootPath);
+                    _pageFileProvider = new PhysicalFileProvider(_environment.ContentRootPath + "/Pages");
                 }
             }
         }
@@ -154,7 +154,7 @@ namespace OrchardCore.Modules
 
             if (path.Equals("**/*.cshtml"))
             {
-                return _rootFileProvider.Watch("Pages/**/*.cshtml");
+                return _pageFileProvider.Watch("**/*.cshtml");
             }
 
             return NullChangeToken.Singleton;
