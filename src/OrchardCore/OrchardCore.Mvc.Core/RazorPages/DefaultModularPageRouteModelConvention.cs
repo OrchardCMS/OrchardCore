@@ -1,10 +1,8 @@
 using System;
-using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {

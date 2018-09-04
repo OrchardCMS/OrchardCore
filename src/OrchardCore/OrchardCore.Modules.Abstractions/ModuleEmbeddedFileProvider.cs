@@ -152,9 +152,9 @@ namespace OrchardCore.Modules
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
             }
 
-            if (path.EndsWith("**/*.cshtml"))
+            if (path.Equals("**/*.cshtml"))
             {
-                return _rootFileProvider.Watch("Pages/" + path);
+                return _rootFileProvider.Watch("Pages/**/*.cshtml");
             }
 
             return NullChangeToken.Singleton;

@@ -2,6 +2,10 @@
 @model DemoModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 
+@{ 
+    //Layout = "../Views/Shared/_Layout.cshtml";
+}
+
 @functions
 {
     public class DemoModel : PageModel
@@ -18,7 +22,7 @@
 }
 
 @await Html.PartialAsync("Header", Model)
-<h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
+<h2>123Hello from @ViewContext.RouteData.Values["page"]</h2>
 <p>
     @T[Model.Message]
 </p>

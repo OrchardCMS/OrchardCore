@@ -16,12 +16,12 @@
         public void OnGet()
         {
             Title = "This is a RazorPage coming from the application!";
-            Message = $"Date and time on the server test123: { DateTime.Now.ToString() }";
+            Message = $"Date and time on the server: { DateTime.Now.ToString() }";
         }
     }
 }
 
-<h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
+<h2>123Hello from @ViewContext.RouteData.Values["page"]</h2>
 <p>
     @Model.Message
 </p>
