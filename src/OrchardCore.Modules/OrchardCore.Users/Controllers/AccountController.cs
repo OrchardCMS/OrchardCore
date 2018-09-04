@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
@@ -10,8 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
-using OrchardCore.ReCaptcha.Core.ActionFilters;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -26,6 +29,7 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
+        private readonly IEnumerable<IAccountEvents> _accountEvents;
 
         public AccountController(
             IUserService userService,
@@ -33,13 +37,15 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
-            IStringLocalizer<AccountController> stringLocalizer)
+            IStringLocalizer<AccountController> stringLocalizer,
+            IEnumerable<IAccountEvents> accountEvents)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
+            _accountEvents = accountEvents;
 
             T = stringLocalizer;
         }
@@ -60,8 +66,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [ValidateReCaptcha(ReCaptchaMode.PreventAbuse)]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, CancellationToken token, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -69,14 +74,13 @@ namespace OrchardCore.Users.Controllers
             {
                 // Require that the users have a confirmed email before they can log on.
                 var user = await _userManager.FindByNameAsync(model.UserName) as User;
-                if (user != null)
+                if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    if (!await _userManager.IsEmailConfirmedAsync(user))
-                    {
-                        ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
-                    }
+                    ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
                 }
             }
+
+            await _accountEvents.InvokeAsync(a => a.LoggingIn(token), _logger);
 
             if (ModelState.IsValid)
             {
@@ -86,6 +90,7 @@ namespace OrchardCore.Users.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
+                    await _accountEvents.InvokeAsync(a => a.LoggedIn(), _logger);
                     return RedirectToLocal(returnUrl);
                 }
                 //if (result.RequiresTwoFactor)
@@ -100,6 +105,7 @@ namespace OrchardCore.Users.Controllers
                 else
                 {
                     ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                    await _accountEvents.InvokeAsync(a => a.LoggingInFailed(), _logger);
                     return View(model);
                 }
             }

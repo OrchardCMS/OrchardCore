@@ -4,12 +4,24 @@ using OrchardCore.Modules.Manifest;
     Name = "ReCaptcha",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
-    Version = "2.0.0"
-)]
+    Version = "2.0.0")]
 
 [assembly: Feature(
     Id = "OrchardCore.ReCaptcha",
     Name = "ReCaptcha",
     Category = "Security",
-    Description = "Provides ReCaptcha functionality."
-)]
+    Description = "Provides ReCaptcha functionality.")]
+
+[assembly: Feature(
+    Id ="OrchardCore.ReCaptcha.User.Login",
+    Name = "ReCaptcha User Login",
+    Description = "Activates a captcha when the user attempts to login too many times.",
+    Category = "Security",
+    Dependencies = new []{ "OrchardCore.ReCaptcha" })]
+
+[assembly: Feature(
+    Id = "OrchardCore.ReCaptcha.User.RegisterAccount",
+    Name = "ReCaptcha Register New Account",
+    Description = "Activates a captcha when a user creates a new account.",
+    Category = "Security",
+    Dependencies = new[] { "OrchardCore.ReCaptcha" })]

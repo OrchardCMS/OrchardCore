@@ -12,8 +12,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.Core;
-using OrchardCore.ReCaptcha.Core.ActionFilters;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -78,7 +76,6 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [ValidateReCaptcha]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();

@@ -13,7 +13,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Navigation\OrchardCore.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ReCaptcha.Core\OrchardCore.ReCaptcha.Core.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

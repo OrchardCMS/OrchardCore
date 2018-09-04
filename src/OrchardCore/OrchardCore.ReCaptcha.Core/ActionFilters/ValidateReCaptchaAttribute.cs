@@ -22,12 +22,8 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
     {
         private readonly ReCaptchaMode _mode;
 
-        public ValidateReCaptchaAttribute() : this(ReCaptchaMode.AlwaysShow)
-        {
 
-        }
-
-        public ValidateReCaptchaAttribute(ReCaptchaMode mode)
+        public ValidateReCaptchaAttribute(ReCaptchaMode mode = ReCaptchaMode.AlwaysShow)
         {
             _mode = mode;
         }
