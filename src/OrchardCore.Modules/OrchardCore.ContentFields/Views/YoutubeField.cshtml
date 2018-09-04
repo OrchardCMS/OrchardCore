@@ -1,0 +1,19 @@
+@model OrchardCore.ContentFields.ViewModels.YoutubeFieldDisplayViewModel
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    int width = settings.Width != default(int) ? settings.Width : 640;
+    int height = settings.Height != default(int) ? settings.Height : 640;
+}
+
+<div class="field field-type-textfield field-name-@name">
+    @{
+        if (!string.IsNullOrEmpty(Model.Field.EmbeddedAddress))
+        {
+            <iframe width="@width" height="@height" src="@Model.Field.EmbeddedAddress" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        }
+    }
+</div>

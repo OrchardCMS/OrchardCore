@@ -315,9 +315,10 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Create")]
         [FormValueRequired("submit.Save")]
-        public Task<IActionResult> CreatePOST(string id, string returnUrl)
+        public Task<IActionResult> CreatePOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
-            return CreatePOST(id, returnUrl, contentItem =>
+            var stayOnSamePage = submitSave == "submit.SaveAndContinue";
+            return CreatePOST(id, returnUrl, stayOnSamePage, contentItem =>
             {
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -331,17 +332,19 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Create")]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> CreateAndPublishPOST(string id, string returnUrl)
+        public async Task<IActionResult> CreateAndPublishPOST(string id, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
         {
+            var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
             // pass a dummy content to the authorization check to check for "own" variations
             var dummyContent = await _contentManager.NewAsync(id);
+
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
                 return Unauthorized();
             }
 
-            return await CreatePOST(id, returnUrl, async contentItem =>
+            return await CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);
 
@@ -353,7 +356,7 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> CreatePOST(string id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.NewAsync(id);
 
@@ -374,12 +377,18 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            if (!string.IsNullOrEmpty(returnUrl))
+            if ((!string.IsNullOrEmpty(returnUrl)) && (!stayOnSamePage))
             {
                 return LocalRedirect(returnUrl);
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                adminRouteValues.Add("returnUrl", returnUrl);
+            }
+
             return RedirectToRoute(adminRouteValues);
         }
 
@@ -421,9 +430,10 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Save")]
-        public Task<IActionResult> EditPOST(string contentItemId, string returnUrl)
+        public Task<IActionResult> EditPOST(string contentItemId, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
-            return EditPOST(contentItemId, returnUrl, contentItem =>
+            var stayOnSamePage = submitSave == "submit.SaveAndContinue";
+            return EditPOST(contentItemId, returnUrl, stayOnSamePage, contentItem =>
             {
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -437,8 +447,10 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, string returnUrl)
+        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix ="submit.Publish")] string submitPublish, string returnUrl)
         {
+            var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
+
             var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (content == null)
@@ -450,8 +462,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Unauthorized();
             }
-
-            return await EditPOST(contentItemId, returnUrl, async contentItem =>
+            return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);
 
@@ -463,7 +474,7 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
@@ -515,6 +526,10 @@ namespace OrchardCore.Contents.Controllers
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
+            }
+            else if (stayOnSamePage)
+            {
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
             else
             {

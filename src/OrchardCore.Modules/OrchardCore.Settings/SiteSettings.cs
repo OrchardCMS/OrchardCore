@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
 
@@ -9,6 +10,7 @@ namespace OrchardCore.Settings
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public string Culture { get; set; }
+        public string[] SupportedCultures { get; set; } = Array.Empty<string>();
         public int MaxPagedCount { get; set; }
         public int MaxPageSize { get; set; }
         public int PageSize { get; set; }

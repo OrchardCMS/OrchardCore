@@ -1,5 +1,4 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
-@using System.Globalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings;
 @{
@@ -8,7 +7,6 @@
     decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
     decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
-    string id = Html.IdFor(m => m.Value);
 }
 
 <fieldset class="form-group">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ Culture.Name }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +7,6 @@
     <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
     {% script name:"jQuery", use_cdn:"true", at:"Foot" %}
-    {% script name:"Bootstrap", use_cdn:"true", version:"4", at:"Foot" %}
     {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
     {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
     {% style name:"font-awesome", use_cdn:"true", version:"4" %}
@@ -23,7 +22,7 @@
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
 </head>
-<body>
+<body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
