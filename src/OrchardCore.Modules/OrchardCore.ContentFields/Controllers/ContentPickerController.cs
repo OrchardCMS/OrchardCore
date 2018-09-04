@@ -5,27 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Content.Controllers
 {
     public class ContentPickerController : Controller
     {
-        private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
 
         public ContentPickerController(
-            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentPickerResultProvider> resultProviders)
         {
-            _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _resultProviders = resultProviders;
         }
 
-        public async Task<IActionResult> List(string part, string field, string query, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(string part, string field, string query)
         {
             if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
             {
@@ -41,17 +37,17 @@ namespace OrchardCore.Content.Controllers
                 return BadRequest("Unable to find field definition");
             }
 
-            var searchResults = new List<ContentPickerResult>();
-            foreach (var resultProvider in _resultProviders)
+            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == fieldSettings.SearchResultProvider);
+            if (resultProvider == null)
             {
-                searchResults.AddRange(await resultProvider.Search(new ContentPickerSearchContext
-                {
-                    Query = query,
-                    ContentTypes = fieldSettings.DisplayedContentTypes
-                }));
+                return new ObjectResult(new List<ContentPickerResult>());
             }
 
-            return new ObjectResult(searchResults);
+            return new ObjectResult(await resultProvider.Search(new ContentPickerSearchContext
+            {
+                Query = query,
+                ContentTypes = fieldSettings.DisplayedContentTypes
+            }));
         }
     }
 }

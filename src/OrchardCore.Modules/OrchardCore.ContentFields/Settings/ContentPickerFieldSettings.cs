@@ -6,5 +6,6 @@ namespace OrchardCore.ContentFields.Settings
         public bool Required { get; set; }
         public bool Multiple { get; set; }
         public string[] DisplayedContentTypes { get; set; } = new string[0];
+        public string SearchResultProvider { get; set; }
     }
 }

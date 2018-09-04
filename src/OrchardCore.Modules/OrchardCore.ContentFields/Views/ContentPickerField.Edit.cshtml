@@ -26,7 +26,10 @@
     <fieldset class="form-group">
         <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
         <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
-        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" label="displayText" @@input="onInput" @@search-change="asyncFind" :multiple="@settings.Multiple.ToString().ToLowerInvariant()" :searchable="true" :close-on-select="true" :show-labels="true" placeholder="Pick a value"></vue-multiselect>
+        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" label="displayText" @@input="onInput"
+                         @{if (settings.SearchResultProvider != "Default") { <text> @@search-change="asyncFind" </text>  } }
+                         :multiple="@settings.Multiple.ToString().ToLowerInvariant()" :searchable="true" :close-on-select="true"
+                         :show-labels="true" placeholder="Pick a value"></vue-multiselect>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

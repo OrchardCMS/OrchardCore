@@ -17,7 +17,7 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
             asyncFind: function (query) {
                 var self = this;
                 self.isLoading = true;
-                var searchUrl = tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName + '&page=1&pageSize=10';                
+                var searchUrl = tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName;                
                 if (query) {
                     searchUrl += '&query=' + query;
                 }

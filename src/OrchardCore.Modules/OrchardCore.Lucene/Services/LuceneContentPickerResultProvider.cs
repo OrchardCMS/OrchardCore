@@ -16,6 +16,8 @@ namespace OrchardCore.Lucene.Services
             _luceneIndexProvider = luceneIndexProvider;
         }
 
+        public string Name => "Lucene";
+
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var indexName = "Search";
