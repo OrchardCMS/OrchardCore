@@ -41,8 +41,10 @@
   <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.WebHooks\OrchardCore.WebHooks.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.WebHooks.Abstractions\OrchardCore.WebHooks.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />

@@ -1,0 +1,152 @@
+@using System.Globalization
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.WebHooks.Models
+@model EditWebHookViewModel
+<hr />
+<div class="form-section card mb-3">
+    <div class="form-section-header card-header text-muted">
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-collapse"><i class="fa fa-minus" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-expand"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        @T["Triggers"]
+    </div>
+    <div class="form-section-body card-body">
+        <div class="form-section-wrapper">
+            <fieldset id="eventSelection" class="form-group">
+                <p>@T["Which events would you like to trigger this webhook?"]</p>
+                <div class="form-check">
+                    <input asp-for="SubscribeAllEvents" class="form-check-input" type="radio" id="allEventsRadio" value="true">
+                    <label class="form-check-label" for="allEventsRadio">
+                        @T["<strong>All</strong> the events"]
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="SubscribeAllEvents" class="form-check-input" type="radio" id="selectedEventsRadio" value="false">
+                    <label class="form-check-label" for="selectedEventsRadio">
+                        @T["Only selected events"]
+                    </label>
+                </div>
+            </fieldset>
+
+            @{
+                var contentEvents = Model.Events.Where(e => e.Category == "Content");
+
+                var contentTypeEvents = Model.Events.Where(e => e.Category == "ContentType");
+                var groupedContentTypeEvents = contentTypeEvents.GroupBy(e => e.DisplayName);
+            }
+            <div id="selectedEventsContainer" style="display: none" class="form-group">
+                <h6>@T["Content Events"]</h6>
+                <table class="table table-bordered table-sm table-events border-0">
+                    <thead class="thead-light text-center">
+                        <tr>
+                            <th class="border-0 bg-white"></th>
+                            @foreach (var eventName in ContentEvents.AllEvents)
+                            {
+                                <th>@CultureInfo.CurrentCulture.TextInfo.ToTitleCase(eventName)</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var groupedContentEvent in groupedContentTypeEvents)
+                        {
+                            <tr>
+                            @{var contentTypeClassName = groupedContentEvent.Key.HtmlClassify();}
+                            @if (groupedContentEvent.Key != null)
+                            {
+                            <td class="table-light">
+                                
+                                <input id="checkbox-@contentTypeClassName" type="checkbox" class="row-selectall" data-target=".row-@contentTypeClassName">
+                                <label for="checkbox-@contentTypeClassName">
+                                    @groupedContentEvent.Key
+                                </label>
+                            </td>
+                            }
+                            else
+                            {
+                            <td>
+                                &nbsp;
+                            </td>
+                            }
+                            @foreach (var contentEvent in groupedContentEvent)
+                            {
+                            <td class="text-center cell-select"><input name="WebHook.Events" type="checkbox" class="row-@contentTypeClassName" value="@contentEvent.Name" @(Model.WebHook.Events.Contains(contentEvent.Name) ? "checked" : "")></td>
+                            }
+                        </tr>
+                        }
+                        <tr class="text-center">
+                            <td class="border-0"></td>
+                            @foreach (var contentEvent in contentEvents)
+                            {
+                                <td class="table-light column-selectall"><input name="WebHook.Events" type="checkbox" value="@contentEvent.Name"></td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    $(function () {
+        // Implement radio button selection
+        $('#eventSelection input[type=radio]').change(function () {
+            if ($('#selectedEventsRadio').is(':checked')) {
+                $('#selectedEventsContainer').show();
+            } else {
+                $('#selectedEventsContainer').hide();
+            }
+        });
+        $("#selectedEventsRadio").change();
+
+        // Ensure checkbox selections on the first column selects all checkboxes in the row
+        $('.table-events .row-selectall').on('change', function () {
+            var isChecked = $(this).prop("checked");
+            var selector = $(this).data('target');
+            $(selector).prop("checked", isChecked).change();
+        });
+
+        // Ensure any missing checkbox selections in a row deselect the first in the row
+        $('.table-events .cell-select input').on('change', function () {
+            var allChecked = true;
+            $(this).closest('tr').find('td.cell-select input').each(function() { // Loop through all checkboxes that aren't "row-selectall"
+                if (!this.checked) {
+                    allChecked = false; // If one is not checked, flag all as not checked
+                    return false;
+                }
+            });
+            $(this).closest('tr').find('td:first-child input').prop("checked", allChecked);
+        });
+        
+        // Ensure checkbox selections on the last row in a column selects all checkboxes in the column
+        $(".table-events .column-selectall input").click(function () {
+            var checkedStatus = this.checked;
+            var index = $(this).parent().index() + 1;
+            $("#selectedEventsContainer tbody tr td.cell-select:nth-child(" + index + ") input:checkbox").prop("checked", checkedStatus).change();
+        });
+
+        // Ensure any missing checkbox selections in a column deselect the last in the column
+        $('.table-events .cell-select input').on('change', function () {
+            var index = $(this).parent().index() + 1;
+            var allChecked = true;
+            $("#selectedEventsContainer tbody tr td.cell-select:nth-child(" + index + ") input:checkbox").each(function () {
+                if (!this.checked) {
+                    allChecked = false; // If one is not checked, flag all as not checked
+                    return false;
+                }
+            });
+            $("#selectedEventsContainer tbody tr td.column-selectall:nth-child(" + index + ") input:checkbox").prop("checked", allChecked);
+        });
+
+        // On load trigger change event on all checkboxes so that the select-all checkboxes are recalculated. 
+        $('.table-events .cell-select input').change();
+
+        // Clicking on a table cell will select the checkbox in that cell
+        $('.table-events td').click(function(event) {
+            if (event.target.type !== 'checkbox' && event.target.localName !== 'label') {
+                $(':checkbox', this).trigger('click');
+            }
+        });
+    });
+
+</script>
+

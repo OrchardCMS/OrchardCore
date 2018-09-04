@@ -1,0 +1,76 @@
+@model EditWebHookViewModel
+
+<div class="form-section card">
+    <div class="form-section-header card-header text-muted">
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-collapse"><i class="fa fa-minus" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-expand"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        @T["Payload"] <span asp-validation-for="WebHook.PayloadTemplate"></span>
+    </div>
+    <div class="form-section-body card-body">
+        <div class="form-section-wrapper">
+            <fieldset id="payloadOptions" class="form-group">
+                <p>@T["Use the default webhook payload or provide a custom template to match the format expected by the service your webhook calls."]</p>
+                <div class="form-check">
+                    <input asp-for="CustomPayload" class="form-check-input" type="radio" id="defaultPayloadRadio" value="false">
+                    <label class="form-check-label" for="defaultPayloadRadio">
+                        @T["Use the default payload"]
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="CustomPayload" class="form-check-input" type="radio" id="customPayloadRadio" value="true">
+                    <label class="form-check-label" for="customPayloadRadio">
+                        @T["Customize the webhook payload"]
+                    </label>
+                </div>
+            </fieldset>
+            <div id="custom-payload" class="collapse">
+                <fieldset asp-validation-class-for="WebHook.PayloadTemplate">
+                    <textarea asp-for="WebHook.PayloadTemplate"></textarea>
+                    <span class="hint">@T["The payload to send with the webhook notification. With Liquid support."]</span>
+                </fieldset>
+                <span class="hint">@T["For example if integrating with Twilio to send an SMS when content is published," +
+                    " you can specify the JSON payload that their <a href=\"https://www.twilio.com/docs/sms/send-messages\" target=\"_blank\">REST API</a> expects."] 
+                </span>
+                <pre class="hint mb-0">{
+    "From": "+12345678910",
+    "To": "234234234",
+    "Body": "{{ User.Identity.Name }} published a new {{ Model.ContentItem.ContentType }} at: {{Site.BaseUrl}}{{ Model.ContentItem | display_url }}"
+}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        var init = false;
+        $('#payloadOptions input[type=radio]').change(function () {
+                            
+            if ($('#customPayloadRadio').is(':checked')) {
+                $('#custom-payload').addClass("show");
+                if(!init) {
+                    var codeMirrorOptions = {
+                        lineNumbers: true,
+                        styleActiveLine: true,
+                        matchBrackets: true,
+                        mode: { name: "liquid" },
+                    };
+                    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.WebHook.PayloadTemplate)'), codeMirrorOptions).setSize(null, 300);
+
+                    init = true;
+                }     
+            } else {
+                $('#custom-payload').removeClass("show");
+            }
+        });
+        $("#customPayloadRadio").change();
+    });
+</script>

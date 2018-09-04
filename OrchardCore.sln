@@ -341,7 +341,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Templates",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Logging.Serilog", "src\OrchardCore\OrchardCore.Logging.Serilog\OrchardCore.Logging.Serilog.csproj", "{B9DC28CB-F531-4533-B53E-6599970BF3F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.WebHooks", "src\OrchardCore.Modules\OrchardCore.WebHooks\OrchardCore.WebHooks.csproj", "{D51E6846-B325-4F99-BC69-72F3D38BBFFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.WebHooks.Abstractions", "src\OrchardCore\OrchardCore.WebHooks.Abstractions\OrchardCore.WebHooks.Abstractions.csproj", "{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -925,6 +929,14 @@ Global
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D51E6846-B325-4F99-BC69-72F3D38BBFFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D51E6846-B325-4F99-BC69-72F3D38BBFFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D51E6846-B325-4F99-BC69-72F3D38BBFFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D51E6846-B325-4F99-BC69-72F3D38BBFFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1087,6 +1099,8 @@ Global
 		{6EF610C3-EC5A-45CC-BDCC-0159B6D2D15A} = {FA7416DC-50F5-4576-9166-78B5129DABA9}
 		{B9DC28CB-F531-4533-B53E-6599970BF3F8} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{D51E6846-B325-4F99-BC69-72F3D38BBFFE} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{749D76B3-9BA6-4CFD-9CC5-F52FB11AB74B} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

@@ -1,0 +1,151 @@
+@model EditWebHookViewModel
+@{
+    bool IsSslVerificationVisible()
+    {
+        return Model.WebHook.Url != null &&
+               Model.WebHook.Url.Trim().ToLower().StartsWith("https://");
+    }
+
+    var httpMethods = new List<SelectListItem>
+    {
+        new SelectListItem {Text = "POST", Value = "POST"},
+        new SelectListItem {Text = "GET", Value = "GET"},
+        new SelectListItem {Text = "PUT", Value = "PUT"},
+        new SelectListItem {Text = "DELETE", Value = "DELETE"},
+        new SelectListItem {Text = "PATCH", Value = "PATCH"},
+        new SelectListItem {Text = "HEAD", Value = "HEAD"}
+    };
+}
+
+<fieldset class="form-group" asp-validation-class-for="WebHook.Name">
+    <label asp-for="WebHook.Name">@T["Name"] <small class="text-muted">@T["(required)"]</small> <span asp-validation-for="WebHook.Name"></span></label>
+    <input asp-for="WebHook.Name" class="form-control" type="text" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="WebHook.Url">
+    <label asp-for="WebHook.Url">@T["URL"] <small class="text-muted">@T["(required)"]</small> <span asp-validation-for="WebHook.Url"></span></label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select asp-for="WebHook.HttpMethod" asp-items="@httpMethods" class="custom-select"></select>
+        </div>
+        <input asp-for="WebHook.Url" class="form-control" type="text" />
+    </div>
+    <span class="hint">@T["The URL the webhook notification will be sent to."]</span>
+</fieldset>
+
+<fieldset id="sslVerificationFields" class="form-group alert
+            @(Model.WebHook.ValidateSsl ? "alert-success" : "alert-danger")
+            @(IsSslVerificationVisible() ? "" : "d-none")"
+            role="alert">
+    <div>@T["SSL Verification"]</div>
+    <p><small class="text-muted"><i class="fa fa-lock"></i> @T["By default, SSL certificates are verified when sending notifications."]</small></p>
+    <div class="form-check form-check-inline">
+        <input asp-for="WebHook.ValidateSsl" class="form-check-input" type="radio" id="enableVerificationRadio" value="true">
+        <label class="form-check-label" for="enableVerificationRadio">
+            <strong>@T["Enable SSL verification"]</strong>
+        </label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input asp-for="WebHook.ValidateSsl" class="form-check-input" type="radio" id="disableVerificationRadio" value="false" data-toggle="modal" data-target="#exampleModal">
+        <label class="form-check-label" for="disableVerificationRadio">
+            @T["Disable"] <small class="text-muted">@T["(not recommended)"]</small>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="WebHook.Secret">
+    <label asp-for="WebHook.Secret">@T["Secret"] <small class="text-muted">@T["(required)"]</small> <span asp-validation-for="WebHook.Secret"></span></label>
+    <div class="input-group">
+        <input asp-for="WebHook.Secret" class="form-control" type="text" />
+        <div class="input-group-append">
+            <button id="btn-regenerate" class="btn btn-outline-primary">
+                <i class="fa fa-redo-alt"></i> @T["Regenerate"]
+            </button>
+        </div>
+    </div>
+    <span class="hint">@T["This secret is used to sign all notifications. Use the generated secret or enter your own."]</span>
+</fieldset>
+
+<!-- SSL Verification Modal -->
+<div class="modal fade" id="verificationModal" tabindex="-1" role="dialog" aria-labelledby="verificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verificationModalLabel">@T["Are you sure?"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @T["<p>SSL verification is an important security measure to protect your webhook data from being intercepted and ensures the payload is securely delivered to the URL endpoint.</p>" +
+                   "<p>Disabling this option is <strong>not recommended</strong>.</p>"]
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                <button id="disableVerificationButton" type="button" class="btn btn-danger" data-dismiss="modal">Disable, I understand the risks</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style asp-src="/OrchardCore.WebHooks/Styles/webhooks.edit.css"></style>
+<script depends-on="jQuery" asp-src="~/OrchardCore.WebHooks/Scripts/webhooks.edit.js" type="text/javascript" at="Foot"></script>
+
+<script at="Foot">
+    $(function()
+    {
+        // Secret Field
+        function setRandomSecret(override) {
+            var field = $('#@Html.IdFor(x => x.WebHook.Secret)');
+            // Don't set a new secret if there's already one set unless told to override.
+            if (field.val() && !override) {
+                return;
+            }
+
+            var secret = Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15) +
+                Math.random().toString(36).substring(2, 15);
+
+            field.val(secret);
+        }
+
+        setRandomSecret(false);
+        $(document).on('click', '#btn-regenerate', function (e) {
+            e.preventDefault();
+            setRandomSecret(true);
+        });
+
+        // SSL Verification Fields
+        $('#@Html.IdFor(x => x.WebHook.Url)').keyup(function () {
+            var input = $(this);
+            var val = input.val();
+
+            if (val.trim().toLowerCase().startsWith("https://")) {
+                $('#sslVerificationFields').removeClass('d-none');
+            } else {
+                $('#sslVerificationFields').addClass('d-none');
+            }
+        });
+
+        $('#enableVerificationRadio').on('change',
+            function() {
+                $('#sslVerificationFields').addClass('alert-success').removeClass('alert-danger');
+            });
+
+        $('#disableVerificationRadio').click(
+            function(e) {
+
+                $('#verificationModal').modal();
+
+                e.preventDefault();
+                return false;     
+            });
+
+        // Modal Disable Button
+        $('#disableVerificationButton').click(
+            function () {
+                $('#sslVerificationFields').addClass('alert-danger').removeClass('alert-success');
+                $('#disableVerificationRadio').prop('checked', true);
+            });
+    });
+</script>
