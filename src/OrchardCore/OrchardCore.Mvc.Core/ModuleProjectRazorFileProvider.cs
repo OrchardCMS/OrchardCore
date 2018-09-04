@@ -62,7 +62,7 @@ namespace OrchardCore.Mvc
 
                             if (page != null)
                             {
-                                _pageFileProviders.Add(new PhysicalFileProvider(root + "Pages"));
+                                _pageFileProviders.Add(new PhysicalFileProvider(root));
                             }
 
                             roots[name] = root;
@@ -183,7 +183,7 @@ namespace OrchardCore.Mvc
 
                 foreach (var provider in _pageFileProviders)
                 {
-                    var changeToken = provider.Watch("**/*.cshtml");
+                    var changeToken = provider.Watch("Pages/**/*.cshtml");
 
                     if (changeToken != null)
                     {

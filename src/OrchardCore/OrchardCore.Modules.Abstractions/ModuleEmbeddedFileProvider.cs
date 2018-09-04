@@ -35,7 +35,7 @@ namespace OrchardCore.Modules
             {
                 if (_pageFileProvider == null)
                 {
-                    _pageFileProvider = new PhysicalFileProvider(_environment.ContentRootPath + "/Pages");
+                    _pageFileProvider = new PhysicalFileProvider(Application.Root);
                 }
             }
         }
@@ -59,8 +59,7 @@ namespace OrchardCore.Modules
             }
             else if (folder == Application.ModulesPath)
             {
-                entries.AddRange(Application.ModuleNames
-                    .Select(n => new EmbeddedDirectoryInfo(n)));
+                entries.AddRange(Application.ModuleNames.Select(n => new EmbeddedDirectoryInfo(n)));
             }
             else if (folder == Application.ModulePath)
             {
@@ -154,7 +153,7 @@ namespace OrchardCore.Modules
 
             if (path.Equals("**/*.cshtml"))
             {
-                return _pageFileProvider.Watch("**/*.cshtml");
+                return _pageFileProvider.Watch("Pages/**/*.cshtml");
             }
 
             return NullChangeToken.Singleton;
