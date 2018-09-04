@@ -16,8 +16,9 @@
     var vueElementId = $"ContentPicker_{partName}_{fieldName}";
 }
 
-<script asp-src="/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<script asp-src="/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect, lodash"></script>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" asp-name="lodash" at="Foot"></script>
 <script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
 <style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
 

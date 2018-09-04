@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -26,7 +25,7 @@ namespace OrchardCore.Content.Controllers
             _resultProviders = resultProviders;
         }
 
-        public async Task<IActionResult> List(string part, string field, string searchTerm, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(string part, string field, string query, PagerParameters pagerParameters)
         {
             if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
             {
@@ -45,19 +44,14 @@ namespace OrchardCore.Content.Controllers
             var searchResults = new List<ContentPickerResult>();
             foreach (var resultProvider in _resultProviders)
             {
-                searchResults.AddRange(await resultProvider.GetContentItems(searchTerm, fieldSettings.DisplayedContentTypes));
+                searchResults.AddRange(await resultProvider.Search(new ContentPickerSearchContext
+                {
+                    Query = query,
+                    ContentTypes = fieldSettings.DisplayedContentTypes
+                }));
             }
-
-            // TODO: handle pagination
 
             return new ObjectResult(searchResults);
         }
-    }
-
-    public class ContentPickerResult
-    {
-        public string DisplayText { get; set; }
-        public string ContentItemId { get; set; }
-        public decimal Score { get; set; }
     }
 }

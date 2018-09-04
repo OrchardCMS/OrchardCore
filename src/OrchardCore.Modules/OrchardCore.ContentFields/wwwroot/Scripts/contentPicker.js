@@ -22,13 +22,19 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
             asyncFind: function (query) {
                 var self = this;
                 self.isLoading = true;
-                return fetch(tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName + '&page=1&pageSize=10') // TODO: send query, debounce/throttle requests
-                    .then(function (res) {
-                        res.json().then(function (json) {
-                            self.options = json;
-                            self.isLoading = false;
+                var searchUrl = tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName + '&page=1&pageSize=10';                
+                if (query) {
+                    searchUrl += '&query=' + query;
+                }
+                _.debounce(function (searchUrl) {
+                    fetch(searchUrl) 
+                        .then(function (res) {
+                            res.json().then(function (json) {
+                                self.options = json;
+                                self.isLoading = false;
+                            })
                         })
-                    })
+                }, 350)(searchUrl);
             },
             onInput: function (value) {
                 var self = this;

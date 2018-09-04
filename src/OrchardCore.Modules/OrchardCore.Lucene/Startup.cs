@@ -1,10 +1,10 @@
 using System;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,6 +14,7 @@ using OrchardCore.Lucene.Handlers;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
+using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -48,6 +49,9 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
+
+            // TODO: move to feature scoped startup            
+            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
