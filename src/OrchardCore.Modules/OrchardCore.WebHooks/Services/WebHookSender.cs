@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.WebHooks.Abstractions.Models;
@@ -141,7 +142,7 @@ namespace OrchardCore.WebHooks.Services
             }
             else
             {
-                var serializedBody = body.ToString();
+                var serializedBody = body.ToString(Formatting.None);
                 return new StringContent(serializedBody, Encoding.UTF8, webHook.ContentType);
             }
         }

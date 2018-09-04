@@ -87,8 +87,8 @@ namespace OrchardCore.Tests.WebHooks
             Assert.Equal("TestTenant", request.Headers.GetValues("X-Orchard-Tenant").First());
             Assert.Equal("article.created", request.Headers.GetValues("X-Orchard-Event").First());
             Assert.Equal("TestId", request.Headers.GetValues("X-Orchard-Id").First());
-            Assert.Equal("sha256=8828416DFE0FEB63DCDA403D1F8E8C0933EABC2DF42672737600013255B318BB", request.Headers.GetValues("X-Orchard-Signature").First());
-            Assert.Equal("{\r\n  \"Test\": 1\r\n}", request.Content.ReadAsStringAsync().Result);
+            Assert.Equal("sha256=04498DF165202E5FA48A78E3F496DFE883CFCA21524E97BBA11A7BD9223C4778", request.Headers.GetValues("X-Orchard-Signature").First());
+            Assert.Equal("{\"Test\":1}", request.Content.ReadAsStringAsync().Result);
 
             return true;
         }
