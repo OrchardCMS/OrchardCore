@@ -16,9 +16,9 @@ namespace OrchardCore.Modules
     public class ModuleProjectStaticFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new object();
 
-        public ModuleProjectStaticFileProvider(IHostingEnvironment environment)
+        public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
         {
             if (_paths != null)
             {
@@ -29,28 +29,26 @@ namespace OrchardCore.Modules
             {
                 if (_paths == null)
                 {
-                    var application = environment.GetApplication();
+                    var application = applicationContext.Application;
 
                     var paths = new Dictionary<string, string>();
 
-                    foreach (var name in application.ModuleNames)
+                    foreach (var module in application.Modules)
                     {
-                        var module = environment.GetModule(name);
-
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
-                        var contentRoot = Application.ModulesRoot + name + '/' + Module.WebRoot;
+                        var contentRoot = Application.ModulesRoot + module.Name + '/' + Module.WebRoot;
 
                         var assets = module.Assets.Where(a => a.ModuleAssetPath
                             .StartsWith(contentRoot, StringComparison.Ordinal)).ToArray();
 
                         foreach (var asset in assets)
                         {
-                            var requestPath = name + asset.ModuleAssetPath.Substring(contentRoot.Length - 1);
+                            var requestPath = module.Name + asset.ModuleAssetPath.Substring(contentRoot.Length - 1);
                             paths[requestPath] = asset.ProjectAssetPath;
                         }
                     }
