@@ -15,23 +15,23 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleProjectStaticFileProvider : IFileProvider
     {
-        private static Dictionary<string, string> _paths;
+        private static Dictionary<string, string> _roots;
         private static object _synLock = new object();
 
         public ModuleProjectStaticFileProvider(IHostingEnvironment environment)
         {
-            if (_paths != null)
+            if (_roots != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_paths == null)
+                if (_roots == null)
                 {
                     var application = environment.GetApplication();
 
-                    var paths = new Dictionary<string, string>();
+                    var roots = new Dictionary<string, string>();
 
                     foreach (var name in application.ModuleNames)
                     {
@@ -48,14 +48,19 @@ namespace OrchardCore.Modules
                         var assets = module.Assets.Where(a => a.ModuleAssetPath
                             .StartsWith(contentRoot, StringComparison.Ordinal)).ToArray();
 
-                        foreach (var asset in assets)
+                        if (assets.Any())
                         {
-                            var requestPath = name + asset.ModuleAssetPath.Substring(contentRoot.Length - 1);
-                            paths[requestPath] = asset.ProjectAssetPath;
+                            var path = assets.First().ProjectAssetPath;
+                            var index = path.IndexOf('/' + Module.WebRoot);
+
+                            if (index != -1)
+                            {
+                                roots[name] = path.Substring(0, index + Module.WebRoot.Length + 1);
+                            }
                         }
                     }
 
-                    _paths = paths;
+                    _roots = roots;
                 }
             }
         }
@@ -73,10 +78,21 @@ namespace OrchardCore.Modules
             }
 
             var path = NormalizePath(subpath);
+            var index = path.IndexOf('/');
 
-            if (_paths.TryGetValue(path, out var projectAssetPath))
+            if (index != -1)
             {
-                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
+                var module = path.Substring(0, index);
+
+                if (_roots.TryGetValue(module, out var root))
+                {
+                    var filePath = root + path.Substring(module.Length + 1);
+
+                    if (File.Exists(filePath))
+                    {
+                        return new PhysicalFileInfo(new FileInfo(filePath));
+                    }
+                }
             }
 
             return new NotFoundFileInfo(subpath);
