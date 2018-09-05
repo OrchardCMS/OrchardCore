@@ -63,12 +63,12 @@ namespace OrchardCore.Recipes.Controllers
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
-                Name = recipe.Name,
+                Name = recipe.DisplayName,
                 FileName = recipe.RecipeFileInfo.Name,
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
                 IsSetupRecipe = recipe.IsSetupRecipe,
-                Feature = features.FirstOrDefault(f=>recipe.BasePath.Contains(f.Extension.SubPath))?.Name,
+                Feature = features.FirstOrDefault(f=>recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
                 Description = recipe.Description
             }).ToArray();
 

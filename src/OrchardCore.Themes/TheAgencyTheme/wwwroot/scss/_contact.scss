@@ -32,13 +32,11 @@ section#contact {
   :-moz-placeholder {
     font-weight: 700;
     color: $gray-400;
-    /* Firefox 18- */
     @include heading-font;
   }
   ::-moz-placeholder {
     font-weight: 700;
     color: $gray-400;
-    /* Firefox 19+ */
     @include heading-font;
   }
   :-ms-input-placeholder {

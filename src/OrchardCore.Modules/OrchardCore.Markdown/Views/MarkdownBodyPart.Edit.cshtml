@@ -1,15 +1,14 @@
-@using OrchardCore.Markdown.ViewModels;
 @model MarkdownBodyPartViewModel
+@using OrchardCore.Markdown.ViewModels;
+@using OrchardCore.Markdown.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "MarkdownBody_Editor";
-
-    if (!String.IsNullOrEmpty(Model.TypePartSettings.Editor))
-    {
-        shape.Metadata.Alternates.Add($"MarkdownBody_Editor__{Model.TypePartSettings.Editor}");
-    }
+    var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
 }
-@await DisplayAsync(Model)
+
+<fieldset class="form-group">
+    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+    <span class="hint">@T["The body of the content item, in Markdown format."]</span>
+</fieldset>

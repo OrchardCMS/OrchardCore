@@ -35,7 +35,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(NumericField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditNumericFieldViewModel>("NumericField_Edit", model =>
+            return Initialize<EditNumericFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
                 model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, CultureInfo.CurrentUICulture);

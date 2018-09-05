@@ -9,11 +9,11 @@ namespace OrchardCore.Mvc.RazorPages
 {
     public class DefaultModularPageRouteModelConvention : IPageRouteModelConvention
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
-        public DefaultModularPageRouteModelConvention(IHostingEnvironment hostingEnvironment)
+        public DefaultModularPageRouteModelConvention(IApplicationContext applicationContext)
         {
-            _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
         public void Apply(PageRouteModel model)
@@ -51,7 +51,7 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var name = _hostingEnvironment.GetModule(module).ModuleInfo.Name;
+                    var name = _applicationContext.Application.GetModule(module).ModuleInfo.Name;
 
                     if (!String.IsNullOrWhiteSpace(name))
                     {
