@@ -35,7 +35,6 @@ namespace OrchardCore.Tests.Extensions
         public ExtensionManagerTests()
         {
             ModuleScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
                 ApplicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
@@ -45,7 +44,6 @@ namespace OrchardCore.Tests.Extensions
                 );
 
             ThemeScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
                 ApplicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
@@ -55,7 +53,6 @@ namespace OrchardCore.Tests.Extensions
                 );
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
                 ApplicationContext,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },

@@ -30,25 +30,22 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 if (_paths == null)
                 {
-                    if (_paths == null)
+                    var assets = new List<Asset>();
+                    var application = applicationContext.Application;
+
+                    foreach (var module in application.Modules)
                     {
-                        var assets = new List<Asset>();
-                        var application = applicationContext.Application;
-
-                        foreach (var module in application.Modules)
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                            != Path.GetDirectoryName(application.Assembly.Location))
                         {
-                            if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
-                                != Path.GetDirectoryName(application.Assembly.Location))
-                            {
-                                continue;
-                            }
-
-                            assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
-                                .EndsWith(".liquid", StringComparison.Ordinal)));
+                            continue;
                         }
 
-                        _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                            .EndsWith(".liquid", StringComparison.Ordinal)));
                     }
+
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }

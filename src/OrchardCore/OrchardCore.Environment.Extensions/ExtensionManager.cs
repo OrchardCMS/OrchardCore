@@ -16,7 +16,6 @@ namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
 
         private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
@@ -29,19 +28,19 @@ namespace OrchardCore.Environment.Extensions
         private IDictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependentFeaturesFunc =
+        private static readonly Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependentFeaturesFunc =
             new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
                 (currentFeature, fs) => fs
                     .Where(f => f.Dependencies.Any(dep => dep == currentFeature.Id))
                     .ToArray());
 
-        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetFeatureDependenciesFunc =
+        private static readonly Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetFeatureDependenciesFunc =
             new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
                 (currentFeature, fs) => fs
                     .Where(f => currentFeature.Dependencies.Any(dep => dep == f.Id))
@@ -51,7 +50,6 @@ namespace OrchardCore.Environment.Extensions
         private static object InitializationSyncLock = new object();
 
         public ExtensionManager(
-            IHostingEnvironment hostingEnvironment,
             IApplicationContext applicationContext,
             IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
@@ -59,7 +57,6 @@ namespace OrchardCore.Environment.Extensions
             IFeaturesProvider featuresProvider,
             ILogger<ExtensionManager> logger)
         {
-            _hostingEnvironment = hostingEnvironment;
             _applicationContext = applicationContext;
             _extensionDependencyStrategies = extensionDependencyStrategies;
             _extensionPriorityStrategies = extensionPriorityStrategies;
