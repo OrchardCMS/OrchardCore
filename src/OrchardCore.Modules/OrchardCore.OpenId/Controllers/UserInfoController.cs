@@ -27,10 +27,11 @@ namespace OrchardCore.OpenId.Controllers
             _userManager = userManager;
         }
 
-        // GET/POST: /OrchardCore.OpenId/UserInfo/Me
+        // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
+        [Route("/connect/userinfo")]
         public async Task<IActionResult> Me()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
