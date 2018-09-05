@@ -1,17 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
+    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
 </Project>

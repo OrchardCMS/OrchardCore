@@ -9,7 +9,6 @@ namespace OrchardCore.Environment.Shell.State
     /// </summary>
     public class ShellState
     {
-        public int Id { get; set; }
         public List<ShellFeatureState> Features { get; } = new List<ShellFeatureState>();
     }
 }

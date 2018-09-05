@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using YamlDotNet.RepresentationModel;
 
-namespace OrchardCore.Yaml.Parser
+namespace OrchardCore.Yaml
 {
     internal class YamlConfigurationFileParser
     {

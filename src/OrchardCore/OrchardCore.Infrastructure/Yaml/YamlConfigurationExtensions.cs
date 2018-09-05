@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using OrchardCore.Yaml.Parser;
+using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Parser
+namespace OrchardCore.Yaml
 {
     public static class YamlConfigurationExtensions
     {

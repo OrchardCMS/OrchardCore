@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 
-namespace OrchardCore.Yaml.Parser
+namespace OrchardCore.Yaml
 {
     /// <summary>
     /// Represents a Yaml file as an <see cref="IConfigurationSource"/>.

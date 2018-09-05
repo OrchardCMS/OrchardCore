@@ -3,10 +3,9 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using OrchardCore.Parser;
-using OrchardCore.Yaml.Parser;
+using OrchardCore.Yaml;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Data
 {
     public class ShellSettingsConfigurationProvider : IShellSettingsConfigurationProvider
     {
