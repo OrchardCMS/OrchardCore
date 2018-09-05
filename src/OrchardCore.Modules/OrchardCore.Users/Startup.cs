@@ -24,6 +24,7 @@ using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.Shapes;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -104,6 +105,9 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+            services.AddScoped<IShapeTableProvider, AfterLoginShapes>();
+            services.AddShapeAttributes<AfterLoginShapes>();
         }
     }
 
@@ -172,6 +176,9 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+
+            services.AddScoped<IShapeTableProvider, AfterForgotPasswordShapes>();
+            services.AddShapeAttributes<AfterForgotPasswordShapes>();
         }
     }
 }

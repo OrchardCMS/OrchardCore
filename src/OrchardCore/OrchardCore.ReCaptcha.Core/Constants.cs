@@ -9,5 +9,7 @@ namespace OrchardCore.ReCaptcha.Core
         public const string ReCaptchaScriptUri = "https://www.google.com/recaptcha/api.js";
 
         public const string ReCaptchaApiUri = "https://www.google.com/recaptcha/api/";
+
+        public const string ReCaptchaServerResponseHeaderName = "g-recaptcha-response";
     }
 }

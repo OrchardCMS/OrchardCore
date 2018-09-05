@@ -30,56 +30,61 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
 
         public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            var settings = context.HttpContext.RequestServices.GetService<IOptions<ReCaptchaSettings>>().Value;
-            var abuseDetection = context.HttpContext.RequestServices.GetServices<IDetectAbuse>().ToList();
-            var logger = context.HttpContext.RequestServices.GetService<ILogger<ValidateReCaptchaAttribute>>();
+            //var abuseDetection = context.HttpContext.RequestServices.GetServices<IDetectAbuse>().ToList();
+            //var logger = context.HttpContext.RequestServices.GetService<ILogger<ValidateReCaptchaAttribute>>();
 
-            // make sure the module is enabled and correctly configured
-            var moduleIsEnabled = settings?.IsValid() ?? false;
+            //// make sure the module is enabled and correctly configured
+            //var moduleIsEnabled = settings?.IsValid() ?? false;
 
-            if (moduleIsEnabled)
-            {
-                switch (_mode)
-                {
-                    case ReCaptchaMode.AlwaysShow:
-                        await ValidateCaptchaAsync(settings.SecretKey, context);
-                        break;
-                    case ReCaptchaMode.PreventAbuse:
-                        // If we suspected abuse, a captcha should be present
-                        if(abuseDetection.Invoke(ab => ab.DetectAbuse(context.HttpContext), logger).Any(a => a.SuspectAbuse))
-                            await ValidateCaptchaAsync(settings.SecretKey, context);
-                        break;
-                }
-            }
+            //if (moduleIsEnabled)
+            //{
+            //    switch (_mode)
+            //    {
+            //        case ReCaptchaMode.AlwaysShow:
+            //            await ValidateCaptchaAsync(context);
+            //            break;
+            //        case ReCaptchaMode.PreventAbuse:
+            //            // If we suspected abuse, a captcha should be present
+            //            if(abuseDetection.Invoke(ab => ab.DetectAbuse(context.HttpContext), logger).Any(a => a.SuspectAbuse))
+            //                await ValidateCaptchaAsync(context);
+            //            break;
+            //    }
+            //}
+
+            var recaptchaService = context.HttpContext.RequestServices.GetService<IReCaptchaService>();
+            var isValidCaptcha = false;
+            var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
+
+            if (!String.IsNullOrWhiteSpace(reCaptchaResponse))
+                isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
+
+            var isConvicted = await recaptchaService.IsConvictedAsync();
+
+            if (isConvicted && !isValidCaptcha)
+                context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
 
             await next();
 
-            if (moduleIsEnabled)
+            if (context.ModelState.IsValid)
             {
-                if (context.ModelState.IsValid)
-                {
-                    abuseDetection?.Invoke(ab => ab.ClearAbuseFlags(context.HttpContext), logger);
-                }
-                else
-                {
-                    abuseDetection?.Invoke(ab => ab.FlagPossibleAbuse(context.HttpContext), logger);
-                }
+                await recaptchaService.MarkAsInnocentAsync();
+            }
+            else
+            {
+                await recaptchaService.FlagAsSuspectAsync();
             }
         }
 
-        private async Task ValidateCaptchaAsync(string secretKey, FilterContext context)
-        {
-            var client = context.HttpContext.RequestServices.GetService<IReCaptchaClient>();
+        //private async Task ValidateCaptchaAsync(FilterContext context)
+        //{
+        //    var service = context.HttpContext.RequestServices.GetService<IReCaptchaService>();
 
-            var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
+        //    var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
 
-            var isValid = !String.IsNullOrEmpty(reCaptchaResponse);
+        //    var isValid = await service.VerifyCaptchaResponseAsync(reCaptchaResponse);
 
-            if (isValid)
-                isValid = await client.VerifyAsync(reCaptchaResponse, secretKey);
-
-            if (!isValid)
-                context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
-        }
+        //    if (!isValid)
+        //        context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
+        //}
     }
 }

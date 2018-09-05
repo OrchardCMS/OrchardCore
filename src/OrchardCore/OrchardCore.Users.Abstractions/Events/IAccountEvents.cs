@@ -8,10 +8,10 @@ namespace OrchardCore.Users.Events
 {
     public interface IAccountEvents
     {
-        Task LoggingIn(CancellationToken token);
+        Task LoggingInAsync(Action<string, string> reportError);
 
-        Task LoggingInFailed();
+        Task LoggingInFailedAsync();
 
-        Task LoggedIn();
+        Task LoggedInAsync();
     }
 }

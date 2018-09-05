@@ -7,12 +7,12 @@ namespace OrchardCore.Users.Events
 {
     public interface IForgotPasswordEvents
     {
-        Task ResettingPassword();
+        Task ResettingPasswordAsync(Action<string, string> reportError);
 
-        Task PasswordReset();
+        Task PasswordResetAsync();
 
-        Task ForgettingPassword();
+        Task ForgettingPasswordAsync(Action<string, string> reportError);
 
-        Task ForgotPassword();
+        Task ForgotPasswordAsync();
     }
 }

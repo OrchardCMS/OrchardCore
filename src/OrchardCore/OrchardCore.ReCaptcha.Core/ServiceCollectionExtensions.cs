@@ -27,6 +27,7 @@ namespace OrchardCore.ReCaptcha.Core
 
             services.AddTransient<IDetectAbuse, IpAddressAbuseDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
+            services.AddTransient<IReCaptchaService, ReCaptchaService>();
 
             if (configure != null)
                 services.Configure(configure);

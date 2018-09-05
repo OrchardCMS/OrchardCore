@@ -45,6 +45,17 @@ namespace OrchardCore.ReCaptcha
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAccountEvents, AccountEventHandlers>();
+            services.AddScoped<IShapeFactoryEvents, AfterLoginShapes>();
+        }
+    }
+
+    [Feature("OrchardCore.ReCaptcha.User.ForgotPassword")]
+    public class ForgotPassword : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IForgotPasswordEvents, ForgotPasswordEventHandlers>();
+            services.AddScoped<IShapeFactoryEvents, AfterForgotPasswordShapes>();
         }
     }
 }

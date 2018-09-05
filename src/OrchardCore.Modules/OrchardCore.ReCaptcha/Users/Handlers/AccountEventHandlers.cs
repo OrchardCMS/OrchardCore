@@ -1,24 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.ReCaptcha.Core.Services;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    public class AccountEventHandlers : IAccountEvents
+    public class AccountEventHandlers : ReCaptchaEventHandler, IAccountEvents
     {
-        public Task LoggedIn()
+        public AccountEventHandlers(IReCaptchaService reCaptchaService, IHttpContextAccessor httpContextAccessor) : base(reCaptchaService, httpContextAccessor)
         {
-            return Task.CompletedTask;
+
         }
 
-        public Task LoggingIn(CancellationToken token)
+        public async Task LoggedInAsync()
         {
-            return Task.CompletedTask;
+            await ReCaptchaService.MarkAsInnocentAsync();
         }
 
-        public Task LoggingInFailed()
+        public async Task LoggingInAsync(Action<string, string> reportError)
         {
-            return Task.CompletedTask;
+            if(await ReCaptchaService.IsConvictedAsync())
+                await ValidateCaptchaAsync(reportError);
+        }
+
+        public async Task LoggingInFailedAsync()
+        {
+            await ReCaptchaService.FlagAsSuspectAsync();
         }
     }
 }

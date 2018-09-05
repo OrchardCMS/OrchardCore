@@ -9,16 +9,16 @@ using OrchardCore.Users.Shapes;
 
 namespace OrchardCore.ReCaptcha.Users.Shapes
 {
-    public class AfterRegistrationShapes : IShapeFactoryEvents
+    public class AfterForgotPasswordShapes : IShapeFactoryEvents
     {
-        public AfterRegistrationShapes()
+        public AfterForgotPasswordShapes()
         {
             
         }
 
         public async void Created(ShapeCreatedContext context)
         {
-            if (context.ShapeType == "AfterRegister")
+            if (context.ShapeType == "AfterForgotPassword")
             {
                 dynamic layout = context.Shape;   
                 layout.Add(await context.ShapeFactory.New.ReCaptcha());

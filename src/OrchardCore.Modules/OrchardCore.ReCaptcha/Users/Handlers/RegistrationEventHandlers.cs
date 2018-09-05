@@ -1,18 +1,29 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using OrchardCore.ReCaptcha.Core.Services;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    public class RegistrationEventHandlers : IRegistrationEvents
+    public class RegistrationEventHandlers : ReCaptchaEventHandler, IRegistrationEvents
     {
-        public Task Registered()
+        public RegistrationEventHandlers(IReCaptchaService recaptchaService, IHttpContextAccessor contextAccessor) : base(recaptchaService, contextAccessor)
+        {
+
+        }
+
+        public Task RegisteredAsync()
         {
             return Task.CompletedTask;
         }
 
-        public Task Registering()
+        public async Task RegisteringAsync(Action<string, string> reportError)
         {
-            return Task.CompletedTask;
+            await ValidateCaptchaAsync(reportError);
         }
     }
 }
