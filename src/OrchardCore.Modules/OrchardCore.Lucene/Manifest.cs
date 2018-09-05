@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lucene",
     Name = "Lucene",
     Description = "Creates Lucene indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Indexing",
         "OrchardCore.Liquid"
@@ -23,6 +23,14 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lucene.Worker",
     Name = "Lucene Worker",
     Description = "Provides a background task to keep local indices in sync with other instances.",
-    Dependencies = new [] { "OrchardCore.Lucene" },
+    Dependencies = new[] { "OrchardCore.Lucene" },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Lucene.ContentPickerSearchProvider",
+    Name = "Lucene Content Picker Search Provider",
+    Description = "Provides search results from a Lucene index for content picker fields.",
+    Dependencies = new[] { "OrchardCore.Lucene", "OrchardCore.ContentFields" },
     Category = "Content Management"
 )]

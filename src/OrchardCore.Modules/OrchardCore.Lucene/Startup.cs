@@ -49,9 +49,6 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
-
-            // TODO: move to feature scoped startup            
-            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -88,6 +85,15 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+        }
+    }
+
+    [Feature("OrchardCore.Lucene.ContentPickerSearchProvider")]
+    public class LuceneContentPickerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
         }
     }
 }

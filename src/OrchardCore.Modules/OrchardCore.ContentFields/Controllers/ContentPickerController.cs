@@ -15,7 +15,8 @@ namespace OrchardCore.Content.Controllers
 
         public ContentPickerController(
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentPickerResultProvider> resultProviders)
+            IEnumerable<IContentPickerResultProvider> resultProviders
+            )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _resultProviders = resultProviders;

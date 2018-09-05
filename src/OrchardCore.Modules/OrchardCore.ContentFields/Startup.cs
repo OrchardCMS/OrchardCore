@@ -103,7 +103,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
-
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
         }
 
