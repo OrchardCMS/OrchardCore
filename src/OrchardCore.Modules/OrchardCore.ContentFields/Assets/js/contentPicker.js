@@ -22,15 +22,12 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
                 if (query) {
                     searchUrl += '&query=' + query;
                 }
-                _.debounce(function (searchUrl) {
-                    fetch(searchUrl) 
-                        .then(function (res) {
-                            res.json().then(function (json) {
-                                self.options = json;
-                                self.isLoading = false;
-                            })
-                        })
-                }, 350)(searchUrl);
+                fetch(searchUrl).then(function (res) {
+                    res.json().then(function (json) {
+                        self.options = json;
+                        self.isLoading = false;
+                    })
+                });
             },
             onInput: function (value) {
                 var self = this;
