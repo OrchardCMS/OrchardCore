@@ -14,27 +14,31 @@
     var fieldName = Model.PartFieldDefinition.Name;
     var tenantPath = string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix) ? string.Empty : "/" + ShellSettings.RequestUrlPrefix;
     var vueElementId = $"ContentPicker_{partName}_{fieldName}";
+    var multiple = settings.Multiple.ToString().ToLowerInvariant();
+    var isDefaultProvider = settings.SearchResultProvider == "Default";
 }
 
 <script asp-src="/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect, lodash"></script>
+<style asp-src="/OrchardCore.ContentFields/Styles/contentPicker.min.css" debug-src="/OrchardCore.ContentFields/Styles/contentPicker.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js" asp-name="lodash" at="Foot"></script>
 <script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
 <style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
 
-<div id="@vueElementId">
+<div id="@vueElementId" class="content-picker-multiselect">
     <fieldset class="form-group">
         <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
         <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
         <vue-multiselect v-model="value" :options="options" track-by="contentItemId" label="displayText" @@input="onInput"
-                         @{if (settings.SearchResultProvider != "Default") { <text> @@search-change="asyncFind" </text>  } }
-                         :multiple="@settings.Multiple.ToString().ToLowerInvariant()" :searchable="true" :close-on-select="true"
-                         :show-labels="true" placeholder="Pick a value"></vue-multiselect>
+                         @{if (!isDefaultProvider) { <text> @@search-change="asyncFind" </text>  } }
+                         :multiple="@multiple" :searchable="true" :close-on-select="true"
+                         :show-labels="true" :hide-selected="@multiple" placeholder=""
+                         select-label="Select" deselect-label="Remove">
+        </vue-multiselect>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
-        @*<pre class="language-json"><code>{{ value }}</code></pre>*@
     </fieldset>
 </div>
 

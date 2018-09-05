@@ -1,9 +1,10 @@
 function initializeContentPickerFieldEditor(elementId, selectedItems, contentItemIds, tenantPath, partName, fieldName) {
 
-    Vue.component('vue-multiselect', window.VueMultiselect.default);
+    var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect.default);
 
     new Vue({
         el: '#' + elementId,
+        components: { 'vue-multiselect': vueMultiselect },
         data: {
             value: selectedItems,
             options: [],
