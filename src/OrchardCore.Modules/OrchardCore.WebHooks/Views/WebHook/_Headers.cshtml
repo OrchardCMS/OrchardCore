@@ -1,0 +1,92 @@
+@using OrchardCore.WebHooks.Models
+@model EditWebHookViewModel
+
+<div class="form-section card mb-3">
+    <div class="form-section-header card-header text-muted">
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-collapse"><i class="fa fa-minus" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm form-section-btn-toggle form-section-btn-expand"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        @T["Headers"]
+    </div>
+    <div class="form-section-body card-body">
+        <div class="form-section-wrapper">
+            <fieldset id="headers" class="form-group" asp-validation-class-for="WebHook.Headers">
+                <label>@T["Custom Headers"]</label>
+                <small class="alert-light">@T["(Press <span class=\"fa fa-plus\"></span> to add another header)"]</small>
+                <div id="headersContainer">
+                    @{ var headerCount = Model.WebHook.Headers.Count > 0 ? Model.WebHook.Headers.Count : Model.WebHook.Headers.Count + 1;}
+                    @for (int i = 0; i < headerCount; i++)
+                    {
+                        var header = Model.WebHook.Headers.ElementAtOrDefault(i);
+                        var name = Html.NameFor(m => m.WebHook.Headers) + "[" + i + "]";
+                        <div class="header row">
+                            <div class="col">
+                                <input name="@(name).Key" value="@header.Key" class="form-control headerKey" type="text" placeholder="Key" />
+                            </div>
+                            <div><strong>:</strong></div>
+                            <div class="col input-group mb-3">
+                                <input name="@(name).Value" value="@header.Value" class="form-control headerValue" type="text" placeholder="Value" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary btn-add" type="button">
+                                        <span class="fa @(i == Model.WebHook.Headers.Count - 1 || Model.WebHook.Headers.Count == 0 ? "fa-plus" : "fa-trash")"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+
+            <fieldset class="form-group" asp-validation-class-for="WebHook.ContentType">
+                <label asp-for="WebHook.ContentType">@T["Content Type"] <span asp-validation-for="WebHook.ContentType"></span></label>
+                <select asp-for="WebHook.ContentType" class="custom-select">
+                    <option>@MediaTypeNames.Json</option>
+                    <option>@MediaTypeNames.FormUrlEncoded</option>
+                    <option>@MediaTypeNames.OrchardVendor</option>
+                </select>
+                <span class="hint">@T["The content type to be used as the value of the <code>Content-Type</code> header."]</span>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+
+<script at="Foot">
+    $(function()
+    {
+        // Custom Headers Field
+        function initHeaderFields() {
+            var controlForm = $('#headers #headersContainer:first');
+            controlForm.find('.header:not(:last) .btn-add')
+                .removeClass('btn-add').addClass('btn-remove')
+                .removeClass('btn-success').addClass('btn-danger')
+                .html('<span class="fa fa-trash"></span>');
+
+            $('#headersContainer input.headerKey').each(function (index) {
+                $(this).attr("name", "WebHook.Headers[" + index + "].Key");
+            });
+            $('#headersContainer input.headerValue').each(function (index) {
+                $(this).attr("name", "WebHook.Headers[" + index + "].Value");
+            });
+        }
+
+        initHeaderFields();
+        $(document).on('click', '.btn-add', function(e)
+        {
+            e.preventDefault();
+
+            var controlForm = $('#headers #headersContainer:first'),
+                currentEntry = $(this).parents('.header:first'),
+                newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+            newEntry.find('input').val('');
+            initHeaderFields();
+
+        }).on('click', '.btn-remove', function(e)
+        {
+            $(this).parents('.header:first').remove();
+            initHeaderFields();
+            e.preventDefault();
+            return false;
+        });
+    });
+</script>

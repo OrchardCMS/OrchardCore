@@ -1,0 +1,32 @@
+@model EditWebHookViewModel
+
+<h1>@RenderTitleSegments(T["Edit Webhook"])</h1>
+
+<p>
+    @T["We'll send a request to the URL below with details of the subscribed event."]
+</p>
+
+<form asp-action="Edit" asp-controller="WebHook" asp-area="OrchardCore.WebHooks" method="post">
+    @Html.ValidationSummary()
+
+    <input asp-for="WebHook.Id" type="hidden"/>
+    
+    <partial name="_Details" model="Model" />
+    <partial name="_Triggers" model="Model" />
+    <partial name="_Headers" model="Model" />
+    <partial name="_Payload" model="Model" />
+
+    <hr />
+    <fieldset class="form-group">
+        <input asp-for="WebHook.Enabled" type="checkbox" />
+        <label class="form-check-label" asp-for="WebHook.Enabled">
+            Enabled
+        </label>
+        <span class="hint">@T["We will send notifications when your selected event(s) occur."]</span>
+    </fieldset>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@T["Save"]</button>
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
+</form>

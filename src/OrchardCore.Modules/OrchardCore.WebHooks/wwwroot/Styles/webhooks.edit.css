@@ -1,0 +1,30 @@
+.input-group-prepend select.custom-select {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.form-section.collapsed .card-body {
+    display: none;
+}
+
+.form-section .card-body {
+    display: inherit;
+}
+
+.form-section-btn-collapse,
+.collapsed .form-section-btn-expand {
+    display: inline-block;
+}
+
+.form-section:not(.collapsed) .form-section-btn-expand,
+.collapsed .form-section-btn-collapse {
+    display: none;
+}
+
+.form-section-wrapper {
+    width: 100%;
+}
+
+.table-events {
+    padding: 0.3rem 1rem 0.3rem 1rem;
+}

@@ -1,0 +1,40 @@
+@model WebHookIndexViewModel
+
+<h1>@RenderTitleSegments(T["Webhooks"])</h1>
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Webhook"]</a>
+        </li>
+    </ul>
+</nav>
+
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
+    @if (Model.WebHooksList.WebHooks.Any())
+    {
+        <ul class="list-group">
+            @foreach (var entry in Model.WebHooksList.WebHooks)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Ping" asp-route-id="@entry.Id" class="btn btn-info btn-sm">@T["Ping"]</a>
+                            <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                        <h5>@entry.Name</h5>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["Webhooks allow you to send notifications to a URL of your choice. " +
+               "Configure a webhook here to invoke behavior on another site when an event occurs."]
+        </div>
+    }
+</form>

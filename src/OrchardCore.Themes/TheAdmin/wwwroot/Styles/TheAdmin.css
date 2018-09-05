@@ -2617,7 +2617,9 @@ input[type="button"].btn-block {
   background-size: 8px 10px;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
-  appearance: none; }
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none; }
   .custom-select:focus {
     border-color: #80bdff;
     outline: 0;
