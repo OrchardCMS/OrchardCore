@@ -30,27 +30,6 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
 
         public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            //var abuseDetection = context.HttpContext.RequestServices.GetServices<IDetectAbuse>().ToList();
-            //var logger = context.HttpContext.RequestServices.GetService<ILogger<ValidateReCaptchaAttribute>>();
-
-            //// make sure the module is enabled and correctly configured
-            //var moduleIsEnabled = settings?.IsValid() ?? false;
-
-            //if (moduleIsEnabled)
-            //{
-            //    switch (_mode)
-            //    {
-            //        case ReCaptchaMode.AlwaysShow:
-            //            await ValidateCaptchaAsync(context);
-            //            break;
-            //        case ReCaptchaMode.PreventAbuse:
-            //            // If we suspected abuse, a captcha should be present
-            //            if(abuseDetection.Invoke(ab => ab.DetectAbuse(context.HttpContext), logger).Any(a => a.SuspectAbuse))
-            //                await ValidateCaptchaAsync(context);
-            //            break;
-            //    }
-            //}
-
             var recaptchaService = context.HttpContext.RequestServices.GetService<IReCaptchaService>();
             var isValidCaptcha = false;
             var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
@@ -58,7 +37,18 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
             if (!String.IsNullOrWhiteSpace(reCaptchaResponse))
                 isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
 
-            var isConvicted = await recaptchaService.IsConvictedAsync();
+            var isConvicted = false;
+
+            switch (_mode)
+            {
+                case ReCaptchaMode.PreventAbuse:
+                    isConvicted = await recaptchaService.IsConvictedAsync();
+                    break;
+                case ReCaptchaMode.AlwaysShow:
+                    isConvicted = true;
+                    break;
+
+            }
 
             if (isConvicted && !isValidCaptcha)
                 context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
@@ -74,17 +64,5 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
                 await recaptchaService.FlagAsSuspectAsync();
             }
         }
-
-        //private async Task ValidateCaptchaAsync(FilterContext context)
-        //{
-        //    var service = context.HttpContext.RequestServices.GetService<IReCaptchaService>();
-
-        //    var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
-
-        //    var isValid = await service.VerifyCaptchaResponseAsync(reCaptchaResponse);
-
-        //    if (!isValid)
-        //        context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
-        //}
     }
 }
