@@ -277,15 +277,17 @@ namespace OrchardCore.Users.Controllers
                         user = null;
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     }
-
-                    var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
-                    if (identityResult.Succeeded)
+                    else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
-                        return RedirectToLocal(returnUrl);
+                        var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                        if (identityResult.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
+                            return RedirectToLocal(returnUrl);
+                        }
+                        AddErrors(identityResult);
                     }
-                    AddErrors(identityResult);
                 }
             }
             return View(nameof(ExternalLogin), model);
