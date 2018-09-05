@@ -4,11 +4,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Moq;
 using OpenIddict.Abstractions;
 using OrchardCore.DisplayManagement;
@@ -19,7 +17,6 @@ using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
-using OrchardCore.Users;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
@@ -29,8 +26,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         [Fact]
         public async Task UsersShouldNotBeAbleToCreateIfNotAllowed()
         {
-            var mockUserManager = MockUserManager<IUser>().Object;
-                        
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<ISiteService>(),
@@ -38,8 +33,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IAuthorizationService>(),
                 Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
-                mockUserManager,
-                Mock.Of<IOptions<IdentityOptions>>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -58,8 +51,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
-                MockUserManager<IUser>().Object,
-                Mock.Of<IOptions<IdentityOptions>>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -84,8 +75,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
-                MockUserManager<IUser>().Object,
-                Mock.Of<IOptions<IdentityOptions>>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -123,8 +112,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
-                MockUserManager<IUser>().Object,
-                Mock.Of<IOptions<IdentityOptions>>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -145,26 +132,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Assert.IsType<ViewResult>(result);
             }
             Assert.Equal(expectValidModel, controller.ModelState.IsValid);
-        }
-
-        public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
-        {
-            IList<IUserValidator<TUser>> UserValidators = new List<IUserValidator<TUser>>();
-            IList<IPasswordValidator<TUser>> PasswordValidators = new List<IPasswordValidator<TUser>>();
-
-            var store = new Mock<IUserStore<TUser>>();
-            UserValidators.Add(new UserValidator<TUser>());
-            PasswordValidators.Add(new PasswordValidator<TUser>());
-            var mgr = new Mock<UserManager<TUser>>(store.Object,
-                null,
-                null,
-                UserValidators,
-                PasswordValidators,
-                null,
-                null,
-                null,
-                null);
-            return mgr;
         }
 
         public Mock<IAuthorizationService> MockAuthorizationServiceMock()
