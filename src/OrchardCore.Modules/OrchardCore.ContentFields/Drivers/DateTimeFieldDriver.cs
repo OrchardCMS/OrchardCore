@@ -34,7 +34,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(DateTimeField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditDateTimeFieldViewModel>("DateTimeField_Edit", async model =>
+            return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;

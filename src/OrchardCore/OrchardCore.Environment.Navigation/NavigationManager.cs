@@ -228,7 +228,7 @@ namespace OrchardCore.Environment.Navigation
                 {
                     foreach (var permission in item.Permissions)
                     {
-                        if (_authorizationService.AuthorizeAsync(user, permission, item.Resource).Result)
+                        if (_authorizationService.AuthorizeAsync(user, permission, item.Resource).GetAwaiter().GetResult())
                         {
                             filtered.Add(item);
                         }
