@@ -11,5 +11,11 @@
       "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/contentPicker.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg.media.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.media.js"
   }
 ]

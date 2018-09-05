@@ -31,13 +31,18 @@ namespace OrchardCore.Lucene
         {
             services.AddSingleton<LuceneIndexingState>();
             services.AddScoped<LuceneIndexingService>();
-
+            services.AddScoped<ISearchQueryService, SearchQueryService>();
+            
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
+
+            services.Configure<LuceneOptions>(o =>
+                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
+                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
@@ -73,9 +78,6 @@ namespace OrchardCore.Lucene
                 template: "api/lucene/documents",
                 defaults: new { controller = "Api", action = "Documents" }
             );
-
-            var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
-            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer, new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 

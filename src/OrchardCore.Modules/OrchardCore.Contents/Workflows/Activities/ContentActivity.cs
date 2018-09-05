@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -26,7 +27,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override LocalizedString Category => T["Content"];
 
         /// <summary>
-        /// An expression that evaluates to either a <see cref="IContent"/> item.
+        /// An expression that evaluates to an <see cref="IContent"/> item.
         /// </summary>
         public WorkflowExpression<IContent> Content
         {
@@ -55,8 +56,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return res;
             }
 
-            // If no expression was provided, see if the content item was provided as an input or as a property using the "Content" key.
-            var content = workflowContext.Input.GetValue<IContent>("Content") ?? workflowContext.Properties.GetValue<IContent>("Content");
+            // If no expression was provided, see if the content item was provided as an input or as a property.
+            var content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
+                ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
 
             if (content != null)
             {

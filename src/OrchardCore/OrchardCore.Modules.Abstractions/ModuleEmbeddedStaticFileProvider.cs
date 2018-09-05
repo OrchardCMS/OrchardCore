@@ -13,11 +13,11 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedStaticFileProvider : IFileProvider
     {
-        private readonly IHostingEnvironment _environment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ModuleEmbeddedStaticFileProvider(IHostingEnvironment environment)
+        public ModuleEmbeddedStaticFileProvider(IApplicationContext applicationContext)
         {
-            _environment = environment;
+            _applicationContext = applicationContext;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -38,18 +38,19 @@ namespace OrchardCore.Modules
 
             if (index != -1)
             {
+                var application = _applicationContext.Application;
                 var module = path.Substring(0, index);
 
-                if (_environment.GetApplication().ModuleNames.Contains(module))
+                if (application.Modules.Any(m=> m.Name == module))
                 {
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
 
-                    if (module != _environment.GetApplication().Name)
+                    if (module != application.Name)
                     {
-                        return _environment.GetModule(module).GetFileInfo(fileSubPath);
+                        return application.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    fileSubPath = _environment.GetApplication().Root + fileSubPath;
+                    fileSubPath = application.Root + fileSubPath;
                     return new PhysicalFileInfo(new FileInfo(fileSubPath));
                 }
             }
