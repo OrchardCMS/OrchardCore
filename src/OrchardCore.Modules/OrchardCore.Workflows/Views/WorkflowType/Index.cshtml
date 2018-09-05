@@ -1,5 +1,7 @@
 @model WorkflowTypeIndexViewModel
+@using System.Collections.Generic
 @using OrchardCore.Workflows.ViewModels;
+@inject IEnumerable<OrchardCore.Localization.IPluralRuleProvider> PluralRuleProviders;
 
 <h1>@RenderTitleSegments(T["Manage Workflow Types"])</h1>
 
@@ -52,7 +54,14 @@
                             }
                             @if (entry.WorkflowCount > 0)
                             {
+                                if (PluralRuleProviders.Any())
+                                {
                                 <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances", entry.WorkflowCount)</a>
+                                }
+                                else
+                                {
+                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T["Instances"] @entry.WorkflowCount</a>
+                                }
                             }
                         </div>
                     </div>
