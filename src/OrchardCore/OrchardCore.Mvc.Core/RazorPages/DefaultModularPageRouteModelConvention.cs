@@ -3,16 +3,17 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {
     public class DefaultModularPageRouteModelConvention : IPageRouteModelConvention
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
-        public DefaultModularPageRouteModelConvention(IHostingEnvironment hostingEnvironment)
+        public DefaultModularPageRouteModelConvention(IApplicationContext applicationContext)
         {
-            _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
         public void Apply(PageRouteModel model)
@@ -50,34 +51,30 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var attributeRouteModel = new AttributeRouteModel();
+                    var name = _applicationContext.Application.GetModule(module).ModuleInfo.Name;
 
-                    if (module != _hostingEnvironment.ApplicationName)
+                    if (!String.IsNullOrWhiteSpace(name))
                     {
-                        attributeRouteModel.Template = module + pageName.Substring(pathIndex + "Pages".Length);
-                        attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
+                        module = name;
+                    }
+
+                    if (module != Application.ModuleName)
+                    {
+                        template = module + pageName.Substring(pathIndex + "Pages".Length);
                     }
                     else
                     {
-                        attributeRouteModel.Template = pageName.Substring(pathIndex + "Pages".Length + 1);
-
-                        // When a Page named "Index" is defined in the application's module
-                        // we force the homepage template.
-                        if (String.Equals(attributeRouteModel.Template, "Index", StringComparison.OrdinalIgnoreCase))
-                        {
-                            attributeRouteModel.Template = "";
-                            attributeRouteModel.Name = "Index";
-                        }
-                        else
-                        {                            
-                            attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
-                        }
-
+                        template = pageName.Substring(pathIndex + "Pages".Length + 1);
                     }
+
 
                     model.Selectors.Add(new SelectorModel
                     {
-                        AttributeRouteModel = attributeRouteModel
+                        AttributeRouteModel = new AttributeRouteModel
+                        {
+                            Template = template,
+                            Name = template.Replace('/', '.')
+                        }
                     });
 
                     break;

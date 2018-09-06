@@ -15,45 +15,45 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleProjectStaticFileProvider : IFileProvider
     {
-        private static Dictionary<string, string> _roots;
-        private static object _synLock = new object();
+        private static Dictionary<string, string> _paths;
+        private static readonly object _synLock = new object();
 
-        public ModuleProjectStaticFileProvider(IHostingEnvironment environment)
+        public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
         {
-            if (_roots != null)
+            if (_paths != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_roots == null)
+                if (_paths == null)
                 {
-                    var application = environment.GetApplication();
+                    var application = applicationContext.Application;
 
-                    var roots = new Dictionary<string, string>();
+                    var paths = new Dictionary<string, string>();
 
-                    foreach (var name in application.ModuleNames)
+                    foreach (var module in application.Modules)
                     {
-                        var module = environment.GetModule(name);
-
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
-                        var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
-                            .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
+                        var contentRoot = Application.ModulesRoot + module.Name + '/' + Module.WebRoot;
 
-                        if (asset != null)
+                        var assets = module.Assets.Where(a => a.ModuleAssetPath
+                            .StartsWith(contentRoot, StringComparison.Ordinal)).ToArray();
+
+                        foreach (var asset in assets)
                         {
-                            var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot);
-                            roots[name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
+                            var requestPath = module.Name + asset.ModuleAssetPath.Substring(contentRoot.Length - 1);
+                            paths[requestPath] = asset.ProjectAssetPath;
                         }
                     }
 
-                    _roots = roots;
+                    _paths = paths;
                 }
             }
         }
@@ -71,21 +71,10 @@ namespace OrchardCore.Modules
             }
 
             var path = NormalizePath(subpath);
-            var index = path.IndexOf('/');
 
-            if (index != -1)
+            if (_paths.TryGetValue(path, out var projectAssetPath))
             {
-                var module = path.Substring(0, index);
-
-                if (_roots.TryGetValue(module, out var root))
-                {
-                    var filePath = root + path.Substring(module.Length + 1);
-
-                    if (File.Exists(filePath))
-                    {
-                        return new PhysicalFileInfo(new FileInfo(filePath));
-                    }
-                }
+                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
             }
 
             return new NotFoundFileInfo(subpath);

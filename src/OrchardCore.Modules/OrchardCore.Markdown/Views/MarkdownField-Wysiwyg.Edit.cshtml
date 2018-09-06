@@ -1,4 +1,4 @@
-﻿@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Markdown.Settings;
 
@@ -25,6 +25,11 @@
             element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
             forceSync: true
         });
+
+        if (simplemdeInitialized !== true) {
+            simplemdeInitialized = true;
+            $(document).trigger('simplemde:initialize', [simplemde]);
+        }
 
         simplemde.codemirror.on('change', function () {
             $(document).trigger('contentpreview:render');

@@ -30,7 +30,8 @@ namespace OrchardCore.Lucene
         {
             services.AddSingleton<LuceneIndexingState>();
             services.AddScoped<LuceneIndexingService>();
-
+            services.AddScoped<ISearchQueryService, SearchQueryService>();
+            
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
