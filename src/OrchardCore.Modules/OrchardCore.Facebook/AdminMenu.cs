@@ -28,15 +28,15 @@ namespace OrchardCore.Facebook
                 return;
             }
 
-            builder.Add(T["Facebook"], "15", category =>
+            builder.Add(T["Configuration"], "15", category =>
             {
-                category.AddClass("facebook").Id("facebook");
-
                 var features = _shellDescriptor.Features.Select(feature => feature.Id).ToImmutableArray();
-                if (features.Contains(FacebookConstants.Features.Core) || features.Contains(FacebookConstants.Features.Login))
+                if (features.Contains(FacebookConstants.Features.Core))
                 {
-                    category.Add(T["Settings"], "1", settings =>
+                    category.Add(T["Facebook"], "1", settings =>
                     {
+                        settings.AddClass("facebook").Id("facebook");
+
                         if (features.Contains(FacebookConstants.Features.Core))
                         {
                             settings.Add(T["Core"], "1", client => client

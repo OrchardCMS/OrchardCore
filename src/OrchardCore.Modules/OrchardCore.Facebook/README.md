@@ -6,7 +6,7 @@
 - Core Components
 - Facebook Login
 
-Configuration can be set through the _Facebook settings_ menu in the admin dashboard.
+Configuration can be set through the _Configuration -> Facebook_ settings menu in the admin dashboard.
 
 ## Core Components
 Registers the Facebook App with site.
@@ -28,5 +28,4 @@ and a valid OAuth redirect URI must be set.
 
 Available settings are:
 
-+ CallbackPath: The request path within the application's base path where the user agent will be returned after sign out from the identity provider. See post_logout_redirect_uri from http://openid.net/specs/openid-connect-session-1_0.html#RedirectionAfterLogout 
-
++ CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
