@@ -31,6 +31,10 @@ namespace OrchardCore.Mvc
             {
                 options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_hostingEnvironment));
             }
+            else
+            {
+                options.FileProviders.Add(new ApplicationCompiledPageFileProvider(_hostingEnvironment));
+            }
         }
     }
 }

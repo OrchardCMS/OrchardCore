@@ -5,13 +5,6 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="PublishRazorPagesFiles" BeforeTargets="BeforePublish">
-    <ItemGroup>
-      <RazorPagesFiles Include="Pages\**\*.cshtml" />
-      <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="%(RazorPagesFiles.Identity)" />
-    </ItemGroup>
-  </Target>
-
   <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
     <MSBuild
       Targets="GetModuleProject"

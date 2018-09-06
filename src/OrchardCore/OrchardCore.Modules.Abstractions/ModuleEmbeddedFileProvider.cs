@@ -137,7 +137,6 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
-
             if (filter == null)
             {
                 return NullChangeToken.Singleton;
