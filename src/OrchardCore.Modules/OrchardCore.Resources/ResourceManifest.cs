@@ -110,23 +110,23 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.2.0/css/all.css")
-                .SetCdnIntegrity("sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ")
-                .SetVersion("5.2.0")
+                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/css/all.css")
+                .SetCdnIntegrity("sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU")
+                .SetVersion("5.3.1")
                 ;
 
             manifest
                 .DefineScript("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.2.0/js/all.js")
-                .SetCdnIntegrity("sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy")
-                .SetVersion("5.2.0")
+                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/js/all.js")
+                .SetCdnIntegrity("sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB")
+                .SetVersion("5.3.1")
                 ;
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetCdn("https://use.fontawesome.com/releases/v5.2.0/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-rn4uxZDX7xwNq5bkqSbpSQ3s4tK9evZrXAO1Gv9WTZK4p1+NFsJvOQmkos19ebn2")
-                .SetVersion("5.2.0")
+                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-DtdEw3/pBQuSag11V3is/UZMjGkGMLDRBgk1UVAOvH6cYoqKjBmCEhePm13skjRV")
+                .SetVersion("5.3.1")
                 ;
         }
     }

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Markdown.Model;
-using OrchardCore.Markdown.Settings;
 
 namespace OrchardCore.Markdown.ViewModels
 {
@@ -17,6 +17,6 @@ namespace OrchardCore.Markdown.ViewModels
         public MarkdownBodyPart MarkdownBodyPart { get; set; }
 
         [BindNever]
-        public MarkdownBodyPartSettings TypePartSettings { get; set; }
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
     }
 }
