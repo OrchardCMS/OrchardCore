@@ -24,6 +24,7 @@ namespace OrchardCore.Settings
                 .Add(T["Settings"], "1", settings => settings
                     .Add(T["General"], T["General"], entry => entry
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                        .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
                     )
                 )

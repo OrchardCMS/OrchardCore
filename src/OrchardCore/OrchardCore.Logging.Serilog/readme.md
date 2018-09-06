@@ -7,7 +7,8 @@
 add a reference to `OrchardCore.Logging.Serilog`
 
 ### add serilog configuration in appsettings.json
-```
+
+``` json
   "Serilog": {
     "MinimumLevel": {
       "Default": "Warning",
@@ -39,7 +40,8 @@ add a reference to `OrchardCore.Logging.Serilog`
 ```
 
 ### Modify `program.cs` to use Serilog
-```
+
+``` csharp
         public static IWebHost BuildWebHost(string[] args)
             => WebHost.CreateDefaultBuilder(args)
                 .UseSerilogWeb()
@@ -48,12 +50,10 @@ add a reference to `OrchardCore.Logging.Serilog`
 ```
 
 ### Modify `startup.cs` to include TenantName in LogContext
-```
+
+``` csharp
         using OrchardCore.Logging;
-```
 
-
-```
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -64,4 +64,3 @@ add a reference to `OrchardCore.Logging.Serilog`
             app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
         }
 ```
-

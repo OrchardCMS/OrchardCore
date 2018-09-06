@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@RenderTitleSegments((await Site).SiteName, "before")</title>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
     <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
     <style asp-name="bootstrap" use-cdn="true" version="4"></style>
@@ -18,7 +18,7 @@
 <body dir="@OrchardCore.CultureDir()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="~/#">@(await Site).SiteName</a>
+            <a class="navbar-brand" href="~/#">@Site.SiteName</a>
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>

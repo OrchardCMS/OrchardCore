@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -25,7 +26,7 @@ namespace OrchardCore.Localization
         {
             var siteSettings = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-            var options = new RequestLocalizationOptions();
+            var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
             if (!String.IsNullOrEmpty(siteSettings.Culture))
