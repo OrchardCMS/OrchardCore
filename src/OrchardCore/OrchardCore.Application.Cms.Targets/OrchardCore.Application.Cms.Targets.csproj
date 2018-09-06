@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DeferredTasks\OrchardCore.DeferredTasks.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
@@ -92,6 +91,7 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>

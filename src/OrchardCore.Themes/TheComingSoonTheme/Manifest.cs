@@ -5,5 +5,5 @@ using OrchardCore.DisplayManagement.Manifest;
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "2.0.0",
-    Description = "A theme adapted for coming soon websites."
+    Description = "Landing page for a project that is under construction"
 )]

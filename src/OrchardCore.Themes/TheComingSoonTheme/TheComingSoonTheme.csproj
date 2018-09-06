@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="gulpfile.js;**\*.less;**\*.scss;" />
     <Compile Remove="wwwroot\node_modules\**" />
+    <Compile Remove="wwwroot\scss\**" />
     <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="wwwroot\scss\**" />
     <None Remove="wwwroot\node_modules\**" />
+    <None Remove="wwwroot\scss\**" />
   </ItemGroup>
 
   <ItemGroup>
