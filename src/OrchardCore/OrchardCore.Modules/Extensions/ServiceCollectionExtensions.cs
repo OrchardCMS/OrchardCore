@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,15 +6,18 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
+using OrchardCore.Modules.DataProtection.Repositories;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -185,21 +189,37 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<OrchardCoreBuilder>>();
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-                var directory = Directory.CreateDirectory(Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                settings.Name, "DataProtection-Keys"));
+                DirectoryInfo directory = null;
+
+                try
+                {
+                    directory = Directory.CreateDirectory(Path.Combine(
+                        options.Value.ShellsApplicationDataPath,
+                        options.Value.ShellsContainerName,
+                        settings.Name, "DataProtection-Keys"));
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    logger.LogError(e, "Access denied when creating the 'DataProtection-Keys' folder for '{TenantName}'", settings.Name);
+                }
 
                 // Re-register the data protection services to be tenant-aware so that modules that internally
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                var collection = new ServiceCollection()
+                var dpBuilder = new ServiceCollection()
                     .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .Services;
+                    .SetApplicationName(settings.Name);
+
+                if (directory != null)
+                {
+                    //dpBuilder.PersistKeysToFileSystem(directory);
+                }
+
+                var collection = dpBuilder.Services;
 
                 // Retrieve the implementation type of the newly startup filter registered as a singleton
                 var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
@@ -220,6 +240,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Remove any previously registered options setups.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
                 services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+
+                if (directory == null)
+                {
+                    services.Configure<KeyManagementOptions>(o =>
+                    {
+                        if (o.XmlRepository == null || o.XmlRepository is FileSystemXmlRepository)
+                        {
+                            o.XmlRepository = new DefaultEphemeralXmlRepository(loggerFactory);
+                        }
+                    });
+                }
 
                 services.Add(collection);
             });
