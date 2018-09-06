@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Internal;
 using Microsoft.Extensions.FileProviders.Physical;
@@ -17,11 +16,27 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
+        private static IFileProvider _pageFileProvider;
+        private static object _synLock = new object();
+
         private readonly IApplicationContext _applicationContext;
 
         public ModuleEmbeddedFileProvider(IApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
+
+            if (_pageFileProvider != null)
+            {
+                return;
+            }
+
+            lock (_synLock)
+            {
+                if (_pageFileProvider == null)
+                {
+                    _pageFileProvider = new PhysicalFileProvider(Application.Root);
+                }
+            }
         }
 
         private Application Application => _applicationContext.Application;
@@ -43,8 +58,7 @@ namespace OrchardCore.Modules
             }
             else if (folder == Application.ModulesPath)
             {
-                entries.AddRange(Application.Modules
-                    .Select(n => new EmbeddedDirectoryInfo(n.Name)));
+                entries.AddRange(Application.Modules.Select(n => new EmbeddedDirectoryInfo(n.Name)));
             }
             else if (folder == Application.ModulePath)
             {
@@ -122,7 +136,6 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
-
             if (filter == null)
             {
                 return NullChangeToken.Singleton;
@@ -134,6 +147,11 @@ namespace OrchardCore.Modules
             {
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
+            }
+
+            if (path.Equals("**/*.cshtml"))
+            {
+                return _pageFileProvider.Watch("Pages/**/*.cshtml");
             }
 
             return NullChangeToken.Singleton;

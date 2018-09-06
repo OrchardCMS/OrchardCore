@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -23,11 +22,11 @@ namespace OrchardCore.Mvc
         private static IList<string> _pages;
         private static object _synLock = new object();
 
-        private readonly IHostingEnvironment _environment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ApplicationCompiledPageFileProvider(IHostingEnvironment environment)
+        public ApplicationCompiledPageFileProvider(IApplicationContext applicationContext)
         {
-            _environment = environment;
+            _applicationContext = applicationContext;
 
             if (_pages != null)
             {
@@ -38,7 +37,7 @@ namespace OrchardCore.Mvc
             {
                 if (_pages == null)
                 {
-                    var application = environment.GetApplication();
+                    var application = _applicationContext.Application;
 
                     var pages = new List<string>();
 
@@ -68,7 +67,7 @@ namespace OrchardCore.Mvc
             }
         }
 
-        private Application Application => _environment.GetApplication();
+        private Application Application => _applicationContext.Application;
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {

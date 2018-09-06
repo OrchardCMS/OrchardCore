@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Internal;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
@@ -16,22 +16,25 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private static Dictionary<string, string> _paths;
-        private static readonly object _synLock = new object();
+        private static IList<IFileProvider> _pageFileProviders;
+        private static Dictionary<string, string> _roots;
+        private static object _synLock = new object();
 
         public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
         {
-            if (_paths != null)
+            if (_roots != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_paths == null)
+                if (_roots == null)
                 {
-                    var assets = new List<Asset>();
                     var application = applicationContext.Application;
+
+                    _pageFileProviders = new List<IFileProvider>();
+                    var roots = new Dictionary<string, string>();
 
                     foreach (var module in application.Modules)
                     {
@@ -41,17 +44,65 @@ namespace OrchardCore.Mvc
                             continue;
                         }
 
-                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
-                            .EndsWith(".cshtml", StringComparison.Ordinal)));
+                        var assets = module.Assets.Where(a => a.ModuleAssetPath
+                            .EndsWith(".cshtml", StringComparison.Ordinal));
+
+                        if (assets.Any())
+                        {
+                            var asset = assets.First();
+                            var index = asset.ModuleAssetPath.IndexOf(module.Root);
+
+                            var filePath = asset.ModuleAssetPath.Substring(index + module.Root.Length);
+                            var root = asset.ProjectAssetPath.Substring(0, asset.ProjectAssetPath.Length - filePath.Length);
+
+                            var page = assets.FirstOrDefault(a => a.ProjectAssetPath.Contains("/Pages/"));
+
+                            if (page != null)
+                            {
+                                _pageFileProviders.Add(new PhysicalFileProvider(root));
+                            }
+
+                            roots[module.Name] = root;
+                        }
                     }
 
-                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
+                    _roots = roots;
                 }
             }
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
+            if (subpath == null)
+            {
+                return NotFoundDirectoryContents.Singleton;
+            }
+
+            var folder = NormalizePath(subpath);
+            var index = folder.IndexOf(Application.ModulesRoot);
+
+            if (index != -1)
+            {
+                folder = folder.Substring(Application.ModulesRoot.Length);
+                index = folder.IndexOf('/');
+
+                if (index != -1)
+                {
+                    var module = folder.Substring(0, index);
+
+                    if (_roots.TryGetValue(module, out var root) &&
+                        (folder.Contains("/Pages/") || folder.EndsWith("/Pages")))
+                    {
+                        folder = root + folder.Substring(module.Length + 1);
+
+                        if (Directory.Exists(folder))
+                        {
+                            return new PhysicalDirectoryContents(folder);
+                        }
+                    }
+                }
+            }
+
             return NotFoundDirectoryContents.Singleton;
         }
 
@@ -63,10 +114,27 @@ namespace OrchardCore.Mvc
             }
 
             var path = NormalizePath(subpath);
+            var index = path.IndexOf(Application.ModulesRoot);
 
-            if (_paths.TryGetValue(path, out var projectAssetPath))
+            if (index != -1)
             {
-                return new PhysicalFileInfo(new FileInfo(projectAssetPath));
+                path = path.Substring(Application.ModulesRoot.Length);
+                index = path.IndexOf('/');
+
+                if (index != -1)
+                {
+                    var module = path.Substring(0, index);
+
+                    if (_roots.TryGetValue(module, out var root))
+                    {
+                        var filePath = root + path.Substring(module.Length + 1);
+
+                        if (File.Exists(filePath))
+                        {
+                            return new PhysicalFileInfo(new FileInfo(filePath));
+                        }
+                    }
+                }
             }
 
             return new NotFoundFileInfo(subpath);
@@ -80,10 +148,50 @@ namespace OrchardCore.Mvc
             }
 
             var path = NormalizePath(filter);
+            var index = path.IndexOf(Application.ModulesRoot);
 
-            if (_paths.TryGetValue(path, out var projectAssetPath))
+            if (index != -1)
             {
-                return new PollingFileChangeToken(new FileInfo(projectAssetPath));
+                path = path.Substring(Application.ModulesRoot.Length);
+                index = path.IndexOf('/');
+
+                if (index != -1)
+                {
+                    var module = path.Substring(0, index);
+
+                    if (_roots.TryGetValue(module, out var root))
+                    {
+                        var filePath = root + path.Substring(module.Length + 1);
+
+                        var directory = Path.GetDirectoryName(filePath);
+                        var fileName = Path.GetFileNameWithoutExtension(filePath);
+
+                        if (Directory.Exists(directory))
+                        {
+                            return new PollingWildCardChangeToken(directory, fileName + ".*");
+                        }
+                    }
+                }
+            }
+
+            if (path.Equals("**/*.cshtml"))
+            {
+                var changeTokens = new List<IChangeToken>();
+
+                foreach (var provider in _pageFileProviders)
+                {
+                    var changeToken = provider.Watch("Pages/**/*.cshtml");
+
+                    if (changeToken != null)
+                    {
+                        changeTokens.Add(changeToken);
+                    }
+                }
+
+                if (changeTokens.Count > 0)
+                {
+                    return new CompositeChangeToken(changeTokens);
+                }
             }
 
             return NullChangeToken.Singleton;

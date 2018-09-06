@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules;
@@ -51,30 +50,34 @@ namespace OrchardCore.Mvc.RazorPages
                         }
                     });
 
-                    var name = _applicationContext.Application.GetModule(module).ModuleInfo.Name;
+                    var attributeRouteModel = new AttributeRouteModel();
 
-                    if (!String.IsNullOrWhiteSpace(name))
+                    if (module != _applicationContext.Application.Name)
                     {
-                        module = name;
-                    }
-
-                    if (module != Application.ModuleName)
-                    {
-                        template = module + pageName.Substring(pathIndex + "Pages".Length);
+                        attributeRouteModel.Template = module + pageName.Substring(pathIndex + "Pages".Length);
+                        attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
                     }
                     else
                     {
-                        template = pageName.Substring(pathIndex + "Pages".Length + 1);
-                    }
+                        attributeRouteModel.Template = pageName.Substring(pathIndex + "Pages".Length + 1);
 
+                        // When a Page named "Index" is defined in the application's module
+                        // we force the homepage template.
+                        if (String.Equals(attributeRouteModel.Template, "Index", StringComparison.OrdinalIgnoreCase))
+                        {
+                            attributeRouteModel.Template = "";
+                            attributeRouteModel.Name = "Index";
+                        }
+                        else
+                        {
+                            attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
+                        }
+
+                    }
 
                     model.Selectors.Add(new SelectorModel
                     {
-                        AttributeRouteModel = new AttributeRouteModel
-                        {
-                            Template = template,
-                            Name = template.Replace('/', '.')
-                        }
+                        AttributeRouteModel = attributeRouteModel
                     });
 
                     break;
