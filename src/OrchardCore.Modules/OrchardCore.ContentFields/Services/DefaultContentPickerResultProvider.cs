@@ -23,7 +23,8 @@ namespace OrchardCore.ContentFields.Services
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var contentItems = await _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.ContentType.IsIn(searchContext.ContentTypes) && x.Published)
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(searchContext.ContentTypes) && x.Latest)
+                .Take(20)
                 .ListAsync();
 
             var results = new List<ContentPickerResult>();
