@@ -1,17 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="wwwroot\node_modules\**" />
-    <Compile Remove="wwwroot\scss\**" />
-    <EmbeddedResource Remove="wwwroot\node_modules\**" />
-    <EmbeddedResource Remove="wwwroot\scss\**" />
-    <None Remove="wwwroot\node_modules\**" />
-    <None Remove="wwwroot\scss\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
@@ -21,12 +12,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="README.md">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
