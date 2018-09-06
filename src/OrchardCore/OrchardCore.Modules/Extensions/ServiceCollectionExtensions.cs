@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,6 +17,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
+using OrchardCore.Modules.DataProtection.Repositories;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -184,6 +186,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var logger = serviceProvider.GetRequiredService<ILogger<OrchardCoreBuilder>>();
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
                 DirectoryInfo directory = null;
 
@@ -209,7 +212,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 if (directory != null)
                 {
-                    dpBuilder.PersistKeysToFileSystem(directory);
+                    //dpBuilder.PersistKeysToFileSystem(directory);
                 }
 
                 var collection = dpBuilder.Services;
@@ -233,6 +236,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Remove any previously registered options setups.
                 services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
                 services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+
+                if (directory == null)
+                {
+                    services.Configure<KeyManagementOptions>(o =>
+                    {
+                        if (o.XmlRepository == null || o.XmlRepository is FileSystemXmlRepository)
+                        {
+                            o.XmlRepository = new DefaultEphemeralXmlRepository(loggerFactory);
+                        }
+                    });
+                }
 
                 services.Add(collection);
             });
