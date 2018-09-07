@@ -35,24 +35,33 @@ namespace OrchardCore.Modules
 
             var entries = new List<IFileInfo>();
 
+            // Under the root.
             if (folder == "")
             {
+                // Add the virtual folder ".Modules" containing all modules.
                 entries.Add(new EmbeddedDirectoryInfo(Application.ModulesPath));
             }
+            // Under ".Modules".
             else if (folder == Application.ModulesPath)
             {
-                entries.AddRange(Application.Modules.Select(n => new EmbeddedDirectoryInfo(n.Name)));
+                // Add virtual folders for all modules by using their assembly names (= module ids).
+                entries.AddRange(Application.Modules.Select(m => new EmbeddedDirectoryInfo(m.Name)));
             }
+            // Under e.g ".Modules/{ModuleId}" or ".Modules/{ModuleId}/wwwroot".
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
+                // Remove ".Modules/" from the folder path.
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
+                // Resolve the module name and get all its asset paths.
                 var name = index == -1 ? path : path.Substring(0, index);
                 var paths = Application.GetModule(name).AssetPaths;
 
+                // Use the normalized assets paths to resolve files and subfolders under this folder.
                 NormalizedPaths.ResolveFolderContents(folder, paths, out var files, out var folders);
 
+                // And add them to the directory contents.
                 entries.AddRange(files.Select(p => GetFileInfo(p)));
                 entries.AddRange(folders.Select(n => new EmbeddedDirectoryInfo(n)));
             }
