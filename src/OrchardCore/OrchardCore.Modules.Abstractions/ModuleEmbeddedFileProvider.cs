@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Internal;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules.FileProviders;
 
@@ -43,10 +42,6 @@ namespace OrchardCore.Modules
             else if (folder == Application.ModulesPath)
             {
                 entries.AddRange(Application.Modules.Select(n => new EmbeddedDirectoryInfo(n.Name)));
-            }
-            else if (folder == Application.ModulePath)
-            {
-                return new PhysicalDirectoryContents(Application.Path);
             }
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {

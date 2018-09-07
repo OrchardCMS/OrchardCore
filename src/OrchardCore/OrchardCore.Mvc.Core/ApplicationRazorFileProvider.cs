@@ -48,7 +48,11 @@ namespace OrchardCore.Modules
 
             var folder = NormalizePath(subpath);
 
-            if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
+            if (folder == Application.ModulePath)
+            {
+                return new PhysicalDirectoryContents(Application.Path);
+            }
+            else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 var tokenizer = new StringTokenizer(folder, new char[] { '/' });
                 if (tokenizer.Any(s => s == "Pages" || s == "Views"))
