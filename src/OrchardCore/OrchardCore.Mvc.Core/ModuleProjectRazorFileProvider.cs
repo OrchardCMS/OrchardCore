@@ -17,9 +17,9 @@ namespace OrchardCore.Mvc
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new object();
 
-        public ModuleProjectRazorFileProvider(IHostingEnvironment environment)
+        public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
         {
             if (_paths != null)
             {
@@ -31,12 +31,10 @@ namespace OrchardCore.Mvc
                 if (_paths == null)
                 {
                     var assets = new List<Asset>();
-                    var application = environment.GetApplication();
+                    var application = applicationContext.Application;
 
-                    foreach (var name in application.ModuleNames)
+                    foreach (var module in application.Modules)
                     {
-                        var module = environment.GetModule(name);
-
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {

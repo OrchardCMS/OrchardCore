@@ -6,8 +6,8 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowStore
     {
-        Task<int> CountAsync();
-        Task<IEnumerable<Workflow>> ListAsync(int? skip = null, int? take = null);
+        Task<int> CountAsync(string workflowTypeId = null);
+        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null);
         Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds);
         Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
         Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null);
