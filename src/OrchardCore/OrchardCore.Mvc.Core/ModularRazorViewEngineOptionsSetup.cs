@@ -29,6 +29,8 @@ namespace OrchardCore.Mvc
                 }
             }
 
+            options.FileProviders.Insert(0, new ApplicationRazorFileProvider(_applicationContext));
+
             if (_hostingEnvironment.IsDevelopment())
             {
                 options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_applicationContext));

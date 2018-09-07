@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Internal;
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules.FileProviders;
 
@@ -16,7 +14,6 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private static IFileProvider _pageFileProvider;
         private static object _synLock = new object();
 
         private readonly IApplicationContext _applicationContext;
@@ -24,19 +21,6 @@ namespace OrchardCore.Modules
         public ModuleEmbeddedFileProvider(IApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
-
-            if (_pageFileProvider != null)
-            {
-                return;
-            }
-
-            lock (_synLock)
-            {
-                if (_pageFileProvider == null)
-                {
-                    _pageFileProvider = new PhysicalFileProvider(Application.Root);
-                }
-            }
         }
 
         private Application Application => _applicationContext.Application;
@@ -63,15 +47,6 @@ namespace OrchardCore.Modules
             else if (folder == Application.ModulePath)
             {
                 return new PhysicalDirectoryContents(Application.Path);
-            }
-            else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
-            {
-                var tokenizer = new StringTokenizer(folder, new char[] { '/' });
-                if (tokenizer.Any(s => s == "Pages" || s == "Views"))
-                {
-                    var folderSubPath = folder.Substring(Application.ModuleRoot.Length);
-                    return new PhysicalDirectoryContents(Application.Root + folderSubPath);
-                }
             }
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
@@ -113,12 +88,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
-            {
-                var fileSubPath = path.Substring(Application.ModuleRoot.Length);
-                return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
-            }
-            else if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
+            if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
@@ -136,24 +106,6 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
-            if (filter == null)
-            {
-                return NullChangeToken.Singleton;
-            }
-
-            var path = NormalizePath(filter);
-
-            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
-            {
-                var fileSubPath = path.Substring(Application.ModuleRoot.Length);
-                return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
-            }
-
-            if (path.Equals("**/*.cshtml"))
-            {
-                return _pageFileProvider.Watch("Pages/**/*.cshtml");
-            }
-
             return NullChangeToken.Singleton;
         }
 
