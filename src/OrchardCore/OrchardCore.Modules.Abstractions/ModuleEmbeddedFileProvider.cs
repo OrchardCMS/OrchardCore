@@ -47,28 +47,14 @@ namespace OrchardCore.Modules
             {
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
+
                 var name = index == -1 ? path : path.Substring(0, index);
-                var assetPaths = Application.GetModule(name).AssetPaths;
-                var folders = new HashSet<string>(StringComparer.Ordinal);
-                var folderSlash = folder + '/';
+                var paths = Application.GetModule(name).AssetPaths;
 
-                foreach (var assetPath in assetPaths.Where(a => a.StartsWith(folderSlash, StringComparison.Ordinal)))
-                {
-                    var folderPath = assetPath.Substring(folderSlash.Length);
-                    var pathIndex = folderPath.IndexOf('/');
-                    var isFilePath = pathIndex == -1;
+                NormalizedPaths.ResolveFolderContents(folder, paths, out var files, out var folders);
 
-                    if (isFilePath)
-                    {
-                        entries.Add(GetFileInfo(assetPath));
-                    }
-                    else
-                    {
-                        folders.Add(folderPath.Substring(0, pathIndex));
-                    }
-                }
-
-                entries.AddRange(folders.Select(f => new EmbeddedDirectoryInfo(f)));
+                entries.AddRange(files.Select(p => GetFileInfo(p)));
+                entries.AddRange(folders.Select(n => new EmbeddedDirectoryInfo(n)));
             }
 
             return new EmbeddedDirectoryContents(entries);

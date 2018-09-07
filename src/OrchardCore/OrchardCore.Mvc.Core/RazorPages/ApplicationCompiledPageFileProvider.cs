@@ -86,26 +86,12 @@ namespace OrchardCore.Mvc
             }
             else if (folder.StartsWith(Application.ModuleRoot + "Pages", StringComparison.Ordinal))
             {
-                var folders = new HashSet<string>(StringComparer.Ordinal);
-                var folderSlash = folder.Substring(Application.ModuleRoot.Length) + '/';
+                var subFolder = folder.Substring(Application.ModuleRoot.Length);
 
-                foreach (var page in _pages.Where(a => a.StartsWith(folderSlash, StringComparison.Ordinal)))
-                {
-                    var folderPath = page.Substring(folderSlash.Length);
-                    var pathIndex = folderPath.IndexOf('/');
-                    var isFilePath = pathIndex == -1;
+                NormalizedPaths.ResolveFolderContents(subFolder, _pages, out var files, out var folders);
 
-                    if (isFilePath)
-                    {
-                        entries.Add(new EmptyPageFileInfo(Path.GetFileName(page)));
-                    }
-                    else
-                    {
-                        folders.Add(folderPath.Substring(0, pathIndex));
-                    }
-                }
-
-                entries.AddRange(folders.Select(f => new EmbeddedDirectoryInfo(f)));
+                entries.AddRange(files.Select(p => new EmptyPageFileInfo(Path.GetFileName(p))));
+                entries.AddRange(folders.Select(n => new EmbeddedDirectoryInfo(n)));
             }
 
             return new EmbeddedDirectoryContents(entries);
@@ -125,21 +111,21 @@ namespace OrchardCore.Mvc
         {
             return path.Replace('\\', '/').Trim('/');
         }
-    }
 
-    internal class EmptyPageFileInfo : IFileInfo
-    {
-        private static readonly byte[] _content = Encoding.UTF8.GetBytes('@' + PageDirective.Directive.Directive);
+        internal class EmptyPageFileInfo : IFileInfo
+        {
+            private static readonly byte[] _content = Encoding.UTF8.GetBytes('@' + PageDirective.Directive.Directive);
 
-        public EmptyPageFileInfo(string name) { Name = name; }
+            public EmptyPageFileInfo(string name) { Name = name; }
 
-        public bool Exists => true;
-        public long Length { get { return _content.Length; } }
-        public string PhysicalPath => null;
-        public string Name { get; }
-        public DateTimeOffset LastModified { get { return DateTimeOffset.MinValue; } }
-        public bool IsDirectory => false;
+            public bool Exists => true;
+            public long Length { get { return _content.Length; } }
+            public string PhysicalPath => null;
+            public string Name { get; }
+            public DateTimeOffset LastModified { get { return DateTimeOffset.MinValue; } }
+            public bool IsDirectory => false;
 
-        public Stream CreateReadStream() { return new MemoryStream(_content); }
+            public Stream CreateReadStream() { return new MemoryStream(_content); }
+        }
     }
 }

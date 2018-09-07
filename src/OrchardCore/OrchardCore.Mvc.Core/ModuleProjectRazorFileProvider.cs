@@ -79,7 +79,7 @@ namespace OrchardCore.Mvc
             }
 
             var folder = NormalizePath(subpath);
-            var index = folder.IndexOf(Application.ModulesRoot);
+            var index = folder.IndexOf(Application.ModulesRoot, StringComparison.Ordinal);
 
             if (index != -1)
             {
