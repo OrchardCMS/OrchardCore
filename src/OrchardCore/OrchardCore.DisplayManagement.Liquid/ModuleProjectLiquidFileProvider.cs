@@ -34,6 +34,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                     foreach (var module in application.Modules)
                     {
+                        // If the module and the application assemblies are not at the same location,
+                        // this means that the module is referenced as a package, not as a project in dev.
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {

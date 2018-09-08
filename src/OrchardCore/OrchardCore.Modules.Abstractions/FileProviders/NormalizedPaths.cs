@@ -6,6 +6,10 @@ namespace OrchardCore.Modules.FileProviders
 {
     public static class NormalizedPaths
     {
+        /// <summary>
+        /// Use a collection of file paths to resolve files and subfolders directly under a given folder.
+        /// Paths need to be normalized by using '/' for the directory separator and with no leading '/'.
+        /// </summary>
         public static void ResolveFolderContents(string folder, IEnumerable<string> normalizedPaths,
             out IEnumerable<string> filePaths, out IEnumerable<string> folderPaths)
         {

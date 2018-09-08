@@ -32,19 +32,24 @@ namespace OrchardCore.Modules
 
                     var roots = new Dictionary<string, string>();
 
+                    // Resolve all module projects "wwwroot".
                     foreach (var module in application.Modules)
                     {
+                        // If the module and the application assemblies are not at the same location,
+                        // this means that the module is referenced as a package, not as a project in dev.
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
+                        // Get the first module asset under ".Modules/{ModuleId}/wwwroot/".
                         var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
                             .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
 
                         if (asset != null)
                         {
+                            // Resolve the "{ModuleProjectDirectory}/wwwroot/" from the project asset.
                             var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot);
                             roots[module.Name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
                         }
@@ -67,19 +72,24 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
+            // "{ModuleId}/**/*.*".
             var path = NormalizePath(subpath);
             var index = path.IndexOf('/');
 
             if (index != -1)
             {
+                // Resolve the module id.
                 var module = path.Substring(0, index);
 
+                // Get the module project "wwwroot" folder.
                 if (_roots.TryGetValue(module, out var root))
                 {
+                    // Resolve the file: "{ModuleProjectDirectory}/wwwroot/**/*.*"
                     var filePath = root + path.Substring(module.Length + 1);
 
                     if (File.Exists(filePath))
                     {
+                        //Serve the file from the physical file system.
                         return new PhysicalFileInfo(new FileInfo(filePath));
                     }
                 }

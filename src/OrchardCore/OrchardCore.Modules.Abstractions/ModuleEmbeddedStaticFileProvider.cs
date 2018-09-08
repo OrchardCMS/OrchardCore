@@ -31,6 +31,7 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
+            // "{ModuleId}/**/*.*".
             var path = NormalizePath(subpath);
 
             var index = path.IndexOf('/');
@@ -38,19 +39,28 @@ namespace OrchardCore.Modules
             if (index != -1)
             {
                 var application = _applicationContext.Application;
+
+                // Resolve the module id.
                 var module = path.Substring(0, index);
 
+                // Check if it is an existing module.
                 if (application.Modules.Any(m=> m.Name == module))
                 {
+                    // Resolve the embedded file subpath: "wwwroot/**/*.*"
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
 
                     if (module != application.Name)
                     {
+                        // Get the embedded file info from the module assembly.
                         return application.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    fileSubPath = application.Root + fileSubPath;
-                    return new PhysicalFileInfo(new FileInfo(fileSubPath));
+                    // Application static files can be requested in a regular way "/**/*.*".
+                    // And here, also through the Application's module "{ApplicationName}/**/*.*".
+
+                    // But these static files are still on the physical file system,
+                    // so here, we still served them from "ContentRootPath/wwwroot/**/*.*"
+                    return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
                 }
             }
 

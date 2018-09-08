@@ -47,18 +47,18 @@ namespace OrchardCore.Modules
                 // Add virtual folders for all modules by using their assembly names (= module ids).
                 entries.AddRange(Application.Modules.Select(m => new EmbeddedDirectoryInfo(m.Name)));
             }
-            // Under e.g ".Modules/{ModuleId}" or ".Modules/{ModuleId}/wwwroot".
+            // Under ".Modules/{ModuleId}" or ".Modules/{ModuleId}/**".
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 // Remove ".Modules/" from the folder path.
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
-                // Resolve the module name and get all its asset paths.
+                // Resolve the module id and get all its asset paths.
                 var name = index == -1 ? path : path.Substring(0, index);
                 var paths = Application.GetModule(name).AssetPaths;
 
-                // Use the normalized assets paths to resolve files and subfolders under this folder.
+                // Resolve all files and subfolders directly under this folder.
                 NormalizedPaths.ResolveFolderContents(folder, paths, out var files, out var folders);
 
                 // And add them to the directory contents.
@@ -78,6 +78,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
+            // ".Modules/{ModuleId}/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 path = path.Substring(Application.ModulesRoot.Length);
@@ -85,8 +86,13 @@ namespace OrchardCore.Modules
 
                 if (index != -1)
                 {
+                    // Resolve the module id.
                     var module = path.Substring(0, index);
+
+                    // Resolve the embedded file subpath: "**/*.*"
                     var fileSubPath = path.Substring(index + 1);
+
+                    // Get the embedded file info from the module assembly.
                     return Application.GetModule(module).GetFileInfo(fileSubPath);
                 }
             }

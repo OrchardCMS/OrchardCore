@@ -36,14 +36,18 @@ namespace OrchardCore.Mvc
                     _pageFileProviders = new List<IFileProvider>();
                     var roots = new Dictionary<string, string>();
 
+                    // Resolve all module projects roots.
                     foreach (var module in application.Modules)
                     {
+                        // If the module and the application assemblies are not at the same location,
+                        // this means that the module is referenced as a package, not as a project in dev.
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
+                        // Get module assets which are razor files.
                         var assets = module.Assets.Where(a => a.ModuleAssetPath
                             .EndsWith(".cshtml", StringComparison.Ordinal));
 
@@ -52,13 +56,18 @@ namespace OrchardCore.Mvc
                             var asset = assets.First();
                             var index = asset.ModuleAssetPath.IndexOf(module.Root);
 
+                            // Resolve the physical "{ModuleProjectDirectory}" from the project asset.
                             var filePath = asset.ModuleAssetPath.Substring(index + module.Root.Length);
                             var root = asset.ProjectAssetPath.Substring(0, asset.ProjectAssetPath.Length - filePath.Length);
 
+                            // Get the first module project asset which is under a "Pages" folder.
                             var page = assets.FirstOrDefault(a => a.ProjectAssetPath.Contains("/Pages/"));
 
+                            // Check if the module project may have a razor page.
                             if (page != null)
                             {
+                                // Razor pages are not watched in the same way as other razor views.
+                                // We need a physical file provider on the "{ModuleProjectDirectory}".
                                 _pageFileProviders.Add(new PhysicalFileProvider(root));
                             }
 
@@ -73,30 +82,39 @@ namespace OrchardCore.Mvc
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
+            // The razor view engine uses 'GetDirectoryContents()' only for razor pages.
+            // So here, we only serve contents under the module projects "Pages" folders.
+
             if (subpath == null)
             {
                 return NotFoundDirectoryContents.Singleton;
             }
 
             var folder = NormalizePath(subpath);
-            var index = folder.IndexOf(Application.ModulesRoot, StringComparison.Ordinal);
 
-            if (index != -1)
+            // Under ".Modules/{ModuleId}" or ".Modules/{ModuleId}/**".
+            if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
+                // Remove ".Modules/" from the folder path.
                 folder = folder.Substring(Application.ModulesRoot.Length);
-                index = folder.IndexOf('/');
+                var index = folder.IndexOf('/');
 
                 if (index != -1)
                 {
+                    // Resolve the module id.
                     var module = folder.Substring(0, index);
 
+                    // Get the module project root and check if under a "Pages" folder.
                     if (_roots.TryGetValue(module, out var root) &&
                         (folder.Contains("/Pages/") || folder.EndsWith("/Pages")))
                     {
+                        // Resolve the page folder: "{ModuleProjectDirectory}/Pages".
+                        // Or any other subfolders: "{ModuleProjectDirectory}/Pages/**".
                         folder = root + folder.Substring(module.Length + 1);
 
                         if (Directory.Exists(folder))
                         {
+                            //Serve the contents from the file system.
                             return new PhysicalDirectoryContents(folder);
                         }
                     }
