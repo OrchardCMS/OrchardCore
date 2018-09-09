@@ -39,6 +39,7 @@ namespace OrchardCore.Mvc.RazorPages
 
                     var module = tokenizer.ElementAt(i - 1).Value;
 
+                    // "{ModuleId}/Pages/Foo" - "{ApplicationName}/Pages/Foo"
                     var template = pageName.Substring(pathIndex - (module.Length + 1));
 
                     model.Selectors.Add(new SelectorModel
@@ -54,11 +55,13 @@ namespace OrchardCore.Mvc.RazorPages
 
                     if (module != _applicationContext.Application.Name)
                     {
+                        // "{ModuleId}/Foo".
                         attributeRouteModel.Template = module + pageName.Substring(pathIndex + "Pages".Length);
                         attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
                     }
                     else
                     {
+                        // "Foo"
                         attributeRouteModel.Template = pageName.Substring(pathIndex + "Pages".Length + 1);
 
                         // When a Page named "Index" is defined in the application's module

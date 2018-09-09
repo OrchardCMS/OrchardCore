@@ -31,11 +31,11 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            // "{ModuleId}/**/*.*".
             var path = NormalizePath(subpath);
 
             var index = path.IndexOf('/');
 
+            // "{ModuleId}/**/*.*".
             if (index != -1)
             {
                 var application = _applicationContext.Application;
@@ -57,9 +57,7 @@ namespace OrchardCore.Modules
 
                     // Application static files can be requested in a regular way "/**/*.*".
                     // And here, also through the Application's module "{ApplicationName}/**/*.*".
-
-                    // But these static files are still on the physical file system,
-                    // so here, we still served them from "ContentRootPath/wwwroot/**/*.*"
+                    // But we still served them from the file system "ContentRootPath/wwwroot/**/*.*"
                     return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
                 }
             }

@@ -43,13 +43,13 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        // Get the first module asset under ".Modules/{ModuleId}/wwwroot/".
+                        // Get the 1st module asset under ".Modules/{ModuleId}/wwwroot/".
                         var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
                             .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
 
                         if (asset != null)
                         {
-                            // Resolve the "{ModuleProjectDirectory}/wwwroot/" from the project asset.
+                            // Resolve "{ModuleProjectDirectory}wwwroot/" from the project asset.
                             var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot);
                             roots[module.Name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
                         }
@@ -72,10 +72,10 @@ namespace OrchardCore.Modules
                 return new NotFoundFileInfo(subpath);
             }
 
-            // "{ModuleId}/**/*.*".
             var path = NormalizePath(subpath);
             var index = path.IndexOf('/');
 
+            // "{ModuleId}/**/*.*".
             if (index != -1)
             {
                 // Resolve the module id.
@@ -84,7 +84,7 @@ namespace OrchardCore.Modules
                 // Get the module project "wwwroot" folder.
                 if (_roots.TryGetValue(module, out var root))
                 {
-                    // Resolve the file: "{ModuleProjectDirectory}/wwwroot/**/*.*"
+                    // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
                     var filePath = root + path.Substring(module.Length + 1);
 
                     if (File.Exists(filePath))

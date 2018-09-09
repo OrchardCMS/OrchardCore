@@ -32,6 +32,8 @@ namespace OrchardCore.Modules
             {
                 if (_pageFileProvider == null)
                 {
+                    // Razor pages are not watched in the same way as other razor views.
+                    // We need a physical file provider on the application root folder.
                     _pageFileProvider = new PhysicalFileProvider(Application.Root);
                 }
             }
@@ -41,6 +43,13 @@ namespace OrchardCore.Modules
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
+            // 'GetDirectoryContents()' is used to discover shapes and build binding tables that we can't update.
+            // So the embedded file provider can always provide the fixed structure under modules "Views" folders.
+            // But application shapes are not embedded, so here we need to serve the application "Views" folder.
+            // The razor view engine also uses 'GetDirectoryContents()' to find razor pages (not mvc views).
+            // So here, we also need to serve the directory contents under the application "Pages" folder.
+            // This provider is also used in production, application razor files may not be precompiled.
+
             if (subpath == null)
             {
                 return NotFoundDirectoryContents.Singleton;
@@ -48,16 +57,23 @@ namespace OrchardCore.Modules
 
             var folder = NormalizePath(subpath);
 
+            // Under ".Modules/ApplicationName".
             if (folder == Application.ModulePath)
             {
+                // Serve the contents from the file system.
                 return new PhysicalDirectoryContents(Application.Path);
             }
+            // Under ".Modules/ApplicationName/**".
             else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
+                // Check for a "Pages" or a "Views" segment.
                 var tokenizer = new StringTokenizer(folder, new char[] { '/' });
                 if (tokenizer.Any(s => s == "Pages" || s == "Views"))
                 {
+                    // Resolve the subpath relative to the application's module root.
                     var folderSubPath = folder.Substring(Application.ModuleRoot.Length);
+
+                    // And serve the contents from the physical application root folder.
                     return new PhysicalDirectoryContents(Application.Root + folderSubPath);
                 }
             }
@@ -74,9 +90,13 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
+            // ".Modules/ApplicationName/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
+                // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
+
+                // And serve the file from the physical application root folder.
                 return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
             }
 
@@ -92,11 +112,18 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(filter);
 
+            // ".Modules/ApplicationName/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
+                // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
+
+                // And watch the application file from the physical application root folder.
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
             }
+
+            // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
+            // So here, we use a file provider to only watch the application "Pages" folder.
 
             if (path.Equals("**/*.cshtml"))
             {

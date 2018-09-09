@@ -13,8 +13,6 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedFileProvider : IFileProvider
     {
-        private static object _synLock = new object();
-
         private readonly IApplicationContext _applicationContext;
 
         public ModuleEmbeddedFileProvider(IApplicationContext applicationContext)
@@ -44,13 +42,13 @@ namespace OrchardCore.Modules
             // Under ".Modules".
             else if (folder == Application.ModulesPath)
             {
-                // Add virtual folders for all modules by using their assembly names (= module ids).
+                // Add virtual folders for all modules by using their assembly names (module ids).
                 entries.AddRange(Application.Modules.Select(m => new EmbeddedDirectoryInfo(m.Name)));
             }
             // Under ".Modules/{ModuleId}" or ".Modules/{ModuleId}/**".
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Remove ".Modules/" from the folder path.
+                // Skip ".Modules/" from the folder path.
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
@@ -58,7 +56,7 @@ namespace OrchardCore.Modules
                 var name = index == -1 ? path : path.Substring(0, index);
                 var paths = Application.GetModule(name).AssetPaths;
 
-                // Resolve all files and subfolders directly under this folder.
+                // Resolve all files and folders directly under this given folder.
                 NormalizedPaths.ResolveFolderContents(folder, paths, out var files, out var folders);
 
                 // And add them to the directory contents.
@@ -78,18 +76,20 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            // ".Modules/{ModuleId}/**/*.*".
+            // ".Modules/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
+                // Skip the ".Modules/" root folder.
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
+                // "{ModuleId}/**/*.*".
                 if (index != -1)
                 {
                     // Resolve the module id.
                     var module = path.Substring(0, index);
 
-                    // Resolve the embedded file subpath: "**/*.*"
+                    // Skip the module id to resolve the subpath.
                     var fileSubPath = path.Substring(index + 1);
 
                     // Get the embedded file info from the module assembly.

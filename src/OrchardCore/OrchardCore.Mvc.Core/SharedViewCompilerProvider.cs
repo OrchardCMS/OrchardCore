@@ -101,6 +101,7 @@ namespace OrchardCore.Mvc
                 provider.PopulateFeature(assemblyParts, feature);
             }
 
+            // Module compiled views are not served while in dev.
             if (!_hostingEnvironment.IsDevelopment())
             {
                 var modules = _applicationContext.Application.Modules;
@@ -122,6 +123,8 @@ namespace OrchardCore.Mvc
                                 provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
                             }
 
+                            // Because razor views are compiled in the context of their modules. The relative paths
+                            // are updated so that they can be found under the virtual ".Modules/{ModuleId}" folder.
                             foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
                                 descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;

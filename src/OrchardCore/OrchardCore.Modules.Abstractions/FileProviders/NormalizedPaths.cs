@@ -16,6 +16,7 @@ namespace OrchardCore.Modules.FileProviders
             var files = new HashSet<string>(StringComparer.Ordinal);
             var folders = new HashSet<string>(StringComparer.Ordinal);
 
+            // Ensure a trailing slash.
             if (folder[folder.Length - 1] != '/')
             {
                 folder = folder + '/';
@@ -23,17 +24,20 @@ namespace OrchardCore.Modules.FileProviders
 
             foreach (var path in normalizedPaths.Where(a => a.StartsWith(folder, StringComparison.Ordinal)))
             {
-                var folderPath = path.Substring(folder.Length);
-                var pathIndex = folderPath.IndexOf('/');
-                var isFilePath = pathIndex == -1;
+                // Resolve the subpath relative to the folder.
+                var subPath = path.Substring(folder.Length);
+                var index = subPath.IndexOf('/');
 
-                if (isFilePath)
+                // If no more slash.
+                if (index == -1)
                 {
+                    // It's a file.
                     files.Add(path);
                 }
                 else
                 {
-                    folders.Add(folderPath.Substring(0, pathIndex));
+                    // Otherwise add the 1st subfolder path.
+                    folders.Add(subPath.Substring(0, index));
                 }
             }
 

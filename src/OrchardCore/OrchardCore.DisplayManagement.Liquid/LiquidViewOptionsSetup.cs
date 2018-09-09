@@ -29,6 +29,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 if (_hostingEnvironment.IsDevelopment())
                 {
+                    // While in development, liquid files are 1st served from their module project locations.
                     options.FileProviders.Insert(0, new ModuleProjectLiquidFileProvider(_applicationContext));
                 }
             }
