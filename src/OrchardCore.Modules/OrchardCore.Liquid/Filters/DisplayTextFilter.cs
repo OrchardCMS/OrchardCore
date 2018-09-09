@@ -7,25 +7,16 @@ namespace OrchardCore.Liquid.Filters
 {
     public class DisplayTextFilter : ILiquidFilter
     {
-        private readonly IContentManager _contentManager;
-
-        public DisplayTextFilter(IContentManager contentManager)
-        {
-            _contentManager = contentManager;
-        }
-
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 
             if (contentItem == null)
             {
-                return NilValue.Instance;
+                return Task.FromResult<FluidValue>(NilValue.Instance);
             }
 
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-
-            return new StringValue(contentItemMetadata.DisplayText ?? "");
+            return Task.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
         }
     }
 }
