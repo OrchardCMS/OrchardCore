@@ -43,12 +43,14 @@ namespace OrchardCore.Modules
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            // 'GetDirectoryContents()' is used to discover shapes and build binding tables that we can't update.
-            // So the embedded file provider can always provide the fixed structure under modules "Views" folders.
-            // But application shapes are not embedded, so here we need to serve the application "Views" folder.
+            // 'GetDirectoryContents()' is used to discover shapes templates and build fixed binding tables.
+            // So the embedded file provider can always provide the structure under modules "Views" folders.
+            // But application shapes are not embedded, so we need to serve the application "Views" folder.
+
             // The razor view engine also uses 'GetDirectoryContents()' to find razor pages (not mvc views).
             // So here, we also need to serve the directory contents under the application "Pages" folder.
-            // This provider is also used in production, application razor files may not be precompiled.
+
+            // Note: This provider is also used in production where application views may not be precompiled.
 
             if (subpath == null)
             {
@@ -57,13 +59,13 @@ namespace OrchardCore.Modules
 
             var folder = NormalizePath(subpath);
 
-            // Under ".Modules/ApplicationName".
+            // Under ".Modules/{ApplicationName}".
             if (folder == Application.ModulePath)
             {
                 // Serve the contents from the file system.
                 return new PhysicalDirectoryContents(Application.Path);
             }
-            // Under ".Modules/ApplicationName/**".
+            // Under ".Modules/{ApplicationName}/**".
             else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Check for a "Pages" or a "Views" segment.
@@ -90,7 +92,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            // ".Modules/ApplicationName/**/*.*".
+            // ".Modules/{ApplicationName}/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
@@ -112,7 +114,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(filter);
 
-            // ".Modules/ApplicationName/**/*.*".
+            // ".Modules/{ApplicationName}/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.

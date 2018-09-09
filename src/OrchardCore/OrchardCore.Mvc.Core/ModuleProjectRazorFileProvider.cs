@@ -83,14 +83,14 @@ namespace OrchardCore.Mvc
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            // 'GetDirectoryContents()' is used to discover shapes and build binding tables that we can't update.
-            // So the embedded file provider can always provide the fixed structure under modules "Views" folders.
-            // The razor view engine also uses 'GetDirectoryContents()' to find all razor pages (not mvc views).
-            // So here, we only need to serve the directory contents under modules projects "Pages" folders.
-            // This provider is not used in production because all modules razor files are precompiled.
+            // 'GetDirectoryContents()' is used to discover shapes templates and build fixed binding tables.
+            // So the embedded file provider can always provide the structure under modules "Views" folders.
 
-            // See 'ApplicationRazorFileProvider' for the specific application's module which don't have
-            // any embedded files and where application razor files may not be precompiled in production.
+            // The razor view engine also uses 'GetDirectoryContents()' to find razor pages (not mvc views).
+            // So here, we only need to serve the directory contents under modules projects "Pages" folders.
+
+            // Note: This provider is not used in production where all modules precompiled views are used.
+            // Note: See 'ApplicationRazorFileProvider' for the specific case of the application's module.
 
             if (subpath == null)
             {

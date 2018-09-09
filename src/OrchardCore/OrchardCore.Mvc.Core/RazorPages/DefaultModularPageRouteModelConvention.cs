@@ -64,10 +64,10 @@ namespace OrchardCore.Mvc.RazorPages
                         // "Foo"
                         attributeRouteModel.Template = pageName.Substring(pathIndex + "Pages".Length + 1);
 
-                        // When a Page named "Index" is defined in the application's module
-                        // we force the homepage template.
+                        // Check if a Page named "Index" is defined in the application's module,
                         if (String.Equals(attributeRouteModel.Template, "Index", StringComparison.OrdinalIgnoreCase))
                         {
+                            // Force the homepage template.
                             attributeRouteModel.Template = "";
                             attributeRouteModel.Name = "Index";
                         }

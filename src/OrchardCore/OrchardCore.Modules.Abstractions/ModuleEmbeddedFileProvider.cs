@@ -79,7 +79,7 @@ namespace OrchardCore.Modules
             // ".Modules/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Skip the ".Modules/" root folder.
+                // Skip the ".Modules/" root.
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 

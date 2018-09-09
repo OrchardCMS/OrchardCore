@@ -55,9 +55,9 @@ namespace OrchardCore.Modules
                         return application.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    // Application static files can be requested in a regular way "/**/*.*".
-                    // And here, also through the Application's module "{ApplicationName}/**/*.*".
-                    // But we still served them from the file system "ContentRootPath/wwwroot/**/*.*"
+                    // Application static files can be still requested in a regular way "/**/*.*".
+                    // Here, it's done through the Application's module "{ApplicationName}/**/*.*".
+                    // But we still serve them from the same physical files "{WebRootPath}/**/*.*".
                     return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
                 }
             }

@@ -123,8 +123,8 @@ namespace OrchardCore.Mvc
                                 provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
                             }
 
-                            // Because razor views are compiled in the context of their modules. The relative paths
-                            // are updated so that they can be found under the virtual ".Modules/{ModuleId}" folder.
+                            // Razor views are precompiled in the context of their modules, but at runtime
+                            // their paths need to be relative to the virtual ".Modules/{ModuleId}" folders.
                             foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
                                 descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;

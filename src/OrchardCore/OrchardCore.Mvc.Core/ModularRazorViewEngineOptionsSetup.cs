@@ -26,7 +26,7 @@ namespace OrchardCore.Mvc
                 if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
                 {
                     // The 'ContentRootFileProvider' is replaced because all razor files are embedded.
-                    // Unless for the application's module for which the below custom provider is used.
+                    // Unless for the application's module for which another custom provider is used.
                     options.FileProviders[i] = new ModuleEmbeddedFileProvider(_applicationContext);
                 }
             }
@@ -42,8 +42,8 @@ namespace OrchardCore.Mvc
             }
             else
             {
-                // In production, the system find application compiled pages under the application content root.
-                // This provider tells that they exist under the virtual ".Modules/ApplicationName/Pages" folder.
+                // In production, the system find application compiled pages under the "Pages" folder.
+                // This provider tells to find them under the ".Modules/{ApplicationName}/Pages" folder.
                 options.FileProviders.Add(new ApplicationCompiledPageFileProvider(_applicationContext));
             }
         }

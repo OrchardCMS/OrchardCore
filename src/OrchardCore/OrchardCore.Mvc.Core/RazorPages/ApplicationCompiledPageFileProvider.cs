@@ -15,7 +15,7 @@ namespace OrchardCore.Mvc
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> provides the virtual directory contents
-    /// of the application '/Pages' folder when embedded in the precompiled '.Views.dll'.
+    /// of the application 'Pages' folder when embedded in the precompiled '.Views.dll'.
     /// </summary>
     public class ApplicationCompiledPageFileProvider : IFileProvider
     {
@@ -53,9 +53,8 @@ namespace OrchardCore.Mvc
                             var assembly = Assembly.LoadFile(precompiledAssemblyPath);
                             var provider = new CompiledRazorAssemblyPart(assembly) as IRazorCompiledItemProvider;
 
-                            // Get all application page identifiers which are equal to pages paths from the root.
-                            // Identifiers (or paths) are relative to the application root and have a leading slash.
-                            // So here, we get normalized paths by removing the leading '/' e.g "Pages/Foo.cshtml".
+                            // Get application page ids which are paths from the root with a leading slash.
+                            // And remove the leading slash to get normalized paths e.g "Pages/Foo.cshtml".
                             pages = provider.CompiledItems.Where(i => i.Identifier.StartsWith("/Pages/") &&
                                 i.Kind == RazorPageDocumentClassifierPass.RazorPageDocumentKind)
                                 .Select(i => i.Identifier.TrimStart('/')).ToList();
@@ -85,21 +84,21 @@ namespace OrchardCore.Mvc
 
             var entries = new List<IFileInfo>();
 
-            // Under ".Modules/ApplicationName".
+            // Under ".Modules/{ApplicationName}".
             if (folder == Application.ModulePath)
             {
                 // Always add a "Pages" folder.
                 entries.Add(new EmbeddedDirectoryInfo("Pages"));
             }
-            // Under ".Modules/ApplicationName/Pages" or ".Modules/ApplicationName/Pages/**".
+            // Under ".Modules/{ApplicationName}/Pages" or ".Modules/{ApplicationName}/Pages/**".
             else if (folder.StartsWith(Application.ModuleRoot + "Pages", StringComparison.Ordinal))
             {
-                // Skip the ".Modules/ApplicationName/" part from the given folder path.
+                // Skip the ".Modules/{ApplicationName}/" part from the given folder path.
                 // So we get "Pages" or "Pages/**" paths relative to the application root.
                 var subFolder = folder.Substring(Application.ModuleRoot.Length);
 
-                // Resolve all files and folders directly under this subfolder relative to the application root,
-                // using the discovered compiled '_pages' paths which are also relative to the application root.
+                // Resolve all files and folders directly under this subfolder by using the
+                // compiled '_pages' paths which are also relative to the application root.
                 NormalizedPaths.ResolveFolderContents(subFolder, _pages, out var files, out var folders);
 
                 // And add them to the directory contents.
