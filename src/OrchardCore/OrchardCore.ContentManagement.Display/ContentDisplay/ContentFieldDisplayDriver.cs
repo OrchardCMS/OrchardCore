@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
-            // e.g., BodyPart.Summary, BodyPart-BlogPost, BagPart-LandingPage-Services
+            // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
@@ -32,12 +32,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 if (fieldType == shapeType)
                 {
-                    // BodyPart-Description, Services-Description
+                    // HtmlBodyPart-Description, Services-Description
                     result.Differentiator($"{partName}-{fieldName}");
                 }
                 else
                 {
-                    // BodyPart-Description-TextField, Services-Description-TextField
+                    // HtmlBodyPart-Description-TextField, Services-Description-TextField
                     result.Differentiator($"{partName}-{fieldName}-{shapeType}");
                 }
 
@@ -54,10 +54,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         foreach (var displayType in displayTypes)
                         {
-                            // [PartType]__[FieldName], e.g. BodyPart-Description
+                            // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
                             ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-BodyPart-Description, LandingPage-Services-Description
+                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
 
                             // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
@@ -71,10 +71,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
-                            // [PartType]__[FieldName]__[ShapeType], e.g. BodyPart-Description-TextFieldSummary
+                            // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
 
-                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-BodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
+                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
 
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
@@ -187,6 +187,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public virtual IDisplayResult Update(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             return null;
+        }
+
+        protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
+        {
+            var editor = context.PartFieldDefinition.Editor();
+            return !String.IsNullOrEmpty(editor)
+                ? shapeType + "__" + editor
+                : shapeType;
+        }
+
+        protected string GetEditorShapeType(BuildFieldEditorContext context)
+        {
+            return GetEditorShapeType(typeof(TField).Name + "_Edit", context);
         }
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)

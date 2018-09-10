@@ -29,7 +29,7 @@
                     <i class="fa {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse"></i>
                 </span>
                 <h4 class="service-heading">{{ service.TitlePart.Title }}</h4>
-                <p class="text-muted">{{ service.BodyPart.Body | raw }}</p>
+                <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
             </div>
             {% endfor %}
         </div>
@@ -93,7 +93,7 @@
                                 <h4 class="subheading">{{ milestone.TitlePart.Title }}</h4>
                             </div>
                             <div class="timeline-body">
-                                <p class="text-muted">{{ milestone.BodyPart.Body }}</p>
+                                <p class="text-muted">{{ milestone.HtmlBodyPart.Html }}</p>
                             </div>
                         </div>
                     </li>
@@ -247,7 +247,7 @@
                             <h2 class="text-uppercase">{{ project.TitlePart.Title }}</h2>
                             <p class="item-intro text-muted">{{ project.Project.Category.Text }}</p>
                             <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:400, height: 300, mode: 'stretch' }}" alt="{{ project.TitlePart.Title }}">
-                            <p>{{ project.BodyPart.Body | raw }}</p>
+                            <p>{{ project.HtmlBodyPart.Html | raw }}</p>
                             {% comment %}
                             <ul class="list-inline">
                                 <li>Date: January 2017</li>

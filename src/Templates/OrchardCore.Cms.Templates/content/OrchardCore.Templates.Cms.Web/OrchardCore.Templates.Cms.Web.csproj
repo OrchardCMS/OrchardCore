@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TieredCompilation>true</TieredCompilation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#if (UseNLog) -->
+    <PackageReference Include="OrchardCore.Logging.NLog" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#endif -->
+    <!--#if (UseSerilog) -->
+    <PackageReference Include="OrchardCore.Logging.Serilog" Version="$(TemplateOrchardPackageVersion)" />
+    <!--#endif -->
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="$(TemplateOrchardPackageVersion)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -57,29 +58,12 @@ namespace OrchardCore.Workflows.Expressions
             var services = _serviceProvider;
 
             // Set WorkflowContext as the model.
+            context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
-            context.SetValue(nameof(WorkflowExecutionContext), workflowContext);
-            context.SetValue("CorrelationId", workflowContext.CorrelationId);
-
-            // TODO: Add Liquid filters to easily access values from Input and Properties.
-            context.SetValue("Input", workflowContext.Input);
-            context.SetValue("Properties", workflowContext.Properties);
-
-            // TODO: For now, simply add each Input and Property to the context, with the risk of overwriting items with the same key.
-            // Add workflow input.
-            foreach (var item in workflowContext.Input)
-            {
-                context.SetValue(item.Key, item.Value);
-            }
-
-            // Add workflow properties.
-            foreach (var item in workflowContext.Properties)
-            {
-                context.SetValue(item.Key, item.Value);
-            }
-
-            // Add LastResult.
-            context.SetValue("LastResult", workflowContext.LastResult);
+            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Input, name)));
+            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
+            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
+            context.SetValue("Workflow", workflowContext);
 
             // Add services.
             context.AmbientValues.Add("Services", services);
@@ -101,7 +85,7 @@ namespace OrchardCore.Workflows.Expressions
             var localizer = services.GetRequiredService<IViewLocalizer>();
             context.AmbientValues.Add("ViewLocalizer", localizer);
 
-            // TODO: Extract the request culture
+            // TODO: Extract the request culture.
 
             // Give modules a chance to add more things to the template context.
             foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
@@ -110,6 +94,14 @@ namespace OrchardCore.Workflows.Expressions
             }
 
             return context;
+        }
+
+        private Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key)
+        {
+            if (!dictionary.ContainsKey(key))
+                return Task.FromResult(default(FluidValue));
+
+            return Task.FromResult(FluidValue.Create(dictionary[key]));
         }
     }
 }

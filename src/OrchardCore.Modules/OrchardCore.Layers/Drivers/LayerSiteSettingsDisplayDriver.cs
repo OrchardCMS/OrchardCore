@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Layers.Models;
@@ -13,27 +14,51 @@ namespace OrchardCore.Layers.Drivers
     public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {
         public const string GroupId = "layers";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public override IDisplayResult Edit(LayerSettings settings, BuildEditorContext context)
+        public LayerSiteSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+        }
+
+        public override async Task<IDisplayResult> EditAsync(LayerSettings settings, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+            {
+                return null;
+            }
+
             return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
                 {
                     model.Zones = String.Join(", ", settings.Zones);
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, BuildEditorContext context)
         {
-            if (groupId == GroupId)
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+            {
+                return null;
+            }
+
+            if (context.GroupId == GroupId)
             {
                 var model = new LayerSettingsViewModel();
 
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.Zones = model.Zones.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

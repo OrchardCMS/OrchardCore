@@ -186,7 +186,7 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
 Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.
 
 ## OIDC Client
-Auhenticates users from an external OpenID Connect identity provider. 
+Authenticates users from an external OpenID Connect identity provider. 
 If the site allows to register new users, a local user is linked and the external login is linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
 

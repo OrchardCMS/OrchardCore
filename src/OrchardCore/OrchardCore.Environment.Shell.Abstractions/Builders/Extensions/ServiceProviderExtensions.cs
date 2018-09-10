@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -18,6 +19,12 @@ namespace OrchardCore.Environment.Shell.Builders
 
             foreach (var services in servicesByType)
             {
+                // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
+                if (services.First().ServiceType == typeof(IStartupFilter))
+                {
+                    continue;
+                }
+
                 // if only one service of a given type
                 if (services.Count() == 1)
                 {
@@ -31,7 +38,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             // There is no Func based way to register an open-generic type, instead of
                             // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));
-                            // Right now, we regsiter them as singleton per cloned scope even though it's wrong
+                            // Right now, we register them as singleton per cloned scope even though it's wrong
                             // but in the actual examples it won't matter.
                             clonedCollection.AddSingleton(service.ServiceType, service.ImplementationType);
                         }

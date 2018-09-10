@@ -1,0 +1,55 @@
+@model SiteCulturesViewModel
+@using OrchardCore.Settings.ViewModels;
+
+<h1>@RenderTitleSegments(T["Settings"])</h1>
+
+<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })@T[" &#62; "]@T["Supported Cultures"]</p>
+<h3>@T["Available Cultures"]</h3>
+
+<form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    <fieldset class="form-group">
+        <div class="form-row">
+            <div class="col">
+                <label for="CultureName">@T["Add a culture..."]</label>
+                <select name="SystemCultureName" class="form-control">
+                    @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
+                    {
+                        <option value="@culture.Name" selected="@String.Equals(Model.CurrentCulture, culture.Name, StringComparison.OrdinalIgnoreCase)">
+                            @culture.Name | @culture.DisplayName
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col">
+                <label for="CultureName">@T["Other"]:</label>
+                @Html.TextBox("CultureName", "", new { @class = "form-control", @placeholder = "Enter an ISO culture code : en-US" })
+            </div>
+        </div>
+    </fieldset>
+
+    <button class="btn btn-primary" type="submit">@T["Add"]</button>
+</form>
+<hr />
+
+<fieldset class="form-group">
+    <h3>@T["Cultures this site supports"]</h3>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Display Name</th>
+                <th scope="col">Value</th>
+                <th scope="col" class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
+            {
+                @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
+            }
+        </tbody>
+    </table>
+</fieldset>
+

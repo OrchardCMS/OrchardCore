@@ -63,12 +63,19 @@ namespace OrchardCore.Setup.Services
             return _recipes;
         }
 
-        public Task<string> SetupAsync(SetupContext context)
+        public async Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return SetupInternalAsync(context);
+                var executionId = await SetupInternalAsync(context);
+
+                if (context.Errors.Any())
+                {
+                    _shellSettings.State = initialState;
+                }
+
+                return executionId;
             }
             catch
             {

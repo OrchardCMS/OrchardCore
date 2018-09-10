@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
@@ -20,13 +21,13 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, BuildEditorContext context)
         {
-            if (groupId == GroupId)
+            if (context.GroupId == GroupId)
             {
-                await updater.TryUpdateModelAsync(section, Prefix);
+                await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

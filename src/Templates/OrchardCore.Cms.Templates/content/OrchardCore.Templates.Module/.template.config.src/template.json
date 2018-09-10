@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Orchard Project",
+  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "name": "Orchard Core Module",
+  "identity": "OrchardCore.Templates.Module",
+  "shortName": "ocmodule",
+  "sourceName": "OrchardCore.Templates.Module",
+  "preferNameDirectory": true,
+  "symbols": {
+    "AddPart": {
+      "type": "parameter",
+      "dataType": "bool",
+      "description": "Add dependency injection for part in Startup.cs",
+      "defaultValue": "false"
+    },
+    "PartName": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Add all files required for a part",
+      "replaces": "MyTest",
+      "fileRename": "MyTest",
+      "defaultValue": ""
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "${TemplateOrchardVersion}"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(PartName=='')",
+          "exclude": [
+            "Migrations.cs",
+            "Drivers/MyTestPartDisplayDriver.cs",
+            "Handlers/MyTestPartHandler.cs",
+            "Models/MyTestPart.cs",
+            "Settings/MyTestPartSettings.cs",
+            "Settings/MyTestPartSettingsDisplayDriver.cs",
+            "Settings/MyTestPartSettingsViewModel.cs",
+            "ViewModels/MyTestPartViewModel.cs",
+            "Views/_ViewImports.cshtml",
+            "Views/MyTestPart.Edit.cshtml",
+            "Views/MyTestPart.liquid",
+            "Views/MyTestPart_Summary.liquid",
+            "Views/MyTestPartSettings.Edit.cshtml"
+          ]
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}

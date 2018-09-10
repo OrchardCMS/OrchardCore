@@ -57,19 +57,12 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            void RegisterJsonWebTokenHandler() =>
-                options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
-                {
-                    // Note: unlike most authentication handlers in ASP.NET Core 2.0,
-                    // the JWT bearer handler is not public (which is likely an oversight).
-                    // To work around this issue, the handler type is resolved using reflection.
-                    builder.HandlerType = typeof(JwtBearerOptions).Assembly
-                        .GetType("Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler");
-                });
-
             if (!string.IsNullOrEmpty(settings.Authority))
             {
-                RegisterJsonWebTokenHandler();
+                options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
+                {
+                    builder.HandlerType = typeof(JwtBearerHandler);
+                });
 
                 return;
             }
@@ -100,7 +93,10 @@ namespace OrchardCore.OpenId.Configuration
                 }
                 else if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
                 {
-                    RegisterJsonWebTokenHandler();
+                    options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
+                    {
+                        builder.HandlerType = typeof(JwtBearerHandler);
+                    });
                 }
                 else
                 {

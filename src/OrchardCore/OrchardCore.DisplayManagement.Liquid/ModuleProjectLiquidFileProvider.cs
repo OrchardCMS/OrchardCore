@@ -17,9 +17,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     public class ModuleProjectLiquidFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new object();
 
-        public ModuleProjectLiquidFileProvider(IHostingEnvironment environment)
+        public ModuleProjectLiquidFileProvider(IApplicationContext applicationContext)
         {
             if (_paths != null)
             {
@@ -30,27 +30,22 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 if (_paths == null)
                 {
-                    if (_paths == null)
+                    var assets = new List<Asset>();
+                    var application = applicationContext.Application;
+
+                    foreach (var module in application.Modules)
                     {
-                        var assets = new List<Asset>();
-                        var application = environment.GetApplication();
-
-                        foreach (var name in application.ModuleNames)
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                            != Path.GetDirectoryName(application.Assembly.Location))
                         {
-                            var module = environment.GetModule(name);
-
-                            if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
-                                != Path.GetDirectoryName(application.Assembly.Location))
-                            {
-                                continue;
-                            }
-
-                            assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
-                                .EndsWith(".liquid", StringComparison.Ordinal)));
+                            continue;
                         }
 
-                        _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
+                            .EndsWith(".liquid", StringComparison.Ordinal)));
                     }
+
+                    _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
         }

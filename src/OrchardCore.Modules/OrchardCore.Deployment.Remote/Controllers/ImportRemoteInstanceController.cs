@@ -1,88 +1,78 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
-using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
-using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     public class ImportRemoteInstanceController : Controller
     {
-        private readonly IDeploymentManager _deploymentManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
         private readonly RemoteClientService _remoteClientService;
-        private readonly INotifier _notifier;
-        private readonly IRecipeExecutor _recipeExecutor;
+        private readonly IDeploymentManager _deploymentManager;
+        private readonly IDataProtector _dataProtector;
 
         public ImportRemoteInstanceController(
-            IAuthorizationService authorizationService,
-            ISession session,
+            IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
             IDeploymentManager deploymentManager,
-            INotifier notifier,
-            IRecipeExecutor recipeExecutor,
             IHtmlLocalizer<ExportRemoteInstanceController> h)
         {
-            _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
-            _session = session;
             _remoteClientService = remoteClientService;
-            _notifier = notifier;
-            _recipeExecutor = recipeExecutor;
+            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
             H = h;
         }
 
         public IHtmlLocalizer H { get; }
 
+        /// <remarks>
+        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and 
+        /// we use a private API key to secure its calls.
+        /// </remarks>
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Import([FromBody] ArchiveContainer archive)
+        public async Task<IActionResult> Import(ImportViewModel model)
         {
             var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
 
-            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == archive.ClientName);
+            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
-            if (remoteClient == null || archive.ApiKey != remoteClient.ApiKey || archive.ClientName != remoteClient.ClientName)
+            var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+
+            if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
             {
-                return StatusCode(403, "The Api Key was not recognized");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }
 
+            // Create a temporary filename to save the archive
             var tempArchiveName = Path.GetTempFileName() + ".zip";
+
+            // Create a temporary folder to extract the archive to
             var tempArchiveFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
             {
-                byte[] content = Convert.FromBase64String(archive.ArchiveBase64);
-                System.IO.File.WriteAllBytes(tempArchiveName, content);
+                using (var fs = System.IO.File.Create(tempArchiveName))
+                {
+                    await model.Content.CopyToAsync(fs);
+                }
 
                 ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
-                var executionId = Guid.NewGuid().ToString("n");
-                var fileProvider = new PhysicalFileProvider(tempArchiveFolder);
-                var recipeDescriptor = new RecipeDescriptor
-                {
-                    FileProvider = fileProvider,
-                    BasePath = "",
-                    RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
-                };
-
-                await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());
+                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
             }
             finally
             {
-                if(System.IO.File.Exists(tempArchiveName))
+                if (System.IO.File.Exists(tempArchiveName))
                 {
                     System.IO.File.Delete(tempArchiveName);
                 }

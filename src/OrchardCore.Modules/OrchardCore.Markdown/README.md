@@ -4,32 +4,32 @@
 
 ### Shapes
 
-The following shapes are rendered when the **BodyPMarkdownPartart** is attached to a content type
+The following shapes are rendered when the **BodyPMarkdownBodyPartart** is attached to a content type
 
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
-| `MarkdownPart` | `Detail` | `Content:5` | `MarkdownPartViewModel` |
-| `MarkdownPart` | `Summary` | `Content:10` | `MarkdownPartViewModel` |
+| `MarkdownBodyPart` | `Detail` | `Content:5` | `MarkdownBodyPartViewModel` |
+| `MarkdownBodyPart` | `Summary` | `Content:10` | `MarkdownBodyPartViewModel` |
 
 ### BodyPartViewModel
 
-The following properties are available on the `MarkdownPartViewModel` class.
+The following properties are available on the `MarkdownBodyPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Markdown` | `string` | The Markdown value after all tokens have been processed |
 | `Html` | `string` | The HTML content resulting from the Markdown source |
 | `ContentItem` | `ContentItem` | The content item of the part |
-| `MarkdownPart` | `MarkdownPart` | The `MarkdownPart` instance|
-| `TypePartSettings` | `MarkdownPartSettings` | The settings of the part |
+| `MarkdownBodyPart` | `MarkdownBodyPart` | The `MarkdownBodyPart` instance|
+| `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part |
 
-### MarkdownPart
+### MarkdownBodyPart
 
-The following properties are available on `MarkdownPart`
+The following properties are available on `MarkdownBodyPart`
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownPart` shape instead |
+| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead |
 | `Content` | The raw content of the part |
 | `ContentItem` | The content item containing this part |
 
@@ -43,7 +43,7 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Markdown` | `string` | The Markdown value once all tokens have been processed |
-| `Html` | `string` | The HTML content resulting from the Mardkown source |
+| `Html` | `string` | The HTML content resulting from the Markdown source |
 | `Field` | `MarkdownField` | The `MarkdownField` instance|
 | `Part` | `ContentPart` | The part this field attached to |
 | `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition |
@@ -89,7 +89,7 @@ Sample content:
 
 ```csharp
 @using OrchardCore.Markdown.ViewModels;
-@model MarkdownPartViewModel
+@model MarkdownBodyPartViewModel
 
 <fieldset class="form-group">
     <label asp-for="Markdown">@T["Markdown"]</label>

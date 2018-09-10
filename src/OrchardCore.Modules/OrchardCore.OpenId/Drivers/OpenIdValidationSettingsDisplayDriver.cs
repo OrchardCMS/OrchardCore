@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -24,7 +23,6 @@ namespace OrchardCore.OpenId.Drivers
 {
     public class OpenIdValidationSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdValidationSettings>
     {
-        private const string RestartPendingCacheKey = "OpenIdSiteSettings_RestartPending";
         private const string SettingsGroupId = "OrchardCore.OpenId.Validation";
 
         private readonly IAuthorizationService _authorizationService;
@@ -32,8 +30,8 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> T;
-        private readonly IMemoryCache _memoryCache;
         private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
         private readonly IShellSettingsManager _shellSettingsManager;
 
         public OpenIdValidationSettingsDisplayDriver(
@@ -42,16 +40,16 @@ namespace OrchardCore.OpenId.Drivers
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer,
-            IMemoryCache memoryCache,
             IShellHost shellHost,
+            ShellSettings shellSettings,
             IShellSettingsManager shellSettingsManager)
         {
             _authorizationService = authorizationService;
             _validationService = validationService;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
-            _memoryCache = memoryCache;
             _shellHost = shellHost;
+            _shellSettings = shellSettings;
             _shellSettingsManager = shellSettingsManager;
             T = stringLocalizer;
         }
@@ -63,9 +61,6 @@ namespace OrchardCore.OpenId.Drivers
             {
                 return null;
             }
-
-            if (context.GroupId == SettingsGroupId && _memoryCache.Get(RestartPendingCacheKey) != null)
-                _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
 
             return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
             {
@@ -98,7 +93,7 @@ namespace OrchardCore.OpenId.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
@@ -106,11 +101,11 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (groupId == SettingsGroupId)
+            if (context.GroupId == SettingsGroupId)
             {
                 var model = new OpenIdValidationSettingsViewModel();
 
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.Authority = model.Authority?.Trim();
                 settings.Audience = model.Audience?.Trim();
@@ -121,18 +116,18 @@ namespace OrchardCore.OpenId.Drivers
                     if (result != ValidationResult.Success)
                     {
                         var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        updater.ModelState.AddModelError(key, result.ErrorMessage);
+                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }
 
-                if (updater.ModelState.IsValid && _memoryCache.Get(RestartPendingCacheKey) == null)
+                // If the settings are valid, reload the current tenant.
+                if (context.Updater.ModelState.IsValid)
                 {
-                    var entry = _memoryCache.CreateEntry(RestartPendingCacheKey);
-                    _memoryCache.Set(entry.Key, entry, new MemoryCacheEntryOptions() { Priority = CacheItemPriority.NeverRemove });
+                    _shellHost.ReloadShellContext(_shellSettings);
                 }
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

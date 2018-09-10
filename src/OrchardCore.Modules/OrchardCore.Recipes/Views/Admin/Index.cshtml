@@ -1,0 +1,90 @@
+@model RecipeViewModel[]
+@using OrchardCore.Recipes.ViewModels;
+
+
+<h1>@(T["Recipes"])</h1>
+<nav class="admin-toolbar">
+    <div class="nav justify-content-end">  
+        <form class="form-inline float-right" autocomplete="off" method="get">
+            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        </form>
+    </div>
+</nav>
+<form asp-action="Recipes">
+    @{
+        var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
+        foreach (var recipeGroup in recipeGroups)
+        {
+            var groupName = recipeGroup.Key;
+
+            <div class="recipe-group">
+                @{
+                    var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.Name));
+                }
+                <h4 data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
+                <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
+                    @{
+                        foreach (var recipe in recipeGroup)
+                        {
+                            <li class="list-group-item" data-filter-value="@groupName @recipe.Name">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <h5>@recipe.Name</h5>
+
+                                        <p class="text-muted">@recipe.Description</p>
+                                        <div>
+                                            @if (recipe.IsSetupRecipe)
+                                            {
+                                                <span class="badge badge-warning">
+                                                    @T["Setup Recipe"]
+                                                </span>
+                                            }
+
+                                            @if (recipe.Tags != null && recipe.Tags.Any())
+                                            {
+                                                @foreach (var tag in recipe.Tags)
+                                                {
+                                                    <span class="badge badge-info">
+                                                        @tag
+                                                    </span>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-message="@T["Are you sure you want to run the recipe?"]" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+    }
+</form>
+<script at="Foot" type="text/javascript">
+    //<![CDATA[
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of features
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-filter-value]");
+
+            // On ESC, clear the search box and display all features
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.toggle(true);
+            } else {
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
+                    $(this).toggle(found);
+                });
+            }
+        });
+    });
+    //]]>
+</script>

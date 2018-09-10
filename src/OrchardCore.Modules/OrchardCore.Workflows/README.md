@@ -12,7 +12,7 @@ A workflow is essentially a visual script, where each activity is a statement of
 There are two types of activities: **Task** and **Event**.
 A Task activity typically performs an action, such as publishing a content item, while an Event activity typically listens for an event to happen before execution continues.
 
-In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event actiivty is _Content Created_, which executes whenever a content item is created.
+In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*. Only Event activities can be marked as the start of a workflow. An example of such an event activity is _Content Created_, which executes whenever a content item is created.
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
@@ -48,7 +48,7 @@ A step in a workflow definition. An activity performs an action and provides zer
 
 ### Task
 
-A specialized type of activity. Tasks perform actions such as sending emails, publishing content and making HTP requests.
+A specialized type of activity. Tasks perform actions such as sending emails, publishing content and making HTTP requests.
 
 ### Event
 
@@ -148,9 +148,29 @@ The following Liquid tags, properties and filters are available by default to an
 
 | Expression | Type | Description | Example |
 | ---------- | ---- | ----------- | ------- |
-| CorrelationId | Property | Returns the correlation value of the workflow instance. | `{{ CorrelationId }}` |
-| Input | Property | Returns the Input dictionary. | `{{ Input["Foo"] }}` |
-| Properties | Property | Returns the Properties dictionary. | `{{ Properties["Foo"] }}` |
+| Workflow.CorrelationId | Property | Returns the correlation value of the workflow instance. | `{{ Workflow.CorrelationId }}` |
+| Workflow.Input | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
+| Workflow.Output | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
+| Workflow.Properties | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
+
+Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you cal also use dot notation, e.g.:
+
+```liquid
+{{ Workflow.Input.ContentItem }}
+```
+
+### Liquid Expressions and ContentItem Events
+
+When handling content related events using a workflow, the content item in question is made available to the workflow via the `Input` dictionary.
+For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from fieldsliquid-ebabled fields as follows:
+
+```liquid
+{{ Workflow.Input.ContentItem | display_url }}
+{{ Workflow.Input.ContentItem | display_text }}
+{{ Workflow.Input.ContentItem.Content.TitlePart.Title }}
+```
+
+For more examples of supported content item filters, see documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
 
 ## Activities out of the box
 

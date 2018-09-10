@@ -5,20 +5,24 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
+using OrchardCore.Recipes;
 
 namespace OrchardCore.Workflows
 {
@@ -48,6 +52,7 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
+            services.AddActivity<Activity, ActivityMetadataDisplay>();
             services.AddActivity<NotifyTask, NotifyTaskDisplay>();
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplay>();
             services.AddActivity<SetOutputTask, SetOutputTaskDisplay>();
@@ -62,6 +67,7 @@ namespace OrchardCore.Workflows
             services.AddActivity<LogTask, LogTaskDisplay>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -93,6 +99,17 @@ namespace OrchardCore.Workflows
                 template: "Admin/Workflows/Types/{action}/{id?}",
                 defaults: new { controller = "WorkflowType", action = "Index" }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
         }
     }
 }
