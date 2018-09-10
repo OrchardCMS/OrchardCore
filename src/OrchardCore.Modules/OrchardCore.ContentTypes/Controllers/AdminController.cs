@@ -740,10 +740,11 @@ namespace OrchardCore.ContentTypes.Controllers
             var typePartViewModel = new EditTypePartViewModel
             {
                 Name = typePartDefinition.Name,
+                Editor = typePartDefinition.Editor(),
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
-                Editor = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
             };
 
             return View(typePartViewModel);
@@ -801,11 +802,11 @@ namespace OrchardCore.ContentTypes.Controllers
                     }
 
                 }
-
-                _contentDefinitionService.AlterTypePart(viewModel);
             }
 
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+            _contentDefinitionService.AlterTypePart(viewModel);
+
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
 
             if (!ModelState.IsValid)
             {

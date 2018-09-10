@@ -21,6 +21,7 @@ namespace OrchardCore.Mvc
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
         private readonly IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _viewsFeatureProviders;
 
         private readonly RazorProjectEngine _razorProjectEngine;
@@ -37,6 +38,7 @@ namespace OrchardCore.Mvc
 
         public SharedViewCompilerProvider(
             IHostingEnvironment hostingEnvironment,
+            IApplicationContext applicationContext,
             IEnumerable<IApplicationFeatureProvider<ViewsFeature>> viewsFeatureProviders,
             ApplicationPartManager applicationPartManager,
             RazorProjectEngine razorProjectEngine,
@@ -46,6 +48,7 @@ namespace OrchardCore.Mvc
             ILoggerFactory loggerFactory)
         {
             _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
             _viewsFeatureProviders = viewsFeatureProviders;
             _applicationPartManager = applicationPartManager;
             _razorProjectEngine = razorProjectEngine;
@@ -100,13 +103,11 @@ namespace OrchardCore.Mvc
 
             if (!_hostingEnvironment.IsDevelopment())
             {
-                var moduleNames = _hostingEnvironment.GetApplication().ModuleNames;
+                var modules = _applicationContext.Application.Modules;
                 var moduleFeature = new ViewsFeature();
 
-                foreach (var name in moduleNames)
+                foreach (var module in modules)
                 {
-                    var module = _hostingEnvironment.GetModule(name);
-
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location),
                         module.Assembly.GetName().Name + ".Views.dll");
 
