@@ -506,22 +506,11 @@ namespace OrchardCore.Contents.Controllers
                 return View("Edit", model);
             }
 
-            await conditionallyPublish(contentItem);
-
-            // The content item needs to be marked as saved (again) in case the drivers or the handlers have
-            // executed some query which would flush the saved entities. In this case the changes happening in handlers 
-            // would not be taken into account.
-
+            // The content item needs to be marked as saved in case the drivers or the handlers have
+            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            
             _session.Save(contentItem);
 
-            //if (!string.IsNullOrWhiteSpace(returnUrl)
-            //    && previousRoute != null
-            //    && !String.Equals(contentItem.As<IAliasAspect>().Path, previousRoute, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    returnUrl = Url.ItemDisplayUrl(contentItem);
-            //}
-
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            await conditionallyPublish(contentItem);           
 
             if (returnUrl == null)
             {
