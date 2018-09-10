@@ -9,10 +9,12 @@ namespace OrchardCore.Mvc
     public class ModularRazorViewEngineOptionsSetup : IConfigureOptions<RazorViewEngineOptions>
     {
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ModularRazorViewEngineOptionsSetup(IHostingEnvironment hostingEnvironment)
+        public ModularRazorViewEngineOptionsSetup(IHostingEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {
             _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
         public void Configure(RazorViewEngineOptions options)
@@ -23,13 +25,13 @@ namespace OrchardCore.Mvc
             {
                 if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
                 {
-                    options.FileProviders[i] = new ModuleEmbeddedFileProvider(_hostingEnvironment);
+                    options.FileProviders[i] = new ModuleEmbeddedFileProvider(_applicationContext);
                 }
             }
 
             if (_hostingEnvironment.IsDevelopment())
             {
-                options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_hostingEnvironment));
+                options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_applicationContext));
             }
         }
     }
