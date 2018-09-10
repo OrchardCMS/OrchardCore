@@ -89,9 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices
-                .AddSingleton<ModularBackgroundService>()
-                .AddSingleton<IHostedService>(sp => sp.GetRequiredService<ModularBackgroundService>());
+            builder.ApplicationServices.AddSingleton<IHostedService, ModularBackgroundService>();
 
             return builder;
         }

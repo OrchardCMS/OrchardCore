@@ -248,12 +248,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {
-                settings = new BackgroundTaskSettings();
+                settings = _backgroundTasks.GetTaskByName(name)?.GetDefaultSettings();
             }
 
-            settings.Enable = true;
-
-            await _backgroundTaskManager.UpdateAsync(name, settings);
+            if (settings != null)
+            {
+                settings.Enable = true;
+                await _backgroundTaskManager.UpdateAsync(name, settings);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -270,12 +272,14 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!document.Settings.TryGetValue(name, out var settings))
             {
-                settings = new BackgroundTaskSettings();
+                settings = _backgroundTasks.GetTaskByName(name)?.GetDefaultSettings();
             }
 
-            settings.Enable = false;
-
-            await _backgroundTaskManager.UpdateAsync(name, settings);
+            if (settings != null)
+            {
+                settings.Enable = false;
+                await _backgroundTaskManager.UpdateAsync(name, settings);
+            }
 
             return RedirectToAction(nameof(Index));
         }
