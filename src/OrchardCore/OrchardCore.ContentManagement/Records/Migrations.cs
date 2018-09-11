@@ -52,6 +52,10 @@ namespace OrchardCore.ContentManagement.Records
         public int UpdateFrom2()
         {
             SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+                .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
+            );
+
+            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 
