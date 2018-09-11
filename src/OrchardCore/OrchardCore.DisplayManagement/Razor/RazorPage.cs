@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Razor
         dynamic New { get; }
         IShapeFactory Factory { get; }
         Task<IHtmlContent> DisplayAsync(dynamic shape);
-        OrchardRazorHelper OrchardCore { get; }
+        IOrchardDisplayHelper Orchard { get; }
         dynamic ThemeLayout { get; set; }
         string ViewLayout { get; set; }
         IPageTitleBuilder Title { get; }
@@ -39,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Razor
     {
         private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
-        private OrchardRazorHelper _orchardHelper;
+        private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
 
         private void EnsureDisplayHelper()
@@ -58,16 +58,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
             }
         }
-
-        private void EnsureOrchardHelper()
-        {
-            if (_orchardHelper == null)
-            {
-                EnsureDisplayHelper();
-                _orchardHelper = new OrchardRazorHelper(Context, _displayHelper);
-            }
-        }
-
+        
         /// <summary>
         /// Gets a dynamic shape factory to create new shapes.
         /// </summary>
@@ -109,11 +100,16 @@ namespace OrchardCore.DisplayManagement.Razor
             return _displayHelper.ShapeExecuteAsync(shape);
         }
 
-        public OrchardRazorHelper OrchardCore
+        public IOrchardDisplayHelper Orchard
         {
             get
             {
-                EnsureOrchardHelper();
+                if (_orchardHelper == null)
+                {
+                    EnsureDisplayHelper();
+                    _orchardHelper = new OrchardDisplayHelper(Context, _displayHelper);
+                }
+
                 return _orchardHelper;
             }
         }
