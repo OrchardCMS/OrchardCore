@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute">
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute" Condition="'@(ModuleNames)' != ''">
         <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
