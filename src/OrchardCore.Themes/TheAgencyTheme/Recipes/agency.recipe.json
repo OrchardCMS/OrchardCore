@@ -1257,7 +1257,6 @@
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
                 "DisplayText": "Responsive Design",
-                "DisplayText": "Responsive Design",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
