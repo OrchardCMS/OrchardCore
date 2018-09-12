@@ -45,7 +45,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMarkdownFieldViewModel>("MarkdownField_Edit", model =>
+            return Initialize<EditMarkdownFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Markdown = field.Markdown;
                 model.Field = field;

@@ -19,7 +19,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
         public HttpRequestTask(
-            IStringLocalizer<HttpRequestTask> localizer, 
+            IStringLocalizer<HttpRequestTask> localizer,
             IHttpContextAccessor httpContextAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator
         )
@@ -153,6 +153,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            // TODO: Refactor this to using HttpClientFactory.
             using (var httpClient = new HttpClient())
             {
                 var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext);

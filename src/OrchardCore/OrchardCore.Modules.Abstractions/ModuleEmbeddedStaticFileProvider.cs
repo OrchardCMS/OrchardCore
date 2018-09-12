@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -13,11 +12,11 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleEmbeddedStaticFileProvider : IFileProvider
     {
-        private readonly IHostingEnvironment _environment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ModuleEmbeddedStaticFileProvider(IHostingEnvironment environment)
+        public ModuleEmbeddedStaticFileProvider(IApplicationContext applicationContext)
         {
-            _environment = environment;
+            _applicationContext = applicationContext;
         }
 
         public IDirectoryContents GetDirectoryContents(string subpath)
@@ -36,21 +35,30 @@ namespace OrchardCore.Modules
 
             var index = path.IndexOf('/');
 
+            // "{ModuleId}/**/*.*".
             if (index != -1)
             {
+                var application = _applicationContext.Application;
+
+                // Resolve the module id.
                 var module = path.Substring(0, index);
 
-                if (_environment.GetApplication().ModuleNames.Contains(module))
+                // Check if it is an existing module.
+                if (application.Modules.Any(m=> m.Name == module))
                 {
+                    // Resolve the embedded file subpath: "wwwroot/**/*.*"
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
 
-                    if (module != _environment.GetApplication().Name)
+                    if (module != application.Name)
                     {
-                        return _environment.GetModule(module).GetFileInfo(fileSubPath);
+                        // Get the embedded file info from the module assembly.
+                        return application.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    fileSubPath = _environment.GetApplication().Root + fileSubPath;
-                    return new PhysicalFileInfo(new FileInfo(fileSubPath));
+                    // Application static files can be still requested in a regular way "/**/*.*".
+                    // Here, it's done through the Application's module "{ApplicationName}/**/*.*".
+                    // But we still serve them from the same physical files "{WebRootPath}/**/*.*".
+                    return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
                 }
             }
 

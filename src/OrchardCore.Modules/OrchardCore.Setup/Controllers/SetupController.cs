@@ -56,7 +56,7 @@ namespace OrchardCore.Setup.Controllers
 
             if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
             {
-                if (string.IsNullOrEmpty(token) || !IsTokenValid(token))
+                if (string.IsNullOrEmpty(token) || ! await IsTokenValid(token))
                 {
                     return View("InvalidToken");
                 }
@@ -86,7 +86,7 @@ namespace OrchardCore.Setup.Controllers
         {
             if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
             {
-                if (string.IsNullOrEmpty(model.SaasToken) || !IsTokenValid(model.SaasToken))
+                if (string.IsNullOrEmpty(model.SaasToken) || !await IsTokenValid(model.SaasToken))
                 {
                     return View("InvalidToken");
                 }
@@ -201,11 +201,11 @@ namespace OrchardCore.Setup.Controllers
             }
         }
 
-        private bool IsTokenValid(string token)
+        private async Task<bool> IsTokenValid(string token)
         {
             try
             {
-                var defaultShellContext = _shellHost.GetOrCreateShellContext(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
+                var defaultShellContext = await _shellHost.GetOrCreateShellContextAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
                 var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
                 ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 

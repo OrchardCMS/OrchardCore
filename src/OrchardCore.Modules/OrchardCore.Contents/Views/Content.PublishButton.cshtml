@@ -1,4 +1,4 @@
-﻿@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
+@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
 @{
     var returnUrl = Context.Request.Query["returnUrl"];
 }
@@ -14,7 +14,7 @@ else
             <span class="sr-only">@T["Toggle Dropdown"]</span>
         </button>
         <div class="dropdown-menu">
-            <button class="dropdown-item" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["Publish And Continue"]</button>
+            <button class="dropdown-item" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
         </div>
     </div>
 }

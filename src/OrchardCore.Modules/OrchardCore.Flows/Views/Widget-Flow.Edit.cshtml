@@ -1,11 +1,10 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
+
 @{
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var contentItemMetadata = await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-    var contentItemDisplayText = contentItemMetadata.DisplayText;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
 }
 

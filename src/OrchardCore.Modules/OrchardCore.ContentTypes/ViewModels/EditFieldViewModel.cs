@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -21,6 +21,12 @@ namespace OrchardCore.ContentTypes.ViewModels
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
         [BindNever]
-        public dynamic Editor { get; set; }
+        public dynamic Shape { get; set; }
+
+        /// <summary>
+        /// The editor name of the field
+        /// </summary>
+        public string Editor { get; set; }
+
     }
 }

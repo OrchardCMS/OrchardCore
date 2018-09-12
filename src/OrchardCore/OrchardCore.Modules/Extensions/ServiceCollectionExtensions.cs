@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -71,6 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+
+            services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }
 
         private static void AddShellServices(IServiceCollection services)
@@ -88,6 +91,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddExtensionServices(OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
+            builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
+            
             builder.ApplicationServices.AddExtensionManagerHost();
 
             builder.ConfigureServices(services =>
@@ -104,18 +110,19 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Configure((app, routes, serviceProvider) =>
             {
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
 
                 IFileProvider fileProvider;
                 if (env.IsDevelopment())
                 {
                     var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(new ModuleProjectStaticFileProvider(env));
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
+                    fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
+                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
                     fileProvider = new CompositeFileProvider(fileProviders);
                 }
                 else
                 {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(env);
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
                 }
 
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;

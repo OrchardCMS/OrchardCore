@@ -164,7 +164,9 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Blog')
 
         // Go to Setup page
-        await page.goto(`${basePath}/blog/`);
+		let a = Array.from(document.querySelectorAll('a'))
+			.find(el => el.textContent === 'Setup')[0];
+        await page.goto(a.href);
         await expect(await page.content()).toMatch('Orchard Setup')
 
         // Setup site
