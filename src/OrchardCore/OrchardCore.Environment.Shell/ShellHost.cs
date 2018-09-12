@@ -364,7 +364,12 @@ namespace OrchardCore.Environment.Shell
         {
             var shellContexts = new List<ShellContext>();
 
-            foreach(var shellContext in _shellContexts.Values.ToArray())
+            if (_shellContexts == null)
+            {
+                return Enumerable.Empty<ShellContext>();
+            }
+
+            foreach (var shellContext in _shellContexts.Values.ToArray())
             {
                 if (!shellContext.Released)
                 {
