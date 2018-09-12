@@ -164,8 +164,10 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Blog')
 
         // Go to Setup page
-		let a = Array.from(document.querySelectorAll('a'))
-			.find(el => el.textContent === 'Setup')[0];
+		let a = Array.prototype.slice.call(document.querySelectorAll('a'))
+		.filter(function (el) {
+			return el.textContent === 'Setup'
+			})[0];
         await page.goto(a.href);
         await expect(await page.content()).toMatch('Orchard Setup')
 
