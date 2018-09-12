@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities.DisplayManagement;
@@ -62,7 +61,7 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
+            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
                 model.Authority = settings.Authority;
                 model.Audience = settings.Audience;
@@ -71,19 +70,14 @@ namespace OrchardCore.OpenId.Drivers
                 var availableTenants = new List<string>();
                 var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running);
 
-                foreach (var tenant in tenants)
+                foreach(var shellContext in await _shellHost.ListShellContextsAsync())
                 {
-                    using (var scope = _shellHost.EnterServiceScope(tenant, throwIfDisabled: false))
+                    using (var scope = shellContext.CreateScope())
                     {
-                        if (scope == null)
-                        {
-                            continue;
-                        }
-
                         var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
                         if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
                         {
-                            availableTenants.Add(tenant.Name);
+                            availableTenants.Add(shellContext.Settings.Name);
                         }
                     }
                 }
@@ -123,7 +117,7 @@ namespace OrchardCore.OpenId.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 

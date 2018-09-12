@@ -21,6 +21,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         private volatile int _refCount = 0;
         private bool _released = false;
         private List<WeakReference<ShellContext>> _dependents;
+        private object _synLock = new object();
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
@@ -31,42 +32,19 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public bool IsActivated { get; set; }
 
-        /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
-        /// </summary>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
-        public IServiceScope EnterServiceScope()
+        public IServiceScope CreateScope()
         {
-            if (_disposed)
-            {
-                throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
-            }
-
-            if (_released)
-            {
-                throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
-            }
-
-            return new ServiceScopeWrapper(this);
-        }
-
-        public bool TryEnterServiceScope(out IServiceScope scope)
-        {
-            scope = new ServiceScopeWrapper(this);
+            var scope = new ServiceScopeWrapper(this);
 
             // A newly created disabled shell has a null service provider.
-            if (!_released && scope.ServiceProvider != null)
+            if (!_released)
             {
-                return true;
+                return scope;
             }
 
             (scope as ServiceScopeWrapper).Dispose();
 
-            scope = null;
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -95,7 +73,7 @@ namespace OrchardCore.Hosting.ShellBuilders
             // resolve or use its services. We then call this method to count the remaining references and dispose it 
             // when the number reached zero.
 
-            lock (this)
+            lock (_synLock)
             {
                 if (_released == true)
                 {
@@ -144,7 +122,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 return;
             }
 
-            lock (this)
+            lock (_synLock)
             {
                 if (_dependents == null)
                 {
@@ -207,7 +185,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 // a scope on a disabled shell or already disposed.
                 if (_shellContext.ServiceProvider == null)
                 {
-                    return;
+                    throw new ArgumentNullException(nameof(shellContext.ServiceProvider), $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
                 }
 
                 _serviceScope = shellContext.ServiceProvider.CreateScope();
@@ -265,19 +243,14 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public void Dispose()
             {
-                // The service scope is null if we tried to create
-                // a scope on a disabled shell or already disposed.
-                if (_serviceScope != null)
+                var disposeShellContext = ScopeReleased();
+
+                _httpContext.RequestServices = _existingServices;
+                _serviceScope.Dispose();
+
+                if (disposeShellContext)
                 {
-                    var disposeShellContext = ScopeReleased();
-
-                    _httpContext.RequestServices = _existingServices;
-                    _serviceScope.Dispose();
-
-                    if (disposeShellContext)
-                    {
-                        _shellContext.Dispose();
-                    }
+                    _shellContext.Dispose();
                 }
 
                 // Decrement the counter at the very end of the scope

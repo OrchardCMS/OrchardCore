@@ -69,13 +69,8 @@ namespace OrchardCore.BackgroundTasks
             {
                 var taskName = task.GetType().FullName;
 
-                using (var scope = _orchardHost.EnterServiceScope(_shellSettings, throwIfDisabled: false))
+                using (var scope = await _orchardHost.GetScopeAsync(_shellSettings))
                 {
-                    if (scope == null)
-                    {
-                        return;
-                    }
-
                     try
                     {
                         if (_states[task] != BackgroundTaskState.Idle)

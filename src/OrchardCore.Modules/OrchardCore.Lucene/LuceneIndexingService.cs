@@ -74,7 +74,7 @@ namespace OrchardCore.Lucene
             do
             {
                 // Create a scope for the content manager
-                using (var scope = _shellHost.EnterServiceScope(_shellSettings))
+                using (var scope = await _shellHost.GetScopeAsync(_shellSettings))
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
