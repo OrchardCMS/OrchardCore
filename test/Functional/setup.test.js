@@ -125,7 +125,15 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Agency')
 
         // Go to Setup page
-        await page.goto(`${basePath}/agency/`);
+  		const setupUrl = await page.evaluate(() => {
+			let a = Array.prototype.slice.call(document.querySelectorAll('a'))
+				.filter(function (el) {
+					return el.textContent == "Setup";
+				})[0];
+			return a.href;
+		});
+
+		await page.goto(setupUrl);
         await expect(await page.content()).toMatch('Orchard Setup')
 
         // Setup site
@@ -164,11 +172,15 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Blog')
 
         // Go to Setup page
-		let a = Array.prototype.slice.call(document.querySelectorAll('a'))
-		.filter(function (el) {
-			return el.textContent === 'Setup'
-			})[0];
-        await page.goto(a.href);
+		const setupUrl = await page.evaluate(() => {
+			let a = Array.prototype.slice.call(document.querySelectorAll('a'))
+				.filter(function (el) {
+					return el.textContent == "Setup";
+				})[0];
+			return a.href;
+		});
+
+        await page.goto(setupUrl);
         await expect(await page.content()).toMatch('Orchard Setup')
 
         // Setup site
