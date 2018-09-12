@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,8 +28,11 @@ namespace OrchardCore.Environment.Shell
         private readonly ILogger _logger;
 
         private readonly static object _syncLock = new object();
-        private ConcurrentDictionary<string, Lazy<ShellContext>> _shellContexts;
+        private ConcurrentDictionary<string, ShellContext> _shellContexts;
         private readonly IExtensionManager _extensionManager;
+        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _scopeSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -44,123 +48,106 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
         }
 
-        public void Initialize()
-        {
-            BuildCurrent();
-        }
-
-        /// <summary>
-        /// Ensures shells are activated, or re-activated if extensions have changed
-        /// </summary>
-        IDictionary<string, Lazy<ShellContext>> BuildCurrent()
+        public async Task InitializeAsync()
         {
             if (_shellContexts == null)
             {
-                lock (this)
+                try
                 {
+                    // Prevent concurrent requests from creating all shells multiple times
+                    await _initializingSemaphore.WaitAsync();
+
                     if (_shellContexts == null)
                     {
-                        _shellContexts = new ConcurrentDictionary<string, Lazy<ShellContext>>();
-                        CreateAndRegisterShellsAsync().Wait();
+                        _shellContexts = new ConcurrentDictionary<string, ShellContext>();
+                        await CreateAndRegisterShellsAsync();
                     }
+                }
+                finally
+                {
+                    _initializingSemaphore.Release();
+                }
+            }
+        }
+
+        public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
+        {
+            ShellContext shell = null;
+
+            while (shell == null)
+            {
+                if (!_shellContexts.TryGetValue(settings.Name, out shell))
+                {
+                    var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
+
+                    await semaphore.WaitAsync();
+
+                    try
+                    {
+                        if (!_shellContexts.TryGetValue(settings.Name, out shell))
+                        {
+                            shell = await CreateShellContextAsync(settings);
+                            RegisterShell(shell);
+
+                            _shellContexts.TryAdd(settings.Name, shell);
+                        }
+
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                        _shellSemaphores.TryRemove(settings.Name, out semaphore);
+                    }
+                }
+
+                if (shell.Released)
+                {
+                    // If the context is released, it is removed from the dictionary so that
+                    // a new call on 'GetOrCreateShellContextAsync' will recreate a new shell context.
+                    _shellContexts.TryRemove(settings.Name, out var value);
+                    shell = null;
                 }
             }
 
-            return _shellContexts;
-        }
-
-        public ShellContext GetOrCreateShellContext(ShellSettings settings)
-        {
-            // Here, the normal path is to get an already created context and a null scope.
-            // But if the context is recreated, we also get a scope that we don't need here.
-            var shell = GetOrAddShellContext(settings, out var scope);
-
-            // If the context has been recreated, we got a scope that we don't need here.
-            if (scope != null)
-            {
-                // So, we dispose it immediately.
-                scope.Dispose();
-                return shell;
-            }
-
-            if (shell.Released)
-            {
-                // If the context is released, it is removed from the dictionary so that
-                // a new call on 'GetOrAddShellContext' will recreate a new shell context.
-                _shellContexts.TryRemove(settings.Name, out var value);
-                return GetOrCreateShellContext(settings);
-            }
-
             return shell;
         }
-
-        public IServiceScope EnterServiceScope(ShellSettings settings, bool throwIfDisabled = true)
+        public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
         {
-            return EnterServiceScope(settings, out var context, throwIfDisabled);
+            return (await GetScopeAndContextAsync(settings)).Scope;
         }
 
-        public IServiceScope EnterServiceScope(ShellSettings settings, out ShellContext context, bool throwIfDisabled = true)
-        {
-            // Here, the normal path is to get an already created context and a null scope.
-            // If the context is recreated, we also get a tracked scope created atomically.
-            context = GetOrAddShellContext(settings, out var scope);
-
-            // Here, the normal path is to call 'TryEnterServiceScope' to get a valid scope.
-            // If the context has been recreated above, here we already have a non null scope.
-            if (scope != null || context.TryEnterServiceScope(out scope))
-            {
-                return scope;
-            }
-
-            // Coming here means that the shell is disabled, or was released but still
-            // in the dictionary, or has been released just before 'TryEnterServiceScope'.
-            if (context.Released)
-            {
-                // If the context has been released, it is removed from the dictionary so that
-                // a new call on 'GetOrAddShellContext' will return a tracked scope atomically.
-                _shellContexts.TryRemove(settings.Name, out var value);
-                return EnterServiceScope(settings, out context);
-            }
-
-            // The scope is null only for a recreated disabled shell which has a null service provider.
-            // But it is not null for a disabled shell which is still in use and then not yet released.
-            if (scope == null && throwIfDisabled)
-            {
-                throw new ApplicationException($"Can't use EnterServiceScope on the tenant {settings.Name} because it is disabled.");
-            }
-
-            return scope;
-        }
-
-        internal ShellContext GetOrAddShellContext(ShellSettings settings, out IServiceScope serviceScope)
+        public async Task<(IServiceScope Scope, ShellContext ShellContext)> GetScopeAndContextAsync(ShellSettings settings)
         {
             IServiceScope scope = null;
+            ShellContext shellContext = null;
 
-            // The normal path is to return an already created context and pass a null scope.
-            // Then the caller can use 'TryEnterServiceScope' to get a non null tracked scope.
-
-            // If the context is released, the usage is to remove it from the dictionary and then recall
-            // this method, so that a tracked scope is created atomically through the lazy value factory.
-
-            var shell = _shellContexts.GetOrAdd(settings.Name, new Lazy<ShellContext>(() =>
+            while (scope == null)
             {
-                var shellContext = CreateShellContextAsync(settings).Result;
-                shellContext.TryEnterServiceScope(out scope);
-                RegisterShell(shellContext);
-                return shellContext;
-            })).Value;
+                if (!_shellContexts.TryGetValue(settings.Name, out shellContext))
+                {
+                    shellContext = await GetOrCreateShellContextAsync(settings);
+                }
 
-            // If the context has been recreated, here the tracked scope can't be null,
-            // unless for a recreated disabled shell which has a null service provider.
-            serviceScope = scope;
+                // We create a scope before checking if the shell has been released.
+                scope = shellContext.CreateScope();
 
-            return shell;
+                // If CreateScope() returned null, the shell is released. We then remove it and 
+                // retry with the hope to get one that won't be released before we create a scope.
+                if (scope == null)
+                {
+                    // If the context is released, it is removed from the dictionary so that
+                    // a new call on 'GetScope' will recreate a new shell context.
+                    _shellContexts.TryRemove(settings.Name, out var value);
+                }
+            }
+
+            return (scope, shellContext);
         }
 
-        public void UpdateShellSettings(ShellSettings settings)
+        public Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             _shellSettingsManager.SaveSettings(settings);
-            ReloadShellContext(settings);
+            return ReloadShellContextAsync(settings);
         }
 
         async Task CreateAndRegisterShellsAsync()
@@ -189,11 +176,11 @@ namespace OrchardCore.Environment.Shell
             else
             {
                 // Load all tenants, and activate their shell.
-                Parallel.ForEach(allSettings, settings =>
+                await Task.WhenAll(allSettings.Select(async settings =>
                 {
                     try
                     {
-                        GetOrCreateShellContext(settings);
+                        await GetOrCreateShellContextAsync(settings);
                     }
                     catch (Exception ex)
                     {
@@ -204,7 +191,7 @@ namespace OrchardCore.Environment.Shell
                             throw;
                         }
                     }
-                });
+                }));
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -236,7 +223,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            if (_shellContexts.TryAdd(context.Settings.Name, new Lazy<ShellContext>(() => context)))
+            if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
                 RegisterShellSettings(context.Settings);
             }
@@ -296,7 +283,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -341,7 +328,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
-                context.Value.Release();
+                context.Release();
             }
 
             return Task.CompletedTask;
@@ -352,34 +339,46 @@ namespace OrchardCore.Environment.Shell
         /// while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        public void ReloadShellContext(ShellSettings settings)
+        public Task ReloadShellContextAsync(ShellSettings settings)
         {
             if (settings.State == TenantState.Disabled)
             {
                 // If a disabled shell is still in use it will be released and then disposed by its last scope.
                 // Knowing that it is still removed from the running shell table, so that it is no more served.
-                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.Value.ActiveScopes > 0)
+                if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
                     _runningShellTable.Remove(settings);
-                    return;
+                    return Task.CompletedTask;
                 }
             }
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 _runningShellTable.Remove(settings);
-                context.Value.Release();
+                context.Release();
             }
 
-            GetOrCreateShellContext(settings);
+            return GetOrCreateShellContextAsync(settings);
         }
 
-        public IEnumerable<ShellContext> ListShellContexts()
+        public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {
-            return _shellContexts?.Select(kv => kv.Value.Value).ToArray()
-                // When a dependent shell is released it is not removed and recreated.
-                .Select(shell => !shell.Released ? shell : GetOrCreateShellContext(shell.Settings))
-                .ToArray() ?? Enumerable.Empty<ShellContext>();
+            var shellContexts = new List<ShellContext>();
+
+            foreach(var shellContext in _shellContexts.Values.ToArray())
+            {
+                if (!shellContext.Released)
+                {
+                    shellContexts.Add(shellContext);
+                }
+                else
+                {
+                    shellContexts.Add(await GetOrCreateShellContextAsync(shellContext.Settings));
+                }
+            }
+
+
+            return shellContexts;
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Modules.FileProviders
 {
-    internal class EmbeddedDirectoryContents : IDirectoryContents
+    public class EmbeddedDirectoryContents : IDirectoryContents
     {
         private readonly IList<IFileInfo> _entries;
 

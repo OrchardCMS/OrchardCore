@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="@OrchardCore.CultureName()">
+<html lang="@Orchard.CultureName()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -21,7 +21,7 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload" dir="@OrchardCore.CultureDir()">
+<body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>

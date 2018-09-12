@@ -3,9 +3,14 @@ using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public class OrchardRazorHelper
+    public interface IOrchardDisplayHelper : IOrchardHelper
     {
-        public OrchardRazorHelper(HttpContext context, IDisplayHelper displayHelper)
+        IDisplayHelper DisplayHelper { get; }
+    }
+
+    internal class OrchardDisplayHelper : IOrchardDisplayHelper
+    {
+        public OrchardDisplayHelper(HttpContext context, IDisplayHelper displayHelper)
         {
             HttpContext = context;
             DisplayHelper = displayHelper;
