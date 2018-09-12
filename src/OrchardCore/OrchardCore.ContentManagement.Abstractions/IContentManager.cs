@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement
     public interface IContentManager
     {
         /// <summary>
-        /// Instantiates a new content item with the specified type
+        /// Creates a new content item with the specified type
         /// </summary>
         /// <remarks>
         /// The content item is not yet persisted!
@@ -17,10 +17,10 @@ namespace OrchardCore.ContentManagement
         Task<ContentItem> NewAsync(string contentType);
 
         /// <summary>
-        /// Creates (persists) a new content item
+        /// Updates a content item without creating a new version.
         /// </summary>
-        /// <param name="contentItem">The content instance filled with all necessary data</param>
-        Task CreateAsync(ContentItem contentItem);
+        /// <param name="contentItem">The existing content item with updated data</param>
+        Task UpdateAsync(ContentItem contentItem);
 
         /// <summary>
         /// Creates (persists) a new content item with the specified version
@@ -68,6 +68,16 @@ namespace OrchardCore.ContentManagement
 
     public static class ContentManagerExtensions
     {
+        /// <summary>
+        /// Creates (persists) a new Published content item
+        /// </summary>
+        /// <param name="contentItem">The content instance filled with all necessary data</param>
+
+        public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
+        {
+            return contentManager.CreateAsync(contentItem, VersionOptions.Published);
+        }
+
         public static Task<TAspect> PopulateAspectAsync<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
         {
             return contentManager.PopulateAspectAsync(content, new TAspect());
@@ -81,6 +91,11 @@ namespace OrchardCore.ContentManagement
             }
 
             return content.ContentItem.IsPublished() || (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) != null);
+        }
+
+        public static Task<ContentItemMetadata> GetContentItemMetadataAsync(this IContentManager contentManager, IContent content)
+        {
+            return contentManager.PopulateAspectAsync<ContentItemMetadata>(content);
         }
     }
 
