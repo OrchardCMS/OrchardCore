@@ -1,9 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
-
-@inject IContentManager ContentManager
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
@@ -15,8 +12,7 @@
     {
         foreach (var contentItem in Model.ContentItems)
         {
-            var displayText = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).DisplayText;
-            <span class="value"><a display-for="@contentItem">@displayText</a></span>
+            <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
             if (contentItem != Model.ContentItems.Last())
             {
                 <span>,</span>

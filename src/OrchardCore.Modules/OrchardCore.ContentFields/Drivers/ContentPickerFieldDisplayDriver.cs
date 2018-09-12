@@ -65,11 +65,10 @@ namespace OrchardCore.ContentFields.Fields
                 foreach (var contentItemId in field.ContentItemIds ?? new string[0])
                 {
                     var contentItem = await _contentManager.GetAsync(contentItemId);
-                    var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                     model.SelectedItems.Add(new ContentPickerItemViewModel
                     {
                         ContentItemId = contentItemId,
-                        DisplayText = contentItemMetadata.DisplayText
+                        DisplayText = contentItem.DisplayText
                     });
                 }
             });

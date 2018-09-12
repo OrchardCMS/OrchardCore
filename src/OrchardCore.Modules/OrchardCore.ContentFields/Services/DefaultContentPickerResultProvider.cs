@@ -22,20 +22,24 @@ namespace OrchardCore.ContentFields.Services
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
-            var contentItems = await _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.ContentType.IsIn(searchContext.ContentTypes) && x.Latest)
-                .Take(20)
-                .ListAsync();
+            var query = _session.Query<ContentItem, ContentItemIndex>()
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(searchContext.ContentTypes) && x.Latest);
+
+            if (!string.IsNullOrEmpty(searchContext.Query))
+            {
+                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query));
+            }
+
+            var contentItems = await query.Take(20).ListAsync();
 
             var results = new List<ContentPickerResult>();
 
             foreach (var contentItem in contentItems)
             {
-                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItemMetadata.DisplayText
+                    DisplayText = contentItem.DisplayText
                 });
             }
 
