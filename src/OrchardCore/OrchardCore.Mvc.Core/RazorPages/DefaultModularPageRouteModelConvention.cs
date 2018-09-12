@@ -17,76 +17,78 @@ namespace OrchardCore.Mvc.RazorPages
 
         public void Apply(PageRouteModel model)
         {
-            var pageName = model.ViewEnginePath.Trim('/');
-            var tokenizer = new StringTokenizer(pageName, new[] { '/' });
-            int count = tokenizer.Count(), pathIndex = 0;
+            var selectors = model.Selectors.ToArray();
 
-            for (var i = 0; i < count; i++)
+            foreach (var selector in selectors)
             {
-                var segment = tokenizer.ElementAt(i);
+                var pageTemplate = selector.AttributeRouteModel.Template;
+                var tokenizer = new StringTokenizer(pageTemplate, new[] { '/' });
+                int count = tokenizer.Count(), pathIndex = 0;
 
-                if ("Pages" == segment)
+                for (var i = 0; i < count; i++)
                 {
-                    if (i < 2 || i == count - 1)
+                    var segment = tokenizer.ElementAt(i);
+
+                    if ("Pages" == segment)
                     {
-                        return;
-                    }
-
-                    foreach (var selector in model.Selectors)
-                    {
-                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
-                    }
-
-                    var module = tokenizer.ElementAt(i - 1).Value;
-
-                    // "{ModuleId}/Pages/Foo" - "{ApplicationName}/Pages/Foo"
-                    var template = pageName.Substring(pathIndex - (module.Length + 1));
-
-                    model.Selectors.Add(new SelectorModel
-                    {
-                        AttributeRouteModel = new AttributeRouteModel
+                        if (i < 2 || i == count - 1)
                         {
-                            Template = template,
-                            Name = template.Replace('/', '.')
+                            return;
                         }
-                    });
 
-                    var attributeRouteModel = new AttributeRouteModel();
+                        selector.AttributeRouteModel.SuppressLinkGeneration = true;
 
-                    if (module != _applicationContext.Application.Name)
-                    {
-                        // "{ModuleId}/Foo".
-                        attributeRouteModel.Template = module + pageName.Substring(pathIndex + "Pages".Length);
-                        attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
-                    }
-                    else
-                    {
-                        // "Foo"
-                        attributeRouteModel.Template = pageName.Substring(pathIndex + "Pages".Length + 1);
+                        var module = tokenizer.ElementAt(i - 1).Value;
 
-                        // Check if a Page named "Index" is defined in the application's module,
-                        if (String.Equals(attributeRouteModel.Template, "Index", StringComparison.OrdinalIgnoreCase))
+                        // "{ModuleId}/Pages/Foo" - "{ApplicationName}/Pages/Foo"
+                        var template = pageTemplate.Substring(pathIndex - (module.Length + 1));
+
+                        model.Selectors.Add(new SelectorModel
                         {
-                            // Force the homepage template.
-                            attributeRouteModel.Template = "";
-                            attributeRouteModel.Name = "Index";
+                            AttributeRouteModel = new AttributeRouteModel
+                            {
+                                Template = template,
+                                Name = template.Replace('/', '.')
+                            }
+                        });
+
+                        var attributeRouteModel = new AttributeRouteModel();
+
+                        if (module != _applicationContext.Application.Name)
+                        {
+                            // "{ModuleId}/Foo".
+                            attributeRouteModel.Template = module + pageTemplate.Substring(pathIndex + "Pages".Length);
+                            attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
                         }
                         else
                         {
-                            attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
+                            // "Foo"
+                            attributeRouteModel.Template = pageTemplate.Substring(pathIndex + "Pages".Length + 1);
+
+                            // Check if a Page named "Index" is defined in the application's module,
+                            if (String.Equals(attributeRouteModel.Template, "Index", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Force the homepage template.
+                                attributeRouteModel.Template = "";
+                                attributeRouteModel.Name = "Index";
+                            }
+                            else
+                            {
+                                attributeRouteModel.Name = attributeRouteModel.Template.Replace('/', '.');
+                            }
+
                         }
 
+                        model.Selectors.Add(new SelectorModel
+                        {
+                            AttributeRouteModel = attributeRouteModel
+                        });
+
+                        break;
                     }
 
-                    model.Selectors.Add(new SelectorModel
-                    {
-                        AttributeRouteModel = attributeRouteModel
-                    });
-
-                    break;
+                    pathIndex += segment.Length + 1;
                 }
-
-                pathIndex += segment.Length + 1;
             }
         }
     }
