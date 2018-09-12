@@ -362,25 +362,26 @@ namespace OrchardCore.Environment.Shell
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {
-            var shellContexts = new List<ShellContext>();
+            var shells = _shellContexts?.Values.ToArray();
 
-            if (_shellContexts == null)
+            if (shells == null || shells.Count() < 1)
             {
                 return Enumerable.Empty<ShellContext>();
             }
 
-            foreach (var shellContext in _shellContexts.Values.ToArray())
+            var shellContexts = new List<ShellContext>();
+
+            foreach (var shell in shells)
             {
-                if (!shellContext.Released)
+                if (!shell.Released)
                 {
-                    shellContexts.Add(shellContext);
+                    shellContexts.Add(shell);
                 }
                 else
                 {
-                    shellContexts.Add(await GetOrCreateShellContextAsync(shellContext.Settings));
+                    shellContexts.Add(await GetOrCreateShellContextAsync(shell.Settings));
                 }
             }
-
 
             return shellContexts;
         }
