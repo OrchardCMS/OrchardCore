@@ -36,7 +36,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         {
             var scope = new ServiceScopeWrapper(this);
 
-            // A newly created disabled shell has a null service provider.
+            // A new scope can be only used on a non released shell.
             if (!_released)
             {
                 return scope;
