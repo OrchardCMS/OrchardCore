@@ -193,11 +193,6 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                if (httpContextAccessor.HttpContext == null)
-                {
-                    httpContextAccessor.HttpContext = new DefaultHttpContext();
-                }
-
                 _httpContext = httpContextAccessor.HttpContext;
                 _existingServices = _httpContext.RequestServices;
                 _httpContext.RequestServices = ServiceProvider;

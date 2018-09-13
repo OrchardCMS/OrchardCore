@@ -78,6 +78,8 @@ namespace OrchardCore.Modules
 
                 var schedulers = GetSchedulersToRun(tenant);
 
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
+
                 foreach (var scheduler in schedulers)
                 {
                     if (stoppingToken.IsCancellationRequested)
@@ -101,8 +103,6 @@ namespace OrchardCore.Modules
 
                     using (scope)
                     {
-                        _httpContextAccessor.HttpContext.Update(context);
-
                         if (scope == null || !context.IsActivated)
                         {
                             break;
@@ -148,6 +148,8 @@ namespace OrchardCore.Modules
                 {
                     return;
                 }
+
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 IServiceScope scope = null;
                 ShellContext context = null;
@@ -306,18 +308,15 @@ namespace OrchardCore.Modules
         }
     }
 
-    internal static class HttpContextExtensions
+    internal static class ShellContextExtensions
     {
-        public static void Update(this HttpContext httpContext, ShellContext shell)
+        public static HttpContext CreateHttpContext(this ShellContext shell)
         {
-            if (httpContext == null)
-            {
-                return;
-            }
-
-            httpContext.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
-            httpContext.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
-            httpContext.Items["IsBackground"] = true;
+            var context = new DefaultHttpContext();
+            context.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
+            context.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
+            context.Items["IsBackground"] = true;
+            return context;
         }
     }
 }
