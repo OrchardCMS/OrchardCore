@@ -58,7 +58,7 @@ namespace OrchardCore.Setup.Controllers
             {
                 if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
-                    _logger.LogError("Accessing the setup without providing Secret");
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
                     return StatusCode(404);
                 }
             }
@@ -89,7 +89,7 @@ namespace OrchardCore.Setup.Controllers
             {
                 if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
-                    _logger.LogError("Accessing the setup without providing Secret");
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
                     return StatusCode(404);
                 }
             }
