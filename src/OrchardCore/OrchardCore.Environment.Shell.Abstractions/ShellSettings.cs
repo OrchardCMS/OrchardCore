@@ -80,10 +80,10 @@ namespace OrchardCore.Environment.Shell
             set { _values["RecipeName"] = value; }
         }
 
-        public string SaasToken
+        public string Secret
         {
-            get { return this["SaasToken"]; }
-            set { _values["SaasToken"] = value; }
+            get { return this["Secret"]; }
+            set { _values["Secret"] = value; }
         }
         public TenantState State
         {

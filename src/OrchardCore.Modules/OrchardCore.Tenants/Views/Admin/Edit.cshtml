@@ -60,11 +60,11 @@
                     <option value="" data-connection-string="false">@T["None"]</option>
                     @foreach (var provider in DatabaseProviders)
                     {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()">@provider.Name</option>
                     }
                 </select>
             </div>
-            <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
+            <div class="form-group col-md-6" asp-validation-class-for="TablePrefix" >
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
                 <input asp-for="TablePrefix" class="form-control" />

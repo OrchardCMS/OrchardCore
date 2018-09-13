@@ -1,6 +1,7 @@
 @model AdminIndexViewModel
 @using OrchardCore.Environment.Shell.Models
 @using OrchardCore.Environment.Shell
+@using System.Net
 
 @functions {
     public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
@@ -23,8 +24,7 @@
 
         if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            result += "?token=" + shellSettingsEntry.Token;
-
+            result +=  "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
         }
 
         return result;

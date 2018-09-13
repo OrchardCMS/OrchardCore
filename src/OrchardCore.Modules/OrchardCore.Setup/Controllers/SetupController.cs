@@ -54,11 +54,12 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
             {
-                if (string.IsNullOrEmpty(token) || ! await IsTokenValid(token))
+                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
-                    return View("InvalidToken");
+                    _logger.LogError("Accessing the setup without providing Secret");
+                    return StatusCode(404);
                 }
             }
 
@@ -67,7 +68,7 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                SaasToken = token
+                Secret = token
             };
 
             CopyShellSettingsValues(model);
@@ -84,11 +85,12 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings.SaasToken))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
             {
-                if (string.IsNullOrEmpty(model.SaasToken) || !await IsTokenValid(model.SaasToken))
+                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
-                    return View("InvalidToken");
+                    _logger.LogError("Accessing the setup without providing Secret");
+                    return StatusCode(404);
                 }
             }
 
@@ -205,17 +207,19 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                var defaultShellContext = await _shellHost.GetOrCreateShellContextAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName));
-                var dataProtectionProvider = defaultShellContext.ServiceProvider.GetService<IDataProtectionProvider>();
-                ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-
-                var tokenValue = dataProtector.Unprotect(token, out var expiration);
-
-                if (_clock.UtcNow < expiration.ToUniversalTime())
+                using (var scope = await _shellHost.GetScopeAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName)))
                 {
-                    if (_shellSettings.SaasToken.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
+                    var dataProtectionProvider = scope.ServiceProvider.GetService<IDataProtectionProvider>();
+                    ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                    var tokenValue = dataProtector.Unprotect(token, out var expiration);
+
+                    if (_clock.UtcNow < expiration.ToUniversalTime())
                     {
-                        return true;
+                        if (_shellSettings.Secret.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
