@@ -111,6 +111,7 @@ namespace OrchardCore.Environment.Shell
 
             return shell;
         }
+
         public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
         {
             return (await GetScopeAndContextAsync(settings)).Scope;
@@ -363,20 +364,26 @@ namespace OrchardCore.Environment.Shell
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {
+            var shells = _shellContexts?.Values.ToArray();
+
+            if (shells == null || shells.Length == 0)
+            {
+                return Enumerable.Empty<ShellContext>();
+            }
+
             var shellContexts = new List<ShellContext>();
 
-            foreach(var shellContext in _shellContexts.Values.ToArray())
+            foreach (var shell in shells)
             {
-                if (!shellContext.Released)
+                if (!shell.Released)
                 {
-                    shellContexts.Add(shellContext);
+                    shellContexts.Add(shell);
                 }
                 else
                 {
-                    shellContexts.Add(await GetOrCreateShellContextAsync(shellContext.Settings));
+                    shellContexts.Add(await GetOrCreateShellContextAsync(shell.Settings));
                 }
             }
-
 
             return shellContexts;
         }

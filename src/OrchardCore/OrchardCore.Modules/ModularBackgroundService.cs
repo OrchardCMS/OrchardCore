@@ -50,7 +50,7 @@ namespace OrchardCore.Modules
                 Logger.LogDebug("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
-            while (GetRunningShells().Count() < 1)
+            while ((await GetRunningShells()).Count() < 1)
             {
                 await Task.Delay(MinIdleTime, stoppingToken);
             }
@@ -59,7 +59,7 @@ namespace OrchardCore.Modules
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var runningShells = GetRunningShells();
+                var runningShells = await GetRunningShells();
                 await UpdateAsync(previousShells, runningShells, stoppingToken);
                 previousShells = runningShells;
 
@@ -85,9 +85,23 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    using (var scope = _shellHost.EnterServiceScope(shell.Settings, out var context))
+                    IServiceScope scope = null;
+                    ShellContext context = null;
+
+                    try
                     {
-                        _httpContextAccessor.HttpContext.Update(shell);
+                        (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
+                    }
+
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
+                        return;
+                    }
+
+                    using (scope)
+                    {
+                        _httpContextAccessor.HttpContext.Update(context);
 
                         if (scope == null || !context.IsActivated)
                         {
@@ -135,7 +149,21 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                using (var scope = _shellHost.EnterServiceScope(shell.Settings, out var context))
+                IServiceScope scope = null;
+                ShellContext context = null;
+
+                try
+                {
+                    (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
+                }
+
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
+                    return;
+                }
+
+                using (scope)
                 {
                     if (scope == null || !context.IsActivated)
                     {
@@ -211,9 +239,9 @@ namespace OrchardCore.Modules
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShells()
+        private async Task<IEnumerable<ShellContext>> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.IsActivated).ToArray();
+            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.IsActivated).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
@@ -282,6 +310,11 @@ namespace OrchardCore.Modules
     {
         public static void Update(this HttpContext httpContext, ShellContext shell)
         {
+            if (httpContext == null)
+            {
+                return;
+            }
+
             httpContext.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
             httpContext.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             httpContext.Items["IsBackground"] = true;
