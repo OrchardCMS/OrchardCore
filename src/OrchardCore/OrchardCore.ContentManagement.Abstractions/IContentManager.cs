@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement
@@ -32,7 +33,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets the published content item with the specified id
         /// </summary>
-        /// <param name="id">The id content item id to load</param>
+        /// <param name="id">The content item id to load</param>
         Task<ContentItem> GetAsync(string id);
 
         /// <summary>
@@ -41,6 +42,17 @@ namespace OrchardCore.ContentManagement
         /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
         Task<ContentItem> GetAsync(string id, VersionOptions options);
+
+        /// <summary>
+        /// Gets the published content items with the specified ids
+        /// </summary>
+        /// <param name="contentItemIds">The content item ids to load</param>
+        /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+        /// <remarks>
+        /// This method will always issue a database query.
+        /// This means that it should be used only to get a list of content items that have not been loaded.
+        /// </remarks>
+        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false);
 
         /// <summary>
         /// Gets the content item with the specified version id

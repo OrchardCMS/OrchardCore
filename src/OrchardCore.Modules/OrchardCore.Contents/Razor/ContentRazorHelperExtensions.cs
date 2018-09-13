@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -44,6 +45,18 @@ public static class ContentRazorHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         return contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+    }
+
+    /// <summary>
+    /// Loads a list of content items by their ids.
+    /// </summary>
+    /// <param name="contentItemIds">The content item ids to load.</param>
+    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+    /// <returns>A list of content items with the specific ids.</returns>
+    public static Task<IEnumerable<ContentItem>> GetContentItemsByIdAsync(this IOrchardHelper orchardHelper, IEnumerable<string> contentItemIds, bool latest = false)
+    {
+        var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+        return contentManager.GetAsync(contentItemIds, latest);
     }
 
     /// <summary>
