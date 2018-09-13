@@ -216,7 +216,7 @@ namespace OrchardCore.Setup.Controllers
 
                     if (_clock.UtcNow < expiration.ToUniversalTime())
                     {
-                        if (_shellSettings.Secret.Equals(tokenValue, StringComparison.OrdinalIgnoreCase))
+                        if (_shellSettings.Secret == tokenValue)
                         {
                             return true;
                         }
