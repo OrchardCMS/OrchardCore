@@ -191,3 +191,4 @@ wwwroot
 !src/OrchardCore.Themes/**/wwwroot
 !src/Templates/**/content/**
 .template.config/
+/OrchardCore.sln.GhostDoc.xml
