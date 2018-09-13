@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var contentDelimiter = Location.IndexOf(':');
             if (contentDelimiter == -1)
             {
-                return DefaultPosition;
+                return DefaultPosition ?? "";
             }
 
             var secondDelimiter = Location.IndexOfAny(Delimiters, contentDelimiter + 1);

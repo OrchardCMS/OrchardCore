@@ -11,14 +11,5 @@ public static class ContentRazorHelperExtensions
     {
         return new HtmlString(Markdig.Markdown.ToHtml(markdown));
     }
-
-    /// <summary>
-    /// Converts Markdown string to HTML.
-    /// </summary>
-    /// <param name="markdown">The markdown to convert.</param>
-    public static IHtmlContent MarkdownToHtml(this IOrchardHelper orchardHelper, object markdown)
-    {
-        return orchardHelper.MarkdownToHtml(markdown?.ToString());
-    }
 }
 

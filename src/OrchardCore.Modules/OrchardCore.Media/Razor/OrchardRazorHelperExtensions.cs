@@ -23,14 +23,6 @@ public static class OrchardRazorHelperExtensions
     }
 
     /// <summary>
-    /// Returns the relative URL of the specifier asset path with optional resizing parameters.
-    /// </summary>
-    public static string AssetUrl(this IOrchardHelper orchardHelper, object assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
-    {
-        return orchardHelper.AssetUrl(assetPath.ToString(), width, height, resizeMode);
-    }
-
-    /// <summary>
     /// Returns a URL with custom resizing parameters for an existing image path.
     /// </summary>
     public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
