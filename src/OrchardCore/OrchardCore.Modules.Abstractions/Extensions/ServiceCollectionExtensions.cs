@@ -8,17 +8,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds tag helper services.
         /// </summary>
-        public static IServiceCollection AddTagHelpers(this IServiceCollection services, string assemblyName)
-        {
-            return services.AddTagHelpers(Assembly.Load(new AssemblyName(assemblyName)));
-        }
-
-        /// <summary>
-        /// Adds tag helper services.
-        /// </summary>
         public static IServiceCollection AddTagHelpers(this IServiceCollection services, Assembly assembly)
         {
-            return services.AddSingleton<ITagHelpersProvider>(new AssemblyTagHelpersProvider(assembly));
+            return services.AddTransient<ITagHelpersProvider>(sp => new AssemblyTagHelpersProvider(assembly));
         }
 
         /// <summary>
@@ -26,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddTagHelpers<T>(this IServiceCollection services)
         {
-            return services.AddSingleton<ITagHelpersProvider>(new TagHelpersProvider<T>());
+            return services.AddTransient<ITagHelpersProvider>(sp => new TagHelpersProvider<T>());
         }
     }
 }
