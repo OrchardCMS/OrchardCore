@@ -96,7 +96,7 @@ namespace OrchardCore.Email.Drivers
                 }
 
                 // Reload the tenant to apply the settings
-                _orchardHost.ReloadShellContext(_currentShellSettings);
+                await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
             }
 
             return await EditAsync(section, context);

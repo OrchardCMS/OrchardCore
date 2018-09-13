@@ -34,7 +34,7 @@ namespace OrchardCore.Modules
         public async Task Invoke(HttpContext httpContext)
         {
             // Ensure all ShellContext are loaded and available.
-            _orchardHost.Initialize();
+            await _orchardHost.InitializeAsync();
 
             var shellSettings = _runningShellTable.Match(httpContext);
 
@@ -49,12 +49,14 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
-
                 var hasPendingTasks = false;
-                using (var scope = shellContext.EnterServiceScope())
+
+                // We need to get a scope and the ShellContext that created it
+                var (scope, shellContext) = await _orchardHost.GetScopeAndContextAsync(shellSettings);
+
+                using (scope)
                 {
-                    // Register the shell context as a custom feature.
+                    // Register the shell context as a custom feature
                     httpContext.Features.Set(shellContext);
 
                     if (!shellContext.IsActivated)
@@ -68,7 +70,7 @@ namespace OrchardCore.Modules
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                using (var activatingScope = shellContext.EnterServiceScope())
+                                using (var activatingScope = await _orchardHost.GetScopeAsync(shellSettings))
                                 {
 
                                     var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
@@ -104,13 +106,14 @@ namespace OrchardCore.Modules
                 // Create a new scope only if there are pending tasks
                 if (hasPendingTasks)
                 {
-                    shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
-
-                    using (var scope = shellContext.EnterServiceScope())
+                    using (var pendingScope = await _orchardHost.GetScopeAsync(shellSettings))
                     {
-                        var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                        var context = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(context);
+                        if (pendingScope != null)
+                        {
+                            var deferredTaskEngine = pendingScope.ServiceProvider.GetService<IDeferredTaskEngine>();
+                            var context = new DeferredTaskContext(pendingScope.ServiceProvider);
+                            await deferredTaskEngine.ExecuteTasksAsync(context);
+                        }
                     }
                 }
             }

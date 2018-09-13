@@ -1,4 +1,4 @@
-﻿@model LuceneSettingsViewModel
+@model LuceneSettingsViewModel
 
 
 @if (Model.SearchIndexes.Any())
@@ -22,6 +22,6 @@ else
 <fieldset class="form-group" asp-validation-class-for="SearchFields">
     <label asp-for="SearchFields">@T["Default searched fields"] <span asp-validation-for="SearchFields"></span></label>
     <input asp-for="SearchFields" class="form-control" />
-    <span class="hint">@T["A comma separated list of fields to use for search pages. (e.g., Content.ContentItemMetadata.DisplayText, Content.BodyAspect.Body)"]</span>
+    <span class="hint">@T["A comma separated list of fields to use for search pages. (e.g., Content.ContentItem.DisplayText.Analyzed, Content.BodyAspect.Body)"]</span>
 </fieldset>
 

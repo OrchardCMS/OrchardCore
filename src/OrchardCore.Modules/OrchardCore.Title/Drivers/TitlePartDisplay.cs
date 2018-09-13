@@ -13,7 +13,7 @@ namespace OrchardCore.Title.Drivers
         {
             return Initialize<TitlePartViewModel>("TitlePart", model =>
             {
-                model.Title = titlePart.Title;
+                model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
             })
             .Location("Detail", "Header:5")
@@ -24,7 +24,7 @@ namespace OrchardCore.Title.Drivers
         {
             return Initialize<TitlePartViewModel>("TitlePart_Edit", model =>
             {
-                model.Title = titlePart.Title;
+                model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
 
                 return Task.CompletedTask;
@@ -34,6 +34,8 @@ namespace OrchardCore.Title.Drivers
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+
+            model.ContentItem.DisplayText = model.Title;
 
             return Edit(model);
         }

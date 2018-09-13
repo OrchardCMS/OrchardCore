@@ -201,7 +201,7 @@ namespace OrchardCore.Lists.RemotePublishing
                         array.Add(new XRpcStruct()
                                       .Set("url", context.Url.Action(displayRouteValues["action"].ToString(), displayRouteValues["controller"].ToString(), displayRouteValues, context.HttpContext.Request.Scheme))
                                       .Set("blogid", list.ContentItemId)
-                                      .Set("blogName", metadata.DisplayText));
+                                      .Set("blogName", list.DisplayText));
                     }
                 }
             }
