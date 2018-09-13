@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
+using YesSql;
 
 public static class ContentRazorHelperExtensions
 {
@@ -69,5 +72,27 @@ public static class ContentRazorHelperExtensions
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         return contentManager.GetVersionAsync(contentItemVersionId);
+    }
+
+    /// <summary>
+    /// Query content items.
+    /// </summary>
+    public static async Task<IEnumerable<ContentItem>> QueryContentItemsAsync(this IOrchardHelper orchardHelper, Func<IQuery<ContentItem, ContentItemIndex>, IQuery<ContentItem>> query)
+    {
+        var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+        var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
+
+        var contentItems = await query(session.Query<ContentItem, ContentItemIndex>()).ListAsync();
+
+        return await contentManager.LoadAsync(contentItems);
+    }
+
+    /// <summary>
+    /// Loads content items of a specific type.
+    /// </summary>
+    /// <param name="contentType">The content type to load.</param>
+    public static Task<IEnumerable<ContentItem>> GetRecentContentItemsByContentTypeAsync(this IOrchardHelper orchardHelper, string contentType, int maxContentItems = 10)
+    {
+        return orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true).OrderByDescending(x => x.CreatedUtc).Take(maxContentItems));
     }
 }

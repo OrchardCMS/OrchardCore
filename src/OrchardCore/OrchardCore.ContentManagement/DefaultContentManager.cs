@@ -199,7 +199,7 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
-        private async Task<ContentItem> LoadAsync(ContentItem contentItem)
+        public async Task<ContentItem> LoadAsync(ContentItem contentItem)
         {
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {
