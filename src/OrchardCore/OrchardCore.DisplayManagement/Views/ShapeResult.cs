@@ -50,6 +50,12 @@ namespace OrchardCore.DisplayManagement.Views
 
         private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
         {
+            // If no location is set from the driver, use the one from the context
+            if (String.IsNullOrEmpty(_defaultLocation))
+            {
+                _defaultLocation = context.DefaultLocation;
+            }            
+
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 

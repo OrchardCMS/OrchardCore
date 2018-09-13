@@ -37,7 +37,7 @@ namespace OrchardCore.Html.Drivers
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition));
+            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition)).Location("Aside");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
