@@ -364,7 +364,7 @@ namespace OrchardCore.Environment.Shell
         {
             var shells = _shellContexts?.Values.ToArray();
 
-            if (shells == null || shells.Count() < 1)
+            if (shells == null || shells.Length == 0)
             {
                 return Enumerable.Empty<ShellContext>();
             }
