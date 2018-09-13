@@ -53,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Views
             // If no location is set from the driver, use the one from the context
             if (String.IsNullOrEmpty(_defaultLocation))
             {
-                _defaultLocation = context.DefaultLocation;
+                _defaultLocation = context.DefaultZone;
             }            
 
             // Look into specific implementations of placements (like placement.info files)
@@ -74,12 +74,19 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 placement = new PlacementInfo() { Location = _defaultLocation };
             }
-            else if (placement.Location == null)
+
+            if (placement.Location == null)
             {
                 // If a placement was found without actual location, use the default.
                 // It can happen when just setting alternates or wrappers for instance.
                 placement.Location = _defaultLocation;
             }
+
+            if (placement.DefaultPosition == null)
+            {
+                placement.DefaultPosition = context.DefaultPosition;
+            }
+            
 
             // If there are no placement or it's explicitely noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
