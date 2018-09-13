@@ -1,0 +1,53 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+}
+
+<style name="fontpickerStyle" at="Head" asp-src="/OrchardCore.ContentFields/Styles/fontawesome-iconpicker-min.css" debug-src="/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.css"></style>
+<style name="fontpickerCustomStyle" at="Head" asp-src="/OrchardCore.ContentFields/Styles/iconpicker-custom.css"></style>
+<script asp-name="bootstrap" at="Foot"></script>
+<script name="fontpickerScript" asp-src="/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot"></script>
+<script name="iconpickerCustomScript" asp-src="/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot"></script>
+
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <input type="hidden" asp-for="Text" id="@Html.IdFor(m=>m.Text)" />
+    <div class="btn-group input-group">
+        <button type="button" class="btn btn-primary iconpicker-component">
+            <i class="fa fa-fw fa-heart"></i>
+        </button>
+        <button type="button" id="@Html.IdForModel()" class="icp icp-dd btn btn-primary dropdown-toggle" data-selected="fa-car" data-toggle="dropdown">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <div class="dropdown-menu"></div>
+    </div>
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+
+</fieldset>
+
+
+<script at="Foot">
+
+    $(function () {
+
+        $('#@Html.IdForModel()').iconpicker();
+
+        var storedIcon = $('#@Html.IdFor(m=>m.Text)').val();
+        if (storedIcon.length > 0) {
+            $('#@Html.IdForModel()').data('iconpicker').update(storedIcon);
+        }
+
+        $('#@Html.IdForModel()').on('iconpickerSelected', function (e) {
+            $('#@Html.IdFor(m=>m.Text)').val(e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue));
+        });
+    });
+
+</script>
