@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var storeConfiguration = new YesSql.Configuration();
 
                     // Disabling query gating as it's failing to improve performance right now
-                    storeConfiguration.DisableQueryGating();
+                    //storeConfiguration.DisableQueryGating();
 
                     switch (shellSettings.DatabaseProvider)
                     {
@@ -80,7 +80,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     var store = new Store(storeConfiguration);
                     var indexes = sp.GetServices<IIndexProvider>();
-                    store.RegisterIndexes(indexes.ToArray());
+
+                    store.RegisterIndexes(indexes);
+
                     return store;
                 });
 
@@ -94,6 +96,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var session = store.CreateSession();
+
+                    var scopedServices = sp.GetServices<IScopedIndexProvider>();
+
+                    session.RegisterIndexes(scopedServices.ToArray());
 
                     return session;
                 });

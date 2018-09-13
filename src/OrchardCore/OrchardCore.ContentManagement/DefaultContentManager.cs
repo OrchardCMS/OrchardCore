@@ -312,6 +312,7 @@ namespace OrchardCore.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
+            buildingContentItem.DisplayText = existingContentItem.DisplayText;
             buildingContentItem.Latest = true;
             buildingContentItem.Data = new JObject(existingContentItem.Data);
 
@@ -321,11 +322,6 @@ namespace OrchardCore.ContentManagement
             await ReversedHandlers.InvokeAsync(async handler => await handler.VersionedAsync(context), _logger);
 
             return context.BuildingContentItem;
-        }
-
-        public Task CreateAsync(ContentItem contentItem)
-        {
-            return CreateAsync(contentItem, VersionOptions.Published);
         }
 
         public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
@@ -364,6 +360,16 @@ namespace OrchardCore.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(publishContext), _logger);
             }
+        }
+
+        public async Task UpdateAsync(ContentItem contentItem)
+        {
+            var context = new UpdateContentContext(contentItem);
+
+            await Handlers.InvokeAsync(async handler => await handler.UpdatingAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.UpdatedAsync(context), _logger);
+
+            _session.Save(contentItem);
         }
 
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)

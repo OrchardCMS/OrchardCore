@@ -167,7 +167,7 @@ For example, if you have a workflow that starts with the **Content Created Event
 ```liquid
 {{ Workflow.Input.ContentItem | display_url }}
 {{ Workflow.Input.ContentItem | display_text }}
-{{ Workflow.Input.ContentItem.Content.TitlePart.Title }}
+{{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
 For more examples of supported content item filters, see documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
