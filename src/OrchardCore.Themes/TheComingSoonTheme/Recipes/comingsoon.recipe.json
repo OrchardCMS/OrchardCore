@@ -42,6 +42,7 @@
         "OrchardCore.Html",
         "OrchardCore.Scripting",
         "OrchardCore.Localization",
+        "OrchardCore.Navigation",
         "OrchardCore.Title",
         "OrchardCore.Roles",
         "OrchardCore.Users",
