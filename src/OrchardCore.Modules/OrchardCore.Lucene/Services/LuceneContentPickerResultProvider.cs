@@ -22,10 +22,11 @@ namespace OrchardCore.Lucene.Services
         {
             var indexName = "Search";
 
-            if (!string.IsNullOrWhiteSpace(searchContext.IndexName))
-            {
-                indexName = searchContext.IndexName;
-            }
+            //var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<>();
+            //if (!string.IsNullOrWhiteSpace(fieldSettings.IndexName))
+            //{
+            //    indexName = searchContext.IndexName;
+            //}
 
             if (!_luceneIndexProvider.Exists(indexName))
             {

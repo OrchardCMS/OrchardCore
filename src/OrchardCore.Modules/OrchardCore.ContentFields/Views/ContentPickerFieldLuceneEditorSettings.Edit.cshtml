@@ -1,0 +1,11 @@
+@model OrchardCore.ContentFields.Settings.ContentPickerFieldLuceneEditorSettings
+
+<div class="field-editor field-editor-lucene">
+    <fieldset class="form-group">
+        <div class="row col-sm-6">
+            <label asp-for="SearchIndex">@T["Search Index"]</label>
+            <input asp-for="SearchIndex" type="text" class="form-control" />
+            <span class="hint">@T["The search index to use for Lucene results."]</span>
+        </div>
+    </fieldset>
+</div>

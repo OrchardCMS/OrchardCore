@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement
 {
@@ -12,8 +13,8 @@ namespace OrchardCore.ContentManagement
     public class ContentPickerSearchContext
     {
         public string Query { get; set; }
-        public string IndexName { get; set; }
         public IEnumerable<string> ContentTypes { get; set; }
+        public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     }
 
     public class ContentPickerResult

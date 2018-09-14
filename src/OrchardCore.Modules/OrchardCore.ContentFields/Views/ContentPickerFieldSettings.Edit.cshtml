@@ -43,18 +43,10 @@
     </div>
 </fieldset>
 
-<fieldset class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="SearchResultProvider">@T["Search Result Provider"]</label>
-        <select asp-for="SearchResultProvider" asp-items="resultProviderItems" class="form-control"></select>
-        <span class="hint">@T["The search result provider to use when selecting content items."]</span>
-    </div>
-</fieldset>
-
-<fieldset class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="SearchIndex">@T["Search Index"]</label>
-        <input asp-for="SearchIndex" type="text" class="form-control" />
-        <span class="hint">@T["The search index to use when using the Lucene provider."]</span>
-    </div>
-</fieldset>
+@*<fieldset class="form-group">
+        <div class="row col-sm-6">
+            <label asp-for="SearchResultProvider">@T["Search Result Provider"]</label>
+            <select asp-for="SearchResultProvider" asp-items="resultProviderItems" class="form-control"></select>
+            <span class="hint">@T["The search result provider to use when selecting content items."]</span>
+        </div>
+    </fieldset>*@

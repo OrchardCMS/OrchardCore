@@ -29,10 +29,10 @@ namespace OrchardCore.Content.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var fieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
-            var fieldSettings = fieldDefinition?.Settings.ToObject<ContentPickerFieldSettings>();
+            var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
             if (fieldSettings == null)
             {
                 return BadRequest("Unable to find field definition");
@@ -48,7 +48,7 @@ namespace OrchardCore.Content.Controllers
             {
                 Query = query,
                 ContentTypes = fieldSettings.DisplayedContentTypes,
-                IndexName = fieldSettings.SearchIndex
+                PartFieldDefinition = partFieldDefinition
             });
 
             return new ObjectResult(results);
