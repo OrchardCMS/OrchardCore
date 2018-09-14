@@ -7,6 +7,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Lucene.Drivers;
@@ -97,6 +98,7 @@ namespace OrchardCore.Lucene
         {
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
+            services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
         }
     }
 }
