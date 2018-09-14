@@ -74,6 +74,18 @@ namespace OrchardCore.Environment.Shell
             set { _values["ConnectionString"] = value; }
         }
 
+        public string RecipeName
+        {
+            get { return this["RecipeName"]; }
+            set { _values["RecipeName"] = value; }
+        }
+
+        public string Secret
+        {
+            get { return this["Secret"]; }
+            set { _values["Secret"] = value; }
+        }
+        
         public TenantState State
         {
             get => _tenantState;
