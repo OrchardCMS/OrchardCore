@@ -8,11 +8,9 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -42,9 +40,7 @@ namespace OrchardCore.ContentFields.Fields
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 model.Updater = context.Updater;
                 model.SelectedContentItemIds = string.Join(",", field.ContentItemIds);
-                model.ContentItems = await _session.Query<ContentItem, ContentItemIndex>()
-                    .With<ContentItemIndex>(x => x.ContentItemId.IsIn(field.ContentItemIds) && x.Published)
-                    .ListAsync();
+                model.ContentItems = await _contentManager.GetAsync(field.ContentItemIds);
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
