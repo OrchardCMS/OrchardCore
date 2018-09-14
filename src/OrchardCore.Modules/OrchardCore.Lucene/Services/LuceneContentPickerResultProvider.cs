@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lucene.Settings;
 
 namespace OrchardCore.Lucene.Services
 {
@@ -22,11 +23,11 @@ namespace OrchardCore.Lucene.Services
         {
             var indexName = "Search";
 
-            //var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<>();
-            //if (!string.IsNullOrWhiteSpace(fieldSettings.IndexName))
-            //{
-            //    indexName = searchContext.IndexName;
-            //}
+            var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldLuceneEditorSettings>();
+            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
+            {
+                indexName = fieldSettings.Index;
+            }
 
             if (!_luceneIndexProvider.Exists(indexName))
             {

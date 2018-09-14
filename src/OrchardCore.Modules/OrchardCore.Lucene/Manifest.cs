@@ -28,9 +28,9 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Lucene.ContentPickerSearchProvider",
-    Name = "Lucene Content Picker Search Provider",
-    Description = "Provides search results from a Lucene index for content picker fields.",
+    Id = "OrchardCore.Lucene.ContentPicker",
+    Name = "Lucene Content Picker",
+    Description = "Provides a Lucene content picker field editor.",
     Dependencies = new[] { "OrchardCore.Lucene", "OrchardCore.ContentFields" },
     Category = "Content Management"
 )]

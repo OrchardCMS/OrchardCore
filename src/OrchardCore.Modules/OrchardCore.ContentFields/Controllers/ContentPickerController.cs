@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Content.Controllers
 {
@@ -32,13 +33,14 @@ namespace OrchardCore.Content.Controllers
             var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
-            var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
+            var fieldSettings = partFieldDefinition?.Settings.ToObject<ContentPickerFieldSettings>();
             if (fieldSettings == null)
             {
                 return BadRequest("Unable to find field definition");
             }
 
-            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == fieldSettings.SearchResultProvider);
+            var editor = partFieldDefinition.Editor() ?? "Default";
+            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor);
             if (resultProvider == null)
             {
                 return new ObjectResult(new List<ContentPickerResult>());

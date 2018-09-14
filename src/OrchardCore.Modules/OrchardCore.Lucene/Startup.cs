@@ -32,7 +32,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneIndexingState>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
-            
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -90,12 +90,13 @@ namespace OrchardCore.Lucene
         }
     }
 
-    [Feature("OrchardCore.Lucene.ContentPickerSearchProvider")]
+    [Feature("OrchardCore.Lucene.ContentPicker")]
     public class LuceneContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
         }
     }
 }
