@@ -85,6 +85,7 @@ namespace OrchardCore.Environment.Shell
             get { return this["Secret"]; }
             set { _values["Secret"] = value; }
         }
+        
         public TenantState State
         {
             get => _tenantState;
