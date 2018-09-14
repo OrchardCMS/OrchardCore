@@ -84,6 +84,9 @@ namespace OrchardCore.Mvc.LocationExpander
                 {
                     if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/", StringComparison.Ordinal))
                     {
+                        yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal)
+                            + "/Pages/".Length) + "/Shared/{0}" + RazorViewEngine.ViewExtension;
+
                         yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal))
                             + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
                     }
