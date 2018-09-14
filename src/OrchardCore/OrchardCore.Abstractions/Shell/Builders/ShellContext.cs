@@ -36,7 +36,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         {
             var scope = new ServiceScopeWrapper(this);
 
-            // A newly created disabled shell has a null service provider.
+            // A new scope can be only used on a non released shell.
             if (!_released)
             {
                 return scope;
@@ -192,11 +192,6 @@ namespace OrchardCore.Hosting.ShellBuilders
                 ServiceProvider = _serviceScope.ServiceProvider;
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                if (httpContextAccessor.HttpContext == null)
-                {
-                    httpContextAccessor.HttpContext = new DefaultHttpContext();
-                }
 
                 _httpContext = httpContextAccessor.HttpContext;
                 _existingServices = _httpContext.RequestServices;

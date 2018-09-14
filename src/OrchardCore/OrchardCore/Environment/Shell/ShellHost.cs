@@ -32,7 +32,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _scopeSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -363,20 +362,26 @@ namespace OrchardCore.Environment.Shell
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {
+            var shells = _shellContexts?.Values.ToArray();
+
+            if (shells == null || shells.Length == 0)
+            {
+                return Enumerable.Empty<ShellContext>();
+            }
+
             var shellContexts = new List<ShellContext>();
 
-            foreach(var shellContext in _shellContexts.Values.ToArray())
+            foreach (var shell in shells)
             {
-                if (!shellContext.Released)
+                if (!shell.Released)
                 {
-                    shellContexts.Add(shellContext);
+                    shellContexts.Add(shell);
                 }
                 else
                 {
-                    shellContexts.Add(await GetOrCreateShellContextAsync(shellContext.Settings));
+                    shellContexts.Add(await GetOrCreateShellContextAsync(shell.Settings));
                 }
             }
-
 
             return shellContexts;
         }
