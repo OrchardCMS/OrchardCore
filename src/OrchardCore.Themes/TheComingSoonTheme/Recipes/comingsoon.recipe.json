@@ -1,6 +1,6 @@
 {
   "name": "ComingSoon",
-  "displayName": "ComingSoon",
+  "displayName": "Coming Soon",
   "description": "Coming Soon website.",
   "author": "The Orchard Team",
   "website": "http://orchardproject.net",
@@ -21,7 +21,6 @@
       "disable": [
       ],
       "enable": [
-        "OrchardCore.Cms.Web",
         "OrchardCore.Settings",
         "OrchardCore.Admin",
         "OrchardCore.Liquid",
@@ -38,18 +37,21 @@
         "OrchardCore.Features",
         "OrchardCore.Widgets",
         "OrchardCore.Flows",
+        "OrchardCore.Forms",
         "OrchardCore.HomeRoute",
         "OrchardCore.Html",
         "OrchardCore.Scripting",
         "OrchardCore.Localization",
-        "OrchardCore.Navigation",
         "OrchardCore.Title",
+        "OrchardCore.Navigation",
         "OrchardCore.Roles",
         "OrchardCore.Users",
         "OrchardCore.Recipes",
         "OrchardCore.Templates",
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
+        "OrchardCore.Workflows",
+        "OrchardCore.Workflows.Http",
         "SafeMode",
         "TheAdmin",
         "TheComingSoonTheme",
@@ -139,7 +141,7 @@
                     "Text": "fa fa-facebook"
                   },
                   "Link": {
-                    "Url": null,
+                    "Url": "https://facebook.com",
                     "Text": "Facebook"
                   }
                 },
@@ -164,7 +166,7 @@
                     "Text": "fa fa-instagram"
                   },
                   "Link": {
-                    "Url": null,
+                    "Url": "https://instagram.com",
                     "Text": "Instagram"
                   }
                 },
@@ -304,6 +306,202 @@
           "Content": "[file:text('Snippets/comingsoon.liquid')]"
         }
       }
+    },
+    {
+      "name": "WorkflowType",
+      "data": [
+        {
+          "WorkflowTypeId": "4856b5kc0hd613crqynq4z18n5",
+          "Name": "User Registration",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "426zsv4abp93qv40cyqpkskpnc",
+              "Name": "HttpRequestEvent",
+              "X": 0,
+              "Y": 0,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Handle User Registration"
+                },
+                "HttpMethod": "POST",
+                "Url": "/comingsoon/Workflows/Invoke?token=CfDJ8DCCAYoU4epDsJeJ60Y60YgcG4YczxrePOg6Or4V8IYhoQG4U_BTeYtbtA6YK7WHnfN_Luro13hhXJOP9bBVECKR2vAxqf7WG7UELU66Rot4jySEcRhOxQboJATRETEnTsJbaCbQi7JJAfJf149fDNLy0HiJcvt2uR0rCnV2eoAHpSg0tHZ9WkLPnq574enyucSAzeL1uN63DjUB9BRidtH5PR_VA1PDXQjff-yar0PR",
+                "ValidateAntiforgeryToken": true
+              }
+            },
+            {
+              "ActivityId": "4gq1ch13zvjb56rrng70w55cmz",
+              "Name": "BindModelStateTask",
+              "X": 300,
+              "Y": 0,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Bind Form to Model State"
+                }
+              }
+            },
+            {
+              "ActivityId": "4whqxbdn0d42524swmh49era4x",
+              "Name": "ForkTask",
+              "X": 660,
+              "Y": 10,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Validate Form Fields"
+                },
+                "Forks": [
+                  "Validate Email",
+                  "Validate NoCaptcha"
+                ]
+              }
+            },
+            {
+              "ActivityId": "4rrw4wj985j05sns4h4m35vk53",
+              "Name": "ValidateFormFieldTask",
+              "X": 370,
+              "Y": 90,
+              "IsStart": false,
+              "Properties": {
+                "FieldName": "Email",
+                "ErrorMessage": "this is not a valid email",
+                "ActivityMetadata": {
+                  "Title": "Validate Email"
+                }
+              }
+            },
+            {
+              "ActivityId": "45gqn0c34pnzv0e0z5anc3dpmk",
+              "Name": "ValidateNoCaptchaTask",
+              "X": 1090,
+              "Y": 90,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                }
+              }
+            },
+            {
+              "ActivityId": "44sfg8spe6xfg67t4arp5wbedn",
+              "Name": "JoinTask",
+              "X": 610,
+              "Y": 220,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Join Validated Form Fields"
+                },
+                "Mode": 0
+              }
+            },
+            {
+              "ActivityId": "4pa4dakwbjt3w401sz726yg0ce",
+              "Name": "ValidateFormTask",
+              "X": 760,
+              "Y": 430,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                }
+              }
+            },
+            {
+              "ActivityId": "4bgxznwjcwz63tnftf001984mv",
+              "Name": "NotifyTask",
+              "X": 440,
+              "Y": 430,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Notify Error"
+                },
+                "NotificationType": 3,
+                "Message": {
+                  "Expression": "Could not register"
+                }
+              }
+            },
+            {
+              "ActivityId": "4ta0ndnzj91gdybah5mbyk90dy",
+              "Name": "NotifyTask",
+              "X": 1080,
+              "Y": 430,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Thank You"
+                },
+                "NotificationType": 0,
+                "Message": {
+                  "Expression": "Thank you."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "Id": 0,
+              "SourceActivityId": "426zsv4abp93qv40cyqpkskpnc",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4gq1ch13zvjb56rrng70w55cmz"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4gq1ch13zvjb56rrng70w55cmz",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4whqxbdn0d42524swmh49era4x"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4whqxbdn0d42524swmh49era4x",
+              "SourceOutcomeName": "Validate NoCaptcha",
+              "DestinationActivityId": "45gqn0c34pnzv0e0z5anc3dpmk"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4whqxbdn0d42524swmh49era4x",
+              "SourceOutcomeName": "Validate Email",
+              "DestinationActivityId": "4rrw4wj985j05sns4h4m35vk53"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4rrw4wj985j05sns4h4m35vk53",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "44sfg8spe6xfg67t4arp5wbedn"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "45gqn0c34pnzv0e0z5anc3dpmk",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "44sfg8spe6xfg67t4arp5wbedn"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "44sfg8spe6xfg67t4arp5wbedn",
+              "SourceOutcomeName": "Joined",
+              "DestinationActivityId": "4pa4dakwbjt3w401sz726yg0ce"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
+              "SourceOutcomeName": "Invalid",
+              "DestinationActivityId": "4bgxznwjcwz63tnftf001984mv"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
+              "SourceOutcomeName": "Valid",
+              "DestinationActivityId": "4ta0ndnzj91gdybah5mbyk90dy"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
