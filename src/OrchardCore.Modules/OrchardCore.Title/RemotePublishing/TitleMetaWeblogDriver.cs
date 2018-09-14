@@ -1,4 +1,4 @@
-﻿using System.Text.Encodings.Web;
+using System.Text.Encodings.Web;
 using OrchardCore.ContentManagement;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;

@@ -135,7 +135,7 @@ namespace OrchardCore.OpenId.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 

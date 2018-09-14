@@ -45,7 +45,7 @@ namespace OrchardCore.Forms.Drivers
                     section.SiteSecret = model.SiteSecret?.Trim();
 
                     // Reload tenant to apply settings.
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 

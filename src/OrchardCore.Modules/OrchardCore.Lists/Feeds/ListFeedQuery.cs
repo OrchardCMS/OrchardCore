@@ -61,7 +61,7 @@ namespace OrchardCore.Lists.Feeds
             if (context.Format == "rss")
             {
                 var link = new XElement("link");
-                context.Response.Element.SetElementValue("title", contentItemMetadata.DisplayText);
+                context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
                 if (bodyAspect.Body != null)
@@ -79,7 +79,7 @@ namespace OrchardCore.Lists.Feeds
             }
             else
             {
-                context.Builder.AddProperty(context, null, "title", contentItemMetadata.DisplayText);
+                context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
 
                 if (bodyAspect.Body != null)
                 {
