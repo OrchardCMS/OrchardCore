@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
-using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Modules;
 

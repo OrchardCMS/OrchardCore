@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Modules
+namespace OrchardCore
 {
     public class DefaultOrchardHelper : IOrchardHelper
     {

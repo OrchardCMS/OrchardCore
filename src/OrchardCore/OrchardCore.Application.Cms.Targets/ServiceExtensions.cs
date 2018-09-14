@@ -43,7 +43,11 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(s =>
             {
                 s.AddResourceManagement();
-                s.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
+                s.AddTagHelpers<LinkTagHelper>();
+                s.AddTagHelpers<MetaTagHelper>();
+                s.AddTagHelpers<ResourcesTagHelper>();
+                s.AddTagHelpers<ScriptTagHelper>();
+                s.AddTagHelpers<StyleTagHelper>();
 
                 s.Configure<MvcOptions>((options) =>
                 {

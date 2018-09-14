@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Antiforgery" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.AspNetCore.Http" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />    
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" />
