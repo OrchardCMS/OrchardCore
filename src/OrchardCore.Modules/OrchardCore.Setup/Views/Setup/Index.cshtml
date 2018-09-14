@@ -91,7 +91,7 @@
                 <input type="hidden" asp-for="RecipeName" required />
                 <nav>
                     <div asp-validation-class-for="RecipeName">
-                        <label asp-for="SiteName">@T["Recipe"]</label>
+                        <label asp-for="RecipeName">@T["Recipe"]</label>
                         @if (defaultRecipe == null)
                         {
                             <div id="noRecipes" class="dropdown disabled">
