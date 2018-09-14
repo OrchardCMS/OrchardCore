@@ -164,7 +164,8 @@ namespace OrchardCore.Media
             // MIME types
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
-            services.AddTagHelpers(typeof(ImageTagHelper).Assembly);
+            services.AddTagHelpers<ImageTagHelper>();
+            services.AddTagHelpers<ImageResizeTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

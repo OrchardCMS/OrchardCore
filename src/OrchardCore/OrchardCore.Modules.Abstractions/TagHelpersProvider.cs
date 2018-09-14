@@ -8,21 +8,29 @@ namespace OrchardCore.Modules
 {
     public interface ITagHelpersProvider
     {
-        IEnumerable<TypeInfo> Types { get; }
+        IEnumerable<Type> GetTypes();
     }
 
-    public class TagHelpersProvider : ITagHelpersProvider
+    public class AssemblyTagHelpersProvider : ITagHelpersProvider
     {
-        public TagHelpersProvider(Assembly assembly)
+        private readonly Assembly _assembly;
+
+        public AssemblyTagHelpersProvider(Assembly assembly)
         {
             if (assembly == null)
             {
                 throw new ArgumentNullException(nameof(assembly));
             }
 
-            Types = assembly.ExportedTypes.Select(t => t.GetTypeInfo()).Where(t => t.IsSubclassOf(typeof(TagHelper)));
+            _assembly = assembly;
         }
 
-        public IEnumerable<TypeInfo> Types { get; }
+        public IEnumerable<Type> GetTypes() => _assembly.ExportedTypes.Where(t => t.IsSubclassOf(typeof(TagHelper)));
+
+    }
+
+    public class TagHelpersProvider<T> : ITagHelpersProvider
+    {
+        public IEnumerable<Type> GetTypes() => new Type[] { typeof(T) };
     }
 }

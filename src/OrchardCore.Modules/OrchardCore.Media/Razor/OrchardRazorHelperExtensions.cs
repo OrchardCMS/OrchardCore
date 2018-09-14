@@ -5,7 +5,10 @@ using OrchardCore.Media.Processing;
 
 public static class OrchardRazorHelperExtensions
 {
-    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath)
+    /// <summary>
+    /// Returns the relative URL of the specifier asset path with optional resizing parameters.
+    /// </summary>
+    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
@@ -14,15 +17,14 @@ public static class OrchardRazorHelperExtensions
             return assetPath;
         }
 
-        return mediaFileStore.MapPathToPublicUrl(assetPath);
-    }
+        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
 
-    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
-    {
-        var resolvedAssetPath = orchardHelper.AssetUrl(assetPath);
         return orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode);
     }
 
+    /// <summary>
+    /// Returns a URL with custom resizing parameters for an existing image path.
+    /// </summary>
     public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
     {
         return ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, width, height, resizeMode);
