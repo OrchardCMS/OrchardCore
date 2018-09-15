@@ -8,8 +8,7 @@ namespace OrchardCore.Demo.Controllers
         [Route("Demo/Index")]
         public IActionResult Index()
         {
-            //return Content("Index content");
-            return View();
+            return Content("Index content");
         }
         [Route("Demo/About")]
         public IActionResult About()

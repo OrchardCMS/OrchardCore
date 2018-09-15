@@ -2,11 +2,6 @@
 @model DemoModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
 
-@{ 
-    //Layout = "../Views/Shared/_Layout.cshtml";
-    //Layout = "_Layout";
-}
-
 @functions
 {
     public class DemoModel : PageModel
@@ -26,9 +21,6 @@
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
 <p>
     @T[Model.Message]
-</p>
-<p>
-@await Html.PartialAsync("Test")
 </p>
 <p>
     Date using the DateTimeShape: @await DisplayAsync(await New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
