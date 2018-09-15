@@ -92,8 +92,18 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
+            // When using relative paths in an application's '_ViewStart', the resolved paths are not under
+            // the virtual application's module but under the root, so here we serve these razor views paths.
+            
+            // "Pages/**/*.*" - "Views/**/*.*".
+            if (path.StartsWith("Pages/", StringComparison.Ordinal) || path.StartsWith("Views/", StringComparison.Ordinal))
+            {
+                // Serve the file from the physical application root folder.
+                return new PhysicalFileInfo(new FileInfo(Application.Root + path));
+            }
+
             // ".Modules/{ApplicationName}/**/*.*".
-            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
+            else if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
@@ -114,8 +124,18 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(filter);
 
+            // When using relative paths in an application's '_ViewStart', the resolved paths are not under
+            // the virtual application's module but under the root, so here we watch these razor views paths.
+
+            // "Pages/**/*.*" - "Views/**/*.*".
+            if (path.StartsWith("Pages/", StringComparison.Ordinal) || path.StartsWith("Views/", StringComparison.Ordinal))
+            {
+                // Watch the application file from the physical application root folder.
+                return new PollingFileChangeToken(new FileInfo(Application.Root + path));
+            }
+
             // ".Modules/{ApplicationName}/**/*.*".
-            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
+            else if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
@@ -127,7 +147,7 @@ namespace OrchardCore.Modules
             // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
             // So here, we use a file provider to only watch the application "Pages" folder.
 
-            if (path.Equals("**/*.cshtml"))
+            else if (path.Equals("**/*.cshtml"))
             {
                 return _pageFileProvider.Watch("Pages/**/*.cshtml");
             }
