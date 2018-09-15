@@ -92,26 +92,26 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            // When using relative paths in an application's '_ViewStart', the resolved paths are not under
-            // the virtual application's module but under the root, so here we serve these razor views paths.
-
-            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
-            if (path.StartsWith("Views/", StringComparison.Ordinal) ||
-                path.StartsWith("Pages/", StringComparison.Ordinal) ||
-                path.StartsWith("Areas/", StringComparison.Ordinal))
-            {
-                // Serve the file from the physical application root folder.
-                return new PhysicalFileInfo(new FileInfo(Application.Root + path));
-            }
-
             // ".Modules/{ApplicationName}/**/*.*".
-            else if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
+            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
 
                 // And serve the file from the physical application root folder.
                 return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
+            }
+
+            // We still serve the standard fallbacks of views locations from the root,
+            // this even they are not requested under the virtual application's module.
+
+            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
+            else if (path.StartsWith("Views/", StringComparison.Ordinal) ||
+                path.StartsWith("Pages/", StringComparison.Ordinal) ||
+                path.StartsWith("Areas/", StringComparison.Ordinal))
+            {
+                // Serve the file from the physical application root folder.
+                return new PhysicalFileInfo(new FileInfo(Application.Root + path));
             }
 
             return new NotFoundFileInfo(subpath);
@@ -126,20 +126,8 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(filter);
 
-            // When using relative paths in an application's '_ViewStart', the resolved paths are not under
-            // the virtual application's module but under the root, so here we watch these razor views paths.
-
-            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
-            if (path.StartsWith("Views/", StringComparison.Ordinal) ||
-                path.StartsWith("Pages/", StringComparison.Ordinal) ||
-                path.StartsWith("Areas/", StringComparison.Ordinal))
-            {
-                // Watch the application file from the physical application root folder.
-                return new PollingFileChangeToken(new FileInfo(Application.Root + path));
-            }
-
             // ".Modules/{ApplicationName}/**/*.*".
-            else if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
+            if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
                 var fileSubPath = path.Substring(Application.ModuleRoot.Length);
@@ -154,6 +142,18 @@ namespace OrchardCore.Modules
             else if (path.Equals("**/*.cshtml"))
             {
                 return _pageFileProvider.Watch("Pages/**/*.cshtml");
+            }
+
+            // We still watch the standard fallbacks of views locations from the root,
+            // this even they are not requested under the virtual application's module.
+
+            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
+            else if (path.StartsWith("Views/", StringComparison.Ordinal) ||
+                path.StartsWith("Pages/", StringComparison.Ordinal) ||
+                path.StartsWith("Areas/", StringComparison.Ordinal))
+            {
+                // Watch the application file from the physical application root folder.
+                return new PollingFileChangeToken(new FileInfo(Application.Root + path));
             }
 
             return NullChangeToken.Singleton;
