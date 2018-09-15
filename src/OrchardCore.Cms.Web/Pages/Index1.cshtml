@@ -1,31 +1,14 @@
 @page
-@model DemoModel
-@using Microsoft.AspNetCore.Mvc.RazorPages
+
+@functions {
+public string Name {get;set;}
+}
+
 
 @{ 
-    Layout = "../Views/Shared/_Layout.cshtml";
+    //Layout = "../Views/Shared/_Layout.cshtml";
+    //Layout = "_Layout";
 }
 
-@functions
-{
-    public class DemoModel : PageModel
-    {
-        public string Title { get; set; }
-        public string Message { get; private set; }
 
-        public void OnGet()
-        {
-            Title = "This is a RazorPage coming from the application!";
-            Message = $"Date and time on the server: { DateTime.Now.ToString() }";
-        }
-    }
-}
-
-<p>
-@await Html.PartialAsync("Foo")
-</p>
-
-<h2>Test123: Hello from @ViewContext.RouteData.Values["page"]</h2>
-<p>
-    @Model.Message
-</p>
+Hello

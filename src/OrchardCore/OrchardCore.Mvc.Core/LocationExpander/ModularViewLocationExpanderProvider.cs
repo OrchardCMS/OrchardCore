@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.Mvc.LocationExpander
@@ -17,16 +19,19 @@ namespace OrchardCore.Mvc.LocationExpander
         private static IList<IExtensionInfo> _modulesWithComponentViews;
         private static object _synLock = new object();
 
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IExtensionManager _extensionManager;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IMemoryCache _memoryCache;
 
         public ModularViewLocationExpanderProvider(
+            IHostingEnvironment hostingEnvironment,
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
             IMemoryCache memoryCache)
         {
+            _hostingEnvironment = hostingEnvironment;
             _extensionManager = extensionManager;
             _shellDescriptor = shellDescriptor;
             _memoryCache = memoryCache;
@@ -87,8 +92,14 @@ namespace OrchardCore.Mvc.LocationExpander
                         yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal)
                             + "/Pages/".Length) + "/Shared/{0}" + RazorViewEngine.ViewExtension;
 
+                        yield return '/' + Application.ModulesRoot + _hostingEnvironment.ApplicationName +
+                            "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
+
                         yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal))
                             + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+
+                        yield return '/' + Application.ModulesRoot + _hostingEnvironment.ApplicationName +
+                            "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
                     }
                 }
             }
@@ -109,6 +120,9 @@ namespace OrchardCore.Mvc.LocationExpander
             if (!context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
             {
                 result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+
+                result.Add('/' + Application.ModulesRoot + _hostingEnvironment.ApplicationName
+                    + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
             }
             else
             {

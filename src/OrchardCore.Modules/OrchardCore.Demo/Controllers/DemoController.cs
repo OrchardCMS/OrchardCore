@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Demo.Controllers
 {
@@ -8,7 +8,8 @@ namespace OrchardCore.Demo.Controllers
         [Route("Demo/Index")]
         public IActionResult Index()
         {
-            return Content("Index content");
+            //return Content("Index content");
+            return View();
         }
         [Route("Demo/About")]
         public IActionResult About()
