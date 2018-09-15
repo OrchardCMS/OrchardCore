@@ -94,9 +94,11 @@ namespace OrchardCore.Modules
 
             // When using relative paths in an application's '_ViewStart', the resolved paths are not under
             // the virtual application's module but under the root, so here we serve these razor views paths.
-            
-            // "Pages/**/*.*" - "Views/**/*.*".
-            if (path.StartsWith("Pages/", StringComparison.Ordinal) || path.StartsWith("Views/", StringComparison.Ordinal))
+
+            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
+            if (path.StartsWith("Views/", StringComparison.Ordinal) ||
+                path.StartsWith("Pages/", StringComparison.Ordinal) ||
+                path.StartsWith("Areas/", StringComparison.Ordinal))
             {
                 // Serve the file from the physical application root folder.
                 return new PhysicalFileInfo(new FileInfo(Application.Root + path));
@@ -127,8 +129,10 @@ namespace OrchardCore.Modules
             // When using relative paths in an application's '_ViewStart', the resolved paths are not under
             // the virtual application's module but under the root, so here we watch these razor views paths.
 
-            // "Pages/**/*.*" - "Views/**/*.*".
-            if (path.StartsWith("Pages/", StringComparison.Ordinal) || path.StartsWith("Views/", StringComparison.Ordinal))
+            // "Views/**/*.*" - "Pages/**/*.*" - "Areas/**/*.*".
+            if (path.StartsWith("Views/", StringComparison.Ordinal) ||
+                path.StartsWith("Pages/", StringComparison.Ordinal) ||
+                path.StartsWith("Areas/", StringComparison.Ordinal))
             {
                 // Watch the application file from the physical application root folder.
                 return new PollingFileChangeToken(new FileInfo(Application.Root + path));
