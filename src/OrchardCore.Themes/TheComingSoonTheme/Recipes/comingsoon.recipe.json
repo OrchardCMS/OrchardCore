@@ -11,8 +11,8 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "comingSoonContentItemId": "[js:uuid()]"
-    // "now": "[js: new Date().toISOString()]"
+    "comingSoonContentItemId": "[js:uuid()]",
+    "now": "[js: new Date().toISOString()]"
   },
 
   "steps": [
@@ -77,13 +77,14 @@
       "data": [
         {
           "ContentItemId": "[js: variables('comingSoonContentItemId')]",
-          "ContentItemVersionId": "40tmdwxagnqmsvqkttcntdcacx",
+          "ContentItemVersionId": "4kt5rnaa8vqaeyahg5cbmb62w2",
           "ContentType": "ComingSoon",
+          "DisplayText": "Coming Soon",
           "Latest": true,
           "Published": true,
-          "ModifiedUtc": "2018-09-02T08:10:45.2483339Z",
-          "PublishedUtc": "2018-09-02T08:10:45.2978167Z",
-          "CreatedUtc": "2018-09-01T07:52:30.4061707Z",
+          "ModifiedUtc": "[js: variables('now')]",
+          "PublishedUtc": "[js: variables('now')]",
+          "CreatedUtc": "[js: variables('now')]",
           "Owner": "admin",
           "Author": "admin",
           "ComingSoon": {},
@@ -92,23 +93,21 @@
             "SetHomepage": true
           },
           "TitlePart": {
-            "Title": "Coming Soon!"
+            "Title": "Coming Soon"
           },
           "HtmlBodyPart": {
-            "Html": "<p class=\"mb-5\">We're working hard to finish the development of this site. Our target launch date is\r\n                <strong>January 2019</strong>! Sign up for updates using the form below!</p>\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"basic-addon\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
+            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"basic-addon\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
           },
           "SocialIcons": {
             "ContentItems": [
               {
                 "Id": 0,
-                "ContentItemId": "4j3y0d8mjzf3bwcxagyx5t32wj",
+                "ContentItemId": "4gjxgam51tfyf5vhj02zhvqecb",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
+                "DisplayText": null,
                 "Latest": false,
                 "Published": false,
-                "ModifiedUtc": "2018-09-02T08:10:45.2533978Z",
-                "PublishedUtc": null,
-                "CreatedUtc": null,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
@@ -119,21 +118,16 @@
                     "Url": "https://twitter.com",
                     "Text": "Twitter"
                   }
-                },
-                "TitlePart": {
-                  "Title": "Twitter"
                 }
               },
               {
                 "Id": 0,
-                "ContentItemId": "49dayfqvbw9jt45mwk2dve5a5f",
+                "ContentItemId": "4e73aztdqsycs0ygegr02rjkx1",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
+                "DisplayText": null,
                 "Latest": false,
                 "Published": false,
-                "ModifiedUtc": "2018-09-02T08:10:45.2588874Z",
-                "PublishedUtc": null,
-                "CreatedUtc": null,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
@@ -144,21 +138,16 @@
                     "Url": "https://facebook.com",
                     "Text": "Facebook"
                   }
-                },
-                "TitlePart": {
-                  "Title": "Facebook"
                 }
               },
               {
                 "Id": 0,
-                "ContentItemId": "42hsmhmf93n6s7he3abm6b5146",
+                "ContentItemId": "4kn15ap88bg611z3ynjvewxpdz",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
+                "DisplayText": null,
                 "Latest": false,
                 "Published": false,
-                "ModifiedUtc": "2018-09-02T08:10:45.2644225Z",
-                "PublishedUtc": null,
-                "CreatedUtc": null,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
@@ -169,12 +158,79 @@
                     "Url": "https://instagram.com",
                     "Text": "Instagram"
                   }
-                },
-                "TitlePart": {
-                  "Title": "Instagram"
                 }
               }
             ]
+          },
+          "FlowPart": {
+            "Widgets": [
+              {
+                "Id": 0,
+                "ContentItemId": "4ywpx1bab0e2t7n33zxhejwv5r",
+                "ContentItemVersionId": null,
+                "ContentType": "ValidationSummary",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "ValidationSummaryPart": {},
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4b9w1xee8bwr0tjnn455wn9fwb",
+                "ContentItemVersionId": null,
+                "ContentType": "Register",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "Register": {
+                  "Placeholder": {
+                    "Text": "enter your email...."
+                  },
+                  "Button": {
+                    "Text": "NOTIFY ME!"
+                  },
+                  "InputFieldName": {
+                    "Text": "Email"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "<p class=\"mb-5\">We're working hard to finish the development of this site. Our target launch date is\r\n                <strong>January 2019</strong>! Sign up for updates using the form below!</p>"
+                },
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4tnv3pbfg0wpn7r9vv9tmfg6nm",
+                "ContentItemVersionId": null,
+                "ContentType": "NoCaptcha",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "NoCaptchaPart": {},
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              }
+            ]
+          },
+          "FormPart": {
+            "Action": "/Workflows/Invoke?token=CfDJ8PxIMEGXH9tPufrlIl0ucMtqkmvSOC_J8fXkCW8OfTDAQjpz0ZG3Umz5IEXdInOkdJkZGbcf9vizlZXJiW21w5inLFmRd2HNeegloD8N4J0YZrKf9Dl5BqIhv8RO5wNohLbrkA8Nu-QXjZ39_PMWpW7ccjoAHcnRVFhB7KlIz2tezpE8IRAUZTx0tbKBxQeld8CYiFPpNCOQ7iYGoG98PfJFIIbUZ0MZaUjDcW5_fcBm",
+            "Method": "POST",
+            "WorkflowTypeId": null
           }
         }
       ]
@@ -198,7 +254,7 @@
               "PartName": "ComingSoon",
               "Name": "ComingSoon",
               "Settings": {
-                "Position": "3"
+                "Position": "4"
               }
             },
             {
@@ -219,23 +275,30 @@
               }
             },
             {
-              "PartName": "HtmlBodyPart",
-              "Name": "HtmlBodyPart",
-              "Settings": {
-                "Position": "2"
-              }
-            },
-            {
               "PartName": "BagPart",
               "Name": "SocialIcons",
               "Settings": {
                 "DisplayName": "Social Icons",
                 "Description": "The list of social icons to display in the Coming Soon page",
-                "Position": "4",
+                "Position": "5",
                 "ContainedContentTypes": [
                   "SocialIcon"
                 ],
                 "DisplayType": null
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "FormPart",
+              "Name": "FormPart",
+              "Settings": {
+                "Position": "2"
               }
             }
           ]
@@ -256,6 +319,38 @@
               "PartName": "SocialIcon",
               "Name": "SocialIcon",
               "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Register",
+          "DisplayName": "Register",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Versionable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Register",
+              "Name": "Register",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "DisplayName": null,
+                "Description": null,
+                "Editor": "Wysiwyg",
+                "HtmlBodyPartSettings": {},
                 "Position": "0"
               }
             }
@@ -295,6 +390,42 @@
               }
             }
           ]
+        },
+        {
+          "Name": "Register",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Placeholder",
+              "Settings": {
+                "DisplayName": "Placeholder",
+                "Editor": null,
+                "Hint": "The text to display in the input field",
+                "Position": "0"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Button",
+              "Settings": {
+                "DisplayName": "Button",
+                "Editor": null,
+                "Hint": "text to display on submit button",
+                "Position": "2"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "InputFieldName",
+              "Settings": {
+                "DisplayName": "InputFieldName",
+                "Editor": null,
+                "Hint": "The name of the input field",
+                "Position": "1"
+              }
+            }
+          ]
         }
       ]
     },
@@ -303,7 +434,11 @@
       "Templates": {
         "Content__ComingSoon": {
           "Description": "Coming Soon Template",
-          "Content": "[file:text('Snippets/comingsoon.liquid')]"
+          "Content": "[file:text('Snippets/Content__ComingSoon.liquid')]"
+        },
+        "Widget__Register": {
+          "Description": "Register email widget",
+          "Content": "[file:text('Snippets/Widget__Register.liquid')]"
         }
       }
     },
@@ -322,20 +457,20 @@
               "Name": "HttpRequestEvent",
               "X": 0,
               "Y": 0,
-              "IsStart": false,
+              "IsStart": true,
               "Properties": {
                 "ActivityMetadata": {
                   "Title": "Handle User Registration"
                 },
                 "HttpMethod": "POST",
-                "Url": "/comingsoon/Workflows/Invoke?token=CfDJ8DCCAYoU4epDsJeJ60Y60YgcG4YczxrePOg6Or4V8IYhoQG4U_BTeYtbtA6YK7WHnfN_Luro13hhXJOP9bBVECKR2vAxqf7WG7UELU66Rot4jySEcRhOxQboJATRETEnTsJbaCbQi7JJAfJf149fDNLy0HiJcvt2uR0rCnV2eoAHpSg0tHZ9WkLPnq574enyucSAzeL1uN63DjUB9BRidtH5PR_VA1PDXQjff-yar0PR",
+                "Url": "/Workflows/Invoke?token=CfDJ8PxIMEGXH9tPufrlIl0ucMtqkmvSOC_J8fXkCW8OfTDAQjpz0ZG3Umz5IEXdInOkdJkZGbcf9vizlZXJiW21w5inLFmRd2HNeegloD8N4J0YZrKf9Dl5BqIhv8RO5wNohLbrkA8Nu-QXjZ39_PMWpW7ccjoAHcnRVFhB7KlIz2tezpE8IRAUZTx0tbKBxQeld8CYiFPpNCOQ7iYGoG98PfJFIIbUZ0MZaUjDcW5_fcBm",
                 "ValidateAntiforgeryToken": true
               }
             },
             {
               "ActivityId": "4gq1ch13zvjb56rrng70w55cmz",
               "Name": "BindModelStateTask",
-              "X": 300,
+              "X": 330,
               "Y": 0,
               "IsStart": false,
               "Properties": {
@@ -363,8 +498,8 @@
             {
               "ActivityId": "4rrw4wj985j05sns4h4m35vk53",
               "Name": "ValidateFormFieldTask",
-              "X": 370,
-              "Y": 90,
+              "X": 350,
+              "Y": 130,
               "IsStart": false,
               "Properties": {
                 "FieldName": "Email",
@@ -377,7 +512,7 @@
             {
               "ActivityId": "45gqn0c34pnzv0e0z5anc3dpmk",
               "Name": "ValidateNoCaptchaTask",
-              "X": 1090,
+              "X": 1110,
               "Y": 90,
               "IsStart": false,
               "Properties": {
@@ -389,8 +524,8 @@
             {
               "ActivityId": "44sfg8spe6xfg67t4arp5wbedn",
               "Name": "JoinTask",
-              "X": 610,
-              "Y": 220,
+              "X": 660,
+              "Y": 190,
               "IsStart": false,
               "Properties": {
                 "ActivityMetadata": {
@@ -402,8 +537,8 @@
             {
               "ActivityId": "4pa4dakwbjt3w401sz726yg0ce",
               "Name": "ValidateFormTask",
-              "X": 760,
-              "Y": 430,
+              "X": 370,
+              "Y": 250,
               "IsStart": false,
               "Properties": {
                 "ActivityMetadata": {
@@ -412,35 +547,31 @@
               }
             },
             {
-              "ActivityId": "4bgxznwjcwz63tnftf001984mv",
-              "Name": "NotifyTask",
-              "X": 440,
-              "Y": 430,
+              "ActivityId": "4h209bxt4e3yj73a9kk4dgtmcn",
+              "Name": "RegisterUserTask",
+              "X": 1080,
+              "Y": 410,
               "IsStart": false,
               "Properties": {
                 "ActivityMetadata": {
-                  "Title": "Notify Error"
-                },
-                "NotificationType": 3,
-                "Message": {
-                  "Expression": "Could not register"
+                  "Title": "Register User"
                 }
               }
             },
             {
-              "ActivityId": "4ta0ndnzj91gdybah5mbyk90dy",
-              "Name": "NotifyTask",
-              "X": 1080,
-              "Y": 430,
+              "ActivityId": "4pfedcmhy0ka66t6bds315vxw5",
+              "Name": "HttpRedirectTask",
+              "X": 400,
+              "Y": 440,
               "IsStart": false,
               "Properties": {
                 "ActivityMetadata": {
-                  "Title": "Thank You"
+                  "Title": "Homepage"
                 },
-                "NotificationType": 0,
-                "Message": {
-                  "Expression": "Thank you."
-                }
+                "Location": {
+                  "Expression": "/"
+                },
+                "Permanent": false
               }
             }
           ],
@@ -490,14 +621,20 @@
             {
               "Id": 0,
               "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
-              "SourceOutcomeName": "Invalid",
-              "DestinationActivityId": "4bgxznwjcwz63tnftf001984mv"
+              "SourceOutcomeName": "Valid",
+              "DestinationActivityId": "4h209bxt4e3yj73a9kk4dgtmcn"
             },
             {
               "Id": 0,
               "SourceActivityId": "4pa4dakwbjt3w401sz726yg0ce",
-              "SourceOutcomeName": "Valid",
-              "DestinationActivityId": "4ta0ndnzj91gdybah5mbyk90dy"
+              "SourceOutcomeName": "Invalid",
+              "DestinationActivityId": "4pfedcmhy0ka66t6bds315vxw5"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4h209bxt4e3yj73a9kk4dgtmcn",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4pfedcmhy0ka66t6bds315vxw5"
             }
           ]
         }
