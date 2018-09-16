@@ -70,7 +70,7 @@ namespace OrchardCore.OpenId.Controllers
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
             var result = await HttpContext.AuthenticateAsync();
-            if (!result.Succeeded || request.HasPrompt(OpenIdConnectConstants.Prompts.Login))
+            if (result == null || !result.Succeeded || request.HasPrompt(OpenIddictConstants.Prompts.Login))
             {
                 return RedirectToLoginPage(request);
             }
@@ -88,7 +88,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return View("Error", new ErrorViewModel
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    Error = OpenIddictConstants.Errors.InvalidClient,
                     ErrorDescription = T["The specified 'client_id' parameter is invalid."]
                 });
             }
@@ -105,20 +105,20 @@ namespace OrchardCore.OpenId.Controllers
                 case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
                     return RedirectToClient(new OpenIdConnectResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        Error = OpenIddictConstants.Errors.ConsentRequired,
                         ErrorDescription = T["The logged in user is not allowed to access this client application."]
                     });
 
                 case OpenIddictConstants.ConsentTypes.Implicit:
                 case OpenIddictConstants.ConsentTypes.External when authorizations.Any():
                 case OpenIddictConstants.ConsentTypes.Explicit when authorizations.Any() &&
-                    !request.HasPrompt(OpenIdConnectConstants.Prompts.Consent):
+                    !request.HasPrompt(OpenIddictConstants.Prompts.Consent):
                     return await IssueTokensAsync(result.Principal, request, application, authorizations.LastOrDefault());
 
-                case OpenIddictConstants.ConsentTypes.Explicit when request.HasPrompt(OpenIdConnectConstants.Prompts.None):
+                case OpenIddictConstants.ConsentTypes.Explicit when request.HasPrompt(OpenIddictConstants.Prompts.None):
                     return RedirectToClient(new OpenIdConnectResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        Error = OpenIddictConstants.Errors.ConsentRequired,
                         ErrorDescription = T["Interactive user consent is required."]
                     });
 
@@ -133,15 +133,20 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [ActionName(nameof(Authorize))]
-        [FormValueRequired("submit." + nameof(Accept)), HttpPost]
-        public async Task<IActionResult> Accept(OpenIdConnectRequest request)
+        [FormValueRequired("submit.Accept"), HttpPost]
+        public async Task<IActionResult> AuthorizeAccept(OpenIdConnectRequest request)
         {
+            // Warning: unlike the main Authorize method, this method MUST NOT be decorated with
+            // [IgnoreAntiforgeryToken] as we must be able to reject authorization requests
+            // sent by a malicious client that could abuse this interactive endpoint to silently
+            // get codes/tokens without the user explicitly approving the authorization demand.
+
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
             {
                 return View("Error", new ErrorViewModel
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    Error = OpenIddictConstants.Errors.InvalidClient,
                     ErrorDescription = T["The specified 'client_id' parameter is invalid."]
                 });
             }
@@ -161,7 +166,7 @@ namespace OrchardCore.OpenId.Controllers
                 case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
                     return RedirectToClient(new OpenIdConnectResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        Error = OpenIddictConstants.Errors.ConsentRequired,
                         ErrorDescription = T["The logged in user is not allowed to access this client application."]
                     });
 
@@ -171,19 +176,53 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [ActionName(nameof(Authorize))]
-        [FormValueRequired("submit." + nameof(Deny)), HttpPost]
-        public IActionResult Deny()
+        [FormValueRequired("submit.Deny"), HttpPost]
+        public IActionResult AuthorizeDeny() => Forbid(OpenIddictServerDefaults.AuthenticationScheme);
+
+        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+        public async Task<IActionResult> Logout(OpenIdConnectRequest request)
         {
-            return Forbid(OpenIddictServerDefaults.AuthenticationScheme);
+            if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+            {
+                // If the user is not logged in, allow redirecting the user agent back to the
+                // specified post_logout_redirect_uri without rendering a confirmation form.
+                var result = await HttpContext.AuthenticateAsync();
+                if (result == null || !result.Succeeded)
+                {
+                    return SignOut(OpenIddictServerDefaults.AuthenticationScheme);
+                }
+            }
+
+            return View(new LogoutViewModel
+            {
+                RequestId = request.RequestId
+            });
         }
 
-        [AllowAnonymous, HttpGet]
-        public async Task<IActionResult> Logout()
+        [ActionName(nameof(Logout)), AllowAnonymous]
+        [FormValueRequired("submit.Accept"), HttpPost]
+        public async Task<IActionResult> LogoutAccept(OpenIdConnectRequest request)
         {
+            // Warning: unlike the main Logout method, this method MUST NOT be decorated with
+            // [IgnoreAntiforgeryToken] as we must be able to reject end session requests
+            // sent by a malicious client that could abuse this interactive endpoint to silently
+            // log the user out without the user explicitly approving the log out operation.
+
             await _signInManager.SignOutAsync();
+
+            // If no post_logout_redirect_uri was specified, redirect the user agent
+            // to the root page, that should correspond to the home page in most cases.
+            if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+            {
+                return Redirect("~/");
+            }
 
             return SignOut(OpenIddictServerDefaults.AuthenticationScheme);
         }
+
+        [ActionName(nameof(Logout)), AllowAnonymous]
+        [FormValueRequired("submit.Deny"), HttpPost]
+        public IActionResult LogoutDeny() => Redirect("~/");
 
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
@@ -222,33 +261,33 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    Error = OpenIddictConstants.Errors.InvalidClient,
                     ErrorDescription = T["The specified 'client_id' parameter is invalid."]
                 });
             }
 
             var identity = new ClaimsIdentity(
                 OpenIddictServerDefaults.AuthenticationScheme,
-                OpenIdConnectConstants.Claims.Name,
-                OpenIdConnectConstants.Claims.Role);
+                OpenIddictConstants.Claims.Name,
+                OpenIddictConstants.Claims.Role);
 
-            identity.AddClaim(OpenIdConnectConstants.Claims.Subject, request.ClientId);
-            identity.AddClaim(OpenIdConnectConstants.Claims.Name,
+            identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId);
+            identity.AddClaim(OpenIddictConstants.Claims.Name,
                 await _applicationManager.GetDisplayNameAsync(application),
-                OpenIdConnectConstants.Destinations.AccessToken,
-                OpenIdConnectConstants.Destinations.IdentityToken);
+                OpenIddictConstants.Destinations.AccessToken,
+                OpenIddictConstants.Destinations.IdentityToken);
 
             foreach (var role in await _applicationManager.GetRolesAsync(application))
             {
                 identity.AddClaim(identity.RoleClaimType, role,
-                    OpenIdConnectConstants.Destinations.AccessToken,
-                    OpenIdConnectConstants.Destinations.IdentityToken);
+                    OpenIddictConstants.Destinations.AccessToken,
+                    OpenIddictConstants.Destinations.IdentityToken);
 
                 foreach (var claim in await _roleManager.GetClaimsAsync(await _roleManager.FindByIdAsync(role)))
                 {
                     identity.AddClaim(claim.Type, claim.Value,
-                        OpenIdConnectConstants.Destinations.AccessToken,
-                        OpenIdConnectConstants.Destinations.IdentityToken);
+                        OpenIddictConstants.Destinations.AccessToken,
+                        OpenIddictConstants.Destinations.IdentityToken);
                 }
             }
 
@@ -269,7 +308,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return View("Error", new ErrorViewModel
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    Error = OpenIddictConstants.Errors.InvalidClient,
                     ErrorDescription = T["The specified 'client_id' parameter is invalid."]
                 });
             }
@@ -279,7 +318,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The username/password couple is invalid."]
                 });
             }
@@ -298,7 +337,7 @@ namespace OrchardCore.OpenId.Controllers
                 case OpenIddictConstants.ConsentTypes.External when authorizations.IsEmpty:
                     return BadRequest(new OpenIdConnectResponse
                     {
-                        Error = OpenIdConnectConstants.Errors.ConsentRequired,
+                        Error = OpenIddictConstants.Errors.ConsentRequired,
                         ErrorDescription = T["The logged in user is not allowed to access this client application."]
                     });
             }
@@ -308,7 +347,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The specified user is not allowed to sign in."]
                 });
             }
@@ -316,7 +355,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The specified user is not allowed to sign in using the password method."]
                 });
             }
@@ -324,7 +363,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The username/password couple is invalid."]
                 });
             }
@@ -341,7 +380,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return View("Error", new ErrorViewModel
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    Error = OpenIddictConstants.Errors.InvalidClient,
                     ErrorDescription = T["The specified 'client_id' parameter is invalid."]
                 });
             }
@@ -356,7 +395,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The token is no longer valid."]
                 });
             }
@@ -366,7 +405,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return BadRequest(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    Error = OpenIddictConstants.Errors.InvalidGrant,
                     ErrorDescription = T["The user is no longer allowed to sign in."]
                 });
             }
@@ -388,8 +427,8 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return View("Error", new ErrorViewModel
                 {
-                    Error = OpenIdConnectConstants.Errors.ServerError,
-                    ErrorDescription = T["An internal error has occurred"]
+                    Error = OpenIddictConstants.Errors.ServerError,
+                    ErrorDescription = T["An internal error has occurred."]
                 });
             }
 
@@ -414,9 +453,9 @@ namespace OrchardCore.OpenId.Controllers
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-            if (string.IsNullOrEmpty(principal.FindFirstValue(OpenIdConnectConstants.Claims.Subject)))
+            if (string.IsNullOrEmpty(principal.FindFirstValue(OpenIddictConstants.Claims.Subject)))
             {
-                identity.AddClaim(new Claim(OpenIdConnectConstants.Claims.Subject, await _userManager.GetUserIdAsync(user)));
+                identity.AddClaim(new Claim(OpenIddictConstants.Claims.Subject, await _userManager.GetUserIdAsync(user)));
             }
 
             // Create a new authentication ticket holding the user identity.
@@ -449,7 +488,7 @@ namespace OrchardCore.OpenId.Controllers
                 if (authorization != null)
                 {
                     // Attach the authorization identifier to the authentication ticket.
-                    ticket.SetProperty(OpenIddictConstants.Properties.AuthorizationId,
+                    ticket.SetProperty(OpenIddictConstants.Properties.InternalAuthorizationId,
                         await _authorizationManager.GetIdAsync(authorization));
                 }
             }
@@ -468,16 +507,16 @@ namespace OrchardCore.OpenId.Controllers
 
                 var destinations = new List<string>
                 {
-                    OpenIdConnectConstants.Destinations.AccessToken
+                    OpenIddictConstants.Destinations.AccessToken
                 };
 
                 // Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
                 // The other claims will only be added to the access_token, which is encrypted when using the default format.
-                if ((claim.Type == OpenIdConnectConstants.Claims.Name && ticket.HasScope(OpenIdConnectConstants.Scopes.Profile)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Email && ticket.HasScope(OpenIdConnectConstants.Scopes.Email)) ||
-                    (claim.Type == OpenIdConnectConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
+                if ((claim.Type == OpenIddictConstants.Claims.Name && ticket.HasScope(OpenIddictConstants.Scopes.Profile)) ||
+                    (claim.Type == OpenIddictConstants.Claims.Email && ticket.HasScope(OpenIddictConstants.Scopes.Email)) ||
+                    (claim.Type == OpenIddictConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
                 {
-                    destinations.Add(OpenIdConnectConstants.Destinations.IdentityToken);
+                    destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
                 }
 
                 claim.SetDestinations(destinations);
@@ -502,9 +541,9 @@ namespace OrchardCore.OpenId.Controllers
         {
             var properties = new AuthenticationProperties(new Dictionary<string, string>
             {
-                [OpenIdConnectConstants.Properties.Error] = response.Error,
-                [OpenIdConnectConstants.Properties.ErrorDescription] = response.ErrorDescription,
-                [OpenIdConnectConstants.Properties.ErrorUri] = response.ErrorUri,
+                [OpenIddictConstants.Properties.Error] = response.Error,
+                [OpenIddictConstants.Properties.ErrorDescription] = response.ErrorDescription,
+                [OpenIddictConstants.Properties.ErrorUri] = response.ErrorUri,
             });
 
             return Forbid(properties, OpenIddictServerDefaults.AuthenticationScheme);
@@ -514,11 +553,11 @@ namespace OrchardCore.OpenId.Controllers
         {
             // If the client application requested promptless authentication,
             // return an error indicating that the user is not logged in.
-            if (request.HasPrompt(OpenIdConnectConstants.Prompts.None))
+            if (request.HasPrompt(OpenIddictConstants.Prompts.None))
             {
                 return RedirectToClient(new OpenIdConnectResponse
                 {
-                    Error = OpenIdConnectConstants.Errors.LoginRequired,
+                    Error = OpenIddictConstants.Errors.LoginRequired,
                     ErrorDescription = T["The user is not logged in."]
                 });
             }
@@ -527,7 +566,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 // Override the prompt parameter to prevent infinite authentication/authorization loops.
                 var parameters = Request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                parameters[OpenIdConnectConstants.Parameters.Prompt] = "continue";
+                parameters[OpenIddictConstants.Parameters.Prompt] = "continue";
 
                 return Request.PathBase + Request.Path + QueryString.Create(parameters);
             }

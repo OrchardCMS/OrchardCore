@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Services
 {
@@ -57,8 +58,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow &&
-                !settings.AllowImplicitFlow && !settings.AllowPasswordFlow)
+            if (settings.GrantTypes.Count == 0)
             {
                 results.Add(new ValidationResult(T["At least one OpenID Connect flow must be enabled."]));
             }
@@ -157,54 +157,55 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (settings.AllowPasswordFlow && !settings.EnableTokenEndpoint)
+            if (settings.GrantTypes.Contains(GrantTypes.Password) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["Password Flow cannot be enabled if Token Endpoint is disabled"], new[]
+                results.Add(new ValidationResult(T["The password flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
-                    nameof(settings.AllowPasswordFlow)
+                    nameof(settings.GrantTypes)
                 }));
             }
 
-            if (settings.AllowClientCredentialsFlow && !settings.EnableTokenEndpoint)
+            if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials) && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["Client Credentials Flow cannot be enabled if Token Endpoint is disabled"], new[]
+                results.Add(new ValidationResult(T["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
-                    nameof(settings.AllowClientCredentialsFlow)
+                    nameof(settings.GrantTypes)
                 }));
             }
 
-            if (settings.AllowAuthorizationCodeFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
+            if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode) &&
+               (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
-                results.Add(new ValidationResult(T["Authorization Code Flow cannot be enabled if Authorization Endpoint and Token Endpoint are disabled"], new[]
+                results.Add(new ValidationResult(T["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
                 {
-                    nameof(settings.AllowAuthorizationCodeFlow)
+                    nameof(settings.GrantTypes)
                 }));
             }
 
-            if (settings.AllowRefreshTokenFlow)
+            if (settings.GrantTypes.Contains(GrantTypes.RefreshToken))
             {
-                if (!settings.EnableTokenEndpoint)
+                if (!settings.TokenEndpointPath.HasValue)
                 {
-                    results.Add(new ValidationResult(T["Refresh Token Flow cannot be enabled if Token Endpoint is disabled"], new[]
+                    results.Add(new ValidationResult(T["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
                     {
-                        nameof(settings.AllowRefreshTokenFlow)
+                        nameof(settings.GrantTypes)
                     }));
                 }
 
-                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow)
+                if (!settings.GrantTypes.Contains(GrantTypes.Password) && !settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
                 {
-                    results.Add(new ValidationResult(T["Refresh Token Flow only can be enabled if Password Flow, Authorization Code Flow or Hybrid Flow are enabled"], new[]
+                    results.Add(new ValidationResult(T["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
                     {
-                        nameof(settings.AllowRefreshTokenFlow)
+                        nameof(settings.GrantTypes)
                     }));
                 }
             }
 
-            if (settings.AllowImplicitFlow && !settings.EnableAuthorizationEndpoint)
+            if (settings.GrantTypes.Contains(GrantTypes.Implicit) && !settings.AuthorizationEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(T["Allow Implicit Flow cannot be enabled if Authorization Endpoint is disabled"], new[]
+                results.Add(new ValidationResult(T["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
                 {
-                    nameof(settings.AllowImplicitFlow)
+                    nameof(settings.GrantTypes)
                 }));
             }
 

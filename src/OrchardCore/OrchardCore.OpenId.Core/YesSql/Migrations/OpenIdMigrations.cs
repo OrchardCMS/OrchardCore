@@ -48,7 +48,15 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject)));
 
-            return 1;
+            return UpdateFrom1();
+        }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table => table
+                .AddColumn<string>(nameof(OpenIdTokenIndex.Type)));
+
+            return 2;
         }
     }
 }
