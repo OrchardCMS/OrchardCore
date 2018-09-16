@@ -54,15 +54,17 @@ namespace OrchardCore.Templates.Controllers
 
             var alias = Request.Form["Alias"].ToString();
 
-            string contentItemId;
-            if (string.IsNullOrEmpty(alias) || alias == "/")
+            string contentItemId = string.Empty;
+
+            if (string.IsNullOrEmpty(alias) == false && alias != "/")
             {
-                var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
-                contentItemId = homeRoute["contentItemId"]?.ToString();
+                contentItemId = await _contentAliasManager.GetContentItemIdAsync("slug:" + alias);                
             }
-            else
+
+            if (string.IsNullOrEmpty(contentItemId))
             {
-                contentItemId = await _contentAliasManager.GetContentItemIdAsync("slug:" + alias);
+                    var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
+                    contentItemId = homeRoute["contentItemId"]?.ToString();
             }
 
             if (string.IsNullOrEmpty(contentItemId))
