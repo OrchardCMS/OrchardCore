@@ -31,7 +31,6 @@ namespace OrchardCore.OpenId.Controllers
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        [Route("/connect/userinfo")]
         public async Task<IActionResult> Me()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

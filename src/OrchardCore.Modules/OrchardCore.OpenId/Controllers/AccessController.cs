@@ -64,7 +64,7 @@ namespace OrchardCore.OpenId.Controllers
             _roleManager = roleManager;
         }
 
-        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken, Route("/connect/authorize")]
+        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
         public async Task<IActionResult> Authorize(OpenIdConnectRequest request)
         {
             // Retrieve the claims stored in the authentication cookie.
@@ -134,7 +134,6 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit." + nameof(Accept)), HttpPost]
-        [Route("/connect/authorize")]
         public async Task<IActionResult> Accept(OpenIdConnectRequest request)
         {
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
@@ -173,14 +172,12 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit." + nameof(Deny)), HttpPost]
-        [Route("/connect/authorize")]
         public IActionResult Deny()
         {
             return Forbid(OpenIddictServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
-        [Route("/connect/logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -191,7 +188,6 @@ namespace OrchardCore.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        [Route("/connect/token")]
         public async Task<IActionResult> Token(OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

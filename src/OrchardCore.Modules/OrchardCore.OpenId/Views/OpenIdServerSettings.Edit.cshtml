@@ -2,6 +2,7 @@
 @using OrchardCore.OpenId.Settings;
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
+@inject Microsoft.Extensions.Options.IOptions<OpenIddict.Server.OpenIddictServerOptions> OpenIddictServerOptions
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
@@ -81,7 +82,7 @@
             @T["Enable Token Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action /connect/token"]</span>
+    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.Value.TokenEndpointPath]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableAuthorizationEndpoint">
@@ -91,7 +92,7 @@
             @T["Enable Authorization Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action /connect/authorize"]</span>
+    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.Value.AuthorizationEndpointPath]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableLogoutEndpoint">
@@ -101,7 +102,7 @@
             @T["Enable Logout Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action /connect/logout"]</span>
+    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.Value.LogoutEndpointPath]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableUserInfoEndpoint">
@@ -111,7 +112,7 @@
             @T["Enable User Info Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action /connect/userinfo"]</span>
+    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.Value.UserinfoEndpointPath]</span>
 </fieldset>
 
 <h3>Flows</h3>
