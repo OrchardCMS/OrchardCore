@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Hosting.ShellBuilders
@@ -20,6 +21,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         private volatile int _refCount = 0;
         private bool _released = false;
         private List<WeakReference<ShellContext>> _dependents;
+        private object _synLock = new object();
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
@@ -30,26 +32,19 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public bool IsActivated { get; set; }
 
-        /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
-        /// </summary>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
-        public IServiceScope EnterServiceScope()
+        public IServiceScope CreateScope()
         {
-            if (_disposed)
+            var scope = new ServiceScopeWrapper(this);
+
+            // A new scope can be only used on a non released shell.
+            if (!_released)
             {
-                throw new InvalidOperationException("Can't use EnterServiceScope on a disposed context");
+                return scope;
             }
 
-            if (_released)
-            {
-                throw new InvalidOperationException("Can't use EnterServiceScope on a released context");
-            }
+            (scope as ServiceScopeWrapper).Dispose();
 
-            return new ServiceScopeWrapper(this);
+            return null;
         }
 
         /// <summary>
@@ -78,25 +73,29 @@ namespace OrchardCore.Hosting.ShellBuilders
             // resolve or use its services. We then call this method to count the remaining references and dispose it 
             // when the number reached zero.
 
-            _released = true;
-
-            lock (this)
+            lock (_synLock)
             {
-                if (_dependents == null)
+                if (_released == true)
                 {
                     return;
                 }
 
-                foreach (var dependent in _dependents)
+                _released = true;
+
+                if (_dependents != null)
                 {
-                    if (dependent.TryGetTarget(out var shellContext))
+
+                    foreach (var dependent in _dependents)
                     {
-                        shellContext.Release();
+                        if (dependent.TryGetTarget(out var shellContext))
+                        {
+                            shellContext.Release();
+                        }
                     }
                 }
 
                 // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
-                // then we need to dispose it right away
+                // then we need to dispose it right away.
                 if (_refCount == 0)
                 {
                     Dispose();
@@ -109,7 +108,21 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
-            lock (this)
+            // If the dependent is released, nothing to do.
+            if (shellContext.Released)
+            {
+                return;
+            }
+
+            // If the dependency is already released.
+            if (_released)
+            {
+                // The dependent is released immediately.
+                shellContext.Release();
+                return;
+            }
+
+            lock (_synLock)
             {
                 if (_dependents == null)
                 {
@@ -119,12 +132,17 @@ namespace OrchardCore.Hosting.ShellBuilders
                 // Remove any previous instance that represent the same tenant in case it has been released (restarted).
                 _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
 
-                // The same item can safely be added multiple times in a Hashset
                 _dependents.Add(new WeakReference<ShellContext>(shellContext));
             }
         }
 
         public void Dispose()
+        {
+            Close();
+            GC.SuppressFinalize(this);
+        }
+
+        public void Close()
         {
             if (_disposed)
             {
@@ -139,17 +157,14 @@ namespace OrchardCore.Hosting.ShellBuilders
             }
 
             IsActivated = false;
-            Settings = null;
             Blueprint = null;
 
             _disposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         ~ShellContext()
         {
-            Dispose();
+            Close();
         }
 
         internal class ServiceScopeWrapper : IServiceScope
@@ -161,19 +176,22 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             public ServiceScopeWrapper(ShellContext shellContext)
             {
-                // Prevent the context from being released until the end of the scope
+                // Prevent the context from being disposed until the end of the scope
                 Interlocked.Increment(ref shellContext._refCount);
 
                 _shellContext = shellContext;
+
+                // The service provider is null if we try to create
+                // a scope on a disabled shell or already disposed.
+                if (_shellContext.ServiceProvider == null)
+                {
+                    throw new ArgumentNullException(nameof(shellContext.ServiceProvider), $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
+                }
+
                 _serviceScope = shellContext.ServiceProvider.CreateScope();
                 ServiceProvider = _serviceScope.ServiceProvider;
 
                 var httpContextAccessor = ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                if (httpContextAccessor.HttpContext == null)
-                {
-                    httpContextAccessor.HttpContext = new DefaultHttpContext();
-                }
 
                 _httpContext = httpContextAccessor.HttpContext;
                 _existingServices = _httpContext.RequestServices;
@@ -183,13 +201,22 @@ namespace OrchardCore.Hosting.ShellBuilders
             public IServiceProvider ServiceProvider { get; }
 
             /// <summary>
-            /// Returns true is the shell context should be disposed consequently to this scope being released.
+            /// Returns true if the shell context should be disposed consequently to this scope being released.
             /// </summary>
             private bool ScopeReleased()
             {
-                var refCount = Interlocked.Decrement(ref _shellContext._refCount);
+                // A disabled shell still in use is released by its last scope.
+                if (_shellContext.Settings.State == TenantState.Disabled)
+                {
+                    if (Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1) == 1)
+                    {
+                        _shellContext.Release();
+                    }
+                }
 
-                if (_shellContext._released && refCount == 0)
+                // If the context is still being released, it will be disposed if the ref counter is equal to 0.
+                // To prevent this while executing the terminating events, the ref counter is not decremented here.
+                if (_shellContext._released && Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1) == 1)
                 {
                     var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
@@ -215,18 +242,14 @@ namespace OrchardCore.Hosting.ShellBuilders
 
                 _httpContext.RequestServices = _existingServices;
                 _serviceScope.Dispose();
-                
-                GC.SuppressFinalize(this);
 
                 if (disposeShellContext)
                 {
                     _shellContext.Dispose();
                 }
-            }
 
-            ~ServiceScopeWrapper()
-            {
-                Dispose();
+                // Decrement the counter at the very end of the scope
+                Interlocked.Decrement(ref _shellContext._refCount);
             }
         }
     }

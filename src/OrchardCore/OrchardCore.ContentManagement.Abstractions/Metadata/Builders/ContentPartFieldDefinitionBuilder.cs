@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -23,6 +23,12 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
+        {
+            _settings[name] = new JArray(values);
             return this;
         }
 

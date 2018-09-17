@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.DisplayManagement.Handlers
@@ -24,6 +24,8 @@ namespace OrchardCore.DisplayManagement.Handlers
         public string HtmlFieldPrefix { get; protected set; }
         public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
+        public string DefaultZone { get; set; }
+        public string DefaultPosition { get; set; }
 
         private static PlacementInfo FindDefaultPlacement(string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {

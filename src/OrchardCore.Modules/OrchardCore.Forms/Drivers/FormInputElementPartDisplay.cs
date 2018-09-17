@@ -25,6 +25,7 @@ namespace OrchardCore.Forms.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 part.Name = viewModel.Name?.Trim();
+                part.ContentItem.DisplayText = part.Name;
             }
 
             return Edit(part);

@@ -1,0 +1,35 @@
+@model MarkdownBodyPartViewModel
+@using OrchardCore.Markdown.ViewModels;
+@using OrchardCore.Markdown.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
+}
+
+<script name="simplemde" depends-on="admin" asp-src="/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
+<style name="simplemde" asp-src="/OrchardCore.Markdown/Styles/simplemde.min.css"></style>
+
+<fieldset class="form-group">
+    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <span class="hint">@T["The markdown text of the content item."]</span>
+    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("@Html.IdFor(m => m.Source)"),
+            forceSync: true
+        });
+
+        if (simplemdeInitialized !== true) {
+            simplemdeInitialized = true;
+            $(document).trigger('simplemde:initialize', [simplemde]);
+        }
+
+        simplemde.codemirror.on('change', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>
