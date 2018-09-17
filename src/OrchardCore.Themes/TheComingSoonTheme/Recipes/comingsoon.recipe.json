@@ -12,6 +12,8 @@
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "comingSoonContentItemId": "[js:uuid()]",
+    "workflowTypeId": "[js:uuid()]",
+    "workflowActivityId": "[js:uuid()]",
     "now": "[js: new Date().toISOString()]"
   },
 
@@ -228,9 +230,8 @@
             ]
           },
           "FormPart": {
-            "Action": "/Workflows/Invoke?token=CfDJ8PxIMEGXH9tPufrlIl0ucMtqkmvSOC_J8fXkCW8OfTDAQjpz0ZG3Umz5IEXdInOkdJkZGbcf9vizlZXJiW21w5inLFmRd2HNeegloD8N4J0YZrKf9Dl5BqIhv8RO5wNohLbrkA8Nu-QXjZ39_PMWpW7ccjoAHcnRVFhB7KlIz2tezpE8IRAUZTx0tbKBxQeld8CYiFPpNCOQ7iYGoG98PfJFIIbUZ0MZaUjDcW5_fcBm",
-            "Method": "POST",
-            "WorkflowTypeId": null
+            "Action": "[js: '/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId')))]",
+            "Method": "POST"
           }
         }
       ]
@@ -446,14 +447,14 @@
       "name": "WorkflowType",
       "data": [
         {
-          "WorkflowTypeId": "4856b5kc0hd613crqynq4z18n5",
+          "WorkflowTypeId": "[js: variables('workflowTypeId')]",
           "Name": "User Registration",
           "IsEnabled": true,
           "IsSingleton": false,
           "DeleteFinishedWorkflows": false,
           "Activities": [
             {
-              "ActivityId": "426zsv4abp93qv40cyqpkskpnc",
+              "ActivityId": "[js: variables('workflowActivityId')]",
               "Name": "HttpRequestEvent",
               "X": 0,
               "Y": 0,
@@ -463,7 +464,7 @@
                   "Title": "Handle User Registration"
                 },
                 "HttpMethod": "POST",
-                "Url": "/Workflows/Invoke?token=CfDJ8PxIMEGXH9tPufrlIl0ucMtqkmvSOC_J8fXkCW8OfTDAQjpz0ZG3Umz5IEXdInOkdJkZGbcf9vizlZXJiW21w5inLFmRd2HNeegloD8N4J0YZrKf9Dl5BqIhv8RO5wNohLbrkA8Nu-QXjZ39_PMWpW7ccjoAHcnRVFhB7KlIz2tezpE8IRAUZTx0tbKBxQeld8CYiFPpNCOQ7iYGoG98PfJFIIbUZ0MZaUjDcW5_fcBm",
+                //"Url": "/Workflows/Invoke?token=CfDJ8PxIMEGXH9tPufrlIl0ucMtqkmvSOC_J8fXkCW8OfTDAQjpz0ZG3Umz5IEXdInOkdJkZGbcf9vizlZXJiW21w5inLFmRd2HNeegloD8N4J0YZrKf9Dl5BqIhv8RO5wNohLbrkA8Nu-QXjZ39_PMWpW7ccjoAHcnRVFhB7KlIz2tezpE8IRAUZTx0tbKBxQeld8CYiFPpNCOQ7iYGoG98PfJFIIbUZ0MZaUjDcW5_fcBm",
                 "ValidateAntiforgeryToken": true
               }
             },

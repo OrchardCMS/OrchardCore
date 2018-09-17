@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
@@ -67,10 +66,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         }
 
         [IgnoreAntiforgeryToken]
-        [HttpGet]
-        [HttpPost]
-        [HttpPut]
-        [HttpPatch]
+        [HttpGet, HttpPost, HttpPut, HttpPatch]
         public async Task<IActionResult> Invoke(string token)
         {
             if (!_securityTokenService.TryDecryptToken<WorkflowPayload>(token, out var payload))
@@ -84,7 +80,11 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             if (workflowType == null)
             {
-                _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                }
+
                 return NotFound();
             }
 
@@ -93,7 +93,11 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             if (startActivity == null)
             {
-                _logger.LogWarning("The provided activity with ID '{ActivityId}' could not be found.", payload.ActivityId);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The provided activity with ID '{ActivityId}' could not be found.", payload.ActivityId);
+                }
+
                 return NotFound();
             }
 
@@ -102,7 +106,11 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             if (httpRequestActivity == null)
             {
-                _logger.LogWarning("Activity with name '{ActivityName}' could not be found.", startActivity.Name);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("Activity with name '{ActivityName}' could not be found.", startActivity.Name);
+                }
+
                 return NotFound();
             }
 
@@ -116,7 +124,11 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                _logger.LogDebug("Invoking new workflow of type {WorkflowTypeId} with start activity {ActivityId}", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                }
+
                 await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
             }
             else
@@ -126,7 +138,11 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                 if (workflow == null)
                 {
-                    _logger.LogWarning("No workflow found that is blocked on activity {ActivityId}", startActivity.ActivityId);
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning("No workflow found that is blocked on activity '{ActivityId}'", startActivity.ActivityId);
+                    }
+
                     return NotFound();
                 }
 
@@ -134,7 +150,11 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                 if (blockingActivity != null)
                 {
-                    _logger.LogDebug("Resuming workflow with ID {WorkflowId} on activity {ActivityId}", workflow.WorkflowId, blockingActivity.ActivityId);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
+                    }
+
                     await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
                 }
             }
