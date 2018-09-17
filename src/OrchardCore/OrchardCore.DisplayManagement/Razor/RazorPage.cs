@@ -231,10 +231,11 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            if (segment != null)
+            if (!String.IsNullOrEmpty(segment))
             {
                 Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
             }
+            
             return Title.GenerateTitle(separator);
         }
 
