@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
             }
         }
-        
+
         /// <summary>
         /// Gets a dynamic shape factory to create new shapes.
         /// </summary>
@@ -231,10 +231,13 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+            if (segment != null)
+            {
+                Title.AddSegment(new HtmlString(HtmlEncoder.Encode(segment)), position);
+            }
             return Title.GenerateTitle(separator);
         }
-        
+
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
