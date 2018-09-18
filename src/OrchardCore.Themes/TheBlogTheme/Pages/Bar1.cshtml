@@ -1,13 +1,13 @@
-@page
+@page "{name?}"
 
-@*functions {
+@functions {
     [FromRoute]
     public string Name {get;set;}
-}*@
+}
 
-<p>TheBlogTheme Bar1 Page123</p>
+<p>TheBlogTheme Bar1 Page</p>
 
-@*Test: @Name*@
+Test: @Name
 
 <div class="item active">
     <img src="~/TheBlogTheme/img/post-sample-image.jpg" alt="ASP.NET" class="img-responsive" />

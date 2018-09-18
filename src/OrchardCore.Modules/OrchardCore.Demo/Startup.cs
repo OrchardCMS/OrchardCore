@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -69,27 +68,7 @@ namespace OrchardCore.Demo
             services.Configure<RazorPagesOptions>(options =>
             {
                 // Add a custom folder route
-                options.Conventions.AddAreaFolderRouteModelConvention("OrchardCore.Demo", "/", model =>
-                {
-                    foreach (var selector in model.Selectors.ToArray())
-                    {
-                        if (selector.AttributeRouteModel.Template.StartsWith("OrchardCore.Demo"))
-                        {
-                            selector.AttributeRouteModel.SuppressLinkGeneration = true;
-
-                            var template = ("Demo/" + selector.AttributeRouteModel.Template
-                                .Substring("OrchardCore.Demo".Length).TrimStart('/')).TrimEnd('/');
-
-                            model.Selectors.Add(new SelectorModel
-                            {
-                                AttributeRouteModel = new AttributeRouteModel
-                                {
-                                    Template = template
-                                }
-                            });
-                        }
-                    }
-                });
+                options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
                 // Add a custom page route
                 options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "Hello");

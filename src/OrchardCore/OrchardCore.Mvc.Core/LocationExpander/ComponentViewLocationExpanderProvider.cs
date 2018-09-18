@@ -73,10 +73,7 @@ namespace OrchardCore.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            // Get Extension, and then add in the relevant views.
-            var extension = _extensionManager.GetExtension(context.AreaName);
-
-            if (!extension.Exists)
+            if (context.AreaName == null)
             {
                 return viewLocations;
             }
