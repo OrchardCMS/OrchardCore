@@ -43,8 +43,8 @@ namespace OrchardCore.Mvc.RazorPages
 
         public void OnProvidersExecuted(PageApplicationModelProviderContext context)
         {
-            var viewEnginePath = context.ActionDescriptor.ViewEnginePath;
-            var found = _paths.Any(p => viewEnginePath.StartsWith(p)) ? true : false;
+            var relativePath = context.ActionDescriptor.RelativePath;
+            var found = _paths.Any(p => relativePath.StartsWith(p)) ? true : false;
             context.PageApplicationModel.Filters.Add(new ModularPageViewEnginePathFilter(found));
         }
     }

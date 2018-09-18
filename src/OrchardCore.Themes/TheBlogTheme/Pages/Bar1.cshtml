@@ -1,0 +1,20 @@
+@page
+
+@*functions {
+    [FromRoute]
+    public string Name {get;set;}
+}*@
+
+<p>TheBlogTheme Bar1 Page123</p>
+
+@*Test: @Name*@
+
+<div class="item active">
+    <img src="~/TheBlogTheme/img/post-sample-image.jpg" alt="ASP.NET" class="img-responsive" />
+    <!--<img src="/TheBlogTheme/theme.png" alt="ASP.NET" class="img-responsive" />-->
+</div>
+
+<div>
+    <a asp-page="Foo1" class="navbar-brand">FooPage</a>
+    <a asp-page="/Foo1" class="navbar-brand">FooPage</a>
+</div>

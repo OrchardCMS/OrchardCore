@@ -11,11 +11,11 @@ using OrchardCore.Mvc.LocationExpander;
 
 namespace OrchardCore.DisplayManagement.LocationExpander
 {
-    public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
+    public class ThemeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
         private readonly IExtensionManager _extensionManager;
 
-        public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
+        public ThemeViewLocationExpanderProvider(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
         }
@@ -76,9 +76,11 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                         {
                             if (moduleId != theme.Id)
                             {
+                                var themePagesPath = '/' + theme.Extension.SubPath + "/Pages";
                                 var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
                                 var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
                                 yield return themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
+                                yield return themePagesPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                                 yield return themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }

@@ -99,10 +99,10 @@ namespace OrchardCore.Mvc
 
             var folder = NormalizePath(subpath);
 
-            // Under ".Modules/{ModuleId}" or ".Modules/{ModuleId}/**".
+            // Under "Areas/{ModuleId}" or "Areas/{ModuleId}/**".
             if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Remove ".Modules/" from the folder path.
+                // Remove "Areas/" from the folder path.
                 folder = folder.Substring(Application.ModulesRoot.Length);
                 var index = folder.IndexOf('/');
 
@@ -141,10 +141,10 @@ namespace OrchardCore.Mvc
 
             var path = NormalizePath(subpath);
 
-            // ".Modules/**/*.*".
+            // "Areas/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Skip the ".Modules/" root folder.
+                // Skip the "Areas/" root folder.
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
@@ -181,10 +181,10 @@ namespace OrchardCore.Mvc
 
             var path = NormalizePath(filter);
 
-            // ".Modules/**/*.*".
+            // "Areas/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Skip the ".Modules/" root folder.
+                // Skip the "Areas/" root folder.
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
@@ -214,10 +214,10 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
+            // The view engine uses a watch on "Pages/**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
 
-            if (path.Equals("**/*.cshtml"))
+            else if (path.Equals("Pages/**/*.cshtml"))
             {
                 var changeTokens = new List<IChangeToken>();
 
