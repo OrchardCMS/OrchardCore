@@ -108,29 +108,31 @@ namespace OrchardCore.OpenId
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var openIddictServerOptions = serviceProvider.GetRequiredService<IOptions<OpenIddictServerOptions>>().Value;
+            var openIddictServerOptions = serviceProvider
+                .GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>()
+                .Get(OpenIddictServerDefaults.AuthenticationScheme);
 
             if (openIddictServerOptions.AuthorizationEndpointPath != PathString.Empty)
             {
                 routes.MapAreaRoute(
                     name: "Access.AuthorizeGet",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath,
-                    defaults: new { controller = "AccessController", action = "Authorize" }
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Authorize" }
                 );
 
                 routes.MapAreaRoute(
                     name: "Access.Authorize",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath,
-                    defaults: new { controller = "AccessController", action = "Accept" }
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Accept" }
                 );
 
                 routes.MapAreaRoute(
                     name: "Access.Deny",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath,
-                    defaults: new { controller = "AccessController", action = "Deny" }
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Deny" }
                 );
 
             }
@@ -140,8 +142,8 @@ namespace OrchardCore.OpenId
                 routes.MapAreaRoute(
                     name: "Access.Token",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.TokenEndpointPath,
-                    defaults: new { controller = "AccessController", action = "Token" }
+                    template: openIddictServerOptions.TokenEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Token" }
                 );
             }
 
@@ -150,8 +152,8 @@ namespace OrchardCore.OpenId
                 routes.MapAreaRoute(
                     name: "Access.Logout",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.LogoutEndpointPath,
-                    defaults: new { controller = "AccessController", action = "Logout" }
+                    template: openIddictServerOptions.LogoutEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Logout" }
                 );
             }
 
@@ -160,7 +162,7 @@ namespace OrchardCore.OpenId
                 routes.MapAreaRoute(
                     name: "UserInfo.Me",
                     areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.UserinfoEndpointPath,
+                    template: openIddictServerOptions.UserinfoEndpointPath.Value,
                     defaults: new { controller = "UserInfo", action = "Me" }
                 );
             }
