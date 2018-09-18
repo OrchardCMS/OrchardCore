@@ -45,7 +45,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                     section.SecretKey = model.SecretKey?.Trim();
 
                     // Reload tenant to apply settings.
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
