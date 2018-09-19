@@ -230,7 +230,7 @@
             ]
           },
           "FormPart": {
-            "Action": "[js: '/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId')))]",
+            "Action": "[js: getRootUrl('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
             "Method": "POST"
           }
         }
@@ -570,7 +570,7 @@
                   "Title": "Homepage"
                 },
                 "Location": {
-                  "Expression": "/"
+                  "Expression": "[js: getRootUrl() ]"
                 },
                 "Permanent": false
               }
@@ -579,7 +579,7 @@
           "Transitions": [
             {
               "Id": 0,
-              "SourceActivityId": "426zsv4abp93qv40cyqpkskpnc",
+              "SourceActivityId": "[js: variables('workflowActivityId')]",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "4gq1ch13zvjb56rrng70w55cmz"
             },
