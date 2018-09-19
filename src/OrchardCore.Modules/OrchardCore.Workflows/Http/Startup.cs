@@ -61,7 +61,7 @@ namespace OrchardCore.Workflows.Http
                 name: "HttpWorkflow",
                 areaName: "OrchardCore.Workflows",
                 template: "workflows/{action}",
-                defaults: new { controller = nameof(HttpWorkflowController) }
+                defaults: new { controller = "HttpWorkflow" }
             );
 
             routes.MapAreaRoute(
