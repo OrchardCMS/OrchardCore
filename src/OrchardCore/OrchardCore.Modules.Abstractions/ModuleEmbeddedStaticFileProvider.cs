@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -36,22 +35,30 @@ namespace OrchardCore.Modules
 
             var index = path.IndexOf('/');
 
+            // "{ModuleId}/**/*.*".
             if (index != -1)
             {
                 var application = _applicationContext.Application;
+
+                // Resolve the module id.
                 var module = path.Substring(0, index);
 
+                // Check if it is an existing module.
                 if (application.Modules.Any(m=> m.Name == module))
                 {
+                    // Resolve the embedded file subpath: "wwwroot/**/*.*"
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
 
                     if (module != application.Name)
                     {
+                        // Get the embedded file info from the module assembly.
                         return application.GetModule(module).GetFileInfo(fileSubPath);
                     }
 
-                    fileSubPath = application.Root + fileSubPath;
-                    return new PhysicalFileInfo(new FileInfo(fileSubPath));
+                    // Application static files can be still requested in a regular way "/**/*.*".
+                    // Here, it's done through the Application's module "{ApplicationName}/**/*.*".
+                    // But we still serve them from the same physical files "{WebRootPath}/**/*.*".
+                    return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
                 }
             }
 

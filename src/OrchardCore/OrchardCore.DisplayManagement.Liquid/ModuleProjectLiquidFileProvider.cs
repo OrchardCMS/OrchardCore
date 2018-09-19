@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -35,16 +34,20 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                     foreach (var module in application.Modules)
                     {
+                        // If the module and the application assemblies are not at the same location,
+                        // this means that the module is referenced as a package, not as a project in dev.
                         if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
+                        // Get module assets which are liquid template files.
                         assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
                             .EndsWith(".liquid", StringComparison.Ordinal)));
                     }
 
+                    // Init the mapping between module and project asset paths.
                     _paths = assets.ToDictionary(a => a.ModuleAssetPath, a => a.ProjectAssetPath);
                 }
             }
@@ -64,8 +67,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var path = NormalizePath(subpath);
 
+            // Map the module asset path to the project asset path.
             if (_paths.TryGetValue(path, out var projectAssetPath))
             {
+                // Serve the project asset from the physical file system.
                 return new PhysicalFileInfo(new FileInfo(projectAssetPath));
             }
 
@@ -81,8 +86,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var path = NormalizePath(filter);
 
+            // Map the module asset path to the project asset path.
             if (_paths.TryGetValue(path, out var projectAssetPath))
             {
+                // Watch the project asset from the physical file system.
                 return new PollingFileChangeToken(new FileInfo(projectAssetPath));
             }
 

@@ -13,7 +13,7 @@ namespace OrchardCore.Contents.Indexing
         public const string PublishedKey = "Content.ContentItem.Published";
         public const string PublishedUtcKey = "Content.ContentItem.PublishedUtc";
         public const string BodyAspectBodyKey = "Content.BodyAspect.Body";
-        public const string DisplayTextAnalyzedKey = "Content.ContentItemMetadata.DisplayText.Analyzed";
-        public const string DisplayTextKey = "Content.ContentItemMetadata.DisplayText";
+        public const string DisplayTextAnalyzedKey = "Content.ContentItem.DisplayText.Analyzed";
+        public const string DisplayTextKey = "Content.ContentItem.DisplayText";
     }
 }
