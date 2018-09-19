@@ -18,7 +18,7 @@ namespace OrchardCore.Workflows.Drivers
 
         protected override void UpdateActivity(ScriptTaskViewModel model, ScriptTask activity)
         {
-            activity.Title = model.Title?.Trim();
+            activity.Title = model.Title?.Trim()?? string.Empty;
             activity.AvailableOutcomes = model.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             activity.Script = new WorkflowExpression<object>(model.Script);
         }
