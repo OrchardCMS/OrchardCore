@@ -66,6 +66,8 @@ namespace OrchardCore.Environment.Shell.Data
             configurationProvider.Set($"{name}:TablePrefix", ObtainValue(configuration,$"{name}:TablePrefix"));
             configurationProvider.Set($"{name}:ConnectionString", ObtainValue(configuration,$"{name}:ConnectionString"));
             configurationProvider.Set($"{name}:State", ObtainValue(configuration,$"{name}:State"));
+            configurationProvider.Set($"{name}:Secret", ObtainValue(configuration, $"{name}:Secret"));
+            configurationProvider.Set($"{name}:RecipeName", ObtainValue(configuration, $"{name}:RecipeName"));
 
             configurationProvider.Commit();
         }

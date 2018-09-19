@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {

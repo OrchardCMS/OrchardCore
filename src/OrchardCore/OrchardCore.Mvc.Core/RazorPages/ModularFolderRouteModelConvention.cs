@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace OrchardCore.Mvc.RazorPages
@@ -29,24 +30,31 @@ namespace OrchardCore.Mvc.RazorPages
             }
 
             var fileName = pageName.Substring(fileIndex + 1);
+            var subpath = _folderPath + '/' + fileName;
 
-            if (pageName.EndsWith('/' + _folderPath + '/' + fileName))
+            if (pageName.EndsWith('/' + subpath))
             {
-                foreach (var selector in model.Selectors)
+                var selectors = model.Selectors.ToArray();
+
+                foreach (var selector in selectors)
                 {
                     selector.AttributeRouteModel.SuppressLinkGeneration = true;
-                }
+                    var pageTemplate = selector.AttributeRouteModel.Template;
 
-                var template = _route.Length > 0 ? _route + '/' + fileName : fileName;
-
-                model.Selectors.Add(new SelectorModel
-                {
-                    AttributeRouteModel = new AttributeRouteModel
+                    if (pageTemplate.StartsWith(subpath + '/'))
                     {
-                        Template = template,
-                        Name = template.Replace('/', '.')
+                        var template = pageTemplate.Replace(_folderPath, _route).TrimStart('/');
+
+                        model.Selectors.Add(new SelectorModel
+                        {
+                            AttributeRouteModel = new AttributeRouteModel
+                            {
+                                Template = template,
+                                Name = template.Replace('/', '.')
+                            }
+                        });
                     }
-                });
+                }
             }
         }
     }

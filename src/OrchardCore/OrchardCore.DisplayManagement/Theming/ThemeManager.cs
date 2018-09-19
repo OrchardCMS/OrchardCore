@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Environment.Extensions;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Extensions;

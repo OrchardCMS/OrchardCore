@@ -25,13 +25,26 @@ namespace OrchardCore.Mvc
             {
                 if (options.FileProviders[i] == _hostingEnvironment.ContentRootFileProvider)
                 {
+                    // The 'ContentRootFileProvider' is replaced because all razor files are embedded.
+                    // Unless for the application's module for which another custom provider is used.
                     options.FileProviders[i] = new ModuleEmbeddedFileProvider(_applicationContext);
                 }
             }
 
+            // To let the application behave as a module, its razor files are requested under the virtual
+            // ".Modules" folder, but there are still served from the file system by this custom provider.
+            options.FileProviders.Insert(0, new ApplicationRazorFileProvider(_applicationContext));
+
             if (_hostingEnvironment.IsDevelopment())
             {
+                // While in development, razor files are 1st served from their module project locations.
                 options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_applicationContext));
+            }
+            else
+            {
+                // In production, the system find application compiled pages under the "Pages" folder.
+                // This provider tells to find them under the ".Modules/{ApplicationName}/Pages" folder.
+                options.FileProviders.Add(new ApplicationCompiledPageFileProvider(_applicationContext));
             }
         }
     }

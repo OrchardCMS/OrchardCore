@@ -4,14 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
 using OrchardCore.Forms.Configuration;
 using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
-using OrchardCore.Forms.Handlers;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.Services;
 using OrchardCore.Modules;
@@ -66,7 +64,6 @@ namespace OrchardCore.Forms
             services.AddSingleton<ContentPart, ValidationSummaryPart>();
             services.AddSingleton<ContentPart, ValidationPart>();
 
-            services.AddScoped<IContentPartHandler, FormInputElementPartHandler>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();

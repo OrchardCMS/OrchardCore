@@ -298,7 +298,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Logging.Serilog", "src\OrchardCore\OrchardCore.Logging.Serilog\OrchardCore.Logging.Serilog.csproj", "{B9DC28CB-F531-4533-B53E-6599970BF3F8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore", "src\OrchardCore\OrchardCore\OrchardCore.csproj", "{4D6A8061-14A5-4E0B-8D0B-8B7C67A0EA24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
 EndProject
+<Merge Conflict>EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Abstractions", "src\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj", "{F145B68A-E3A7-4001-9C56-A5EC3DDE329C}"
@@ -312,6 +314,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Infrastructure", "src\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj", "{9FC1AA36-6334-4A62-AB19-C091BBFDD1E0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Infrastructure.Abstractions", "src\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj", "{7440FFDC-3815-4C7D-B4C6-FE1D521AD1FE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functional", "Functional", "{7B59A132-759A-4B32-B5A0-D585B9F33AD2}"
+	ProjectSection(SolutionItems) = preProject
+		test\Functional\package.json = test\Functional\package.json
+		test\Functional\setup.test.js = test\Functional\setup.test.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -981,6 +989,7 @@ Global
 		{4D6A8061-14A5-4E0B-8D0B-8B7C67A0EA24} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{F145B68A-E3A7-4001-9C56-A5EC3DDE329C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{7B59A132-759A-4B32-B5A0-D585B9F33AD2} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{DA38A60E-1D85-41BC-BED2-07AA721EE9C7} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{0B8F189D-B697-457C-B2D5-E1C65EA349BC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{61816498-35A2-48E2-8EFE-96E90C652675} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
