@@ -2,7 +2,7 @@
 <style asp-src="/OrchardCore.Themes/Styles/themes.admin.css"></style>
 <div class="alert alert-warning">
     <h4>@T["Changing default themes"]</h4>
-    <p>@T["This page lets you change the site's themes. Try <code>The Default Theme</code> and <code>The Blog Theme</code> for the front-end or <code>The Admin Theme</code> for the admin."]</p>
+    <p>@T["This page lets you change the site's default themes for both the front-end and the back-end."]</p>
 </div>
 
 @if (!Model.Themes.Any())
@@ -65,5 +65,12 @@ else
                 </div>
             </div>
         }
+    </div>
+
+    <div class="alert alert-danger">
+        <h4>@T["Reset default themes"]</h4>
+        <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
+        <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+        <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
     </div>
 }

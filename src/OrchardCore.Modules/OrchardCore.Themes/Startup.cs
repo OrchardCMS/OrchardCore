@@ -24,7 +24,6 @@ namespace OrchardCore.Themes
         {
             services.AddRecipeExecutionStep<ThemesStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IThemeSelector, SafeModeThemeSelector>();
             services.AddScoped<IThemeSelector, SiteThemeSelector>();
             services.AddScoped<ISiteThemeService, SiteThemeService>();
             services.AddScoped<INavigationProvider, AdminMenu>();

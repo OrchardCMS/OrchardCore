@@ -148,9 +148,29 @@ The following Liquid tags, properties and filters are available by default to an
 
 | Expression | Type | Description | Example |
 | ---------- | ---- | ----------- | ------- |
-| CorrelationId | Property | Returns the correlation value of the workflow instance. | `{{ CorrelationId }}` |
-| Input | Property | Returns the Input dictionary. | `{{ Input["Foo"] }}` |
-| Properties | Property | Returns the Properties dictionary. | `{{ Properties["Foo"] }}` |
+| Workflow.CorrelationId | Property | Returns the correlation value of the workflow instance. | `{{ Workflow.CorrelationId }}` |
+| Workflow.Input | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
+| Workflow.Output | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
+| Workflow.Properties | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
+
+Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you cal also use dot notation, e.g.:
+
+```liquid
+{{ Workflow.Input.ContentItem }}
+```
+
+### Liquid Expressions and ContentItem Events
+
+When handling content related events using a workflow, the content item in question is made available to the workflow via the `Input` dictionary.
+For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from fieldsliquid-ebabled fields as follows:
+
+```liquid
+{{ Workflow.Input.ContentItem | display_url }}
+{{ Workflow.Input.ContentItem | display_text }}
+{{ Workflow.Input.ContentItem.DisplayText }}
+```
+
+For more examples of supported content item filters, see documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
 
 ## Activities out of the box
 

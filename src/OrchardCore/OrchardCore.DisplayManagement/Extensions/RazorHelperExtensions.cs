@@ -1,5 +1,5 @@
 using System.Globalization;
-using OrchardCore.DisplayManagement.Razor;
+using OrchardCore;
 
 public static class RazorHelperExtensions
 {
@@ -7,7 +7,7 @@ public static class RazorHelperExtensions
     /// Returns the text writing directionality or the current request.
     /// </summary>
     /// <returns><c>"rtl"</c> if the current culture is Left To Right, empty otherwise.</returns>
-    public static string CultureDir(this OrchardRazorHelper razorHelper)
+    public static string CultureDir(this IOrchardHelper orchardHelper)
     {
         return CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "";
     }
@@ -15,7 +15,7 @@ public static class RazorHelperExtensions
     /// <summary>
     /// Returns the current culture name.
     /// </summary>
-    public static string CultureName(this OrchardRazorHelper razorHelper)
+    public static string CultureName(this IOrchardHelper orchardHelper)
     {
         return CultureInfo.CurrentUICulture.Name;
     }

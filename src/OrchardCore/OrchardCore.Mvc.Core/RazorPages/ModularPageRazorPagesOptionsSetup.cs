@@ -1,22 +1,22 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IApplicationContext _applicationContext;
 
-        public ModularPageRazorPagesOptionsSetup(IHostingEnvironment hostingEnvironment)
+        public ModularPageRazorPagesOptionsSetup(IApplicationContext applicationContext)
         {
-            _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
         public void Configure(RazorPagesOptions options)
         {
             options.RootDirectory = "/";
-            options.Conventions.Add(new DefaultModularPageRouteModelConvention(_hostingEnvironment));
+            options.Conventions.Add(new DefaultModularPageRouteModelConvention(_applicationContext));
         }
     }
 }

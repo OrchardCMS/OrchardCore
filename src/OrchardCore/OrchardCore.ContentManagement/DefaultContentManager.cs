@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.ContentManagement
 {
@@ -83,6 +84,38 @@ namespace OrchardCore.ContentManagement
             }
 
             return GetAsync(contentItemId, VersionOptions.Published);
+        }
+
+        public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
+        {
+            if (contentItemIds == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemIds));
+            }
+
+            List<ContentItem> contentItems;
+
+            if (latest)
+            {
+                contentItems = (await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest == true)
+                    .ListAsync()).ToList();
+            }
+            else
+            {
+                contentItems = (await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
+                    .ListAsync()).ToList();
+            }
+
+            for (var i = 0; i < contentItems.Count; i++)
+            {
+                contentItems[i] = await LoadAsync(contentItems[i]);
+            }
+            
+            return contentItems;
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
@@ -166,7 +199,7 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
-        private async Task<ContentItem> LoadAsync(ContentItem contentItem)
+        public async Task<ContentItem> LoadAsync(ContentItem contentItem)
         {
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {
@@ -312,6 +345,7 @@ namespace OrchardCore.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
+            buildingContentItem.DisplayText = existingContentItem.DisplayText;
             buildingContentItem.Latest = true;
             buildingContentItem.Data = new JObject(existingContentItem.Data);
 
@@ -321,11 +355,6 @@ namespace OrchardCore.ContentManagement
             await ReversedHandlers.InvokeAsync(async handler => await handler.VersionedAsync(context), _logger);
 
             return context.BuildingContentItem;
-        }
-
-        public Task CreateAsync(ContentItem contentItem)
-        {
-            return CreateAsync(contentItem, VersionOptions.Published);
         }
 
         public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
@@ -364,6 +393,16 @@ namespace OrchardCore.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(publishContext), _logger);
             }
+        }
+
+        public async Task UpdateAsync(ContentItem contentItem)
+        {
+            var context = new UpdateContentContext(contentItem);
+
+            await Handlers.InvokeAsync(async handler => await handler.UpdatingAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.UpdatedAsync(context), _logger);
+
+            _session.Save(contentItem);
         }
 
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
