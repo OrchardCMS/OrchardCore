@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {

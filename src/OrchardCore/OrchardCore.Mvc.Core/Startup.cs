@@ -70,7 +70,7 @@ namespace OrchardCore.Mvc
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
+                ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
     }
 }
