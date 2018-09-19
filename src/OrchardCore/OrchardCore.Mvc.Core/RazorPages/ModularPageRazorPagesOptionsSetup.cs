@@ -3,15 +3,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+
 namespace OrchardCore.Mvc.RazorPages
 {
     public class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
     {
         private readonly IApplicationContext _applicationContext;
+        private readonly ShellSettings _shellSettings;
 
-        public ModularPageRazorPagesOptionsSetup(IApplicationContext applicationContext)
+        public ModularPageRazorPagesOptionsSetup(IApplicationContext applicationContext, ShellSettings shellSettings)
         {
             _applicationContext = applicationContext;
+            _shellSettings = shellSettings;
         }
 
         public void Configure(RazorPagesOptions options)
@@ -19,8 +24,17 @@ namespace OrchardCore.Mvc.RazorPages
             // Only serve pages under the "Areas" folder and whose routes have an area name.
             options.Conventions.AddFolderRouteModelConvention("/", model => model.Selectors.Clear());
 
-            // Add a custom folder route to serve the application's module pages from the root.
-            options.Conventions.AddAreaFolderRoute(_applicationContext.Application.Name, "/", "");
+            if (_shellSettings.State != TenantState.Running)
+            {
+                // Don't serve any page of the application'module which is enabled during a setup.
+                options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/",
+                    model => model.Selectors.Clear());
+            }
+            else
+            {
+                // Add a custom folder route to serve the application's module pages from the root.
+                options.Conventions.AddAreaFolderRoute(_applicationContext.Application.Name, "/", "");
+            }
         }
     }
 }
