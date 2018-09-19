@@ -41,7 +41,7 @@ namespace OrchardCore.Mvc.RazorPages
                     selector.AttributeRouteModel.SuppressLinkGeneration = true;
                     var pageTemplate = selector.AttributeRouteModel.Template;
 
-                    if (pageTemplate.StartsWith(subpath + '/'))
+                    if (pageTemplate.Equals(subpath) || pageTemplate.StartsWith(subpath + '/'))
                     {
                         var template = pageTemplate.Replace(_folderPath, _route).TrimStart('/');
 

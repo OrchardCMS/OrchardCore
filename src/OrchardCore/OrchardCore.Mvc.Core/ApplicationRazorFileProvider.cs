@@ -14,7 +14,7 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ApplicationRazorFileProvider : IFileProvider
     {
-        private static IFileProvider _pageFileProvider;
+        private static IFileProvider _rootFileProvider;
         private static object _synLock = new object();
 
         private readonly IApplicationContext _applicationContext;
@@ -23,18 +23,18 @@ namespace OrchardCore.Modules
         {
             _applicationContext = applicationContext;
 
-            if (_pageFileProvider != null)
+            if (_rootFileProvider != null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_pageFileProvider == null)
+                if (_rootFileProvider == null)
                 {
                     // Razor pages are not watched in the same way as other razor views.
-                    // We need a physical file provider on the application root folder.
-                    _pageFileProvider = new PhysicalFileProvider(Application.Root);
+                    // So we need a physical file provider on the application root folder.
+                    _rootFileProvider = new PhysicalFileProvider(Application.Root);
                 }
             }
         }
@@ -102,7 +102,12 @@ namespace OrchardCore.Modules
                 return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
             }
 
-            return new NotFoundFileInfo(subpath);
+            // We still serve the standard fallbacks of views locations from the root,
+            // this even they are not requested under the virtual application's module.
+            else
+            {
+                return _rootFileProvider.GetFileInfo(subpath);
+            }
         }
 
         public IChangeToken Watch(string filter)
@@ -124,15 +129,23 @@ namespace OrchardCore.Modules
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
             }
 
-            // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
+            // The razor view engine uses a watch on "/**/*.cshtml" but only for razor pages.
             // So here, we use a file provider to only watch the application "Pages" folder.
 
-            if (path.Equals("**/*.cshtml"))
+            else if (path.Equals("**/*.cshtml"))
             {
-                return _pageFileProvider.Watch("Pages/**/*.cshtml");
+                return _rootFileProvider.Watch("Pages/**/*.cshtml");
             }
 
-            return NullChangeToken.Singleton;
+            // Note: For pages razor also watches "/Areas/**/*.cshtml" but that's ok
+            // because it is not from the root, it only concerns the "Areas" folder.
+
+            // We still watch the standard fallbacks of views locations from the root,
+            // this even they are not requested under the virtual application's module.
+            else
+            {
+                return _rootFileProvider.Watch(filter);
+            }
         }
 
         private string NormalizePath(string path)

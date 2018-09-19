@@ -32,7 +32,7 @@ namespace OrchardCore.Mvc.RazorPages
                     selector.AttributeRouteModel.SuppressLinkGeneration = true;
                     var pageTemplate = selector.AttributeRouteModel.Template;
 
-                    if (pageTemplate.StartsWith(_pageName + '/'))
+                    if (pageTemplate.Equals(_pageName) || pageTemplate.StartsWith(_pageName + '/'))
                     {
                         var template = pageTemplate.Replace(_pageName, _route).TrimStart('/');
 

@@ -76,9 +76,11 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                         {
                             if (moduleId != theme.Id)
                             {
+                                var themePagesPath = '/' + theme.Extension.SubPath + "/Pages";
                                 var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
                                 var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
                                 yield return themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
+                                yield return themePagesPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                                 yield return themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
                             }
                         }

@@ -217,7 +217,7 @@ namespace OrchardCore.Mvc
             // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
 
-            if (path.Equals("**/*.cshtml"))
+            else if (path.Equals("**/*.cshtml"))
             {
                 var changeTokens = new List<IChangeToken>();
 
