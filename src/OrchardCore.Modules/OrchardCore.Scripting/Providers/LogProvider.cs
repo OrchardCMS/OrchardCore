@@ -16,8 +16,7 @@ namespace OrchardCore.Scripting.Providers
                 Name = "log",
                 Method = serviceProvider => (Action<string, string, object>)((level, text, param) =>
                 {
-                    LogLevel logLevel;
-                    if(!Enum.TryParse< LogLevel>(level, true, out logLevel))
+                    if (!Enum.TryParse<LogLevel>(level, true, out var logLevel))
                     {
                         logLevel = LogLevel.Information;
                     }
