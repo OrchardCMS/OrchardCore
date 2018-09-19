@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -12,6 +13,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Modules;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -23,6 +26,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
+        private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
+        private readonly IDataProtectionProvider _dataProtectorProvider;
+        private readonly IClock _clock;
         private readonly INotifier _notifier;
 
         public AdminController(
@@ -31,10 +37,16 @@ namespace OrchardCore.Tenants.Controllers
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
+            IDataProtectionProvider dataProtectorProvider,
+            IClock clock,
             INotifier notifier,
+            IEnumerable<IRecipeHarvester> recipeHarvesters,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
+            _dataProtectorProvider = dataProtectorProvider;
+            _clock = clock;
+            _recipeHarvesters = recipeHarvesters;
             _orchardHost = orchardHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
@@ -52,14 +64,25 @@ namespace OrchardCore.Tenants.Controllers
         public async Task<IActionResult> Index()
         {
             var shells = await GetShellsAsync();
+            var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
             var model = new AdminIndexViewModel
             {
-                ShellSettingsEntries = shells.Select(x => new ShellSettingsEntry
+                ShellSettingsEntries = shells.Select(x =>
                 {
-                    Name = x.Settings.Name,
-                    ShellSettings = x.Settings,
-                    IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                    var entry = new ShellSettingsEntry
+                    {
+                        Name = x.Settings.Name,
+                        ShellSettings = x.Settings,
+                        IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                    };
+
+                    if (x.Settings.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings.Secret))
+                    {
+                        entry.Token = dataProtector.Protect(x.Settings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                    }
+
+                    return entry;
                 }).ToList()
             };
 
@@ -79,7 +102,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
+
             var model = new EditTenantViewModel();
+            model.Recipes = recipes;
 
             return View(model);
         }
@@ -112,7 +139,9 @@ namespace OrchardCore.Tenants.Controllers
                     ConnectionString = model.ConnectionString,
                     TablePrefix = model.TablePrefix,
                     DatabaseProvider = model.DatabaseProvider,
-                    State = TenantState.Uninitialized
+                    State = TenantState.Uninitialized,
+                    Secret = Guid.NewGuid().ToString(),
+                    RecipeName = model.RecipeName
                 };
 
                 _shellSettingsManager.SaveSettings(shellSettings);
@@ -120,6 +149,10 @@ namespace OrchardCore.Tenants.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
+            model.Recipes = recipes;
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -159,9 +192,14 @@ namespace OrchardCore.Tenants.Controllers
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {
+                var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+                var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
+                model.Recipes = recipes;
+
                 model.DatabaseProvider = shellSettings.DatabaseProvider;
                 model.TablePrefix = shellSettings.TablePrefix;
                 model.ConnectionString = shellSettings.ConnectionString;
+                model.RecipeName = shellSettings.RecipeName;
                 model.CanSetDatabasePresets = true;
             }
 
@@ -209,6 +247,8 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings.DatabaseProvider = model.DatabaseProvider;
                     shellSettings.TablePrefix = model.TablePrefix;
                     shellSettings.ConnectionString = model.ConnectionString;
+                    shellSettings.RecipeName = model.RecipeName;
+                    shellSettings.Secret = Guid.NewGuid().ToString();
                 }
 
                 await _orchardHost.UpdateShellSettingsAsync(shellSettings);
@@ -223,8 +263,13 @@ namespace OrchardCore.Tenants.Controllers
                 model.DatabaseProvider = shellSettings.DatabaseProvider;
                 model.TablePrefix = shellSettings.TablePrefix;
                 model.ConnectionString = shellSettings.ConnectionString;
+                model.RecipeName = shellSettings.RecipeName;
                 model.CanSetDatabasePresets = true;
             }
+
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
+            model.Recipes = recipes;
 
             // If we got this far, something failed, redisplay form
             return View(model);

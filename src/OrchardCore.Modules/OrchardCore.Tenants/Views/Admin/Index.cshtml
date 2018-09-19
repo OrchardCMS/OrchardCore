@@ -1,10 +1,12 @@
 @model AdminIndexViewModel
 @using OrchardCore.Environment.Shell.Models
 @using OrchardCore.Environment.Shell
+@using System.Net
 
 @functions {
-    public string GetTenantUrl(ShellSettings tenantShellSettings)
+    public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
     {
+        ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
         var requestHostInfo = Context.Request.Host;
 
         var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
@@ -18,6 +20,11 @@
         if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
         {
             result += "/" + tenantShellSettings.RequestUrlPrefix;
+        }
+
+        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        {
+            result +=  "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
         }
 
         return result;
@@ -54,12 +61,12 @@
                         }
                         @if (entry.ShellSettings.State == TenantState.Uninitialized)
                         {
-                            <a class="btn btn-success btn-sm" href="@GetTenantUrl(entry.ShellSettings)">@T["Setup"]</a>
+                            <a class="btn btn-success btn-sm" href="@GetTenantUrl(entry)">@T["Setup"]</a>
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                     <h5>
-                        <a href="@GetTenantUrl(entry.ShellSettings)">@entry.Name</a>
+                        <a href="@GetTenantUrl(entry)">@entry.Name</a>
                         <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
                         @switch (entry.ShellSettings.State)
                         {

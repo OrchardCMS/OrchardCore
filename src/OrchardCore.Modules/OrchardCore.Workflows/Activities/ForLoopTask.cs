@@ -82,6 +82,7 @@ namespace OrchardCore.Workflows.Activities
             }
             else
             {
+                Index = from;
                 return Outcomes("Done");
             }
         }

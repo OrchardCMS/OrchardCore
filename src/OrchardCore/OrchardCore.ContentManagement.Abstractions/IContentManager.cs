@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement
@@ -32,7 +34,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets the published content item with the specified id
         /// </summary>
-        /// <param name="id">The id content item id to load</param>
+        /// <param name="id">The content item id to load</param>
         Task<ContentItem> GetAsync(string id);
 
         /// <summary>
@@ -43,10 +45,27 @@ namespace OrchardCore.ContentManagement
         Task<ContentItem> GetAsync(string id, VersionOptions options);
 
         /// <summary>
+        /// Gets the published content items with the specified ids
+        /// </summary>
+        /// <param name="contentItemIds">The content item ids to load</param>
+        /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+        /// <remarks>
+        /// This method will always issue a database query.
+        /// This means that it should be used only to get a list of content items that have not been loaded.
+        /// </remarks>
+        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false);
+
+        /// <summary>
         /// Gets the content item with the specified version id
         /// </summary>
         /// <param name="contentItemVersionId">The content item version id</param>
         Task<ContentItem> GetVersionAsync(string contentItemVersionId);
+
+        /// <summary>
+        /// Triggers the Load events for a content item that was queried directly from the database.
+        /// </summary>
+        /// <param name="contentItem">The content item </param>
+        Task<ContentItem> LoadAsync(ContentItem contentItem);
 
         /// <summary>
         /// Removes <see cref="ContentItem.Latest"/> and <see cref="ContentItem.Published"/> flags
@@ -96,6 +115,18 @@ namespace OrchardCore.ContentManagement
         public static Task<ContentItemMetadata> GetContentItemMetadataAsync(this IContentManager contentManager, IContent content)
         {
             return contentManager.PopulateAspectAsync<ContentItemMetadata>(content);
+        }
+
+        public static async Task<IEnumerable<ContentItem>> LoadAsync(this IContentManager contentManager, IEnumerable<ContentItem> contentItems)
+        {
+            var results = new List<ContentItem>(contentItems.Count());
+
+            foreach (var contentItem in contentItems)
+            {
+                results.Add(await contentManager.LoadAsync(contentItem));
+            }
+
+            return results;
         }
     }
 
