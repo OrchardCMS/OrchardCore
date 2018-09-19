@@ -230,7 +230,7 @@
             ]
           },
           "FormPart": {
-            "Action": "[js: getRootUrl('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
+            "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
             "Method": "POST"
           }
         }
@@ -570,7 +570,7 @@
                   "Title": "Homepage"
                 },
                 "Location": {
-                  "Expression": "[js: getRootUrl() ]"
+                  "Expression": "[js: getUrlPrefix() ]"
                 },
                 "Permanent": false
               }

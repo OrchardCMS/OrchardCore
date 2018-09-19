@@ -8,13 +8,13 @@ namespace OrchardCore.Contents.Scripting
 {
     public class UrlMethodsProvider : IGlobalMethodProvider
     {
-        private readonly GlobalMethod _getRootUrl;
+        private readonly GlobalMethod _getUrlPrefix;
 
         public UrlMethodsProvider()
         {
-            _getRootUrl = new GlobalMethod
+            _getUrlPrefix = new GlobalMethod
             {
-                Name = "getRootUrl",
+                Name = "getUrlPrefix",
                 Method = serviceProvider => (Func<string, string>)((string path) =>
                  {
                      var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _getRootUrl };
+            return new[] { _getUrlPrefix };
         }
     }
 }

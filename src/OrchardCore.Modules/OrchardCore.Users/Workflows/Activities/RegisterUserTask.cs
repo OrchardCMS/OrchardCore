@@ -57,9 +57,8 @@ namespace OrchardCore.Users.Workflows.Activities
                 if (string.IsNullOrWhiteSpace(userName))
                     userName = email;
 
-                var user = new User() { UserName = userName, Email = email };
                 var errors = new Dictionary<string, string>();
-                user = await _userService.CreateUserAsync(user, null, (key, message) => errors.Add(key, message));
+                var user = await _userService.CreateUserAsync(new User() { UserName = userName, Email = email }, null, (key, message) => errors.Add(key, message));
                 if (errors.Count > 0)
                 {
                     var updater = _updateModelAccessor.ModelUpdater;
