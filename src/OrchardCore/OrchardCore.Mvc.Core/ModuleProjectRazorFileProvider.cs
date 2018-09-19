@@ -233,6 +233,11 @@ namespace OrchardCore.Mvc
                     }
                 }
 
+                if (changeTokens.Count == 1)
+                {
+                    return changeTokens.First();
+                }
+
                 if (changeTokens.Count > 0)
                 {
                     // Use a composite of all provider tokens.

@@ -25,6 +25,7 @@ namespace OrchardCore.Mvc.RazorPages
         {
         }
 
+        // Called the 1st time a page is requested or if any page has been updated.
         public void OnProvidersExecuted(PageApplicationModelProviderContext context)
         {
             // Check if the page belongs to an enabled module.

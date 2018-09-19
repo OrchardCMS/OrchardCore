@@ -46,7 +46,10 @@ namespace OrchardCore.Mvc
 
         public void OnProvidersExecuted(ApplicationModelProviderContext context)
         {
-            // This code is called only once per tenant during the construction of routes
+            // This code is called only once per tenant during the construction of routes.
+            // Or if an 'IActionDescriptorChangeProvider' tells that an action descriptor
+            // has changed. E.g 'PageActionDescriptorChangeProvider' after any page update.
+
             foreach (var controller in context.Result.Controllers)
             {
                 var controllerType = controller.ControllerType.AsType();
