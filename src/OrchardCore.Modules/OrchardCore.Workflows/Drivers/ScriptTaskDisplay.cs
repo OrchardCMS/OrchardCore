@@ -11,14 +11,12 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void EditActivity(ScriptTask source, ScriptTaskViewModel model)
         {
-            model.Title = source.Title;
             model.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
             model.Script = source.Script.Expression;
         }
 
         protected override void UpdateActivity(ScriptTaskViewModel model, ScriptTask activity)
         {
-            activity.Title = model.Title?.Trim()?? string.Empty;
             activity.AvailableOutcomes = model.AvailableOutcomes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             activity.Script = new WorkflowExpression<object>(model.Script);
         }
