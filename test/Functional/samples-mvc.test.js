@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const { spawn } = require('child_process');
+const child_process = require('child_process');
 const rimraf = require('rimraf');
 
 let browser;
@@ -14,8 +14,11 @@ jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
 
+    console.log('Building ...');
+    child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: '../../src/OrchardCore.Mvc.Web' });
+
     console.log('Starting application ...');
-    server = spawn('dotnet', ['run'], { cwd: '../../src/OrchardCore.Mvc.Web' });
+    server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.1/OrchardCore.Mvc.Web.dll'], { cwd: '../../src/OrchardCore.Mvc.Web' });
 
     server.stdout.on('data', (data) => {
         let now = new Date().toLocaleTimeString();
@@ -30,13 +33,19 @@ beforeAll(async () => {
         console.log(`Server process exited with code ${code}`);
     });
 
-    browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100  } : { });
+    console.log('loading browser');
+    browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
     page = await browser.newPage();
 });
 
 afterAll(async () => {
-    await browser.close();
-    server.kill();
+    if (browser) {
+        await browser.close();
+    }
+
+    if (server) {
+        server.kill('SIGINT');
+    }
 });
 
 describe('ASP.NET MVC', () => {

@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const { spawn } = require('child_process');
+const child_process = require('child_process');
 const rimraf = require('rimraf');
 
 let browser;
@@ -14,8 +14,12 @@ jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
 
+    console.log('Building ...');
+    child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: '../../src/OrchardCore.Nancy.Web' });
+
     console.log('Starting application ...');
-    server = spawn('dotnet', ['run'], { cwd: '../../src/OrchardCore.Nancy.Web' });
+    server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.1/OrchardCore.Nancy.Web.dll'], { cwd: '../../src/OrchardCore.Nancy.Web' });
+
 
     server.stdout.on('data', (data) => {
         let now = new Date().toLocaleTimeString();
@@ -35,8 +39,13 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await browser.close();
-    server.kill();
+    if (browser) {
+        await browser.close();
+    }
+
+    if (server) {
+        server.kill('SIGINT');
+    }
 });
 
 describe('Nancy', () => {
