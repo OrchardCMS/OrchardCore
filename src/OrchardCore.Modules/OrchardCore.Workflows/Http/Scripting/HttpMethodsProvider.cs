@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
@@ -43,7 +46,8 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "absoluteUrl",
                 Method = serviceProvider => (Func<string, string>)(relativePath =>
                 {
-                    var urlHelper = serviceProvider.GetRequiredService<IUrlHelper>();
+                    var urlHelperّFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
+                    var urlHelper = urlHelperّFactory.GetUrlHelper(new ActionContext(httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
                     return urlHelper.ToAbsoluteUrl(relativePath);
                 })
             };
