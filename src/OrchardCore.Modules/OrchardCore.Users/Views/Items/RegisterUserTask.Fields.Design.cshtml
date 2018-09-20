@@ -5,5 +5,8 @@
 @model ActivityViewModel<RegisterUserTask>
 
 <header>
-    <h4><i class="fa fa-user"></i>@Model.Activity.GetTitleOrDefault(() => T["Register User"])</h4>
+    @{ 
+        var icon = Model.Activity.ConfirmUser ? "fa-user-shield" : "fa-user";
+    }
+    <h4><i class="fa @icon"></i>@Model.Activity.GetTitleOrDefault(() => T["Register User"])</h4>
 </header>

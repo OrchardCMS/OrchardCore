@@ -35,6 +35,20 @@ namespace OrchardCore.Users.Workflows.Activities
         // The category to which this activity belongs. The activity picker groups activities by this category.
         public override LocalizedString Category => T["Content"];
 
+        // The message to display.
+        public bool ConfirmUser
+        {
+            get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
+        // The message to display.
+        public WorkflowExpression<string> ConfirmationEmailTemplate
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
