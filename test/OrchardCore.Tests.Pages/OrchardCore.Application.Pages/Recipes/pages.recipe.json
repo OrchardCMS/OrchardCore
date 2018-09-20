@@ -58,6 +58,8 @@
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
 
+        "Module.Pages",
+
         // Themes
         "Theme.Pages",
         "TheAdmin",
