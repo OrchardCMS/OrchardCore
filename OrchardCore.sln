@@ -341,7 +341,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Templates",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Logging.Serilog", "src\OrchardCore\OrchardCore.Logging.Serilog\OrchardCore.Logging.Serilog.csproj", "{B9DC28CB-F531-4533-B53E-6599970BF3F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Tests.Pages", "OrchardCore.Tests.Pages", "{E920D550-AB94-4449-AD6D-ED97985BF4F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Application.Pages", "OrchardCore.Application.Pages", "{3436F913-676F-4F37-87DF-BAC7941C6478}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Pages", "test\OrchardCore.Tests.Pages\OrchardCore.Application.Pages\OrchardCore.Application.Pages.csproj", "{4521E800-BFA3-4A62-8F1A-658B179D7E41}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes.Pages", "OrchardCore.Themes.Pages", "{102FB182-10BB-4A7C-B4BE-EE7DC74565B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Pages", "OrchardCore.Modules.Pages", "{1547C14D-17C9-488E-A9F2-D81AD602B8A7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Theme.Pages", "test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Theme.Pages\Theme.Pages.csproj", "{3D437344-AD44-400D-890F-B6508ED82695}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -925,6 +937,14 @@ Global
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4521E800-BFA3-4A62-8F1A-658B179D7E41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4521E800-BFA3-4A62-8F1A-658B179D7E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4521E800-BFA3-4A62-8F1A-658B179D7E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4521E800-BFA3-4A62-8F1A-658B179D7E41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D437344-AD44-400D-890F-B6508ED82695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D437344-AD44-400D-890F-B6508ED82695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D437344-AD44-400D-890F-B6508ED82695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D437344-AD44-400D-890F-B6508ED82695}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1087,6 +1107,12 @@ Global
 		{6EF610C3-EC5A-45CC-BDCC-0159B6D2D15A} = {FA7416DC-50F5-4576-9166-78B5129DABA9}
 		{B9DC28CB-F531-4533-B53E-6599970BF3F8} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{E920D550-AB94-4449-AD6D-ED97985BF4F1} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
+		{3436F913-676F-4F37-87DF-BAC7941C6478} = {E920D550-AB94-4449-AD6D-ED97985BF4F1}
+		{4521E800-BFA3-4A62-8F1A-658B179D7E41} = {3436F913-676F-4F37-87DF-BAC7941C6478}
+		{102FB182-10BB-4A7C-B4BE-EE7DC74565B7} = {E920D550-AB94-4449-AD6D-ED97985BF4F1}
+		{1547C14D-17C9-488E-A9F2-D81AD602B8A7} = {E920D550-AB94-4449-AD6D-ED97985BF4F1}
+		{3D437344-AD44-400D-890F-B6508ED82695} = {102FB182-10BB-4A7C-B4BE-EE7DC74565B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
