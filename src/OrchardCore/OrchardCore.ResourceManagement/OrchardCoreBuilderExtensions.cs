@@ -14,11 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IRequireSettingsProvider, DefaultRequireSettingsProvider>();
             services.TryAddSingleton<IResourceManifestState, ResourceManifestState>();
 
-                services.AddTagHelpers<LinkTagHelper>();
-                services.AddTagHelpers<MetaTagHelper>();
-                services.AddTagHelpers<ResourcesTagHelper>();
-                services.AddTagHelpers<ScriptTagHelper>();
-                services.AddTagHelpers<StyleTagHelper>();
+            return services;
         }
     }
 }

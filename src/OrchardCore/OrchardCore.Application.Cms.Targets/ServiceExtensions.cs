@@ -1,6 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
-using OrchardCore.ResourceManagement.Filters;
 using OrchardCore.ResourceManagement.TagHelpers;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -43,12 +41,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(s =>
             {
                 s.AddResourceManagement();
-                s.AddTagHelpers(typeof(ResourcesTagHelper).Assembly);
 
-                s.Configure<MvcOptions>((options) =>
-                {
-                    options.Filters.Add(typeof(MetaGeneratorFilter));
-                });
+                services.AddTagHelpers<LinkTagHelper>();
+                services.AddTagHelpers<MetaTagHelper>();
+                services.AddTagHelpers<ResourcesTagHelper>();
+                services.AddTagHelpers<ScriptTagHelper>();
+                services.AddTagHelpers<StyleTagHelper>();
             });
 
 

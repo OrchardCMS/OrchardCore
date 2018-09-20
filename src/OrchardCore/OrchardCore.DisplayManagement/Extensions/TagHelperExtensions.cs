@@ -1,6 +1,5 @@
 using System.Reflection;
 using OrchardCore.DisplayManagement.TagHelpers;
-using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
