@@ -1,29 +1,42 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Email;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
     public class RegisterUserTask : TaskActivity
     {
         private readonly IUserService _userService;
+        private readonly UserManager<IUser> _userManager;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IStringLocalizer T;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public RegisterUserTask(IUserService userService, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<RegisterUserTask> t)
+        public RegisterUserTask(IUserService userService, UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<RegisterUserTask> t)
         {
             _userService = userService;
+            _userManager = userManager;
+            _expressionEvaluator = expressionEvaluator;
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
             T = t;
@@ -45,7 +58,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
         {
-            get => GetProperty(() => new WorkflowExpression<string>());
+            get => GetProperty(() => new WorkflowExpression<string>("Thank you for your interest! Please <a href=\"{{ emailConfirmationUrl }}\">click here</a> to confirm your email."));
             set => SetProperty(value);
         }
 
@@ -58,10 +71,15 @@ namespace OrchardCore.Users.Workflows.Activities
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-
-            var form = _httpContextAccessor.HttpContext.Request.Form;
-            var email = form["Email"];
-            var isValid = !string.IsNullOrWhiteSpace(email);
+            bool isValid = false;
+            IFormCollection form = null;
+            string email = null;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                form = _httpContextAccessor.HttpContext.Request.Form;
+                email = form["Email"];
+                isValid = !string.IsNullOrWhiteSpace(email);
+            }
             var outcome = isValid ? "Valid" : "Invalid";
 
 
@@ -72,7 +90,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     userName = email;
 
                 var errors = new Dictionary<string, string>();
-                var user = await _userService.CreateUserAsync(new User() { UserName = userName, Email = email }, null, (key, message) => errors.Add(key, message));
+                var user = (User)await _userService.CreateUserAsync(new User() { UserName = userName, Email = email }, null, (key, message) => errors.Add(key, message));
                 if (errors.Count > 0)
                 {
                     var updater = _updateModelAccessor.ModelUpdater;
@@ -84,6 +102,35 @@ namespace OrchardCore.Users.Workflows.Activities
                         }
                     }
                     outcome = "Invalid";
+                }
+                else if (ConfirmUser)
+                {
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var request = _httpContextAccessor.HttpContext.Request;
+                    var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
+                    if (request.Host.Port.HasValue)
+                        uriBuilder.Port = request.Host.Port.Value;
+                    uriBuilder.Path = string.Format("OrchardCore.Users/Registration/ConfirmEmail?userId={0}&code={1}", user.Id, code);
+                    workflowContext.Properties["emailConfirmationUrl"] = uriBuilder.Uri.ToString();
+
+                    var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
+                    var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
+                    var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
+                    message.To.Add(email);
+                    var smtpService = (ISmtpService)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(ISmtpService));
+                    var result = await smtpService.SendAsync(message);
+                    if (!result.Succeeded)
+                    {
+                        var updater = _updateModelAccessor.ModelUpdater;
+                        if (updater != null)
+                        {
+                            foreach (var item in result.Errors)
+                            {
+                                updater.ModelState.TryAddModelError(item.Name, item.Value);
+                            }
+                        }
+                        outcome = "Invalid";
+                    }
                 }
             }
 
