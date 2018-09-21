@@ -89,7 +89,7 @@ describe('Create Tenants', () => {
         await page.goto(`${basePath}/OrchardCore.Tenants/Admin/Index`);
         await expect(await page.content()).toMatch('Default');
 
-        var tenantsCount = expect((await page.$$("div.properties")).length).toBe(1);
+        await expect((await page.$$("div.properties")).length).toBe(1);
     });
 
     it('should create a tenant based on Agency', async () => {
@@ -109,15 +109,8 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Agency');
 
         // Go to Setup page
-        const setupUrl = await page.evaluate(() => {
-			let a = Array.prototype.slice.call(document.querySelectorAll('a'))
-				.filter(function (el) {
-					return el.textContent === "Setup";
-				})[0];
-			return a.href;
-		});
+        await page.click('#btn-setup-Agency');
 
-		await page.goto(setupUrl);
         await expect(await page.content()).toMatch('Orchard Setup');
 
         // Setup site
@@ -156,13 +149,7 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Blog');
 
         // Go to Setup page
-		const setupUrl = await page.evaluate(() => {
-			let a = Array.prototype.slice.call(document.querySelectorAll('a'))
-				.filter(function (el) {
-					return el.textContent === "Setup";
-				})[0];
-			return a.href;
-		});
+        await page.click('#btn-setup-Blog');
 
         await page.goto(setupUrl);
         await expect(await page.content()).toMatch('Orchard Setup');
