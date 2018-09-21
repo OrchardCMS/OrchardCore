@@ -22,7 +22,6 @@ namespace OrchardCore.Setup.Services
 {
     public class SetupService : ISetupService
     {
-        private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
@@ -33,7 +32,6 @@ namespace OrchardCore.Setup.Services
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
-            ShellSettings shellSettings,
             IShellHost orchardHost,
             IHostingEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
@@ -43,7 +41,6 @@ namespace OrchardCore.Setup.Services
             IStringLocalizer<SetupService> stringLocalizer
             )
         {
-            _shellSettings = shellSettings;
             _orchardHost = orchardHost;
             _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
@@ -65,21 +62,21 @@ namespace OrchardCore.Setup.Services
 
         public async Task<string> SetupAsync(SetupContext context)
         {
-            var initialState = _shellSettings.State;
+            var initialState = context.ShellSettings.State;
             try
             {
                 var executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Any())
                 {
-                    _shellSettings.State = initialState;
+                    context.ShellSettings.State = initialState;
                 }
 
                 return executionId;
             }
             catch
             {
-                _shellSettings.State = initialState;
+                context.ShellSettings.State = initialState;
                 throw;
             }
         }
@@ -90,7 +87,7 @@ namespace OrchardCore.Setup.Services
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Running setup for tenant '{TenantName}'.", _shellSettings.Name);
+                _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings.Name);
             }
 
             // Features to enable for Setup
@@ -105,9 +102,9 @@ namespace OrchardCore.Setup.Services
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            _shellSettings.State = TenantState.Initializing;
+            context.ShellSettings.State = TenantState.Initializing;
 
-            var shellSettings = new ShellSettings(_shellSettings.Configuration);
+            var shellSettings = new ShellSettings(context.ShellSettings.Configuration);
 
             if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
             {

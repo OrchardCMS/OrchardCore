@@ -139,6 +139,7 @@ namespace OrchardCore.Setup.Controllers
 
             var setupContext = new SetupContext
             {
+                ShellSettings = _shellSettings,
                 SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.UserName,
