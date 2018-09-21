@@ -1,10 +1,9 @@
 const puppeteer = require('puppeteer');
-const child_process = require('child_process');
+const orchard = require('./orchard.js');
 
 let browser;
 let page;
-let server;
-const basePath = "http://localhost:5000";
+let basePath;
 
 // e.g., npm test --debug
 // In debug mode we show the editor, slow down operations, and increase the timeout for each test
@@ -13,28 +12,10 @@ jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
 
-    console.log('Building ...');
-    child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: '../../src/OrchardCore.Mvc.Web' });
-
-    console.log('Starting application ...');
-    server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.1/OrchardCore.Mvc.Web.dll'], { cwd: '../../src/OrchardCore.Mvc.Web' });
-
-    server.stdout.on('data', (data) => {
-        let now = new Date().toLocaleTimeString();
-        console.log(`[${now}] ${data}`);
-    });
-      
-    server.stderr.on('data', (data) => {
-        console.log(`stderr: ${data}`);
-    });
-      
-    server.on('close', (code) => {
-        console.log(`Server process exited with code ${code}`);
-    });
-
-    console.log('loading browser');
+    basePath = orchard.run('../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll');
     browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
     page = await browser.newPage();
+
 });
 
 afterAll(async () => {
@@ -42,9 +23,7 @@ afterAll(async () => {
         await browser.close();
     }
 
-    if (server) {
-        server.kill('SIGINT');
-    }
+    orchard.stop();
 });
 
 describe('ASP.NET MVC', () => {
