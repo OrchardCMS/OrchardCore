@@ -11,7 +11,7 @@ namespace OrchardCore.Modules
         private readonly Dictionary<string, List<Module>> _modulesByName;
         private readonly List<Module> _modules;
 
-        public static readonly string ModulesPath = ".Modules";
+        public static readonly string ModulesPath = "Areas";
         public static readonly string ModuleName = "Application";
         public static readonly string ModulesRoot = ModulesPath + "/";
 

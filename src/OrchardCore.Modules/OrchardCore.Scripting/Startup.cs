@@ -1,6 +1,7 @@
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting.JavaScript;
+using OrchardCore.Scripting.Providers;
 
 namespace OrchardCore.Scripting
 {
@@ -10,6 +11,7 @@ namespace OrchardCore.Scripting
         {
             services.AddScripting();
             services.AddJavaScriptEngine();
+            services.AddSingleton<IGlobalMethodProvider, LogProvider>();
         }
     }
 }

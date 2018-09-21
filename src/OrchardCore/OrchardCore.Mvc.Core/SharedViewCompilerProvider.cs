@@ -124,7 +124,7 @@ namespace OrchardCore.Mvc
                             }
 
                             // Razor views are precompiled in the context of their modules, but at runtime
-                            // their paths need to be relative to the virtual ".Modules/{ModuleId}" folders.
+                            // their paths need to be relative to the virtual "Areas/{ModuleId}" folders.
                             foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
                                 descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
