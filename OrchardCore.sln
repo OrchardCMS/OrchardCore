@@ -316,6 +316,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functional", "Functional", "{7B59A132-759A-4B32-B5A0-D585B9F33AD2}"
 	ProjectSection(SolutionItems) = preProject
 		test\Functional\package.json = test\Functional\package.json
+		test\Functional\samples-mvc.test.js = test\Functional\samples-mvc.test.js
+		test\Functional\samples-nancy.test.js = test\Functional\samples-nancy.test.js
 		test\Functional\setup.test.js = test\Functional\setup.test.js
 	EndProjectSection
 EndProject
