@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -11,7 +10,7 @@ using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.Mvc.LocationExpander
 {
-    public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
+    public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
         private const string CacheKey = "ModuleComponentViewLocations)";
         private static IList<IExtensionInfo> _modulesWithComponentViews;
@@ -21,7 +20,7 @@ namespace OrchardCore.Mvc.LocationExpander
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IMemoryCache _memoryCache;
 
-        public ModularViewLocationExpanderProvider(
+        public ComponentViewLocationExpanderProvider(
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
@@ -74,40 +73,14 @@ namespace OrchardCore.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)
-            {
-                var pageViewLocations = PageViewLocations().ToList();
-                pageViewLocations.AddRange(viewLocations);
-                return pageViewLocations;
-
-                IEnumerable<string> PageViewLocations()
-                {
-                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/", StringComparison.Ordinal))
-                    {
-                        yield return page.RelativePath.Substring(0, page.RelativePath.IndexOf("/Pages/", StringComparison.Ordinal))
-                            + "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
-                    }
-                }
-            }
-
-            // Get Extension, and then add in the relevant views.
-            var extension = _extensionManager.GetExtension(context.AreaName);
-
-            if (!extension.Exists)
+            if (context.AreaName == null)
             {
                 return viewLocations;
             }
 
             var result = new List<string>();
 
-            var extensionViewsPath = '/' + extension.SubPath + "/Views";
-            result.Add(extensionViewsPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
-
-            if (!context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
-            {
-                result.Add(extensionViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
-            }
-            else
+            if (context.ViewName.StartsWith("Components/", StringComparison.Ordinal))
             {
                 if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleComponentViewLocations))
                 {
