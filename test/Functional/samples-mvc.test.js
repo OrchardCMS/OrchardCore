@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const child_process = require('child_process');
-const rimraf = require('rimraf');
 
 let browser;
 let page;

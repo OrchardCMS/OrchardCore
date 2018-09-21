@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const child_process = require('child_process');
-const rimraf = require('rimraf');
 
 let browser;
 let page;
@@ -19,7 +18,6 @@ beforeAll(async () => {
 
     console.log('Starting application ...');
     server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.1/OrchardCore.Nancy.Web.dll'], { cwd: '../../src/OrchardCore.Nancy.Web' });
-
 
     server.stdout.on('data', (data) => {
         let now = new Date().toLocaleTimeString();
