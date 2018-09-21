@@ -1,3 +1,4 @@
+using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using System.Collections.Generic;
 
@@ -5,6 +6,7 @@ namespace OrchardCore.Setup.Services
 {
     public class SetupContext
     {
+        public ShellSettings ShellSettings { get; set; }
         public string SiteName { get; set; }
         public string AdminUsername { get; set; }
         public string AdminEmail { get; set; }
