@@ -43,7 +43,7 @@ namespace OrchardCore.Modules
                             continue;
                         }
 
-                        // Get the 1st module asset under ".Modules/{ModuleId}/wwwroot/".
+                        // Get the 1st module asset under "Areas/{ModuleId}/wwwroot/".
                         var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
                             .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
 
