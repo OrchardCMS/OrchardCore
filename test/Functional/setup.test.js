@@ -151,7 +151,6 @@ describe('Create Tenants', () => {
         // Go to Setup page
         await page.click('#btn-setup-Blog');
 
-        await page.goto(setupUrl);
         await expect(await page.content()).toMatch('Orchard Setup');
 
         // Setup site
