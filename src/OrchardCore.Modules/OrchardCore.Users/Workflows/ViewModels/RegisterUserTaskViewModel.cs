@@ -5,7 +5,7 @@ namespace OrchardCore.Users.Workflows.ViewModels
 {
     public class RegisterUserTaskViewModel
     {
-        public bool ConfirmUser { get; set; }
+        public bool SendConfirmationEmail { get; set; }
 
         [Required]
         public string ConfirmationEmailTemplate { get; set; }

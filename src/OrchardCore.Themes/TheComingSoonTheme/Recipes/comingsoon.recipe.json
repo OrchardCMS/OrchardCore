@@ -23,37 +23,52 @@
       "disable": [
       ],
       "enable": [
-        "OrchardCore.Settings",
         "OrchardCore.Admin",
-        "OrchardCore.Liquid",
-        "OrchardCore.Contents",
-        "OrchardCore.ContentTypes",
         "OrchardCore.Alias",
         "OrchardCore.Autoroute",
+
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+
         "OrchardCore.Deployment",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
-        "OrchardCore.Resources",
+
+        "OrchardCore.Email",
+
         "OrchardCore.Features",
-        "OrchardCore.Widgets",
         "OrchardCore.Flows",
         "OrchardCore.Forms",
+
         "OrchardCore.HomeRoute",
         "OrchardCore.Html",
-        "OrchardCore.Scripting",
+
+        "OrchardCore.Liquid",
         "OrchardCore.Localization",
-        "OrchardCore.Title",
+
         "OrchardCore.Navigation",
-        "OrchardCore.Roles",
-        "OrchardCore.Users",
+
         "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+
+
+        "OrchardCore.Scripting",
+        "OrchardCore.Settings",
+
         "OrchardCore.Templates",
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
+        "OrchardCore.Title",
+
+        "OrchardCore.Users",
+
+        "OrchardCore.Widgets",
         "OrchardCore.Workflows",
         "OrchardCore.Workflows.Http",
+
         "SafeMode",
         "TheAdmin",
         "TheComingSoonTheme",
@@ -556,6 +571,10 @@
               "Properties": {
                 "ActivityMetadata": {
                   "Title": "Register User"
+                },
+                "SendConfirmationEmail": true,
+                "ConfirmationEmailTemplate": {
+                  "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl }}\">click here</a> to confirm your email."
                 }
               }
             },

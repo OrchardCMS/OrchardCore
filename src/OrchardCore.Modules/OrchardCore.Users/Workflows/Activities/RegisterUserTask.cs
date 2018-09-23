@@ -1,21 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.ViewModels;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -49,7 +45,7 @@ namespace OrchardCore.Users.Workflows.Activities
         public override LocalizedString Category => T["Content"];
 
         // The message to display.
-        public bool ConfirmUser
+        public bool SendConfirmationEmail
         {
             get => GetProperty(() => true);
             set => SetProperty(value);
@@ -58,7 +54,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
         {
-            get => GetProperty(() => new WorkflowExpression<string>("Thank you for your interest! Please <a href=\"{{ emailConfirmationUrl }}\">click here</a> to confirm your email."));
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -103,7 +99,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     }
                     outcome = "Invalid";
                 }
-                else if (ConfirmUser)
+                else if (SendConfirmationEmail)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var request = _httpContextAccessor.HttpContext.Request;
@@ -111,25 +107,40 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
                     uriBuilder.Path = string.Format("OrchardCore.Users/Registration/ConfirmEmail?userId={0}&code={1}", user.Id, code);
-                    workflowContext.Properties["emailConfirmationUrl"] = uriBuilder.Uri.ToString();
+                    workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
+
+
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
                     var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
                     var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
                     message.To.Add(email);
-                    var smtpService = (ISmtpService)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(ISmtpService));
-                    var result = await smtpService.SendAsync(message);
-                    if (!result.Succeeded)
+                    var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
+
+                    if (smtpService == null)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
                         if (updater != null)
                         {
-                            foreach (var item in result.Errors)
-                            {
-                                updater.ModelState.TryAddModelError(item.Name, item.Value);
-                            }
+                            updater.ModelState.TryAddModelError("", T["No email service is available"]);
                         }
                         outcome = "Invalid";
+                    }
+                    else
+                    {
+                        var result = await smtpService.SendAsync(message);
+                        if (!result.Succeeded)
+                        {
+                            var updater = _updateModelAccessor.ModelUpdater;
+                            if (updater != null)
+                            {
+                                foreach (var item in result.Errors)
+                                {
+                                    updater.ModelState.TryAddModelError(item.Name, item.Value);
+                                }
+                            }
+                            outcome = "Invalid";
+                        }
                     }
                 }
             }
