@@ -105,7 +105,8 @@ namespace OrchardCore.Recipes.Controllers
             var site = await _siteService.GetSiteSettingsAsync();
             var executionId = Guid.NewGuid().ToString("n");
 
-            // Set shell state to "Initializing" so that requests are responded to with "Service Unavailable".
+            // Set shell state to "Initializing" so that subsequent HTTP requests
+            // are responded to with "Service Unavailable" while running the recipe.
             _shellSettings.State = TenantState.Initializing;
 
             try
@@ -123,6 +124,7 @@ namespace OrchardCore.Recipes.Controllers
                 _shellSettings.State = TenantState.Running;
             }
 
+            // Reload the tenant so that the pipeline will be rebuilt.
             await _shellHost.ReloadShellContextAsync(_shellSettings);
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
