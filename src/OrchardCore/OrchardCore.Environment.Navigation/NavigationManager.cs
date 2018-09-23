@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Navigation
             _authorizationService = authorizationService;
         }
 
-        public IEnumerable<MenuItem> BuildMenu(string name, ActionContext actionContext)
+        public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
         {
             var builder = new NavigationBuilder();
 
@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Navigation
             {
                 try
                 {
-                    navigationProvider.BuildNavigationAsync(name, builder);
+                    await navigationProvider.BuildNavigationAsync(name, builder);
                 }
                 catch (Exception e)
                 {

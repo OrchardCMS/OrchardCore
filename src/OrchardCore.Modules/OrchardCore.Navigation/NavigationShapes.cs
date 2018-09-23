@@ -40,7 +40,7 @@ namespace OrchardCore.Navigation
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
+                    var menuItems = await navigationManager.BuildMenuAsync(menuName, context.DisplayContext.ViewContext);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
