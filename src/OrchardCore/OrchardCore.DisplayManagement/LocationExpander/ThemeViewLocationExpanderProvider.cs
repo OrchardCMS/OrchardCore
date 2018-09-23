@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Theming;
@@ -11,11 +10,11 @@ using OrchardCore.Mvc.LocationExpander;
 
 namespace OrchardCore.DisplayManagement.LocationExpander
 {
-    public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
+    public class ThemeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
         private readonly IExtensionManager _extensionManager;
 
-        public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
+        public ThemeViewLocationExpanderProvider(IExtensionManager extensionManager)
         {
             _extensionManager = extensionManager;
         }
@@ -46,7 +45,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (!context.Values.ContainsKey("Theme"))
+            if (context.AreaName == null || !context.Values.ContainsKey("Theme"))
             {
                 return viewLocations;
             }
@@ -58,34 +57,6 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                 .Where(x => x.Extension.IsTheme())
                 .Reverse();
 
-            if (context.ActionContext.ActionDescriptor is PageActionDescriptor page)
-            {
-                var pageViewLocations = PageViewLocations().ToList();
-                pageViewLocations.AddRange(viewLocations);
-                return pageViewLocations;
-
-                IEnumerable<string> PageViewLocations()
-                {
-                    if (page.RelativePath.Contains("/Pages/") && !page.RelativePath.StartsWith("/Pages/"))
-                    {
-                        var pageIndex = page.RelativePath.LastIndexOf("/Pages/");
-                        var moduleFolder = page.RelativePath.Substring(0, pageIndex);
-                        var moduleId = moduleFolder.Substring(moduleFolder.LastIndexOf("/") + 1);
-
-                        foreach (var theme in currentThemeAndBaseThemesOrdered)
-                        {
-                            if (moduleId != theme.Id)
-                            {
-                                var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
-                                var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
-                                yield return themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
-                                yield return themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension;
-                            }
-                        }
-                    }
-                }
-            }
-
             var result = new List<string>();
 
             if (!String.IsNullOrEmpty(context.AreaName))
@@ -94,9 +65,25 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                 {
                     if (context.AreaName != theme.Id)
                     {
+                        var themePagesPath = '/' + theme.Extension.SubPath + "/Pages";
                         var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
+                        var themePagesAreaPath = themePagesPath + '/' + context.AreaName;
                         var themeViewsAreaPath = themeViewsPath + '/' + context.AreaName;
-                        result.Add(themeViewsAreaPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+
+                        if (context.PageName != null)
+                        {
+                            result.Add(themePagesAreaPath + "/{0}" + RazorViewEngine.ViewExtension);
+                        }
+                        else
+                        {
+                            result.Add(themeViewsAreaPath + "/{1}/{0}" + RazorViewEngine.ViewExtension);
+                        }
+
+                        if (context.PageName != null)
+                        {
+                            result.Add(themePagesPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
+                        }
+
                         result.Add(themeViewsAreaPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
                         result.Add(themeViewsPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
                     }

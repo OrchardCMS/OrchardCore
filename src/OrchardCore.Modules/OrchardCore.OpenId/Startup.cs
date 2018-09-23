@@ -1,10 +1,13 @@
+using System;
 using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -101,6 +104,68 @@ namespace OrchardCore.OpenId
 
             // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
             services.ConfigureApplicationCookie(options => options.Cookie.SameSite = SameSiteMode.None);
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var openIddictServerOptions = serviceProvider
+                .GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>()
+                .Get(OpenIddictServerDefaults.AuthenticationScheme);
+
+            if (openIddictServerOptions.AuthorizationEndpointPath != PathString.Empty)
+            {
+                routes.MapAreaRoute(
+                    name: "Access.AuthorizeGet",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Authorize" }
+                );
+
+                routes.MapAreaRoute(
+                    name: "Access.Authorize",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Accept" }
+                );
+
+                routes.MapAreaRoute(
+                    name: "Access.Deny",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Deny" }
+                );
+
+            }
+
+            if (openIddictServerOptions.TokenEndpointPath != PathString.Empty)
+            {
+                routes.MapAreaRoute(
+                    name: "Access.Token",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.TokenEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Token" }
+                );
+            }
+
+            if (openIddictServerOptions.LogoutEndpointPath != PathString.Empty)
+            {
+                routes.MapAreaRoute(
+                    name: "Access.Logout",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.LogoutEndpointPath.Value,
+                    defaults: new { controller = "Access", action = "Logout" }
+                );
+            }
+
+            if (openIddictServerOptions.UserinfoEndpointPath != PathString.Empty)
+            {
+                routes.MapAreaRoute(
+                    name: "UserInfo.Me",
+                    areaName: OpenIdConstants.Features.Core,
+                    template: openIddictServerOptions.UserinfoEndpointPath.Value,
+                    defaults: new { controller = "UserInfo", action = "Me" }
+                );
+            }
         }
     }
 

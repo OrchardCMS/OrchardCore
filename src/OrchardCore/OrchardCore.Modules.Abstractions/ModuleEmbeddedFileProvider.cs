@@ -36,19 +36,19 @@ namespace OrchardCore.Modules
             // Under the root.
             if (folder == "")
             {
-                // Add the virtual folder ".Modules" containing all modules.
+                // Add the virtual folder "Areas" containing all modules.
                 entries.Add(new EmbeddedDirectoryInfo(Application.ModulesPath));
             }
-            // Under ".Modules".
+            // Under "Areas".
             else if (folder == Application.ModulesPath)
             {
                 // Add virtual folders for all modules by using their assembly names (module ids).
                 entries.AddRange(Application.Modules.Select(m => new EmbeddedDirectoryInfo(m.Name)));
             }
-            // Under ".Modules/{ModuleId}" or ".Modules/{ModuleId}/**".
+            // Under "Areas/{ModuleId}" or "Areas/{ModuleId}/**".
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Skip ".Modules/" from the folder path.
+                // Skip "Areas/" from the folder path.
                 var path = folder.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 
@@ -76,10 +76,10 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            // ".Modules/**/*.*".
+            // "Areas/**/*.*".
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
-                // Skip the ".Modules/" root.
+                // Skip the "Areas/" root.
                 path = path.Substring(Application.ModulesRoot.Length);
                 var index = path.IndexOf('/');
 

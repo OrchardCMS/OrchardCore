@@ -1,0 +1,30 @@
+@using OrchardCore.ContentFields.Settings
+@model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
+
+<div class="field-editor field-editor-predefinedlist">
+    <div class="row">
+        <fieldset class="form-group col-sm-6">
+            <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
+            <select asp-for="Editor" class="form-control">
+                <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
+                <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
+            </select>
+        </fieldset>
+    </div>
+
+    <fieldset class="form-group">
+        <div class="row col-md">
+            <label asp-for="Options">@T["Options"]</label>
+            <textarea asp-for="Options" rows="8" class="form-control"></textarea>
+            <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
+        </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <div class="row col">
+            <label asp-for="DefaultValue">@T["Default value"]</label>
+            <input asp-for="DefaultValue" class="form-control" type="text" />
+            <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
+        </div>
+    </fieldset>
+</div>
