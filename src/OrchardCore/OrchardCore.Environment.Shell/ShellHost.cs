@@ -32,7 +32,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _scopeSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,

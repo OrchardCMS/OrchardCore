@@ -9,34 +9,16 @@ using Microsoft.Extensions.Primitives;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// This custom <see cref="IFileProvider"/> implementation provides the file contents
-    /// of the Application Razor files while in a development or a production environment.
+    /// This custom <see cref="IFileProvider"/> implementation provides the file contents of
+    /// the Application's module razor files while in a development or production environment.
     /// </summary>
     public class ApplicationRazorFileProvider : IFileProvider
     {
-        private static IFileProvider _pageFileProvider;
-        private static object _synLock = new object();
-
         private readonly IApplicationContext _applicationContext;
 
         public ApplicationRazorFileProvider(IApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
-
-            if (_pageFileProvider != null)
-            {
-                return;
-            }
-
-            lock (_synLock)
-            {
-                if (_pageFileProvider == null)
-                {
-                    // Razor pages are not watched in the same way as other razor views.
-                    // We need a physical file provider on the application root folder.
-                    _pageFileProvider = new PhysicalFileProvider(Application.Root);
-                }
-            }
         }
 
         private Application Application => _applicationContext.Application;
@@ -45,7 +27,7 @@ namespace OrchardCore.Modules
         {
             // 'GetDirectoryContents()' is used to discover shapes templates and build fixed binding tables.
             // So the embedded file provider can always provide the structure under modules "Views" folders.
-            // But application shapes are not embedded, so we need to serve the application "Views" folder.
+            // But application's module shapes are not embedded, so we need to serve the application "Views".
 
             // The razor view engine also uses 'GetDirectoryContents()' to find razor pages (not mvc views).
             // So here, we also need to serve the directory contents under the application "Pages" folder.
@@ -59,13 +41,13 @@ namespace OrchardCore.Modules
 
             var folder = NormalizePath(subpath);
 
-            // Under ".Modules/{ApplicationName}".
+            // Under "Areas/{ApplicationName}".
             if (folder == Application.ModulePath)
             {
                 // Serve the contents from the file system.
                 return new PhysicalDirectoryContents(Application.Path);
             }
-            // Under ".Modules/{ApplicationName}/**".
+            // Under "Areas/{ApplicationName}/**".
             else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Check for a "Pages" or a "Views" segment.
@@ -92,7 +74,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(subpath);
 
-            // ".Modules/{ApplicationName}/**/*.*".
+            // "Areas/{ApplicationName}/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
@@ -114,7 +96,7 @@ namespace OrchardCore.Modules
 
             var path = NormalizePath(filter);
 
-            // ".Modules/{ApplicationName}/**/*.*".
+            // "Areas/{ApplicationName}/**/*.*".
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
@@ -122,14 +104,6 @@ namespace OrchardCore.Modules
 
                 // And watch the application file from the physical application root folder.
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
-            }
-
-            // The razor view engine uses a watch on "**/*.cshtml" but only for razor pages.
-            // So here, we use a file provider to only watch the application "Pages" folder.
-
-            if (path.Equals("**/*.cshtml"))
-            {
-                return _pageFileProvider.Watch("Pages/**/*.cshtml");
             }
 
             return NullChangeToken.Singleton;

@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
-                    services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
+                    services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                     services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
                     services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
@@ -80,7 +80,21 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
                     services.AddShapeAttributes<DateTimeShapes>();
 
-                    services.AddTagHelpers(typeof(BaseShapeTagHelper).Assembly);
+                    services.AddTagHelpers<AddAlternateTagHelper>();
+                    services.AddTagHelpers<AddClassTagHelper>();
+                    services.AddTagHelpers<AddWrapperTagHelper>();
+                    services.AddTagHelpers<BaseShapeTagHelper>();
+                    services.AddTagHelpers<ClearAlternatesTagHelper>();
+                    services.AddTagHelpers<ClearClassesTagHelper>();
+                    services.AddTagHelpers<ClearWrappersTagHelper>();
+                    services.AddTagHelpers<InputIsDisabledTagHelper>();
+                    services.AddTagHelpers<RemoveAlternateTagHelper>();
+                    services.AddTagHelpers<RemoveClassTagHelper>();
+                    services.AddTagHelpers<RemoveWrapperTagHelper>();
+                    services.AddTagHelpers<ShapeMetadataTagHelper>();
+                    services.AddTagHelpers<ShapeTagHelper>();
+                    services.AddTagHelpers<ValidationMessageTagHelper>();
+                    services.AddTagHelpers<ZoneTagHelper>();
                 });
 
             return builder;

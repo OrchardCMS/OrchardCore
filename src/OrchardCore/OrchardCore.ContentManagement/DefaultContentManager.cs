@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
@@ -11,6 +12,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.ContentManagement
 {
@@ -85,6 +87,38 @@ namespace OrchardCore.ContentManagement
             return GetAsync(contentItemId, VersionOptions.Published);
         }
 
+        public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
+        {
+            if (contentItemIds == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemIds));
+            }
+
+            List<ContentItem> contentItems;
+
+            if (latest)
+            {
+                contentItems = (await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest == true)
+                    .ListAsync()).ToList();
+            }
+            else
+            {
+                contentItems = (await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
+                    .ListAsync()).ToList();
+            }
+
+            for (var i = 0; i < contentItems.Count; i++)
+            {
+                contentItems[i] = await LoadAsync(contentItems[i]);
+            }
+            
+            return contentItems;
+        }
+
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
             ContentItem contentItem = null;
@@ -125,10 +159,7 @@ namespace OrchardCore.ContentManagement
                     return contentItem;
                 }
 
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == contentItemId && x.Published == true)
-                    .FirstOrDefaultAsync();
+                contentItem = await _session.ExecuteQuery(new PublishedContentItemById(contentItemId)).FirstOrDefaultAsync();
             }
 
             if (contentItem == null)
@@ -166,7 +197,7 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
-        private async Task<ContentItem> LoadAsync(ContentItem contentItem)
+        public async Task<ContentItem> LoadAsync(ContentItem contentItem)
         {
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {

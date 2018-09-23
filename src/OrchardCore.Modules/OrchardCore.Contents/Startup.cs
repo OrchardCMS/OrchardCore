@@ -64,7 +64,7 @@ namespace OrchardCore.Contents
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
-            services.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
+            services.AddTagHelpers<ContentLinkTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

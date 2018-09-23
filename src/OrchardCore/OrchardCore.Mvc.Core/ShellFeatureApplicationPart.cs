@@ -55,8 +55,10 @@ namespace OrchardCore.Mvc
                 var tagHelpers = services.GetServices<ITagHelpersProvider>();
                 var shellBluePrint = services.GetRequiredService<ShellBlueprint>();
 
-                return shellBluePrint.Dependencies.Keys.Select(type => type.GetTypeInfo())
-                    .Concat(tagHelpers.SelectMany(p => p.Types));
+                return shellBluePrint
+                    .Dependencies.Keys
+                    .Concat(tagHelpers.SelectMany(p => p.GetTypes()))
+                    .Select(x => x.GetTypeInfo());
             }
         }
 
