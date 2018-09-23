@@ -173,12 +173,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
-        public static async Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
+        public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
             var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
 
-            await context.ContextualizeAsync(new DisplayContext()
+            return context.ContextualizeAsync(new DisplayContext()
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
