@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Navigation
             {
                 try
                 {
-                    navigationProvider.BuildNavigation(name, builder);
+                    navigationProvider.BuildNavigationAsync(name, builder);
                 }
                 catch (Exception e)
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using OrchardCore.Layers.Drivers;
@@ -14,11 +15,11 @@ namespace OrchardCore.Layers
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -35,6 +36,8 @@ namespace OrchardCore.Layers
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));
+
+            return Task.CompletedTask;
         }
     }
 }
