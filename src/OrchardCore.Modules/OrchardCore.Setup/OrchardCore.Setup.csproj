@@ -18,8 +18,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

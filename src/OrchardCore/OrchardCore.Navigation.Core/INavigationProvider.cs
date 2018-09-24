@@ -1,7 +1,10 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Navigation
+
 {
     public interface INavigationProvider
     {
-        void BuildNavigation(string name, NavigationBuilder builder);
+        Task BuildNavigationAsync(string name, NavigationBuilder builder);
     }
 }

@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentTypes {
     public class AdminMenu : INavigationProvider {
@@ -12,11 +13,11 @@ namespace OrchardCore.ContentTypes {
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
@@ -31,6 +32,8 @@ namespace OrchardCore.ContentTypes {
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
                     );
+
+            return Task.CompletedTask;
         }
     }
 }

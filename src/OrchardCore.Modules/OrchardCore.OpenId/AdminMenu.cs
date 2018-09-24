@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -21,11 +22,11 @@ namespace OrchardCore.OpenId
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder.Add(T["OpenID Connect"], "15", category =>
@@ -81,6 +82,8 @@ namespace OrchardCore.OpenId
                     });
                 }
             });
+
+            return Task.CompletedTask;
         }
     }
 }

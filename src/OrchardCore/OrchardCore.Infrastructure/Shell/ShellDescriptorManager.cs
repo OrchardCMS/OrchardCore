@@ -76,7 +76,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                 shellDescriptorRecord.SerialNumber++;
             }
 
-            shellDescriptorRecord.Features = enabledFeatures.ToList();
+            shellDescriptorRecord.Features = _alwaysEnabledFeatures.Concat(enabledFeatures).Distinct().ToList();
             shellDescriptorRecord.Parameters = parameters.ToList();
 
             if (_logger.IsEnabled(LogLevel.Information))

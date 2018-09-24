@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Navigation;
@@ -14,10 +15,10 @@ namespace OrchardCore.Email
             T = localizer;
         }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-                return;
+                return Task.CompletedTask;
 
             builder
                 .Add(T["Configuration"], configuration => configuration
@@ -27,6 +28,8 @@ namespace OrchardCore.Email
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()
                 )));
+
+            return Task.CompletedTask;
         }
     }
 }

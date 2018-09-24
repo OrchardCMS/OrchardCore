@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Lucene
 {
@@ -13,11 +14,11 @@ namespace OrchardCore.Lucene
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -39,6 +40,7 @@ namespace OrchardCore.Lucene
                             .LocalNav()
                         )));
 
+            return Task.CompletedTask;
         }
     }
 }

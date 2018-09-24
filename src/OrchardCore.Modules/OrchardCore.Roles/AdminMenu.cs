@@ -1,6 +1,7 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using System;
 
 namespace OrchardCore.Roles
 {
@@ -13,11 +14,11 @@ namespace OrchardCore.Roles
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -28,6 +29,8 @@ namespace OrchardCore.Roles
                             .Permission(Permissions.ManageRoles)
                             .LocalNav()
                         )));
+
+            return Task.CompletedTask;
         }
     }
 }
