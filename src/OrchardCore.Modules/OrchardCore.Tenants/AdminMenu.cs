@@ -2,6 +2,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Navigation;
 using System;
 using OrchardCore.Environment.Shell;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Tenants
 {
@@ -17,17 +18,17 @@ namespace OrchardCore.Tenants
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             // Don't add the menu item on non-default tenants
             if (_shellSettings.Name != ShellHelper.DefaultShellName)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -39,6 +40,8 @@ namespace OrchardCore.Tenants
                         .LocalNav()
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }
