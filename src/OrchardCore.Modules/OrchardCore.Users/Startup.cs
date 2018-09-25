@@ -10,7 +10,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
