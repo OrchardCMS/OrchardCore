@@ -163,6 +163,7 @@ namespace OrchardCore.Hosting.ShellBuilders
 
             IsActivated = false;
             Blueprint = null;
+            Pipeline = null;
 
             _disposed = true;
         }
