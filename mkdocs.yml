@@ -31,7 +31,7 @@ pages:
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
-    - Code Generation Templates: Templates/README.MD
+    - Code Generation Templates: docs/templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
