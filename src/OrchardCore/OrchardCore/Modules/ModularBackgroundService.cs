@@ -103,7 +103,7 @@ namespace OrchardCore.Modules
 
                     using (scope)
                     {
-                        if (scope == null || !context.IsActivated)
+                        if (scope == null || context.Pipeline == null)
                         {
                             break;
                         }
@@ -167,7 +167,7 @@ namespace OrchardCore.Modules
 
                 using (scope)
                 {
-                    if (scope == null || !context.IsActivated)
+                    if (scope == null || context.Pipeline == null)
                     {
                         return;
                     }
@@ -243,7 +243,7 @@ namespace OrchardCore.Modules
 
         private async Task<IEnumerable<ShellContext>> GetRunningShells()
         {
-            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.IsActivated).ToArray();
+            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
