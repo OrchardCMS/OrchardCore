@@ -32,6 +32,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public bool IsActivated { get; set; }
 
+        /// <summary>
+        /// Whether the pipeline is built. 
+        /// </summary>
+        public bool IsPipelineBuilt { get; set; }
+
         public IServiceScope CreateScope()
         {
             var scope = new ServiceScopeWrapper(this);
