@@ -32,6 +32,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public bool IsActivated { get; set; }
 
+        /// <summary>
+        /// The HTTP Request delegate built for this shell.
+        /// </summary>
+        public RequestDelegate Pipeline { get; set; }
+
         public IServiceScope CreateScope()
         {
             var scope = new ServiceScopeWrapper(this);

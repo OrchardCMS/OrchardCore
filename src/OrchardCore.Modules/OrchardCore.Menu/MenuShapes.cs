@@ -37,6 +37,11 @@ namespace OrchardCore.Menu
                         ? await aliasManager.GetContentItemIdAsync(menu.Alias)
                         : menu.ContentItemId;
 
+                    if (contentItemId == null)
+                    {
+                        return;
+                    }
+
                     var menuContentItem = await contentManager.GetAsync(contentItemId);
 
                     if (menuContentItem == null)
