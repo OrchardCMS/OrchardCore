@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Modules
@@ -21,7 +22,7 @@ namespace OrchardCore.Modules
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-        private readonly Dictionary<string, RequestDelegate> _pipelines = new Dictionary<string, RequestDelegate>();
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantRouterMiddleware(
             RequestDelegate next,
@@ -49,37 +50,30 @@ namespace OrchardCore.Modules
                 httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
             }
 
-            // TODO: Invalidate the pipeline automatically when the shell context is changed
-            // such that we can reload the middlewares and the routes. Implement something similar
-            // to IRunningShellTable but for the pipelines.
-
             // Do we need to rebuild the pipeline ?
-            var rebuildPipeline = httpContext.Items["BuildPipeline"] != null;
-            if (rebuildPipeline && _pipelines.ContainsKey(shellContext.Settings.Name))
+            if (shellContext.Pipeline == null)
             {
-                _pipelines.Remove(shellContext.Settings.Name);
-            }
+                var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
 
-            RequestDelegate pipeline;
+                // Building a pipeline for a given shell can't be done by two requests.
+                await semaphore.WaitAsync();
 
-            if (!_pipelines.TryGetValue(shellContext.Settings.Name, out pipeline))
-            {
-                // Building a pipeline can't be done by two requests
-                lock (_pipelines)
+                try
                 {
-                    if (!_pipelines.TryGetValue(shellContext.Settings.Name, out pipeline))
+                    if (shellContext.Pipeline == null)
                     {
-                        pipeline = BuildTenantPipeline(shellContext.ServiceProvider, httpContext.RequestServices);
-
-                        if (shellContext.Settings.State == TenantState.Running)
-                        {
-                            _pipelines.Add(shellContext.Settings.Name, pipeline);
-                        }
+                        shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider, httpContext.RequestServices);
                     }
+                }
+
+                finally
+                {
+                    semaphore.Release();
+                    _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
                 }
             }
 
-            await pipeline.Invoke(httpContext);
+            await shellContext.Pipeline.Invoke(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant
@@ -120,7 +114,7 @@ namespace OrchardCore.Modules
 
             // In the case of several tenants, they will all be checked by ShellSettings. To optimize
             // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSetting. This way there would just be one lookup.
+            // TenantRoute object by their ShellSettings. This way there would just be one lookup.
             // And the ShellSettings test in TenantRoute would also be useless.
             foreach (var startup in startups)
             {

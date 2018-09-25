@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddLocalization();
             services.AddWebEncoders();
 
-            // ModularTenantRouterMiddleware which is configured with UseModules() calls UseRouter() which requires the routing services to be
+            // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouter() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
