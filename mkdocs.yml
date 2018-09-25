@@ -32,7 +32,7 @@ pages:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
     - Code Generation Templates: Templates/README.MD
-    - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
+    - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
         - Alias: OrchardCore.Modules/OrchardCore.Alias/README.md
