@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
 
