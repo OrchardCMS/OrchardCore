@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
     {
         public static Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> body)
         {
-            var partitionCount = Environment.ProcessorCount;
+            var partitionCount = System.Environment.ProcessorCount;
 
             return Task.WhenAll(
                 from partition in Partitioner.Create(source).GetPartitions(partitionCount)
