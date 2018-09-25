@@ -1,6 +1,5 @@
-﻿using OrchardCore.Parser;
-using OrchardCore.Yaml.Parser;
 using System;
+using OrchardCore.Yaml;
 using Xunit;
 
 namespace OrchardCore.Tests.Parser.Yaml
