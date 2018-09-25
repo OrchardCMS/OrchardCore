@@ -23,7 +23,6 @@ namespace OrchardCore.Modules
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private readonly ConcurrentDictionary<string, RequestDelegate> _pipelines = new ConcurrentDictionary<string, RequestDelegate>();
 
         public ModularTenantRouterMiddleware(
             RequestDelegate next,
@@ -52,7 +51,7 @@ namespace OrchardCore.Modules
             }
 
             // Do we need to rebuild the pipeline ?
-            if (!shellContext.IsPipelineBuilt)
+            if (shellContext.Pipeline == null)
             {
                 var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
 
@@ -61,12 +60,9 @@ namespace OrchardCore.Modules
 
                 try
                 {
-                    if (!shellContext.IsPipelineBuilt)
+                    if (shellContext.Pipeline == null)
                     {
-                        _pipelines[shellContext.Settings.Name] = BuildTenantPipeline(
-                            shellContext.ServiceProvider, httpContext.RequestServices);
-
-                        shellContext.IsPipelineBuilt = true;
+                        shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider, httpContext.RequestServices);
                     }
                 }
 
@@ -77,7 +73,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            await _pipelines[shellContext.Settings.Name].Invoke(httpContext);
+            await shellContext.Pipeline.Invoke(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant

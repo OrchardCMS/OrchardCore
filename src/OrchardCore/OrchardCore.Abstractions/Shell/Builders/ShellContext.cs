@@ -33,9 +33,9 @@ namespace OrchardCore.Hosting.ShellBuilders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// Whether the pipeline is built. 
+        /// The HTTP Request delegate built for this shell.
         /// </summary>
-        public bool IsPipelineBuilt { get; set; }
+        public RequestDelegate Pipeline { get; set; }
 
         public IServiceScope CreateScope()
         {
