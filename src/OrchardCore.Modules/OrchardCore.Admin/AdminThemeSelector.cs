@@ -26,22 +26,24 @@ namespace OrchardCore.Admin
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            string adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+            if (String.IsNullOrEmpty(adminThemeName))
             {
-                string adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
-                if (String.IsNullOrEmpty(adminThemeName))
-                {
-                    return null;
-                }
-
-                return new ThemeSelectorResult
-                {
-                    Priority = 100,
-                    ThemeName = adminThemeName
-                };
+                return null;
             }
 
-            return null;
+            var result = new ThemeSelectorResult()
+            {
+                ThemeName = adminThemeName,
+                Priority = -1
+            };
+
+            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            {
+                result.Priority = 100;
+            }
+
+            return result;
         }
     }
 }

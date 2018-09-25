@@ -15,7 +15,6 @@ using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Admin]
     public class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;

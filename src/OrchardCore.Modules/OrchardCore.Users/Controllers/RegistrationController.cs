@@ -20,7 +20,6 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.Registration")]
-    [Admin]
     public class RegistrationController : BaseEmailController
     {
         private readonly IUserService _userService;

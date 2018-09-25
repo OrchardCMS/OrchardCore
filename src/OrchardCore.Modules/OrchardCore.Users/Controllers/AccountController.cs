@@ -19,7 +19,6 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
-    [Admin]
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
