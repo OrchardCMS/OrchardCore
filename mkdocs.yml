@@ -23,7 +23,6 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
-  - markdown.extensions.toc(permalink=Link)
   - markdown_fenced_code_tabs
 
 # Page tree
