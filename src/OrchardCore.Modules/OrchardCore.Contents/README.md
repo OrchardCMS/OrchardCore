@@ -35,6 +35,12 @@ You can use the `Latest` property to retrieve the latest version of a content it
 {% assign my_content = Content.ContentItemId["417qsjrgv97e74wvp149h4da53"] %}
 ```
 
+When a list of content item ids is available, the `content_item_id` filter should be preferred:
+
+```
+{% assign posts = postIds | content_item_id %}
+```
+
 #### Loading from a content item version id
 
 ```
