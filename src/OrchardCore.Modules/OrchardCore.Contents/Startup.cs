@@ -129,6 +129,7 @@ namespace OrchardCore.Contents
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
+            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
         }
     }
 
