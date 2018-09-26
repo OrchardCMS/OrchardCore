@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Html.Model;
-using OrchardCore.Html.Settings;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Html.Model;
 
 namespace OrchardCore.Html.ViewModels
 {
@@ -17,6 +17,6 @@ namespace OrchardCore.Html.ViewModels
         public HtmlBodyPart HtmlBodyPart { get; set; }
 
         [BindNever]
-        public HtmlBodyPartSettings TypePartSettings { get; set; }
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
     }
 }

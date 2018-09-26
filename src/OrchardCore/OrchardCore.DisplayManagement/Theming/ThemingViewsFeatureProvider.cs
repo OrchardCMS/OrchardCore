@@ -10,8 +10,13 @@ using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
+    /// <summary>
+    /// Provides Theming precompiled views when specific Layout and ViewStart files are seeked on the filesystem.
+    /// </summary>
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
+        public static string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
+
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public ThemingViewsFeatureProvider(IHostingEnvironment hostingEnvironment)
@@ -37,8 +42,8 @@ namespace OrchardCore.DisplayManagement.Theming
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = ViewPath.NormalizePath("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension),
-                ViewAttribute = new RazorViewAttribute("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension, typeof(ThemeLayout)),
+                RelativePath = ViewPath.NormalizePath(ThemeLayoutFileName),
+                ViewAttribute = new RazorViewAttribute(ThemeLayoutFileName, typeof(ThemeLayout)),
                 IsPrecompiled = true,
             });
         }

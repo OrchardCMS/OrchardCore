@@ -125,19 +125,19 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.EnableAuthorizationEndpoint)
             {
-                options.AuthorizationEndpointPath = "/OrchardCore.OpenId/Access/Authorize";
+                options.AuthorizationEndpointPath = "/connect/authorize";
             }
             if (settings.EnableTokenEndpoint)
             {
-                options.TokenEndpointPath = "/OrchardCore.OpenId/Access/Token";
+                options.TokenEndpointPath = "/connect/token";
             }
             if (settings.EnableLogoutEndpoint)
             {
-                options.LogoutEndpointPath = "/OrchardCore.OpenId/Access/Logout";
+                options.LogoutEndpointPath = "/connect/logout";
             }
             if (settings.EnableUserInfoEndpoint)
             {
-                options.UserinfoEndpointPath = "/OrchardCore.OpenId/UserInfo/Me";
+                options.UserinfoEndpointPath = "/connect/userinfo";
             }
             if (settings.AllowAuthorizationCodeFlow)
             {

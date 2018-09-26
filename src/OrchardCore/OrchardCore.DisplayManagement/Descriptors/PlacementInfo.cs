@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -10,6 +9,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public string Location { get; set; }
         public string Source { get; set; }
         public string ShapeType { get; set; }
+        public string DefaultPosition { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public AlternatesCollection Wrappers { get; set; }
 
@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var contentDelimiter = Location.IndexOf(':');
             if (contentDelimiter == -1)
             {
-                return "";
+                return DefaultPosition ?? "";
             }
 
             var secondDelimiter = Location.IndexOfAny(Delimiters, contentDelimiter + 1);

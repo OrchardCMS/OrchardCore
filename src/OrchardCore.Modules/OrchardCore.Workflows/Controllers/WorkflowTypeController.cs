@@ -123,7 +123,10 @@ namespace OrchardCore.Workflows.Controllers
                 .ListAsync();
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
-            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync()).GroupBy(x => x.WorkflowTypeId).ToDictionary(x => x.Key);
+            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
+                .ListAsync())
+                .GroupBy(x => x.WorkflowTypeId)
+                .ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
