@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Recipes.ViewModels;
 using OrchardCore.Security;
@@ -18,6 +20,7 @@ namespace OrchardCore.Recipes.Controllers
     [Admin]
     public class AdminController : Controller
     {
+        private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
@@ -26,6 +29,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly ISiteService _siteService;
 
         public AdminController(
+            ShellSettings shellSettings,
             ISiteService siteService,
             IAdminThemeService adminThemeService,
             IExtensionManager extensionManager,
@@ -35,6 +39,7 @@ namespace OrchardCore.Recipes.Controllers
             IRecipeExecutor recipeExecutor,
             INotifier notifier)
         {
+            _shellSettings = shellSettings;
             _siteService = siteService;
             _recipeExecutor = recipeExecutor;
             _extensionManager = extensionManager;
@@ -97,11 +102,24 @@ namespace OrchardCore.Recipes.Controllers
             var site = await _siteService.GetSiteSettingsAsync();
             var executionId = Guid.NewGuid().ToString("n");
 
-            await _recipeExecutor.ExecuteAsync(executionId, recipe, new
+            // Set shell state to "Initializing" so that subsequent HTTP requests
+            // are responded to with "Service Unavailable" while running the recipe.
+            _shellSettings.State = TenantState.Initializing;
+
+            try
             {
-                site.SiteName,
-                AdminUsername = User.Identity.Name,
-            });
+                await _recipeExecutor.ExecuteAsync(executionId, recipe, new
+                {
+                    site.SiteName,
+                    AdminUsername = User.Identity.Name,
+                });
+            }
+
+            finally
+            {
+                // Don't lock the tenant if the recipe fails.
+                _shellSettings.State = TenantState.Running;
+            }
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
             return RedirectToAction("Index");

@@ -9,7 +9,7 @@ using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 

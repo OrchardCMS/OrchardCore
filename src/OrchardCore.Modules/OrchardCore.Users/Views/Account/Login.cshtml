@@ -7,7 +7,9 @@
 @inject SignInManager<IUser> _signInManager
 @inject ISiteService _site
 
-@{
+@{ 
+    ThemeLayout.Metadata.Alternates.Add("Layout__Login");
+
     var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
     var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();

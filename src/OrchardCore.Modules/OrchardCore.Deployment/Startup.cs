@@ -8,7 +8,7 @@ using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;

@@ -1,10 +1,11 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.EventHandlers;
 using OrchardCore.DynamicCache.Services;
+using OrchardCore.DynamicCache.TagHelpers;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DynamicCache
 {
@@ -25,6 +26,8 @@ namespace OrchardCore.DynamicCache
             services.AddShapeAttributes<CachedShapeWrapperShapes>();
             
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
+            services.AddSingleton<DynamicCacheTagHelperService>();
+            services.AddTagHelpers<DynamicCacheTagHelper>();
         }
     }
 }

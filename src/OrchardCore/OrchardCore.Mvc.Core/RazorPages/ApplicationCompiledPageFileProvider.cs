@@ -14,8 +14,8 @@ using OrchardCore.Modules.FileProviders;
 namespace OrchardCore.Mvc
 {
     /// <summary>
-    /// This custom <see cref="IFileProvider"/> provides the virtual directory contents
-    /// of the application 'Pages' folder when embedded in the precompiled '.Views.dll'.
+    /// This custom <see cref="IFileProvider"/> provides the virtual directory contents of the 
+    /// application's module 'Pages' folder when embedded in the '{ApplicationName}.Views.dll'.
     /// </summary>
     public class ApplicationCompiledPageFileProvider : IFileProvider
     {
@@ -84,16 +84,16 @@ namespace OrchardCore.Mvc
 
             var entries = new List<IFileInfo>();
 
-            // Under ".Modules/{ApplicationName}".
+            // Under "Areas/{ApplicationName}".
             if (folder == Application.ModulePath)
             {
                 // Always add a "Pages" folder.
                 entries.Add(new EmbeddedDirectoryInfo("Pages"));
             }
-            // Under ".Modules/{ApplicationName}/Pages" or ".Modules/{ApplicationName}/Pages/**".
+            // Under "Areas/{ApplicationName}/Pages" or "Areas/{ApplicationName}/Pages/**".
             else if (folder.StartsWith(Application.ModuleRoot + "Pages", StringComparison.Ordinal))
             {
-                // Skip the ".Modules/{ApplicationName}/" part from the given folder path.
+                // Skip the "Areas/{ApplicationName}/" part from the given folder path.
                 // So we get "Pages" or "Pages/**" paths relative to the application root.
                 var subFolder = folder.Substring(Application.ModuleRoot.Length);
 
