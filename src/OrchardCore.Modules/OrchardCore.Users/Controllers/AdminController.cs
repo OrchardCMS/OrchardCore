@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -20,6 +21,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Controllers
 {
+    [Admin]
     public class AdminController : Controller, IUpdateModel
     {
         private readonly UserManager<IUser> _userManager;
