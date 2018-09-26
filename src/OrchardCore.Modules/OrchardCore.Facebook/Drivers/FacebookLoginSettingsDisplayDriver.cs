@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
@@ -91,7 +91,7 @@ namespace OrchardCore.Facebook.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
