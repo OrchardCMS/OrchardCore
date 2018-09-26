@@ -6,16 +6,11 @@
     var settings = Model.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
 }
 
-@{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "YoutubeField_Editor";
-
-    if (!String.IsNullOrEmpty(settings.Editor))
+<fieldset class="form-group">
+    <label asp-for="RawAddress">@Model.PartFieldDefinition.DisplayName()</label>
+    <input asp-for="RawAddress" class="form-control content-preview-text" />
+    @if (!String.IsNullOrEmpty(settings.Hint))
     {
-        shape.Metadata.Alternates.Add($"YoutubeField_Editor__{settings.Editor}");
+    <span class="hint">@settings.Hint</span>
     }
-}
-
-@await DisplayAsync(Model)
+</fieldset>

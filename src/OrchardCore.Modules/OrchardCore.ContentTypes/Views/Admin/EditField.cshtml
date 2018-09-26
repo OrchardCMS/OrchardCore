@@ -1,7 +1,18 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.DisplayManagement;
 
 @model EditFieldViewModel
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
+@{
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+}
 
 <h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1>
 
@@ -23,9 +34,51 @@
         </div>
     </fieldset>
 
-    @await DisplayAsync(Model.Editor)
+@if (Model.Shape.Content != null)
+{
+    <fieldset class="form-group">
+        @await DisplayAsync(Model.Shape.Content)
+    </fieldset>
 
+    @if (editorShapes.Any())
+    {
+    <div class="row">
+        <fieldset class="form-group col-sm-6">
+            <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+            <select asp-for="Editor" class="form-control" id="field-editor-select">
+                @foreach (var editorShape in editorShapes)
+                {
+                    dynamic shape = await Factory.CreateAsync(editorShape);
+                    shape.Editor = Model.Editor;
+                    @await DisplayAsync(shape)
+                }
+            </select>
+        </fieldset>
+    </div>
+    }
+
+    <fieldset id="field-editor-container" class="form-group" style="display: none">
+        @await DisplayAsync(Model.Shape.Editor)
+    </fieldset>
+}
+       
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
     </fieldset>
 </form>
+
+<script at="Foot" type="text/javascript">
+    //<![CDATA[
+    $(function () {
+        $('.field-editor').hide();
+        $('#field-editor-container').show();
+        var fieldEditorSelect = $('#field-editor-select');
+        $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();         
+
+        fieldEditorSelect.change(function () {
+            $('.field-editor').hide();
+            $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+        });
+    });    
+    //]]>
+</script>

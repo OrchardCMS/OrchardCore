@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -24,7 +24,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditBooleanFieldViewModel>("BooleanField_Edit", model =>
+            return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Value = field.Value;
                 model.Field = field;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -27,6 +27,11 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             }
 
             return description;
+        }
+
+        public static string Editor(this ContentTypePartDefinition typePart)
+        {
+            return typePart.Settings.ToObject<ContentTypePartSettings>().Editor;
         }
     }
 }

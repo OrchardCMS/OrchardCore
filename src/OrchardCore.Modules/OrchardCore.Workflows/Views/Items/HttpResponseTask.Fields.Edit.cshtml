@@ -1,0 +1,53 @@
+@using OrchardCore.Workflows.Http.ViewModels;
+@model HttpResponseTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="HttpStatusCode">
+    <label asp-for="HttpStatusCode">@T["HTTP Status Code"] <span asp-validation-for="HttpStatusCode"></span></label>
+    <input type="text" asp-for="HttpStatusCode" class="form-control" />
+    <span class="hint">@T["The HTTP Status Code to send back. <a href=\"https://en.wikipedia.org/wiki/List_of_HTTP_status_codes\" target=\"_blank\">Click here</a> for a complete list."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType">@T["Content Type"] <span asp-validation-for="ContentType"></span></label>
+    <select asp-for="ContentType" class="form-control">
+        <option>text/plain</option>
+        <option>application/x-www-form-urlencoded</option>
+        <option>application/json</option>
+        <option>application/xml</option>
+    </select>
+    <span class="hint">@T["The content type of the response body."]</span>
+</fieldset>
+
+@*TODO: Only display Content field when appropriate for the selected HTTP status code.*@
+<fieldset class="form-group" asp-validation-class-for="Content">
+    <label asp-for="Content">@T["Content"] <span asp-validation-for="Content"></span></label>
+    <textarea asp-for="Content"></textarea>
+    <span class="hint">@T["The body to send back. With Liquid support."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Headers">
+    <label asp-for="Headers">@T["Headers"] <span asp-validation-for="Headers"></span></label>
+    <textarea asp-for="Headers"></textarea>
+    <span class="hint">@T["Provide additional HTTP response headers. Enter one key/value pair per line. For example: \"X-MyHeader: Foo\". With Liquid support."]</span>
+</fieldset>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        var codeMirrorOptions = {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        };
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Content)'), codeMirrorOptions);
+});
+</script>

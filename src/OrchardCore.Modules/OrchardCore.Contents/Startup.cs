@@ -22,7 +22,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -64,7 +64,7 @@ namespace OrchardCore.Contents
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
-            services.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
+            services.AddTagHelpers<ContentLinkTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -129,6 +129,7 @@ namespace OrchardCore.Contents
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
+            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
         }
     }
 

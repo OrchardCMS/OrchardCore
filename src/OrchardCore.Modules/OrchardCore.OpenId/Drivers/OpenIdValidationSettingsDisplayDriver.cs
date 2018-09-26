@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,13 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
@@ -60,17 +61,29 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
+            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
                 model.Authority = settings.Authority;
                 model.Audience = settings.Audience;
                 model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings().AsParallel()
-                                          let provider = _shellHost.GetOrCreateShellContext(tenant).ServiceProvider
-                                          let descriptor = provider.GetRequiredService<ShellDescriptor>()
-                                          where descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server)
-                                          select tenant.Name).ToList();
+                var availableTenants = new List<string>();
+                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running);
+
+                foreach(var shellContext in await _shellHost.ListShellContextsAsync())
+                {
+                    using (var scope = shellContext.CreateScope())
+                    {
+                        var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
+                        if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        {
+                            availableTenants.Add(shellContext.Settings.Name);
+                        }
+                    }
+                }
+
+                model.AvailableTenants = availableTenants;
+
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -104,7 +117,7 @@ namespace OrchardCore.OpenId.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 

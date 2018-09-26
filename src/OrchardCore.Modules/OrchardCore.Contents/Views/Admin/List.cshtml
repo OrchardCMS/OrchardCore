@@ -22,7 +22,8 @@
     List<SelectListItem> contentSorts = new List<SelectListItem>() {
         new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
         new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() }
+        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
+        new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
     };
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>

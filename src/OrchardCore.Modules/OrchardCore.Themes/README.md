@@ -172,7 +172,7 @@ Because multiple fields of the same type can be added to the same content type o
 
 For a list of available shape alternates for fields see [Content field templates](../OrchardCore.Templates/README/#content-field-templates)
 
-In our case, the __Portfolio__ has a __Text__ field named `Url`. The best shape to override in this case is `Portfolio__Url` which will match the template `Portfolio-Url.cshtml`.
+In our case, the __Project__ has a __Text__ field named `Url`. The best shape to override in this case is `Project__Url` which will match the template `Project-Url.cshtml`.
 
 The model accessible from this field is described here [Available fields](../OrchardCore.ContentFields/README/#available-fields)
 
@@ -180,16 +180,16 @@ This page explains that the __Text__ field contains a property `Text` that conta
 
 To create a link for this field we can create these templates.
 
-#### Portfolio-Url.cshtml
+#### Project-Url.cshtml
 
 ```razor
-<a href="@Model.Text">External url</a>
+<a href="@Model.Field.Text">External url</a>
 ```
 
-#### Portfolio-Url.liquid
+#### Project-Url.liquid
 
 ```liquid
-<a href="{{ Model.Text }}">External url</a>
+<a href="{{ Model.Field.Text }}">External url</a>
 ```
 
 ### Display types

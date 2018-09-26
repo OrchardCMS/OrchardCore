@@ -1,19 +1,21 @@
 using System;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
+using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -30,6 +32,7 @@ namespace OrchardCore.Lucene
         {
             services.AddSingleton<LuceneIndexingState>();
             services.AddScoped<LuceneIndexingService>();
+            services.AddScoped<ISearchQueryService, SearchQueryService>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
@@ -37,6 +40,10 @@ namespace OrchardCore.Lucene
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
+
+            services.Configure<LuceneOptions>(o =>
+                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
+                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
@@ -72,9 +79,6 @@ namespace OrchardCore.Lucene
                 template: "api/lucene/documents",
                 defaults: new { controller = "Api", action = "Documents" }
             );
-
-            var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
-            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 
@@ -84,6 +88,17 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+        }
+    }
+
+    [Feature("OrchardCore.Lucene.ContentPicker")]
+    public class LuceneContentPickerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
+            services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
         }
     }
 }

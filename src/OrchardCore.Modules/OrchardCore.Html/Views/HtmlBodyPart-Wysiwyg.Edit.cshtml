@@ -1,0 +1,25 @@
+@model HtmlBodyPartViewModel
+@using OrchardCore.Html.ViewModels;
+@using OrchardCore.Html.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
+}
+
+<script asp-name="trumbowyg" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
+<style asp-name="trumbowyg" asp-src="/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+
+<fieldset class="form-group">
+    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+    <span class="hint">@T["The body of the content item."]</span>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Source)').trumbowyg().on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>
