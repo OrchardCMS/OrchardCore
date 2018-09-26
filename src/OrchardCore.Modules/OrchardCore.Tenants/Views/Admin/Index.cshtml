@@ -61,7 +61,7 @@
                         }
                         @if (entry.ShellSettings.State == TenantState.Uninitialized)
                         {
-                            <a class="btn btn-success btn-sm" href="@GetTenantUrl(entry)">@T["Setup"]</a>
+                            <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry)">@T["Setup"]</a>
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>

@@ -1,8 +1,9 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
-using OrchardCore.Users.Drivers;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users
 {
@@ -15,11 +16,11 @@ namespace OrchardCore.Users
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -30,9 +31,11 @@ namespace OrchardCore.Users
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
                          )));
+
+            return Task.CompletedTask;
         }
     }
-    
+
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
@@ -43,11 +46,11 @@ namespace OrchardCore.Users
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -58,6 +61,8 @@ namespace OrchardCore.Users
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
+
+            return Task.CompletedTask;
         }
     }
 
@@ -71,11 +76,11 @@ namespace OrchardCore.Users
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -86,6 +91,8 @@ namespace OrchardCore.Users
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
+
+            return Task.CompletedTask;
         }
     }
 }

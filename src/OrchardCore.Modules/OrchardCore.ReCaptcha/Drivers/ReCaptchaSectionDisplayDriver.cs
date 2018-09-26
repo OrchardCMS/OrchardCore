@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReCaptcha.Core.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;

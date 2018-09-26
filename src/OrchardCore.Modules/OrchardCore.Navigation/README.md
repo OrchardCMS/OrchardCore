@@ -122,7 +122,7 @@ public class MainMenu : INavigationProvider
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public async Task BuildNavigation(string name, NavigationBuilder builder)
         {
             //Only interact with the "main" navigation menu here.
             if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
