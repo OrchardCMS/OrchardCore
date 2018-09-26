@@ -17,13 +17,21 @@ namespace OrchardCore.Contents.Scripting
                 Name = "getUrlPrefix",
                 Method = serviceProvider => (Func<string, string>)((string path) =>
                  {
+                     string ret;
+
                      var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                     var url = string.Concat('/', shellSettings.RequestUrlPrefix).TrimEnd('/');
+
+                     if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
+                         ret = shellSettings.RequestUrlPrefix.Trim('/');
+                     else
+                         ret = string.Empty;
+
                      if (!string.IsNullOrWhiteSpace(path))
                      {
-                         url = string.Concat(url, '/', path.TrimStart('/')).TrimEnd('/');
+                         ret = string.Concat(ret, '/', path.Trim('/')).Trim('/');
                      }
-                     return url;
+
+                     return string.Concat('/', ret);
                  })
             };
         }
