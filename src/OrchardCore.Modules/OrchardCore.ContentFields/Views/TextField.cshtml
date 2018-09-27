@@ -1,8 +1,10 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayTextFieldViewModel
+@using OrchardCore.ContentFields.Settings;
 @using OrchardCore.Mvc.Utilities
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var editor = Model.PartFieldDefinition.Settings.GetValue("Editor").ToString();
 }
 
 <div class="field field-type-textfield field-name-@name">

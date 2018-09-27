@@ -39,6 +39,8 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<FontIconPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<FontIconPickerFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -98,6 +100,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, YoutubeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
+
+            // Font icon picker field
+            services.AddSingleton<ContentField, FontIconPickerField>();
+            services.AddScoped<IContentFieldDisplayDriver, FontIconPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, FontIconPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, FontIconPickerFieldIndexHandler>();
 
             // Content picker field
             services.AddSingleton<ContentField, ContentPickerField>();

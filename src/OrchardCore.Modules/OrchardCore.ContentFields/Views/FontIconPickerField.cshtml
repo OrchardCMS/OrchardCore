@@ -1,0 +1,19 @@
+@model OrchardCore.ContentFields.ViewModels.FontIconPickerFieldViewModel
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<style name="fontIcomoon" at="Head" asp-src="/OrchardCore.ContentFields/Styles/icomoon.css"></style>
+<style name="fontFontello" at="Head" asp-src="/OrchardCore.ContentFields/Styles/fontello.css"></style>
+
+<div class="field field-type-textfield field-name-@name">
+    @{
+        if (!string.IsNullOrEmpty(Model.Field.IconFormatted))
+        {
+            @Html.Raw(Model.Field.IconFormatted);
+        }
+    }
+</div>
