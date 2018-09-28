@@ -34,10 +34,9 @@ namespace OrchardCore.Contents.Indexing
 
         public ILogger Logger { get; }
 
-        public async Task BuildIndexAsync(BuildIndexContext context)
+        public async Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -48,7 +47,7 @@ namespace OrchardCore.Contents.Indexing
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
-                var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
+                var part = (ContentPart)contentItem.Get(partActivator.Type, partName);
 
                 var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 
@@ -69,11 +68,9 @@ namespace OrchardCore.Contents.Indexing
                         continue;
                     }
 
-                    await _fieldIndexHandlers.InvokeAsync(_fieldIndexHandler => _fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
+                    await _fieldIndexHandlers.InvokeAsync(fieldIndexHandler => fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
                 }
             }
-
-            return;
         }
     }
 }
