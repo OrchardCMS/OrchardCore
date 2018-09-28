@@ -1,0 +1,8 @@
+@model RedisSettingsViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Configuration">
+    <label asp-for="Configuration">@T["Redis connection string"] <span asp-validation-for="Configuration"></span></label>
+    <input asp-for="Configuration" class="form-control" />
+    <span class="hint">@T["Configuration string used to connect to Redis server(s)"]</span>
+</fieldset>
+

@@ -4,8 +4,15 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Distributed.Drivers;
+using OrchardCore.Distributed.Settings;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
+
 
 namespace OrchardCore.Distributed
 {
@@ -19,6 +26,16 @@ namespace OrchardCore.Distributed
         }
     }
 
+    [Feature("OrchardCore.Distributed.Redis.Settings")]
+    public class RedisSettingsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, RedisSiteSettingsDisplayDriver>();
+        }
+    }
+
     [Feature("OrchardCore.Distributed.Redis.Cache")]
     public class DistributedRedisCacheStartup : StartupBase
     {
@@ -26,20 +43,24 @@ namespace OrchardCore.Distributed
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //services.Configure<RedisCacheOptions>(o =>
-            //{
-            //    o.Configuration = "192.168.99.100:6379";
-            //});
-
             services.AddDistributedRedisCache(o => { });
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var siteService = serviceProvider.GetRequiredService<ISiteService>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+            var siteSettings = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
             var options = serviceProvider.GetService<IOptions<RedisCacheOptions>>().Value;
 
-            options.Configuration = "192.168.99.100:6379,abortConnect=false";
+            if (siteSettings.Has<RedisSettings>())
+            {
+                // Right now, only a string representing the configuration is available.
+                // In the next version there will be a full 'ConfigurationOptions' object.
+                options.Configuration = siteSettings.As<RedisSettings>().Configuration;
+            }
+
             options.InstanceName = shellSettings.Name;
         }
     }

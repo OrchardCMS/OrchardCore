@@ -43,7 +43,7 @@ namespace OrchardCore.DynamicCache.Services
             {
                 // Even this instance has removed or never set the cached value, here we may get
                 // a cached value from another instance and before this instance was able to set
-                // or refresh the cache itself. If so, the cache keys will not be tagged locally.
+                // or refresh the cache itself, and then before tagging the cache keys locally.
 
                 var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
 
