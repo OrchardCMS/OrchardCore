@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Indexing
 {
@@ -7,6 +8,6 @@ namespace OrchardCore.Indexing
     /// </summary>
     public interface IContentItemIndexHandler
     {
-        Task BuildIndexAsync(BuildIndexContext context);
+        Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem);
     }
 }

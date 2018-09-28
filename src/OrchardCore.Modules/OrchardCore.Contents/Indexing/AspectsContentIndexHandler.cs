@@ -14,35 +14,28 @@ namespace OrchardCore.Contents.Indexing
             _contentManager = contentManager;
         }
 
-        public async Task BuildIndexAsync(BuildIndexContext context)
+        public async Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem)
         {
-            var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
-
+            var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect());
             if (body != null)
             {
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.BodyAspectBodyKey,
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
             if (context.ContentItem.DisplayText != null)
             {
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.DisplayTextAnalyzedKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextAnalyzedKey,
+                    contentItem.DisplayText,
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.DisplayTextKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextKey,
+                    contentItem.DisplayText,
+                    DocumentIndexOptions.Store);
             }
         }
     }

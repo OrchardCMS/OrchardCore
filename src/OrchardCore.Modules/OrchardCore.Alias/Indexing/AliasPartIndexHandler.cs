@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Alias.Models;
 using OrchardCore.Indexing;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Alias.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Alias, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, part.Alias, options);
 
             return Task.CompletedTask;
         }

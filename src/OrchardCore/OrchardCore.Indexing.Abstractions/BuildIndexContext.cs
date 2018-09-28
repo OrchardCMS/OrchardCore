@@ -1,16 +1,16 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Indexing
 {
     public class BuildIndexContext
     {
         public BuildIndexContext(
-            DocumentIndex documentIndex, 
-            ContentItem contentItem, 
+            DocumentIndex documentIndex,
+            ContentItem contentItem,
             string key)
         {
-            ContentItem = contentItem;
             DocumentIndex = documentIndex;
+            ContentItem = contentItem;
             Key = key;
         }
 
