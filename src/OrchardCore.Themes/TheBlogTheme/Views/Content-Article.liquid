@@ -16,6 +16,12 @@
     </header>
 {% endzone %}
 
+{% assign cacheDependency = "contentitemid:" | append: Model.ContentItem.ContentItemId %}
+
+{% cache "article", dependencies: cacheDependency  %}
+    <h3>Cache testing: {{ "now" | date: "%Y-%m-%d %H:%M:%S" }}</h3>
+{% endcache %}
+
 
 {{ Model.Content.ContentsMetadata.Value }}
 {{ Model.Content.ContentsMetadata | shape_render }}

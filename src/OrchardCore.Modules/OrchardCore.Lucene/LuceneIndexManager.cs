@@ -75,7 +75,7 @@ namespace OrchardCore.Lucene
                 {
                     pool.MakeDirty();
                 }
-            });
+            }, true);
         }
 
         public void DeleteIndex(string indexName)
@@ -142,7 +142,7 @@ namespace OrchardCore.Lucene
                 {
                     pool.MakeDirty();
                 }
-            });
+            }, true);
         }
 
         public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)

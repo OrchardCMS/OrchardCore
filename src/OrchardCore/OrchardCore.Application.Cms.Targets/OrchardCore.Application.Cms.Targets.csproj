@@ -44,6 +44,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment\OrchardCore.Deployment.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment.Remote\OrchardCore.Deployment.Remote.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Distributed\OrchardCore.Distributed.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" PrivateAssets="none" />

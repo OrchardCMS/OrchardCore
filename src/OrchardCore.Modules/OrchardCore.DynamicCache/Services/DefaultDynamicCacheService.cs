@@ -39,6 +39,27 @@ namespace OrchardCore.DynamicCache.Services
 
             var content = await GetCachedStringAsync(cacheKey);
 
+            if (content != null)
+            {
+                // Even this instance has removed or never set the cached value, here we may get
+                // a cached value from another instance and before this instance was able to set
+                // or refresh the cache itself. If so, the cache keys will not be tagged locally.
+
+                var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
+
+                var tags = context.Tags.ToArray();
+                foreach (var tag in tags)
+                {
+                    // Check if any tag needs to be refreshed.
+                    if (!tagCache.IsItemTagged(tag, cacheKey))
+                    {
+                        tagCache.Tag(cacheKey, tags);
+                        tagCache.Tag(GetCacheContextCacheKey(context.CacheId), tags);
+                        break;
+                    }
+                }
+            }
+
             return content;
         }
         
