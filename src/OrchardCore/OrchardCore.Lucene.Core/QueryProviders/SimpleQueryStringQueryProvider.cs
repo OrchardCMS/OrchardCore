@@ -1,3 +1,4 @@
+using System.Linq;
 using Lucene.Net.QueryParsers.Simple;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -14,9 +15,19 @@ namespace OrchardCore.Lucene.QueryProviders
             }
 
             var queryString = query["query"]?.Value<string>();
-            var fields = query["fields"]?.Value<string>() ?? "";
-            var defaultOperator = query["default_operator"]?.Value<string>() ?? "and";
-            var queryParser = new SimpleQueryParser(context.DefaultAnalyzer, "");
+            var fields = query["fields"]?.Values<string>() ?? new string[0];
+            var defaultOperator = query["default_operator"]?.Value<string>().ToLowerInvariant() ?? "or";
+            var weights = fields.ToDictionary(field => field, field => 1.0f);
+            var queryParser = new SimpleQueryParser(context.DefaultAnalyzer, weights);
+            switch (defaultOperator)
+            {
+                case "and":
+                    queryParser.DefaultOperator = Occur.MUST;
+                    break;
+                case "or":
+                    queryParser.DefaultOperator = Occur.SHOULD;
+                    break;
+            }
             return queryParser.Parse(queryString);
         }
     }
