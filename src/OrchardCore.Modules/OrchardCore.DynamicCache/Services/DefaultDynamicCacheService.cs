@@ -28,8 +28,11 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            context = await GetCachedContextAsync(context.CacheId);
-            if (context == null)
+            // When using known values variations, the key of the cached value
+            // returned by 'GetCacheKey()' doesn't only rely on the 'CacheId'.
+            // So here, we use another var to not override the actual context.
+            var cachedContext = await GetCachedContextAsync(context.CacheId);
+            if (cachedContext == null)
             {
                 // We don't know the context, so we must treat this as a cache miss
                 return null;

@@ -43,7 +43,7 @@ namespace OrchardCore.Distributed
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDistributedRedisCache(o => { });
+            //services.AddDistributedRedisCache(o => { });
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
