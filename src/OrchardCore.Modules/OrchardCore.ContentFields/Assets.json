@@ -8,9 +8,22 @@
   },
   {
     "inputs": [
-      "Assets/js/*.js"
+      "Assets/js/ContentPicker/*.js"
     ],
     "output": "wwwroot/Scripts/contentPicker.js"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/optionsEditor.scss"
+    ],
+    "output": "wwwroot/Styles/optionsEditor.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/OptionsEditor/*.js"
+    ],
+    "output": "wwwroot/Scripts/optionsEditor.js"
   },
   {
     "inputs": [

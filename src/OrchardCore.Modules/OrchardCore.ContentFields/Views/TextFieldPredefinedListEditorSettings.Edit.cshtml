@@ -1,7 +1,64 @@
 @using OrchardCore.ContentFields.Settings
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<div class="field-editor field-editor-predefinedlist">
+@{
+    var options = string.IsNullOrWhiteSpace(Model.Options) ? new ListValueOption[0] : JsonConvert.DeserializeObject<ListValueOption[]>(Model.Options);
+}
+
+<script asp-src="/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<style asp-src="/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+
+<script at="Foot">
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options));
+</script>
+
+<script type="text/x-template" id="options-table">
+    <table class="table table-bordered table-sm options-table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Option Label</th>
+                <th scope="col">Value</th>
+                <th scope="col" colspan="3">Default?</th>
+            </tr>
+        </thead>
+        <draggable v-model="list" :element="'tbody'">
+            <tr v-for="(option, index) in list" :key="option.name" class="ui-sortable-handle">
+                <td>
+                    <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" v-model="option.value" placeholder="Enter a value" style="font-family: Courier New, Courier, monospace" />
+                </td>
+                <td class="text-center">
+                    <div class="custom-control custom-radio ml-2">
+                        <input type="radio" v-bind:id="'customRadio_' + index" name="default" class="custom-control-input" v-on:click="uncheck(index)">
+                        <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </td>
+                <td class="text-center"><div class="btn ui-sortable-handle"><i class="fas fa-arrows-alt"></i></div></td>
+            </tr>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> Add an option</a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
     <div class="row">
         <fieldset class="form-group col-sm-6">
             <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
@@ -12,19 +69,11 @@
         </fieldset>
     </div>
 
-    <fieldset class="form-group">
-        <div class="row col-md">
+    <div class="row">
+        <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <textarea asp-for="Options" rows="8" class="form-control"></textarea>
-            <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
-        </div>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <div class="row col">
-            <label asp-for="DefaultValue">@T["Default value"]</label>
-            <input asp-for="DefaultValue" class="form-control" type="text" />
-            <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
-        </div>
-    </fieldset>
+            <input asp-for="Options" type="hidden" v-bind:value="getData()" />
+            <options-table v-model="option"></options-table>
+        </fieldset>
+    </div>
 </div>
