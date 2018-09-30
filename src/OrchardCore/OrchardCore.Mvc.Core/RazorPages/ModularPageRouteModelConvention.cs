@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace OrchardCore.Mvc.RazorPages
@@ -24,19 +25,27 @@ namespace OrchardCore.Mvc.RazorPages
 
             if (pageName.EndsWith('/' + _pageName))
             {
-                foreach (var selector in model.Selectors)
+                var selectors = model.Selectors.ToArray();
+
+                foreach (var selector in selectors)
                 {
                     selector.AttributeRouteModel.SuppressLinkGeneration = true;
-                }
+                    var pageTemplate = selector.AttributeRouteModel.Template;
 
-                model.Selectors.Add(new SelectorModel
-                {
-                    AttributeRouteModel = new AttributeRouteModel
+                    if (pageTemplate.StartsWith(_pageName + '/'))
                     {
-                        Template = _route,
-                        Name = _route.Replace('/', '.')
+                        var template = pageTemplate.Replace(_pageName, _route).TrimStart('/');
+
+                        model.Selectors.Add(new SelectorModel
+                        {
+                            AttributeRouteModel = new AttributeRouteModel
+                            {
+                                Template = template,
+                                Name = template.Replace('/', '.')
+                            }
+                        });
                     }
-                });
+                }
             }
         }
     }

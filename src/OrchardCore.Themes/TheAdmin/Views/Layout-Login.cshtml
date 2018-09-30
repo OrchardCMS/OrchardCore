@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()">
+<head>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/favicon.ico" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
+
+    <script asp-name="font-awesome" use-cdn="true" at="Foot" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" use-cdn="true" at="Foot" version="5"></script>
+
+    <resources type="Header" />
+
+</head>
+<body class="preload" dir="@Orchard.CultureDir()">
+    <div class="ta-content ta-content-login">
+        @await RenderSectionAsync("Messages", required: false)
+
+        @await RenderBodyAsync()
+    </div>
+
+    @await RenderSectionAsync("Footer", required: false)
+
+    <resources type="Footer" />    
+</body>
+</html>

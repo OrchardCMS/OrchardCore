@@ -103,7 +103,7 @@ namespace OrchardCore.OpenId.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
@@ -111,11 +111,11 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (groupId == SettingsGroupId)
+            if (context.GroupId == SettingsGroupId)
             {
                 var previousClientSecret = settings.ClientSecret;
                 var model = new OpenIdClientSettingsViewModel();
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 model.Scopes = model.Scopes ?? string.Empty;
 
@@ -184,18 +184,18 @@ namespace OrchardCore.OpenId.Drivers
                     if (result != ValidationResult.Success)
                     {
                         var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        updater.ModelState.AddModelError(key, result.ErrorMessage);
+                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }
 
                 // If the settings are valid, reload the current tenant.
-                if (updater.ModelState.IsValid)
+                if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

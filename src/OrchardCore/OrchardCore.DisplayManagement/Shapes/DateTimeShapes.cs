@@ -84,10 +84,12 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (Format == null)
             {
+                // We use the Plural localizer so we don't need to resolve another one.
+                // Internally it will use the string localizer by passing 0 as count.
                 Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
             }
 
-            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.InvariantCulture)));
+            return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
         }
     }
 

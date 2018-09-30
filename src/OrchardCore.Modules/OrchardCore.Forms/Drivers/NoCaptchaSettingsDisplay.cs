@@ -33,24 +33,24 @@ namespace OrchardCore.Forms.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(NoCaptchaSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(NoCaptchaSettings section, BuildEditorContext context)
         {
-            if (groupId == GroupId)
+            if (context.GroupId == GroupId)
             {
                 var model = new NoCaptchaSettingsViewModel();
 
-                if (await updater.TryUpdateModelAsync(model, Prefix))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
 
                     section.SiteKey = model.SiteKey?.Trim();
                     section.SiteSecret = model.SiteSecret?.Trim();
 
                     // Reload tenant to apply settings.
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

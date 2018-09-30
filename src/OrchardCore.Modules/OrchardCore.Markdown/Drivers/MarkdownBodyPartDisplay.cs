@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -26,16 +28,16 @@ namespace OrchardCore.Markdown.Drivers
             _liquidTemplatemanager = liquidTemplatemanager;
         }
 
-        public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart)
+        public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart))
+            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
 
-        public override IDisplayResult Edit(MarkdownBodyPart MarkdownBodyPart)
+        public override IDisplayResult Edit(MarkdownBodyPart MarkdownBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart_Edit", m => BuildViewModel(m, MarkdownBodyPart));
+            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater)
@@ -49,7 +51,7 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model);
         }
 
-        private async Task BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
+        private async Task BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(MarkdownBodyPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownBodyPart));
@@ -68,7 +70,7 @@ namespace OrchardCore.Markdown.Drivers
 
             model.ContentItem = MarkdownBodyPart.ContentItem;
             model.MarkdownBodyPart = MarkdownBodyPart;
-            model.TypePartSettings = settings;
+            model.TypePartDefinition = definition;
         }
     }
 }

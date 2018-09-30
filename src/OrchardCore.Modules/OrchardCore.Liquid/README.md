@@ -222,7 +222,7 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | -------- | ------- |------------ |
 | `BaseUrl` |  | The base URL of the site | 
 | `Calendar` |  | The site's calendar | 
-| `Culture` | `en-us` | The site's culture as an ISO language code | 
+| `Culture` | `en-us` | The site's default culture as an ISO language code | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user | 
 | `PageSize` | `10` | The default page size of lists | 
@@ -253,6 +253,17 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https` |
 | `Scheme` | `https` | The scheme of the request |
 | `Method` | `GET` | The HTTP method  |
+
+### Culture
+
+Represents the current culture.
+
+The following properties are available on the `Culture` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `Name` | `en-US` | The requests's culture as an ISO language code |
+| `Dir` | `rtl` | The text writing directionality |
 
 ## Shape Filters
 

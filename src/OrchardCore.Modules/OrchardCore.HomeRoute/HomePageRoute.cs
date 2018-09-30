@@ -35,8 +35,6 @@ namespace OrchardCore.HomeRoute
 
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            object value;
-
             var tokens = GetHomeRouteValues(context.HttpContext);
 
             if (tokens == null)
@@ -47,9 +45,10 @@ namespace OrchardCore.HomeRoute
             // Return null if it doesn't match the home route values
             foreach (var entry in tokens)
             {
-                if (String.Equals(entry.Key, "area", StringComparison.OrdinalIgnoreCase))
+                object value;
+                if (string.Equals(entry.Key, "area", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!context.AmbientValues.TryGetValue("area", out value) || !String.Equals(value.ToString(), tokens["area"].ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (!context.Values.TryGetValue("area", out value) || !String.Equals(value.ToString(), tokens["area"].ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         return null;
                     }
@@ -64,12 +63,13 @@ namespace OrchardCore.HomeRoute
             }
 
             // Remove the values that should not be rendered in the query string
+            var clonedContext = new VirtualPathContext(context.HttpContext, context.AmbientValues, new RouteValueDictionary(context.Values), context.RouteName);
             foreach (var key in tokens.Keys)
             {
-                context.Values.Remove(key);
+                clonedContext.Values.Remove(key);
             }
 
-            var result = base.GetVirtualPath(context);
+            var result = base.GetVirtualPath(clonedContext);
 
             return result;
         }

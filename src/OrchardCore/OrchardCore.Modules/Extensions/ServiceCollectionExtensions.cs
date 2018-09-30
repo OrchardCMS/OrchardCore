@@ -4,11 +4,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -70,6 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+
+            services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }
 
         private static void AddShellServices(IServiceCollection services)
@@ -87,6 +91,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddExtensionServices(OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
+            builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
+            
             builder.ApplicationServices.AddExtensionManagerHost();
 
             builder.ConfigureServices(services =>
@@ -103,25 +110,26 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Configure((app, routes, serviceProvider) =>
             {
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
 
                 IFileProvider fileProvider;
                 if (env.IsDevelopment())
                 {
                     var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(new ModuleProjectStaticFileProvider(env));
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(env));
+                    fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
+                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
                     fileProvider = new CompositeFileProvider(fileProviders);
                 }
                 else
                 {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(env);
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
                 }
 
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    RequestPath = "",
-                    FileProvider = fileProvider
-                });
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+
+                options.RequestPath = "";
+                options.FileProvider = fileProvider;
+                app.UseStaticFiles(options);
             });
         }
 
@@ -190,11 +198,33 @@ namespace Microsoft.Extensions.DependencyInjection
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
                 // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
                 // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                services.Add(new ServiceCollection()
+                var collection = new ServiceCollection()
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .Services);
+                    .Services;
+
+                // Retrieve the implementation type of the newly startup filter registered as a singleton
+                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
+
+                if (startupFilterType != null)
+                {
+                    // Remove any previously registered data protection startup filters.
+                    var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
+                        (s.ImplementationInstance?.GetType() == startupFilterType ||
+                        s.ImplementationType == startupFilterType)).ToArray();
+
+                    foreach (var descriptor in descriptors)
+                    {
+                        services.Remove(descriptor);
+                    }
+                }
+
+                // Remove any previously registered options setups.
+                services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+
+                services.Add(collection);
             });
         }
     }

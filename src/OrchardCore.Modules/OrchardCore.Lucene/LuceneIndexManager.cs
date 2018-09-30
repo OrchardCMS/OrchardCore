@@ -2,8 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,11 +13,11 @@ using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
-using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Services;
 using OrchardCore.Modules;
 using Spatial4n.Core.Context;
 using Directory = System.IO.Directory;
@@ -41,16 +39,16 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-
-        private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private SpatialContext _ctx;
-        private GeohashPrefixTree _grid;
+        private GeohashPrefixTree _grid;     
 
         public LuceneIndexManager(
             IClock clock,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
-            ILogger<LuceneIndexManager> logger
+            ILogger<LuceneIndexManager> logger,
+            LuceneAnalyzerManager luceneAnalyzerManager
             )
         {
             _clock = clock;
@@ -60,6 +58,9 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
 
+            _rootDirectory = Directory.CreateDirectory(_rootPath);
+            _luceneAnalyzerManager = luceneAnalyzerManager;
+
             //Typical geospatial context
             //  These can also be constructed from SpatialContextFactory
             _ctx = SpatialContext.GEO;
@@ -68,19 +69,10 @@ namespace OrchardCore.Lucene
             //TODO demo lookup by detail distance
             //  This can also be constructed from SpatialPrefixTreeFactory
             _grid = new GeohashPrefixTree(_ctx, maxLevels);
-
-            _rootDirectory = Directory.CreateDirectory(_rootPath);
         }
 
         public void CreateIndex(string indexName)
         {
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            if (!path.Exists)
-            {
-                path.Create();
-            }
-
             Write(indexName, _ => { }, true);
         }
 
@@ -115,7 +107,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-
+                
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -294,8 +286,8 @@ namespace OrchardCore.Lucene
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-
-                        var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
+                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                        var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
                         };
@@ -332,8 +324,6 @@ namespace OrchardCore.Lucene
         {
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
                 var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(directory);
                 return new IndexReaderPool(reader);

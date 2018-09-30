@@ -1,13 +1,7 @@
 @model OrchardCore.ContentFields.Settings.NumericFieldSettings
 @using System.Globalization
 
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
-
 @{
-    var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("NumericField_Option__", StringComparison.OrdinalIgnoreCase));
     var step = Math.Pow(10, 0 - Model.Scale);
     var stepAttribute = step.ToString(CultureInfo.InvariantCulture);
     string minimum = (Model.Minimum.HasValue) ? Math.Round(Model.Minimum.Value, Model.Scale).ToString(CultureInfo.InvariantCulture) : "";
@@ -22,21 +16,6 @@
         </label>
     </div>
 </fieldset>
-
-<div class="row">
-    <fieldset class="form-group col-sm-6">
-        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
-        <select asp-for="Editor" class="form-control">
-            @foreach (var editorShape in editorShapes)
-            {
-                dynamic shape = await Factory.CreateAsync(editorShape);
-                shape.Editor = Model.Editor;
-                @await DisplayAsync(shape)
-            }
-        </select>
-        <span class="hint">@T["The editor to use. eg: Number, Range"]</span>
-    </fieldset>
-</div>
 
 <fieldset class="form-group">
     <div class="row col-md">
