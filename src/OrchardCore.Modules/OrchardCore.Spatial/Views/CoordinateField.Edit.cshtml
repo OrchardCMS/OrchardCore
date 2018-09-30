@@ -1,21 +1,25 @@
 @using OrchardCore.Spatial.Settings
 @using OrchardCore.Spatial.ViewModels
 @model EditCoordinateFieldViewModel
-
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<CoordinateFieldSettings>();
 }
 
-@{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "CoordinateField_Editor";
-
-    if (!string.IsNullOrEmpty(settings.Editor))
-    {
-        shape.Metadata.Alternates.Add($"CoordinateField_Editor__{settings.Editor}");
-    }
-}
-
-@await DisplayAsync(Model)
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label asp-for="Latitude">Latitude</label>
+        <input asp-for="Latitude" class="form-control content-preview-text" required="@settings.Required" />
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+    <div class="form-group col-md-4">
+        <label asp-for="Longitude">Longitude</label>
+        <input asp-for="Longitude" class="form-control content-preview-text" required="@settings.Required" />
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+</div>

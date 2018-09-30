@@ -24,7 +24,7 @@ namespace OrchardCore.Spatial.Drivers
 
         public override IDisplayResult Edit(CoordinateField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditCoordinateFieldViewModel>("CoordinateField_Edit", model =>
+            return Initialize<EditCoordinateFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Latitude = field.Latitude;
                 model.Longitude = field.Longitude;
@@ -38,7 +38,7 @@ namespace OrchardCore.Spatial.Drivers
         {
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Latitude, f => f.Longitude);
 
-            return Edit(field, context); ;
+            return Edit(field, context);
         }
     }
 }
