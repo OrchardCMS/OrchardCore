@@ -7,6 +7,7 @@ function initializeOptionsEditor(el, data) {
 
     var optionsEditor = $(el);
     var previouslyChecked;
+    var defaultValue = null;
 
     var optionsTable = {
         template: '#options-table',
@@ -24,12 +25,12 @@ function initializeOptionsEditor(el, data) {
         },
         methods: {
             add: function () {
-                this.list.push({ name: '', value: ''});
+                this.list.push({ name: '', value: '', selected: false});
             },
             remove: function (index) {
                 this.list.splice(index, 1);
             },
-            uncheck: function (index) {
+            uncheck: function (index, ckbEl) {
                 if (index == previouslyChecked) {
                     $('#customRadio_' + index)[0].checked = false;
                     previouslyChecked = null;
@@ -37,6 +38,10 @@ function initializeOptionsEditor(el, data) {
                 else {
                     previouslyChecked = index;
                 }
+
+            },
+            onChange: function () {
+                checked = false;
             }
         }
     };
@@ -53,6 +58,12 @@ function initializeOptionsEditor(el, data) {
         methods: {
             getData: function () {
                 return JSON.stringify(data);
+            },
+            getDefault: function () {
+                if (data.filter(d => d.selected != null).length > 0) {
+                    return data.filter(d => d.selected != null)[0].value;
+                }
+                else return null;
             }
         }
 
