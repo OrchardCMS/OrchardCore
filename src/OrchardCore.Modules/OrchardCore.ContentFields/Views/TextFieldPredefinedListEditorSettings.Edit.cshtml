@@ -14,7 +14,7 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options));
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), document.getElementById('@Html.IdFor(m => m.Options)'));
 </script>
 
 <script type="text/x-template" id="options-table">
@@ -59,6 +59,7 @@
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> Add an option</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
                 </td>
             </tr>
         </tfoot>
@@ -79,7 +80,6 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <input asp-for="Options" type="hidden" v-bind:value="getData()" />
             <options-table v-model="option"></options-table>
         </fieldset>
     </div>

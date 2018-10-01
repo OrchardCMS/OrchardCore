@@ -1,4 +1,4 @@
-function initializeOptionsEditor(el, data) {
+function initializeOptionsEditor(el, data, resultCtl) {
 
     var optionsEditor = $(el);
     var previouslyChecked;
@@ -34,9 +34,9 @@ function initializeOptionsEditor(el, data) {
                 }
 
             },
-            onChange: function () {
-                checked = false;
-            }
+            getFormattedList: function () {
+                return JSON.stringify(this.list.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+            },
         }
     };
 
@@ -48,13 +48,11 @@ function initializeOptionsEditor(el, data) {
         data: {
             option: data,
             dragging: false
-        },
-        methods: {
-            getData: function () {
-                return JSON.stringify(data.filter(function (x) { return x.name != null && x.name != "" && x.value != null && x.value != "" }));
-            }
         }
-
     });
 
+}
+
+function IsNullOrWhiteSpace(str) {
+    return str === null || str.match(/^ *$/) !== null;
 }
