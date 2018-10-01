@@ -44,7 +44,6 @@
                         {
                             <input type="radio" v-bind:id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" class="custom-control-input" v-on:click="uncheck(index, this)">
                         }
-
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>

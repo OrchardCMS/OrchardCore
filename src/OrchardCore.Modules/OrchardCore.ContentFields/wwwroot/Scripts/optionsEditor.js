@@ -14,13 +14,13 @@ function initializeOptionsEditor(el, data) {
         name: 'options-table',
         computed: {
             list: {
-                get() {
+                get: function() {
                     return this.value;
                 },
-                set(value) {
+                set: function(value) {
                     this.$emit('input', value);
                 }
-            }
+            } 
         },
         methods: {
             add: function () {
@@ -56,7 +56,7 @@ function initializeOptionsEditor(el, data) {
         },
         methods: {
             getData: function () {
-                return JSON.stringify(data);
+                return JSON.stringify(data.filter(function (x) { return x.name != null && x.name != "" && x.value != null && x.value != "" }));
             }
         }
 
