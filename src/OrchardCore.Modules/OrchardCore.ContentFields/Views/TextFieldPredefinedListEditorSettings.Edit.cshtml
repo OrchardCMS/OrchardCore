@@ -36,7 +36,15 @@
                 </td>
                 <td class="text-center">
                     <div class="custom-control custom-radio ml-2">
-                        <input type="radio" v-bind:id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-bind:checked="option.value == '@Model.DefaultValue'" class="custom-control-input" v-on:click="uncheck(index, this)">
+                        @if (Model.DefaultValue != null)
+                        {
+                            <input type="radio" v-bind:id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-bind:checked="option.value == '@Model.DefaultValue'" class="custom-control-input" v-on:click="uncheck(index, this)">
+                        }
+                        else
+                        {
+                            <input type="radio" v-bind:id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" class="custom-control-input" v-on:click="uncheck(index, this)">
+                        }
+
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
