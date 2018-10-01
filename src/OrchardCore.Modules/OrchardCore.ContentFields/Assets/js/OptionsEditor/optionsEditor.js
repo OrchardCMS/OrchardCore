@@ -2,7 +2,6 @@ function initializeOptionsEditor(el, data) {
 
     var optionsEditor = $(el);
     var previouslyChecked;
-    var defaultValue = null;
 
     var optionsTable = {
         template: '#options-table',
@@ -20,7 +19,7 @@ function initializeOptionsEditor(el, data) {
         },
         methods: {
             add: function () {
-                this.list.push({ name: '', value: '', selected: false});
+                this.list.push({ name: '', value: ''});
             },
             remove: function (index) {
                 this.list.splice(index, 1);
@@ -53,12 +52,6 @@ function initializeOptionsEditor(el, data) {
         methods: {
             getData: function () {
                 return JSON.stringify(data);
-            },
-            getDefault: function () {
-                if (data.filter(d => d.selected != null).length > 0) {
-                    return data.filter(d => d.selected != null)[0].value;
-                }
-                else return null;
             }
         }
 
