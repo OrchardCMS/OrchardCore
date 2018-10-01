@@ -1,11 +1,6 @@
 @using OrchardCore.ContentFields.Settings
 @using Newtonsoft.Json;
-@using Newtonsoft.Json.Linq;
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
-
-@{
-    var options = string.IsNullOrWhiteSpace(Model.Options) ? new ListValueOption[0] : JsonConvert.DeserializeObject<ListValueOption[]>(Model.Options);
-}
 
 <script asp-src="/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
 <style asp-src="/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
@@ -21,9 +16,9 @@
     <table class="table table-bordered table-sm options-table">
         <thead class="thead-light">
             <tr>
-                <th scope="col">Option Label</th>
-                <th scope="col">Value</th>
-                <th scope="col" colspan="3">Default?</th>
+                <th scope="col">@T["Option Label"]</th>
+                <th scope="col">@T["Value"]</th>
+                <th scope="col" colspan="3">@T["Default?"]</th>
             </tr>
         </thead>
         <draggable v-model="list" :element="'tbody'">
@@ -58,7 +53,7 @@
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> Add an option</a>
+                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
                 </td>
             </tr>
