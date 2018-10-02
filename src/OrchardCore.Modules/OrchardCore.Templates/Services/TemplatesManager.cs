@@ -42,15 +42,13 @@ namespace OrchardCore.Templates.Services
                             document = new TemplatesDocument();
 
                             _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
+                            _memoryCache.Set(CacheKey, document, ChangeToken);
                         }
                     }
                 }
                 else
                 {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
+                    _memoryCache.Set(CacheKey, document, ChangeToken);
                 }
             }
 
@@ -64,8 +62,8 @@ namespace OrchardCore.Templates.Services
             document.Templates.Remove(name);
             _session.Save(document);
 
-            _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
+            _memoryCache.Set(CacheKey, document, ChangeToken);
         }
         
         public async Task UpdateTemplateAsync(string name, Template template)
@@ -75,8 +73,8 @@ namespace OrchardCore.Templates.Services
             document.Templates[name] = template;
             _session.Save(document);
 
-            _memoryCache.Set(CacheKey, document);
             _signal.SignalToken(CacheKey);
+            _memoryCache.Set(CacheKey, document, ChangeToken);
         }
 
     }

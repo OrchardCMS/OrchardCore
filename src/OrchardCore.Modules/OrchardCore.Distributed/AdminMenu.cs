@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Distributed.Drivers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -26,7 +27,7 @@ namespace OrchardCore.Distributed
             builder.Add(T["Configuration"], configuration => configuration
                 .Add(T["Settings"], "2", settings => settings
                     .Add(T["Redis"], T["Redis"], entry => entry
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "redis" })
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RedisSiteSettingsDisplayDriver.GroupId })
                         .LocalNav()
                     )
                 )

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        private struct ChangeTokenInfo
+        public struct ChangeTokenInfo
         {
             public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
             {

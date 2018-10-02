@@ -4,12 +4,23 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Distributed.Settings;
 using OrchardCore.Distributed.ViewModels;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Distributed.Drivers
 {
     public class RedisSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, RedisSettings>
     {
+        public const string GroupId = "redis";
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
+
+        public RedisSiteSettingsDisplayDriver(IShellHost shellHost, ShellSettings shellSettings)
+        {
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
+        }
+
         public override IDisplayResult Edit(RedisSettings section, BuildEditorContext context)
         {
             return Initialize<RedisSettingsViewModel>("RedisSettings_Edit", model =>
@@ -27,6 +38,9 @@ namespace OrchardCore.Distributed.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 section.Configuration = model.Configuration;
+
+                // Reload the tenant to apply the settings
+                await _shellHost.ReloadShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(section, context);
