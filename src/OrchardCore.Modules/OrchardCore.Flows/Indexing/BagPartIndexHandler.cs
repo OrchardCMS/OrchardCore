@@ -32,7 +32,9 @@ namespace OrchardCore.Flows.Indexing
                 {
                     foreach (var contentItem in bagPart.ContentItems)
                     {
-                        await contentItemIndexHandler.BuildIndexAsync(context, contentItem);
+                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, contentItem.ContentType);
+
+                        await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                     }
                 }
             }

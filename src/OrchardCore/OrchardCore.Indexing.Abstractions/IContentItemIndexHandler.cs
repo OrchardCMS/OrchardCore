@@ -8,6 +8,6 @@ namespace OrchardCore.Indexing
     /// </summary>
     public interface IContentItemIndexHandler
     {
-        Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem);
+        Task BuildIndexAsync(BuildIndexContext context);
     }
 }
