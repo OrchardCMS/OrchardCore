@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Razor
             if (displayContext.ViewContext.View != null)
             {
                 var htmlHelper = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
-                return Task.FromResult(htmlHelper.Partial(viewName, displayContext.Value));
+                return htmlHelper.PartialAsync(viewName, displayContext.Value);
             }
             else
             {
