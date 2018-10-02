@@ -1,0 +1,8 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model DisableTenantTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Expression">
+    <label asp-for="Expression">@T["Expression"] <span asp-validation-for="Expression"></span></label>
+    <input type="text" asp-for="Expression" class="form-control code" autofocus />
+    <span class="hint">@T["Enter a JavaScript expression that evaluates to the tenant item to be published. For example: input(\"Tenant\"). If no expression is specified, the workflow's \"Tenant\" input variable or \"Tenant\" property will be used."]</span>
+</fieldset>
