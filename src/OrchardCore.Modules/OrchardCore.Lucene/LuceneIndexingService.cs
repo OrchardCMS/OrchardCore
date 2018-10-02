@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Lucene
 {
     /// <summary>
-    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls
+    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls 
     /// from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
     /// It also indexes one content item at a time and provides the result to all indices.
     /// </summary>
@@ -31,8 +31,8 @@ namespace OrchardCore.Lucene
         public LuceneIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            LuceneIndexingState indexingState,
-            LuceneIndexManager indexManager,
+            LuceneIndexingState indexingState, 
+            LuceneIndexManager indexManager, 
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
             ILogger<LuceneIndexingService> logger)
@@ -102,6 +102,7 @@ namespace OrchardCore.Lucene
                         if (task.Type == IndexingTaskTypes.Update)
                         {
                             var contentItem = await contentManager.GetAsync(task.ContentItemId);
+
                             if (contentItem == null)
                             {
                                 continue;
@@ -109,7 +110,7 @@ namespace OrchardCore.Lucene
 
                             var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
 
-                            // Update the document from the index if its lastIndexId is smaller than the current task id.
+                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
                             await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
 
                             foreach (var index in allIndices)
@@ -121,6 +122,7 @@ namespace OrchardCore.Lucene
                             }
                         }
                     }
+
 
                     // Update task ids
                     lastTaskId = batch.Last().Id;
@@ -135,7 +137,7 @@ namespace OrchardCore.Lucene
 
                     _indexingState.Update();
 
-                }
+                } 
             } while (batch.Length == BatchSize);
         }
 

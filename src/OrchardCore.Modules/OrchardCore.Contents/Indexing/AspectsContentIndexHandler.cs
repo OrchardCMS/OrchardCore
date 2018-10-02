@@ -14,9 +14,10 @@ namespace OrchardCore.Contents.Indexing
             _contentManager = contentManager;
         }
 
-        public async Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem)
+        public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var body = await _contentManager.PopulateAspectAsync(contentItem, new BodyAspect());
+            var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
+
             if (body != null)
             {
                 context.DocumentIndex.Set(
@@ -29,12 +30,12 @@ namespace OrchardCore.Contents.Indexing
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.DisplayTextAnalyzedKey,
-                    contentItem.DisplayText,
+                    context.ContentItem.DisplayText,
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
                 context.DocumentIndex.Set(
                     IndexingConstants.DisplayTextKey,
-                    contentItem.DisplayText,
+                    context.ContentItem.DisplayText,
                     DocumentIndexOptions.Store);
             }
         }

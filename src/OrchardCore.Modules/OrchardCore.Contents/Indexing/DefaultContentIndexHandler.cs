@@ -6,56 +6,56 @@ namespace OrchardCore.Contents.Indexing
 {
     public class DefaultContentIndexHandler : IContentItemIndexHandler
     {
-        public Task BuildIndexAsync(BuildIndexContext context, ContentItem contentItem)
+        public Task BuildIndexAsync(BuildIndexContext context)
         {
             context.DocumentIndex.Set(
                 IndexingConstants.ContentItemIdKey,
-                contentItem.ContentItemId,
+                context.ContentItem.ContentItemId,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.ContentItemVersionIdKey,
-                contentItem.ContentItemVersionId,
+                context.ContentItem.ContentItemVersionId,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.ContentTypeKey,
-                contentItem.ContentType,
+                context.ContentItem.ContentType,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
-                contentItem.CreatedUtc,
+                context.ContentItem.CreatedUtc,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.LatestKey,
-                contentItem.Latest,
+                context.ContentItem.Latest,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.OwnerKey,
-                contentItem.Owner,
+                context.ContentItem.Owner,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,
-                contentItem.Author,
+                context.ContentItem.Author,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.ModifiedUtcKey,
-                contentItem.ModifiedUtc,
+                context.ContentItem.ModifiedUtc,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedKey,
-                contentItem.Published,
+                context.ContentItem.Published,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedUtcKey,
-                contentItem.PublishedUtc,
+                context.ContentItem.PublishedUtc,
                 DocumentIndexOptions.Store);
 
             return Task.CompletedTask;

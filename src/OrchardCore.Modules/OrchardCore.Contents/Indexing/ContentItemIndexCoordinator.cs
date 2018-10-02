@@ -37,6 +37,7 @@ namespace OrchardCore.Contents.Indexing
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+
             if (contentTypeDefinition == null)
             {
                 return;
@@ -70,6 +71,8 @@ namespace OrchardCore.Contents.Indexing
 
                     await _fieldIndexHandlers.InvokeAsync(_fieldIndexHandler => _fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
                 }
+
+                return;
             }
         }
     }
