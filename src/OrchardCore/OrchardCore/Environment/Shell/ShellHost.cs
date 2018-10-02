@@ -409,7 +409,6 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.State == TenantState.Initializing;
         }
 
-
         public void Dispose()
         {
             var shells = _shellContexts?.Values.ToArray();
