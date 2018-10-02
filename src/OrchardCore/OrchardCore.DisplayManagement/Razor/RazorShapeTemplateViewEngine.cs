@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
+        public async Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
             var viewName = "/" + relativePath;
             viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
@@ -46,14 +46,14 @@ namespace OrchardCore.DisplayManagement.Razor
             if (displayContext.ViewContext.View != null)
             {
                 var htmlHelper = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
-                return Task.FromResult(htmlHelper.Partial(viewName, displayContext.Value));
+                return await htmlHelper.PartialAsync(viewName, displayContext.Value);
             }
             else
             {
                 // If the View is null, it means that the shape is being executed from a non-view origin / where no ViewContext was established by the view engine, but manually.
                 // Manually creating a ViewContext works when working with Shape methods, but not when the shape is implemented as a Razor view template.
                 // Horrible, but it will have to do for now.
-                return RenderRazorViewAsync(viewName, displayContext);
+                return await RenderRazorViewAsync(viewName, displayContext);
             }
         }
 
