@@ -13,7 +13,7 @@ namespace OrchardCore.Html.Indexing
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Html, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, part.Html, options);
 
             return Task.CompletedTask;
         }

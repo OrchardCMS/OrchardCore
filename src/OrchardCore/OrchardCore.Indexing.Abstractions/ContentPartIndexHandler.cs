@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -10,18 +10,18 @@ namespace OrchardCore.Indexing
     /// </summary>
     public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler where TPart : ContentPart
     {
-        Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, ContentIndexSettings settings)
+        public async Task BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, ContentIndexSettings settings)
         {
             var part = contentPart as TPart;
 
             if (part == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, typePartDefinition.Name, typePartDefinition, settings);
 
-            return BuildIndexAsync(part, buildPartIndexContext);
+            await BuildIndexAsync(part, buildPartIndexContext);
         }
 
         public abstract Task BuildIndexAsync(TPart part, BuildPartIndexContext context);

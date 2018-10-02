@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Indexing;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Autoroute.Indexing
                 & ~DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Path, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, part.Path, options);
 
             return Task.CompletedTask;
         }

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Title.Model;
 
@@ -12,7 +12,7 @@ namespace OrchardCore.Title.Indexing
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Title, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, part.Title, options);
 
             return Task.CompletedTask;
         }
