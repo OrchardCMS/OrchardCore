@@ -9,7 +9,6 @@ namespace OrchardCore.ContentFields.Indexing
         public override Task BuildIndexAsync(LinkField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-
             context.DocumentIndex.Set(context.Key, field.Url, options);
             context.DocumentIndex.Set(context.Key, field.Text, options);
 

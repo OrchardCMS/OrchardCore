@@ -71,9 +71,9 @@ namespace OrchardCore.Contents.Indexing
 
                     await _fieldIndexHandlers.InvokeAsync(_fieldIndexHandler => _fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
                 }
-
-                return;
             }
+
+            return;
         }
     }
 }

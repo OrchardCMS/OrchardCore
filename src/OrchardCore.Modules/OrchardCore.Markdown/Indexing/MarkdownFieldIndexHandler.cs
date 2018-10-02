@@ -9,7 +9,6 @@ namespace OrchardCore.Markdown.Indexing
         public override Task BuildIndexAsync(MarkdownField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-
             context.DocumentIndex.Set(context.Key, field.Markdown, options);
 
             return Task.CompletedTask;

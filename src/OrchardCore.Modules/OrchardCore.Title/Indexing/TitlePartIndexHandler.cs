@@ -8,7 +8,7 @@ namespace OrchardCore.Title.Indexing
     {
         public override Task BuildIndexAsync(TitlePart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions()
+            var options = context.Settings.ToOptions() 
                 | DocumentIndexOptions.Analyze
                 ;
 
