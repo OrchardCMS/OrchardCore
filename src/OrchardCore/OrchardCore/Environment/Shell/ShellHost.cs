@@ -421,11 +421,7 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var shell in shells)
             {
-                if (shell.ServiceProvider != null)
-                {
-                    shell.Dispose();
-                    Console.WriteLine($"Disposed {shell.Settings.Name}");
-                }
+                shell.Dispose();
             }
         }
     }
