@@ -16,7 +16,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
-        
+
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
         public DefaultDynamicCacheService(ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
@@ -28,33 +28,57 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            context = await GetCachedContextAsync(context.CacheId);
-            if (context == null)
+            // When using known values variations, the key of the cached value
+            // returned by 'GetCacheKey()' doesn't only rely on the 'CacheId'.
+            // So here, we use another var to not override the actual context.
+            var cachedContext = await GetCachedContextAsync(context.CacheId);
+            if (cachedContext == null)
             {
                 // We don't know the context, so we must treat this as a cache miss
                 return null;
             }
-            
+
             var cacheKey = await GetCacheKey(context);
 
             var content = await GetCachedStringAsync(cacheKey);
 
+            if (content != null)
+            {
+                // Even this instance has removed or never set the cached value, here we may get
+                // a cached value from another instance and before this instance was able to set
+                // or refresh the cache itself, and then before tagging the cache keys locally.
+
+                var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
+
+                var tags = context.Tags.ToArray();
+                foreach (var tag in tags)
+                {
+                    // Check if any tag needs to be refreshed.
+                    if (!tagCache.IsItemTagged(tag, cacheKey))
+                    {
+                        tagCache.Tag(cacheKey, tags);
+                        tagCache.Tag(GetCacheContextCacheKey(context.CacheId), tags);
+                        break;
+                    }
+                }
+            }
+
             return content;
         }
-        
+
         public async Task SetCachedValueAsync(CacheContext context, string value)
         {
             var cacheKey = await GetCacheKey(context);
-            
+
             _localCache[cacheKey] = value;
             var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
-            
+
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
                 SetCachedValueAsync(GetCacheContextCacheKey(context.CacheId), esi, context)
             );
         }
-        
+
         public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
         {
             return Task.WhenAll(keys.Select(key => _dynamicCache.RemoveAsync(key)));
@@ -83,7 +107,7 @@ namespace OrchardCore.DynamicCache.Services
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
             tagCache.Tag(cacheKey, context.Tags.ToArray());
         }
-        
+
         private async Task<string> GetCacheKey(CacheContext context)
         {
             var cacheEntries = context.Contexts.Count > 0
