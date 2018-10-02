@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Contents.Indexing
