@@ -1,34 +1,28 @@
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
-using OrchardCore.Distributed.Settings;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Settings;
+using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Options
 {
     public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {
+        private readonly IOptions<ConfigurationOptions> _configurationOptions;
         private readonly ShellSettings _shellSettings;
-        private readonly ISiteService _siteService;
 
-        public RedisCacheOptionsSetup(ShellSettings shellSettings, ISiteService siteService)
+        public RedisCacheOptionsSetup(
+            IOptions<ConfigurationOptions> configurationOptions,
+            ShellSettings shellSettings)
         {
+            _configurationOptions = configurationOptions;
             _shellSettings = shellSettings;
-            _siteService = siteService;
         }
 
         public void Configure(RedisCacheOptions options)
         {
-            var siteSettings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-
-            if (siteSettings.Has<RedisSettings>())
-            {
-                // Right now, only a string representing the configuration is available.
-                // In the next version there will be a full 'ConfigurationOptions' object.
-                options.Configuration = siteSettings.As<RedisSettings>().Configuration;
-            }
-
+            // We can only pass a string representing the configuration.
+            // Passing a redis 'ConfigurationOptions' is not yet available.
+            options.Configuration = _configurationOptions.Value.ToString();
             options.InstanceName = _shellSettings.Name;
         }
     }
