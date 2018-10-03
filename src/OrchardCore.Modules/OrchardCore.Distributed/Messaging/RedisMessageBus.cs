@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
 
@@ -16,19 +15,18 @@ namespace OrchardCore.Distributed.Messaging
         private volatile ConnectionMultiplexer _connection;
 
         private IDatabase _database;
-        private readonly string _host;
+        private readonly string _hostName;
         private readonly string _channelPrefix;
         private readonly string _messagePrefix;
 
-        private readonly IOptions<ConfigurationOptions> _configurationOptions;
+        private readonly IOptions<ConfigurationOptions> _optionsAccessor;
 
-        public RedisMessageBus(ShellSettings shellSettings, IOptions<ConfigurationOptions> configurationOptions)
+        public RedisMessageBus(IOptions<ConfigurationOptions> optionsAccessor, ShellSettings shellSettings)
         {
-            _channelPrefix = shellSettings.Name;
-            _host = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _messagePrefix = _host + "/";
-
-            _configurationOptions = configurationOptions;
+            _optionsAccessor = optionsAccessor;
+            _channelPrefix = shellSettings.Name + ":";
+            _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
+            _messagePrefix = _hostName + "/";
         }
 
         public void Subscribe(string channel, Action<string, string> handler)
@@ -39,20 +37,14 @@ namespace OrchardCore.Distributed.Messaging
 
             subscriber?.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
             {
-                var tokenizer = new StringTokenizer(redisValue, new char[] { '/' });
+                var tokens = redisValue.ToString().Split('/').ToArray();
 
-                if (tokenizer.Count() != 2)
+                if (tokens.Length != 2 || tokens[0].Length == 0)
                 {
                     return;
                 }
 
-                // Ignore self sent messages.
-                if (tokenizer.First().Equals(_host, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                handler(channel, tokenizer.ElementAt(1).ToString());
+                handler(channel, tokens[1]);
             });
         }
 
@@ -75,7 +67,7 @@ namespace OrchardCore.Distributed.Messaging
             {
                 if (_database == null)
                 {
-                    _connection = ConnectionMultiplexer.Connect(_configurationOptions.Value);
+                    _connection = ConnectionMultiplexer.Connect(_optionsAccessor.Value);
                     _database = _connection.GetDatabase();
                 }
             }

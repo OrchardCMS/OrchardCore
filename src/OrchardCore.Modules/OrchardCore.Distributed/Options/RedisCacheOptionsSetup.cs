@@ -7,22 +7,19 @@ namespace OrchardCore.Distributed.Options
 {
     public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {
-        private readonly IOptions<ConfigurationOptions> _configurationOptions;
+        private readonly IOptions<ConfigurationOptions> _optionsAccessor;
         private readonly ShellSettings _shellSettings;
 
-        public RedisCacheOptionsSetup(
-            IOptions<ConfigurationOptions> configurationOptions,
-            ShellSettings shellSettings)
+        public RedisCacheOptionsSetup(IOptions<ConfigurationOptions> optionsAccessor, ShellSettings shellSettings)
         {
-            _configurationOptions = configurationOptions;
+            _optionsAccessor = optionsAccessor;
             _shellSettings = shellSettings;
         }
 
         public void Configure(RedisCacheOptions options)
         {
-            // We can only pass a string representing the configuration.
-            // Passing a redis 'ConfigurationOptions' is not yet available.
-            options.Configuration = _configurationOptions.Value.ToString();
+            // Right now we can only pass a configuration string.
+            options.Configuration = _optionsAccessor.Value.ToString();
             options.InstanceName = _shellSettings.Name;
         }
     }

@@ -44,8 +44,6 @@ namespace OrchardCore.Distributed
     [Feature("OrchardCore.Distributed.Redis.Cache")]
     public class DistributedRedisCacheStartup : StartupBase
     {
-        public override int Order => 10;
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.TryAddEnumerable(
@@ -58,8 +56,6 @@ namespace OrchardCore.Distributed
     [Feature("OrchardCore.Distributed.Redis.MessageBus")]
     public class RedisSignalStartup : StartupBase
     {
-        public override int Order => 10;
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IMessageBus, RedisMessageBus>();

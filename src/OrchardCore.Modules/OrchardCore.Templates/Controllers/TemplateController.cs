@@ -173,8 +173,11 @@ namespace OrchardCore.Templates.Controllers
             {
                 var template = new Template { Content = model.Content, Description = model.Description };
 
+                if (sourceName != model.Name)
+                {
+                    await _templatesManager.RemoveTemplateAsync(sourceName);
+                }
 
-                await _templatesManager.RemoveTemplateAsync(sourceName);
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
                 if (submit != "SaveAndContinue")
                 {

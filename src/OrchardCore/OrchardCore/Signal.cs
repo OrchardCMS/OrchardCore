@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        public struct ChangeTokenInfo
+        private struct ChangeTokenInfo
         {
             public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
             {
