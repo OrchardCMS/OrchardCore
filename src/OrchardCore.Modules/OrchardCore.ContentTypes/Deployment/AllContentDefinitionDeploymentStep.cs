@@ -5,9 +5,9 @@ namespace OrchardCore.ContentTypes.Deployment
     /// <summary>
     /// Adds all content definitions to a <see cref="DeploymentPlanResult"/>. 
     /// </summary>
-    public class ContentDefinitionDeploymentStep : DeploymentStep
+    public class AllContentDefinitionDeploymentStep : DeploymentStep
     {
-        public ContentDefinitionDeploymentStep()
+        public AllContentDefinitionDeploymentStep()
         {
             Name = "ContentDefinition";
         }

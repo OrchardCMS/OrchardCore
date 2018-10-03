@@ -6,18 +6,18 @@ using YesSql;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
-    public class ContentDefinitionDeploymentSource : IDeploymentSource
+    public class AllContentDefinitionDeploymentSource : IDeploymentSource
     {
         private readonly ISession _session;
 
-        public ContentDefinitionDeploymentSource(ISession session)
+        public AllContentDefinitionDeploymentSource(ISession session)
         {
             _session = session;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is ContentDefinitionDeploymentStep contentDefitionStep))
+            if (!(step is AllContentDefinitionDeploymentStep contentDefitionStep))
             {
                 return;
             }

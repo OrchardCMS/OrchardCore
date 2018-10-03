@@ -36,9 +36,9 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
 
             // Deployment step
-            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, AllContentDefinitionDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDefinitionDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDefinitionDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
