@@ -23,6 +23,7 @@ namespace OrchardCore.Distributed
             services.AddSingleton<DistributedSignal>();
             services.AddSingleton<ISignal>(sp => sp.GetRequiredService<DistributedSignal>());
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedSignal>());
+            services.AddSingleton<IModularTenantEvents, DistributedShell>();
         }
     }
 

@@ -31,6 +31,8 @@ namespace OrchardCore.Distributed
             _messageBus?.Publish("Signal", key);
         }
 
+        public Task ActivatingAsync() { return Task.CompletedTask; }
+
         public Task ActivatedAsync()
         {
             if (_messageBus != null)
@@ -39,13 +41,11 @@ namespace OrchardCore.Distributed
                 {
                     SignalToken(message);
                 });
-
             }
 
             return Task.CompletedTask;
         }
 
-        public Task ActivatingAsync() { return Task.CompletedTask; }
         public Task TerminatingAsync() { return Task.CompletedTask; }
         public Task TerminatedAsync() { return Task.CompletedTask; }
     }
