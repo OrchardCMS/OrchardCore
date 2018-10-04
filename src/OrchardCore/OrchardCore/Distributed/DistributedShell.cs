@@ -22,11 +22,11 @@ namespace OrchardCore.Distributed
 
         public Task ActivatingAsync() { return Task.CompletedTask; }
 
-        public Task ActivatedAsync()
+        public async Task ActivatedAsync()
         {
             if (_messageBus != null)
             {
-                _messageBus.Subscribe("Shell", (channel, message) =>
+                await _messageBus.SubscribeAsync("Shell", (channel, message) =>
                 {
                     if (message == "Terminated")
                     {
@@ -34,16 +34,13 @@ namespace OrchardCore.Distributed
                     }
                 });
             }
-
-            return Task.CompletedTask;
         }
 
         public Task TerminatingAsync() { return Task.CompletedTask; }
 
         public Task TerminatedAsync()
         {
-            _messageBus?.Publish("Shell", "Terminated");
-            return Task.CompletedTask;
+            return _messageBus?.PublishAsync("Shell", "Terminated");
         }
     }
 }

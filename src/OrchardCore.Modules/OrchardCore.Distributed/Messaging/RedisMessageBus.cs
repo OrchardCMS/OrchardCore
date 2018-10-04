@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Distributed.Options;
@@ -39,15 +40,15 @@ namespace OrchardCore.Distributed.Messaging
 
         public ILogger Logger { get; set; }
 
-        public void Subscribe(string channel, Action<string, string> handler)
+        public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {
-            Connect();
+            await ConnectAsync();
 
             if (_database?.Multiplexer.IsConnected ?? false)
             {
                 var subscriber = _database.Multiplexer.GetSubscriber();
 
-                subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
+                await subscriber.SubscribeAsync(_channelPrefix + channel, (redisChannel, redisValue) =>
                 {
                     var tokens = redisValue.ToString().Split('/').ToArray();
 
@@ -62,29 +63,30 @@ namespace OrchardCore.Distributed.Messaging
             }
         }
 
-        public void Publish(string channel, string message)
+        public async Task PublishAsync(string channel, string message)
         {
-            Connect();
+            await ConnectAsync();
 
             if (_database?.Multiplexer.IsConnected ?? false)
             {
-                _database.Publish(_channelPrefix + channel, _messagePrefix + message);
+                var subscriber = _database.Multiplexer.GetSubscriber();
+                await subscriber.PublishAsync(_channelPrefix + channel, _messagePrefix + message);
             }
         }
 
-        private void Connect()
+        private async Task ConnectAsync()
         {
             if (_initialized)
             {
                 return;
             }
 
-            _connectionLock.Wait();
+            await _connectionLock.WaitAsync();
             try
             {
                 if (!_initialized)
                 {
-                    _connection = ConnectionMultiplexer.Connect(_redisOptionsAccessor.Value.ConfigurationOptions);
+                    _connection = await ConnectionMultiplexer.ConnectAsync(_redisOptionsAccessor.Value.ConfigurationOptions);
                     _database = _connection.GetDatabase();
                     _initialized = true;
                 }
