@@ -9,7 +9,7 @@ namespace OrchardCore.Markdown.Indexing
         public override Task BuildIndexAsync(MarkdownField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Markdown, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, field.Markdown, options);
 
             return Task.CompletedTask;
         }
