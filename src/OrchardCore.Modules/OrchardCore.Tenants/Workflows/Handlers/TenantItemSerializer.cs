@@ -1,43 +1,44 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
 {
     public class TenantItemSerializer : IWorkflowValueSerializer
     {
-        private readonly IContentManager _contentManager;
+        protected IShellSettingsManager _shellSettingsManager { get; }
 
-        public TenantItemSerializer(IContentManager contentManager)
+        public TenantItemSerializer(IShellSettingsManager shellSettingsManager)
         {
-            _contentManager = contentManager;
+            _shellSettingsManager = shellSettingsManager;
         }
 
-        public async Task DeserializeValueAsync(SerializeWorkflowValueContext context)
+        public Task DeserializeValueAsync(SerializeWorkflowValueContext context)
         {
             if (context.Input is JObject jObject)
             {
                 var type = jObject.Value<string>("Type");
 
-                if (type == "Content")
-                {
-                    var contentId = jObject.Value<string>("ContentId");
-                    context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
-                }
+                //if (type == "Content")
+                //{
+                //    var contentId = jObject.Value<string>("ContentId");
+                //    context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
+                //}
             }
+            return Task.CompletedTask;
         }
 
         public Task SerializeValueAsync(SerializeWorkflowValueContext context)
         {
-            if (context.Input is IContent content)
-            {
-                context.Output = JObject.FromObject(new
-                {
-                    Type = "Content",
-                    ContentId = content.ContentItem.ContentItemId
-                });
-            }
+            //if (context.Input is IContent content)
+            //{
+            //    context.Output = JObject.FromObject(new
+            //    {
+            //        Type = "Content",
+            //        ContentId = content.ContentItem.ContentItemId
+            //    });
+            //}
 
             return Task.CompletedTask;
         }

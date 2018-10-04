@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Workflows.ViewModels;
 
@@ -16,7 +15,7 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
             Activity = activity;
         }
 
-        public IList<ContentTypeDefinition> ContentTypeFilter { get; set; }
+        //public IList<ContentTypeDefinition> ContentTypeFilter { get; set; }
         public IList<string> SelectedContentTypeNames { get; set; } = new List<string>();
     }
 
