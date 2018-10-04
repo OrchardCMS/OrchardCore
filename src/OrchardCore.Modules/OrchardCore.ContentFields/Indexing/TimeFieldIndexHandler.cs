@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Indexing
             {
                 indexedValue = new DateTime(field.Value.Value.Ticks);
             }
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(indexedValue, DocumentIndex.Types.DateTime, options));
+            context.DocumentIndex.Set(context.Key, indexedValue, options);
 
             return Task.CompletedTask;
         }

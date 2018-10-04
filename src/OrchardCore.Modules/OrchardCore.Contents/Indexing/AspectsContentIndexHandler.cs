@@ -20,29 +20,23 @@ namespace OrchardCore.Contents.Indexing
 
             if (body != null)
             {
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.BodyAspectBodyKey,
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
             if (context.ContentItem.DisplayText != null)
             {
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.DisplayTextAnalyzedKey,
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextAnalyzedKey,
                     context.ContentItem.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.DisplayTextKey,
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextKey,
                     context.ContentItem.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                    DocumentIndexOptions.Store);
             }
         }
     }
