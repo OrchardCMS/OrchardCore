@@ -25,10 +25,10 @@ namespace OrchardCore.Distributed
             return GetToken(key);
         }
 
-        void ISignal.SignalToken(string key)
+        async Task ISignal.SignalTokenAsync(string key)
         {
-            SignalToken(key);
-            _messageBus?.PublishAsync("Signal", key).GetAwaiter().GetResult();
+            await SignalTokenAsync(key);
+            await _messageBus?.PublishAsync("Signal", key);
         }
 
         public Task ActivatingAsync() { return Task.CompletedTask; }

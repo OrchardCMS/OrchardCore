@@ -103,7 +103,7 @@ namespace OrchardCore.Settings.Services
 
             session.Save(existing);
 
-            _signal.SignalToken(SiteCacheKey);
+            await _signal.SignalTokenAsync(SiteCacheKey);
             _memoryCache.Set(SiteCacheKey, site, ChangeToken);
 
             return;

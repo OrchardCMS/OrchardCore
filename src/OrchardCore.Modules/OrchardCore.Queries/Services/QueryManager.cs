@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -29,6 +30,8 @@ namespace OrchardCore.Queries.Services
             _querySources = querySources;
         }
 
+        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+
         public async Task DeleteQueryAsync(string name)
         {
             // Ensure QueriesDocument exists 
@@ -47,8 +50,8 @@ namespace OrchardCore.Queries.Services
 
             _session.Save(existing);
 
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            await _signal.SignalTokenAsync(QueriesDocumentCacheKey);
+            _memoryCache.Set(QueriesDocumentCacheKey, existing, ChangeToken);
 
             return;
         }
@@ -86,8 +89,8 @@ namespace OrchardCore.Queries.Services
 
             _session.Save(existing);
 
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            await _signal.SignalTokenAsync(QueriesDocumentCacheKey);
+            _memoryCache.Set(QueriesDocumentCacheKey, existing, ChangeToken);
 
             return;
         }
@@ -109,15 +112,13 @@ namespace OrchardCore.Queries.Services
                             queries = new QueriesDocument();
 
                             _session.Save(queries);
-                            _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                            _signal.SignalToken(QueriesDocumentCacheKey);
+                            _memoryCache.Set(QueriesDocumentCacheKey, queries, ChangeToken);
                         }
                     }
                 }
                 else
                 {
-                    _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                    _signal.SignalToken(QueriesDocumentCacheKey);
+                    _memoryCache.Set(QueriesDocumentCacheKey, queries, ChangeToken);
                 }
             }
 

@@ -288,7 +288,7 @@ namespace OrchardCore.ContentManagement
         {
             _contentDefinitionRecord.Serial++;
             _session.Save(_contentDefinitionRecord);
-            _signal.SignalToken(TypeHashCacheKey);
+            _signal.SignalTokenAsync(TypeHashCacheKey).GetAwaiter().GetResult();
 
             // Release cached values
             _typeDefinitions.Clear();

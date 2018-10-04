@@ -287,7 +287,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             // Clear the cache
-            _signal.SignalToken(LayerMetadataHandler.LayerChangeToken);
+            await _signal.SignalTokenAsync(LayerMetadataHandler.LayerChangeToken);
 			
 			if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
 			{

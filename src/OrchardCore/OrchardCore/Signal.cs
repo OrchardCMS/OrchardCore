@@ -1,6 +1,7 @@
-using Microsoft.Extensions.Primitives;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -34,6 +35,12 @@ namespace OrchardCore.Environment.Cache
             {
                 changeTokenInfo.TokenSource.Cancel();
             }
+        }
+
+        public Task SignalTokenAsync(string key)
+        {
+            SignalToken(key);
+            return Task.CompletedTask;
         }
 
         private struct ChangeTokenInfo

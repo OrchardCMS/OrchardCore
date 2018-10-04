@@ -62,7 +62,7 @@ namespace OrchardCore.Templates.Services
             document.Templates.Remove(name);
             _session.Save(document);
 
-            _signal.SignalToken(CacheKey);
+            await _signal.SignalTokenAsync(CacheKey);
             _memoryCache.Set(CacheKey, document, ChangeToken);
         }
         
@@ -73,7 +73,7 @@ namespace OrchardCore.Templates.Services
             document.Templates[name] = template;
             _session.Save(document);
 
-            _signal.SignalToken(CacheKey);
+            await _signal.SignalTokenAsync(CacheKey);
             _memoryCache.Set(CacheKey, document, ChangeToken);
         }
 

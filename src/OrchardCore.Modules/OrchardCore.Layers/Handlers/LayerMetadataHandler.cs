@@ -19,30 +19,29 @@ namespace OrchardCore.Layers.Handlers
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return SignalLayerChangedAsync(context.ContentItem);
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return SignalLayerChangedAsync(context.ContentItem);
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
+            return SignalLayerChangedAsync(context.ContentItem);
         }
 
-        private void SignalLayerChanged(ContentItem contentItem)
+        private Task SignalLayerChangedAsync(ContentItem contentItem)
         {
             var layerMetadata = contentItem.As<LayerMetadata>();
 
             if (layerMetadata != null)
             {
-                _signal.SignalToken(LayerChangeToken);
+                return _signal.SignalTokenAsync(LayerChangeToken);
             }
+
+            return Task.CompletedTask;
         }
     }
 }
