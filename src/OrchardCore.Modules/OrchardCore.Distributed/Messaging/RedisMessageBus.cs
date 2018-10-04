@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Distributed.Options;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
 
@@ -14,50 +16,65 @@ namespace OrchardCore.Distributed.Messaging
         private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
         private volatile ConnectionMultiplexer _connection;
 
+        private bool _initialized;
         private IDatabase _database;
         private readonly string _hostName;
+        private readonly string _tenantName;
         private readonly string _channelPrefix;
         private readonly string _messagePrefix;
 
-        private readonly IOptions<ConfigurationOptions> _optionsAccessor;
+        private readonly IOptions<RedisOptions> _redisOptionsAccessor;
 
-        public RedisMessageBus(IOptions<ConfigurationOptions> optionsAccessor, ShellSettings shellSettings)
+        public RedisMessageBus(ShellSettings shellSettings, IOptions<RedisOptions> redisOptionsAccessor, ILogger<RedisMessageBus> logger)
         {
-            _optionsAccessor = optionsAccessor;
-            _channelPrefix = shellSettings.Name + ":";
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
+
+            _tenantName = shellSettings.Name;
+            _channelPrefix = _tenantName + ":";
             _messagePrefix = _hostName + "/";
+
+            _redisOptionsAccessor = redisOptionsAccessor;
+            Logger = logger;
         }
+
+        public ILogger Logger { get; set; }
 
         public void Subscribe(string channel, Action<string, string> handler)
         {
             Connect();
 
-            var subscriber = _connection?.GetSubscriber();
-
-            subscriber?.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
+            if (_database?.Multiplexer.IsConnected ?? false)
             {
-                var tokens = redisValue.ToString().Split('/').ToArray();
+                var subscriber = _database.Multiplexer.GetSubscriber();
 
-                if (tokens.Length != 2 || tokens[0].Length == 0)
+                subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
                 {
-                    return;
-                }
+                    var tokens = redisValue.ToString().Split('/').ToArray();
 
-                handler(channel, tokens[1]);
-            });
+                    if (tokens.Length != 2 || tokens[0].Length == 0 || tokens[0]
+                        .Equals(_hostName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
+
+                    handler(channel, tokens[1]);
+                });
+            }
         }
 
         public void Publish(string channel, string message)
         {
             Connect();
 
-            _database?.Publish(_channelPrefix + channel, _messagePrefix + message);
+            if (_database?.Multiplexer.IsConnected ?? false)
+            {
+                _database.Publish(_channelPrefix + channel, _messagePrefix + message);
+            }
         }
 
         private void Connect()
         {
-            if (_database != null)
+            if (_initialized)
             {
                 return;
             }
@@ -65,14 +82,20 @@ namespace OrchardCore.Distributed.Messaging
             _connectionLock.Wait();
             try
             {
-                if (_database == null)
+                if (!_initialized)
                 {
-                    _connection = ConnectionMultiplexer.Connect(_optionsAccessor.Value);
+                    _connection = ConnectionMultiplexer.Connect(_redisOptionsAccessor.Value.ConfigurationOptions);
                     _database = _connection.GetDatabase();
+                    _initialized = true;
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "'{TenantName}' is unable to connect to Redis.", _tenantName);
             }
             finally
             {
+                _initialized = true;
                 _connectionLock.Release();
             }
         }

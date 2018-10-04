@@ -31,18 +31,13 @@ namespace OrchardCore.Distributed
             _messageBus?.Publish("Signal", key);
         }
 
-        private void InternalSignalToken(string key)
-        {
-            SignalToken(key);
-        }
-
         public Task ActivatedAsync()
         {
             if (_messageBus != null)
             {
                 _messageBus.Subscribe("Signal", (channel, message) =>
                 {
-                    InternalSignalToken(message);
+                    SignalToken(message);
                 });
 
             }

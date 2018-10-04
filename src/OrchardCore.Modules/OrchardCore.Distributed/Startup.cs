@@ -10,8 +10,6 @@ using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using StackExchange.Redis;
-
 
 namespace OrchardCore.Distributed
 {
@@ -37,7 +35,7 @@ namespace OrchardCore.Distributed
             services.AddScoped<IDisplayDriver<ISite>, RedisSiteSettingsDisplayDriver>();
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ConfigurationOptions>, RedisConfigurationOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
         }
     }
 
