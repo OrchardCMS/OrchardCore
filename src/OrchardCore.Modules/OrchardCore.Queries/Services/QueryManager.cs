@@ -30,7 +30,7 @@ namespace OrchardCore.Queries.Services
             _querySources = querySources;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+        private IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
 
         public async Task DeleteQueryAsync(string name)
         {

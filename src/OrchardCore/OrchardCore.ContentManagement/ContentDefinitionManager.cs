@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -20,8 +20,8 @@ namespace OrchardCore.ContentManagement
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 
-        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
-        private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+        private ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
+        private ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
 
         public ContentDefinitionManager(
             ISession session,
@@ -31,9 +31,6 @@ namespace OrchardCore.ContentManagement
             _signal = signal;
             _memoryCache = memoryCache;
             _session = session;
-
-            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
-            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
 
         private ContentDefinitionRecord GetContentDefinitionRecord()
@@ -60,6 +57,12 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
+            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry =>
+            {
+                entry.ExpirationTokens.Add(_signal.GetToken(TypeHashCacheKey));
+                return new ConcurrentDictionary<string, ContentTypeDefinition>();
+            });
+
             return _typeDefinitions.GetOrAdd(name, n =>
             {
                 var contentTypeDefinitionRecord = GetContentDefinitionRecord()
@@ -72,6 +75,12 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
+            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry =>
+            {
+                entry.ExpirationTokens.Add(_signal.GetToken(TypeHashCacheKey));
+                return new ConcurrentDictionary<string, ContentPartDefinition>();
+            });
+
             return _partDefinitions.GetOrAdd(name, n =>
             {
                 return Build(GetContentDefinitionRecord()
@@ -289,10 +298,6 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionRecord.Serial++;
             _session.Save(_contentDefinitionRecord);
             _signal.SignalTokenAsync(TypeHashCacheKey).GetAwaiter().GetResult();
-
-            // Release cached values
-            _typeDefinitions.Clear();
-            _partDefinitions.Clear();
         }
 
         public Task<int> GetTypesHashAsync()
