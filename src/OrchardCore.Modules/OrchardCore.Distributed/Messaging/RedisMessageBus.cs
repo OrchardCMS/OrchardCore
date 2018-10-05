@@ -70,8 +70,7 @@ namespace OrchardCore.Distributed.Messaging
             if (_database?.Multiplexer.IsConnected ?? false)
             {
                 var subscriber = _database.Multiplexer.GetSubscriber();
-                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message,
-                    CommandFlags.FireAndForget);
+                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message, CommandFlags.FireAndForget);
             }
         }
 

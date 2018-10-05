@@ -40,7 +40,12 @@ namespace OrchardCore.Distributed
 
         public Task TerminatedAsync()
         {
-            return _messageBus?.PublishAsync("Shell", "Terminated");
+            if (_messageBus != null)
+            {
+                return _messageBus.PublishAsync("Shell", "Terminated");
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

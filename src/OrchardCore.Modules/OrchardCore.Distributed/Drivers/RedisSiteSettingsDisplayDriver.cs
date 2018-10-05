@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -6,6 +7,7 @@ using OrchardCore.Distributed.Settings;
 using OrchardCore.Distributed.ViewModels;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Drivers
 {
@@ -37,10 +39,24 @@ namespace OrchardCore.Distributed.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.Configuration = model.Configuration;
+                try
+                {
+                   ConfigurationOptions.Parse(model.Configuration);
+                }
 
-                // Reload the tenant to apply the settings
-                await _shellHost.ReloadShellContextAsync(_shellSettings);
+                catch (Exception e)
+                {
+                    context.Updater.ModelState.AddModelError(nameof(model.Configuration),
+                        "The configuration string is not valid: " + e.Message);
+                }
+
+                if (context.Updater.ModelState.IsValid)
+                {
+                    section.Configuration = model.Configuration;
+
+                    // Reload the tenant to apply the settings
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                }
             }
 
             return await EditAsync(section, context);

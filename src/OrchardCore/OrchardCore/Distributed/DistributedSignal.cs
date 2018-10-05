@@ -28,7 +28,11 @@ namespace OrchardCore.Distributed
         async Task ISignal.SignalTokenAsync(string key)
         {
             await SignalTokenAsync(key);
-            await _messageBus?.PublishAsync("Signal", key);
+
+            if (_messageBus != null)
+            {
+                await _messageBus.PublishAsync("Signal", key);
+            }
         }
 
         public Task ActivatingAsync() { return Task.CompletedTask; }
