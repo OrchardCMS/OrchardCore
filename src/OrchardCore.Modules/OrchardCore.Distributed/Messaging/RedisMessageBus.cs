@@ -48,7 +48,7 @@ namespace OrchardCore.Distributed.Messaging
             {
                 var subscriber = _database.Multiplexer.GetSubscriber();
 
-                await subscriber.SubscribeAsync(_channelPrefix + channel, (redisChannel, redisValue) =>
+                subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
                 {
                     var tokens = redisValue.ToString().Split('/').ToArray();
 
@@ -70,7 +70,7 @@ namespace OrchardCore.Distributed.Messaging
             if (_database?.Multiplexer.IsConnected ?? false)
             {
                 var subscriber = _database.Multiplexer.GetSubscriber();
-                await subscriber.PublishAsync(_channelPrefix + channel, _messagePrefix + message,
+                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message,
                     CommandFlags.FireAndForget);
             }
         }
