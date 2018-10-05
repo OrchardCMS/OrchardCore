@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
-using System;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Themes.Services
 {
@@ -14,16 +15,18 @@ namespace OrchardCore.Themes.Services
         private readonly ISiteService _siteService;
 
         private readonly IMemoryCache _memoryCache;
+        private readonly ISignal _signal;
 
         public SiteThemeService(
             ISiteService siteService,
             IExtensionManager extensionManager,
-            IMemoryCache memoryCache
-            )
+            IMemoryCache memoryCache,
+            ISignal signal)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
             _memoryCache = memoryCache;
+            _signal = signal;
         }
 
         public async Task<IExtensionInfo> GetSiteThemeAsync()
@@ -42,7 +45,8 @@ namespace OrchardCore.Themes.Services
             var site = await _siteService.GetSiteSettingsAsync();
             site.Properties["CurrentThemeName"] = themeName;
             //(site as IContent).ContentItem.Content.CurrentThemeName = themeName;
-            _memoryCache.Set(CacheKey, themeName);
+            await _signal.SignalTokenAsync(CacheKey);
+            _memoryCache.Set(CacheKey, themeName, _signal.GetToken(CacheKey));
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
@@ -53,7 +57,7 @@ namespace OrchardCore.Themes.Services
             {
                 var site = await _siteService.GetSiteSettingsAsync();
                 themeName = (string)site.Properties["CurrentThemeName"];
-                _memoryCache.Set(CacheKey, themeName);
+                _memoryCache.Set(CacheKey, themeName, _signal.GetToken(CacheKey));
             }
 
             return themeName;
