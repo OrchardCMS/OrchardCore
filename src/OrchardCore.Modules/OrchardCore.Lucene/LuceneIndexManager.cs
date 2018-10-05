@@ -37,7 +37,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;        
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
 
         public LuceneIndexManager(
             IClock clock,
@@ -75,7 +75,7 @@ namespace OrchardCore.Lucene
                 {
                     pool.MakeDirty();
                 }
-            });
+            }, true);
         }
 
         public void DeleteIndex(string indexName)
@@ -94,7 +94,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -142,7 +142,7 @@ namespace OrchardCore.Lucene
                 {
                     pool.MakeDirty();
                 }
-            });
+            }, true);
         }
 
         public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
@@ -351,7 +351,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if(_writers.TryGetValue(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
