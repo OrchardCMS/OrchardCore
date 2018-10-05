@@ -68,10 +68,6 @@ namespace OrchardCore.ContentTypes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDefinitionDeploymentStepDriver>();
-
             services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();

@@ -26,6 +26,7 @@ namespace OrchardCore.ContentTypes.Deployment
             {
                 model.ContentParts = step.ContentParts;
                 model.ContentTypes = step.ContentTypes;
+                model.IncludeAll = step.IncludeAll;
             }).Location("Content");
         }
 
@@ -39,9 +40,19 @@ namespace OrchardCore.ContentTypes.Deployment
                 step,
                 Prefix,
                 x => x.ContentTypes,
-                x => x.ContentParts);
+                x => x.ContentParts,
+                x => x.IncludeAll);
 
-            step.ContentParts = step.ContentParts.Distinct().ToArray();
+            // don't have the selected option if include all
+            if (step.IncludeAll)
+            {
+                step.ContentTypes = Array.Empty<string>();
+                step.ContentParts = Array.Empty<string>();
+            }
+            else
+            {
+                step.ContentParts = step.ContentParts.Distinct().ToArray();
+            }
 
             return Edit(step);
         }

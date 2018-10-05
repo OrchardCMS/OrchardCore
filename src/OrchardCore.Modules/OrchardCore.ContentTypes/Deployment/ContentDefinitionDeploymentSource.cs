@@ -27,16 +27,20 @@ namespace OrchardCore.ContentTypes.Deployment
                 .Query<ContentDefinitionRecord>()
                 .FirstOrDefaultAsync();
 
+            var contentTypes = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                    .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+
+            var contentParts = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                : contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "ContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(
-                    contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                        .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name))
-                    )),
-                new JProperty("ContentParts", JArray.FromObject(
-                    contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name))
-                    ))
+                new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
+                new JProperty("ContentParts", JArray.FromObject(contentParts))
             ));
 
             return;

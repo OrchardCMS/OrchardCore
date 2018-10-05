@@ -3,7 +3,15 @@
 @model ShapeViewModel<ContentDefinitionDeploymentStep>
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
-@{
+
+<h5>@T["Content Definitions"]</h5>
+
+@if (Model.Value.IncludeAll)
+{
+    <span class="badge badge-success">All</span>
+}
+else
+{
     var contentTypes = Model.Value.ContentTypes;
     var contentParts = Model.Value.ContentParts;
 
@@ -11,28 +19,26 @@
     var allParts = ContentDefinitionManager.ListPartDefinitions();
 
     var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
-}
 
-<h5>@T["Content Definitions"]</h5>
-
-@if (contentTypes?.Length > 0)
-{
-    @foreach (var def in ContentDefinitionManager.ListTypeDefinitions())
+    if (contentTypes?.Length > 0)
     {
-        if (contentTypes.Contains(def.Name))
+        foreach (var def in ContentDefinitionManager.ListTypeDefinitions())
         {
-            <span class="badge badge-info">@def.DisplayName</span>
+            if (contentTypes.Contains(def.Name))
+            {
+                <span class="badge badge-info">@def.DisplayName</span>
+            }
         }
     }
-}
 
-@if (contentParts?.Length > 0)
-{
-    @foreach (var part in avaParts)
+    if (contentParts?.Length > 0)
     {
-        if (contentParts.Contains(part.Name))
+        foreach (var part in avaParts)
         {
-            <span class="badge badge-dark">@part.Name</span>
+            if (contentParts.Contains(part.Name))
+            {
+                <span class="badge badge-dark">@part.Name</span>
+            }
         }
     }
 }

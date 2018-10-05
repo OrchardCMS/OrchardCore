@@ -14,7 +14,23 @@
 
 <h5>@T["Content Definitions"]</h5>
 
-<fieldset class="form-group mt-4">
+<fieldset class="form-group mt-4 mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IncludeAll"
+                        data-reverseToggle=".cdsel"
+                        />
+                    Include all content types and parts definitions.
+                </label>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+
+<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Types</h6>
@@ -34,15 +50,13 @@
                             @* Make sure that the part with the same name is included in the step if the content type is selected. *@
                             @if (contentTypeDefinition.Parts.Any(x => x.Name == ctypename))
                             {
-                                <input class="invisible" style="position:absolute" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@ctypename" 
-                                       id="part_@ctypename" checked="@checkd" 
-                                       />
+                                <input class="invisible" style="position:absolute" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@ctypename"
+                                       id="part_@ctypename" checked="@checkd" />
                             }
                             <label class="form-check-label">
                                 <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentTypes)" value="@ctypename" checked="@checkd"
                                        data-toggle="collapse" data-target="#sub_@ctypename"
-                                       data-checkbox="#part_@ctypename" 
-                                       />
+                                       data-checkbox="#part_@ctypename" />
                                 @contentTypeDefinition.DisplayName
                             </label>
                         </div>
@@ -56,8 +70,7 @@
                                     <div class="form-check">
                                         <label class="form-check-label">
                                             <input class="form-check-input part_@partName" name="tempparts" value="" type="checkbox" checked="@partChecked"
-                                                   data-checkboxChecked="#part_@part.PartDefinition.Name"
-                                                   />
+                                                   data-checkboxChecked="#part_@part.PartDefinition.Name" />
                                             @if (part.PartDefinition.Name == part.Name)
                                             {
                                                 @part.Name
@@ -79,7 +92,7 @@
     </div>
 </fieldset>
 
-<fieldset class="form-group mt-4">
+<fieldset class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
         <div class="col">
             <h6>Content Parts</h6>
@@ -99,7 +112,7 @@
                             <label class="form-check-label">
                                 <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@partName" checked="@checkd"
                                        id="part_@partName"
-                                       data-checkboxUnchecked=".part_@partName"/>
+                                       data-checkboxUnchecked=".part_@partName" />
                                 @partName
                             </label>
                         </div>
@@ -112,6 +125,14 @@
 
 <script at="Foot">
     $(function () {
+        $("[data-reversetoggle]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-reversetoggle")).collapse('hide');
+            } else {
+                $($(this).attr("data-reversetoggle")).collapse('show');
+            }
+        });
         $("[data-checkbox]").on("click", function () {
             var state = this.checked;
             $($(this).attr("data-checkbox"))
@@ -125,7 +146,7 @@
                     .prop("checked", state);
             }
         });
-        
+
         $("[data-checkboxUnchecked]").on("click", function () {
             var state = this.checked;
             if (!state) {

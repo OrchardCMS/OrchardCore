@@ -9,8 +9,10 @@ namespace OrchardCore.ContentTypes.Deployment
     {
         public ContentDefinitionDeploymentStep()
         {
-            Name = "SelectedContentDefinition";
+            Name = "ContentDefinition";
         }
+
+        public bool IncludeAll { get; set; } = true;
 
         public string[] ContentTypes { get; set; }
 
