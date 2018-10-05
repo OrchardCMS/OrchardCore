@@ -48,13 +48,13 @@ namespace OrchardCore.Layers.Services
 							layers = new LayersDocument();
 
 							_session.Save(layers);
-							_memoryCache.Set(LayersCacheKey, layers);
+							_memoryCache.Set(LayersCacheKey, layers, _signal.GetToken(LayersCacheKey));
 						}
 					}
 				}
 				else
 				{
-					_memoryCache.Set(LayersCacheKey, layers);
+					_memoryCache.Set(LayersCacheKey, layers, _signal.GetToken(LayersCacheKey));
 				}
 			}
 
@@ -82,7 +82,8 @@ namespace OrchardCore.Layers.Services
 
 			existing.Layers = layers.Layers;
 			_session.Save(existing);
-			_memoryCache.Set(LayersCacheKey, existing);
+            _signal.SignalTokenAsync(LayersCacheKey).GetAwaiter().GetResult();
+            _memoryCache.Set(LayersCacheKey, existing, _signal.GetToken(LayersCacheKey));
 		}
 	}
 }
