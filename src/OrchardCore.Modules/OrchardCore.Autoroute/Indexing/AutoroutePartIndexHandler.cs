@@ -13,7 +13,10 @@ namespace OrchardCore.Autoroute.Indexing
                 & ~DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Set(context.Key, part.Path, options);
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Path, options);
+            }
 
             return Task.CompletedTask;
         }
