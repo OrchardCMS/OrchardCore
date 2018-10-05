@@ -13,7 +13,6 @@ namespace OrchardCore.Themes.Services
 
         private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
-
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 

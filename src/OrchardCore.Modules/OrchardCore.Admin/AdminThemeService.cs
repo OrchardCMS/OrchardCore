@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Settings;
 using OrchardCore.Environment.Extensions;
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.Admin
 {
@@ -13,16 +14,18 @@ namespace OrchardCore.Admin
         private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
         private readonly IMemoryCache _memoryCache;
+        private readonly ISignal _signal;
 
         public AdminThemeService(
             ISiteService siteService,
             IExtensionManager extensionManager,
-            IMemoryCache memoryCache
-            )
+            IMemoryCache memoryCache,
+            ISignal signal)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
             _memoryCache = memoryCache;
+            _signal = signal;
         }
 
         public async Task<IExtensionInfo> GetAdminThemeAsync()
@@ -41,7 +44,8 @@ namespace OrchardCore.Admin
             var site = await _siteService.GetSiteSettingsAsync();
             site.Properties["CurrentAdminThemeName"] = themeName;
             //(site as IContent).ContentItem.Content.CurrentAdminThemeName = themeName;
-            _memoryCache.Set(CacheKey, themeName);
+            await _signal.SignalTokenAsync(CacheKey);
+            _memoryCache.Set(CacheKey, themeName, _signal.GetToken(CacheKey));
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
@@ -53,7 +57,7 @@ namespace OrchardCore.Admin
                 var site = await _siteService.GetSiteSettingsAsync();
                 themeName = (string)site.Properties["CurrentAdminThemeName"];
                 // themeName = (string)(site as IContent).ContentItem.Content.CurrentAdminThemeName;
-                _memoryCache.Set(CacheKey, themeName);
+                _memoryCache.Set(CacheKey, themeName, _signal.GetToken(CacheKey));
             }
 
             return themeName;

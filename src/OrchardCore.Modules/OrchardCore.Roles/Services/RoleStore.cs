@@ -72,7 +72,8 @@ namespace OrchardCore.Roles.Services
         {
             roles.Serial++;
             _session.Save(roles);
-            _memoryCache.Set(Key, roles);
+            _signal.SignalTokenAsync(Key).GetAwaiter().GetResult();
+            _memoryCache.Set(Key, roles, _signal.GetToken(Key));
         }
 
         public async Task<IEnumerable<string>> GetRoleNamesAsync()
