@@ -28,6 +28,7 @@ namespace OrchardCore.Distributed
                 .Add(T["Settings"], "2", settings => settings
                     .Add(T["Redis"], T["Redis"], entry => entry
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RedisSiteSettingsDisplayDriver.GroupId })
+                        .Permission(Permissions.ManageDistributedServices)
                         .LocalNav()
                     )
                 )

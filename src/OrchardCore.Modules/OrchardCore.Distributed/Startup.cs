@@ -9,6 +9,7 @@ using OrchardCore.Distributed.Options;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Distributed
@@ -32,6 +33,7 @@ namespace OrchardCore.Distributed
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RedisSiteSettingsDisplayDriver>();
 
