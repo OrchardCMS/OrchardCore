@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Distributed.Locking
+namespace OrchardCore.Distributed
 {
     public interface IDistributedLock
     {

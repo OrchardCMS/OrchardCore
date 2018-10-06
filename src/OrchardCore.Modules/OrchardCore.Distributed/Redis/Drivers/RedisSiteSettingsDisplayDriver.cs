@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Distributed.Settings;
-using OrchardCore.Distributed.ViewModels;
+using OrchardCore.Distributed.Redis.Settings;
+using OrchardCore.Distributed.Redis.ViewModels;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using StackExchange.Redis;
 
-namespace OrchardCore.Distributed.Drivers
+namespace OrchardCore.Distributed.Redis.Drivers
 {
     public class RedisSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, RedisSettings>
     {

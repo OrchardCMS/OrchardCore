@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Distributed.Options;
+using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
 
-namespace OrchardCore.Distributed.Locking
+namespace OrchardCore.Distributed.Redis.Services
 {
     public class RedisLock : IDistributedLock, IDisposable
     {

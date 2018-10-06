@@ -1,4 +1,4 @@
-namespace OrchardCore.Distributed.ViewModels
+namespace OrchardCore.Distributed.Redis.ViewModels
 {
     public class RedisSettingsViewModel
     {

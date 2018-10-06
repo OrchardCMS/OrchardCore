@@ -1,6 +1,6 @@
 using StackExchange.Redis;
 
-namespace OrchardCore.Distributed.Options
+namespace OrchardCore.Distributed.Redis.Options
 {
     public class RedisOptions
     {

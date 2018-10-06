@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Distributed.Messaging
+namespace OrchardCore.Distributed
 {
     public interface IMessageBus
     {

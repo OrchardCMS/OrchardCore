@@ -2,7 +2,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Distributed.Options
+namespace OrchardCore.Distributed.Redis.Options
 {
     public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {

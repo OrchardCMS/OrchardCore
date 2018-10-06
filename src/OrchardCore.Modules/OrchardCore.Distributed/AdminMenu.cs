@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Distributed.Drivers;
+using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 

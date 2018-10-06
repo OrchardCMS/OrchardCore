@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Distributed.Messaging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 

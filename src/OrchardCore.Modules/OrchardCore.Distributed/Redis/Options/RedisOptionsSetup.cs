@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Distributed.Settings;
+using OrchardCore.Distributed.Redis.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using StackExchange.Redis;
 
-namespace OrchardCore.Distributed.Options
+namespace OrchardCore.Distributed.Redis.Options
 {
     /// <summary>
     /// Configure 'RedisOptions' which is a wrapper of the redis 'ConfigurationOptions' object. This allows
