@@ -39,6 +39,8 @@ namespace OrchardCore.Distributed
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
+
+            services.AddSingleton<IRedisConnection, RedisConnection>();
         }
     }
 
