@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Distributed.Redis;
 using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Distributed.Redis.Services;
@@ -41,6 +42,7 @@ namespace OrchardCore.Distributed
                 ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
 
             services.AddSingleton<IRedisConnection, RedisConnection>();
+            services.AddSingleton<IDistributedLock, RedisLock>();
         }
     }
 
