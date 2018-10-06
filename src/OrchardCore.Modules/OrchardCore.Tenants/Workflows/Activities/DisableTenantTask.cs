@@ -12,8 +12,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class DisableTenantTask : TenantTask
     {
-        public DisableTenantTask(IShellSettingsManager shellSettingsManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer) 
-            : base(shellSettingsManager, scriptEvaluator, localizer)
+        public DisableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DisableTenantTask> localizer) 
+            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
         }
 
@@ -22,16 +22,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Deleted"]);
+            return Outcomes(T["Disabled"]);
         }
 
-        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var shellSettings = await GetTenantAsync(workflowContext);
-            shellSettings.State = TenantState.Disabled;
-            //await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+        //public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        //{
+        //    //var shellSettings = await GetTenantAsync(workflowContext);
+        //    //shellSettings.State = TenantState.Disabled;
+        //    //await ShellHost.UpdateShellSettingsAsync(shellSettings);
 
-            return Outcomes("Disable");
-        }
+        //    return Outcomes("Disable");
+        //}
     }
 }

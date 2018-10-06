@@ -6,8 +6,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class TenantCreatedEvent : TenantEvent
     {
-        public TenantCreatedEvent(IShellSettingsManager shellSettingsManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<TenantCreatedEvent> localizer) 
-            : base(shellSettingsManager, scriptEvaluator, localizer)
+        public TenantCreatedEvent(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<TenantCreatedEvent> localizer) 
+            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
         }
 

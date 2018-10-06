@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -15,8 +15,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
     {
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public CreateTenantTask(IShellSettingsManager shellSettingsManager, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CreateTenantTask> localizer)
-            : base(shellSettingsManager, scriptEvaluator, localizer)
+        public CreateTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CreateTenantTask> localizer)
+            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
             _expressionEvaluator = expressionEvaluator;
         }
@@ -30,16 +30,46 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
         
-        public WorkflowExpression<string> TenantProperties
+        public WorkflowExpression<string> RequestUrlPrefix
         {
-            get => GetProperty(() => new WorkflowExpression<string>(JsonConvert.SerializeObject(new { TitlePart = new { Title = "" } }, Formatting.Indented)));
+            get => GetProperty<WorkflowExpression<string>>();
             set => SetProperty(value);
         }
 
-        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public WorkflowExpression<string> RequestUrlHost
         {
-            return !string.IsNullOrEmpty(ContentType);
+            get => GetProperty<WorkflowExpression<string>>();
+            set => SetProperty(value);
         }
+
+        public WorkflowExpression<string> DatabaseProvider
+        {
+            get => GetProperty<WorkflowExpression<string>>();
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> ConnectionString
+        {
+            get => GetProperty<WorkflowExpression<string>>();
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> TablePrefix
+        {
+            get => GetProperty<WorkflowExpression<string>>();
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> RecipeName
+        {
+            get => GetProperty<WorkflowExpression<string>>();
+            set => SetProperty(value);
+        }
+
+        //public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        //{
+        //    return !string.IsNullOrEmpty(TenantName);
+        //}
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -48,35 +78,38 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            var requestUrlPrefixTask = _expressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
+            var requestUrlHostTask = _expressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
+            var databaseProviderTask = _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
+            var connectionStringTask = _expressionEvaluator.EvaluateAsync(ConnectionString, workflowContext);
+            var tablePrefixTask = _expressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
+            var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
+
+            await Task.WhenAll(requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
+
             var shellSettings = new ShellSettings();
 
-            if (!string.IsNullOrWhiteSpace(TenantProperties.Expression))
+            if (!string.IsNullOrWhiteSpace(TenantName))
             {
-                var tenantProperties = await _expressionEvaluator.EvaluateAsync(TenantProperties, workflowContext);
-                var propertyObject = JObject.Parse(tenantProperties);
-
-                // shellSettings = new ShellSettings();
-
-                //var shellSettings = new ShellSettings
-                //{
-                //    Name = model.Name,
-                //    RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
-                //    RequestUrlHost = model.RequestUrlHost,
-                //    ConnectionString = model.ConnectionString,
-                //    TablePrefix = model.TablePrefix,
-                //    DatabaseProvider = model.DatabaseProvider,
-                //    State = TenantState.Uninitialized,
-                //    Secret = Guid.NewGuid().ToString(),
-                //    RecipeName = model.RecipeName
-                //};
+                shellSettings = new ShellSettings
+                {
+                    Name = TenantName,
+                    RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
+                    RequestUrlHost = requestUrlHostTask.Result?.Trim(),
+                    ConnectionString = connectionStringTask.Result?.Trim(),
+                    TablePrefix = tablePrefixTask.Result?.Trim(),
+                    DatabaseProvider = databaseProviderTask.Result?.Trim(),
+                    State = TenantState.Uninitialized,
+                    Secret = Guid.NewGuid().ToString(),
+                    RecipeName = recipeNameTask.Result.Trim()
+                };
             }
             
             ShellSettingsManager.SaveSettings(shellSettings);
-            //var shellContext = await _orchardHost.GetOrCreateShellContextAsync(shellSettings);
+            var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
 
             workflowContext.LastResult = shellSettings;
             workflowContext.CorrelationId = shellSettings.Name;
-            //workflowContext.Properties[TenantsHandler.ContentItemInputKey] = contentItem;
 
             return Outcomes("Done");
         }

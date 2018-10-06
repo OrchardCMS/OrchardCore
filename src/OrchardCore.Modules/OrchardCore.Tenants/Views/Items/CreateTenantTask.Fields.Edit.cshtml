@@ -1,16 +1,42 @@
 @using OrchardCore.Tenants.Workflows.ViewModels
 @model CreateTenantTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Name">
-    <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
-            <input type="text" asp-for="Name" />
+<fieldset class="form-group" asp-validation-class-for="TenantName">
+    <label asp-for="TenantName">@T["Name"] <span asp-validation-for="TenantName"></span></label>
+    <input type="text" asp-for="TenantName" />
     <span class="hint">@T["Select the name of tenant to create."]</span>
 </fieldset>
 
-@*<fieldset class="form-group" asp-validation-class-for="TenantProperties">
-    <label asp-for="TenantProperties">@T["Tenant Properties"] <span asp-validation-for="TenantProperties"></span></label>
-    <textarea asp-for="TenantProperties" class="form-control"></textarea>
-    <span class="hint">@T["Optionally provide values for the tenant parts, fields and their properties in JSON format. With Liquid support."]</span>
+<fieldset class="form-group" asp-validation-class-for="RequestUrlPrefixExpression">
+    <label asp-for="RequestUrlPrefixExpression">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
+    <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
+    <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="RequestUrlHostExpression">
+    <label asp-for="RequestUrlHostExpression">@T["Host name"] <span asp-validation-for="RequestUrlHostExpression"></span></label>
+    <input type="text" asp-for="RequestUrlHostExpression" class="form-control code" />
+    <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DatabaseProviderExpression">
+    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <input type="text" asp-for="DatabaseProviderExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="TablePrefixExpression">
+    <label asp-for="TablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="TablePrefixExpression"></span></label>
+    <input type="text" asp-for="TablePrefixExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ConnectionStringExpression">
+    <label asp-for="ConnectionStringExpression">@T["Connection string"] <span asp-validation-for="ConnectionStringExpression"></span></label>
+    <input type="text" asp-for="ConnectionStringExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="RecipeName">
+    <label asp-for="RecipeName">@T["Recipe"] <span asp-validation-for="RecipeName"></span></label>
+    <input type="text" asp-for="RecipeName" />
 </fieldset>
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
@@ -22,11 +48,11 @@
 
 <script at="Foot">
 $(function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantProperties)'), {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlPrefixExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
       });
 });
-</script>*@
+</script>

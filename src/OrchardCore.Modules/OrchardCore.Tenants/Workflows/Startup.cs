@@ -13,9 +13,11 @@ namespace OrchardCore.Tenants.Workflows
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddActivity<TenantCreatedEvent, TenantCreatedEventDisplay>();
-            services.AddActivity<TenantDisableEvent, TenantDisabledEventDisplay>();
+            services.AddActivity<TenantDisabledEvent, TenantDisabledEventDisplay>();
             services.AddActivity<DisableTenantTask, DisableTenantTaskDisplay>();
+            services.AddActivity<EnableTenantTask, DisableTenantTaskDisplay>();
             services.AddActivity<CreateTenantTask, CreateTenantTaskDisplay>();
+            services.AddActivity<SetupTenantTask, SetupTenantTaskDisplay>();
 
             services.AddScoped<IWorkflowValueSerializer, TenantItemSerializer>();
         }

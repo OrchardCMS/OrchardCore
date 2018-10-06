@@ -11,33 +11,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public abstract class TenantEvent : TenantActivity, IEvent
     {
-        protected TenantEvent(IShellSettingsManager shellSettingsManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) 
-            : base(shellSettingsManager, scriptEvaluator, localizer)
+        protected TenantEvent(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) 
+            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
         }
 
-        public IList<string> ContentTypeFilter
-        {
-            get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
-            set => SetProperty(value);
-        }
-
-        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            var content = await GetTenantAsync(workflowContext);
-
-            if (content == null)
-            {
-                return false;
-            }
-
-            //var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-
-            // "" means 'any'.
-            return true; //!contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
-        }
-
-
+        //public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        //{
+        //    return true;
+        //}
+        
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Halt();

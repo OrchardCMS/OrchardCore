@@ -1,0 +1,65 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model SetupTenantTaskViewModel
+
+<fieldset class="form-group" asp-validation-class-for="TenantName">
+    <label asp-for="TenantName">@T["Tenant name"] <span asp-validation-for="TenantName"></span></label>
+    <input type="text" asp-for="TenantName" />
+    <span class="hint">@T["Select the name of tenant to create."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="SiteNameExpression">
+    <label asp-for="SiteNameExpression">@T["Site name"] <span asp-validation-for="SiteNameExpression"></span></label>
+    <input type="text" asp-for="SiteNameExpression" class="form-control code" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="AdminUsernameExpression">
+    <label asp-for="AdminUsernameExpression">@T["Admin user name"] <span asp-validation-for="AdminUsernameExpression"></span></label>
+    <input type="text" asp-for="AdminUsernameExpression" class="form-control code" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="AdminEmailExpression">
+    <label asp-for="AdminEmailExpression">@T["Admin email"] <span asp-validation-for="AdminEmailExpression"></span></label>
+    <input type="text" asp-for="AdminEmailExpression" class="form-control code" />
+</fieldset>
+<fieldset class="form-group" asp-validation-class-for="AdminPasswordExpression">
+    <label asp-for="AdminPasswordExpression">@T["Admin password"] <span asp-validation-for="AdminPasswordExpression"></span></label>
+    <input type="text" asp-for="AdminPasswordExpression" class="form-control code" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DatabaseProviderExpression">
+    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <input type="text" asp-for="DatabaseProviderExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DatabaseTablePrefixExpression">
+    <label asp-for="DatabaseTablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="DatabaseTablePrefixExpression"></span></label>
+    <input type="text" asp-for="DatabaseTablePrefixExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DatabaseConnectionStringExpression">
+    <label asp-for="DatabaseConnectionStringExpression">@T["Connection string"] <span asp-validation-for="DatabaseConnectionStringExpression"></span></label>
+    <input type="text" asp-for="DatabaseConnectionStringExpression" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="RecipeName">
+    <label asp-for="RecipeName">@T["Recipe"] <span asp-validation-for="RecipeName"></span></label>
+    <input type="text" asp-for="RecipeName" />
+</fieldset>
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
+<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.SiteNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>

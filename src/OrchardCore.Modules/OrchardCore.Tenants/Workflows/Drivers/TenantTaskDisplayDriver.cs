@@ -8,6 +8,8 @@ namespace OrchardCore.Tenants.Workflows.Drivers
     public abstract class TenantTaskDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> 
         where TActivity : TenantTask where TViewModel : TenantTaskViewModel<TActivity>, new()
     {
+        public string TenantName { get; set; }
+
         public override IDisplayResult Display(TActivity activity)
         {
             return Combine(

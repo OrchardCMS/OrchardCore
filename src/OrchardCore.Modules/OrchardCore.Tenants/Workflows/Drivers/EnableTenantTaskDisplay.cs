@@ -5,14 +5,14 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Tenants.Workflows.Drivers
 {
-    public class DisableTenantTaskDisplay : TenantTaskDisplayDriver<DisableTenantTask, DisableTenantTaskViewModel>
+    public class EnableTenantTaskDisplay : TenantTaskDisplayDriver<EnableTenantTask, EnableTenantTaskViewModel>
     {
-        protected override void EditActivity(DisableTenantTask activity, DisableTenantTaskViewModel model)
+        protected override void EditActivity(EnableTenantTask activity, EnableTenantTaskViewModel model)
         {
             model.TenantName = activity.TenantName;
         }
 
-        protected override void UpdateActivity(DisableTenantTaskViewModel model, DisableTenantTask activity)
+        protected override void UpdateActivity(EnableTenantTaskViewModel model, EnableTenantTask activity)
         {
             activity.TenantName = model.TenantName;
         }

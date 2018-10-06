@@ -26,7 +26,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.TenantName))
             {
                 //model.ContentTypeFilter = FilterContentTypesQuery(viewModel.SelectedContentTypeNames).ToList();
             }

@@ -5,6 +5,8 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
 {
     public class TenantTaskViewModel<T> : ActivityViewModel<T> where T : TenantTask
     {
+        public string TenantName { get; set; }
+
         public TenantTaskViewModel()
         {
 

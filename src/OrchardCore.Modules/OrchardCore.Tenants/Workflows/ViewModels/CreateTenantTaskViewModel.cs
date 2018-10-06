@@ -1,10 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using OrchardCore.Tenants.Workflows.Activities;
 
 namespace OrchardCore.Tenants.Workflows.ViewModels
 {
     public class CreateTenantTaskViewModel : TenantTaskViewModel<CreateTenantTask>
     {
-        public string Name { get; set; }
-        public string TenantProperties { get; set; }
+        public string RequestUrlPrefixExpression { get; set; }
+        public string RequestUrlHostExpression { get; set; }
+        public string DatabaseProviderExpression { get; set; }
+        public string ConnectionStringExpression { get; set; }
+        public string TablePrefixExpression { get; set; }
+        public string RecipeName { get; set; }
     }
 }

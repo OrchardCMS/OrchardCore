@@ -3,11 +3,5 @@
 <header>
     <h4><i class="fa fa-trash"></i>@Model.Activity.GetTitleOrDefault(() => T["Disable Tenant"])</h4>
 </header>
-@if (string.IsNullOrWhiteSpace(Model.Activity.Tenant?.Expression))
-{
-    <span>@T["Disable tenant provided via the <em>Tenant</em> input argument"]</span>
-}
-else
-{
-    <span>@T["Disable tenant using expression: <em>{0}</em>", Model.Activity.Tenant.Expression]</span>
-}
+
+<em>@Model.Activity.TenantName</em>
