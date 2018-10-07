@@ -25,7 +25,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("jQuery")
                 .SetCdn("http://code.jquery.com/jquery-3.3.1.slim.min.js", "http://code.jquery.com/jquery-3.3.1.js")
-                .SetCdnIntegrity("sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=", "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=")
+                .SetCdnIntegrity("sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=", "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=")
                 .SetVersion("3.3.1")
                 ;
 
