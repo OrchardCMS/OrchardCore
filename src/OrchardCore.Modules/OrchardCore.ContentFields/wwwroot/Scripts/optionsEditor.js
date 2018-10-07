@@ -3,7 +3,9 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function initializeOptionsEditor(el, data, resultCtl) {
+function initializeOptionsEditor(el, data, defaultValue) {
+
+    var checked = defaultValue;
 
     var optionsEditor = $(el);
     var previouslyChecked;
@@ -20,7 +22,15 @@ function initializeOptionsEditor(el, data, resultCtl) {
                 set: function(value) {
                     this.$emit('input', value);
                 }
-            } 
+            },
+            defaultValue: {
+                get: function () {
+                    return defaultValue;
+                },
+                set: function (value) {
+                    defaultValue = value;
+                }
+            }
         },
         methods: {
             add: function () {
@@ -41,7 +51,7 @@ function initializeOptionsEditor(el, data, resultCtl) {
             },
             getFormattedList: function () {
                 return JSON.stringify(this.list.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
-            },
+            }
         }
     };
 
@@ -52,6 +62,7 @@ function initializeOptionsEditor(el, data, resultCtl) {
         el: optionsEditor.get(0),
         data: {
             option: data,
+            defaultValue: checked,
             dragging: false
         }
     });
