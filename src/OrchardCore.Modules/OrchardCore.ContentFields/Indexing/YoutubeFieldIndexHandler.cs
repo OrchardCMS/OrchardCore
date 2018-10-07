@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Indexing
         public override Task BuildIndexAsync(YoutubeField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.EmbeddedAddress, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Set(context.Key, field.EmbeddedAddress, options);
 
             return Task.CompletedTask;
         }

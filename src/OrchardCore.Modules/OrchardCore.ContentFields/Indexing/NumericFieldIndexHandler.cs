@@ -14,11 +14,11 @@ namespace OrchardCore.ContentFields.Indexing
 
             if (settings.Scale == 0)
             {
-                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry((int?)field.Value, DocumentIndex.Types.Integer, options));
+                context.DocumentIndex.Set(context.Key, (int?)field.Value, options);
             }
             else
             {
-                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Value, DocumentIndex.Types.Number, options));
+                context.DocumentIndex.Set(context.Key, field.Value, options);
             }
 
             return Task.CompletedTask;

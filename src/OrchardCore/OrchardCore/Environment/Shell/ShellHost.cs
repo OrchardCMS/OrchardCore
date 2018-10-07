@@ -411,6 +411,11 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
+            if (_shellContexts == null)
+            {
+                return;
+            }
+
             var shells = _shellContexts.Values.ToArray();
 
             foreach (var shell in shells)

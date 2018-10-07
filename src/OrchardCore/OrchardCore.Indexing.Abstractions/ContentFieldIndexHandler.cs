@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Indexing
             var field = contentPart.Get<TField>(partFieldDefinition.Name);
             if (field != null)
             {
-                var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, $"{typePartDefinition.Name}.{partFieldDefinition.Name}", contentPart, typePartDefinition, partFieldDefinition, settings);
+                var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, $"{context.Key}.{partFieldDefinition.Name}", contentPart, typePartDefinition, partFieldDefinition, settings);
 
                 return BuildIndexAsync(field, buildFieldIndexContext);
             }
