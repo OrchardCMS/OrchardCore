@@ -33,53 +33,52 @@ namespace OrchardCore.Tenants.Workflows.Activities
         
         public WorkflowExpression<string> SiteName
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> AdminUsername
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> AdminEmail
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> AdminPassword
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> DatabaseProvider
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> DatabaseConnectionString
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> DatabaseTablePrefix
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> RecipeName
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-
-
+        
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Running"]);
@@ -87,6 +86,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            var tenantNameTask = _expressionEvaluator.EvaluateAsync(TenantName, workflowContext);
             var siteNameTask = _expressionEvaluator.EvaluateAsync(SiteName, workflowContext);
             var adminUsernameTask = _expressionEvaluator.EvaluateAsync(AdminUsername, workflowContext);
             var adminEmailTask = _expressionEvaluator.EvaluateAsync(AdminEmail, workflowContext);
@@ -96,13 +96,9 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseTablePrefixTask = _expressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext);
             var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
-            await Task.WhenAll(siteNameTask, adminUsernameTask, adminEmailTask, adminPasswordTask, databaseProviderTask, databaseConnectionStringTask, databaseTablePrefixTask, recipeNameTask);
+            await Task.WhenAll(tenantNameTask, siteNameTask, adminUsernameTask, adminEmailTask, adminPasswordTask, databaseProviderTask, databaseConnectionStringTask, databaseTablePrefixTask, recipeNameTask);
 
-            if (!ShellSettingsManager.TryGetSettings(TenantName, out var shellSettings))
-            {
-
-            }
-            else
+            if (!ShellSettingsManager.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
             {
                 // Create tenant ?
                 //recipeNameTask.Result.Trim()
@@ -114,17 +110,17 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = siteNameTask.Result.Trim(),
+                SiteName = siteNameTask.Result?.Trim(),
                 EnabledFeatures = null,
-                AdminUsername = adminUsernameTask.Result.Trim(),
-                AdminEmail = adminEmailTask.Result.Trim(),
-                AdminPassword = adminPasswordTask.Result.Trim(),
+                AdminUsername = adminUsernameTask.Result?.Trim(),
+                AdminEmail = adminEmailTask.Result?.Trim(),
+                AdminPassword = adminPasswordTask.Result?.Trim(),
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipe,
                 SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
-                DatabaseProvider = databaseProviderTask.Result.Trim(),
-                DatabaseConnectionString = databaseConnectionStringTask.Result.Trim(),
-                DatabaseTablePrefix = databaseTablePrefixTask.Result.Trim(),
+                DatabaseProvider = databaseProviderTask.Result?.Trim(),
+                DatabaseConnectionString = databaseConnectionStringTask.Result?.Trim(),
+                DatabaseTablePrefix = databaseTablePrefixTask.Result?.Trim(),
             };
 
             var executionId = await SetupService.SetupAsync(setupContext);

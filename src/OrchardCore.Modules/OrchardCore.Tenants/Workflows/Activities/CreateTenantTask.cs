@@ -32,37 +32,37 @@ namespace OrchardCore.Tenants.Workflows.Activities
         
         public WorkflowExpression<string> RequestUrlPrefix
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> RequestUrlHost
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> DatabaseProvider
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> ConnectionString
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> TablePrefix
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
         public WorkflowExpression<string> RecipeName
         {
-            get => GetProperty<WorkflowExpression<string>>();
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
 
@@ -78,6 +78,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            var tenantNameTask = _expressionEvaluator.EvaluateAsync(TenantName, workflowContext);
             var requestUrlPrefixTask = _expressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext);
             var requestUrlHostTask = _expressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext);
             var databaseProviderTask = _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
@@ -85,15 +86,15 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var tablePrefixTask = _expressionEvaluator.EvaluateAsync(TablePrefix, workflowContext);
             var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
-            await Task.WhenAll(requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
+            await Task.WhenAll(tenantNameTask, requestUrlPrefixTask, requestUrlHostTask, databaseProviderTask, connectionStringTask, tablePrefixTask, recipeNameTask);
 
             var shellSettings = new ShellSettings();
 
-            if (!string.IsNullOrWhiteSpace(TenantName))
+            if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
             {
                 shellSettings = new ShellSettings
                 {
-                    Name = TenantName,
+                    Name = tenantNameTask.Result?.Trim(),
                     RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
                     RequestUrlHost = requestUrlHostTask.Result?.Trim(),
                     ConnectionString = connectionStringTask.Result?.Trim(),

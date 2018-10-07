@@ -11,6 +11,6 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
         public string DatabaseProviderExpression { get; set; }
         public string DatabaseConnectionStringExpression { get; set; }
         public string DatabaseTablePrefixExpression { get; set; }
-        public string RecipeName { get; set; }
+        public string RecipeNameExpression { get; set; }
     }
 }

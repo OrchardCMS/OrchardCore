@@ -19,7 +19,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             ScriptEvaluator = scriptEvaluator;
             T = localizer;
         }
-        public string TenantName { get; set; }
+
+        public WorkflowExpression<string> TenantName
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
 
         protected IShellSettingsManager ShellSettingsManager { get; }
         protected IShellHost ShellHost { get; }

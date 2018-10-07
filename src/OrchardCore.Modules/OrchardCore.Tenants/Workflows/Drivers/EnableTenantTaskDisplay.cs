@@ -9,12 +9,12 @@ namespace OrchardCore.Tenants.Workflows.Drivers
     {
         protected override void EditActivity(EnableTenantTask activity, EnableTenantTaskViewModel model)
         {
-            model.TenantName = activity.TenantName;
+            model.TenantNameExpression = activity.TenantName.Expression;
         }
 
         protected override void UpdateActivity(EnableTenantTaskViewModel model, EnableTenantTask activity)
         {
-            activity.TenantName = model.TenantName;
+            activity.TenantName = new WorkflowExpression<string>(model.TenantNameExpression);
         }
     }
 }
