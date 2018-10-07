@@ -10,21 +10,21 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("http://code.jquery.com/jquery-1.12.4.min.js", "http://code.jquery.com/jquery-1.12.4.js")
+                .SetCdn("https://code.jquery.com/jquery-1.12.4.min.js", "https://code.jquery.com/jquery-1.12.4.js")
                 .SetCdnIntegrity("sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=", "sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=")
                 .SetVersion("1.12.4")
                 ;
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("http://code.jquery.com/jquery-2.2.4.min.js", "http://code.jquery.com/jquery-2.2.4.js")
+                .SetCdn("https://code.jquery.com/jquery-2.2.4.min.js", "https://code.jquery.com/jquery-2.2.4.js")
                 .SetCdnIntegrity("sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=", "sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=")
                 .SetVersion("2.2.4")
                 ;
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("http://code.jquery.com/jquery-3.3.1.slim.min.js", "http://code.jquery.com/jquery-3.3.1.js")
+                .SetCdn("https://code.jquery.com/jquery-3.3.1.min.js", "https://code.jquery.com/jquery-3.3.1.js")
                 .SetCdnIntegrity("sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=", "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=")
                 .SetVersion("3.3.1")
                 ;
