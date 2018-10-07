@@ -23,24 +23,19 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public ILogger Logger { get; set; }
 
-        public async Task<bool> LockTakeAsync(string key, TimeSpan expiry)
+        public async Task<bool> LockAsync(string key, TimeSpan expiry)
         {
             var database = await _connection.GetDatabaseAsync();
 
             if (database?.Multiplexer.IsConnected ?? false)
             {
-                if (database.LockQueryAsync(_lockKeyPrefix + key).ToString() == _hostName)
-                {
-                    return await database.LockExtendAsync(_lockKeyPrefix + key, _hostName, expiry);
-                }
-
                 return await database.LockTakeAsync(_lockKeyPrefix + key, _hostName, expiry);
             }
 
             return false;
         }
 
-        public async Task<bool> LockReleaseAsync(string key)
+        public async Task<bool> ReleaseAsync(string key)
         {
             var database = await _connection.GetDatabaseAsync();
 

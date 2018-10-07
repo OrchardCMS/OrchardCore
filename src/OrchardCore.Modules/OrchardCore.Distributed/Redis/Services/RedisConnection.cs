@@ -11,18 +11,17 @@ namespace OrchardCore.Distributed.Redis.Services
 {
     public class RedisConnection : IRedisConnection, IDisposable
     {
-        private bool _initialized;
-        private IDatabase _database;
         private readonly string _tenantName;
-        private readonly IOptions<RedisOptions> _redisOptionsAccessor;
+        private readonly IOptions<RedisOptions> _options;
+        private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1);
+        private ConnectionMultiplexer _connection;
+        private IDatabase _database;
+        private bool _initialized;
 
-        private volatile ConnectionMultiplexer _connection;
-        private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
-
-        public RedisConnection(ShellSettings shellSettings, IOptions<RedisOptions> redisOptionsAccessor, ILogger<RedisConnection> logger)
+        public RedisConnection(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisConnection> logger)
         {
             _tenantName = shellSettings.Name;
-            _redisOptionsAccessor = redisOptionsAccessor;
+            _options = options;
             Logger = logger;
         }
 
@@ -30,25 +29,24 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public async Task<IDatabase> GetDatabaseAsync()
         {
-            await ConnectAsync();
+            if (!_initialized)
+            {
+                await ConnectAsync();
+            }
+
             return _database;
         }
 
         private async Task ConnectAsync()
         {
-            if (_initialized)
-            {
-                return;
-            }
-
             await _connectionLock.WaitAsync();
+
             try
             {
                 if (!_initialized)
                 {
-                    _connection = await ConnectionMultiplexer.ConnectAsync(_redisOptionsAccessor.Value.ConfigurationOptions);
+                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
                     _database = _connection.GetDatabase();
-                    _initialized = true;
                 }
             }
             catch (Exception e)

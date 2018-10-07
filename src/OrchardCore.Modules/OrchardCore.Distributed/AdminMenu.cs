@@ -8,9 +8,9 @@ using OrchardCore.Navigation;
 namespace OrchardCore.Distributed
 {
     [Feature("OrchardCore.Distributed.Redis")]
-    public class AdminMenu : INavigationProvider
+    public class RedisAdminMenu : INavigationProvider
     {
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public RedisAdminMenu(IStringLocalizer<RedisAdminMenu> localizer)
         {
             T = localizer;
         }
@@ -28,7 +28,7 @@ namespace OrchardCore.Distributed
                 .Add(T["Settings"], "2", settings => settings
                     .Add(T["Redis"], T["Redis"], entry => entry
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RedisSiteSettingsDisplayDriver.GroupId })
-                        .Permission(Permissions.ManageDistributedServices)
+                        .Permission(RedisPermissions.ManageRedisServices)
                         .LocalNav()
                     )
                 )

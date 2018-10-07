@@ -1,16 +1,18 @@
 using System.Collections.Generic;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Distributed
 {
-    public class Permissions : IPermissionProvider
+    [Feature("OrchardCore.Distributed.Redis")]
+    public class RedisPermissions : IPermissionProvider
     {
-        public static readonly Permission ManageDistributedServices =
-            new Permission("ManageDistributedServices", "Manage Distributed Services");
+        public static readonly Permission ManageRedisServices =
+            new Permission("ManageRedisServices", "Manage Redis Services");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] { ManageDistributedServices };
+            return new[] { ManageRedisServices };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +22,7 @@ namespace OrchardCore.Distributed
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageDistributedServices }
+                    Permissions = new[] { ManageRedisServices }
                 }
             };
         }

@@ -29,13 +29,13 @@ namespace OrchardCore.Distributed
         }
     }
 
-    [Feature("OrchardCore.Distributed.Redis.Settings")]
-    public class RedisSettingsStartup : StartupBase
+    [Feature("OrchardCore.Distributed.Redis")]
+    public class RedisStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, RedisPermissions>();
+            services.AddScoped<INavigationProvider, RedisAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RedisSiteSettingsDisplayDriver>();
 
             services.TryAddEnumerable(
@@ -47,7 +47,7 @@ namespace OrchardCore.Distributed
     }
 
     [Feature("OrchardCore.Distributed.Redis.Cache")]
-    public class DistributedRedisCacheStartup : StartupBase
+    public class RedisCacheStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

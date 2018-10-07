@@ -5,7 +5,7 @@ namespace OrchardCore.Distributed
 {
     public interface IDistributedLock
     {
-        Task<bool> LockTakeAsync(string key, TimeSpan expiry);
-        Task<bool> LockReleaseAsync(string key);
+        Task<bool> LockAsync(string key, TimeSpan expiry);
+        Task<bool> ReleaseAsync(string key);
     }
 }

@@ -15,24 +15,24 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Distributed.Redis.Settings",
-    Name = "Distributed Redis Settings",
+    Id = "OrchardCore.Distributed.Redis",
+    Name = "Redis",
     Description = "Configuration to connect to Redis.",
     Category = "Hosting"
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis.Cache",
-    Name = "Distributed Redis Cache",
+    Name = "Redis Cache",
     Description = "Distributed cache implementation using Redis.",
-    Dependencies = new[] { "OrchardCore.Distributed.Redis.Settings" },
+    Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis.MessageBus",
-    Name = "Distributed Redis MessageBus",
+    Name = "Redis Message Bus",
     Description = "Message bus implementation using Redis.",
-    Dependencies = new[] { "OrchardCore.Distributed", "OrchardCore.Distributed.Redis.Settings" },
+    Dependencies = new[] { "OrchardCore.Distributed", "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]
