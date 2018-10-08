@@ -1,0 +1,31 @@
+@model LinkAdminNodeViewModel
+
+<h5>@T["Link"]</h5>
+
+<fieldset>
+    <div class="form-group form-check">
+        <input asp-for="Enabled" class="form-check-input" />
+        <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="LinkText">
+    <label asp-for="LinkText">@T["Link Text"] <span asp-validation-for="LinkText"></span></label>
+    <input asp-for="LinkText" class="form-control" />
+    <span class="hint">@T["The Link Text as it will be shown in the tree."]</span>
+</fieldset>
+
+
+<fieldset class="form-group">
+    <label asp-for="LinkUrl">@T["Link Url"]</label>
+    <input asp-for="LinkUrl" class="form-control" />
+    <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. Use \"~/\" before your url to indicate the root of the admin site"]</span>
+</fieldset>
+
+
+<fieldset class="form-group">
+    <label asp-for="CustomClasses">@T["CSS Classes"]</label>
+    <input asp-for="CustomClasses" class="form-control" type="text" />
+    <span class="hint">@T["A comma separated list of classes that will be added to the tag."]</span>
+</fieldset>
+

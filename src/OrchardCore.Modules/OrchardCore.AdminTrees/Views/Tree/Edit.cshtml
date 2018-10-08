@@ -1,0 +1,26 @@
+@model AdminTreeEditViewModel
+<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees.css" debug-src="/OrchardCore.AdminTrees/Styles/admin-trees.css"></style>
+
+<h1>@RenderTitleSegments(T["Edit Admin Tree: {0}", Model.Name])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Edit" method="post">
+    <fieldset>
+        <div class="form-group" asp-validation-class-for="Name">
+            <label asp-for="Name">@T["Name"]</label>
+            <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
+            <input asp-for="Name" class="form-control" autofocus />
+        </div>
+        <div class="form-group form-check">
+            <input asp-for="Enabled" class="form-check-input" />
+            <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-primary" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
+            <a class="btn btn-secondary" asp-route-action="List">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
