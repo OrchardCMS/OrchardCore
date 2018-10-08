@@ -14,14 +14,14 @@ namespace OrchardCore.Distributed.Redis.Services
     public class RedisLock : ILock
     {
         private readonly string _hostName;
-        private readonly string _lockKeyPrefix;
-        private readonly IRedisConnection _connection;
+        private readonly string _keyPrefix;
+        private readonly IRedis _redis;
 
-        public RedisLock(ShellSettings shellSettings, IRedisConnection connection)
+        public RedisLock(ShellSettings shellSettings, IRedis redis)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _lockKeyPrefix = shellSettings.Name + ":";
-            _connection = connection;
+            _keyPrefix = shellSettings.Name + ":";
+            _redis = redis;
         }
 
         /// <summary>
@@ -34,11 +34,11 @@ namespace OrchardCore.Distributed.Redis.Services
 
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
         {
-            var database = await _connection.GetDatabaseAsync();
+            await _redis.ConnectAsync();
 
-            if (database?.Multiplexer.IsConnected ?? false)
+            if (_redis.IsConnected)
             {
-                return await database.LockTakeAsync(_lockKeyPrefix + key, _hostName, expiry);
+                return await _redis.Database.LockTakeAsync(_keyPrefix + key, _hostName, expiry);
             }
 
             return false;
@@ -46,11 +46,9 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public void Release(string key)
         {
-            var database = _connection.GetDatabaseAsync().Result;
-
-            if (database?.Multiplexer.IsConnected ?? false)
+            if (_redis.IsConnected)
             {
-                database.LockRelease(_lockKeyPrefix + key, _hostName, CommandFlags.FireAndForget);
+                _redis.Database.LockRelease(_keyPrefix + key, _hostName, CommandFlags.FireAndForget);
             }
         }
 
@@ -59,9 +57,9 @@ namespace OrchardCore.Distributed.Redis.Services
             private readonly RedisLock _lock;
             private readonly string _key;
 
-            public Locker(RedisLock rlock, string key)
+            public Locker(RedisLock redislock, string key)
             {
-                _lock = rlock;
+                _lock = redislock;
                 _key = key;
             }
 

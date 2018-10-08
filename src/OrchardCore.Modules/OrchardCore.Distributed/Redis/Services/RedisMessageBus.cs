@@ -13,23 +13,23 @@ namespace OrchardCore.Distributed.Redis.Services
         private readonly string _hostName;
         private readonly string _channelPrefix;
         private readonly string _messagePrefix;
-        private readonly IRedisConnection _connection;
+        private readonly IRedis _redis;
 
-        public RedisMessageBus(ShellSettings shellSettings, IRedisConnection connection)
+        public RedisMessageBus(ShellSettings shellSettings, IRedis redis)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
             _channelPrefix = shellSettings.Name + ":";
             _messagePrefix = _hostName + "/";
-            _connection = connection;
+            _redis = redis;
         }
 
         public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {
-            var database = await _connection.GetDatabaseAsync();
+            await _redis.ConnectAsync();
 
-            if (database?.Multiplexer.IsConnected ?? false)
+            if (_redis.IsConnected)
             {
-                var subscriber = database.Multiplexer.GetSubscriber();
+                var subscriber = _redis.Connection.GetSubscriber();
 
                 subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
                 {
@@ -48,13 +48,12 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public async Task PublishAsync(string channel, string message)
         {
-            var database = await _connection.GetDatabaseAsync();
+            await _redis.ConnectAsync();
 
-            if (database?.Multiplexer.IsConnected ?? false)
+            if (_redis.IsConnected)
             {
-                var subscriber = database.Multiplexer.GetSubscriber();
-                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message,
-                    CommandFlags.FireAndForget);
+                var subscriber = _redis.Connection.GetSubscriber();
+                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message, CommandFlags.FireAndForget);
             }
         }
     }

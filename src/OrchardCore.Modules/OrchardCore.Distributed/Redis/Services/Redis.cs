@@ -9,16 +9,14 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Redis.Services
 {
-    public class RedisConnection : IRedisConnection, IDisposable
+    public class Redis : IRedis, IDisposable
     {
         private readonly string _tenantName;
         private readonly IOptions<RedisOptions> _options;
         private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1);
-        private ConnectionMultiplexer _connection;
-        private IDatabase _database;
         private bool _initialized;
 
-        public RedisConnection(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisConnection> logger)
+        public Redis(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<Redis> logger)
         {
             _tenantName = shellSettings.Name;
             _options = options;
@@ -27,26 +25,25 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public ILogger Logger { get; set; }
 
-        public async Task<IDatabase> GetDatabaseAsync()
+        public bool IsConnected => Connection?.IsConnected ?? false;
+        public IConnectionMultiplexer Connection { get; private set; }
+        public IDatabase Database { get; private set; }
+
+        public async Task ConnectAsync()
         {
-            if (!_initialized)
+            if (_initialized)
             {
-                await ConnectAsync();
+                return;
             }
 
-            return _database;
-        }
-
-        private async Task ConnectAsync()
-        {
             await _connectionLock.WaitAsync();
 
             try
             {
                 if (!_initialized)
                 {
-                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
-                    _database = _connection.GetDatabase();
+                    Connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
+                    Database = Connection.GetDatabase();
                 }
             }
             catch (Exception e)
@@ -62,9 +59,9 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public void Dispose()
         {
-            if (_connection != null)
+            if (Connection != null)
             {
-                _connection.Close();
+                Connection.Close();
             }
         }
     }
