@@ -5,8 +5,6 @@
 
 function initializeOptionsEditor(el, data, defaultValue) {
 
-    var checked = defaultValue;
-
     var optionsEditor = $(el);
     var previouslyChecked;
 
@@ -23,12 +21,12 @@ function initializeOptionsEditor(el, data, defaultValue) {
                     this.$emit('input', value);
                 }
             },
-            defaultValue: {
+            selected: {
                 get: function () {
                     return defaultValue;
                 },
                 set: function (value) {
-                    defaultValue = value;
+                    this.$emit('input', value)
                 }
             }
         },
@@ -62,7 +60,7 @@ function initializeOptionsEditor(el, data, defaultValue) {
         el: optionsEditor.get(0),
         data: {
             option: data,
-            defaultValue: checked,
+            selected: defaultValue,
             dragging: false
         }
     });

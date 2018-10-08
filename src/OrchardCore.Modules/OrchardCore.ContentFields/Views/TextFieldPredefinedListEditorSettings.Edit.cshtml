@@ -32,11 +32,11 @@
                     <div class="custom-control custom-radio ml-2">
                         @if (Model.DefaultValue != null)
                         {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="defaultValue" v-on:click="uncheck(index, option.value)" >
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="defaultValue" :value="option.value" v-model="selected" v-on:click="uncheck(index, option.value)" >
                         }
                         else
                         {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-on:click="uncheck(index, option.value)">
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="defaultValue" :value="option.value" v-on:click="uncheck(index, option.value)">
                         }
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                     </div>
@@ -53,6 +53,7 @@
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="text" v-bind:value="selected" />
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
                 </td>
             </tr>
