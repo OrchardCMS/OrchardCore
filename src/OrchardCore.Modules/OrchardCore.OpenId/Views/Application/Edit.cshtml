@@ -41,7 +41,7 @@
         <div class="form-group" asp-validation-class-for="ClientSecret">
             <label asp-for="ClientSecret">@T["Client Secret"]</label>
             <span asp-validation-for="ClientSecret" class="text-danger"></span>
-            <input asp-for="ClientSecret" class="form-control" autofocus />
+            <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         </div>
     </div>
 

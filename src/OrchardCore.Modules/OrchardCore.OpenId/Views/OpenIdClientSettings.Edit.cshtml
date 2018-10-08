@@ -129,7 +129,7 @@
 
 <fieldset class="form-group collapse" asp-validation-class-for="ClientSecret">
     <label>@T["Client Secret"] <span asp-validation-for="ClientSecret"></span></label>
-    <input asp-for="ClientSecret" class="form-control" type="password" />
+    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
     <span class="hint">@T["set client secret."]</span>
 </fieldset>
 
