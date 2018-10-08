@@ -20,11 +20,6 @@ namespace OrchardCore.BackgroundTasks
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageBackgroundTasks }
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { ManageBackgroundTasks }
                 }
             };
         }
