@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -100,8 +101,25 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             if (!ShellSettingsManager.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
             {
-                // Create tenant ?
-                //recipeNameTask.Result.Trim()
+                if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
+                {
+                    shellSettings = new ShellSettings
+                    {
+                        Name = tenantNameTask.Result?.Trim(),
+                        RequestUrlPrefix = tenantNameTask.Result?.Trim(),
+                        //RequestUrlPrefix = requestUrlPrefixTask.Result?.Trim(),
+                        //RequestUrlHost = requestUrlHostTask.Result?.Trim(),
+                        ConnectionString = databaseConnectionStringTask.Result?.Trim(),
+                        TablePrefix = databaseTablePrefixTask.Result?.Trim(),
+                        DatabaseProvider = databaseProviderTask.Result?.Trim(),
+                        State = TenantState.Uninitialized,
+                        Secret = Guid.NewGuid().ToString(),
+                        RecipeName = recipeNameTask.Result.Trim()
+                    };
+                }
+
+                ShellSettingsManager.SaveSettings(shellSettings);
+                var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
