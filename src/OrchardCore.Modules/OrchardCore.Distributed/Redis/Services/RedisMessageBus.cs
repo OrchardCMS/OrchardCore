@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
 
@@ -16,16 +15,13 @@ namespace OrchardCore.Distributed.Redis.Services
         private readonly string _messagePrefix;
         private readonly IRedisConnection _connection;
 
-        public RedisMessageBus(ShellSettings shellSettings, IRedisConnection connection, ILogger<RedisMessageBus> logger)
+        public RedisMessageBus(ShellSettings shellSettings, IRedisConnection connection)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
             _channelPrefix = shellSettings.Name + ":";
             _messagePrefix = _hostName + "/";
             _connection = connection;
-            Logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {

@@ -17,7 +17,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis",
     Name = "Redis",
-    Description = "Configuration to connect to Redis.",
+    Description = "Allows to configure and connect to Redis.",
     Category = "Hosting"
 )]
 
@@ -34,5 +34,13 @@ using OrchardCore.Modules.Manifest;
     Name = "Redis Message Bus",
     Description = "Message bus implementation using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed", "OrchardCore.Distributed.Redis" },
+    Category = "Hosting"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Distributed.Redis.Lock",
+    Name = "Redis Lock",
+    Description = "Distributed lock implementation using Redis.",
+    Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 
@@ -14,6 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
+                services.AddSingleton<ILock, Lock>();
                 services.AddTransient<ITagCache, DefaultTagCache>();
                 services.AddSingleton<ISignal, Signal>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();

@@ -8,7 +8,8 @@ using OrchardCore.Modules;
 namespace OrchardCore.Distributed
 {
     /// <summary>
-    /// This component is a singleton and holds all the existing signal token for a tenant.
+    /// This component is a singleton and holds all the existing signal token for a given tenant.
+    /// It becomes a distributed signal if at least one message bus implementation is registered.
     /// </summary>
     public class DistributedSignal : Signal, ISignal, IModularTenantEvents
     {

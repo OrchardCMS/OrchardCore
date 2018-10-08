@@ -42,7 +42,6 @@ namespace OrchardCore.Distributed
                 ServiceDescriptor.Transient<IConfigureOptions<RedisOptions>, RedisOptionsSetup>());
 
             services.AddSingleton<IRedisConnection, RedisConnection>();
-            services.AddSingleton<IDistributedLock, RedisLock>();
         }
     }
 
@@ -64,6 +63,15 @@ namespace OrchardCore.Distributed
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IMessageBus, RedisMessageBus>();
+        }
+    }
+
+    [Feature("OrchardCore.Distributed.Redis.Lock")]
+    public class RedisLockStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ILock, RedisLock>();
         }
     }
 }
