@@ -1,5 +1,6 @@
-function initializeOptionsEditor(el, data, defaultValue) {
+function initializeOptionsEditor(el, data, defaultValue, dvCtl) {
 
+    var selectedValue = defaultValue;
     var optionsEditor = $(el);
     var previouslyChecked;
 
@@ -18,10 +19,10 @@ function initializeOptionsEditor(el, data, defaultValue) {
             },
             selected: {
                 get: function () {
-                    return defaultValue;
+                    return selectedValue;
                 },
                 set: function (value) {
-                    this.$emit('input', value)
+                    selectedValue = value;
                 }
             }
         },
@@ -32,13 +33,14 @@ function initializeOptionsEditor(el, data, defaultValue) {
             remove: function (index) {
                 this.list.splice(index, 1);
             },
-            uncheck: function (index) {
+            uncheck: function (index, value) {
                 if (index == previouslyChecked) {
                     $('#customRadio_' + index)[0].checked = false;
                     previouslyChecked = null;
                 }
                 else {
                     previouslyChecked = index;
+                    dvCtl.value = value;
                 }
 
             },

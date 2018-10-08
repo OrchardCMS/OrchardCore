@@ -8,7 +8,7 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue');
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementById('@Html.IdFor(m => m.DefaultValue)'));
 </script>
 
 <script type="text/x-template" id="options-table">
@@ -53,7 +53,7 @@
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
-                    <input class="form-control" id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="text" v-bind:value="selected" />
+                    
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
                 </td>
             </tr>
@@ -76,6 +76,7 @@
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
             <options-table v-model="option"></options-table>
+            <input class="form-control" id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="text" value="@Model.DefaultValue" />
         </fieldset>
     </div>
 </div>
