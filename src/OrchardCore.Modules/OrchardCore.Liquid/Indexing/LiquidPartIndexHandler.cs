@@ -13,7 +13,10 @@ namespace OrchardCore.Liquid.Indexing
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Set(context.Key, part.Liquid, options);
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Liquid, options);
+            }
 
             return Task.CompletedTask;
         }
