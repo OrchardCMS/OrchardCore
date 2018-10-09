@@ -103,12 +103,6 @@ namespace OrchardCore.Hosting.ShellBuilders
                 // then we need to dispose it right away.
                 if (_refCount == 0)
                 {
-                    if (ServiceProvider != null)
-                    {
-                        // So that terminating event handlers are invoked.
-                        using (CreateScope()) { };
-                    }
-
                     Dispose();
                 }
             }

@@ -89,8 +89,20 @@ namespace OrchardCore.Environment.Shell
                             RegisterShell(shell);
 
                             _shellContexts.TryAdd(settings.Name, shell);
-                        }
 
+                            if (settings.Name == ShellHelper.DefaultShellName)
+                            {
+                                using (var scope = shell.CreateScope())
+                                {
+                                    var tenantEvents = scope.ServiceProvider.GetServices<IDefaultTenantEvents>();
+
+                                    foreach (var tenantEvent in tenantEvents)
+                                    {
+                                        await tenantEvent.DefaultTenantCreatedAsync();
+                                    }
+                                }
+                            }
+                        }
                     }
                     finally
                     {
@@ -338,7 +350,7 @@ namespace OrchardCore.Environment.Shell
         /// while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        public Task ReloadShellContextAsync(ShellSettings settings)
+        public async Task ReloadShellContextAsync(ShellSettings settings, bool broadcast = true)
         {
             if (settings.State == TenantState.Disabled)
             {
@@ -347,7 +359,7 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0)
                 {
                     _runningShellTable.Remove(settings);
-                    return Task.CompletedTask;
+                    return;
                 }
             }
 
@@ -357,7 +369,22 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            return GetOrCreateShellContextAsync(settings);
+            await GetOrCreateShellContextAsync(settings);
+
+            if (broadcast && _shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+            {
+                var (scope, shellContext) = await GetScopeAndContextAsync(defaultSettings);
+
+                using (scope)
+                {
+                    var tenantEvents = scope.ServiceProvider.GetServices<IDefaultTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        await tenantEvent.ReloadedAsync(settings.Name);
+                    }
+                }
+            }
         }
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()

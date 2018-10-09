@@ -2,41 +2,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Distributed
 {
-    public class DistributedShell : IModularTenantEvents
+    /// <summary>
+    /// 'IDefaultTenantEvents' are only invoked on the default tenant.
+    /// </summary>
+    public class DistributedShell : IDefaultTenantEvents
     {
         private readonly IShellHost _shellHost ;
         private readonly ShellSettings _shellSettings;
+        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IMessageBus _messageBus;
 
-        public DistributedShell(IShellHost shellHost, ShellSettings shellSettings, IEnumerable<IMessageBus> _messageBuses)
+        public DistributedShell(
+            IShellHost shellHost,
+            ShellSettings shellSettings,
+            IShellSettingsManager shellSettingsManager,
+            IEnumerable<IMessageBus> _messageBuses)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _shellSettingsManager = shellSettingsManager;
             _messageBus = _messageBuses.LastOrDefault();
         }
 
-        public Task ActivatingAsync() { return Task.CompletedTask; }
-
-        public Task ActivatedAsync()
+        public Task DefaultTenantCreatedAsync()
         {
             if (_messageBus != null)
             {
-                return _messageBus.SubscribeAsync("Shell", (channel, message) =>
+                return _messageBus.SubscribeAsync("ShellReload", (channel, message) =>
                 {
-                    if (message == "Disabled")
+                    if (_shellSettingsManager.TryGetSettings(message, out var settings))
                     {
-                        _shellSettings.State = TenantState.Disabled;
-                        _shellHost.UpdateShellSettingsAsync(_shellSettings).GetAwaiter().GetResult();
-                    }
-
-                    if (message == "Terminated" || message == "Disabled")
-                    {
-                        _shellHost.ReloadShellContextAsync(_shellSettings).GetAwaiter().GetResult();
+                        _shellHost.ReloadShellContextAsync(settings, broadcast: false).GetAwaiter().GetResult();
                     }
                 });
             }
@@ -44,18 +44,11 @@ namespace OrchardCore.Distributed
             return Task.CompletedTask;
         }
 
-        public Task TerminatingAsync() { return Task.CompletedTask; }
-
-        public Task TerminatedAsync()
+        public Task ReloadedAsync(string tenant)
         {
             if (_messageBus != null)
             {
-                if (_shellSettings.State == TenantState.Disabled)
-                {
-                    return _messageBus.PublishAsync("Shell", "Disabled");
-                }
-
-                return _messageBus.PublishAsync("Shell", "Terminated");
+                return _messageBus.PublishAsync("ShellReload", tenant);
             }
 
             return Task.CompletedTask;

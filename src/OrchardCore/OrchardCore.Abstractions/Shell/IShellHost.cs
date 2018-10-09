@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Shell
         /// Reloads a shell.
         /// </summary>
         /// <param name="settings"></param>
-        Task ReloadShellContextAsync(ShellSettings settings);
+        Task ReloadShellContextAsync(ShellSettings settings, bool broadcast = true);
 
         /// <summary>
         /// Creates a new <see cref="ShellContext"/>.
