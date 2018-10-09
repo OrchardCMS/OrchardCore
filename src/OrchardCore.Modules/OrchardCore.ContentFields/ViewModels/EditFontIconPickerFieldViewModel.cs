@@ -10,7 +10,6 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class EditFontIconPickerFieldViewModel : FontIconPickerFieldViewModel
     {
-        [Required(ErrorMessage = "Font Icon field is required")]
         public string IconCode { get; set; }
         public string IconFormatted { get; set; }
     }
