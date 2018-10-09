@@ -44,17 +44,17 @@ namespace OrchardCore.AdminTrees.Services
                                     .Where(x => x.Enabled == true)
                                     .Where( x => x.MenuItems.Count > 0);
 
-            trees.ToList().ForEach( p => BuildTree(p, builder));
+            trees.ToList().ForEach( async p => await BuildTreeAsync(p, builder));
         }
 
-        private void BuildTree(AdminTree tree, NavigationBuilder builder)
+        private async Task BuildTreeAsync(AdminTree tree, NavigationBuilder builder)
         {
             foreach (MenuItem node in tree.MenuItems)
             {
                 var nodeBuilder = _nodeBuilders.Where(x => x.Name == node.GetType().Name).FirstOrDefault();
                 if (nodeBuilder != null)
                 {
-                    nodeBuilder.BuildNavigation(node, builder, _nodeBuilders);
+                    await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);
                 }
                 else
                 {

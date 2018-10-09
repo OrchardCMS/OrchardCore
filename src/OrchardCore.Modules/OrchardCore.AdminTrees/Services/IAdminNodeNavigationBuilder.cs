@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using OrchardCore.AdminTrees.Models;
+using System.Threading.Tasks;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminTrees.Services
@@ -12,7 +10,7 @@ namespace OrchardCore.AdminTrees.Services
         // The builder will handle  only the nodes whose typeName equals this name.
         string Name { get; }
 
-        void BuildNavigation(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders);
+        Task BuildNavigationAsync(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders);
         
     }
 }

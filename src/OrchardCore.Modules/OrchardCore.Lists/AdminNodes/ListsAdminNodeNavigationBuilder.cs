@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.AdminTrees.Services;
 using OrchardCore.Navigation;
 using YesSql;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Lists.AdminNodes
 {
@@ -33,7 +34,7 @@ namespace OrchardCore.Lists.AdminNodes
 
         public string Name => typeof(ListsAdminNode).Name;
 
-        public void BuildNavigation(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+        public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var tn = menuItem as ListsAdminNode;
 
@@ -66,7 +67,7 @@ namespace OrchardCore.Lists.AdminNodes
                 try
                 {
                     var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
-                    treeBuilder.BuildNavigation(childTreeNode, builder, treeNodeBuilders);
+                    await treeBuilder.BuildNavigationAsync(childTreeNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)
                 {

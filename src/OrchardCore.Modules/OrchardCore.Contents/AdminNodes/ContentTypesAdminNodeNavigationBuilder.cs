@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.AdminNodes
         public string Name => typeof(ContentTypesAdminNode).Name;
 
 
-        public void BuildNavigation(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+        public async Task BuildNavigationAsync(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var tn = treeNode as ContentTypesAdminNode;
 
@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.AdminNodes
                     try
                     {
                         var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
-                        treeBuilder.BuildNavigation(childTreeNode, itemBuilder, treeNodeBuilders);
+                        await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
                     }
                     catch (Exception e)
                     {

@@ -8,6 +8,7 @@ using OrchardCore.AdminTrees.Models;
 using OrchardCore.AdminTrees.Services;
 using OrchardCore.AdminTrees.AdminNodes;
 using OrchardCore.Navigation;
+using System.Threading.Tasks;
 
 namespace OrchardCore.AdminTrees.AdminNodes
 {
@@ -23,16 +24,16 @@ namespace OrchardCore.AdminTrees.AdminNodes
         public string Name => typeof(LinkAdminNode).Name;
 
 
-        public void BuildNavigation(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+        public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var ltn = menuItem as LinkAdminNode;
 
             if ((ltn == null) ||( !ltn.Enabled))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            builder.Add(new LocalizedString(ltn.LinkText, ltn.LinkText), itemBuilder => {
+            builder.Add(new LocalizedString(ltn.LinkText, ltn.LinkText), async itemBuilder => {
 
                 // Add the actual link
                 itemBuilder.Url(ltn.LinkUrl);
@@ -47,7 +48,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
                     try
                     {
                         var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
-                        treeBuilder.BuildNavigation(childTreeNode, itemBuilder, treeNodeBuilders);
+                        await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
                     }
                     catch (Exception e)
                     {
@@ -55,6 +56,8 @@ namespace OrchardCore.AdminTrees.AdminNodes
                     }
                 }
             });
+
+            return Task.CompletedTask;
         }
     }
 }
