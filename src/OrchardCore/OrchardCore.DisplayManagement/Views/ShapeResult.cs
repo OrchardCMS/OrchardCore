@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Models;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Cache;
 
@@ -186,6 +188,14 @@ namespace OrchardCore.DisplayManagement.Views
                     // try to access it as a member
                     parentShape = parentShape[zone];
                 }
+            }
+
+            var fieldContext = context as IFieldDisplayManagementContext;
+            if(!string.IsNullOrEmpty(fieldContext?.ExplicitPartName))// if current shape is field shape and PartName is specified
+            {
+                var partShape = (parentShape as Shape).SingleOrDefault(x => (x as IShape)?.Metadata?.Prefix == fieldContext.ExplicitPartName);
+                // and part shape found in the resolved zone / holding shape, set part shape as the parent
+                parentShape = partShape ?? parentShape;
             }
 
             if (String.IsNullOrEmpty(position))
