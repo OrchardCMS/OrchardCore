@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// <typeparam name="TPart"></typeparam>
     public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver where TPart : ContentPart, new()
     {
-        private ContentTypePartDefinition _typePartDefinition;
+        protected ContentTypePartDefinition _typePartDefinition;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
@@ -89,14 +89,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
+        protected bool CanHandleContentPart(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, out TPart handleable) {
+            handleable = contentPart as TPart;
+            return handleable != null;
+        }
+
         async Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
-            {
+            if (!CanHandleContentPart(contentPart, typePartDefinition, out var part))
                 return null;
-            }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
@@ -113,12 +114,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
-            {
+            if (!CanHandleContentPart(contentPart, typePartDefinition, out var part))
                 return Task.FromResult<IDisplayResult>(null);
-            }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
@@ -129,12 +126,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
-            var part = contentPart as TPart;
-
-            if(part == null)
-            {
+            if (!CanHandleContentPart(contentPart, typePartDefinition, out var part))
                 return null;
-            }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
@@ -205,7 +198,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetEditorShapeType(typeof(TPart).Name + "_Edit", context);
         }
 
-        private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
+        protected void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
         {
             Prefix = typePartDefinition.Name;
 
