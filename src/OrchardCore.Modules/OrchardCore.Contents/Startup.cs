@@ -117,7 +117,7 @@ namespace OrchardCore.Contents
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
-                template: "Admin/Contents/ContentItems",
+                template: "Admin/Contents/ContentItems/{typeId?}",
                 defaults: new { controller = "Admin", action = "List" }
             );
         }
