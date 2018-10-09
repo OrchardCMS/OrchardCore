@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -100,7 +102,9 @@ namespace OrchardCore.ContentManagement.Display
                                 var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
                                 if (result != null)
                                 {
-                                    await result.ApplyAsync(context);
+                                    var partIsExplicit = contentTypePartDefinition.PartDefinition.Name != contentTypeDefinition.Name;                                   
+                                    var fieldDisplayContext = new BuildFieldDisplayContext(part, contentTypePartDefinition, contentPartFieldDefinition, context, partIsExplicit);
+                                    await result.ApplyAsync(fieldDisplayContext);
                                 }
                             }
                             catch (Exception ex)
