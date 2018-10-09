@@ -1,0 +1,85 @@
+@model ContentTypesAdminNodeViewModel
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var selectedContentTypes = (string[])Model.ContentTypes;
+
+    var listable = ContentDefinitionManager.ListTypeDefinitions()
+        .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+        .OrderBy(ctd => ctd.DisplayName);
+}
+
+<h5>@T["Content Types"]</h5>
+
+<fieldset>
+    <div class="form-group form-check">
+        <input asp-for="Enabled" class="form-check-input" />
+        <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row">
+        <div class="col-md">
+            <div class="form-group form-check">
+                <input asp-for="ShowAll" class="form-check-input" id="ContentTypesAdminNode_ShowAll" />
+                <label asp-for="ShowAll" class="form-check-label">@T["Show All Content Types"]</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <ul class="list-group">
+                @foreach (var contentTypeDefinition in listable)
+                {
+                    var name = contentTypeDefinition.Name;
+                    var checkd = selectedContentTypes?.Contains(name);
+
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input content-type-checkbox" type="checkbox" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@checkd">
+                                @contentTypeDefinition.DisplayName
+                            </label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md">
+            <span class="hint">@T["The content types to add to the menu."]</span>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row">
+        <div class="col-md">
+            <label asp-for="CustomClasses">@T["CSS Classes"]</label>
+            <input asp-for="CustomClasses" class="form-control" type="text" />
+            <span class="hint">@T["A comma separated list of classes that will be added to the tag for every link."]</span>
+        </div>
+    </div>
+</fieldset>
+
+<script at="Foot" depends-on="jquery">
+    $(function () {
+        switchContentTypesCheckBoxes();
+
+        $('#ContentTypesAdminNode_ShowAll').change(function () {
+            switchContentTypesCheckBoxes();
+        });
+
+        function switchContentTypesCheckBoxes() {
+            var checked = $('#ContentTypesAdminNode_ShowAll').prop('checked');
+            if (checked == true) {
+                $('.content-type-checkbox').prop('checked', false);
+            }
+            $('.content-type-checkbox').prop('disabled', checked);
+        }
+    });
+</script>
+

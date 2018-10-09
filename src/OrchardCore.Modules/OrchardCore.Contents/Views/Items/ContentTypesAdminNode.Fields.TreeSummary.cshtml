@@ -1,0 +1,43 @@
+@model ShapeViewModel<ContentTypesAdminNode>
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var selectedContentTypes = Model.Value.ContentTypes;
+    var selectedDisplayNames = new List<string>();
+
+    var enabled = Model.Value.Enabled;
+
+    if (selectedContentTypes != null && selectedContentTypes.Length > 0)
+    {
+        foreach (var contentTypeDefinition in allContentTypes)
+        {
+            if (selectedContentTypes.Contains(contentTypeDefinition.Name))
+            {
+                selectedDisplayNames.Add(contentTypeDefinition.DisplayName);
+            }
+        }
+    }
+}
+
+<div class="@(enabled ? "" : "disabled") concrete-link">
+    <h5 class="align-self-center">@T["Content Types"]</h5>
+    @if (Model.Value.ShowAll)
+    {
+        <span class="badge badge-info">@T["Show all Content Types"]</span>
+    }
+    else
+    {
+        @if (selectedDisplayNames.Count > 0)
+        {
+            foreach (var displayName in selectedDisplayNames)
+            {
+                <span class="badge badge-info">@displayName</span>
+            }
+        }
+        else
+        {
+            <span class="badge badge-warning">@T["Nothing here!"]</span>
+        }
+    }
+</div>
