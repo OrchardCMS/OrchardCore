@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Distributed
@@ -27,7 +28,13 @@ namespace OrchardCore.Distributed
             {
                 return _messageBus.SubscribeAsync("Shell", (channel, message) =>
                 {
-                    if (message == "Terminated")
+                    if (message == "Disabled")
+                    {
+                        _shellSettings.State = TenantState.Disabled;
+                        _shellHost.UpdateShellSettingsAsync(_shellSettings).GetAwaiter().GetResult();
+                    }
+
+                    if (message == "Terminated" || message == "Disabled")
                     {
                         _shellHost.ReloadShellContextAsync(_shellSettings).GetAwaiter().GetResult();
                     }
@@ -43,6 +50,11 @@ namespace OrchardCore.Distributed
         {
             if (_messageBus != null)
             {
+                if (_shellSettings.State == TenantState.Disabled)
+                {
+                    return _messageBus.PublishAsync("Shell", "Disabled");
+                }
+
                 return _messageBus.PublishAsync("Shell", "Terminated");
             }
 
