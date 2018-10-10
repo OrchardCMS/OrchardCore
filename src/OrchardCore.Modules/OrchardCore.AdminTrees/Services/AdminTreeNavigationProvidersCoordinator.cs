@@ -17,6 +17,7 @@ namespace OrchardCore.AdminTrees.Services
     {
         private readonly IEnumerable<IAdminNodeNavigationBuilder> _nodeBuilders;
         private readonly ISession _session;
+        private readonly ILogger Logger;
 
         public AdminTreeNavigationProvidersCoordinator(
             ISession session,
@@ -25,9 +26,10 @@ namespace OrchardCore.AdminTrees.Services
         {
             _session = session;
             _nodeBuilders = nodeBuilders;
+            Logger = logger;
         }
 
-        public ILogger Logger { get; set; }
+        
 
 
         // We only add them if the caller uses the string "admintree").
@@ -43,6 +45,7 @@ namespace OrchardCore.AdminTrees.Services
             var trees = (await _session.Query<AdminTree>().ListAsync())
                                     .Where(x => x.Enabled == true)
                                     .Where( x => x.MenuItems.Count > 0);
+
 
             trees.ToList().ForEach( async p => await BuildTreeAsync(p, builder));
         }
