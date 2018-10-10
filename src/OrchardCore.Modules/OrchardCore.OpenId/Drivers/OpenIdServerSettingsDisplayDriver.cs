@@ -13,7 +13,10 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Settings;
+using Microsoft.Extensions.Options;
 using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
+using OpenIddict.Server;
+using OrchardCore.Entities;
 
 namespace OrchardCore.OpenId.Drivers
 {
@@ -23,8 +26,11 @@ namespace OrchardCore.OpenId.Drivers
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IOpenIdServerService _serverService;
+        private readonly ISiteService _siteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
+        private readonly IOptionsMonitor<OpenIddictServerOptions> _optionsMonitor;
+        private readonly IOptionsMonitor<OpenIdServerSettings> _optionsMonitor2;
         private readonly IHtmlLocalizer<OpenIdServerSettingsDisplayDriver> T;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -32,19 +38,25 @@ namespace OrchardCore.OpenId.Drivers
         public OpenIdServerSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IOpenIdServerService serverService,
+            ISiteService siteService,
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
+            IOptionsMonitor<OpenIddictServerOptions> optionsMonitor,
+            IOptionsMonitor<OpenIdServerSettings> optionsMonitor2,
             IHtmlLocalizer<OpenIdServerSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _serverService = serverService;
+            _siteService = siteService;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             T = stringLocalizer;
+            _optionsMonitor = optionsMonitor;
+            _optionsMonitor2 = optionsMonitor2;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
@@ -53,6 +65,16 @@ namespace OrchardCore.OpenId.Drivers
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageServerSettings))
             {
                 return null;
+            }
+
+            var siteSettings = (await _siteService.GetSiteSettingsAsync()).As<OpenIdServerSettings>();
+            var validationResult = await _serverService.ValidateSettingsAsync(siteSettings);
+            OpenIddictServerOptions serverOptions = null;
+
+            if (validationResult.Length == 0)
+            {
+                serverOptions = _optionsMonitor
+                    .Get(OpenIddictServerDefaults.AuthenticationScheme);
             }
 
             return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
@@ -73,6 +95,14 @@ namespace OrchardCore.OpenId.Drivers
                 model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
                 model.AllowImplicitFlow = settings.AllowImplicitFlow;
                 model.UseRollingTokens = settings.UseRollingTokens;
+
+                model.Endpoints = new EndpointInfo()
+                {
+                    TokenEndpointPath = serverOptions?.TokenEndpointPath.Value,
+                    AuthorizationEndpointPath = serverOptions?.AuthorizationEndpointPath.Value,
+                    LogoutEndpointPath = serverOptions?.LogoutEndpointPath.Value,
+                    UserinfoEndpointPath = serverOptions?.UserinfoEndpointPath.Value
+                };
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
@@ -132,7 +162,6 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
