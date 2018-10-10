@@ -411,8 +411,6 @@ namespace OrchardCore.OpenId.Controllers
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
             var identity = (ClaimsIdentity) principal.Identity;
 
-            identity.AddClaim(new Claim("TrivestId", "Contoso"));
-
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
