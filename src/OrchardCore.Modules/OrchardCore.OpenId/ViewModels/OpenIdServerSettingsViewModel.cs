@@ -25,6 +25,17 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool UseRollingTokens { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
+        public EndpointInfo Endpoints { get; set; }
+
+        public class EndpointInfo
+        {
+            public string TokenEndpointPath { get; set; }
+            public string AuthorizationEndpointPath { get; set; }
+            public string LogoutEndpointPath { get; set; }
+            public string UserinfoEndpointPath { get; set; }
+        }
+
         public class CertificateInfo
         {
             public string FriendlyName { get; set; }

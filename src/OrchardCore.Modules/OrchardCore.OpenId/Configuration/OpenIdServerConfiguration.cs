@@ -123,6 +123,11 @@ namespace OrchardCore.OpenId.Configuration
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
 
+            if (!settings.EnableAuthorizationEndpoint && !settings.EnableTokenEndpoint && !settings.EnableLogoutEndpoint && !settings.EnableUserInfoEndpoint)
+            {
+                // Work around for Openiddict that throws an exception when no flows are selected
+                settings.EnableAuthorizationEndpoint = true;
+            }
             if (settings.EnableAuthorizationEndpoint)
             {
                 options.AuthorizationEndpointPath = "/connect/authorize";

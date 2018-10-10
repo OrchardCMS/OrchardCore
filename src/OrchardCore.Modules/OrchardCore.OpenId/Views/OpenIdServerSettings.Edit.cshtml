@@ -2,9 +2,6 @@
 @using OrchardCore.OpenId.Settings;
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
-@inject Microsoft.Extensions.Options.IOptionsMonitor<OpenIddict.Server.OpenIddictServerOptions> OpenIddictServerOptionsMonitor
-
-@{ var OpenIddictServerOptions = OpenIddictServerOptionsMonitor.Get(OpenIddict.Server.OpenIddictServerDefaults.AuthenticationScheme); }
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
@@ -84,7 +81,10 @@
             @T["Enable Token Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.TokenEndpointPath]</span>
+    @if (!String.IsNullOrWhiteSpace(Model.Endpoints.TokenEndpointPath))
+    {
+        <span class="hint">@T["Enables action {0}", Model.Endpoints.TokenEndpointPath]</span>
+    }
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableAuthorizationEndpoint">
@@ -94,7 +94,10 @@
             @T["Enable Authorization Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.AuthorizationEndpointPath]</span>
+    @if (!String.IsNullOrWhiteSpace(Model.Endpoints.AuthorizationEndpointPath))
+    {
+        <span class="hint">@T["Enables action {0}", Model.Endpoints.AuthorizationEndpointPath]</span>
+    }
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableLogoutEndpoint">
@@ -104,7 +107,10 @@
             @T["Enable Logout Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.LogoutEndpointPath]</span>
+    @if (!String.IsNullOrWhiteSpace(Model.Endpoints.LogoutEndpointPath))
+    {
+        <span class="hint">@T["Enables action {0}", Model.Endpoints.LogoutEndpointPath]</span>
+    }
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="EnableUserInfoEndpoint">
@@ -114,7 +120,10 @@
             @T["Enable User Info Endpoint"]
         </label>
     </div>
-    <span class="hint">@T["Enables action {0}", OpenIddictServerOptions.UserinfoEndpointPath]</span>
+    @if (!String.IsNullOrWhiteSpace(Model.Endpoints.UserinfoEndpointPath))
+    {
+        <span class="hint">@T["Enables action {0}", Model.Endpoints.UserinfoEndpointPath]</span>
+    }
 </fieldset>
 
 <h3>Flows</h3>
