@@ -3,7 +3,7 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Redis
 {
-    public interface IRedis
+    public interface IRedisClient
     {
         Task ConnectAsync();
         bool IsConnected { get; }

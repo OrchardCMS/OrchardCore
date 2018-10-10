@@ -30,17 +30,9 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Distributed.Redis.MessageBus",
-    Name = "Redis Message Bus",
+    Id = "OrchardCore.Distributed.Redis.Bus",
+    Name = "Redis Bus",
     Description = "Message bus implementation using Redis.",
-    Dependencies = new[] { "OrchardCore.Distributed", "OrchardCore.Distributed.Redis" },
-    Category = "Hosting"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.Distributed.Redis.Lock",
-    Name = "Redis Lock",
-    Description = "Distributed lock implementation using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]

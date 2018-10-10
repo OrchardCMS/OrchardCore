@@ -9,16 +9,16 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Redis.Services
 {
-    public class Redis : IRedis, IDisposable
+    public class RedisClient : IRedisClient, IDisposable
     {
-        private readonly string _tenantName;
+        private readonly string _tenant;
         private readonly IOptions<RedisOptions> _options;
         private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1);
         private bool _initialized;
 
-        public Redis(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<Redis> logger)
+        public RedisClient(ShellSettings shellSettings, IOptions<RedisOptions> options, ILogger<RedisClient> logger)
         {
-            _tenantName = shellSettings.Name;
+            _tenant = shellSettings.Name;
             _options = options;
             Logger = logger;
         }
@@ -48,7 +48,7 @@ namespace OrchardCore.Distributed.Redis.Services
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "'{TenantName}' is unable to connect to Redis.", _tenantName);
+                Logger.LogError(e, "'{TenantName}' is unable to connect to Redis.", _tenant);
             }
             finally
             {

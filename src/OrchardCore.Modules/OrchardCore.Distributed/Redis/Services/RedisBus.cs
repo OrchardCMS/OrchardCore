@@ -8,18 +8,18 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Redis.Services
 {
-    public class RedisMessageBus : IMessageBus
+    public class RedisBus : IMessageBus
     {
         private readonly string _hostName;
         private readonly string _channelPrefix;
         private readonly string _messagePrefix;
-        private readonly IRedis _redis;
+        private readonly IRedisClient _redis;
 
-        public RedisMessageBus(ShellSettings shellSettings, IRedis redis)
+        public RedisBus(ShellSettings shellSettings, IRedisClient redis)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _channelPrefix = shellSettings.Name + ":";
-            _messagePrefix = _hostName + "/";
+            _channelPrefix = shellSettings.Name + ':';
+            _messagePrefix = _hostName + '/';
             _redis = redis;
         }
 
@@ -53,7 +53,8 @@ namespace OrchardCore.Distributed.Redis.Services
             if (_redis.IsConnected)
             {
                 var subscriber = _redis.Connection.GetSubscriber();
-                subscriber.Publish(_channelPrefix + channel, _messagePrefix + message, CommandFlags.FireAndForget);
+                subscriber.Publish((_channelPrefix ?? _channelPrefix) + channel,
+                    _messagePrefix + message, CommandFlags.FireAndForget);
             }
         }
     }

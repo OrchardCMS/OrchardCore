@@ -14,13 +14,13 @@ namespace OrchardCore.Distributed.Redis.Services
     public class RedisLock : ILock
     {
         private readonly string _hostName;
-        private readonly string _keyPrefix;
-        private readonly IRedis _redis;
+        private readonly string _prefix;
+        private readonly IRedisClient _redis;
 
-        public RedisLock(ShellSettings shellSettings, IRedis redis)
+        public RedisLock(ShellSettings shellSettings, IRedisClient redis)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _keyPrefix = shellSettings.Name + ":";
+            _prefix = shellSettings.Name + ":";
             _redis = redis;
         }
 
@@ -38,7 +38,7 @@ namespace OrchardCore.Distributed.Redis.Services
 
             if (_redis.IsConnected)
             {
-                return await _redis.Database.LockTakeAsync(_keyPrefix + key, _hostName, expiry);
+                return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
             }
 
             return false;
@@ -48,7 +48,7 @@ namespace OrchardCore.Distributed.Redis.Services
         {
             if (_redis.IsConnected)
             {
-                _redis.Database.LockRelease(_keyPrefix + key, _hostName, CommandFlags.FireAndForget);
+                _redis.Database.LockRelease(_prefix + key, _hostName, CommandFlags.FireAndForget);
             }
         }
 
@@ -57,9 +57,9 @@ namespace OrchardCore.Distributed.Redis.Services
             private readonly RedisLock _lock;
             private readonly string _key;
 
-            public Locker(RedisLock redislock, string key)
+            public Locker(RedisLock lock_, string key)
             {
-                _lock = redislock;
+                _lock = lock_;
                 _key = key;
             }
 

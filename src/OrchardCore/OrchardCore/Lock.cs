@@ -15,11 +15,8 @@ namespace OrchardCore
     {
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        private readonly string _prefix;
-
         public Lock(ShellSettings shellSettings)
         {
-            _prefix = shellSettings.Name + ":";
         }
 
         /// <summary>
@@ -28,7 +25,7 @@ namespace OrchardCore
         /// </summary>
         public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? expiration = null)
         {
-            var semaphore = _semaphores.GetOrAdd(_prefix + key, (name) => new SemaphoreSlim(1));
+            var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
             return (new Locker(semaphore), await semaphore.WaitAsync(TimeSpan.FromMilliseconds(1)));
         }
 

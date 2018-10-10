@@ -17,12 +17,12 @@ namespace OrchardCore.Distributed.Redis.Options
     /// </summary>
     public class RedisOptionsSetup : IConfigureOptions<RedisOptions>
     {
-        private readonly string _tenantName;
+        private readonly string _tenant;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RedisOptionsSetup(ShellSettings shellSettings, IHttpContextAccessor httpContextAccessor, ILogger<RedisOptionsSetup> logger)
         {
-            _tenantName = shellSettings.Name;
+            _tenant = shellSettings.Name;
             _httpContextAccessor = httpContextAccessor;
             Logger = logger;
         }
@@ -45,7 +45,7 @@ namespace OrchardCore.Distributed.Redis.Options
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "'{TenantName}' has an invalid Redis configuration.", _tenantName);
+                    Logger.LogError(e, "'{TenantName}' has an invalid Redis configuration.", _tenant);
                 }
             }
         }
