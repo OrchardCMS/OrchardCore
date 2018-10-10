@@ -37,6 +37,7 @@ using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using YesSql.Indexes;
+using System.Linq;
 
 namespace OrchardCore.OpenId
 {
@@ -65,7 +66,8 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
             });
         }
     }
@@ -82,7 +84,8 @@ namespace OrchardCore.OpenId
             services.TryAddScoped<OpenIddictServerHandler>();
             services.TryAddScoped<OpenIddictServerProvider>();
 
-            services.Configure<MvcOptions>(options => options.ModelBinderProviders.Insert(0, new OpenIddictMvcBinderProvider()));
+            services.Configure<MvcOptions>(options =>
+                options.ModelBinderProviders.Insert(0, new OpenIddictMvcBinderProvider()));
 
             // Register the options initializers required by OpenIddict and the JWT handler.
             services.TryAddEnumerable(new[]
@@ -92,14 +95,19 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIddictMvcOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdServerConfiguration>(),
+                ServiceDescriptor
+                    .Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdServerConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIddictServerInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdConnectServerInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIddictServerInitializer>(),
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictServerOptions>, OpenIdConnectServerInitializer>(),
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
             });
 
             // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
@@ -108,63 +116,70 @@ namespace OrchardCore.OpenId
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var openIddictServerOptions = serviceProvider
-                .GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>()
-                .Get(OpenIddictServerDefaults.AuthenticationScheme);
+            var service = serviceProvider.GetRequiredService<IOpenIdServerService>();
+            var settings = serviceProvider.GetRequiredService<IOptions<Settings.OpenIdServerSettings>>().Value;
+            var validationResult = service.ValidateSettingsAsync(settings).GetAwaiter().GetResult();
 
-            if (openIddictServerOptions.AuthorizationEndpointPath != PathString.Empty)
+            if (validationResult.Length == 0)
             {
-                routes.MapAreaRoute(
-                    name: "Access.AuthorizeGet",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
-                    defaults: new { controller = "Access", action = "Authorize" }
-                );
+                var openIddictServerOptions = serviceProvider
+                    .GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>()
+                    .Get(OpenIddictServerDefaults.AuthenticationScheme);
 
-                routes.MapAreaRoute(
-                    name: "Access.Authorize",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
-                    defaults: new { controller = "Access", action = "Accept" }
-                );
+                if (openIddictServerOptions.AuthorizationEndpointPath != PathString.Empty)
+                {
+                    routes.MapAreaRoute(
+                        name: "Access.AuthorizeGet",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                        defaults: new {controller = "Access", action = "Authorize"}
+                    );
 
-                routes.MapAreaRoute(
-                    name: "Access.Deny",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.AuthorizationEndpointPath.Value,
-                    defaults: new { controller = "Access", action = "Deny" }
-                );
+                    routes.MapAreaRoute(
+                        name: "Access.Authorize",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                        defaults: new {controller = "Access", action = "Accept"}
+                    );
 
-            }
+                    routes.MapAreaRoute(
+                        name: "Access.Deny",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.AuthorizationEndpointPath.Value,
+                        defaults: new {controller = "Access", action = "Deny"}
+                    );
 
-            if (openIddictServerOptions.TokenEndpointPath != PathString.Empty)
-            {
-                routes.MapAreaRoute(
-                    name: "Access.Token",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.TokenEndpointPath.Value,
-                    defaults: new { controller = "Access", action = "Token" }
-                );
-            }
+                }
 
-            if (openIddictServerOptions.LogoutEndpointPath != PathString.Empty)
-            {
-                routes.MapAreaRoute(
-                    name: "Access.Logout",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.LogoutEndpointPath.Value,
-                    defaults: new { controller = "Access", action = "Logout" }
-                );
-            }
+                if (openIddictServerOptions.TokenEndpointPath != PathString.Empty)
+                {
+                    routes.MapAreaRoute(
+                        name: "Access.Token",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.TokenEndpointPath.Value,
+                        defaults: new {controller = "Access", action = "Token"}
+                    );
+                }
 
-            if (openIddictServerOptions.UserinfoEndpointPath != PathString.Empty)
-            {
-                routes.MapAreaRoute(
-                    name: "UserInfo.Me",
-                    areaName: OpenIdConstants.Features.Core,
-                    template: openIddictServerOptions.UserinfoEndpointPath.Value,
-                    defaults: new { controller = "UserInfo", action = "Me" }
-                );
+                if (openIddictServerOptions.LogoutEndpointPath != PathString.Empty)
+                {
+                    routes.MapAreaRoute(
+                        name: "Access.Logout",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.LogoutEndpointPath.Value,
+                        defaults: new {controller = "Access", action = "Logout"}
+                    );
+                }
+
+                if (openIddictServerOptions.UserinfoEndpointPath != PathString.Empty)
+                {
+                    routes.MapAreaRoute(
+                        name: "UserInfo.Me",
+                        areaName: OpenIdConstants.Features.Core,
+                        template: openIddictServerOptions.UserinfoEndpointPath.Value,
+                        defaults: new {controller = "UserInfo", action = "Me"}
+                    );
+                }
             }
         }
     }
@@ -181,25 +196,29 @@ namespace OrchardCore.OpenId
                 .AddCore(options =>
                 {
                     options.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
-                           .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
-                           .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
-                           .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
+                        .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
+                        .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
+                        .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
 
                     options.AddApplicationStore(typeof(OpenIdApplicationStore<>))
-                           .AddAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
-                           .AddScopeStore(typeof(OpenIdScopeStore<>))
-                           .AddTokenStore(typeof(OpenIdTokenStore<>));
+                        .AddAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
+                        .AddScopeStore(typeof(OpenIdScopeStore<>))
+                        .AddTokenStore(typeof(OpenIdTokenStore<>));
 
                     options.SetDefaultApplicationEntity<OpenIdApplication>()
-                           .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
-                           .SetDefaultScopeEntity<OpenIdScope>()
-                           .SetDefaultTokenEntity<OpenIdToken>();
+                        .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
+                        .SetDefaultScopeEntity<OpenIdScope>()
+                        .SetDefaultTokenEntity<OpenIdToken>();
                 });
 
-            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
-            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
-            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
+            services.TryAddScoped(provider =>
+                (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
+            services.TryAddScoped(provider =>
+                (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            services.TryAddScoped(provider =>
+                (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
+            services.TryAddScoped(provider =>
+                (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
 
             services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
             services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
@@ -234,12 +253,15 @@ namespace OrchardCore.OpenId
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<JwtBearerOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
+                ServiceDescriptor
+                    .Transient<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
-                ServiceDescriptor.Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OpenIddictValidationInitializer>(),
+                ServiceDescriptor
+                    .Transient<IPostConfigureOptions<OpenIddictValidationOptions>, OAuthValidationInitializer>()
             });
         }
     }
