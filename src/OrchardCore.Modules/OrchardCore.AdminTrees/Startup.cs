@@ -12,6 +12,10 @@ using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
+using OrchardCore.Deployment;
+using OrchardCore.AdminTrees.Deployment;
+using OrchardCore.Recipes;
+using OrchardCore.AdminTrees.Recipes;
 
 namespace OrchardCore.AdminTrees
 {
@@ -27,6 +31,13 @@ namespace OrchardCore.AdminTrees
             services.AddScoped<AdminTreeNavigationProvidersCoordinator, AdminTreeNavigationProvidersCoordinator>();
 
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
+
+            services.AddRecipeExecutionStep<AdminTreeStep>();
+
+            services.AddTransient<IDeploymentSource, AdminTreesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AdminTreesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AdminTreesDeploymentStepDriver>();
+
 
             // link treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
