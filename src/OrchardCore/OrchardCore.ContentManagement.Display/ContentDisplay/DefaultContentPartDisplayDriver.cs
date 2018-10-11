@@ -33,10 +33,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return true;
         }
 
-        public override IDisplayResult Display(ContentPart part) => 
-            Initialize<ExplicitContentPartViewModel>(_typePartDefinition.Name, model => model.ContentPart = part)
-            .Displaying(ctx => ctx.ShapeMetadata.Alternates.Add("ContentPart"))// in case there is no _typePartDefinition.Name template
-            .Location("Content", "");
+        public override IDisplayResult Display(ContentPart part)
+        {
+            var uniqueShapeName = _typePartDefinition.Name;
+            return Initialize<ExplicitContentPartViewModel>(uniqueShapeName, model => model.ContentPart = part)
+                .Displaying(ctx =>
+                {
+                    ctx.ShapeMetadata.Alternates.Add("ContentPart");// default template for all dynamically defined, explicit content parts 
+                    ctx.ShapeMetadata.Alternates.Add(uniqueShapeName);// but override "ContentPart" alternate if a specialised template exists
+                }).Location("Content");
+        }
+
     }
 
 }
