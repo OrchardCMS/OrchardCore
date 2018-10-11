@@ -37,25 +37,7 @@ namespace OrchardCore.Distributed
             }
         }
 
-        Task IModularTenantEvents.ActivatingAsync() { return Task.CompletedTask; }
-
-        public async Task ActivatedAsync()
-        {
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
-            {
-                await ActivatedAsync(ShellHelper.DefaultShellName);
-            }
-
-            else if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
-                {
-                    var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
-                    await (distributedShell?.ActivatedAsync(_shellSettings.Name) ?? Task.CompletedTask);
-                }
-            }
-        }
-
+        #region IDistributedShell
         /// <summary>
         /// This event is only invoked on the 'Default' tenant.
         /// </summary>
@@ -101,9 +83,33 @@ namespace OrchardCore.Distributed
             }
         }
 
+        /// <summary>
+        /// This event is only invoked on the 'Default' tenant.
+        /// </summary>
         public Task TerminatedAsync(string tenant)
         {
             return (_messageBus?.PublishAsync("Shell", tenant + ":Terminated") ?? Task.CompletedTask);
+        }
+        #endregion
+
+        #region IModularTenantEvents
+        Task IModularTenantEvents.ActivatingAsync() { return Task.CompletedTask; }
+
+        public async Task ActivatedAsync()
+        {
+            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            {
+                await ActivatedAsync(ShellHelper.DefaultShellName);
+            }
+
+            else if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+            {
+                using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
+                {
+                    var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
+                    await (distributedShell?.ActivatedAsync(_shellSettings.Name) ?? Task.CompletedTask);
+                }
+            }
         }
 
         public Task TerminatingAsync() { return Task.CompletedTask; }
@@ -124,5 +130,6 @@ namespace OrchardCore.Distributed
                 }
             }
         }
+        #endregion
     }
 }
