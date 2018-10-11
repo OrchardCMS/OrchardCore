@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        protected new bool CanHandleContentPart(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, out ContentPart handleable) {
+        protected override bool CanHandleContentPart(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, out ContentPart handleable) {
             handleable = contentPart;
 
             if (contentPart.GetType() != typeof(ContentPart))

@@ -89,7 +89,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
-        protected bool CanHandleContentPart(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, out TPart handleable) {
+        protected virtual bool CanHandleContentPart(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, out TPart handleable) {
             handleable = contentPart as TPart;
             return handleable != null;
         }
