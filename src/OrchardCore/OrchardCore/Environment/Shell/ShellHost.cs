@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Distributed;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -351,26 +352,31 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            if (fireEvent && _shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await GetScopeAsync(defaultSettings))
-                {
-                    var tenantEvents = scope.ServiceProvider.GetServices<IDefaultTenantEvents>();
-
-                    foreach (var tenantEvent in tenantEvents)
-                    {
-                        await tenantEvent.ReloadAsync(settings.Name);
-                    }
-                }
-            }
-
+            bool wasDisabled = false;
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
+                // Check if the tenant is now running but was disabled (ServiceProvider == null).
+                wasDisabled = settings.State == TenantState.Running && context.ServiceProvider == null;
+
                 _runningShellTable.Remove(settings);
                 context.Release();
             }
 
             await GetOrCreateShellContextAsync(settings);
+
+            // If it was disabled, terminating events have not be invoked when releasing the context.
+            if (fireEvent && wasDisabled)
+            {
+                // So, in a distributed context we invoke the related event through the default tenant.
+                if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+                {
+                    using (var scope = await GetScopeAsync(defaultSettings))
+                    {
+                        var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
+                        await (distributedShell?.TerminatedAsync(settings.Name) ?? Task.CompletedTask);
+                    }
+                }
+            }
         }
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()

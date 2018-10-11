@@ -8,6 +8,7 @@ using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Distributed.Redis.Services;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -20,6 +21,13 @@ namespace OrchardCore.Distributed
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly ShellSettings _shellSettings;
+
+        public Startup(ShellSettings shellSettings)
+        {
+            _shellSettings = shellSettings;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<DistributedSignal>();
@@ -28,7 +36,11 @@ namespace OrchardCore.Distributed
 
             services.AddSingleton<DistributedShell>();
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedShell>());
-            services.AddSingleton<IDefaultTenantEvents>(sp => sp.GetRequiredService<DistributedShell>());
+
+            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            {
+                services.AddSingleton<IDistributedShell>(sp => sp.GetRequiredService<DistributedShell>());
+            }
 
             services.AddSingleton<ILock, RedisLock>();
         }

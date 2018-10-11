@@ -47,10 +47,10 @@ namespace OrchardCore.Environment.Shell
 
         /// <summary>
         /// Reloads a shell. Note: When triggered from another instance, 'fireEvent'
-        /// should be set to false so that we don't fire again the 'Reload' event.
+        /// should be set to false so that we don't fire again any distributed event.
         /// </summary>
         /// <param name="settings"></param>
-        /// <param name="fireEvent">If false don't fire the 'Reload' event.</param>
+        /// <param name="fireEvent">If false don't fire any distributed event.</param>
         Task ReloadShellContextAsync(ShellSettings settings, bool fireEvent = true);
 
         /// <summary>

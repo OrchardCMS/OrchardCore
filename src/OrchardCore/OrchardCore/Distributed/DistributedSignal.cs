@@ -28,28 +28,17 @@ namespace OrchardCore.Distributed
         Task ISignal.SignalTokenAsync(string key)
         {
             SignalToken(key);
-
-            if (_messageBus != null)
-            {
-                return _messageBus.PublishAsync("Signal", key);
-            }
-
-            return Task.CompletedTask;
+            return (_messageBus?.PublishAsync("Signal", key) ?? Task.CompletedTask);
         }
 
         public Task ActivatingAsync() { return Task.CompletedTask; }
 
         public Task ActivatedAsync()
         {
-            if (_messageBus != null)
+            return (_messageBus?.SubscribeAsync("Signal", (channel, message) =>
             {
-                return _messageBus.SubscribeAsync("Signal", (channel, message) =>
-                {
-                    SignalToken(message);
-                });
-            }
-
-            return Task.CompletedTask;
+                SignalToken(message);
+            }) ?? Task.CompletedTask);
         }
 
         public Task TerminatingAsync() { return Task.CompletedTask; }
