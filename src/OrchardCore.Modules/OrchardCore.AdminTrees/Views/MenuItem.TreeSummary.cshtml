@@ -10,10 +10,13 @@
     var index = 0;
 
     string disabledClass = "";
+    string toggleButtonText = T["Toggle"].Value;
+
     var adminNode = menuItem as AdminNode;
     if (adminNode != null)
     {
         disabledClass = adminNode.Enabled ? "" : "disabled-admin-node";
+        toggleButtonText = adminNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
     }
 }
 
@@ -38,19 +41,13 @@
         {
             <div class="properties">
                 <div class="related">
-                    @if ( Model.MenuItem.Enabled)
-                    {
-                        <a asp-controller="Node" asp-action="Toggle" asp-route-id="@Model.AdminTreeId" asp-route-treeNodeId="@Model.MenuItem.UniqueId" class="btn btn-success btn-sm" itemprop="UnsafeUrl">
-                            @T["Enabled"]
-                        </a>
+                    <a asp-controller="Node" 
+                       asp-action="Toggle" 
+                       asp-route-id="@Model.AdminTreeId" 
+                       asp-route-treeNodeId="@Model.MenuItem.UniqueId" 
+                       class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>
 
-                    }
-                    else
-                    {
-                        <a asp-controller="Node" asp-action="Toggle" asp-route-id="@Model.AdminTreeId" asp-route-treeNodeId="@Model.MenuItem.UniqueId" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">
-                            @T["Disabled"]
-                        </a>
-                    }
+                    
                     <a asp-action="Edit"
                        asp-controller="Node"
                        asp-route-id="@Model.AdminTreeId"

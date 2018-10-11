@@ -232,30 +232,5 @@ namespace OrchardCore.AdminTrees.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Toggle(int id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
-            {
-                return Unauthorized();
-            }
-
-            var tree = await _session.GetAsync<AdminTree>(id);
-
-            if (tree == null)
-            {
-                return NotFound();
-            }
-
-            tree.Enabled = !tree.Enabled;
-
-            _session.Save(tree);
-
-            _notifier.Success(H["Admin tree toggled successfully"]);
-
-            return RedirectToAction(nameof(List));
-        }
-
     }
 }
