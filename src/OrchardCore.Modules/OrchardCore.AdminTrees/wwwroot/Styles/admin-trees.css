@@ -29,3 +29,11 @@ html, body, .ta-wrapper {
 .disabled-tree, .disabled-admin-node {
   background-color: #f5f5f5;
   color: #808080; }
+
+#menu {
+  list-style: none;
+  padding-left: 0; }
+
+#menu li {
+  list-style: none;
+  cursor: move; }
