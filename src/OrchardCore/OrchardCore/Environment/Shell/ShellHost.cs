@@ -185,8 +185,8 @@ namespace OrchardCore.Environment.Shell
                         {
                             using (var scope = shell.CreateScope())
                             {
-                                var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
-                                await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                                var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                await (events?.CreatedAsync() ?? Task.CompletedTask);
                             }
                         }
                     }
@@ -331,10 +331,10 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts == null)
             {
-                return;// Task.CompletedTask;
+                return;
             }
 
-            await FireShellChangedEventAsync(tenant);
+            await DefaultShellEvent(e => e.ChangedAsync(tenant));
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
@@ -349,12 +349,12 @@ namespace OrchardCore.Environment.Shell
         /// while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        /// <param name="fireEvent">If false prevent to fire again the reload event e.g when triggered from another instance</param>
-        public async Task ReloadShellContextAsync(ShellSettings settings, bool fireEvent = true)
+        /// <param name="localEvent">If false don't fire again any distributed event.</param>
+        public async Task ReloadShellContextAsync(ShellSettings settings, bool localEvent = true)
         {
-            if (fireEvent)
+            if (localEvent)
             {
-                await FireShellChangedEventAsync(settings.Name);
+                await DefaultShellEvent(e => e.ChangedAsync(settings.Name));
             }
 
             if (settings.State == TenantState.Disabled)
@@ -376,33 +376,9 @@ namespace OrchardCore.Environment.Shell
 
             await GetOrCreateShellContextAsync(settings);
 
-            if (!fireEvent && settings.Name == ShellHelper.DefaultShellName)
+            if (!localEvent && settings.Name == ShellHelper.DefaultShellName)
             {
-                await FireShellCreatedEvent();
-            }
-        }
-
-        private async Task FireShellCreatedEvent()
-        {
-            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await GetScopeAsync(defaultSettings))
-                {
-                    var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
-                    await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
-                }
-            }
-        }
-
-        private async Task FireShellChangedEventAsync(string tenant)
-        {
-            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await GetScopeAsync(defaultSettings))
-                {
-                    var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
-                    await (defaultShellEvents?.ChangedAsync(tenant) ?? Task.CompletedTask);
-                }
+                await DefaultShellEvent(e => e.CreatedAsync());
             }
         }
 
@@ -430,6 +406,22 @@ namespace OrchardCore.Environment.Shell
             }
 
             return shellContexts;
+        }
+
+        private async Task DefaultShellEvent(Func<IDefaultShellEvents, Task> handler)
+        {
+            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
+            {
+                using (var scope = await GetScopeAsync(settings))
+                {
+                    var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+
+                    if (events != null)
+                    {
+                        await handler(events);
+                    }
+                }
+            }
         }
 
         /// <summary>

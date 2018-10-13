@@ -7,7 +7,14 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public interface IDefaultShellEvents
     {
+        /// <summary>
+        /// Invoked when the 'Default' tenant has been created or recreated.
+        /// </summary>
         Task CreatedAsync();
+
+        /// <summary>
+        /// Invoked when any tenant has changed.
+        /// </summary>
         Task ChangedAsync(string tenant);
     }
 }

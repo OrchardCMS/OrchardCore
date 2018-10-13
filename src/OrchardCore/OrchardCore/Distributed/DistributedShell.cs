@@ -11,7 +11,8 @@ using OrchardCore.Hosting.ShellBuilders;
 namespace OrchardCore.Distributed
 {
     /// <summary>
-    /// 'IDefaultShellEvents' events are only invoked on the default tenant.
+    /// In a distributed environment, allows to synchronize tenant states by subscribing
+    /// to the 'Shell' channel, and then by publishing and reacting to 'Changed' messages.
     /// </summary>
     public class DistributedShell : IDefaultShellEvents
     {
@@ -34,16 +35,17 @@ namespace OrchardCore.Distributed
             _shellSettings = shellSettings;
             _shellSettingsManager = shellSettingsManager;
             _httpContextAccessor = httpContextAccessor;
-            _messageBus = _messageBuses.LastOrDefault();
 
             if (shellSettings.Name == ShellHelper.DefaultShellName)
             {
+                _messageBus = _messageBuses.LastOrDefault();
                 _synLock = new SemaphoreSlim(1);
             }
         }
 
         /// <summary>
-        /// This event is only invoked on the 'Default' tenant.
+        /// Invoked when the 'Default' tenant has been created or recreated. Used to
+        /// subscribe to the 'Shell' channel and react to the shell 'Changed' events.
         /// </summary>
         public async Task CreatedAsync()
         {
@@ -60,20 +62,24 @@ namespace OrchardCore.Distributed
                 {
                     if (!_initialized)
                     {
+                        // Subscribe to the 'Shell' channel.
                         await _messageBus.SubscribeAsync("Shell", (channel, message) =>
                         {
                             var tokens = message.Split(':').ToArray();
 
+                            // Validate the message = {tenant}:{event}
                             if (tokens.Length != 2 || tokens[0].Length == 0)
                             {
                                 return;
                             }
 
+                            // Check for a valid tenant
                             if (_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
                             {
                                 if (tokens[1] == "Changed")
                                 {
-                                    _shellHost.ReloadShellContextAsync(settings, fireEvent: false).GetAwaiter().GetResult();
+                                    // Reload the shell with 'localEvent: false' to break the event loop.
+                                    _shellHost.ReloadShellContextAsync(settings, localEvent: false).GetAwaiter().GetResult();
                                 }
                             }
                         });
@@ -88,42 +94,48 @@ namespace OrchardCore.Distributed
         }
 
         /// <summary>
-        /// This event is only invoked on the 'Default' tenant.
+        /// Invoked when any tenant has changed. Used to publish shell 'Changed' events.
         /// </summary>
-        public async Task ChangedAsync(string tenant)
+        public Task ChangedAsync(string tenant)
         {
             var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
+            var isBackground = _httpContextAccessor.HttpContext?.Items["IsBackground"] != null;
 
-            if (currentShell?.Settings.Name == tenant && currentShell.ActiveScopes > 0)
+            // If there is no valid request related to the tenant.
+            if (currentShell?.Settings.Name != tenant || isBackground)
             {
-                using (var scope = currentShell.CreateScope())
-                {
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    deferredTaskEngine.AddTask(async context =>
-                    {
-                        if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var _defaultSettings))
-                        {
-                            using (var changedScope = await _shellHost.GetScopeAsync(_defaultSettings))
-                            {
-                                if (tenant == ShellHelper.DefaultShellName)
-                                {
-                                    // Need to re-activate the default shell to subcribe again to the channel.
-                                    var defaultShellEvents = changedScope.ServiceProvider.GetService<IDefaultShellEvents>();
-                                    await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
-                                }
-
-                                var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
-                                await (messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
-                            }
-                        }
-                    }, order: 10);
-                }
-
-                return;
+                // The shell 'Changed' event message can be published immediately.
+                return (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
             }
 
-            await (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+            // Otherwise use a deferred task so that any pending database updates will be committed.
+            using (var scope = currentShell.CreateScope())
+            {
+                var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                deferredTaskEngine.AddTask(async context =>
+                {
+                    if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var _defaultSettings))
+                    {
+                        using (var changedScope = await _shellHost.GetScopeAsync(_defaultSettings))
+                        {
+                            // If the default shell was changed and released.
+                            if (tenant == ShellHelper.DefaultShellName)
+                            {
+                                // Invoke the 'Created' event to subscribe again to the 'Shell' channel.
+                                var defaultShellEvents = changedScope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                            }
+
+                            // Then publish the shell 'Changed' event message.
+                            var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
+                            await (messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                        }
+                    }
+                }, order: 100);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
