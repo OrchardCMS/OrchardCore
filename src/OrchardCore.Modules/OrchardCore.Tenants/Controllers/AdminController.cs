@@ -22,7 +22,6 @@ namespace OrchardCore.Tenants.Controllers
     public class AdminController : Controller
     {
         private readonly IShellHost _orchardHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -35,7 +34,6 @@ namespace OrchardCore.Tenants.Controllers
             IShellHost orchardHost,
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
-            IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
@@ -49,7 +47,6 @@ namespace OrchardCore.Tenants.Controllers
             _recipeHarvesters = recipeHarvesters;
             _orchardHost = orchardHost;
             _authorizationService = authorizationService;
-            _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _notifier = notifier;
@@ -144,8 +141,7 @@ namespace OrchardCore.Tenants.Controllers
                     RecipeName = model.RecipeName
                 };
 
-                _shellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await _orchardHost.GetOrCreateShellContextAsync(shellSettings);
+                await _orchardHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }

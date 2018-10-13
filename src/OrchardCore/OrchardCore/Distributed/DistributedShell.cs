@@ -73,7 +73,7 @@ namespace OrchardCore.Distributed
                                 return;
                             }
 
-                            // Check for a valid tenant
+                            // Check for a valid tenant.
                             if (_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
                             {
                                 if (tokens[1] == "Changed")
@@ -101,7 +101,7 @@ namespace OrchardCore.Distributed
             var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
             var isBackground = _httpContextAccessor.HttpContext?.Items["IsBackground"] != null;
 
-            // If there is no valid request related to the tenant.
+            // If not in the context of a valid request related to this tenant.
             if (currentShell?.Settings.Name != tenant || isBackground)
             {
                 // The shell 'Changed' event message can be published immediately.
@@ -113,7 +113,8 @@ namespace OrchardCore.Distributed
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
-                deferredTaskEngine.AddTask(async context =>
+                // Can be null just after a tenant setup.
+                deferredTaskEngine?.AddTask(async context =>
                 {
                     if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var _defaultSettings))
                     {
