@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.DeferredTasks
@@ -19,7 +17,7 @@ namespace OrchardCore.DeferredTasks
             _httpContext = httpContextAccessor.HttpContext;
         }
 
-        public IList<Func<DeferredTaskContext, Task>> Tasks
+        public IList<DeferredTask> Tasks
         {
             get
             {
@@ -27,11 +25,11 @@ namespace OrchardCore.DeferredTasks
 
                 if (!_httpContext.Items.TryGetValue(Key, out tasks))
                 {
-                    tasks = new List<Func<DeferredTaskContext, Task>>();
+                    tasks = new List<DeferredTask>();
                     _httpContext.Items[Key] = tasks;
                 }
 
-                return (IList<Func<DeferredTaskContext, Task>>)tasks;
+                return (IList<DeferredTask>)tasks;
             }
         }
     }

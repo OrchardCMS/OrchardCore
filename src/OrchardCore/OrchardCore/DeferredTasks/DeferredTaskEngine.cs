@@ -18,20 +18,22 @@ namespace OrchardCore.DeferredTasks
 
         public bool HasPendingTasks => _deferredTaskState.Tasks.Any();
 
-        public void AddTask(Func<DeferredTaskContext, Task> task)
+        public void AddTask(Func<DeferredTaskContext, Task> task, int order = 0)
         {
-            _deferredTaskState.Tasks.Add(task);
+            _deferredTaskState.Tasks.Add(new DeferredTask { Task = task, Order = order });
         }
 
         public async Task ExecuteTasksAsync(DeferredTaskContext context)
         {
-            for (var i = 0; i < _deferredTaskState.Tasks.Count; i++)
+            var deferredTasks = _deferredTaskState.Tasks.OrderBy(t => t.Order).ToArray();
+
+            for (var i = 0; i < deferredTasks.Length; i++)
             {
-                var task = _deferredTaskState.Tasks[i];
+                var deferredTask = deferredTasks[i];
 
                 try
                 {
-                    await task(context);
+                    await deferredTask.Task(context);
                 }
                 catch (Exception e)
                 {

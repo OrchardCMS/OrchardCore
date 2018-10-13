@@ -34,12 +34,9 @@ namespace OrchardCore.Distributed
             services.AddSingleton<ISignal>(sp => sp.GetRequiredService<DistributedSignal>());
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedSignal>());
 
-            services.AddSingleton<DistributedShell>();
-            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedShell>());
-
             if (_shellSettings.Name == ShellHelper.DefaultShellName)
             {
-                services.AddSingleton<IDistributedShell>(sp => sp.GetRequiredService<DistributedShell>());
+                services.AddSingleton<IDefaultShellEvents, DistributedShell>();
             }
 
             services.AddSingleton<ILock, RedisLock>();

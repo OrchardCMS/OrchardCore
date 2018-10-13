@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OrchardCore.DeferredTasks
 {
@@ -10,6 +8,6 @@ namespace OrchardCore.DeferredTasks
     /// </summary>
     public interface IDeferredTaskState
     {
-        IList<Func<DeferredTaskContext, Task>> Tasks { get; }
+        IList<DeferredTask> Tasks { get; }
     }
 }

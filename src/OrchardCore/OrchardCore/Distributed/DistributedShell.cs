@@ -2,20 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
+using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Distributed
 {
     /// <summary>
-    /// 'IDistributedShell' specific events are only invoked on the default tenant.
+    /// 'IDefaultShellEvents' events are only invoked on the default tenant.
     /// </summary>
-    public class DistributedShell : IDistributedShell
+    public class DistributedShell : IDefaultShellEvents
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMessageBus _messageBus;
         private readonly SemaphoreSlim _synLock;
         private bool _initialized;
@@ -24,11 +27,13 @@ namespace OrchardCore.Distributed
             IShellHost shellHost,
             ShellSettings shellSettings,
             IShellSettingsManager shellSettingsManager,
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IMessageBus> _messageBuses)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _shellSettingsManager = shellSettingsManager;
+            _httpContextAccessor = httpContextAccessor;
             _messageBus = _messageBuses.LastOrDefault();
 
             if (shellSettings.Name == ShellHelper.DefaultShellName)
@@ -37,11 +42,10 @@ namespace OrchardCore.Distributed
             }
         }
 
-        #region IDistributedShell
         /// <summary>
         /// This event is only invoked on the 'Default' tenant.
         /// </summary>
-        public async Task ActivatedAsync(string tenant)
+        public async Task CreatedAsync()
         {
             if (_messageBus == null)
             {
@@ -67,7 +71,7 @@ namespace OrchardCore.Distributed
 
                             if (_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
                             {
-                                if (tokens[1] == "Terminated")
+                                if (tokens[1] == "Changed")
                                 {
                                     _shellHost.ReloadShellContextAsync(settings, fireEvent: false).GetAwaiter().GetResult();
                                 }
@@ -86,50 +90,40 @@ namespace OrchardCore.Distributed
         /// <summary>
         /// This event is only invoked on the 'Default' tenant.
         /// </summary>
-        public Task TerminatedAsync(string tenant)
+        public async Task ChangedAsync(string tenant)
         {
-            return (_messageBus?.PublishAsync("Shell", tenant + ":Terminated") ?? Task.CompletedTask);
-        }
-        #endregion
+            var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
 
-        #region IModularTenantEvents
-        Task IModularTenantEvents.ActivatingAsync() { return Task.CompletedTask; }
-
-        public async Task ActivatedAsync()
-        {
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            if (currentShell?.Settings.Name == tenant && currentShell.ActiveScopes > 0)
             {
-                await ActivatedAsync(ShellHelper.DefaultShellName);
-            }
-
-            else if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
+                using (var scope = currentShell.CreateScope())
                 {
-                    var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
-                    await (distributedShell?.ActivatedAsync(_shellSettings.Name) ?? Task.CompletedTask);
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    deferredTaskEngine.AddTask(async context =>
+                    {
+                        if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var _defaultSettings))
+                        {
+                            using (var changedScope = await _shellHost.GetScopeAsync(_defaultSettings))
+                            {
+                                if (tenant == ShellHelper.DefaultShellName)
+                                {
+                                    // Need to re-activate the default shell to subcribe again to the channel.
+                                    var defaultShellEvents = changedScope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                    await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                                }
+
+                                var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
+                                await (messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                            }
+                        }
+                    }, order: 10);
                 }
+
+                return;
             }
+
+            await (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
         }
-
-        public Task TerminatingAsync() { return Task.CompletedTask; }
-
-        public async Task TerminatedAsync()
-        {
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
-            {
-                await TerminatedAsync(ShellHelper.DefaultShellName);
-            }
-
-            else if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-            {
-                using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
-                {
-                    var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
-                    await (distributedShell?.TerminatedAsync(_shellSettings.Name) ?? Task.CompletedTask);
-                }
-            }
-        }
-        #endregion
     }
 }

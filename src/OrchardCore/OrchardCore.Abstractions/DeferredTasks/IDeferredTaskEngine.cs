@@ -11,7 +11,7 @@ namespace OrchardCore.DeferredTasks
     public interface IDeferredTaskEngine
     {
         bool HasPendingTasks { get; }
-        void AddTask(Func<DeferredTaskContext, Task> task);
+        void AddTask(Func<DeferredTaskContext, Task> task, int order = 0);
         Task ExecuteTasksAsync(DeferredTaskContext context);
     }
 }

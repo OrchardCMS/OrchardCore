@@ -52,8 +52,7 @@ namespace OrchardCore.Distributed.Redis.Services
 
             if (_redis.IsConnected)
             {
-                var subscriber = _redis.Connection.GetSubscriber();
-                subscriber.Publish((_channelPrefix ?? _channelPrefix) + channel,
+                _redis.Connection.GetSubscriber().Publish(_channelPrefix + channel,
                     _messagePrefix + message, CommandFlags.FireAndForget);
             }
         }

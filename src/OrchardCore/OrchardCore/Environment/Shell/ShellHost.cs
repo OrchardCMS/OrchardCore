@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Distributed;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -110,6 +109,7 @@ namespace OrchardCore.Environment.Shell
 
             return shell;
         }
+
         public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
         {
             return (await GetScopeAndContextAsync(settings)).Scope;
@@ -179,7 +179,16 @@ namespace OrchardCore.Environment.Shell
                 {
                     try
                     {
-                        await GetOrCreateShellContextAsync(settings);
+                        var shell = await GetOrCreateShellContextAsync(settings);
+
+                        if (shell.Settings.Name == ShellHelper.DefaultShellName)
+                        {
+                            using (var scope = shell.CreateScope())
+                            {
+                                var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -313,7 +322,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// A feature is enabled/disabled, the tenant needs to be restarted
         /// </summary>
-        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -322,15 +331,17 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts == null)
             {
-                return Task.CompletedTask;
+                return;// Task.CompletedTask;
             }
+
+            await FireShellChangedEventAsync(tenant);
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
                 context.Release();
             }
 
-            return Task.CompletedTask;
+            return;
         }
 
         /// <summary>
@@ -341,6 +352,11 @@ namespace OrchardCore.Environment.Shell
         /// <param name="fireEvent">If false prevent to fire again the reload event e.g when triggered from another instance</param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool fireEvent = true)
         {
+            if (fireEvent)
+            {
+                await FireShellChangedEventAsync(settings.Name);
+            }
+
             if (settings.State == TenantState.Disabled)
             {
                 // If a disabled shell is still in use it will be released and then disposed by its last scope.
@@ -352,29 +368,40 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            bool wasDisabled = false;
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                // Check if the tenant is now running but was disabled (ServiceProvider == null).
-                wasDisabled = settings.State == TenantState.Running && context.ServiceProvider == null;
-
                 _runningShellTable.Remove(settings);
                 context.Release();
             }
 
             await GetOrCreateShellContextAsync(settings);
 
-            // If it was disabled, terminating events have not be invoked when releasing the context.
-            if (fireEvent && wasDisabled)
+            if (!fireEvent && settings.Name == ShellHelper.DefaultShellName)
             {
-                // So, in a distributed context we invoke the related event through the default tenant.
-                if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+                await FireShellCreatedEvent();
+            }
+        }
+
+        private async Task FireShellCreatedEvent()
+        {
+            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+            {
+                using (var scope = await GetScopeAsync(defaultSettings))
                 {
-                    using (var scope = await GetScopeAsync(defaultSettings))
-                    {
-                        var distributedShell = scope.ServiceProvider.GetService<IDistributedShell>();
-                        await (distributedShell?.TerminatedAsync(settings.Name) ?? Task.CompletedTask);
-                    }
+                    var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                    await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                }
+            }
+        }
+
+        private async Task FireShellChangedEventAsync(string tenant)
+        {
+            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+            {
+                using (var scope = await GetScopeAsync(defaultSettings))
+                {
+                    var defaultShellEvents = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                    await (defaultShellEvents?.ChangedAsync(tenant) ?? Task.CompletedTask);
                 }
             }
         }
