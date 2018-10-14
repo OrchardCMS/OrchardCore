@@ -28,9 +28,9 @@ namespace OrchardCore.Apis.GraphQL.Services
 
         public async Task<ISchema> GetSchema()
         {
-            return await _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
-            {
-                f.SetSlidingExpiration(TimeSpan.FromHours(1));
+            //return await _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
+            //{
+            //    f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
                 var schema = new Schema();
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                     if (token != null)
                     {
-                        f.AddExpirationToken(token);
+                        //f.AddExpirationToken(token);
                     }
                 }
 
@@ -87,7 +87,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                 }
 
                 return schema;
-            });
+           // });
         }
     }
 }

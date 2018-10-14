@@ -53,15 +53,24 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                     var partInputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(partActivator.Type);
 
-                    var partQueryGraphTypeResolved =
-                        internalCache.GetOrAdd(partName, (key) =>
+                    var partQueryGraphType = typeof(ObjectGraphType<>).MakeGenericType(partActivator.Type);
+
+                    var resolvedGraphType = (IObjectGraphType)serviceProvider.GetService(partQueryGraphType);
+
+                    if (resolvedGraphType != null)
+                    {
+                        if (part.PartDefinition.Fields.Any())
                         {
-                            var partQueryGraphType = typeof(ObjectGraphType<>).MakeGenericType(partActivator.Type);
+                            var register = false;
 
-                            var resolvedGraphType = (IObjectGraphType)serviceProvider.GetService(partQueryGraphType);
+                            if (resolvedGraphType is ContentPartInputObjectType)
+                            {
+                                resolvedGraphType = new ContentPartInputObjectType
+                                {
+                                    Name = part.PartDefinition.Name
+                                };
 
-                            if (resolvedGraphType == null) {
-                                return null;
+                                register = true;
                             }
 
                             foreach (var fieldDefinition in part.PartDefinition.Fields)
@@ -76,35 +85,41 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                                 var fieldQueryGraphTypeResolved = (IObjectGraphType)serviceProvider.GetService(fieldQueryGraphType);
 
-                                if (fieldQueryGraphTypeResolved == null) {
+                                if (fieldQueryGraphTypeResolved == null)
+                                {
                                     continue;
                                 }
-
-                                resolvedGraphType.AddField(new FieldType {
-                                    Name = fieldName,
+                                
+                                resolvedGraphType.AddField(new FieldType
+                                {
+                                    Name = fieldDefinition.Name.ToGraphQLStringFormat(),
                                     Type = fieldQueryGraphTypeResolved.GetType(),
-                                    Resolver = new AsyncFieldResolver<ContentField>((context) => {
+                                    Resolver = new FuncFieldResolver<ContentPart, object>(context => {
+                                        var nameToResolve = context.ReturnType.Name;
+                                        var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                                        return null;
+                                        return context.Source.Get(typeToResolve, context.FieldName.FromGraphQLStringFormat());
                                     })
                                 });
                             }
 
-                            return resolvedGraphType;
-                        });
-
-                    if (partQueryGraphTypeResolved != null)
-                    {
-                        typeType.Field(
-                            partQueryGraphTypeResolved.GetType(),
-                            partName,
-                            resolve: context =>
+                            if (register)
                             {
+                                schema.RegisterType(resolvedGraphType);
+                            }
+                        }
+
+                        typeType.AddField(new FieldType
+                        {
+                            ResolvedType = resolvedGraphType,
+                            Name = partName.ToGraphQLStringFormat(),
+                            Resolver = new FuncFieldResolver<ContentItem, object>(context => {
                                 var nameToResolve = context.ReturnType.Name;
                                 var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
+                                return context.Source.Get(typeToResolve, nameToResolve.FromGraphQLStringFormat());
+                            })
+                        });
                     }
 
                     var partInputGraphTypeResolved = serviceProvider.GetService(partInputGraphType) as IQueryArgumentObjectGraphType;
@@ -113,7 +128,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         queryArguments.Add(new QueryArgument(partInputGraphTypeResolved)
                         {
-                            Name = partName
+                            Name = partName.ToGraphQLStringFormat()
                         });
                     }
                 }

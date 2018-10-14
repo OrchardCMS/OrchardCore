@@ -9,7 +9,7 @@ namespace OrchardCore.Title.GraphQL
         {
             Name = "TitlePart";
 
-            Field(x => x.Title);
+            Field(x => x.Title).Type(new StringGraphType());
         }
     }
 }

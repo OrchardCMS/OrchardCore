@@ -36,12 +36,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Create("BlogPost", builder =>
                 {
                     builder
-                        .WithContentPart("titlePart")
-                        .AddField("title", "Some sorta blogpost!");
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta blogpost!");
 
                     builder
-                        .WithContentPart("containedPart")
-                        .AddField("listContentItemId", BlogContext.BlogContentItemId);
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
             
             var result = await BlogContext
@@ -50,11 +50,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("contentItemId", blogPostContentItemId);
+                        .WithQueryField("ContentItemId", blogPostContentItemId);
 
                     builder
-                        .WithNestedField("titlePart")
-                        .AddField("title");
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
                 });
 
             this.Assent(result.ToString());
@@ -71,16 +71,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Create("BlogPost", builder =>
                 {
                     builder
-                        .WithContentPart("titlePart")
+                        .WithContentPart("TitlePart")
                         .AddField("Title", "Some sorta blogpost!");
 
                     builder
-                        .WithContentPart("autoroutePart")
+                        .WithContentPart("AutoroutePart")
                         .AddField("Path", "Path1");
 
                     builder
-                        .WithContentPart("containedPart")
-                        .AddField("listContentItemId", BlogContext.BlogContentItemId);
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var blogPostContentItemId2 = await BlogContext
@@ -89,16 +89,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Create("BlogPost", builder =>
                 {
                     builder
-                        .WithContentPart("titlePart")
-                        .AddField("title", "Some sorta other blogpost!");
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta other blogpost!");
 
                     builder
-                        .WithContentPart("autoroutePart")
-                        .AddField("path", "Path2");
+                        .WithContentPart("AutoroutePart")
+                        .AddField("Path", "Path2");
 
                     builder
-                        .WithContentPart("containedPart")
-                        .AddField("listContentItemId", BlogContext.BlogContentItemId);
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext
@@ -107,11 +107,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithNestedQueryField("autoroutePart", "path: \"Path1\"");
+                        .WithNestedQueryField("AutoroutePart", "path: \"Path1\"");
 
                     builder
-                        .WithNestedField("titlePart")
-                        .AddField("title");
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
                 });
             
             this.Assent(result.ToString());
@@ -128,12 +128,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Create("BlogPost", builder =>
                 {
                     builder
-                        .WithContentPart("titlePart")
-                        .AddField("title", "Some sorta blogpost!");
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta blogpost!");
 
                     builder
-                        .WithContentPart("containedPart")
-                        .AddField("listContentItemId", BlogContext.BlogContentItemId);
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
                 });
 
             var result = await BlogContext
@@ -142,11 +142,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("contentItemId", blogPostContentItemId);
+                        .WithQueryField("cCntentItemId", blogPostContentItemId);
 
                     builder
-                        .WithNestedField("titlePart")
-                        .AddField("title");
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
                 });
 
             Assert.True(result["data"]["blogPost"].HasValues);
@@ -162,15 +162,35 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("contentItemId", blogPostContentItemId);
+                        .WithQueryField("ContentItemId", blogPostContentItemId);
 
                     builder
-                        .WithNestedField("titlePart")
-                        .AddField("title");
+                        .WithNestedField("TitlePart")
+                        .AddField("Title");
                 });
 
 
             Assert.False(result2["data"]["blogPost"].HasValues);
+        }
+
+        [Fact]
+        public async Task ShouldGetFieldValueOffPart()
+        {
+            await BlogContext.InitializeBlogAsync();
+
+            var result = await BlogContext
+                .GraphQLClient
+                .Content
+                .Query("BlogPost", builder => {
+                    builder
+                        .WithNestedField("BlogPost")
+                        .WithNestedField("Subtitle")
+                        .AddField("Text");
+                });
+
+            Assert.Equal(
+                "Problems look mighty small from 150 miles up",
+                result["data"]["blogPost"][0]["blogPost"]["subtitle"]["text"].ToString());
         }
     }
 }

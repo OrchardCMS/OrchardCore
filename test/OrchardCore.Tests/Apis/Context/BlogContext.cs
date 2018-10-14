@@ -19,7 +19,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             var result = await GraphQLClient
             .Content
-            .Query("Blog", builder =>
+            .Query("blog", builder =>
             {
                 builder
                     .AddField("contentItemId");

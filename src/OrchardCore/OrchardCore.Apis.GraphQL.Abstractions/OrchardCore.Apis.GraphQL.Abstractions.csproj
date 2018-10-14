@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\graphql-dotnet\src\GraphQL\GraphQL.csproj" />
     <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
   </ItemGroup>
 

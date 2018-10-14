@@ -357,7 +357,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Templates",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Logging.Serilog", "src\OrchardCore\OrchardCore.Logging.Serilog\OrchardCore.Logging.Serilog.csproj", "{B9DC28CB-F531-4533-B53E-6599970BF3F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.MiniProfiler", "src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj", "{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL", "..\graphql-dotnet\src\GraphQL\GraphQL.csproj", "{6ADAF317-76DB-47CD-A1BD-F287C8081E9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -973,6 +975,10 @@ Global
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{261E038A-25DA-4DD7-A66A-5884C6F2BEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ADAF317-76DB-47CD-A1BD-F287C8081E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ADAF317-76DB-47CD-A1BD-F287C8081E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ADAF317-76DB-47CD-A1BD-F287C8081E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ADAF317-76DB-47CD-A1BD-F287C8081E9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

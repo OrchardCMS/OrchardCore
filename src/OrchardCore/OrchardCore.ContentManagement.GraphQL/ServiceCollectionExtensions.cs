@@ -24,6 +24,8 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddTransient<CreateContentItemInputType>();
             services.AddTransient<ContentPartsInputType>();
 
+            //services.AddGraphQLInputType<ContentPart, ContentPartInputObjectType>();
+            services.AddGraphQLQueryType<ContentPart, ContentPartInputObjectType>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
 

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonApiFramework.Server" />
+    <PackageReference Include="JsonApiFramework.Server" Version="1.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" />
   </ItemGroup>
 

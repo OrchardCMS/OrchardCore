@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata;
+using System.Linq;
+using OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
 {
@@ -28,12 +30,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
             IHttpContextAccessor httpContextAccessor,
             IContentDefinitionManager contentDefinitionManager,
             ITypeActivatorFactory<ContentPart> partTypeActivator,
-            ITypeActivatorFactory<ContentField> fieldTypeActivator)
+            ITypeActivatorFactory<ContentField> fieldTypeActivator,
+            IEnumerable<ContentPart> cps)
         {
             Name = "ContentPartsInput";
 
             var requestServices = httpContextAccessor.HttpContext
                            .RequestServices;
+
+            var existingParts = cps.Select(x => x.GetType()).ToList();
 
             foreach (var partDefinition in contentDefinitionManager.ListPartDefinitions())
             {
@@ -66,6 +71,26 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                         }
                     }
 
+                    Field(
+                        partInputGraphTypeResolved.GetType(),
+                        partName);
+
+                    existingParts.Remove(partActivator.Type);
+                }
+            }
+
+            foreach (var p in existingParts) {
+                var partName = p.Name;
+                var partActivator = partTypeActivator.GetTypeActivator(partName);
+
+                var partInputGraphType =
+                    typeof(InputObjectGraphType<>).MakeGenericType(partActivator.Type);
+
+                var partInputGraphTypeResolved =
+                    (IInputObjectGraphType)requestServices.GetService(partInputGraphType);
+
+                if (partInputGraphTypeResolved != null)
+                {
                     Field(
                         partInputGraphTypeResolved.GetType(),
                         partName);

@@ -15,12 +15,12 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder(string contentType)
         {
-            _contentType = contentType;
+            _contentType = contentType.ToGraphQLStringFormat();
         }
 
         public ContentTypeQueryResourceBuilder AddField(string name)
         {
-            _keys.Add(name.ToGraphQLStringFormat());
+            _keys.Add(name);
 
             return this;
         }
@@ -34,19 +34,19 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder WithQueryField(string fieldName, string fieldValue)
         {
-            _queryFields.Add(fieldName, fieldValue);
+            _queryFields.Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             return this;
         }
 
         public ContentTypeQueryResourceBuilder WithNestedQueryField(string fieldName, string fieldValue)
         {
-            _nestedQueryFields.Add(fieldName, fieldValue);
+            _nestedQueryFields.Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             return this;
         }
 
         internal string Build()
         {
-            var sb = new StringBuilder(_contentType.ToGraphQLStringFormat());
+            var sb = new StringBuilder(_contentType);
 
             if (_queryFields.Count > 0 || _nestedQueryFields.Count > 0)
             {
