@@ -103,23 +103,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                                 });
                             }
 
-                            if (register)
+                            if (register && resolvedGraphType.Fields.Any())
                             {
                                 schema.RegisterType(resolvedGraphType);
                             }
                         }
 
-                        typeType.AddField(new FieldType
+                        if (resolvedGraphType.Fields.Any())
                         {
-                            ResolvedType = resolvedGraphType,
-                            Name = partName.ToGraphQLStringFormat(),
-                            Resolver = new FuncFieldResolver<ContentItem, object>(context => {
-                                var nameToResolve = context.ReturnType.Name;
-                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                            typeType.AddField(new FieldType
+                            {
+                                ResolvedType = resolvedGraphType,
+                                Name = partName.ToGraphQLStringFormat(),
+                                Resolver = new FuncFieldResolver<ContentItem, object>(context =>
+                                {
+                                    var nameToResolve = context.ReturnType.Name;
+                                    var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                                return context.Source.Get(typeToResolve, nameToResolve.FromGraphQLStringFormat());
-                            })
-                        });
+                                    return context.Source.Get(typeToResolve, nameToResolve.FromGraphQLStringFormat());
+                                })
+                            });
+                        }
                     }
 
                     var partInputGraphTypeResolved = serviceProvider.GetService(partInputGraphType) as IQueryArgumentObjectGraphType;

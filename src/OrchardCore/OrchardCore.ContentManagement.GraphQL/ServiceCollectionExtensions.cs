@@ -1,3 +1,4 @@
+using GraphQL.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL;
@@ -28,6 +29,8 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddGraphQLQueryType<ContentPart, ContentPartInputObjectType>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
+
+            GraphTypeTypeRegistry.Register(typeof(ContentItem), typeof(ContentItemType));
 
             return services;
         }

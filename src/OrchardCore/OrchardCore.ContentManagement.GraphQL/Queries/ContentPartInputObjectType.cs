@@ -1,4 +1,5 @@
 using GraphQL.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -7,6 +8,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         public ContentPartInputObjectType()
         {
             Name = "ContentPart";
+
+            Field(x => x.ContentItem);
         }
     }
 }

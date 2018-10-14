@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             Name = "TimeField";
 
-            Field(x => x.Value);
+            Field(x => x.Value.Value);
         }
     }
 }

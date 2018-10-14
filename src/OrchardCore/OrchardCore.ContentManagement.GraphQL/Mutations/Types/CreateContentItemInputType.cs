@@ -71,9 +71,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                         }
                     }
 
-                    Field(
-                        partInputGraphTypeResolved.GetType(),
-                        partName);
+                    if (partInputGraphTypeResolved.Fields.Any())
+                    {
+                        Field(
+                            partInputGraphTypeResolved.GetType(),
+                            partName);
+                    }
 
                     existingParts.Remove(partActivator.Type);
                 }
@@ -89,7 +92,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations.Types
                 var partInputGraphTypeResolved =
                     (IInputObjectGraphType)requestServices.GetService(partInputGraphType);
 
-                if (partInputGraphTypeResolved != null)
+                if (partInputGraphTypeResolved != null && partInputGraphTypeResolved.Fields.Any())
                 {
                     Field(
                         partInputGraphTypeResolved.GetType(),
