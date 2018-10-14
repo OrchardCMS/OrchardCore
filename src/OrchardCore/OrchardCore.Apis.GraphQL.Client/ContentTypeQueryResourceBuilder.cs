@@ -20,7 +20,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         public ContentTypeQueryResourceBuilder AddField(string name)
         {
-            _keys.Add(name);
+            _keys.Add(name.ToGraphQLStringFormat());
 
             return this;
         }

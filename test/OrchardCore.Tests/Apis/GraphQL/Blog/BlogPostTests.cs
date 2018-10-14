@@ -142,7 +142,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder =>
                 {
                     builder
-                        .WithQueryField("cCntentItemId", blogPostContentItemId);
+                        .WithQueryField("ContentItemId", blogPostContentItemId);
 
                     builder
                         .WithNestedField("TitlePart")
