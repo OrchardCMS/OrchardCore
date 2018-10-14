@@ -47,10 +47,10 @@
     <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1220" />
     <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1220" />
     <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1220" />
-    <PackageManagement Include="GraphQL" Version="2.0.0" />
-    <PackageManagement Include="JsonApiFramework.Server" Version="1.7.0" />
+    <PackageManagement Include="GraphQL" Version="2.1.0" />
+    <PackageManagement Include="JsonApiFramework.Server" Version="1.9.0" />
     <PackageManagement Include="Microsoft.OpenApi" Version="1.1.0" />
-    <PackageManagement Include="NSwag.Annotations" Version="11.18.7" />
+    <PackageManagement Include="NSwag.Annotations" Version="11.20.1" />
    </ItemGroup>
 
 </Project>
