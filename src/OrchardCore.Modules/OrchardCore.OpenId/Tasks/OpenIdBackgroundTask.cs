@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.OpenId.Abstractions.Managers;
-using OrchardCore.OpenId.Services.Managers;
 
 namespace OrchardCore.OpenId.Tasks
 {

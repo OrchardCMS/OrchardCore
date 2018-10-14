@@ -1,0 +1,26 @@
+@* Based on https://getbootstrap.com/docs/4.0/examples/sticky-footer-navbar/ *@
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <link type="image/x-icon" rel="shortcut icon" href="/Theme.Pages/favicon.ico" />
+    <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
+    <style asp-name="bootstrap" use-cdn="true" version="4"></style>
+    <style asp-name="font-awesome" use-cdn="true" version="5"></style>
+    <resources type="Meta" />
+    <resources type="HeadLink" />
+    <resources type="Stylesheet" />
+    <resources type="HeadScript" />
+</head>
+<body dir="@Orchard.CultureDir()">
+    @await RenderSectionAsync("Header", required: false)
+    <main role="main" class="container">
+        @await RenderSectionAsync("Messages", required: false)
+        @await RenderBodyAsync()
+    </main>
+    @await RenderSectionAsync("Footer", required: false)
+    <resources type="FootScript" />
+</body>
+</html>

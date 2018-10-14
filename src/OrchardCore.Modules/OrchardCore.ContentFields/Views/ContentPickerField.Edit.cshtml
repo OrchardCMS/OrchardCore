@@ -1,0 +1,45 @@
+@model OrchardCore.ContentFields.ViewModels.EditContentPickerFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Serialization;
+@using OrchardCore.Environment.Shell;
+
+@inject ShellSettings ShellSettings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
+    var selectedItems = Html.Raw(JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+    var partName = Model.PartFieldDefinition.PartDefinition.Name;
+    var fieldName = Model.PartFieldDefinition.Name;
+    var tenantPath = string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix) ? string.Empty : "/" + ShellSettings.RequestUrlPrefix;
+    var vueElementId = $"ContentPicker_{partName}_{fieldName}";
+    var multiple = settings.Multiple.ToString().ToLowerInvariant();
+}
+
+<script asp-src="/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<style asp-src="/OrchardCore.ContentFields/Styles/contentPicker.min.css" debug-src="/OrchardCore.ContentFields/Styles/contentPicker.css"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
+<style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
+
+<div id="@vueElementId" class="content-picker-multiselect">
+    <fieldset class="form-group">
+        <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
+        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" label="displayText"
+                         @@input="onInput" @@search-change="asyncFind"
+                         :multiple="@multiple" :searchable="true" :close-on-select="true"
+                         :show-labels="true" :hide-selected="@multiple" placeholder=""
+                         select-label="Select" deselect-label="Remove">
+        </vue-multiselect>
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </fieldset>
+</div>
+
+<script at="Foot">
+    initializeContentPickerFieldEditor('@vueElementId', @selectedItems, '@Model.ContentItemIds', '@tenantPath', '@partName', '@fieldName');
+</script>

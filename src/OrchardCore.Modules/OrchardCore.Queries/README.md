@@ -112,7 +112,7 @@ The `query` filter allows you to pass in parameters to your paramterized queries
 
 # Razor Helpers
 
-The `QueryAsync` and `ContentQueryAsync` OrchardRazorHelper extension methods (in the `OrchardCore.Queries` and `OrchardCore.ContentManagement` namespaces respectively) allow you to run queries directly from razor pages.
+The `QueryAsync` and `ContentQueryAsync` Orchard Helper extension methods (in the `OrchardCore.Queries` and `OrchardCore.ContentManagement` namespaces respectively) allow you to run queries directly from razor pages.
 
 You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
 
@@ -121,9 +121,11 @@ For example, to run a query called LatestBlogPosts, and display the results:
 ```
 @foreach (var contentItem in await OrchardCore.ContentQueryAsync("AllContent"))
 {
-    @await OrchardCore.DisplayAsync(contentItem)
+    @await Orchard.DisplayAsync(contentItem)
 }
 ```
+
+> The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
 # Executing SQL Queries
 

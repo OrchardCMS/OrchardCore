@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -17,14 +20,26 @@ namespace OrchardCore.Setup.Controllers
     {
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
+        private readonly IShellHost _shellHost;
+        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+        private readonly IClock _clock;
+        private readonly ILogger<SetupController> _logger;
 
         public SetupController(
+            ILogger<SetupController> logger,
+            IClock clock,
             ISetupService setupService,
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
+            IShellHost shellHost,
+            IShellSettingsManager shellSettingsManager,
             IStringLocalizer<SetupController> t)
         {
+            _logger = logger;
+            _clock = clock;
+            _shellSettingsManager = shellSettingsManager;
+            _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
@@ -34,33 +49,29 @@ namespace OrchardCore.Setup.Controllers
 
         public IStringLocalizer T { get; set; }
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string token)
         {
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            {
+                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
+                {
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
+                    return StatusCode(404);
+                }
+            }
 
             var model = new SetupViewModel
             {
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
-                RecipeName = defaultRecipe?.Name
+                RecipeName = defaultRecipe?.Name,
+                Secret = token
             };
 
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
-            }
-
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
-            {
-                model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
-            }
-            else
-            {
-                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
-            }
+            CopyShellSettingsValues(model);
 
             if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
             {
@@ -74,62 +85,15 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            var setupContext = await PrepareSetupContext(model);
-
-            if (setupContext == null)
+            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
             {
-                return View(model);
-            }
-
-            var executionId = await _setupService.SetupAsync(setupContext);
-
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
-            {
-                foreach (var error in setupContext.Errors)
+                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
-                    ModelState.AddModelError(error.Key, error.Value);
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
+                    return StatusCode(404);
                 }
-
-                _shellSettings.State = TenantState.Uninitialized;
-		
-                return View(model);
             }
 
-            return Redirect("~/");
-        }
-
-        [HttpPost, Route("api/setup")]
-        [Produces("application/json")]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> ApiIndexPOST([FromBody] SetupViewModel model)
-        {
-            var setupContext = await PrepareSetupContext(model);
-
-            if (setupContext == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var executionId = await _setupService.SetupAsync(setupContext);
-
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
-            {
-                foreach (var error in setupContext.Errors)
-                {
-                    ModelState.AddModelError(error.Key, error.Value);
-                }
-		
-                _shellSettings.State = TenantState.Uninitialized;
-
-                return BadRequest(ModelState);
-            }
-
-            return Created("~/", executionId);
-        }
-
-        private async Task<SetupContext> PrepareSetupContext(SetupViewModel model) {
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
@@ -154,19 +118,28 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-
-            if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings.RecipeName);
+                if (selectedRecipe == null)
+                {
+                    ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                }
+            }
+            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
             }
 
             if (!ModelState.IsValid)
             {
-                return null;
+                CopyShellSettingsValues(model);
+                return View(model);
             }
 
             var setupContext = new SetupContext
             {
+                ShellSettings = _shellSettings,
                 SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.UserName,
@@ -177,7 +150,7 @@ namespace OrchardCore.Setup.Controllers
                 SiteTimeZone = model.SiteTimeZone
             };
 
-            if (model.DatabaseConfigurationPreset)
+            if (!string.IsNullOrEmpty(_shellSettings.ConnectionString))
             {
                 setupContext.DatabaseProvider = _shellSettings.DatabaseProvider;
                 setupContext.DatabaseConnectionString = _shellSettings.ConnectionString;
@@ -190,7 +163,171 @@ namespace OrchardCore.Setup.Controllers
                 setupContext.DatabaseTablePrefix = model.TablePrefix;
             }
 
-            return setupContext;
+            var executionId = await _setupService.SetupAsync(setupContext);
+
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                foreach (var error in setupContext.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return View(model);
+            }
+
+            return Redirect("~/");
+        }
+
+        [HttpPost, Route("api/setup")]
+        [Produces("application/json")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> ApiIndexPOST([FromBody] SetupViewModel model)
+        {
+            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            {
+                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
+                {
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
+                    return StatusCode(404);
+                }
+            }
+
+            model.DatabaseProviders = _databaseProviders;
+            model.Recipes = await _setupService.GetSetupRecipesAsync();
+
+            var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
+
+            if (!model.DatabaseConfigurationPreset)
+            {
+                if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
+                {
+                    ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider."]);
+                }
+            }
+
+            if (String.IsNullOrEmpty(model.Password))
+            {
+                ModelState.AddModelError(nameof(model.Password), T["The password is required."]);
+            }
+
+            if (model.Password != model.PasswordConfirmation)
+            {
+                ModelState.AddModelError(nameof(model.PasswordConfirmation), T["The password confirmation doesn't match the password."]);
+            }
+
+            RecipeDescriptor selectedRecipe = null;
+            if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings.RecipeName);
+                if (selectedRecipe == null)
+                {
+                    ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                }
+            }
+            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            {
+                ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var setupContext = new SetupContext
+            {
+                ShellSettings = _shellSettings,
+                SiteName = model.SiteName,
+                EnabledFeatures = null, // default list,
+                AdminUsername = model.UserName,
+                AdminEmail = model.Email,
+                AdminPassword = model.Password,
+                Errors = new Dictionary<string, string>(),
+                Recipe = selectedRecipe,
+                SiteTimeZone = model.SiteTimeZone
+            };
+
+            if (!string.IsNullOrEmpty(_shellSettings.ConnectionString))
+            {
+                setupContext.DatabaseProvider = _shellSettings.DatabaseProvider;
+                setupContext.DatabaseConnectionString = _shellSettings.ConnectionString;
+                setupContext.DatabaseTablePrefix = _shellSettings.TablePrefix;
+            }
+            else
+            {
+                setupContext.DatabaseProvider = model.DatabaseProvider;
+                setupContext.DatabaseConnectionString = model.ConnectionString;
+                setupContext.DatabaseTablePrefix = model.TablePrefix;
+            }
+
+            var executionId = await _setupService.SetupAsync(setupContext);
+
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                foreach (var error in setupContext.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            return Created("~/", executionId);
+        }
+        
+        private void CopyShellSettingsValues(SetupViewModel model)
+        {
+            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.ConnectionString = _shellSettings.ConnectionString;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
+            {
+                model.RecipeNamePreset = true;
+                model.RecipeName = _shellSettings.RecipeName;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+            }
+            else
+            {
+                model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            }
+        }
+
+        private async Task<bool> IsTokenValid(string token)
+        {
+            try
+            {
+                using (var scope = await _shellHost.GetScopeAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName)))
+                {
+                    var dataProtectionProvider = scope.ServiceProvider.GetService<IDataProtectionProvider>();
+                    ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                    var tokenValue = dataProtector.Unprotect(token, out var expiration);
+
+                    if (_clock.UtcNow < expiration.ToUniversalTime())
+                    {
+                        if (_shellSettings.Secret == tokenValue)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in decrypting the token");
+            }
+
+            return false;
         }
     }
 }

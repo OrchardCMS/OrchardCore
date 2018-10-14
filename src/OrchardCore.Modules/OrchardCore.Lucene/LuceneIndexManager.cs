@@ -37,7 +37,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;        
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
 
         public LuceneIndexManager(
             IClock clock,
@@ -94,7 +94,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -184,49 +184,49 @@ namespace OrchardCore.Lucene
 
             foreach (var entry in documentIndex.Entries)
             {
-                var store = entry.Value.Options.HasFlag(DocumentIndexOptions.Store)
+                var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
                             ? Field.Store.YES
                             : Field.Store.NO;
 
-                if (entry.Value.Value == null)
+                if (entry.Value == null)
                 {
                     continue;
                 }
 
-                switch (entry.Value.Type)
+                switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
                         // store "true"/"false" for booleans
-                        doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value).ToLowerInvariant(), store));
+                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value.Value is DateTimeOffset)
+                        if (entry.Value is DateTimeOffset)
                         {
-                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTimeOffset)entry.Value.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTime)entry.Value.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
                         }
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        doc.Add(new Int32Field(entry.Key, Convert.ToInt32(entry.Value.Value), store));
+                        doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
                         break;
 
                     case DocumentIndex.Types.Number:
-                        doc.Add(new DoubleField(entry.Key, Convert.ToDouble(entry.Value.Value), store));
+                        doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value.Options.HasFlag(DocumentIndexOptions.Analyze))
+                        if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                         {
-                            doc.Add(new TextField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                            doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                            doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         break;
                 }
@@ -260,12 +260,6 @@ namespace OrchardCore.Lucene
                     {
                         var directory = CreateDirectory(indexName);
                         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-
-                        if (analyzer == null) {
-                            _luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer, new StandardAnalyzer(LuceneSettings.DefaultVersion)));
-                            analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-                        }
-
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
@@ -357,7 +351,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if(_writers.TryGetValue(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {

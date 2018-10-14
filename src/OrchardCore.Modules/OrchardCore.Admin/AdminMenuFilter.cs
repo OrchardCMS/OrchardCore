@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
@@ -39,6 +39,13 @@ namespace OrchardCore.Admin
                 return;
             }
 
+            // Should only run for authenticated users
+            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+            {
+                await next();
+                return;
+            }
+
             // Don't create the menu if the status code is 3xx
             var statusCode = filterContext.HttpContext.Response.StatusCode;
             if (statusCode >= 300 && statusCode < 400)
@@ -48,7 +55,7 @@ namespace OrchardCore.Admin
             }
 
             // Populate main nav
-            IShape menuShape = await _shapeFactory.CreateAsync("Navigation",
+            var menuShape = await _shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
                     MenuName = "admin",

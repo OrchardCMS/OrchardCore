@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
@@ -96,7 +96,7 @@ namespace OrchardCore.Email.Drivers
                 }
 
                 // Reload the tenant to apply the settings
-                _orchardHost.ReloadShellContext(_currentShellSettings);
+                await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
             }
 
             return await EditAsync(section, context);

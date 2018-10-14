@@ -1,7 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings
 {
@@ -19,11 +20,11 @@ namespace OrchardCore.CustomSettings
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             foreach (var type in _customSettingsService.GetSettingsTypes())
@@ -38,6 +39,8 @@ namespace OrchardCore.CustomSettings
                                 .LocalNav()
                             )));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

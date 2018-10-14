@@ -10,7 +10,7 @@ When building a form, there are primarily two aspects involved:
 2. Processing the form when submitted.
 
 Both parts are independent from one another, so that you can just use the form builder and handle its submissions yourself, or provide the form HTML markup yourself but rely on workflows to handle form submission.
-The form-building part relies on the Form widget. To create a form, add a Form widget to a zone or to a ocntent item that has the FlowPart attached.
+The form-building part relies on the Form widget. To create a form, add a Form widget to a zone or to a content item that has the FlowPart attached.
 
 ### Creating a Form
 
@@ -44,7 +44,7 @@ At this point, you should be able to test out your form and its submission.
 
 ## Implementing a Contact Form
 
-In the following walkthrough, we'll build an actual contact form and implement a form habdler using a workflow.
+In the following walkthrough, we'll build an actual contact form and implement a form handler using a workflow.
 The contact form will include the following fields:
 
 * A Validation Summary widget.
@@ -193,11 +193,11 @@ After the email is sent, we want to redirect the user to a "Thank You" page. Go 
 
 ### Adding a Thank You Page
 
-Create a new Page content item with a title of `Thank You!`, and make sure its Permalink is `thank-you` after saving. Add any widgets to this page that you like. For exaple, add the **Paragraph** widget with the following text: `Thank you for reaching out! We'll get back to you soon.`
+Create a new Page content item with a title of `Thank You!`, and make sure its Permalink is `thank-you` after saving. Add any widgets to this page that you like. For example, add the **Paragraph** widget with the following text: `Thank you for reaching out! We'll get back to you soon.`
 
 ### Updating the Contact Form widget
 
-Now that our workflow is done, we need to update the Contact Form widget with the Workflow URL that was generated for us in the **Http Request** activity. Unless you have that URL still on your clipboard, go back to the first activity on the workflow, double-click it to get to its activity editor, and copy the URL (without the schem, host and port number; just the path).
+Now that our workflow is done, we need to update the Contact Form widget with the Workflow URL that was generated for us in the **Http Request** activity. Unless you have that URL still on your clipboard, go back to the first activity on the workflow, double-click it to get to its activity editor, and copy the URL (without the scheme, host and port number; just the path).
 Go back to the Contact Form page content item, expand the Contact Form widget and paste in the URL into the **Action** field and save your changes.
 
 ### Try it out!
@@ -207,9 +207,9 @@ If you leave any field empty or do not pass the captcha, you should be redirecte
 
 ### Fixing the Lost Field Values Isue
 
-There's one issue with the form that I left out intentionally to the very last. To see the problem, try entering some values in the form, except for one (e.g. leave Email empty, or do not check the captcha checkbox). When you submit the form, notice that the values you entered have dissappeared.
+There's one issue with the form that I left out intentionally to the very last. To see the problem, try entering some values in the form, except for one (e.g. leave Email empty, or do not check the captcha checkbox). When you submit the form, notice that the values you entered have disappeared.
 Normally what happens when you submit a form to an MVC controller, the model binder will bind the fields to some view model. During the model binding phase, MVC will add model state entries. However, we are not invoking model binding anywhere. We only add model validation errors when we identify a missing value.
-To fix this, we must add the **Bind Form Model State** activity to the workflow, and connect it in between the first activity (Http Request) and the second activity (the Fork activity). This will cause all Form fields tp be copied into ModelState, which os used when displaying the form again.
+To fix this, we must add the **Bind Form Model State** activity to the workflow, and connect it in between the first activity (Http Request) and the second activity (the Fork activity). This will cause all Form fields to be copied into ModelState, which is used when displaying the form again.
 
 The final workflow should look like this:
 
@@ -217,5 +217,5 @@ The final workflow should look like this:
 
 ## Future Improvements
 
-Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination wit hthe Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values gainst those settings.
+Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination with the Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values against those settings.
 The low-level validation activities will remain part of the toolbox to support workflow validation for forms that are not built with the Form widget, but implemented as raw HTML for example.

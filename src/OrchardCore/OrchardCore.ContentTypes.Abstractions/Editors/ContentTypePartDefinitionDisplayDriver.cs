@@ -14,6 +14,9 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 Prefix = htmlFielPrefix + "." + Prefix;
             }
+
+            // Prefix any driver with a unique name
+            Prefix += "." + GetType().Name;
         }
 
         public override bool CanHandleModel(ContentTypePartDefinition model)

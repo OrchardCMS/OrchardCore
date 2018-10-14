@@ -70,11 +70,10 @@ namespace OrchardCore.Mvc
             services.Replace(
                 ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
 
-            services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
+                ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
     }
 }

@@ -69,7 +69,7 @@
                                 {
                                     var contentItem = await ContentManager.NewAsync(type.Name);
                                     var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                    createRoute["returnUrl"] = Context.Request.Path;
+                                    createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
                                     createRoute["LayerMetadata.Zone"] = zone;
                                     createRoute["LayerMetadata.Position"] = maxPosition + 1;
                                     <a class="dropdown-item add-list-widget btn-sm"

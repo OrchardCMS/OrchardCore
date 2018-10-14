@@ -65,8 +65,15 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
-            var to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
+            if (!double.TryParse(From.Expression, out var from))
+            {
+                from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
+            }
+
+            if (!double.TryParse(To.Expression, out var to))
+            {
+                to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
+            }
 
             if(Index < from)
             {
@@ -82,6 +89,7 @@ namespace OrchardCore.Workflows.Activities
             }
             else
             {
+                Index = from;
                 return Outcomes("Done");
             }
         }

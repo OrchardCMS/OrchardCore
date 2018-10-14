@@ -10,19 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\web.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- For testing the testing infrastructure only -->
-    <WebApplicationFactoryContentRootAttribute Include="OrchardCore.Cms.Web" AssemblyName="OrchardCore.Cms.Web" ContentRootPath="../../src/OrchardCore.Cms.Web" ContentRootTest="OrchardCore.Cms.Web.csproj" Priority="-1" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <None Remove="Localization\PoFiles\EntryWithComments.po" />
     <None Remove="Localization\PoFiles\EntryWithContext.po" />
     <None Remove="Localization\PoFiles\EntryWithEscapedCharacters.po" />
@@ -52,6 +39,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.JsonApi.Client\OrchardCore.Apis.JsonApi.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />
@@ -60,8 +51,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.JsonApi.Client\OrchardCore.Apis.JsonApi.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore\OrchardCore.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,6 +72,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -80,8 +84,6 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
-  <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>

@@ -12,10 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DeferredTasks\OrchardCore.DeferredTasks.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Cache\OrchardCore.Environment.Cache.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Environment.Shell.Data\OrchardCore.Environment.Shell.Data.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
   </ItemGroup>
 
   <!--
@@ -33,7 +31,7 @@
     <!-- 
       When adding a reference to this list, please keep it ordered alphabetically, and set PrivateAssets="none" 
     -->
-    
+
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.JsonApi\OrchardCore.Apis.JsonApi.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.OpenApi\OrchardCore.Apis.OpenApi.csproj" PrivateAssets="none" />

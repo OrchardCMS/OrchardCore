@@ -17,14 +17,8 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-
-                model.Editor = settings.Editor;
-                model.HtmlBodyPartSettings = settings;
-
-            }).Location("Content");
+            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.Settings.Populate(model))
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -34,12 +28,11 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new HtmlBodyPartSettingsViewModel();
+            var model = new HtmlBodyPartSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Editor))
-            {
-                context.Builder.WithSettings(new HtmlBodyPartSettings { Editor = model.Editor });
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.WithSettings(model);
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
