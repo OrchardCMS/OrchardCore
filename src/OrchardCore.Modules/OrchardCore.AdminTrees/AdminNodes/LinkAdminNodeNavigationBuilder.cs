@@ -38,6 +38,8 @@ namespace OrchardCore.AdminTrees.AdminNodes
                 // Add the actual link
                 itemBuilder.Url(ltn.LinkUrl);
                 ltn.CustomClasses.ToList().ForEach( x => itemBuilder.AddClass(x));
+                AddIconPickerClassToLink( ltn.IconClass, itemBuilder);
+                
 
                 // Add the other ITreeNodeNavigationBuilder build themselves as children of this link
 
@@ -58,6 +60,21 @@ namespace OrchardCore.AdminTrees.AdminNodes
             });
 
             return Task.CompletedTask;
+        }
+
+        // Add adminNode's IconClass property values to menuItem.Classes. 
+        // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
+        private void AddIconPickerClassToLink(string iconClass, NavigationItemBuilder itemBuilder)
+        {
+            if (String.IsNullOrEmpty(iconClass))
+            {
+                return;
+            }
+            
+            foreach (var c in iconClass.Split(' ' ))
+            {
+                itemBuilder.AddClass("icon-class-" + c);
+            }
         }
     }
 }

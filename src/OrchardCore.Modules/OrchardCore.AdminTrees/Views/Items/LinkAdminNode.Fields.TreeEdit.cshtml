@@ -1,5 +1,9 @@
 @model LinkAdminNodeViewModel
 
+<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees.css" debug-src="/OrchardCore.AdminTrees/Styles/admin-trees.css" at="Head" depends-on="admin"></style>
+<script asp-src="/OrchardCore.AdminTrees/Scripts/admin-trees.js" at="Foot" depends-on="admin"></script>
+
+
 <h5>@T["Link"]</h5>
 
 <fieldset>
@@ -29,3 +33,67 @@
     <span class="hint">@T["A comma separated list of classes that will be added to the tag."]</span>
 </fieldset>
 
+<fieldset class="form-group">
+    <label asp-for="IconClass">@T["Icon"]</label>
+    <input type="hidden" asp-for="IconClass" id="@Html.IdFor(m=>m.IconClass)" />
+
+    <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+
+        <div class="btn-group input-group mr-2" role="group" aria-label="Icon Selector">
+            <button type="button" class="btn btn-primary iconpicker-component">
+                <i class="fa fa-fw"></i>
+            </button>
+            <button type="button" id="iconPicker" class="icp icp-dd btn btn-primary dropdown-toggle" data-selected="fa-car" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu"></div>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="Remove Icon Button">
+            <button id="removeIconButton" type="button" class="btn btn-secondary">
+                <i class="fa fa-trash"></i>
+            </button>
+        </div>
+    </div>
+
+    <span class="hint">@T["Select an icon to display when this link is a first level menu item."]</span>
+</fieldset>
+
+
+<script at="Foot">
+        $(function () {
+            $('#iconPicker').iconpicker();
+
+            // set initial state
+            var storedIcon = $('#@Html.IdFor(m=>m.IconClass)').val();
+
+            if (storedIcon.length > 0) {
+                $('#iconPicker').data('iconpicker').update(storedIcon);
+            } else {
+                hideIconSample();
+            }
+
+
+            // a new icon is selected
+            $('#iconPicker').on('iconpickerSelected', function (e) {
+                $('#@Html.IdFor(m=>m.IconClass)').val(e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue));
+                $('.iconpicker-component i').css('opacity', '1');
+            });
+
+
+            // remove the selected icon
+            $('#removeIconButton').on('click', function () {                
+                $('#@Html.IdFor(m=>m.IconClass)').val(undefined);
+                hideIconSample();
+            });
+
+
+            // helper function to hide the icon when needed
+            function hideIconSample() {
+                $('#iconPicker').data('iconpicker').setSourceValue('far fa-circle'); // we set a random icon. Not sure why setting to an empty string does not work.
+                $('#iconPicker').data('iconpicker').update();
+                $('.iconpicker-component i').css('opacity', '0');
+            }
+        });
+</script>

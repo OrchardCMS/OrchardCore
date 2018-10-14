@@ -29,6 +29,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
                 model.LinkText = treeNode.LinkText;
                 model.LinkUrl = treeNode.LinkUrl;
                 model.Enabled = treeNode.Enabled;
+                model.IconClass = treeNode.IconClass;
                 model.CustomClasses = string.Join(",", treeNode.CustomClasses);
             }).Location("Content");
         }
@@ -36,12 +37,17 @@ namespace OrchardCore.AdminTrees.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
         {
             var model = new LinkAdminNodeViewModel();
-            if(await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.Enabled, x => x.CustomClasses))
+            if(await updater.TryUpdateModelAsync(model, Prefix, 
+                x => x.LinkUrl, x => x.LinkText, x => x.Enabled, x => x.CustomClasses, x => x.IconClass))
             {
                 treeNode.LinkText = model.LinkText;
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.Enabled = model.Enabled;
-                treeNode.CustomClasses = string.IsNullOrEmpty(model.CustomClasses) ? Array.Empty<string>() : model.CustomClasses.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                treeNode.IconClass = model.IconClass;
+                treeNode.CustomClasses = String.IsNullOrEmpty(model.CustomClasses) ? 
+                            Array.Empty<string>() : 
+                            model.CustomClasses.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                
             };
             
             return Edit(treeNode);

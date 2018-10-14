@@ -1,5 +1,19 @@
-@if (Model.Level == 1)
-{
-<span class="icon"><i class="far fa-circle" aria-hidden="true"></i></span>
+@using System.Linq
+
+@if (Model.Level == 1){
+
+    var prefix = "icon-class-";
+
+    //extract icon classes from Model.Classes
+    var iconClasses = ((IEnumerable<string>)Model.Classes)
+                    .ToList()
+                    .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .Select(c => c.Substring(prefix.Length));
+
+    // if no icon classes, set a fallback icon
+    iconClasses = iconClasses.Count() > 0 ? iconClasses : new string[] { "far", "fa-circle" };
+
+    <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
 }
-@Model.Text
+
+    @Model.Text
