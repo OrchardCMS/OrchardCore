@@ -99,13 +99,18 @@ namespace OrchardCore.Distributed
         /// </summary>
         public async Task ChangedAsync(string tenant)
         {
-            var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
+            if (_messageBus == null)
+            {
+                return;
+            }
+
+            var currentShell = _httpContextAccessor.HttpContext.Features.Get<ShellContext>();
 
             // If not in a context tied to this tenant, e.g when 'Changed' through the 'Default' tenant.
             if (currentShell?.Settings.Name != tenant)
             {
                 // The shell 'Changed' event message can be published immediately.
-                await (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                await (_messageBus.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
                 return;
             }
 
@@ -124,7 +129,7 @@ namespace OrchardCore.Distributed
             // Otherwise use a deferred task so that any pending database updates will be committed.
             using (var scope = await _shellHost.GetScopeAsync(settings))
             {
-                var deferredTaskEngine = scope?.ServiceProvider.GetService<IDeferredTaskEngine>();
+                var deferredTaskEngine = scope.ServiceProvider?.GetService<IDeferredTaskEngine>();
 
                 deferredTaskEngine?.AddTask(async context =>
                 {
@@ -136,8 +141,8 @@ namespace OrchardCore.Distributed
                             if (tenant == ShellHelper.DefaultShellName)
                             {
                                 // Invoke the 'Created' event to subscribe again to the 'Shell' channel.
-                                var defaultShellEvents = changedScope.ServiceProvider.GetService<IDefaultShellEvents>();
-                                await (defaultShellEvents?.CreatedAsync() ?? Task.CompletedTask);
+                                var events = changedScope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                await (events?.CreatedAsync() ?? Task.CompletedTask);
                             }
 
                             // Then publish the shell 'Changed' event message.

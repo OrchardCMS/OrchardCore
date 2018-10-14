@@ -20,6 +20,7 @@ namespace OrchardCore.Recipes.Controllers
     [Admin]
     public class AdminController : Controller
     {
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
@@ -29,6 +30,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly ISiteService _siteService;
 
         public AdminController(
+            IShellHost shellHost,
             ShellSettings shellSettings,
             ISiteService siteService,
             IAdminThemeService adminThemeService,
@@ -39,6 +41,7 @@ namespace OrchardCore.Recipes.Controllers
             IRecipeExecutor recipeExecutor,
             INotifier notifier)
         {
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _siteService = siteService;
             _recipeExecutor = recipeExecutor;
@@ -105,6 +108,7 @@ namespace OrchardCore.Recipes.Controllers
             // Set shell state to "Initializing" so that subsequent HTTP requests
             // are responded to with "Service Unavailable" while running the recipe.
             _shellSettings.State = TenantState.Initializing;
+            await _shellHost.UpdateShellSettingsAsync(_shellSettings);
 
             try
             {
@@ -119,6 +123,7 @@ namespace OrchardCore.Recipes.Controllers
             {
                 // Don't lock the tenant if the recipe fails.
                 _shellSettings.State = TenantState.Running;
+                await _shellHost.UpdateShellSettingsAsync(_shellSettings);
             }
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
