@@ -12,6 +12,15 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             services.AddGraphQLInputType<TextField, TextFieldInputObjectType>();
             services.AddGraphQLQueryType<TextField, TextFieldQueryObjectType>();
+
+            services.AddGraphQLQueryType<BooleanField, BooleanFieldQueryObjectType>();
+            services.AddGraphQLQueryType<DateField, DateFieldQueryObjectType>();
+            services.AddGraphQLQueryType<DateTimeField, DateTimeFieldQueryObjectType>();
+            services.AddGraphQLQueryType<HtmlField, HtmlFieldQueryObjectType>();
+            services.AddGraphQLQueryType<LinkField, LinkFieldQueryObjectType>();
+            services.AddGraphQLQueryType<NumericField, NumericFieldQueryObjectType>();
+            services.AddGraphQLQueryType<TimeField, TimeFieldQueryObjectType>();
+            services.AddGraphQLQueryType<YoutubeField, YoutubeFieldQueryObjectType>();
         }
     }
 }
