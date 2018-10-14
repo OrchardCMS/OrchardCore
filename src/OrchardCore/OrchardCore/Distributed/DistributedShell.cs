@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Distributed
@@ -96,29 +97,40 @@ namespace OrchardCore.Distributed
         /// <summary>
         /// Invoked when any tenant has changed. Used to publish shell 'Changed' events.
         /// </summary>
-        public Task ChangedAsync(string tenant)
+        public async Task ChangedAsync(string tenant)
         {
             var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
-            var isBackground = _httpContextAccessor.HttpContext?.Items["IsBackground"] != null;
 
-            // If not in the context of a valid request related to this tenant.
-            if (currentShell?.Settings.Name != tenant || isBackground)
+            // If not in a context tied to this tenant, e.g when 'Changed' through the 'Default' tenant.
+            if (currentShell?.Settings.Name != tenant)
             {
                 // The shell 'Changed' event message can be published immediately.
-                return (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                await (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                return;
+            }
+
+            // Try to retrieve the last updated settings.
+            if (!_shellSettingsManager.TryGetSettings(tenant, out var settings))
+            {
+                return;
+            }
+
+            // Nothing to do if the tenant is not yet running, e.g during a tenant setup.
+            if (settings.State != TenantState.Running)
+            {
+                return;
             }
 
             // Otherwise use a deferred task so that any pending database updates will be committed.
-            using (var scope = currentShell.CreateScope())
+            using (var scope = await _shellHost.GetScopeAsync(settings))
             {
-                var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+                var deferredTaskEngine = scope?.ServiceProvider.GetService<IDeferredTaskEngine>();
 
-                // Can be null just after a tenant setup.
                 deferredTaskEngine?.AddTask(async context =>
                 {
-                    if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var _defaultSettings))
+                    if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
                     {
-                        using (var changedScope = await _shellHost.GetScopeAsync(_defaultSettings))
+                        using (var changedScope = await _shellHost.GetScopeAsync(defaultSettings))
                         {
                             // If the default shell was changed and released.
                             if (tenant == ShellHelper.DefaultShellName)
@@ -135,8 +147,6 @@ namespace OrchardCore.Distributed
                     }
                 }, order: 100);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
