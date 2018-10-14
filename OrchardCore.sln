@@ -353,8 +353,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.JsonApi.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentManagement.GraphQL", "src\OrchardCore\OrchardCore.ContentManagement.GraphQL\OrchardCore.ContentManagement.GraphQL.csproj", "{3FACF5BF-F228-4804-A3E7-A80AE5CD9CF8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL", "..\graphql-dotnet\src\GraphQL\GraphQL.csproj", "{D5089F33-6A5C-40BA-9B59-95E8DE46EE5C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -929,10 +927,6 @@ Global
 		{3FACF5BF-F228-4804-A3E7-A80AE5CD9CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FACF5BF-F228-4804-A3E7-A80AE5CD9CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FACF5BF-F228-4804-A3E7-A80AE5CD9CF8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5089F33-6A5C-40BA-9B59-95E8DE46EE5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5089F33-6A5C-40BA-9B59-95E8DE46EE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5089F33-6A5C-40BA-9B59-95E8DE46EE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5089F33-6A5C-40BA-9B59-95E8DE46EE5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
