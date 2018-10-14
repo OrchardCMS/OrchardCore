@@ -98,6 +98,7 @@ namespace OrchardCore.Setup.GraphQL
 
                 var setupContext = new SetupContext
                 {
+                    ShellSettings = shellSettings,
                     SiteName = model.SiteName,
                     EnabledFeatures = null, // default list,
                     AdminUsername = model.UserName,
