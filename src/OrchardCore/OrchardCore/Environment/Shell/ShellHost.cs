@@ -382,6 +382,22 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        private async Task DefaultShellEvent(Func<IDefaultShellEvents, Task> handler)
+        {
+            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
+            {
+                using (var scope = await GetScopeAsync(settings))
+                {
+                    var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+
+                    if (events != null)
+                    {
+                        await handler(events);
+                    }
+                }
+            }
+        }
+
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {
             var shells = _shellContexts?.Values.ToArray();
@@ -406,22 +422,6 @@ namespace OrchardCore.Environment.Shell
             }
 
             return shellContexts;
-        }
-
-        private async Task DefaultShellEvent(Func<IDefaultShellEvents, Task> handler)
-        {
-            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
-            {
-                using (var scope = await GetScopeAsync(settings))
-                {
-                    var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
-
-                    if (events != null)
-                    {
-                        await handler(events);
-                    }
-                }
-            }
         }
 
         /// <summary>

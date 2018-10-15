@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Distributed",
     Name = "Distributed services",
-    Description = "Core components using Message bus.",
+    Description = "Core components mainly using Message bus.",
     Category = "Hosting"
 )]
 
