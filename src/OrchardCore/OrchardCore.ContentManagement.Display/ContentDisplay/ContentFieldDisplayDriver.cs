@@ -22,7 +22,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            // This should only be set in Display methods
             if (_typePartDefinition != null && _partFieldDefinition != null)
             {
                 var partType = _typePartDefinition.PartDefinition.Name;
