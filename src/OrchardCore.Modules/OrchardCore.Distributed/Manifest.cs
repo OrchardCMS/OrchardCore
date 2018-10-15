@@ -8,9 +8,17 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Distributed",
-    Name = "Distributed services",
-    Description = "Core components mainly using Message bus.",
+    Id = "OrchardCore.Distributed.Signal",
+    Name = "Distributed Signal",
+    Description = "Distributed Signal using a Message bus.",
+    Category = "Hosting"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Distributed.Shell",
+    Name = "Distributed Shell",
+    Description = "Distributed Shell using a Message Bus.",
+    DefaultTenantOnly = true,
     Category = "Hosting"
 )]
 
@@ -24,7 +32,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis.Cache",
     Name = "Redis Cache",
-    Description = "Distributed cache implementation using Redis.",
+    Description = "Distributed cache using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]
@@ -32,7 +40,15 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis.Bus",
     Name = "Redis Bus",
-    Description = "Message bus implementation using Redis.",
+    Description = "Message bus using Redis.",
+    Dependencies = new[] { "OrchardCore.Distributed.Redis" },
+    Category = "Hosting"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Distributed.Redis.Lock",
+    Name = "Redis Lock",
+    Description = "Distributed Lock using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Hosting"
 )]

@@ -19,27 +19,33 @@ namespace OrchardCore.Distributed
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
-    public class Startup : StartupBase
+    [Feature("OrchardCore.Distributed.Signal")]
+    public class DistributedSignalStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<DistributedSignal>();
+            services.AddSingleton<ISignal>(sp => sp.GetRequiredService<DistributedSignal>());
+            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedSignal>());
+        }
+    }
+
+    [Feature("OrchardCore.Distributed.Shell")]
+    public class DistributedShellStartup : StartupBase
     {
         private readonly ShellSettings _shellSettings;
 
-        public Startup(ShellSettings shellSettings)
+        public DistributedShellStartup(ShellSettings shellSettings)
         {
             _shellSettings = shellSettings;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<DistributedSignal>();
-            services.AddSingleton<ISignal>(sp => sp.GetRequiredService<DistributedSignal>());
-            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedSignal>());
-
             if (_shellSettings.Name == ShellHelper.DefaultShellName)
             {
                 services.AddSingleton<IDefaultShellEvents, DistributedShell>();
             }
-
-            services.AddSingleton<ILock, RedisLock>();
         }
     }
 
@@ -72,11 +78,20 @@ namespace OrchardCore.Distributed
     }
 
     [Feature("OrchardCore.Distributed.Redis.Bus")]
-    public class RedisSignalStartup : StartupBase
+    public class RedisBusStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IMessageBus, RedisBus>();
+        }
+    }
+
+    [Feature("OrchardCore.Distributed.Redis.Lock")]
+    public class RedisLockStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ILock, RedisLock>();
         }
     }
 }
