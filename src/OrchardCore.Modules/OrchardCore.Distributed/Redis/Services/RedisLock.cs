@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Distributed.Redis.Services
 {
@@ -17,12 +18,15 @@ namespace OrchardCore.Distributed.Redis.Services
         private readonly string _prefix;
         private readonly IRedisClient _redis;
 
-        public RedisLock(ShellSettings shellSettings, IRedisClient redis)
+        public RedisLock(ShellSettings shellSettings, IRedisClient redis, ILogger<RedisLock> logger)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
             _prefix = shellSettings.Name + ":";
             _redis = redis;
+            Logger = logger;
         }
+
+        public ILogger Logger { get; set; }
 
         /// <summary>
 		/// Tries to immediately acquire a named lock with a given expiration time within the current tenant.
@@ -38,7 +42,15 @@ namespace OrchardCore.Distributed.Redis.Services
 
             if (_redis.IsConnected)
             {
-                return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
+                try
+                {
+                    return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
+                }
+
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "'Fails to acquire the named lock {LockName}'.", _prefix + key);
+                }
             }
 
             return false;
@@ -48,7 +60,15 @@ namespace OrchardCore.Distributed.Redis.Services
         {
             if (_redis.IsConnected)
             {
-                _redis.Database.LockRelease(_prefix + key, _hostName, CommandFlags.FireAndForget);
+                try
+                {
+                    _redis.Database.LockRelease(_prefix + key, _hostName, CommandFlags.FireAndForget);
+                }
+
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "'Fails to release the named lock {LockName}'.", _prefix + key);
+                }
             }
         }
 

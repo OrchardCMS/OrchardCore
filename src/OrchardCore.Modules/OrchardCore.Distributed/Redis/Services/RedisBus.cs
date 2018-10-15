@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
 
@@ -15,13 +16,16 @@ namespace OrchardCore.Distributed.Redis.Services
         private readonly string _messagePrefix;
         private readonly IRedisClient _redis;
 
-        public RedisBus(ShellSettings shellSettings, IRedisClient redis)
+        public RedisBus(ShellSettings shellSettings, IRedisClient redis, ILogger<RedisBus> logger)
         {
             _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
             _channelPrefix = shellSettings.Name + ':';
             _messagePrefix = _hostName + '/';
             _redis = redis;
+            Logger = logger;
         }
+
+        public ILogger Logger { get; set; }
 
         public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {
@@ -29,20 +33,28 @@ namespace OrchardCore.Distributed.Redis.Services
 
             if (_redis.IsConnected)
             {
-                var subscriber = _redis.Connection.GetSubscriber();
-
-                subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
+                try
                 {
-                    var tokens = redisValue.ToString().Split('/').ToArray();
+                    var subscriber = _redis.Connection.GetSubscriber();
 
-                    if (tokens.Length != 2 || tokens[0].Length == 0 || tokens[0]
-                        .Equals(_hostName, StringComparison.OrdinalIgnoreCase))
+                    subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
                     {
-                        return;
-                    }
+                        var tokens = redisValue.ToString().Split('/').ToArray();
 
-                    handler(channel, tokens[1]);
-                }, CommandFlags.FireAndForget);
+                        if (tokens.Length != 2 || tokens[0].Length == 0 || tokens[0]
+                            .Equals(_hostName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+
+                        handler(channel, tokens[1]);
+                    }, CommandFlags.FireAndForget);
+                }
+
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "'Unable to subscribe to the channel {ChannelName}'.", _channelPrefix + channel);
+                }
             }
         }
 
@@ -52,8 +64,16 @@ namespace OrchardCore.Distributed.Redis.Services
 
             if (_redis.IsConnected)
             {
-                _redis.Connection.GetSubscriber().Publish(_channelPrefix + channel,
-                    _messagePrefix + message, CommandFlags.FireAndForget);
+                try
+                {
+                    _redis.Connection.GetSubscriber().Publish(_channelPrefix + channel,
+                        _messagePrefix + message, CommandFlags.FireAndForget);
+                }
+
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "'Unable to publish to the channel {ChannelName}'.", _channelPrefix + channel);
+                }
             }
         }
     }
