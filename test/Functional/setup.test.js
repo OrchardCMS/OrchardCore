@@ -4,6 +4,7 @@ const orchard = require('./orchard.js');
 let browser;
 let page;
 let basePath;
+let error;
 
 // e.g., npm test --debug
 // In debug mode we show the editor, slow down operations, and increase the timeout for each test
