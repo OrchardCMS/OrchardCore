@@ -13,6 +13,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
+        private bool _isEditorFieldDisplay = false;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
@@ -30,7 +31,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
 
-                if (fieldType == shapeType)
+                if (fieldType == shapeType || _isEditorFieldDisplay && fieldType + "_Edit" == shapeType)
                 {
                     // HtmlBodyPart-Description, Services-Description
                     result.Differentiator($"{partName}-{fieldName}");
@@ -39,6 +40,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 {
                     // HtmlBodyPart-Description-TextField, Services-Description-TextField
                     result.Differentiator($"{partName}-{fieldName}-{shapeType}");
+                }
+
+                if (_isEditorFieldDisplay)
+                {
+                    // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
+                    return result;
                 }
 
                 result.Displaying(ctx =>
@@ -89,7 +96,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            if(!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
                 return Task.FromResult(default(IDisplayResult));
@@ -104,6 +111,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 _typePartDefinition = typePartDefinition;
                 _partFieldDefinition = partFieldDefinition;
+                _isEditorFieldDisplay = false;
 
                 var result = DisplayAsync(field, fieldDisplayContext);
 
@@ -126,11 +134,26 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
-            BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
+            if (field != null)
+            {
+                BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
-            var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+                var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
-            return EditAsync(field, fieldEditorContext);
+                _typePartDefinition = typePartDefinition;
+                _partFieldDefinition = partFieldDefinition;
+                _isEditorFieldDisplay = true;
+
+                var result = EditAsync(field, fieldEditorContext);
+
+                _typePartDefinition = null;
+                _partFieldDefinition = null;
+                _isEditorFieldDisplay = false;
+
+                return result;
+            }
+
+            return Task.FromResult(default(IDisplayResult));
         }
 
         async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
@@ -155,7 +178,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             contentPart.Apply(partFieldDefinition.Name, field);
-            
+
             return result;
         }
 
