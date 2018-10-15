@@ -11,11 +11,13 @@ let debug = process.env.npm_config_debug || false;
 jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
-
-    basePath = orchard.run('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll');
-    browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
-    page = await browser.newPage();
-
+    try {
+        basePath = orchard.run('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll');
+        browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
+        page = await browser.newPage();
+    } catch (ex) {
+        error = ex;
+    }
 });
 
 afterAll(async () => {
@@ -25,6 +27,21 @@ afterAll(async () => {
 
     orchard.stop();
 });
+
+describe('Browser is initialized', () => {
+    // Workaround for https://github.com/jasmine/jasmine/issues/1533.
+    // Jasmine will not report errors from beforeAll and instead continue running tests which will
+    // inevitably fail since the initial state isn't correct.
+    // This test allows us to print the error from beforeAll, if any.
+    test('no errors on launch', () => {
+        expect(error).toBeUndefined();
+
+        // Sanity testing
+        expect(basePath).toBeDefined();
+        expect(browser).toBeDefined();
+        expect(page).toBeDefined();
+    })
+})
 
 describe('Setup', () => {
 
