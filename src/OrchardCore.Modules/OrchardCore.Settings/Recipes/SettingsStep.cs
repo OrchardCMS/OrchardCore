@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
@@ -46,7 +47,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "SupportedCultures":
-                        site.SupportedCultures = property.Value<string[]>();
+                        site.SupportedCultures = property.Value.ToObject<string[]>();
                         break;
 
                     case "MaxPagedCount":
