@@ -3,40 +3,26 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function initializeOptionsEditor(el, data, defaultValue, dvCtl) {
+function initializeOptionsEditor(elem, data, defaultValue) {
 
-    var selectedValue = defaultValue;
-    var optionsEditor = $(el);
     var previouslyChecked;
 
     var optionsTable = {
         template: '#options-table',
         props: ['value'],
         name: 'options-table',
-        computed: {
-            list: {
-                get: function() {
-                    return this.value;
-                },
-                set: function(value) {
-                    this.$emit('input', value);
-                }
-            },
-            selected: {
-                get: function () {
-                    return selectedValue;
-                },
-                set: function (value) {
-                    selectedValue = value;
-                }
+        data: function() {
+            return {
+                options: data,
+                selected: defaultValue
             }
         },
         methods: {
             add: function () {
-                this.list.push({ name: '', value: ''});
+                this.options.push({ name: '', value: ''});
             },
             remove: function (index) {
-                this.list.splice(index, 1);
+                this.options.splice(index, 1);
             },
             uncheck: function (index, value) {
                 if (index == previouslyChecked) {
@@ -45,12 +31,11 @@ function initializeOptionsEditor(el, data, defaultValue, dvCtl) {
                 }
                 else {
                     previouslyChecked = index;
-                    dvCtl.value = value;
                 }
 
             },
             getFormattedList: function () {
-                return JSON.stringify(this.list.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+                return JSON.stringify(this.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
             }
         }
     };
@@ -59,10 +44,10 @@ function initializeOptionsEditor(el, data, defaultValue, dvCtl) {
         components: {
             optionsTable: optionsTable
         },
-        el: optionsEditor.get(0),
+        el: elem,
         data: {
-            option: data,
-            selected: defaultValue,
+            options: data,
+            selected: '',
             dragging: false
         }
     });
