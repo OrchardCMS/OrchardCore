@@ -46,12 +46,10 @@ namespace OrchardCore.Environment.Shell
         Task UpdateShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
-        /// Reloads a shell. Note: When triggered from another instance, 'localEvent'
-        /// should be set to false so that we don't fire again any distributed event.
+        /// Reloads a shell.
         /// </summary>
         /// <param name="settings"></param>
-        /// <param name="localEvent">If false don't fire any distributed event.</param>
-        Task ReloadShellContextAsync(ShellSettings settings, bool localEvent = true);
+        Task ReloadShellContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Creates a new <see cref="ShellContext"/>.

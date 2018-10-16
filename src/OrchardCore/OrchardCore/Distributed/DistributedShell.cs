@@ -46,7 +46,7 @@ namespace OrchardCore.Distributed
 
         /// <summary>
         /// Invoked when the 'Default' tenant is 1st created  or has changed. Used to
-        /// subscribe to the 'Shell' channel and react to the shell 'Changed' events.
+        /// subscribe to the 'Shell' channel and react to the shell 'Changed' messages.
         /// </summary>
         public async Task CreatedAsync()
         {
@@ -74,13 +74,26 @@ namespace OrchardCore.Distributed
                                 return;
                             }
 
-                            // Try to retrieve the last updated settings.
-                            if (_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
+                            // Try to retrieve the last settings of the specified tenant.
+                            if (!_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
                             {
-                                if (tokens[1] == "Changed")
+                                return;
+                            }
+
+                            if (tokens[1] == "Changed")
+                            {
+                                // Reload the shell of the specified tenant.
+                                _shellHost.ReloadShellContextAsync(settings).GetAwaiter().GetResult();
+
+                                // If the default shell has been reloaded.
+                                if (settings.Name == ShellHelper.DefaultShellName)
                                 {
-                                    // Reload the shell with 'localEvent: false' to break the event loop.
-                                    _shellHost.ReloadShellContextAsync(settings, localEvent: false).GetAwaiter().GetResult();
+                                    // Invoke the 'Created' event to subscribe again to the 'Shell' channel.
+                                    using (var scope = _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult())
+                                    {
+                                        var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                                        events?.CreatedAsync().GetAwaiter().GetResult();
+                                    }
                                 }
                             }
                         });
@@ -95,7 +108,7 @@ namespace OrchardCore.Distributed
         }
 
         /// <summary>
-        /// Invoked when any tenant has changed. Used to publish shell 'Changed' events.
+        /// Invoked when any tenant has changed. Used to publish shell 'Changed' messages.
         /// </summary>
         public async Task ChangedAsync(string tenant)
         {
@@ -104,12 +117,19 @@ namespace OrchardCore.Distributed
                 return;
             }
 
-            var currentShell = _httpContextAccessor.HttpContext.Features.Get<ShellContext>();
+            // There is no shell feature if we are executing the `Changed` message handler.
+            var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
+
+            // If so, break the loop.
+            if (currentShell == null)
+            {
+                return;
+            }
 
             // If not in a request tied to this tenant.
-            if (currentShell?.Settings.Name != tenant)
+            if (currentShell.Settings.Name != tenant)
             {
-                // Publish immediately the shell 'Changed' message.
+                // We can publish immediately the shell 'Changed' message.
                 await (_messageBus.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
                 return;
             }
@@ -120,10 +140,10 @@ namespace OrchardCore.Distributed
                 return;
             }
 
-            // Otherwise, if in a request context tied to this tenant.
+            // So, we are in a request tied to this running tenant.
             using (var scope = await _shellHost.GetScopeAsync(settings))
             {
-                // Use a deferred task to let any storage to be completed.
+                // Use a deferred task so that any storage will be completed before publishing.
                 var deferredTaskEngine = scope.ServiceProvider?.GetService<IDeferredTaskEngine>();
 
                 deferredTaskEngine?.AddTask(async context =>
@@ -134,7 +154,7 @@ namespace OrchardCore.Distributed
                         return;
                     }
 
-                    // A 'Changed' message is always published through the 'Default' tenant.
+                    // 'Changed' messages are always published using the 'Default' tenant.
                     using (var changedScope = await _shellHost.GetScopeAsync(defaultSettings))
                     {
                         // If the default shell has changed.

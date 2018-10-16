@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
@@ -334,7 +335,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            await DefaultShellEvent(e => e.ChangedAsync(tenant));
+            await DefaultShellEventAsync(e => e.ChangedAsync(tenant));
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
@@ -350,12 +351,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings"></param>
         /// <param name="localEvent">If false don't fire again any distributed event.</param>
-        public async Task ReloadShellContextAsync(ShellSettings settings, bool localEvent = true)
+        public async Task ReloadShellContextAsync(ShellSettings settings)
         {
-            if (localEvent)
-            {
-                await DefaultShellEvent(e => e.ChangedAsync(settings.Name));
-            }
+            await DefaultShellEventAsync(e => e.ChangedAsync(settings.Name));
 
             if (settings.State == TenantState.Disabled)
             {
@@ -375,14 +373,9 @@ namespace OrchardCore.Environment.Shell
             }
 
             await GetOrCreateShellContextAsync(settings);
-
-            if (!localEvent && settings.Name == ShellHelper.DefaultShellName)
-            {
-                await DefaultShellEvent(e => e.CreatedAsync());
-            }
         }
 
-        private async Task DefaultShellEvent(Func<IDefaultShellEvents, Task> handler)
+        private async Task DefaultShellEventAsync(Func<IDefaultShellEvents, Task> handler)
         {
             if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
             {
