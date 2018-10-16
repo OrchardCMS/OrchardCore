@@ -10,12 +10,17 @@ namespace OrchardCore.ContentFields.Indexing
         public override Task BuildIndexAsync(TimeField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
+
             DateTime? indexedValue = null;
             if (field.Value.HasValue)
             {
                 indexedValue = new DateTime(field.Value.Value.Ticks);
             }
-            context.DocumentIndex.Set(context.Key, indexedValue, options);
+
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, indexedValue, options);
+            }
 
             return Task.CompletedTask;
         }

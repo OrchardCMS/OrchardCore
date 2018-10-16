@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation;
+using OpenIddict.Validation.Internal;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -59,10 +60,7 @@ namespace OrchardCore.OpenId.Configuration
 
             if (!string.IsNullOrEmpty(settings.Authority))
             {
-                options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
-                {
-                    builder.HandlerType = typeof(JwtBearerHandler);
-                });
+                options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
@@ -86,17 +84,11 @@ namespace OrchardCore.OpenId.Configuration
                 // Register the JWT or validation handler in the authentication handlers collection.
                 if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.Encrypted)
                 {
-                    options.AddScheme(OpenIddictValidationDefaults.AuthenticationScheme, builder =>
-                    {
-                        builder.HandlerType = typeof(OpenIddictValidationHandler);
-                    });
+                    options.AddScheme<OpenIddictValidationHandler>(OpenIddictValidationDefaults.AuthenticationScheme, displayName: null);
                 }
                 else if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
                 {
-                    options.AddScheme(JwtBearerDefaults.AuthenticationScheme, builder =>
-                    {
-                        builder.HandlerType = typeof(JwtBearerHandler);
-                    });
+                    options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
                 }
                 else
                 {

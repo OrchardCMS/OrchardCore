@@ -14,11 +14,17 @@ namespace OrchardCore.ContentFields.Indexing
 
             if (settings.Scale == 0)
             {
-                context.DocumentIndex.Set(context.Key, (int?)field.Value, options);
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key, (int?)field.Value, options);
+                }
             }
             else
             {
-                context.DocumentIndex.Set(context.Key, field.Value, options);
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key, field.Value, options);
+                }
             }
 
             return Task.CompletedTask;
