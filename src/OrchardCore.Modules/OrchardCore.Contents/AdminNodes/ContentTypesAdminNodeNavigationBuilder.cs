@@ -53,6 +53,7 @@ namespace OrchardCore.Contents.AdminNodes
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.Permission(Permissions.EditOwnContent);
                     tn.CustomClasses.ToList().ForEach(x => cTypeMenu.AddClass(x));
                 });
             }

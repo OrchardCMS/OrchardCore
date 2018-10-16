@@ -91,8 +91,10 @@ namespace OrchardCore.Lists.AdminNodes
                 if ((cim.AdminRouteValues.Any()) && (ci.DisplayText != null))
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m => m
-                    .Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues)
-                    .LocalNav());
+                        .Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues)
+                        .Permission(Contents.Permissions.EditOwnContent)
+                        .Resource(ci)
+                        .LocalNav());
                 }
 
             }

@@ -41,8 +41,6 @@ namespace OrchardCore.AdminTrees.AdminNodes
                 AddIconPickerClassToLink( ltn.IconClass, itemBuilder);
                 
 
-                // Add the other ITreeNodeNavigationBuilder build themselves as children of this link
-
                 // Let children build themselves inside this MenuItem
                 // todo: this logic can be shared by all TreeNodeNavigationBuilders
                 foreach (var childTreeNode in menuItem.Items)
