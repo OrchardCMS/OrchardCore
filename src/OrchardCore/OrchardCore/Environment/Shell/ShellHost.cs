@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
@@ -61,6 +60,7 @@ namespace OrchardCore.Environment.Shell
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         await CreateAndRegisterShellsAsync();
+                        await DefaultShellEventAsync(e => e.CreatedAsync());
                     }
                 }
                 finally
@@ -180,16 +180,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     try
                     {
-                        var shell = await GetOrCreateShellContextAsync(settings);
-
-                        if (shell.Settings.Name == ShellHelper.DefaultShellName)
-                        {
-                            using (var scope = shell.CreateScope())
-                            {
-                                var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
-                                await (events?.CreatedAsync() ?? Task.CompletedTask);
-                            }
-                        }
+                        await GetOrCreateShellContextAsync(settings);
                     }
                     catch (Exception ex)
                     {

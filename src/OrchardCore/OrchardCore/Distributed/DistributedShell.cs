@@ -55,6 +55,31 @@ namespace OrchardCore.Distributed
                 return;
             }
 
+            // There is no shell on the 1st creation before serving the 1st request.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ShellContext>() == null)
+            {
+                // So, use a deferred task to let the requested tenant be fully initialized.
+                var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices?.GetService<IDeferredTaskEngine>();
+
+                deferredTaskEngine?.AddTask(async context =>
+                {
+                    // Try to retrieve the last updated settings of the `Default` tenant.
+                    if (!_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+                    {
+                        return;
+                    }
+
+                    // Invoke the 'Created' event to subscribe to the 'Shell' channel.
+                    using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
+                    {
+                        var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                        await (events?.CreatedAsync() ?? Task.CompletedTask);
+                    }
+                }, order: 100);
+
+                return;
+            }
+
             if (!_initialized && _synLock != null)
             {
                 await _synLock.WaitAsync();
@@ -112,7 +137,9 @@ namespace OrchardCore.Distributed
         /// </summary>
         public async Task ChangedAsync(string tenant)
         {
-            if (_messageBus == null)
+            // If the 'Default' tenant has changed, a message bus may have been
+            // just enabled and not yet available, so let's add a deferred task.
+            if (_messageBus == null && ShellHelper.DefaultShellName != tenant)
             {
                 return;
             }
@@ -130,7 +157,7 @@ namespace OrchardCore.Distributed
             if (currentShell.Settings.Name != tenant)
             {
                 // We can publish immediately the shell 'Changed' message.
-                await (_messageBus.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
+                await (_messageBus?.PublishAsync("Shell", tenant + ":Changed") ?? Task.CompletedTask);
                 return;
             }
 
@@ -140,10 +167,10 @@ namespace OrchardCore.Distributed
                 return;
             }
 
-            // So, we are in a request tied to this running tenant.
+            // Here means the request is tied to this running tenant.
             using (var scope = await _shellHost.GetScopeAsync(settings))
             {
-                // Use a deferred task so that any storage will be completed before publishing.
+                // So, use a deferred task to let any storage be completed.
                 var deferredTaskEngine = scope.ServiceProvider?.GetService<IDeferredTaskEngine>();
 
                 deferredTaskEngine?.AddTask(async context =>
