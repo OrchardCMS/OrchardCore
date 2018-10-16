@@ -41,8 +41,6 @@ function initializeOptionsEditor(elem, data, defaultValue) {
         },
         el: elem,
         data: {
-            options: data,
-            selected: '',
             dragging: false
         }
     });
