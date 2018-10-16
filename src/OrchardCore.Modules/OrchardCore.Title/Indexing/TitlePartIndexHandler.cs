@@ -12,7 +12,10 @@ namespace OrchardCore.Title.Indexing
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Set(context.Key, part.Title, options);
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Title, options);
+            }
 
             return Task.CompletedTask;
         }

@@ -150,6 +150,7 @@ namespace OrchardCore.Contents
         }
     }
 
+
     [RequireFeatures("OrchardCore.AdminTrees")]
     public class ContentTreeStartup : StartupBase
     {
@@ -158,6 +159,15 @@ namespace OrchardCore.Contents
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+        }
+     }
+
+    [Feature("OrchardCore.Contents.FileContentDefinition")]
+    public class FileContentDefinitionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddFileContentDefinitionStore();
         }
     }
 }
