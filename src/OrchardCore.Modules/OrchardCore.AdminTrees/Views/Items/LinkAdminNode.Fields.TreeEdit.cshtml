@@ -26,13 +26,6 @@
     <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"]</span>
 </fieldset>
 
-
-<fieldset class="form-group">
-    <label asp-for="CustomClasses">@T["CSS Classes"]</label>
-    <input asp-for="CustomClasses" class="form-control" type="text" />
-    <span class="hint">@T["A comma separated list of classes that will be added to the tag."]</span>
-</fieldset>
-
 <fieldset class="form-group">
     <label asp-for="IconClass">@T["Icon"]</label>
     <input type="hidden" asp-for="IconClass" id="@Html.IdFor(m=>m.IconClass)" />

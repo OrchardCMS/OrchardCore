@@ -6,8 +6,6 @@ namespace OrchardCore.Lists.AdminNodes
 
         public bool Enabled { get; set; }
 
-        public string CustomClasses { get; set; }
-
         public bool AddContentTypeAsParent { get; set; }
     }
 }

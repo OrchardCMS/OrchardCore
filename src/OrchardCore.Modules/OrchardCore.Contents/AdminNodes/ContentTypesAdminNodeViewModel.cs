@@ -7,7 +7,5 @@ namespace OrchardCore.Contents.AdminNodes
         public string[] ContentTypes { get; set; }
 
         public bool Enabled { get; set; }
-
-        public string CustomClasses { get; set; }
     }
 }

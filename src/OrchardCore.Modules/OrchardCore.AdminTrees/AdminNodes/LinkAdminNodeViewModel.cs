@@ -10,8 +10,6 @@ namespace OrchardCore.AdminTrees.AdminNodes
 
         public bool Enabled { get; set; }
 
-        public string CustomClasses { get; set; }
-
         public string IconClass { get; set; }
     }
 }

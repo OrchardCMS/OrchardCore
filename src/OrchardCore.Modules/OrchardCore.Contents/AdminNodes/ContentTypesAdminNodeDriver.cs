@@ -24,7 +24,6 @@ namespace OrchardCore.Contents.AdminNodes
                 model.ShowAll = treeNode.ShowAll;
                 model.ContentTypes = treeNode.ContentTypes;
                 model.Enabled = treeNode.Enabled;
-                model.CustomClasses = string.Join("," , treeNode.CustomClasses);                
             }).Location("Content");
         }
 
@@ -35,12 +34,11 @@ namespace OrchardCore.Contents.AdminNodes
 
             var model = new ContentTypesAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.ContentTypes, x => x.Enabled, x => x.CustomClasses)) {
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.ContentTypes, x => x.Enabled)) {
 
                 treeNode.ShowAll = model.ShowAll;
                 treeNode.ContentTypes = model.ContentTypes;
-                treeNode.Enabled = model.Enabled;
-                treeNode.CustomClasses = string.IsNullOrEmpty(model.CustomClasses) ? Array.Empty<string>() : model.CustomClasses.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                treeNode.Enabled = model.Enabled;                
             };
 
             return Edit(treeNode);

@@ -37,8 +37,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
 
                 // Add the actual link
                 itemBuilder.Url(ltn.LinkUrl);
-                ltn.CustomClasses.ToList().ForEach( x => itemBuilder.AddClass(x));
-                AddIconPickerClassToLink( ltn.IconClass, itemBuilder);
+                AddIconPickerClassToLink(ltn.IconClass, itemBuilder);
                 
 
                 // Let children build themselves inside this MenuItem

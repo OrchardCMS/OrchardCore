@@ -55,16 +55,6 @@
     </div>
 </fieldset>
 
-<fieldset class="form-group">
-    <div class="row">
-        <div class="col-md">
-            <label asp-for="CustomClasses">@T["CSS Classes"]</label>
-            <input asp-for="CustomClasses" class="form-control" type="text" />
-            <span class="hint">@T["A comma separated list of classes that will be added to the tag for every link."]</span>
-        </div>
-    </div>
-</fieldset>
-
 <script at="Foot" depends-on="jquery">
     $(function () {
         switchContentTypesCheckBoxes();

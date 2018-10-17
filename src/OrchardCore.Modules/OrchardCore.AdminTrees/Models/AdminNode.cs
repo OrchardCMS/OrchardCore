@@ -10,8 +10,7 @@ namespace OrchardCore.AdminTrees.Models
     {
         public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
         public bool Enabled { get; set; } = true;        
-        public string[] CustomClasses { get; set; } = Array.Empty<string>();
-
+        
         public AdminNode GetMenuItemById(string id)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
