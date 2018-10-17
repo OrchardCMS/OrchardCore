@@ -29,12 +29,8 @@ namespace OrchardCore.AdminTrees.Services
             Logger = logger;
         }
 
-        
-
-
         // We only add them if the caller uses the string "admintree").
         // todo: use a public constant for the string
-        // todo: make async once INavigationProviders are async.
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admintree", StringComparison.OrdinalIgnoreCase))
