@@ -11,7 +11,6 @@ namespace OrchardCore.AdminTrees.AdminNodes
 
         public string LinkUrl { get; set; }
 
-        public string IconClass { get; set; }
+        public string IconClass { get; set; } = "far fa-circle";
     }
-
 }

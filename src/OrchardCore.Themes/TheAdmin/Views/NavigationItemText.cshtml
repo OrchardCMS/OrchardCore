@@ -10,9 +10,6 @@
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 
-    // if no icon classes, set a fallback icon
-    iconClasses = iconClasses.Count() > 0 ? iconClasses : new string[] { "far", "fa-circle" };
-
     <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
 }
 
