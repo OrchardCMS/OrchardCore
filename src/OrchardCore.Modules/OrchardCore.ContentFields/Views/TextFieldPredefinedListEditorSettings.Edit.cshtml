@@ -26,7 +26,7 @@
                     <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
                 </td>
                 <td>
-                    <input type="text" class="form-control" v-model="option.value" placeholder="Enter a value" style="font-family: Courier New, Courier, monospace" />
+                    <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
                 </td>
                 <td class="text-center">
                     <div class="custom-control custom-radio ml-2">
@@ -75,7 +75,7 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-right">@T["Edit JSON"]</a>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right">@T["Edit Data"]</a>
             <options-table></options-table>
         </fieldset>
     </div>
@@ -85,7 +85,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Edit JSON"]</h5>
+                <h5 class="modal-title">@T["Edit Data"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
