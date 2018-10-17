@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>
-    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
+    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler, IDisposable
     {
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -407,6 +407,21 @@ namespace OrchardCore.Environment.Shell
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
+        }
+
+        public void Dispose()
+        {
+            if (_shellContexts == null)
+            {
+                return;
+            }
+
+            var shells = _shellContexts.Values.ToArray();
+
+            foreach (var shell in shells)
+            {
+                shell.Dispose();
+            }
         }
     }
 }

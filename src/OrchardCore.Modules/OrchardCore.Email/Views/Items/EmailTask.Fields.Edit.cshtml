@@ -25,6 +25,13 @@
     <span class="hint">@T["The body of the email message. With Liquid support."]</span>
 </fieldset>
 
+<div class="form-group">
+    <fieldset class="form-check">
+        <input class="form-check-input" type="checkbox" asp-for="IsBodyHtml" />
+        <label class="form-check-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
+    </fieldset>
+    <span class="hint">@T["If checked, indicates the body of the email message is HTML. If unchecked, indicates the body of the email message is plain text."]</span>
+</div>
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>

@@ -23,8 +23,8 @@
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@Context.Request.Path">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@Context.Request.Path">@T["Workflows"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
+            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Workflows"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
         </li>
     </ul>
 </nav>

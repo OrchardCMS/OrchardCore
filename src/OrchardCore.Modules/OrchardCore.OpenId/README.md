@@ -55,7 +55,7 @@ Available settings are:
 A sample of OpenID Connect Settings recipe step:
 ```
 {
-      "name": "openidsettings",
+      "name": "OpenIdServerSettings",
       "TestingModeEnabled": false,
       "AccessTokenFormat": "JWT", //JWT or Encrypted
       "Authority": "https://www.orchardproject.net",
