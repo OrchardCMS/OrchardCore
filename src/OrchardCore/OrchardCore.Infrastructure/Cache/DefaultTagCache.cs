@@ -67,6 +67,11 @@ namespace OrchardCore.Environment.Cache
             return _dictionary.TryGetValue(tag, out var set) && set.Contains(item);
         }
 
+        public bool HasTag(string tag, string item)
+        {
+            return _dictionary.TryGetValue(tag, out var set) && set.Contains(item);
+        }
+
         public Task RemoveTagAsync(string tag)
         {
             HashSet<string> set;

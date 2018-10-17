@@ -7,6 +7,7 @@ using OrchardCore.Distributed.Redis;
 using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Distributed.Redis.Services;
+using OrchardCore.Distributed.Core.Services;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;

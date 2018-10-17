@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 
-namespace OrchardCore.Distributed
+namespace OrchardCore.Distributed.Core.Services
 {
     /// <summary>
     /// In a distributed environment, allows to synchronize tenant states by subscribing

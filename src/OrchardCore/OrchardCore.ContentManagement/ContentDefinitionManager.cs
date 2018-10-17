@@ -18,8 +18,8 @@ namespace OrchardCore.ContentManagement
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IContentDefinitionStore _contentDefinitionStore;
-        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
-        private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+        private ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
+        private ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
 
         public ContentDefinitionManager(
             IMemoryCache memoryCache,
@@ -29,13 +29,16 @@ namespace OrchardCore.ContentManagement
             _signal = signal;
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
-
-            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
-            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
+            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry =>
+            {
+                entry.ExpirationTokens.Add(_signal.GetToken(TypeHashCacheKey));
+                return new ConcurrentDictionary<string, ContentTypeDefinition>();
+            });
+
             return _typeDefinitions.GetOrAdd(name, n =>
             {
                 var contentTypeDefinitionRecord = GetContentDefinitionRecord()
@@ -48,6 +51,12 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
+            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry =>
+            {
+                entry.ExpirationTokens.Add(_signal.GetToken(TypeHashCacheKey));
+                return new ConcurrentDictionary<string, ContentPartDefinition>();
+            });
+
             return _partDefinitions.GetOrAdd(name, n =>
             {
                 return Build(GetContentDefinitionRecord()
@@ -292,14 +301,7 @@ namespace OrchardCore.ContentManagement
         {
             _contentDefinitionRecord.Serial++;
             _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
-
-            _signal.SignalToken(TypeHashCacheKey);
-
-
-            // Release cached values
-            _typeDefinitions.Clear();
-            _partDefinitions.Clear();
+            _signal.SignalTokenAsync(TypeHashCacheKey).GetAwaiter().GetResult();
         }
-
     }
 }

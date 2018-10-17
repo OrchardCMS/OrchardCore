@@ -37,7 +37,7 @@ namespace OrchardCore.Distributed.Redis.Services
                 {
                     var subscriber = _redis.Connection.GetSubscriber();
 
-                    subscriber.Subscribe(_channelPrefix + channel, (redisChannel, redisValue) =>
+                    await subscriber.SubscribeAsync(_channelPrefix + channel, (redisChannel, redisValue) =>
                     {
                         var tokens = redisValue.ToString().Split('/').ToArray();
 
@@ -66,7 +66,7 @@ namespace OrchardCore.Distributed.Redis.Services
             {
                 try
                 {
-                    _redis.Connection.GetSubscriber().Publish(_channelPrefix + channel,
+                    await _redis.Connection.GetSubscriber().PublishAsync(_channelPrefix + channel,
                         _messagePrefix + message, CommandFlags.FireAndForget);
                 }
 

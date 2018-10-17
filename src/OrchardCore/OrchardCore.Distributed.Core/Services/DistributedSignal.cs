@@ -5,7 +5,7 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Distributed
+namespace OrchardCore.Distributed.Core.Services
 {
     /// <summary>
     /// This component is a singleton and holds all the existing signal token for a given tenant.
