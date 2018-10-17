@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function initializeOptionsEditor(elem, data, defaultValue) {
+function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
 
@@ -47,6 +47,32 @@ function initializeOptionsEditor(elem, data, defaultValue) {
         el: elem,
         data: {
             dragging: false
+        },
+        methods: {
+            showModal: function (event) {
+
+                var modal = $(modalBodyElement).modal();
+                modal.show();
+
+                if (this.canAddMedia) {
+                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
+                    $("#mediaApp").show();
+                    var modal = $(modalBodyElement).modal();
+                    $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
+                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
+                            alert($('#onlyOneItemMessage').val());
+                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
+                        } else {
+                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
+                        }
+                        // we don't want the included medias to be still selected the next time we open the modal.
+                        mediaApp.selectedMedias = [];
+
+                        modal.modal('hide');
+                        return true;
+                    });
+                }
+            }
         }
     });
 

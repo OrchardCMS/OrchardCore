@@ -8,7 +8,7 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue');
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementById('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">
@@ -32,7 +32,7 @@
                     <div class="custom-control custom-radio ml-2">
                         @if (Model.DefaultValue != null)
                         {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="selected" v-on:click="uncheck(index, option.value)" >
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="selected" v-on:click="uncheck(index, option.value)">
                         }
                         else
                         {
@@ -53,7 +53,7 @@
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
-                    
+
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
                 </td>
             </tr>
@@ -75,7 +75,37 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right">@T["Edit JSON"]</a>
             <options-table></options-table>
         </fieldset>
+    </div>
+</div>
+
+<div class="modal" id="@Html.IdFor(m => m)-ModalBody">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Edit JSON"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form-group">
+                    <label asp-for="Options">@T["Options"]</label>
+                    <textarea asp-for="Options" rows="8" class="form-control"></textarea>
+                    <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
+                </fieldset>
+                <fieldset class="form-group">
+                    <label asp-for="DefaultValue">@T["Default value"]</label>
+                    <input asp-for="DefaultValue" class="form-control" type="text" />
+                    <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
     </div>
 </div>
