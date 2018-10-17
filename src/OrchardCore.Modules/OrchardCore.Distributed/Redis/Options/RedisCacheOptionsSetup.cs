@@ -17,6 +17,7 @@ namespace OrchardCore.Distributed.Redis.Options
 
         public void Configure(RedisCacheOptions options)
         {
+            // Used to prefix all keys with the tenant name.
             options.InstanceName = _shellSettings.Name;
 
             // Right now we can only pass a string representing the redis configuration.

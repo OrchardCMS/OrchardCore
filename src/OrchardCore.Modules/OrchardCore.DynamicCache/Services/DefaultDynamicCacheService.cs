@@ -54,7 +54,7 @@ namespace OrchardCore.DynamicCache.Services
                 foreach (var tag in tags)
                 {
                     // Check if any tag needs to be refreshed.
-                    if (!tagCache.IsItemTagged(tag, cacheKey))
+                    if (!tagCache.HasTag(tag, cacheKey))
                     {
                         tagCache.Tag(cacheKey, tags);
                         tagCache.Tag(GetCacheContextCacheKey(context.CacheId), tags);

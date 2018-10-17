@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Cache
     {
         void Tag(string key, params string[] tags);
         IEnumerable<string> GetTaggedItems(string tag);
-        bool IsItemTagged(string tag, string item);
+        bool HasTag(string tag, string item);
         Task RemoveTagAsync(string tag);
     }
 
