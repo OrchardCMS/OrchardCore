@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -19,7 +20,14 @@ namespace OrchardCore.Indexing
                 return Task.CompletedTask;
             }
 
-            var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, $"{context.Key}.{typePartDefinition.Name}", typePartDefinition, settings);
+            var keys = new List<string>();
+            keys.Add(typePartDefinition.Name);
+            foreach (var key in context.Keys)
+            {
+                keys.Add($"{key}.{typePartDefinition.Name}");
+            }
+
+            var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, keys, typePartDefinition, settings);
 
             return BuildIndexAsync(part, buildPartIndexContext);
         }

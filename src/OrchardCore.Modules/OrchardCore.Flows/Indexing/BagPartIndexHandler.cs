@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Flows.Models;
@@ -32,7 +33,14 @@ namespace OrchardCore.Flows.Indexing
                 {
                     foreach (var contentItem in bagPart.ContentItems)
                     {
-                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, $"{context.Key}.{contentItem.ContentType}");
+                        var keys = new List<string>();
+                        keys.Add(contentItem.ContentType);
+                        foreach (var key in context.Keys)
+                        {
+                            keys.Add($"{key}.{contentItem.ContentType}");
+                        }
+
+                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys);
 
                         await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                     }
