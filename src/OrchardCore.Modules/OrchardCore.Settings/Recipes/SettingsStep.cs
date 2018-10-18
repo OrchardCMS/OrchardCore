@@ -46,7 +46,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "SupportedCultures":
-                        site.SupportedCultures = property.Value.ToObject<string[]>();
+                        site.SupportedCultures = property.Value<string[]>();
                         break;
 
                     case "MaxPagedCount":
