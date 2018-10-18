@@ -51,11 +51,6 @@ namespace OrchardCore.Features.Recipes.Executors
                 featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
             }
 
-            if (featuresToDisable.Count > 0 && featuresToEnable.Count == 0)
-            {
-                return;
-            }
-
             if (featuresToDisable.Count > 0 && featuresToEnable.Count > 0)
             {
                 await _shellFeatureManager.DisableEnableFeaturesAsync(featuresToDisable, featuresToEnable, true);
