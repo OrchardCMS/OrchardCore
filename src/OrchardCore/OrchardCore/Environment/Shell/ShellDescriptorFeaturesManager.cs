@@ -50,23 +50,7 @@ namespace OrchardCore.Environment.Shell
 
             if (featuresToEnable.Count > 0)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    foreach(var feature in featuresToEnable)
-                    {
-                        _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
-                    }
-                }
-
-                var enabledFeatures = await _extensionManager
-                    .LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
-
-                shellDescriptor.Features = enabledFeatures
-                    .Select(x => x.FeatureInfo)
-                    .Concat(featuresToEnable)
-                    .Distinct()
-                    .Select(x => new ShellFeature(x.Id))
-                    .ToList();
+                shellDescriptor = await EnableFeaturesInternalAsync(shellDescriptor, featuresToEnable);
 
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
@@ -80,7 +64,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Disables a list of features.
         /// </summary>
-        /// <param name="featureIds">The IDs for the features to be disabled.</param>
+        /// <param name="features">The features to be disabled.</param>
         /// <returns>An enumeration with the disabled feature IDs.</returns>
         public Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
         {
@@ -105,20 +89,7 @@ namespace OrchardCore.Environment.Shell
 
             if (featuresToDisable.Count > 0)
             {
-                var loadedFeatures = await _extensionManager.LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
-                var enabledFeatures = loadedFeatures.Select(x => x.FeatureInfo).ToList();
-
-                foreach (var feature in featuresToDisable)
-                {
-                    enabledFeatures.Remove(feature);
-
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
-                    }
-                }
-
-                shellDescriptor.Features = enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList();
+                shellDescriptor = await DisableFeaturesInternalAsync(shellDescriptor, featuresToDisable);
 
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
@@ -127,6 +98,83 @@ namespace OrchardCore.Environment.Shell
             }
 
             return featuresToDisable;
+        }
+
+        public async Task DisableEnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force)
+        {
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
+
+            var featuresToDisable = disabled
+                .Where(f => !alwaysEnabledIds.Contains(f.Id))
+                .SelectMany(feature => GetFeaturesToDisable(feature, force))
+                .Distinct()
+                .ToList();
+
+            if (featuresToDisable.Count > 0)
+            {
+                shellDescriptor = await DisableFeaturesInternalAsync(shellDescriptor, featuresToDisable);
+            }
+
+            var featuresToEnable = enabled
+                .SelectMany(feature => GetFeaturesToEnable(feature, force))
+                .Distinct()
+                .ToList();
+
+            if (featuresToEnable.Count > 0)
+            {
+                shellDescriptor = await EnableFeaturesInternalAsync(shellDescriptor, featuresToEnable);
+            }
+
+            if (featuresToEnable.Count > 0 || featuresToDisable.Count > 0)
+            {
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(
+                    shellDescriptor.SerialNumber,
+                    shellDescriptor.Features,
+                    shellDescriptor.Parameters);
+            }
+        }
+
+        private async Task<ShellDescriptor> EnableFeaturesInternalAsync(ShellDescriptor shellDescriptor, IList<IFeatureInfo> featuresToEnable)
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                foreach (var feature in featuresToEnable)
+                {
+                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
+                }
+            }
+
+            var enabledFeatures = await _extensionManager
+                .LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
+
+            shellDescriptor.Features = enabledFeatures
+                .Select(x => x.FeatureInfo)
+                .Concat(featuresToEnable)
+                .Distinct()
+                .Select(x => new ShellFeature(x.Id))
+                .ToList();
+
+            return shellDescriptor;
+        }
+
+        private async Task<ShellDescriptor> DisableFeaturesInternalAsync(ShellDescriptor shellDescriptor, IList<IFeatureInfo> featuresToDisable)
+        {
+            var loadedFeatures = await _extensionManager.LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
+            var enabledFeatures = loadedFeatures.Select(x => x.FeatureInfo).ToList();
+
+            foreach (var feature in featuresToDisable)
+            {
+                enabledFeatures.Remove(feature);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
+                }
+            }
+
+            shellDescriptor.Features = enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList();
+
+            return shellDescriptor;
         }
 
         /// <summary>

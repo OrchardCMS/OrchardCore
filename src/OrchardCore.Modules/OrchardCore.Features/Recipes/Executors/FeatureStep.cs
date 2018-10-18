@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -35,17 +37,37 @@ namespace OrchardCore.Features.Recipes.Executors
 
             var features = _extensionManager.GetFeatures();
 
+            var featuresToDisable = new List<IFeatureInfo>();
+
             if (step.Disable.Any())
             {
-                var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
+                featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
             }
+
+            var featuresToEnable = new List<IFeatureInfo>();
 
             if (step.Enable.Any())
             {
-                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
+                featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
+            }
 
+            if (featuresToDisable.Count > 0 && featuresToEnable.Count == 0)
+            {
+                return;
+            }
+
+            if (featuresToDisable.Count > 0 && featuresToEnable.Count > 0)
+            {
+                await _shellFeatureManager.DisableEnableFeaturesAsync(featuresToDisable, featuresToEnable, true);
+            }
+
+            else if (featuresToDisable.Count > 0)
+            {
+                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
+            }
+
+            else if (featuresToEnable.Count > 0)
+            {
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }
         }

@@ -53,6 +53,11 @@ namespace OrchardCore.Environment.Shell
             return _shellDescriptorFeaturesManager.DisableFeaturesAsync(_shellDescriptor, features, force);
         }
 
+        public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force = true)
+        {
+            return _shellDescriptorFeaturesManager.DisableEnableFeaturesAsync(_shellDescriptor, disabled, enabled, force);
+        }
+
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
         {
             // enabled extensions are those which have at least one enabled feature.
