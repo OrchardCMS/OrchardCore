@@ -47,13 +47,15 @@ namespace OrchardCore.ContentFields.Fields
         {
             EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix)) {
+            if (await updater.TryUpdateModelAsync(model, Prefix))
+            {
                 var settings = context.PartFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, T["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else {
+                else
+                {
                     var uri = new Uri(model.RawAddress);
 
                     // if it is a url with QueryString
