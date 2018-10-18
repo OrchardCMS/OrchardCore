@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <draggable v-model="data.options" :element="'tbody'">
-            <tr v-for="(option, index) in data.options" :key="option.value + index" class="ui-sortable-handle">
+            <tr v-for="(option, index) in data.options" :key="index" class="ui-sortable-handle">
                 <td>
                     <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
                 </td>
