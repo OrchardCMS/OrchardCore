@@ -8,7 +8,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
     var previouslyChecked;
 
     var store = {
-        debug: true,
+        debug: false,
         state: {
             options: data,
             selected: defaultValue
@@ -85,8 +85,8 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         el: elem,
         methods: {
-            showModal: function (event) {
-                optionsModal.methods.showModal(event);
+            showModal: function () {
+                optionsModal.methods.showModal();
             }
         }
     });
