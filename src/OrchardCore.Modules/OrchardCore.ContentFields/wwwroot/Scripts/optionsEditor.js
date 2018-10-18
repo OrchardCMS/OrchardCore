@@ -6,7 +6,6 @@
 function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
-    var currentData = data;
 
     var store = {
         debug: true,
@@ -14,16 +13,20 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             options: data,
             selected: defaultValue
         },
-        methods: {
-            setMessageAction: function(newValue) {
-                if (this.debug) { console.log('setMessageAction triggered with', newValue) };
-            },
-            clearMessageAction: function() {
-                if (this.debug) { console.log('clearMessageAction triggered') };
-            },
-            reloadData: function(data) {
-                this.options = data;
+        addOption: function () {
+            if (this.debug) { console.log('add option triggered') };
+            var exist = this.state.options.filter(function (x) { return IsNullOrWhiteSpace(x.value) }).length;
+            if (!exist) {
+                this.state.options.push({ name: '', value: '' });
             }
+        },
+        removeOption: function (index) {
+            if (this.debug) { console.log('remove option triggered with', index) };
+            this.state.options.splice(index, 1);
+        },
+        getOptionsFormattedList: function () {
+            if (this.debug) { console.log('getOptionsFormattedList triggered') };
+            return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
         }
     }
 
@@ -33,26 +36,23 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         name: 'options-table',
         methods: {
             add: function () {
-                var exist = this.data.options.filter(function (x) { return IsNullOrWhiteSpace(x.value) }).length;
-                if (!exist) {
-                    this.data.options.push({ name: '', value: '' });
-                }
+                store.addOption();
             },
             remove: function (index) {
-                this.data.options.splice(index, 1);
+                store.removeOption(index);
             },
-            uncheck: function (index, value) {
+            uncheck: function (index) {
                 if (index == previouslyChecked) {
                     $('#customRadio_' + index)[0].checked = false;
+                    store.state.selected = null;
                     previouslyChecked = null;
                 }
                 else {
                     previouslyChecked = index;
                 }
-
             },
-            getFormattedList: function () {
-                return JSON.stringify(this.data.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+            getOptionsFormattedList: function () {
+                return store.getOptionsFormattedList();
             }
         }
     };
@@ -62,14 +62,11 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         props: ['data'],
         name: 'options-modal',
         methods: {
-            getFormattedList: function () {
-                return JSON.stringify(this.data.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+            getOptionsFormattedList: function () {
+                return store.getOptionsFormattedList();
             },
-            setFormattedListToObject: function (element) {
-                this.data.options.push(JSON.parse(element));
-            },
-            showModal: function (event) {
-                var modal = $(modalBodyElement).modal();
+            showModal: function () {
+                $(modalBodyElement).modal();
             },
             closeModal: function () {
                 var modal = $(modalBodyElement).modal();
@@ -78,7 +75,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         }
     };
 
-    var optionTableApp = new Vue({
+    new Vue({
         components: {
             optionsTable: optionsTable,
             optionsModal: optionsModal

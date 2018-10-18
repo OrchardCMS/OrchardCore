@@ -30,14 +30,7 @@
                 </td>
                 <td class="text-center">
                     <div class="custom-control custom-radio ml-2">
-                        @if (Model.DefaultValue != null)
-                        {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="data.selected" v-on:click="uncheck(index, option.value)">
-                        }
-                        else
-                        {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-on:click="uncheck(index, option.value)">
-                        }
+                        <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
@@ -53,7 +46,7 @@
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
-                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
+                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getOptionsFormattedList()" />
                 </td>
             </tr>
         </tfoot>
@@ -105,7 +98,7 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-right">@T["Edit Data"]</a>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right small">@T["Edit Data"]</a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </fieldset>
