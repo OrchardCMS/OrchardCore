@@ -107,7 +107,7 @@ namespace OrchardCore.Queries.Sql
             columnItem.Rule = columnSource + aliasOpt;
 
             columnSource.Rule = funCall | Id;
-            fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
+            fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt + joinChainOpt + joinChainOpt + joinChainOpt + joinChainOpt;
             joinChainOpt.Rule = Empty | joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
             joinKindOpt.Rule = Empty | "INNER" | "LEFT" | "RIGHT";
             whereClauseOptional.Rule = Empty | "WHERE" + expression;

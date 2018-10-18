@@ -486,29 +486,39 @@ namespace OrchardCore.Queries.Sql
             _modes.Push(FormattingModes.FromClause);
             EvaluateAliasList(aliasList);
 
-            var joins = parseTreeNode.ChildNodes[2];
+            var joins = new List<ParseTreeNode>();
 
-            if (joins.ChildNodes.Count != 0)
+            for(int i = 2; i < parseTreeNode.ChildNodes.Count; i++)
             {
-                var jointKindOpt = joins.ChildNodes[0];
+                if (parseTreeNode.ChildNodes[i].Term.Name == "joinChainOpt" && parseTreeNode.ChildNodes[i].ChildNodes.Count > 0)
+                {
+                    joins.Add(parseTreeNode.ChildNodes[i]);
+                }
+            }
+
+            foreach (var jointKindOpt in joins)
+            {
+                _modes.Push(FormattingModes.Join);
 
                 if (jointKindOpt.ChildNodes.Count > 0)
                 {
-                    _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].Term.Name);
+                    _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].ChildNodes[0].Term.Name);
                 }
 
                 _builder.Append(" JOIN ");
 
-                EvaluateAliasList(joins.ChildNodes[2]);
+                EvaluateAliasList(jointKindOpt.ChildNodes[2]);
 
                 _builder.Append(" ON ");
                 _modes.Push(FormattingModes.SelectClause);
 
-                EvaluateId(joins.ChildNodes[4]);
+                EvaluateId(jointKindOpt.ChildNodes[4]);
 
                 _builder.Append(" = ");
 
-                EvaluateId(joins.ChildNodes[6]);
+                EvaluateId(jointKindOpt.ChildNodes[6]);
+
+                _modes.Pop();
             }
 
             _from = _builder.ToString();
@@ -591,6 +601,7 @@ namespace OrchardCore.Queries.Sql
                     EvaluateSelectId(id);
                     break;
                 case FormattingModes.FromClause:
+                case FormattingModes.Join:
                     EvaluateFromId(id);
                     break;
             }
@@ -661,7 +672,8 @@ namespace OrchardCore.Queries.Sql
         private enum FormattingModes
         {
             SelectClause,
-            FromClause
+            FromClause,
+            Join
         }
     }
 }
