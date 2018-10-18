@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.Fields
                     var uri = new Uri(model.RawAddress);
 
                     // if it is a url with QueryString
-                    if (!string.IsNullOrWhiteSpace(uri.Query))
+                    if (!String.IsNullOrWhiteSpace(uri.Query))
                     {
                         var query = QueryHelpers.ParseQuery(uri.Query);
                         if (query.ContainsKey("v"))
@@ -73,7 +73,7 @@ namespace OrchardCore.ContentFields.Fields
                     }
                     else
                     {
-                        string path = uri.AbsolutePath.Split('?')[0];
+                        var path = uri.AbsolutePath.Split('?')[0];
                         model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                     }
 
