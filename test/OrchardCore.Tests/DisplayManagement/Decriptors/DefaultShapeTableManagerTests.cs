@@ -228,6 +228,16 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
+            public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
             {
                 return Task.FromResult(_extensionManager.GetExtensions());
