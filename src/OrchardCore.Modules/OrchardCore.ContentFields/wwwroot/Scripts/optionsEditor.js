@@ -6,23 +6,40 @@
 function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
+    var currentData = data;
+
+    var store = {
+        debug: true,
+        state: {
+            options: data,
+            selected: defaultValue
+        },
+        methods: {
+            setMessageAction: function(newValue) {
+                if (this.debug) { console.log('setMessageAction triggered with', newValue) };
+            },
+            clearMessageAction: function() {
+                if (this.debug) { console.log('clearMessageAction triggered') };
+            },
+            reloadData: function(data) {
+                this.options = data;
+            }
+        }
+    }
 
     var optionsTable = {
         template: '#options-table',
-        props: ['value'],
+        props: ['data'],
         name: 'options-table',
-        data: function() {
-            return {
-                options: data,
-                selected: defaultValue
-            }
-        },
         methods: {
             add: function () {
-                this.options.push({ name: '', value: ''});
+                var exist = this.data.options.filter(function (x) { return IsNullOrWhiteSpace(x.value) }).length;
+                if (!exist) {
+                    this.data.options.push({ name: '', value: '' });
+                }
             },
             remove: function (index) {
-                this.options.splice(index, 1);
+                this.data.options.splice(index, 1);
             },
             uncheck: function (index, value) {
                 if (index == previouslyChecked) {
@@ -35,43 +52,44 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
 
             },
             getFormattedList: function () {
-                return JSON.stringify(this.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+                return JSON.stringify(this.data.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
             }
         }
     };
 
-    new Vue({
+    var optionsModal = {
+        template: '#options-modal',
+        props: ['data'],
+        name: 'options-modal',
+        methods: {
+            getFormattedList: function () {
+                return JSON.stringify(this.data.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) && !IsNullOrWhiteSpace(x.value) }));
+            },
+            setFormattedListToObject: function (element) {
+                this.data.options.push(JSON.parse(element));
+            },
+            showModal: function (event) {
+                var modal = $(modalBodyElement).modal();
+            },
+            closeModal: function () {
+                var modal = $(modalBodyElement).modal();
+                modal.modal('hide');
+            }
+        }
+    };
+
+    var optionTableApp = new Vue({
         components: {
-            optionsTable: optionsTable
+            optionsTable: optionsTable,
+            optionsModal: optionsModal
+        },
+        data: {
+            sharedState: store.state
         },
         el: elem,
-        data: {
-            dragging: false
-        },
         methods: {
             showModal: function (event) {
-
-                var modal = $(modalBodyElement).modal();
-                modal.show();
-
-                if (this.canAddMedia) {
-                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
-                    $("#mediaApp").show();
-                    var modal = $(modalBodyElement).modal();
-                    $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
-                            alert($('#onlyOneItemMessage').val());
-                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
-                        } else {
-                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
-                        }
-                        // we don't want the included medias to be still selected the next time we open the modal.
-                        mediaApp.selectedMedias = [];
-
-                        modal.modal('hide');
-                        return true;
-                    });
-                }
+                optionsModal.methods.showModal(event);
             }
         }
     });
