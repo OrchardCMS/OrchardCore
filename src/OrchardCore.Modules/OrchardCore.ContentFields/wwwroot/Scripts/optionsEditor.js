@@ -85,8 +85,8 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         el: elem,
         methods: {
-            showModal: function (event) {
-                optionsModal.methods.showModal(event);
+            showModal: function () {
+                optionsModal.methods.showModal();
             }
         }
     });
