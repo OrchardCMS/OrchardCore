@@ -100,6 +100,11 @@ namespace OrchardCore.Environment.Shell
             return featuresToDisable;
         }
 
+        public Task DisableEnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled)
+        {
+            return DisableEnableFeaturesAsync(shellDescriptor, disabled, enabled, false);
+        }
+
         public async Task DisableEnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force)
         {
             var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();

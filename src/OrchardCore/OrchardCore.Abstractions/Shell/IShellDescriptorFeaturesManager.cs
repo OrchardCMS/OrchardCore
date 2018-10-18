@@ -18,6 +18,8 @@ namespace OrchardCore.Environment.Shell
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force);
         Task DisableEnableFeaturesAsync(
+            ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled);
+        Task DisableEnableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force);
     }
 }

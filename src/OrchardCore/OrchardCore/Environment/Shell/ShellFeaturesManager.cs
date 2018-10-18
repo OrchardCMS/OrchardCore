@@ -53,7 +53,12 @@ namespace OrchardCore.Environment.Shell
             return _shellDescriptorFeaturesManager.DisableFeaturesAsync(_shellDescriptor, features, force);
         }
 
-        public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force = true)
+        public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled)
+        {
+            return _shellDescriptorFeaturesManager.DisableEnableFeaturesAsync(_shellDescriptor, disabled, enabled);
+        }
+
+        public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force)
         {
             return _shellDescriptorFeaturesManager.DisableEnableFeaturesAsync(_shellDescriptor, disabled, enabled, force);
         }
