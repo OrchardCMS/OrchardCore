@@ -66,7 +66,7 @@ namespace OrchardCore.ContentFields.Fields
                         }
                         else
                         {
-                            updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), "The url format is not correct");
+                            updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), T["The url format is not correct"]);
                         }
                     }
                     else
