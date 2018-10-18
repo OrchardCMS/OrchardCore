@@ -3,7 +3,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
     var previouslyChecked;
 
     var store = {
-        debug: true,
+        debug: false,
         state: {
             options: data,
             selected: defaultValue
