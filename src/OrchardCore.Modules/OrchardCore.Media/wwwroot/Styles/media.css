@@ -261,7 +261,8 @@ ol.media-items-grid {
   font-size: 0.875rem; }
   #breadcrumb .breadcrumb-path {
     margin-bottom: 4px;
-    margin-right: 8px; }
+    margin-right: 8px;
+    flex-grow: 1; }
     #breadcrumb .breadcrumb-path .breadcrumb-item a {
       color: #495057; }
   #breadcrumb .breadcrumb-buttons {
@@ -290,7 +291,9 @@ ol.media-items-grid {
     height: 40px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
     #folder-tree .treeroot a {
-      font-size: 1rem !important; }
+      font-size: 1rem; }
+      #folder-tree .treeroot a .folder-actions .btn.btn-sm {
+        font-size: 0.875rem; }
     #folder-tree .treeroot .expand {
       font-size: 0.875rem;
       padding: 0; }
@@ -305,13 +308,10 @@ ol.media-items-grid {
     font-size: 0.875rem; }
     #folder-tree li div a {
       display: block;
-      padding-top: 8px;
       height: 100%; }
-  #folder-tree div {
-    /*padding: 0.2rem 0.2rem;*/ }
-    #folder-tree div a {
-      color: #495057;
-      text-decoration: none; }
+  #folder-tree div a {
+    color: #495057;
+    text-decoration: none; }
   #folder-tree ol {
     padding-left: 0; }
   #folder-tree .folder {
@@ -325,14 +325,29 @@ ol.media-items-grid {
     cursor: pointer;
     font-size: 0.625rem;
     display: inline-block;
-    padding: 12px 6px 12px 6px;
-    margin-top: -12px; }
+    padding: 12px 12px 12px 6px; }
   #folder-tree .opened svg {
     transform: rotate(90deg);
     -webkit-transform: rotate(90deg); }
   #folder-tree .empty {
     transform: none;
     visibility: hidden; }
+  #folder-tree .folder-menu-item {
+    display: flex;
+    align-items: center; }
+    #folder-tree .folder-menu-item .folder-name {
+      flex-grow: 1;
+      display: flex;
+      align-items: center; }
+    #folder-tree .folder-menu-item .folder-actions {
+      align-self: flex-end;
+      display: flex;
+      align-items: center;
+      font-size: 0.875rem; }
+      #folder-tree .folder-menu-item .folder-actions a.btn {
+        display: flex;
+        align-items: center;
+        background-color: #e6f2ff; }
 
 #customdropzone {
   align-items: center;

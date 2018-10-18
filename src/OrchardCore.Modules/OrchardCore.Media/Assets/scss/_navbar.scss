@@ -97,6 +97,7 @@
     .breadcrumb-path {
         margin-bottom: 4px;
         margin-right: 8px;
+        flex-grow: 1;
 
         .breadcrumb-item a {
             color: $gray-700;

@@ -84,6 +84,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
+                    bus.$on('createFolderRequested', function (media) {
+                        self.createFolder();                        
+                    });
+
+                    bus.$on('deleteFolderRequested', function (media) {
+                        self.deleteFolder();
+                    });
+
                     // common handlers for actions in both grid and table view.
                     bus.$on('sortChangeRequested', function (newSort) {
                         self.changeSort(newSort);

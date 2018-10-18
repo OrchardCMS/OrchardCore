@@ -76,10 +76,6 @@
                     </span>
 
                 </div>
-                <div class="btn-group breadcrumb-buttons">
-                    <a v-cloak href="javascript:;" id="create-folder-button" class="btn btn-light btn-sm" v-on:click="createFolder"><i class="fa fa-plus"></i></a>
-                    <a v-cloak v-show="!isHome" href="javascript:;" id="delete-folder-button" v-on:click="deleteFolder" class="btn btn-light btn-sm"><i class="fa fa-trash"></i></a>
-                </div>
                 <div class="btn-group visibility-buttons" v-show="gridView">
                     <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
                         <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>

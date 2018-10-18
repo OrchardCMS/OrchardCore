@@ -10,7 +10,11 @@
         border-bottom: $media-border-content;
 
         a {
-            font-size: 1rem !important;
+            font-size: 1rem;
+
+            .folder-actions .btn.btn-sm {
+                font-size: 0.875rem;
+            }
         }
 
         .expand {
@@ -35,13 +39,11 @@
 
         a {
             display: block;
-            padding-top: 8px;
             height: 100%;
         }
     }
 
     div {
-        /*padding: 0.2rem 0.2rem;*/
         a {
             color: $gray-700;
             text-decoration: none;
@@ -67,8 +69,7 @@
         cursor: pointer;
         font-size: 0.625rem;
         display: inline-block;
-        padding: 12px 6px 12px 6px;
-        margin-top: -12px;
+        padding: 12px 12px 12px 6px;
     }
 
     .opened {
@@ -84,5 +85,29 @@
     }
 
     .closed {
+    }
+
+    .folder-menu-item {
+        display: flex;
+        align-items: center;
+
+        .folder-name {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .folder-actions {
+            align-self: flex-end;
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+
+            a.btn {
+                display: flex;
+                align-items: center;
+                background-color: $selected-background-color;
+            }
+        }
     }
 }
