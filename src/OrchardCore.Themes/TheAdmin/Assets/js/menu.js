@@ -19,14 +19,14 @@ $('.leftbar-compactor').click(function () {
 });
 
 $('#left-nav li.has-items').click(function () {
-    $('#left-nav li.has-items').removeClass("active");
-    $(this).addClass("active");
+    $('#left-nav li.has-items').removeClass("visible");
+    $(this).addClass("visible");
 });
 
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");
     if ($trigger !== event.target && !$trigger.has(event.target).length) {
-        $('#left-nav li.has-items').removeClass("active");
+        $('#left-nav li.has-items').removeClass("visible");
     }
 });
 
@@ -54,7 +54,7 @@ function setCompactStatus(explicit) {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav').removeClass('ps');
     $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
-    $('#left-nav li.has-items').removeClass("active");
+    $('#left-nav li.has-items').removeClass("visible");
 
     if (explicit == true) {
         isCompactExplicit = explicit;
@@ -71,7 +71,7 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav').addClass('ps');
-    $('#left-nav li.has-items').removeClass("active");
+    $('#left-nav li.has-items').removeClass("visible");
 
     isCompactExplicit = false;
     persistAdminPreferences();

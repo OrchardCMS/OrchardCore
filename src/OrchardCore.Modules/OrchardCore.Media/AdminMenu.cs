@@ -1,6 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Media
 {
@@ -13,11 +14,11 @@ namespace OrchardCore.Media
 
         public IStringLocalizer S { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -27,6 +28,8 @@ namespace OrchardCore.Media
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
                     ));
+
+            return Task.CompletedTask;
         }
     }
 }

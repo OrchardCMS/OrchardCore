@@ -123,7 +123,10 @@ namespace OrchardCore.Workflows.Controllers
                 .ListAsync();
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
-            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync()).GroupBy(x => x.WorkflowTypeId).ToDictionary(x => x.Key);
+            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
+                .ListAsync())
+                .GroupBy(x => x.WorkflowTypeId)
+                .ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -294,8 +297,18 @@ namespace OrchardCore.Workflows.Controllers
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
-            var activityThumbnailShapes = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
-            var activityDesignShapes = activityDesignDisplayTasks.Select(x => x.Result).ToList();
+            var activityThumbnailShapes = new List<dynamic>();
+            foreach (var thumbnailTask in activityThumbnailDisplayTasks)
+            {
+                activityThumbnailShapes.Add(await thumbnailTask);
+            }
+
+            var activityDesignShapes = new List<dynamic>();
+            foreach (var designDisplayTask in activityDesignDisplayTasks)
+            {
+                activityDesignShapes.Add(await designDisplayTask);
+            }
+
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,

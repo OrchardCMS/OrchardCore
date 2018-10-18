@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-///<reference path="../../../Assets/Lib/jQuery/typings.d.ts" />
+///<reference path="../../Assets/Lib/jQuery/typings.d.ts" />
 $(function () {
     var generateWorkflowUrl = function () {
         var workflowTypeId = $('[data-workflow-type-id]').data('workflow-type-id');
@@ -23,7 +23,7 @@ $(function () {
     $('#generate-url-button').on('click', function (e) {
         generateWorkflowUrl();
     });
-    if ($('#workflow-url-text').val() == '') {
+    if ($('#workflow-url-text').val() === '') {
         generateWorkflowUrl();
     }
 });

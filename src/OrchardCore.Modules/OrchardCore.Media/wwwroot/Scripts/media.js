@@ -224,7 +224,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.sortAsc = true;
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                console.log('error loading folder:' + folder.path);                                
+                                self.selectRoot();                
                             }
                         });
                     },
@@ -2665,7 +2666,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" />  \
+                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
                                 </div> \
                             </td> \
                             <td> \

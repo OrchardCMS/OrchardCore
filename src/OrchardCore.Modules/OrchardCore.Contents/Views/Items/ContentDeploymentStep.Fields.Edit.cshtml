@@ -1,0 +1,36 @@
+@model ContentDeploymentStepViewModel
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentTypes = (string[])Model.ContentTypes;
+}
+
+<h5>@T["Content Types"]</h5>
+
+<fieldset class="form-group">
+    <div class="row">
+        <div class="col-sm">
+            <span class="hint">@T["The content types to add as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <ul class="list-group">
+                @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions().OrderBy(i => i.Name))
+                {
+                    var name = contentTypeDefinition.Name;
+                    var checkd = contentTypes?.Contains(name);
+
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@checkd">
+                                @contentTypeDefinition.DisplayName
+                            </label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</fieldset>

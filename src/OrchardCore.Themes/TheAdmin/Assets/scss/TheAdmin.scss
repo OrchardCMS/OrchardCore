@@ -301,7 +301,7 @@ body {
             overflow: hidden;
         }
 
-        > li.active {
+        > li.visible {
             overflow: visible;
             width: $left-navigation-width-when-compact + $left-navigation-width;
         }
@@ -487,6 +487,10 @@ ul.pager li a {
 // ------------------------------
 .ui-sortable-handle {
     cursor: move;
+}
+
+.btn.ui-sortable-handle {
+    cursor: move !important;
 }
 
 .ui-sortable {

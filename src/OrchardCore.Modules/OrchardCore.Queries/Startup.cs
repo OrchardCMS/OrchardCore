@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;

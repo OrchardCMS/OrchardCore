@@ -57,6 +57,12 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            {
+                return NotFound();
+            }
+            
+
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
             return Json(content.ToArray());
@@ -72,6 +78,11 @@ namespace OrchardCore.Media.Controllers
             if (string.IsNullOrEmpty(path))
             {
                 path = "";
+            }
+
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            {
+                return NotFound();
             }
 
             var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);

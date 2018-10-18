@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
@@ -164,7 +164,8 @@ namespace OrchardCore.Media
             // MIME types
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
-            services.AddTagHelpers(typeof(ImageTagHelper).Assembly);
+            services.AddTagHelpers<ImageTagHelper>();
+            services.AddTagHelpers<ImageResizeTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

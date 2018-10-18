@@ -1,6 +1,8 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
+using OrchardCore.Navigation;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
@@ -18,12 +20,15 @@ namespace OrchardCore.Recipes
             services.AddRecipes();
 
             services.AddScoped<IRecipeStore, RecipeStore>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<IIndexProvider, RecipeResultIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<CommandStep>();
             services.AddRecipeExecutionStep<RecipesStep>();
+
+            services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
         }
     }
 }

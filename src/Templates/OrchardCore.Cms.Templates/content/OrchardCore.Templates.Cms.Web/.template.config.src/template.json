@@ -3,16 +3,30 @@
   "author": "Orchard Project",
   "classifications": [ "Web", "Orchard Core", "CMS" ],
   "name": "Orchard Core Cms Web App",
-  "identity": "OrchardCore.Templates.Cms",
+  "identity": "OrchardCore.Templates.Cms.Web",
   "shortName": "occms",
-  "sourceName": "OrchardCore.Templates.Cms",
+  "sourceName": "OrchardCore.Templates.Cms.Web",
   "preferNameDirectory": true,
   "symbols": {
-    "AddNLog": {
+    "logger": {
       "type": "parameter",
-      "dataType": "bool",
-      "description": "Add NLog.config file",
-      "defaultValue": "false"
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "nlog",
+          "description": "Configures NLog as the logger component."
+        },
+        {
+          "choice": "serilog",
+          "description": "Configures Serilog as the logger component."
+        },
+        {
+          "choice": "none",
+          "description": "Do not configure logger."
+        }
+      ],
+      "description": "Configures the logger component.",
+      "defaultValue": "nlog"
     },
     "OrchardVersion": {
       "type": "parameter",
@@ -20,14 +34,21 @@
       "description": "Specifies which version of Orchard Core packages to use.",
       "replaces": "$(TemplateOrchardPackageVersion)",
       "defaultValue": "${TemplateOrchardVersion}"
+    },
+    "UseNLog": {
+      "type": "computed",
+      "value": "(logger == \"nlog\")"
+    },
+    "UseSerilog": {
+      "type": "computed",
+      "value": "(logger == \"serilog\")"
     }
   },
   "sources": [
     {
-      "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
       "modifiers": [
         {
-          "condition": "(!AddNLog)",
+          "condition": "(!UseNLog)",
           "exclude": [
             "NLog.config"
           ]

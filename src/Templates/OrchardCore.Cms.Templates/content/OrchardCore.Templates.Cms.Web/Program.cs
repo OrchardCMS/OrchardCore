@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-#if (AddNLog)
+#if (UseNLog || UseSerilog)
 using OrchardCore.Logging;
 #endif
 using OrchardCore.Modules;
@@ -16,8 +16,11 @@ namespace OrchardCore.Templates.Cms.Web
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-#if (AddNLog)
+#if (UseNLog)
                 .UseNLogWeb()
+#endif
+#if (UseSerilog)
+                .UseSerilogWeb()
 #endif
                 .UseStartup<Startup>()
                 .Build();

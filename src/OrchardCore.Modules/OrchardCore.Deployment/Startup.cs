@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
@@ -9,7 +8,8 @@ using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
@@ -27,16 +27,9 @@ namespace OrchardCore.Deployment
             services.AddScoped<IDisplayManager<DeploymentStep>, DisplayManager<DeploymentStep>>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
-            services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
+            // Custom File deployment step
             services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();
-            services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
-
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
-
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();

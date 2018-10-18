@@ -1,12 +1,6 @@
 @using OrchardCore.Workflows.ViewModels;
 @model ScriptTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Title">
-    <label asp-for="Title">@T["Title"] <span asp-validation-for="Title"></span></label>
-    <input asp-for="Title" class="form-control" autofocus />
-    <span class="hint">@T["Optionally specify a title that describes the script."]</span>
-</fieldset>
-
 <fieldset class="form-group" asp-validation-class-for="AvailableOutcomes">
     <label asp-for="AvailableOutcomes">@T["Available Outcomes"] <span asp-validation-for="AvailableOutcomes"></span></label>
     <input asp-for="AvailableOutcomes" class="form-control" />

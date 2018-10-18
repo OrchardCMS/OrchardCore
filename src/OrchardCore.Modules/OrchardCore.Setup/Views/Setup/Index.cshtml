@@ -85,38 +85,41 @@
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
-        <fieldset class="form-group col-md-4">
-            <input type="hidden" asp-for="RecipeName" required />
-            <nav>
-                <div asp-validation-class-for="RecipeName">
-                    <label asp-for="SiteName">@T["Recipe"]</label>
-                    @if (defaultRecipe == null)
-                    {
-                        <div id="noRecipes" class="dropdown disabled">
-                            <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["No Recipes Available"]
-                            </button>
-                        </div>
-                    }
-                    else
-                    {
-                        <div id="recipes" class="dropdown">
-                            <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @defaultRecipe.DisplayName
-                            </button>
-                            <div class="dropdown-menu">
-                                @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
-                                {
-                                    <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
-                                }
+        @if (!Model.RecipeNamePreset)
+        {
+            <fieldset class="form-group col-md-4">
+                <input type="hidden" asp-for="RecipeName" required />
+                <nav>
+                    <div asp-validation-class-for="RecipeName">
+                        <label asp-for="RecipeName">@T["Recipe"]</label>
+                        @if (defaultRecipe == null)
+                        {
+                            <div id="noRecipes" class="dropdown disabled">
+                                <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @T["No Recipes Available"]
+                                </button>
                             </div>
-                        </div>
-                    }
-                    <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
+                        }
+                        else
+                        {
+                            <div id="recipes" class="dropdown">
+                                <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @defaultRecipe.DisplayName
+                                </button>
+                                <div class="dropdown-menu">
+                                    @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
+                                    {
+                                        <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
 
-                </div>
-            </nav>
-        </fieldset>
+                    </div>
+                </nav>
+            </fieldset>
+        }
         <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone">@T["Default Time Zone"] <span asp-validation-for="SiteTimeZone"></span></label>
             <select asp-for="SiteTimeZone" class="form-control">
@@ -219,6 +222,7 @@
     </div>
     <fieldset>
         <div class="form-group">
+            <input type="hidden" asp-for="Secret" value="@Model.Secret" />
             <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
         </div>
     </fieldset>

@@ -13,7 +13,10 @@ namespace OrchardCore.Markdown.Indexing
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Markdown, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Markdown, options);
+            }
 
             return Task.CompletedTask;
         }

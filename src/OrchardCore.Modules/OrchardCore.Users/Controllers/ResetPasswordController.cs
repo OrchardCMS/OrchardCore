@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
@@ -18,6 +19,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.ResetPassword")]
+    [Admin]
     public class ResetPasswordController : BaseEmailController
     {
         private readonly IUserService _userService;
@@ -69,11 +71,11 @@ namespace OrchardCore.Users.Controllers
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
-                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "Password"));
+                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
                 }
 
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
-                var resetPasswordUrl = Url.Action("ResetPassword", "Password", new { code = user.ResetToken }, HttpContext.Request.Scheme);
+                var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
                 await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl }, "TemplateUserLostPassword");
             }

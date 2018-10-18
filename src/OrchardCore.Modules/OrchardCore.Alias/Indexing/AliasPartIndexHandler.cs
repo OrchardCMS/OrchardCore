@@ -10,7 +10,10 @@ namespace OrchardCore.Alias.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Alias, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Alias, options);
+            }
 
             return Task.CompletedTask;
         }

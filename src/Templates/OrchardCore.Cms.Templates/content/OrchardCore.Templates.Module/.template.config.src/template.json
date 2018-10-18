@@ -19,6 +19,7 @@
       "datatype": "string",
       "description": "Add all files required for a part",
       "replaces": "MyTest",
+      "fileRename": "MyTest",
       "defaultValue": ""
     },
     "OrchardVersion": {
@@ -31,7 +32,6 @@
   },
   "sources": [
     {
-      "exclude": [ "Properties/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json" ],
       "modifiers": [
         {
           "condition": "(PartName=='')",

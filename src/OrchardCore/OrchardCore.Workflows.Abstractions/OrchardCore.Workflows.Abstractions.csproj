@@ -11,10 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-    <ProjectReference Include="..\OrchardCore.Entities.DisplayManagement\OrchardCore.Entities.DisplayManagement.csproj" />
-    <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
     <ProjectReference Include="..\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Scripting.Abstractions\OrchardCore.Scripting.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

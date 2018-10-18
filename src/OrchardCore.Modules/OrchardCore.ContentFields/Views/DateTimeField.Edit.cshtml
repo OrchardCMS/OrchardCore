@@ -1,21 +1,14 @@
 @model OrchardCore.ContentFields.ViewModels.EditDateTimeFieldViewModel
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
-
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
 }
 
-@{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "DateTimeField_Editor";
-
-    if (!String.IsNullOrEmpty(settings.Editor))
-    {
-        shape.Metadata.Alternates.Add($"DateTimeField_Editor__{settings.Editor}");
-    }
-}
-
-@await DisplayAsync(Model)
+<fieldset class="form-group">
+    <div class="row col-sm-12 col-md-6 col-lg-3">
+        <label asp-for="LocalDateTime">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>

@@ -5,6 +5,8 @@ namespace OrchardCore.Lucene
 {
     public class LuceneSettings
     {
+        public static string StandardAnalyzer = "standardanalyzer";
+
         public static LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
 
         public string SearchIndex { get; set; }

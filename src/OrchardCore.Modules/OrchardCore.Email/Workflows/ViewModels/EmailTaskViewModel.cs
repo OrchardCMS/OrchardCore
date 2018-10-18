@@ -10,5 +10,6 @@ namespace OrchardCore.Email.Workflows.ViewModels
         public string RecipientsExpression { get; set; }
         public string SubjectExpression { get; set; }
         public string Body { get; set; }
+        public bool IsBodyHtml { get; set; }
     }
 }

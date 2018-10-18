@@ -1,11 +1,7 @@
-@inject OrchardCore.Settings.ISiteService SiteService
-@{
-        var site = await SiteService.GetSiteSettingsAsync();
-}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@Orchard.CultureName()">
 <head>
-    <title>@RenderTitleSegments(site.SiteName, "before")</title>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -36,10 +32,10 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload">
+<body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@site.SiteName</span></a>
+            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)

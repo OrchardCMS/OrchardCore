@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Forms.Configuration;
 using OrchardCore.Forms.ViewModels;
@@ -33,24 +32,24 @@ namespace OrchardCore.Forms.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(NoCaptchaSettings section, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(NoCaptchaSettings section, BuildEditorContext context)
         {
-            if (groupId == GroupId)
+            if (context.GroupId == GroupId)
             {
                 var model = new NoCaptchaSettingsViewModel();
 
-                if (await updater.TryUpdateModelAsync(model, Prefix))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
 
                     section.SiteKey = model.SiteKey?.Trim();
                     section.SiteSecret = model.SiteSecret?.Trim();
 
                     // Reload tenant to apply settings.
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

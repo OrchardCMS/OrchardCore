@@ -1,0 +1,81 @@
+@using OrchardCore.ContentFields.Settings
+@model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
+
+<script asp-src="/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<style asp-src="/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+
+<script at="Foot">
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue');
+</script>
+
+<script type="text/x-template" id="options-table">
+    <table class="table table-bordered table-sm options-table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@T["Option Label"]</th>
+                <th scope="col">@T["Value"]</th>
+                <th scope="col" colspan="3">@T["Default?"]</th>
+            </tr>
+        </thead>
+        <draggable v-model="options" :element="'tbody'">
+            <tr v-for="(option, index) in options" :key="option.value" class="ui-sortable-handle">
+                <td>
+                    <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" v-model="option.value" placeholder="Enter a value" style="font-family: Courier New, Courier, monospace" />
+                </td>
+                <td class="text-center">
+                    <div class="custom-control custom-radio ml-2">
+                        @if (Model.DefaultValue != null)
+                        {
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="selected" v-on:click="uncheck(index, option.value)" >
+                        }
+                        else
+                        {
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-on:click="uncheck(index, option.value)">
+                        }
+                        <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </td>
+                <td class="text-center"><div class="btn ui-sortable-handle"><i class="fas fa-arrows-alt"></i></div></td>
+            </tr>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
+                    
+                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
+    <div class="row">
+        <fieldset class="form-group col-sm-6">
+            <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
+            <select asp-for="Editor" class="form-control">
+                <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
+                <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
+            </select>
+        </fieldset>
+    </div>
+
+    <div class="row">
+        <fieldset class="col-sm-6">
+            <label asp-for="Options">@T["Options"]</label>
+            <options-table></options-table>
+        </fieldset>
+    </div>
+</div>

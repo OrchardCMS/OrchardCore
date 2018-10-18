@@ -88,7 +88,7 @@ namespace OrchardCore.Templates.Controllers
         }
 
         [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(TemplateViewModel model, string returnUrl = null)
+        public async Task<IActionResult> CreatePost(TemplateViewModel model, string submit, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -109,8 +109,10 @@ namespace OrchardCore.Templates.Controllers
                 var template = new Template { Content = model.Content, Description = model.Description };
 
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
-
-                return RedirectToReturnUrlOrIndex(returnUrl);
+                if (submit != "SaveAndContinue")
+                {
+                    return RedirectToReturnUrlOrIndex(returnUrl);
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -145,7 +147,7 @@ namespace OrchardCore.Templates.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Edit(string sourceName, TemplateViewModel model, string submit, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -174,8 +176,10 @@ namespace OrchardCore.Templates.Controllers
 
                 await _templatesManager.RemoveTemplateAsync(sourceName);
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
-
-                return RedirectToReturnUrlOrIndex(returnUrl);
+                if (submit != "SaveAndContinue")
+                {
+                    return RedirectToReturnUrlOrIndex(returnUrl);
+                }                
             }
 
             // If we got this far, something failed, redisplay form
