@@ -31,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
 
             // To let the application behave as a module, its views are requested under the virtual
-            // "Areas" folder, but there are still served from the file system by this custom provider.
+            // "Areas" folder, but they are still served from the file system by this custom provider.
             options.FileProviders.Insert(0, new ApplicationViewFileProvider(_applicationContext));
         }
     }
