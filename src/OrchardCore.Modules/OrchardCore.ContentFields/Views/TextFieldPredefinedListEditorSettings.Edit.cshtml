@@ -98,7 +98,8 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-right small">@T["Edit Data"]</a>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+            
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </fieldset>
