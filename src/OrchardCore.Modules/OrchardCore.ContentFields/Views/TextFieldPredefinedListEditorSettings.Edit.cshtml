@@ -45,7 +45,7 @@
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getOptionsFormattedList()" />
                 </td>
             </tr>
@@ -99,7 +99,6 @@
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
-            
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </fieldset>
