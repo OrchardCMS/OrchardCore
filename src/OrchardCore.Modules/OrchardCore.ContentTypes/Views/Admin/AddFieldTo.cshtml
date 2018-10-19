@@ -25,15 +25,17 @@
 
     <fieldset class="form-group">
         <label for="DisplayName">@T["Field Type"]</label>
-        @for (var i = 0; i < Model.Fields.Count; i++)
-        {
-            <div class="radio">
-                <label asp-for="Fields[i]">
-                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" />
-                    @Model.Fields[i].CamelFriendly()
-                </label>
-            </div>
-        }
+        <ul class="list-group">
+            @for (var i = 0; i < Model.Fields.Count; i++)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" class="custom-control-input" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" checked="@(i == 0)">
+                        <label class="custom-control-label" asp-for="Fields[i]">@Model.Fields[i].CamelFriendly()</label>
+                    </div>
+                </li>
+            }
+        </ul>
     </fieldset>
 
     <fieldset class="form-group">

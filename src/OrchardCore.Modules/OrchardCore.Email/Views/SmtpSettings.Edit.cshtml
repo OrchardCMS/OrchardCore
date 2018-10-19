@@ -45,21 +45,27 @@
                 </fieldset>
 
                 <fieldset class="form-group" asp-validation-class-for="EnableSsl">
-                    <input asp-for="EnableSsl" type="checkbox" />
-                    <label asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
-                    <span class="hint d-block">@T["Check if the SMTP server requires SSL communications."]</span>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="EnableSsl">
+                        <label class="custom-control-label" asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
+                        <span class="hint d-block">@T["Check if the SMTP server requires SSL communications."]</span>
+                    </div>
                 </fieldset>
 
                 <fieldset class="form-group clearfix" asp-validation-class-for="RequireCredentials">
-                    <input asp-for="RequireCredentials" type="checkbox" data-toggle="collapse" data-target=".requireCredential" />
-                    <label asp-for="RequireCredentials">@T["Require credentials"] <span asp-validation-for="RequireCredentials"></span></label>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="RequireCredentials" data-toggle="collapse" data-target=".requireCredential">
+                        <label class="custom-control-label" asp-for="RequireCredentials">@T["Require credentials"] <span asp-validation-for="RequireCredentials"></span></label>
+                    </div>
                 </fieldset>
 
                 <div class="requireCredential collapse @(Model.RequireCredentials ? "show" : "")">
                     <fieldset class="form-group" asp-validation-class-for="UseDefaultCredentials">
-                        <input asp-for="UseDefaultCredentials" type="checkbox" data-toggle="collapse-toggle" data-target=".useCustomCredential" />
-                        <label asp-for="UseDefaultCredentials">@T["Use Windows authentication"] <span asp-validation-for="UseDefaultCredentials"></span></label>
-                        <span class="hint">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" asp-for="UseDefaultCredentials" data-toggle="collapse-toggle" data-target=".useCustomCredential">
+                            <label class="custom-control-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"] <span asp-validation-for="UseDefaultCredentials"></span></label>
+                            <span class="hint d-block">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
+                        </div>
                     </fieldset>
 
                     <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">

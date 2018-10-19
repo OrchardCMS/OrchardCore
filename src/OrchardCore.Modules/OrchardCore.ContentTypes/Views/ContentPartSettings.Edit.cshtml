@@ -19,17 +19,17 @@
 </fieldset>
 
 <fieldset class="form-group">
-    <label asp-for="Attachable">
-        <input asp-for="Attachable" type="checkbox">
-        @T["Attachable"]
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Attachable">
+        <label class="custom-control-label" asp-for="Attachable">@T["Attachable"]</label>
         <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
-    </label>
+    </div>
 </fieldset>
 
 <fieldset class="form-group">
-    <label asp-for="Reusable">
-        <input asp-for="Reusable" type="checkbox">
-        @T["Reusable"]
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Reusable">
+        <label class="custom-control-label" asp-for="Reusable">@T["Reusable"]</label>
         <span class="hint">@T["Check to allow this part to be attached multiple times."]</span>
-    </label>
+    </div>
 </fieldset>
