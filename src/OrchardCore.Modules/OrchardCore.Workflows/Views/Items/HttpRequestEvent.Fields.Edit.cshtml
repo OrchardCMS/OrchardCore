@@ -22,6 +22,9 @@
         <div class="input-group-append">
             <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
         </div>
+        <div class="input-group-append">
+            <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fas fa-copy"></i> @T["Copy"]</span>
+        </div>
     </div>
     <span class="hint"><i class="fa fa-exclamation-triangle"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
 </fieldset>
@@ -33,3 +36,4 @@
 </fieldset>
 
 <script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" type="text/javascript" at="Foot"></script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/crossbrowserclipboardcopy.js" type="text/javascript" at="Foot"></script>
