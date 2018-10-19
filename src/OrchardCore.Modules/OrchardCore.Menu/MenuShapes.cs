@@ -2,8 +2,11 @@ using System;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu
@@ -32,6 +35,8 @@ namespace OrchardCore.Menu
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
+                    var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
                     string contentItemId = menu.Alias != null
                         ? await aliasManager.GetContentItemIdAsync(menu.Alias)
@@ -84,6 +89,11 @@ namespace OrchardCore.Menu
                         menu.Add(shape);
                     }
 
+                    // if parts are dynamically added to the Menu content item, they will be retrieved here through the built display shape properties
+                    var displayShape = await displayManager.BuildDisplayAsync(menuContentItem, updateModelAccessor.ModelUpdater, context.ShapeMetadata.DisplayType) as dynamic;
+                    foreach (var prop in (displayShape as Composite).Properties) {
+                        (menu as Composite).Properties.Add(prop);
+                    }
                 });
 
             builder.Describe("MenuItem")
