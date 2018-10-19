@@ -198,12 +198,17 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 _extensionManager = extensionManager;
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetEnabledFeaturesAsync()
+            public Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
             {
                 return Task.FromResult(_extensionManager.GetFeatures());
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetDisabledFeaturesAsync()
+            public Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
             {
                 throw new NotImplementedException();
             }
@@ -211,16 +216,6 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
             {
                 return Task.FromResult(_extensionManager.GetExtensions());
-            }
-
-            Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> IShellFeaturesManager.UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IExtensionInfo>> IShellFeaturesManager.GetEnabledExtensionsAsync()
-            {
-                throw new NotImplementedException();
             }
         }
 
