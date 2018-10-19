@@ -8,7 +8,7 @@
 
 <fieldset class="form-group">
     <label asp-for="RawAddress">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="RawAddress" class="form-control content-preview-text" />
+    <input asp-for="RawAddress" class="form-control content-preview-text" required="@settings.Required" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
     <span class="hint">@settings.Hint</span>

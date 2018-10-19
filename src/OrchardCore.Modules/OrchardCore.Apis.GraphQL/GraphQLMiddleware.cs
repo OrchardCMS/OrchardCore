@@ -103,14 +103,14 @@ namespace OrchardCore.Apis.GraphQL
             await WriteResponseAsync(context, result);
         }
 
-        private Task WriteResponseAsync(HttpContext context, ExecutionResult result)
+        private async Task WriteResponseAsync(HttpContext context, ExecutionResult result)
         {
-            var json = _writer.Write(result);
+            var json = await _writer.WriteToStringAsync(result);
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = result.Errors?.Any() == true ? (int)HttpStatusCode.BadRequest : (int)HttpStatusCode.OK;
 
-            return context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(json);
         }
     }
 }

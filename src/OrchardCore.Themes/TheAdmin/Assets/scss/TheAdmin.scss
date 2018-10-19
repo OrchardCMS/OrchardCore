@@ -483,6 +483,10 @@ ul.pager li a {
     cursor: move;
 }
 
+.btn.ui-sortable-handle {
+    cursor: move !important;
+}
+
 .ui-sortable {
     min-height: $font-size-base;
 }

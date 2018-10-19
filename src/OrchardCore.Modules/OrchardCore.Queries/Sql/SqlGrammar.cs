@@ -56,6 +56,7 @@ namespace OrchardCore.Queries.Sql
             var aliasOpt = new NonTerminal("aliasOpt");
             var tuple = new NonTerminal("tuple");
             var joinChainOpt = new NonTerminal("joinChainOpt");
+            var joinStatement = new NonTerminal("joinStatement");
             var joinKindOpt = new NonTerminal("joinKindOpt");
             var term = new NonTerminal("term");
             var unExpr = new NonTerminal("unExpr");
@@ -108,7 +109,8 @@ namespace OrchardCore.Queries.Sql
 
             columnSource.Rule = funCall | Id;
             fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
-            joinChainOpt.Rule = Empty | joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
+            joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
+            joinStatement.Rule = joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
             joinKindOpt.Rule = Empty | "INNER" | "LEFT" | "RIGHT";
             whereClauseOptional.Rule = Empty | "WHERE" + expression;
             groupClauseOpt.Rule = Empty | "GROUP" + BY + idlist;
