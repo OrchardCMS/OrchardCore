@@ -203,37 +203,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 return Task.FromResult(_extensionManager.GetFeatures());
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
-            {
-                throw new NotImplementedException();
-            }
-
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetDisabledFeaturesAsync()
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task DisableEnableFeaturesAsync(IEnumerable<IFeatureInfo> disabled, IEnumerable<IFeatureInfo> enabled, bool force)
             {
                 throw new NotImplementedException();
             }
@@ -241,6 +211,16 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
             {
                 return Task.FromResult(_extensionManager.GetExtensions());
+            }
+
+            Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> IShellFeaturesManager.UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
+            Task<IEnumerable<IExtensionInfo>> IShellFeaturesManager.GetEnabledExtensionsAsync()
+            {
+                throw new NotImplementedException();
             }
         }
 

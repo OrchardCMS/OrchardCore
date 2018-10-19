@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -26,45 +24,25 @@ namespace OrchardCore.Features.Recipes.Executors
             _shellFeatureManager = shellFeatureManager;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var step = context.Step.ToObject<FeatureStepModel>();
-
             var features = _extensionManager.GetFeatures();
 
-            var featuresToDisable = new List<IFeatureInfo>();
+            var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
+            var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
-            if (step.Disable.Any())
+            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
             {
-                featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
+                return _shellFeatureManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }
 
-            var featuresToEnable = new List<IFeatureInfo>();
-
-            if (step.Enable.Any())
-            {
-                featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
-            }
-
-            if (featuresToDisable.Count > 0 && featuresToEnable.Count > 0)
-            {
-                await _shellFeatureManager.DisableEnableFeaturesAsync(featuresToDisable, featuresToEnable, true);
-            }
-
-            else if (featuresToDisable.Count > 0)
-            {
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
-            }
-
-            else if (featuresToEnable.Count > 0)
-            {
-                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
-            }
+            return Task.CompletedTask;
         }
 
         private class FeatureStepModel
