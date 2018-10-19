@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     /// <summary>
-    /// 
+    /// Provides a concrete content part display driver implementation for explicit parts that are dynamically defined
     /// </summary>
     public class DefaultContentPartDisplayDriver : ContentPartDisplayDriver<ContentPart>, IContentPartDisplayDriver
     {
