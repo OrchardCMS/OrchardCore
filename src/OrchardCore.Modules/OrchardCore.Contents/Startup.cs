@@ -147,4 +147,13 @@ namespace OrchardCore.Contents
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
         }
     }
+
+    [Feature("OrchardCore.Contents.FileContentDefinition")]
+    public class FileContentDefinitionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddFileContentDefinitionStore();
+        }
+    }
 }

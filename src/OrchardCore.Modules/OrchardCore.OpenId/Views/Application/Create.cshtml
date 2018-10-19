@@ -2,6 +2,7 @@
 @using OpenIddict.Abstractions;
 @using OrchardCore.OpenId.ViewModels;
 @using OrchardCore.OpenId.Settings;
+@using static OpenIddict.Abstractions.OpenIddictConstants
 @{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
@@ -11,12 +12,12 @@
 <form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
-        <span asp-validation-for="ClientId" class="text-danger">@T["The Client Id is required."]</span>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
         <input asp-for="ClientId" class="form-control" autofocus />
     </div>
     <div class="form-group" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
-        <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
         <input asp-for="DisplayName" class="form-control" autofocus />
     </div>
     <div class="form-group" asp-validation-class-for="Type">
@@ -92,7 +93,7 @@
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
             <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger">@T["At least one Redirect Uri is required."]</span>
+            <span asp-validation-for="RedirectUris" class="text-danger"></span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
         <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
@@ -107,7 +108,7 @@
             <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
                     <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
-                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["At least on logout Redirect Uri is required."]</span>
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                 </div>
             </div>
@@ -164,64 +165,87 @@
             {
                 <text>
                     $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowImplicitFlowFieldSet").collapse("show");
                     $("#AllowPasswordFlowFieldSet").collapse("show");
-                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                    $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
 
             }
             else
             {
-                <text>
-                    if (@(settings.AllowAuthorizationCodeFlow.ToString().ToLower()) == true) {
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
+                {
+                    <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
                         $("#AllowAuthorizationCodeFlow").prop("checked", false);
-                    }
+                    </text>
+                }
 
-                    if (@(settings.AllowImplicitFlow.ToString().ToLower()) == true) {
-                        $("#AllowImplicitFlowFieldSet").collapse("show");
-                    }
-                    else {
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                        $("#AllowImplicitFlow").prop("checked", false);
-                    }
-
-
-                    if (@(settings.AllowPasswordFlow.ToString().ToLower()) == true) {
-                        $("#AllowPasswordFlowFieldSet").collapse("show");
-                    }
-                    else {
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                        $("#AllowPasswordFlow").prop("checked", false);
-                    }
-
-                    if (@(settings.AllowClientCredentialsFlow.ToString().ToLower()) === true) {
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials))
+                {
+                    <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
                         $("#AllowClientCredentialsFlow").prop("checked", false);
-                    }
+                    </text>
+                }
 
-                    if (@(settings.AllowRefreshTokenFlow.ToString().ToLower()) == true) {
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.Implicit))
+                {
+                    <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowImplicitFlowFieldSet").collapse("hide");
+                        $("#AllowImplicitFlow").prop("checked", false);
+                    </text>
+                }
+
+                if (settings.GrantTypes.Contains(GrantTypes.Password))
+                {
+                    <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowPasswordFlowFieldSet").collapse("hide");
+                        $("#AllowPasswordFlow").prop("checked", false);
+                    </text>
+                }
+
+                if (settings.GrantTypes.Contains(GrantTypes.RefreshToken))
+                {
+                    <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
                         $("#AllowRefreshTokenFlow").prop("checked", false);
-                    }
-                    if (@(settings.EnableLogoutEndpoint.ToString().ToLower()) == true) {
-                        $("#AllowLogoutEndpointFieldSet").collapse("show");
-                    }
-                    else {
+                    </text>
+                }
+
+                if (settings.LogoutEndpointPath.HasValue)
+                {
+                    <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowLogoutEndpointFieldSet").collapse("hide");
                         $("#AllowLogoutEndpointFieldSet").prop("checked", false);
-                    }
-                </text>
+                    </text>
+                }
             }
         }
 

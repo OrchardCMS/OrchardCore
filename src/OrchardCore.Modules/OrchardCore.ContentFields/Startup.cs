@@ -54,7 +54,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldTextAreaEditorSettingsDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
 
             // Html Field

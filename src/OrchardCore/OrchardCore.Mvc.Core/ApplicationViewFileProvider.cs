@@ -10,13 +10,13 @@ namespace OrchardCore.Modules
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents of
-    /// the Application's module razor files while in a development or production environment.
+    /// the Application's module view files while in a development or production environment.
     /// </summary>
-    public class ApplicationRazorFileProvider : IFileProvider
+    public class ApplicationViewFileProvider : IFileProvider
     {
         private readonly IApplicationContext _applicationContext;
 
-        public ApplicationRazorFileProvider(IApplicationContext applicationContext)
+        public ApplicationViewFileProvider(IApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

@@ -37,7 +37,7 @@ namespace OrchardCore.HomeRoute
         {
             var tokens = GetHomeRouteValues(context.HttpContext);
 
-            if (tokens == null)
+            if (tokens == null || tokens.Count == 0)
             {
                 return null;
             }

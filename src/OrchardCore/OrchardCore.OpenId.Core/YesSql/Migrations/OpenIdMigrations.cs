@@ -46,9 +46,18 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<DateTimeOffset>(nameof(OpenIdTokenIndex.ExpirationDate))
                 .Column<string>(nameof(OpenIdTokenIndex.ReferenceId))
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
-                .Column<string>(nameof(OpenIdTokenIndex.Subject)));
+                .Column<string>(nameof(OpenIdTokenIndex.Subject))
+                .Column<string>(nameof(OpenIdTokenIndex.Type)));
 
-            return 1;
+            return 2;
+        }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table => table
+                .AddColumn<string>(nameof(OpenIdTokenIndex.Type)));
+
+            return 2;
         }
     }
 }
