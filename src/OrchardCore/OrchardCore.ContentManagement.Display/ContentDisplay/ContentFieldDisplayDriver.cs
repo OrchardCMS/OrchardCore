@@ -13,7 +13,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
-        private bool _isEditorFieldDisplay;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
@@ -30,7 +29,16 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
 
-                if (fieldType == shapeType || _isEditorFieldDisplay && fieldType + "_Edit" == shapeType)
+                if (GetEditorShapeType(_partFieldDefinition) == shapeType)
+                {
+                    // HtmlBodyPart-Description, Services-Description
+                    result.Differentiator($"{partName}-{fieldName}");
+
+                    // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
+                    return result;
+                }
+
+                if (fieldType == shapeType)
                 {
                     // HtmlBodyPart-Description, Services-Description
                     result.Differentiator($"{partName}-{fieldName}");
@@ -39,12 +47,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 {
                     // HtmlBodyPart-Description-TextField, Services-Description-TextField
                     result.Differentiator($"{partName}-{fieldName}-{shapeType}");
-                }
-
-                if (_isEditorFieldDisplay)
-                {
-                    // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
-                    return result;
                 }
 
                 result.Displaying(ctx =>
@@ -110,7 +112,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 _typePartDefinition = typePartDefinition;
                 _partFieldDefinition = partFieldDefinition;
-                _isEditorFieldDisplay = false;
 
                 var result = DisplayAsync(field, fieldDisplayContext);
 
@@ -141,13 +142,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 _typePartDefinition = typePartDefinition;
                 _partFieldDefinition = partFieldDefinition;
-                _isEditorFieldDisplay = true;
 
                 var result = EditAsync(field, fieldEditorContext);
 
                 _typePartDefinition = null;
                 _partFieldDefinition = null;
-                _isEditorFieldDisplay = false;
 
                 return result;
             }
@@ -211,17 +210,27 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
+        protected string GetEditorShapeType(string shapeType, ContentPartFieldDefinition partFieldDefinition)
         {
-            var editor = context.PartFieldDefinition.Editor();
+            var editor = partFieldDefinition.Editor();
             return !String.IsNullOrEmpty(editor)
                 ? shapeType + "__" + editor
                 : shapeType;
         }
 
+        protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
+        {
+            return GetEditorShapeType(shapeType, context.PartFieldDefinition);
+        }
+
+        protected string GetEditorShapeType(ContentPartFieldDefinition partFieldDefinition)
+        {
+            return GetEditorShapeType(typeof(TField).Name + "_Edit", partFieldDefinition);
+        }
+
         protected string GetEditorShapeType(BuildFieldEditorContext context)
         {
-            return GetEditorShapeType(typeof(TField).Name + "_Edit", context);
+            return GetEditorShapeType(context.PartFieldDefinition);
         }
 
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
