@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayHtmlFieldViewModel>("HtmlField", async model =>
+            return Initialize<DisplayHtmlFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", field.ContentItem);
