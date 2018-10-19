@@ -1,6 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.GraphQL.Fields;
+using OrchardCore.ContentFields.GraphQL.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.GraphQL
@@ -10,17 +13,10 @@ namespace OrchardCore.ContentFields.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<TextField, TextFieldInputObjectType>();
-            services.AddGraphQLQueryType<TextField, TextFieldQueryObjectType>();
+            services.AddScoped<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
+            services.AddScoped<IContentFieldProvider, ContentFieldsProvider>();
 
-            services.AddGraphQLQueryType<BooleanField, BooleanFieldQueryObjectType>();
-            services.AddGraphQLQueryType<DateField, DateFieldQueryObjectType>();
-            services.AddGraphQLQueryType<DateTimeField, DateTimeFieldQueryObjectType>();
-            services.AddGraphQLQueryType<HtmlField, HtmlFieldQueryObjectType>();
             services.AddGraphQLQueryType<LinkField, LinkFieldQueryObjectType>();
-            services.AddGraphQLQueryType<NumericField, NumericFieldQueryObjectType>();
-            services.AddGraphQLQueryType<TimeField, TimeFieldQueryObjectType>();
-            services.AddGraphQLQueryType<YoutubeField, YoutubeFieldQueryObjectType>();
         }
     }
 }

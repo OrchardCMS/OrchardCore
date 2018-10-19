@@ -95,6 +95,9 @@ namespace OrchardCore.Apis.GraphQL
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
+#if DEBUG
+                _.ExposeExceptions = true;
+#endif
             });
 
             await WriteResponseAsync(context, result);
