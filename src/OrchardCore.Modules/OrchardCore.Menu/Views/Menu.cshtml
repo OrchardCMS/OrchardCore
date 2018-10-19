@@ -1,4 +1,4 @@
-﻿@{
+@{
     // By using a tag builder, sub items can alter the
     // menu element. Note how Display is called on the menu
     // items before the tag is actually rendered.
@@ -13,4 +13,9 @@
 
 <nav>
     @tag
+
+    @if (Model.Content != null)
+    {   
+        @await DisplayAsync(Model.Content)
+    }
 </nav>
