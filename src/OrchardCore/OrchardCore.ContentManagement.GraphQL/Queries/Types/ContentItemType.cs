@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         private bool IsContentType(object obj)
         {
-            return obj is ContentItem item && item.ContentType == Name;
+            return obj is ContentItem;
         }
     }
 }

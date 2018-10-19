@@ -184,8 +184,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .Query("BlogPost", builder => {
                     builder
                         .WithNestedField("BlogPost")
-                        .WithNestedField("Subtitle")
-                        .AddField("Text");
+                        .AddField("Subtitle");
                 });
 
             Assert.Equal(
