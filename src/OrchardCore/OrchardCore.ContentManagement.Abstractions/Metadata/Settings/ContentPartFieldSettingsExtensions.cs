@@ -19,5 +19,10 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return builder.WithSetting(nameof(ContentPartFieldSettings.Editor), editor);
         }
 
+        public static ContentPartFieldDefinitionBuilder WithDisplayMode(this ContentPartFieldDefinitionBuilder builder, string displayMode)
+        {
+            return builder.WithSetting(nameof(ContentPartFieldSettings.DisplayMode), displayMode);
+        }
+
     }
 }
