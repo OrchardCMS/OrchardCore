@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Mutations
                 new QueryArgument<NonNullGraphType<CreateContentItemInputType>> { Name = "contentItem" }
             };
 
-            Type = typeof(ContentItemType);
+            Type = typeof(ContentItemInterface);
 
             Resolver = new AsyncFieldResolver<object, object>(async (context) =>
             {

@@ -4,7 +4,7 @@ using Assent;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 
-namespace OrchardCore.Tests.Apis.GraphQL
+namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
     public class BlogPostTests
     {
@@ -181,15 +181,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await BlogContext
                 .GraphQLClient
                 .Content
-                .Query("BlogPost", builder => {
-                    builder
-                        .WithNestedField("BlogPost")
-                        .AddField("Subtitle");
+                .Query("BlogPost", builder =>
+                {
+                    builder.AddField("Subtitle");
                 });
 
             Assert.Equal(
                 "Problems look mighty small from 150 miles up",
-                result["data"]["blogPost"][0]["blogPost"]["subtitle"]["text"].ToString());
+                result["data"]["blogPost"][0]["subtitle"].ToString());
         }
     }
 }
