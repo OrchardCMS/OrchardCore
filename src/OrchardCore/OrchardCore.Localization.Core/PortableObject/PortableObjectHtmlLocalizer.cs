@@ -26,9 +26,23 @@ namespace OrchardCore.Localization.PortableObject
         {
             get
             {
-                // TODO: Extract plural arguments, call _localizer with only plural arguments -> result; then call ToHtmlString(result, arguments)
+                // 'HtmlLocalizer' doesn't use '_localizer[name, arguments]' but '_localizer[name]' to get
+                // an unformatted string because a formatting is done through 'LocalizedHtmlString.WriteTo()'.
 
-                return ToHtmlString(_localizer[name, arguments]);
+                // See https://github.com/aspnet/Mvc/blob/master/src/Microsoft.AspNetCore.Mvc.Localization/LocalizedHtmlString.cs#L97
+
+                // But with a plural localizer, arguments may be provided for plural localization. So, we
+                // still use them to get a non formatted translation and extract all non plural arguments.
+
+                if (_localizer is IPluralStringLocalizer pluralLocalizer)
+                {
+                    // Get an unformatted string and all non plural arguments (1st one is the plural count).
+                    var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
+
+                    return ToHtmlString(translation, argumentsWithCount);
+                }
+
+                return ToHtmlString(_localizer[name], arguments);
             }
         }
     }
