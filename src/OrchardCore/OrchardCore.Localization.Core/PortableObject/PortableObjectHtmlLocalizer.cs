@@ -34,6 +34,8 @@ namespace OrchardCore.Localization.PortableObject
                 // But with a plural localizer, arguments may be provided for plural localization. So, we
                 // still use them to get a non formatted translation and extract all non plural arguments.
 
+                // Otherwise an already formatted string containing curly braces will be wrongly reformatted.
+
                 if (_localizer is IPluralStringLocalizer pluralLocalizer)
                 {
                     // Get an unformatted string and all non plural arguments (1st one is the plural count).
