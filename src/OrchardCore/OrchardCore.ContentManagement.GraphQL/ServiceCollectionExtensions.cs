@@ -18,12 +18,11 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
             services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
-            services.AddSingleton<ISchemaBuilder, ContentTypeMutation>();
+            services.AddSingleton<ISchemaBuilder, CreateContentItemMutationBuilder>();
 
             services.AddTransient<ContentItemType>();
             services.AddTransient<DeletionStatusObjectGraphType>();
             services.AddTransient<CreateContentItemInputType>();
-            services.AddTransient<ContentPartsInputType>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
 

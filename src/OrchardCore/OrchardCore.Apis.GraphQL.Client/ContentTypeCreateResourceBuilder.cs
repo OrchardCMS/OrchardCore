@@ -9,9 +9,11 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         private List<ContentPartBuilder> contentPartBuilders = new List<ContentPartBuilder>();
 
+        private string ContentType { get; set; }
+
         public ContentTypeCreateResourceBuilder(string contentType)
         {
-            _values.Add("contentType", contentType);
+            ContentType = contentType;
         }
 
         public ContentPartBuilder WithContentPart(string contentPartName) {
@@ -31,6 +33,8 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             var sbo = new StringBuilder();
 
+            sbo.AppendLine(ContentType.ToGraphQLStringFormat() + ": {");
+
             foreach (var value in _values)
             {
                 var key = value.Key;
@@ -47,8 +51,6 @@ namespace OrchardCore.Apis.GraphQL.Client
                     sbo.AppendLine($"{key}: {value.Value}");
                 }
             }
-
-            sbo.AppendLine("contentParts: {");
 
             for (var i = 0; i < contentPartBuilders.Count; i++)
             {
