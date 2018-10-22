@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.OpenApi
                 DeclaredType = typeof(TModel)
             };
 
-            var executor = context.RequestServices.GetRequiredService<ObjectResultExecutor>();
+            var executor = context.RequestServices.GetRequiredService<IActionResultExecutor<ObjectResult>>();
 
             var routeData = context.GetRouteData() ?? EmptyRouteData;
             var actionContext = new ActionContext(context, routeData, EmptyActionDescriptor);
