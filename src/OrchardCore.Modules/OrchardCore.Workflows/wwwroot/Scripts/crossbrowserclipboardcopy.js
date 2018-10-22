@@ -36,13 +36,13 @@ function select_all_and_copy(el) {
         el.readOnly = readOnly; // Restore previous readOnly status
         if (document.queryCommandSupported("copy")) {
             var successful = document.execCommand('copy');
-            if (successful) tooltip(el, "Copied to clipboard.");
-            else tooltip(el, "Press CTRL+C to copy");
+            //if (successful) tooltip(el, "Copied to clipboard.");
+            //else tooltip(el, "Press CTRL+C to copy");
         }
-        else {
-            if (!navigator.userAgent.match(/ipad|ipod|iphone|android|silk/i))
-                tooltip(el, "Press CTRL+C to copy");
-        }
+        //else {
+        //    if (!navigator.userAgent.match(/ipad|ipod|iphone|android|silk/i))
+        //        tooltip(el, "Press CTRL+C to copy");
+        //}
     }
 } // end function select_all_and_copy(el)
 
