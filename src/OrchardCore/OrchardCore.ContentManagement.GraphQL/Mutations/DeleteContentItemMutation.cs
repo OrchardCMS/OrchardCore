@@ -1,12 +1,8 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Types;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentManagement.GraphQL.Mutations
 {

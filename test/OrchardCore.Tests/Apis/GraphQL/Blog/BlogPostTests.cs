@@ -174,7 +174,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
         }
 
         [Fact]
-        public async Task ShouldGetFieldValueOffPart()
+        public async Task WhenThePartHasTheSameNameAsTheContentTypeShouldCollapseFieldsToContentType()
         {
             await BlogContext.InitializeBlogAsync();
 
@@ -188,6 +188,43 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
             Assert.Equal(
                 "Problems look mighty small from 150 miles up",
+                result["data"]["blogPost"][0]["subtitle"].ToString());
+        }
+
+        [Fact]
+        public async Task WhenCreatingABlogPostShouldBeAbleToPopulateField()
+        {
+            await BlogContext.InitializeBlogAsync();
+
+            var blogPostContentItemId = await BlogContext
+                .GraphQLClient
+                .Content
+                .Create("BlogPost", builder =>
+                {
+                    builder
+                        .WithField("Subtitle", "Hey - Is this working!?!?!?!?")
+                        .WithContentPart("TitlePart")
+                        .AddField("Title", "Some sorta blogpost!");
+
+                    builder
+                        .WithContentPart("ContainedPart")
+                        .AddField("ListContentItemId", BlogContext.BlogContentItemId);
+                });
+
+            var result = await BlogContext
+                .GraphQLClient
+                .Content
+                .Query("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryField("ContentItemId", blogPostContentItemId);
+
+                    builder
+                        .AddField("Subtitle");
+                });
+
+            Assert.Equal(
+                "Hey - Is this working!?!?!?!?",
                 result["data"]["blogPost"][0]["subtitle"].ToString());
         }
     }

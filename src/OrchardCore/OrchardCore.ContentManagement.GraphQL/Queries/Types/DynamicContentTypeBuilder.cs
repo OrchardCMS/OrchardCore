@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         public void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var contentFieldProviders = serviceProvider.GetService<IEnumerable<IContentFieldProvider>>().ToList();
+            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
 
             foreach (var part in contentTypeDefinition.Parts)
             {
