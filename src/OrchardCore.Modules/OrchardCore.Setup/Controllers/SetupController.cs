@@ -205,7 +205,7 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                using (var scope = await _shellHost.GetScopeAsync(_shellHost.GetSettings(ShellHelper.DefaultShellName)))
+                using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
                 {
                     var dataProtectionProvider = scope.ServiceProvider.GetService<IDataProtectionProvider>();
                     ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();

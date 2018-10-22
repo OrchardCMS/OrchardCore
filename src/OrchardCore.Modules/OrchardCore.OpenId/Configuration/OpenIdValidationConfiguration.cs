@@ -193,8 +193,7 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                var shellSettings = _shellHost.GetSettings(settings.Tenant);
-                var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(shellSettings).GetAwaiter().GetResult();
+                var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(settings.Tenant).GetAwaiter().GetResult();
                 using (scope)
                 {
                     // If the other tenant is released, ensure the current tenant is also restarted as it
@@ -226,8 +225,7 @@ namespace OrchardCore.OpenId.Configuration
                 return _serviceProvider.CreateScope();
             }
 
-            var settings = _shellHost.GetSettings(tenant);
-            return _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult();
+            return _shellHost.GetScopeAsync(tenant).GetAwaiter().GetResult();
         }
 
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)
