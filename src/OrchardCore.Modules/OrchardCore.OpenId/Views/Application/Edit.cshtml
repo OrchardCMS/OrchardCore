@@ -148,12 +148,10 @@
         <h6>@T["Client Credentials Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
-            <div class="form-check">
-                <label class="form-check-label" asp-for="RoleEntries[i].Selected">
-                    <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
-                    <input type="hidden" asp-for="RoleEntries[i].Name" />
-                    @Model.RoleEntries[i].Name
-                </label>
+            <input type="hidden" asp-for="RoleEntries[i].Name" />
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="RoleEntries[i].Selected">
+                <label class="custom-control-label" asp-for="RoleEntries[i].Selected">@Model.RoleEntries[i].Name</label>
             </div>
         }
     </div>
