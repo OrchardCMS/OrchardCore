@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
-            return Initialize<YoutubeFieldDisplayViewModel>("YoutubeField", model =>
+            return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
            {
                model.Field = field;
                model.Part = context.ContentPart;
