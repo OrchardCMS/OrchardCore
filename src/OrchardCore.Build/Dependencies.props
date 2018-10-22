@@ -17,7 +17,7 @@
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
     <PackageManagement Include="Markdig" Version="0.15.2" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.0.138" />
     <PackageManagement Include="Moq" Version="4.10.0" />
     <PackageManagement Include="Nancy" Version="2.0.0-clinteastwood" />
@@ -30,7 +30,7 @@
     <PackageManagement Include="OpenIddict.EntityFrameworkCore" Version="2.0.0-rtm-1116" />
     <PackageManagement Include="Serilog" Version="2.7.1" />
     <PackageManagement Include="Serilog.AspNetCore" Version="2.1.1" />
-    <PackageManagement Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageManagement Include="Serilog.Settings.Configuration" Version="3.0.0" />
     <PackageManagement Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageManagement Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageManagement Include="SixLabors.ImageSharp" Version="1.0.0-beta0004" />
