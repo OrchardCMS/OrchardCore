@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,10 @@ namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
+        // We use a static 'MemoryCache' so that it is shared across tenants. We don't need a custom
+        // 'IViewCompilationMemoryCacheProvider' because we are overriding 'RazorViewCompilerProvider'.
+        private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
         private readonly IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _viewsFeatureProviders;
@@ -28,6 +33,7 @@ namespace OrchardCore.Mvc
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IRazorViewEngineFileProviderAccessor _fileProviderAccessor;
         private readonly CSharpCompiler _csharpCompiler;
+        //private readonly IViewCompilationMemoryCacheProvider _compilationMemoryCacheProvider;
         private readonly RazorViewEngineOptions _viewEngineOptions;
         private readonly ILogger<RazorViewCompiler> _logger;
         private readonly Func<IViewCompiler> _createCompiler;
@@ -45,6 +51,7 @@ namespace OrchardCore.Mvc
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
             CSharpCompiler csharpCompiler,
             IOptions<RazorViewEngineOptions> viewEngineOptionsAccessor,
+            //IViewCompilationMemoryCacheProvider compilationMemoryCacheProvider,
             ILoggerFactory loggerFactory)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -54,6 +61,7 @@ namespace OrchardCore.Mvc
             _razorProjectEngine = razorProjectEngine;
             _fileProviderAccessor = fileProviderAccessor;
             _csharpCompiler = csharpCompiler;
+            //_compilationMemoryCacheProvider = compilationMemoryCacheProvider;
             _viewEngineOptions = viewEngineOptionsAccessor.Value;
 
             _logger = loggerFactory.CreateLogger<RazorViewCompiler>();
@@ -141,13 +149,23 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            return new SharedRazorViewCompiler(
+            return new RazorViewCompiler(
                 _fileProviderAccessor.FileProvider,
                 _razorProjectEngine,
                 _csharpCompiler,
+// See https://github.com/aspnet/Mvc/blob/release/2.2/src/Microsoft.AspNetCore.Mvc.Razor/Internal/RazorViewCompilerProvider.cs#L78 
+#pragma warning disable CS0618 // Type or member is obsolete
                 _viewEngineOptions.CompilationCallback,
+#pragma warning restore CS0618 // Type or member is obsolete
                 feature.ViewDescriptors,
-                _logger);
+                // We use a static 'MemoryCache' so that it is shared across tenants. We don't need a custom
+                // 'IViewCompilationMemoryCacheProvider' because we are overriding 'RazorViewCompilerProvider'.
+                //_compilationMemoryCacheProvider.CompilationMemoryCache,
+                _cache,
+                _logger)
+            {
+                AllowRecompilingViewsOnFileChange = _viewEngineOptions.AllowRecompilingViewsOnFileChange,
+            };
         }
     }
 }
