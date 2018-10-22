@@ -48,7 +48,7 @@ namespace OrchardCore.Distributed.Redis.Services
                         }
 
                         handler(channel, tokens[1]);
-                    }, CommandFlags.FireAndForget);
+                    });
                 }
 
                 catch (Exception e)
@@ -66,8 +66,8 @@ namespace OrchardCore.Distributed.Redis.Services
             {
                 try
                 {
-                    await _redis.Connection.GetSubscriber().PublishAsync(_channelPrefix + channel,
-                        _messagePrefix + message, CommandFlags.FireAndForget);
+                    await _redis.Connection.GetSubscriber().PublishAsync(
+                        _channelPrefix + channel, _messagePrefix + message);
                 }
 
                 catch (Exception e)
