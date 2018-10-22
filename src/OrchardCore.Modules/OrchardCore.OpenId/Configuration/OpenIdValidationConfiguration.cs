@@ -193,7 +193,7 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                _shellHost.TryGetSettings(settings.Tenant, out var shellSettings);
+                var shellSettings = _shellHost.GetSettings(settings.Tenant);
                 var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(shellSettings).GetAwaiter().GetResult();
                 using (scope)
                 {
@@ -226,7 +226,7 @@ namespace OrchardCore.OpenId.Configuration
                 return _serviceProvider.CreateScope();
             }
 
-            _shellHost.TryGetSettings(tenant, out var settings);
+            var settings = _shellHost.GetSettings(tenant);
             return _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult();
         }
 

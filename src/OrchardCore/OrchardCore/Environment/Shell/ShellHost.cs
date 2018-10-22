@@ -282,7 +282,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -384,20 +384,6 @@ namespace OrchardCore.Environment.Shell
             }
 
             return shellContexts;
-        }
-
-        /// <summary>
-        /// Retrieves the shell settings associated with the specified tenant.
-        /// </summary>
-        /// <returns>The shell settings associated with the tenant.</returns>
-        public ShellSettings GetSettings(string name)
-        {
-            if (!TryGetSettings(name, out ShellSettings settings))
-            {
-                throw new ArgumentException("The specified tenant name is not valid.", nameof(name));
-            }
-
-            return settings;
         }
 
         /// <summary>
