@@ -30,7 +30,6 @@ namespace OrchardCore.OpenId.Configuration
         private readonly IServiceProvider _serviceProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
 
         public OpenIdValidationConfiguration(
             ILogger<OpenIdValidationConfiguration> logger,
@@ -38,8 +37,7 @@ namespace OrchardCore.OpenId.Configuration
             IRunningShellTable runningShellTable,
             IServiceProvider serviceProvider,
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager)
+            ShellSettings shellSettings)
         {
             _logger = logger;
             _validationService = validationService;
@@ -47,7 +45,6 @@ namespace OrchardCore.OpenId.Configuration
             _serviceProvider = serviceProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -196,7 +193,7 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                var shellSettings = _shellSettingsManager.GetSettings(settings.Tenant);
+                var shellSettings = _shellHost.GetSettings(settings.Tenant);
                 var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(shellSettings).GetAwaiter().GetResult();
                 using (scope)
                 {
@@ -229,7 +226,7 @@ namespace OrchardCore.OpenId.Configuration
                 return _serviceProvider.CreateScope();
             }
 
-            var settings = _shellSettingsManager.GetSettings(tenant);
+            var settings = _shellHost.GetSettings(tenant);
             return _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult();
         }
 

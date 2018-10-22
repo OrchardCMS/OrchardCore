@@ -21,7 +21,6 @@ namespace OrchardCore.Setup.Controllers
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
         private readonly ILogger<SetupController> _logger;
@@ -33,12 +32,10 @@ namespace OrchardCore.Setup.Controllers
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
-            IShellSettingsManager shellSettingsManager,
             IStringLocalizer<SetupController> t)
         {
             _logger = logger;
             _clock = clock;
-            _shellSettingsManager = shellSettingsManager;
             _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
@@ -208,7 +205,7 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                using (var scope = await _shellHost.GetScopeAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName)))
+                using (var scope = await _shellHost.GetScopeAsync(_shellHost.GetSettings(ShellHelper.DefaultShellName)))
                 {
                     var dataProtectionProvider = scope.ServiceProvider.GetService<IDataProtectionProvider>();
                     ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();

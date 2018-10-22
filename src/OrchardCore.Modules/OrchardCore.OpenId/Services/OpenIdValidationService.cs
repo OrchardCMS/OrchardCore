@@ -18,7 +18,6 @@ namespace OrchardCore.OpenId.Services
     {
         private readonly IMemoryCache _cache;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdValidationService> T;
@@ -26,14 +25,12 @@ namespace OrchardCore.OpenId.Services
         public OpenIdValidationService(
             IMemoryCache cache,
             ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager,
             IShellHost shellHost,
             ISiteService siteService,
             IStringLocalizer<OpenIdValidationService> stringLocalizer)
         {
             _cache = cache;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
             _shellHost = shellHost;
             _siteService = siteService;
             T = stringLocalizer;
@@ -124,7 +121,7 @@ namespace OrchardCore.OpenId.Services
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                if (!_shellSettingsManager.TryGetSettings(settings.Tenant, out var tenant))
+                if (!_shellHost.TryGetSettings(settings.Tenant, out var tenant))
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }

@@ -387,6 +387,52 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
+        /// Retrieves the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns>The shell settings associated with the tenant.</returns>
+        public ShellSettings GetSettings(string name)
+        {
+            if (!TryGetSettings(name, out ShellSettings settings))
+            {
+                throw new ArgumentException("The specified tenant name is not valid.", nameof(name));
+            }
+
+            return settings;
+        }
+
+        /// <summary>
+        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
+        public bool TryGetSettings(string name, out ShellSettings settings)
+        {
+            if (_shellContexts != null && _shellContexts.TryGetValue(name, out var shell))
+            {
+                settings = shell.Settings;
+                return true;
+            }
+
+            settings = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves all shell settings.
+        /// </summary>
+        /// <returns>All shell settings.</returns>
+        public IEnumerable<ShellSettings> GetAllSettings()
+        {
+            var shells = _shellContexts?.Values.ToArray();
+
+            if (shells == null || shells.Length == 0)
+            {
+                return Enumerable.Empty<ShellSettings>();
+            }
+
+            return shells.Select(s => s.Settings);
+        }
+
+        /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
         /// </summary>
         private bool CanCreateShell(ShellSettings shellSettings)
