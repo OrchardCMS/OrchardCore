@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Content.Controllers
 {
+    [Route("api/content")]
     public class ApiController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -33,7 +34,7 @@ namespace OrchardCore.Content.Controllers
                 return Unauthorized();
             }
 
-            return new ObjectResult(contentItem);
+            return Ok(contentItem);
         }
     }
 }
