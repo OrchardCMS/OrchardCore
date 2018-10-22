@@ -6,6 +6,8 @@
   
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <!-- Prevent the SDK from validating the supported tfm. Can be removed when a new SDK supporting netcoreapp2.2 is available. -->
+    <NETCoreAppMaximumVersion>99.9</NETCoreAppMaximumVersion>
   </PropertyGroup>
 
   <ItemGroup>
