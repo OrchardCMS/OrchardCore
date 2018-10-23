@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Assent;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
@@ -37,7 +36,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                         .AddField("displayText");
                 });
 
-            this.Assent(result.ToString());
+            var nodes = result["data"]["recentBlogPosts"];
+
+            Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
+            Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
         }
     }
 }
