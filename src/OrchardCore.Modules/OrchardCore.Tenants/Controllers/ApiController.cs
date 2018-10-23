@@ -85,11 +85,6 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (!IsDefaultShell())
-            {
-                return Unauthorized();
-            }
-            
             var allShells = await GetShellsAsync();
 
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
