@@ -107,7 +107,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_shellSettingsManager.TryGetSettings(model.Name, out var shellSettings))
+                if (_shellHost.TryGetSettings(model.Name, out var shellSettings))
                 {
                     // Site already exists, return 200 for indempotency purpose
 
@@ -161,7 +161,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest();
             }
 
-            if (!_shellSettingsManager.TryGetSettings(model.Name, out var shellSettings))
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
             }
