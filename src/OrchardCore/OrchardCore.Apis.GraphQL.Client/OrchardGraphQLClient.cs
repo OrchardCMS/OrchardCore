@@ -12,5 +12,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         }
 
         public ContentResource Content => new ContentResource(_client);
+
+        public HttpClient Client => _client;
     }
 }
