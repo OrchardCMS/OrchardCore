@@ -7,7 +7,7 @@ namespace OrchardCore.Tenants.ViewModels
     {
 
         [Required]
-        public string Tenant { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public string SiteName { get; set; }
