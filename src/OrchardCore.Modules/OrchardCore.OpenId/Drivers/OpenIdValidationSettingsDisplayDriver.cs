@@ -31,7 +31,6 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> T;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
 
         public OpenIdValidationSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -40,8 +39,7 @@ namespace OrchardCore.OpenId.Drivers
             INotifier notifier,
             IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager)
+            ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _validationService = validationService;
@@ -49,7 +47,6 @@ namespace OrchardCore.OpenId.Drivers
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
             T = stringLocalizer;
         }
 
@@ -68,9 +65,9 @@ namespace OrchardCore.OpenId.Drivers
                 model.Tenant = settings.Tenant;
 
                 var availableTenants = new List<string>();
-                var tenants = _shellSettingsManager.LoadSettings().Where(s => s.State == TenantState.Running);
 
-                foreach(var shellContext in await _shellHost.ListShellContextsAsync())
+                foreach (var shellContext in (await _shellHost.ListShellContextsAsync())
+                    .Where(s => s.Settings.State == TenantState.Running))
                 {
                     using (var scope = shellContext.CreateScope())
                     {

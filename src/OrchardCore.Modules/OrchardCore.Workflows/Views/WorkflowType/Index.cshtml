@@ -52,7 +52,7 @@
                             }
                             @if (entry.WorkflowCount > 0)
                             {
-                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances", entry.WorkflowCount)</a>
+                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
                             }
                         </div>
                     </div>

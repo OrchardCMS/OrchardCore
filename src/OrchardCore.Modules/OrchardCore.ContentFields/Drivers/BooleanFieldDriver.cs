@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayBooleanFieldViewModel>("BooleanField", model =>
+            return Initialize<DisplayBooleanFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
