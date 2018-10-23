@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var field = new FieldType
             {
                 Name = "ContentItem",
-                Type = typeof(ContentItemType),
+                Type = typeof(ContentItemInterface),
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>>
                     {
