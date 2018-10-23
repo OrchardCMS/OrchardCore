@@ -41,7 +41,7 @@
                 </div>
                 <div class="nav-item ">
                     <a href="javascript:;" class="nav-link active" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
-                        @T["Delete"] <span class="badge badge-pill badge-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>                        
+                        @T["Delete"] <span class="badge badge-pill badge-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                     </a>
                 </div>
                 <div class="nav-item ml-auto">
@@ -105,10 +105,10 @@
             <media-items-grid v-show="gridView"
                               :filtered-media-items="filteredMediaItems"
                               :selected-medias="selectedMedias"
-                              :thumb-size="thumbSize">
+                              :thumb-size="thumbSize"></media-items-grid>
 
-            </media-items-grid>
-
+            <div class="alert-info pt-3 pb-3 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
+            <div class="alert-info pt-3 pb-3 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
         </div>
     </div>
 </div>
