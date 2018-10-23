@@ -1,11 +1,35 @@
 #mediaApp {
     margin: 0px -15px 0px -15px;
     margin-top: 0;
-    
+    height: 100%;
+
+    #mediaContainer {
+        display: flex;
+        flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
+        height: 100%;
+        align-items: stretch;
+    }
+
+    // on large screen they are side by side
+    @media only screen and ( min-width: 768px ) {
+        #mediaContainer {
+            flex-direction: row;
+        }
+        // we don't want left navigation 100% tall when on stacked over the thumbs list
+        #navigationApp {
+            height: 100%;
+        }
+    }
+
+    .alert-info {
+        font-size: 0.875rem;
+    }
+
+
     #navigationApp {
         border-right: $media-border-content;
         border-top: $media-border-content;
-        width: 260px;
+        min-width: 260px;
     }
 
     .message-warning {
@@ -24,10 +48,8 @@ h1 {
     height: 42px;*/
 }
 
-#mediaApp, #mediaContainer, #navigationApp {
+/*#mediaApp {
     height: 100%;
-}
+}*/
 
-.alert-info {
-    font-size: 0.875rem;
-}
+

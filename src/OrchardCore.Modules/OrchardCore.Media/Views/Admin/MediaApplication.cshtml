@@ -12,8 +12,7 @@
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
-    <div id="mediaContainer" class="d-flex align-items-stretch">
-
+    <div id="mediaContainer" class="align-items-stretch">
         <div id="navigationApp" class="media-container-navigation flex-shrink-0 m-0 p-0" v-cloak>
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
