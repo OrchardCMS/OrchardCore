@@ -46,5 +46,46 @@ namespace OrchardCore.Environment.Shell
         {
             return shellHost.GetScopeAndContextAsync(shellHost.GetSettings(tenant));
         }
+
+        /// <summary>
+        /// Tries to creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// </summary>
+        /// <param name="tenant">The tenant name related to the service scope to get.</param>
+        /// <returns>An associated scope if the tenant name is valid, otherwise null.</returns>
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        public static async Task<IServiceScope> TryGetScopeAsync(this IShellHost shellHost, string tenant)
+        {
+            if (!shellHost.TryGetSettings(tenant, out var settings))
+            {
+                return null;
+            }
+
+            return (await shellHost.GetScopeAndContextAsync(settings)).Scope;
+        }
+
+
+        /// <summary>
+        /// Tries to creates a standalone service scope that can be used to resolve local services and
+        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// </summary>
+        /// <param name="tenant">The tenant name related to the scope and the shell to get.</param>
+        /// <returns>Associated scope and shell if the tenant name is valid, otherwise null values.</returns>
+        /// <remarks>
+        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
+        /// </remarks>
+        public static Task<(IServiceScope Scope, ShellContext ShellContext)> TryGetScopeAndContextAsync(this IShellHost shellHost, string tenant)
+        {
+            if (!shellHost.TryGetSettings(tenant, out var settings))
+            {
+                IServiceScope scope = null;
+                ShellContext shell = null;
+                return Task.FromResult((scope, shell));
+            }
+
+            return shellHost.GetScopeAndContextAsync(settings);
+        }
     }
 }

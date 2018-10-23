@@ -121,13 +121,14 @@ namespace OrchardCore.OpenId.Services
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                if (!_shellHost.TryGetSettings(settings.Tenant, out var tenant))
+                IServiceScope scope;
+                if ((scope = await _shellHost.TryGetScopeAsync(settings.Tenant)) == null)
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
                 else
                 {
-                    using (var scope = await _shellHost.GetScopeAsync(tenant))
+                    using (scope)
                     {
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
