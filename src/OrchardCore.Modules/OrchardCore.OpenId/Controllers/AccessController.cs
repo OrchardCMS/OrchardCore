@@ -66,7 +66,7 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Authorize([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        public async Task<IActionResult> Authorize([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
@@ -135,7 +135,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> AuthorizeAccept([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        public async Task<IActionResult> AuthorizeAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Authorize method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject authorization requests
@@ -181,7 +181,7 @@ namespace OrchardCore.OpenId.Controllers
         public IActionResult AuthorizeDeny() => Forbid(OpenIddictServerDefaults.AuthenticationScheme);
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Logout([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        public async Task<IActionResult> Logout([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
             {
@@ -202,7 +202,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Logout)), AllowAnonymous]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> LogoutAccept([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        public async Task<IActionResult> LogoutAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Logout method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject end session requests
@@ -228,7 +228,7 @@ namespace OrchardCore.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        public async Task<IActionResult> Token([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by the MVC modules stack,
@@ -254,7 +254,7 @@ namespace OrchardCore.OpenId.Controllers
             throw new NotSupportedException("The specified grant type is not supported.");
         }
 
-        private async Task<IActionResult> ExchangeClientCredentialsGrantType([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        private async Task<IActionResult> ExchangeClientCredentialsGrantType(OpenIdConnectRequest request)
         {
             // Note: client authentication is always enforced by OpenIddict before this action is invoked.
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
@@ -302,7 +302,7 @@ namespace OrchardCore.OpenId.Controllers
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        private async Task<IActionResult> ExchangePasswordGrantType([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        private async Task<IActionResult> ExchangePasswordGrantType(OpenIdConnectRequest request)
         {
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
@@ -374,7 +374,7 @@ namespace OrchardCore.OpenId.Controllers
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIdConnectRequest request)
         {
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
@@ -550,7 +550,7 @@ namespace OrchardCore.OpenId.Controllers
             return Forbid(properties, OpenIddictServerDefaults.AuthenticationScheme);
         }
 
-        private IActionResult RedirectToLoginPage([ModelBinder(typeof(OpenIddictMvcBinder))]OpenIdConnectRequest request)
+        private IActionResult RedirectToLoginPage(OpenIdConnectRequest request)
         {
             // If the client application requested promptless authentication,
             // return an error indicating that the user is not logged in.
