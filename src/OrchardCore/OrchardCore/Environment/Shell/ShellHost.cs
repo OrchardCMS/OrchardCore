@@ -282,7 +282,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -384,6 +384,38 @@ namespace OrchardCore.Environment.Shell
             }
 
             return shellContexts;
+        }
+
+        /// <summary>
+        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
+        public bool TryGetSettings(string name, out ShellSettings settings)
+        {
+            if (_shellContexts != null && _shellContexts.TryGetValue(name, out var shell))
+            {
+                settings = shell.Settings;
+                return true;
+            }
+
+            settings = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves all shell settings.
+        /// </summary>
+        /// <returns>All shell settings.</returns>
+        public IEnumerable<ShellSettings> GetAllSettings()
+        {
+            var shells = _shellContexts?.Values.ToArray();
+
+            if (shells == null || shells.Length == 0)
+            {
+                return Enumerable.Empty<ShellSettings>();
+            }
+
+            return shells.Select(s => s.Settings);
         }
 
         /// <summary>
