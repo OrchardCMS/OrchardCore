@@ -10,30 +10,22 @@
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     width: 260px; }
-  #mediaApp #mediaContainerMain {
-    /*border-top: $media-border-content;*/ }
   #mediaApp .message-warning {
     padding: 20px;
     margin-bottom: 8px; }
   #mediaApp a.disabled {
     cursor: default; }
-  #mediaApp a.nav-link {
-    font-size: 0.9375rem;
-    color: #495057; }
-  #mediaApp a.nav-link.disabled {
-    color: #adb5bd; }
-  #mediaApp a.nav-link:not(.disabled):hover {
-    background-color: #e9ecef; }
-  #mediaApp button, #mediaApp a, #mediaApp input {
-    border-radius: 0px; }
 
 h1 {
-  font-size: 1.5rem;
-  font-weight: normal;
-  height: 42px; }
+  /*font-size: 2rem;
+    font-weight: normal;
+    height: 42px;*/ }
 
 #mediaApp, #mediaContainer, #navigationApp {
   height: 100%; }
+
+.alert-info {
+  font-size: 0.875rem; }
 
 .upload {
   background-color: rgba(0, 0, 0, 0.05);
@@ -213,31 +205,14 @@ ol.media-items-grid {
       position: absolute;
       top: 8px;
       left: 10px;
-      z-index: 1070;
+      z-index: 1030;
       pointer-events: none;
       color: #6c757d; }
-  .action-bar .nav-bar-divider {
-    background-color: #6c757d;
-    margin: 2px 4px 0 4px;
-    width: 1px;
-    min-width: 1px;
-    height: 22px;
-    align-self: center; }
-  .action-bar .nav-item {
-    margin-top: 2px !important; }
-    .action-bar .nav-item .badge-light {
-      font-size: 0.875rem;
-      background-color: #e9ecef;
-      color: #495057; }
-  .action-bar .selected-count {
-    min-width: 25px;
-    display: inline-block; }
   .action-bar .fileinput-button {
     cursor: pointer;
     margin: 0;
-    padding: 5px 16px 0px 16px;
-    border: 0;
-    border-radius: 0px !important; }
+    padding: 4px 12px 4px 8px;
+    border: 0; }
     .action-bar .fileinput-button svg {
       margin-right: 6px; }
     .action-bar .fileinput-button input {
@@ -249,8 +224,7 @@ ol.media-items-grid {
       z-index: -1; }
   .action-bar input[type="text"] {
     outline: none;
-    box-shadow: none !important;
-    /*border: 1px solid red !important;*/ }
+    box-shadow: none !important; }
 
 #breadcrumb {
   background-color: transparent;

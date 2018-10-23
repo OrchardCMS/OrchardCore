@@ -8,10 +8,6 @@
         width: 260px;
     }
 
-    #mediaContainerMain {
-        /*border-top: $media-border-content;*/
-    }
-
     .message-warning {
         padding: 20px;
         margin-bottom: 8px;
@@ -20,31 +16,18 @@
     a.disabled {
         cursor: default;
     }
-
-    a.nav-link {
-        font-size: 0.9375rem;
-        color: $gray-700;
-    }
-
-    a.nav-link.disabled {
-        color: $gray-500;
-    }
-
-    a.nav-link:not(.disabled):hover {
-        background-color: $gray-200;
-    }
-
-    button, a, input {
-        border-radius: 0px;
-    }
 }
 
 h1 {
-    font-size: 1.5rem;
+    /*font-size: 2rem;
     font-weight: normal;
-    height: 42px;
+    height: 42px;*/
 }
 
 #mediaApp, #mediaContainer, #navigationApp {
     height: 100%;
+}
+
+.alert-info {
+    font-size: 0.875rem;
 }

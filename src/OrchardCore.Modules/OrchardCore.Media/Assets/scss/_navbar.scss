@@ -1,5 +1,5 @@
 .action-bar {
-    border-bottom: $media-border-content;
+    border-bottom: $media-border-content; 
 
     .media-filter {
         margin-top: 3px;
@@ -29,41 +29,18 @@
             position: absolute;
             top: 8px;
             left: 10px;
-            z-index: 1070; // when integrated with bootstrap variables you replace this value by $zindex-tooltip.
+            z-index: $zindex-fixed;
             pointer-events: none;
             color: $gray-600;
         }
     }
 
-    .nav-bar-divider {
-        background-color: $gray-600;
-        margin: 2px 4px 0 4px;
-        width: 1px;
-        min-width: 1px;
-        height: 22px;
-        align-self: center;
-    }
-
-    .nav-item {
-        margin-top: 2px !important; // fixing a gap at the bottom of each nav-item
-        .badge-light {
-            font-size: 0.875rem;
-            background-color: $gray-200;
-            color: $gray-700;
-        }
-    }
-
-    .selected-count {
-        min-width: 25px;
-        display: inline-block;
-    }
     /* Upload button */
     .fileinput-button {
         cursor: pointer;
         margin: 0;
-        padding: 5px 16px 0px 16px;
+        padding: 4px 12px 4px 8px;
         border: 0;
-        border-radius: 0px !important;
 
         svg {
             margin-right: 6px;
@@ -82,7 +59,6 @@
     input[type="text"] {
         outline: none;
         box-shadow: none !important;
-        /*border: 1px solid red !important;*/
     }
 }
 

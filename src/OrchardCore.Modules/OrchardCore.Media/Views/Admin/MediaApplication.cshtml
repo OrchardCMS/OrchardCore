@@ -23,27 +23,22 @@
 
         <div id="mediaContainerMain" class="flex-grow-1 pl-0 ml-4 mr-4" v-cloak>
 
-            <nav class="nav action-bar align-items-stretch">
-                <div class="nav-item ">
-                    <a href="javascript:;" class="nav-link active" v-on:click="selectAll">
+            <nav class="nav action-bar pb-2">
+                <div class="form-inline">
+                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="selectAll">
                         @T["Select All"]
                     </a>
-                </div>
-                <div class="nav-item ">
-                    <a href="javascript:;" class="nav-link active" v-on:click="unSelectAll" :disabled="selectedMedias.length < 1">
+                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
                         @T["Select None"]
                     </a>
-                </div>
-                <div class="nav-item ">
-                    <a href="javascript:;" class="nav-link active" v-on:click="invertSelection">
+                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="invertSelection">
                         @T["Invert"]
                     </a>
-                </div>
-                <div class="nav-item ">
-                    <a href="javascript:;" class="nav-link active" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
+                    <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
                         @T["Delete"] <span class="badge badge-pill badge-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                     </a>
                 </div>
+
                 <div class="nav-item ml-auto">
                     <div class="media-filter">
                         <div class="input-group input-group-sm">
@@ -107,8 +102,8 @@
                               :selected-medias="selectedMedias"
                               :thumb-size="thumbSize"></media-items-grid>
 
-            <div class="alert-info pt-3 pb-3 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
-            <div class="alert-info pt-3 pb-3 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
+            <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
+            <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
         </div>
     </div>
 </div>
@@ -194,4 +189,3 @@
         </div>
     </div>
 </div>
-
