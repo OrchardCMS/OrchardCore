@@ -22,6 +22,11 @@ namespace OrchardCore.Environment.Shell
             builder.AddJsonFile(Path.Combine(_hostingEnvironment.ContentRootPath, "tenants.json"));
         }
 
+        public void AddSource(IConfigurationBuilder builder, string name)
+        {
+            AddSource(builder);
+        }
+
         public void SaveToSource(string name, IDictionary<string, string> configuration)
         {
         }

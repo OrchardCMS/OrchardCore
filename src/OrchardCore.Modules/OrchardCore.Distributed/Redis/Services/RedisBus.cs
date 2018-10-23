@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
-using StackExchange.Redis;
 
 namespace OrchardCore.Distributed.Redis.Services
 {

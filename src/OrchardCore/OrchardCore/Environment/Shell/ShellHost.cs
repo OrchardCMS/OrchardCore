@@ -368,7 +368,7 @@ namespace OrchardCore.Environment.Shell
 
         private async Task DefaultShellEventAsync(Func<IDefaultShellEvents, Task> handler)
         {
-            if (_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
+            if (TryGetSettings(ShellHelper.DefaultShellName, out var settings))
             {
                 using (var scope = await GetScopeAsync(settings))
                 {

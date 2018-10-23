@@ -63,14 +63,8 @@ namespace OrchardCore.Distributed.Core.Services
 
                 deferredTaskEngine?.AddTask(async context =>
                 {
-                    // Try to retrieve the last updated settings of the `Default` tenant.
-                    if (!_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-                    {
-                        return;
-                    }
-
                     // Invoke the 'Created' event to subscribe to the 'Shell' channel.
-                    using (var scope = await _shellHost.GetScopeAsync(defaultSettings))
+                    using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
                     {
                         var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
                         await (events?.CreatedAsync() ?? Task.CompletedTask);
@@ -99,8 +93,8 @@ namespace OrchardCore.Distributed.Core.Services
                                 return;
                             }
 
-                            // Try to retrieve the last settings of the specified tenant.
-                            if (!_shellSettingsManager.TryGetSettings(tokens[0], out var settings))
+                            // Try to load the last settings of the specified tenant.
+                            if (!_shellSettingsManager.TryLoadSettings(tokens[0], out var settings))
                             {
                                 return;
                             }
@@ -162,7 +156,7 @@ namespace OrchardCore.Distributed.Core.Services
             }
 
             // Nothing to do if, from the last updated settings, the tenant is not yet running.
-            if (!_shellSettingsManager.TryGetSettings(tenant, out var settings) || settings.State != TenantState.Running)
+            if (!_shellSettingsManager.TryLoadSettings(tenant, out var settings) || settings.State != TenantState.Running)
             {
                 return;
             }
@@ -175,14 +169,8 @@ namespace OrchardCore.Distributed.Core.Services
 
                 deferredTaskEngine?.AddTask(async context =>
                 {
-                    // Try to retrieve the last updated settings of the `Default` tenant.
-                    if (!_shellSettingsManager.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
-                    {
-                        return;
-                    }
-
                     // 'Changed' messages are always published using the 'Default' tenant.
-                    using (var changedScope = await _shellHost.GetScopeAsync(defaultSettings))
+                    using (var changedScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
                     {
                         // If the default shell has changed.
                         if (tenant == ShellHelper.DefaultShellName)

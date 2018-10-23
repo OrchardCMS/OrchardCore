@@ -108,7 +108,6 @@ namespace OrchardCore.Recipes.Controllers
             // Set shell state to "Initializing" so that subsequent HTTP requests
             // are responded to with "Service Unavailable" while running the recipe.
             _shellSettings.State = TenantState.Initializing;
-            await _shellHost.UpdateShellSettingsAsync(_shellSettings);
 
             try
             {

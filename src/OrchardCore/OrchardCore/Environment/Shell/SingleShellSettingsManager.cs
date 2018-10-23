@@ -8,9 +8,26 @@ namespace OrchardCore.Environment.Shell
         {
             yield return new ShellSettings
             {
-                Name = "Default",
+                Name = ShellHelper.DefaultShellName,
                 State = Models.TenantState.Running
             };
+        }
+
+        public bool TryLoadSettings(string name, out ShellSettings settings)
+        {
+            if (ShellHelper.DefaultShellName != name)
+            {
+                settings = null;
+                return false;
+            }
+
+            settings = new ShellSettings
+            {
+                Name = ShellHelper.DefaultShellName,
+                State = Models.TenantState.Running
+            };
+
+            return true;
         }
 
         public void SaveSettings(ShellSettings shellSettings)

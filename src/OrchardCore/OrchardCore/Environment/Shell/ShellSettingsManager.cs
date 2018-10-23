@@ -53,6 +53,38 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        public bool TryLoadSettings(string name, out ShellSettings settings)
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+
+            foreach (var provider in _configurationProviders)
+            {
+                provider.AddSource(configurationBuilder, name);
+            }
+
+            var configurationRoot = configurationBuilder.Build();
+
+            var tenant = configurationRoot.GetChildren().FirstOrDefault(t => t.Key == name);
+
+            if (tenant == null)
+            {
+                settings = null;
+                return false;
+            }
+
+            var values = tenant
+                .AsEnumerable()
+                .ToDictionary(k => k.Key.Replace((tenant.Key + ":"), string.Empty), v => v.Value);
+
+            // More a replace.
+            values.Remove(tenant.Key);
+            values.Add("Name", tenant.Key);
+
+            // What goes in to here is everything but with tenant name removed.
+            settings = new ShellSettings(values);
+            return true;
+        }
+
         public void SaveSettings(ShellSettings settings)
         {
             if (settings == null)

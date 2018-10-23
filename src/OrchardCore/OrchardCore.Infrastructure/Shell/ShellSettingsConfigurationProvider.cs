@@ -46,6 +46,19 @@ namespace OrchardCore.Environment.Shell.Data
             }
         }
 
+        public void AddSource(IConfigurationBuilder builder, string name)
+        {
+            var settingsFile = GetSettingsFilePath(Path.Combine(
+                        _optionsAccessor.Value.ShellsApplicationDataPath,
+                        _optionsAccessor.Value.ShellsContainerName,
+                        name));
+
+            if (File.Exists(settingsFile))
+            {
+                builder.AddYamlFile(settingsFile);
+            }
+        }
+
         public void SaveToSource(string name, IDictionary<string, string> configuration)
         {
             var settingsFile = GetSettingsFilePath(Path.Combine(
