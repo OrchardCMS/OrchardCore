@@ -25,9 +25,10 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers
 {
     [Route("api/tenants")]
+    [IgnoreAntiforgeryToken]
     public class ApiController : Controller
     {
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
@@ -39,7 +40,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly INotifier _notifier;
 
         public ApiController(
-            IShellHost orchardHost,
+            IShellHost shellHost,
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
@@ -56,7 +57,7 @@ namespace OrchardCore.Tenants.Controllers
             _setupService = setupService;
             _clock = clock;
             _recipeHarvesters = recipeHarvesters;
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
@@ -71,7 +72,7 @@ namespace OrchardCore.Tenants.Controllers
         public IHtmlLocalizer H { get; set; }
 
         [HttpPost]
-        [Route("create")]
+        [Route("create")]        
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
             if (!IsDefaultShell())
@@ -135,7 +136,7 @@ namespace OrchardCore.Tenants.Controllers
                     };
 
                     _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _orchardHost.GetOrCreateShellContextAsync(shellSettings);
+                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 
@@ -165,14 +166,14 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest();
             }
 
-            if (!_shellSettingsManager.TryGetSettings(model.Tenant, out var shellSettings))
+            if (!_shellSettingsManager.TryGetSettings(model.Name, out var shellSettings))
             {
-                ModelState.AddModelError(nameof(SetupApiViewModel.Tenant), S["Tenant not found: '{0}'", model.Tenant]);
+                ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
             }
 
             if (shellSettings.State == TenantState.Running)
             {
-                return Ok();
+                return StatusCode(201);
             }
 
             if (shellSettings.State != TenantState.Uninitialized)
@@ -185,6 +186,13 @@ namespace OrchardCore.Tenants.Controllers
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not defined."]);
+            }
+
+            var tablePrefix = shellSettings.TablePrefix;
+
+            if (String.IsNullOrEmpty(tablePrefix))
+            {
+                tablePrefix = model.TablePrefix;
             }
 
             var connectionString = shellSettings.ConnectionString;
@@ -212,7 +220,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (model.Recipe == null)
                 {
-                    BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
+                    return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
                 }
 
                 var tempFilename = Path.GetTempFileName();
@@ -234,11 +242,11 @@ namespace OrchardCore.Tenants.Controllers
             else
             {
                 var setupRecipes = await _setupService.GetSetupRecipesAsync();
-                var selectedRecipe = setupRecipes.FirstOrDefault(x => String.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
+                recipeDescriptor = setupRecipes.FirstOrDefault(x => String.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
 
-                if (selectedRecipe == null)
+                if (recipeDescriptor == null)
                 {
-                    BadRequest(S["Recipe '{0}' not found.", recipeName]);
+                    return BadRequest(S["Recipe '{0}' not found.", recipeName]);
                 }
             }
 
@@ -252,7 +260,10 @@ namespace OrchardCore.Tenants.Controllers
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
-                SiteTimeZone = model.SiteTimeZone
+                SiteTimeZone = model.SiteTimeZone,
+                DatabaseProvider = selectedProvider.Name,
+                DatabaseConnectionString = connectionString,
+                DatabaseTablePrefix = tablePrefix
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
@@ -265,7 +276,7 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return StatusCode(500, ModelState.ToString());
+                return StatusCode(500, ModelState);
             }
 
             return Ok(executionId);
@@ -273,7 +284,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private async Task<IEnumerable<ShellContext>> GetShellsAsync()
         {
-            return (await _orchardHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
+            return (await _shellHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
         }
 
         private bool IsDefaultShell()
