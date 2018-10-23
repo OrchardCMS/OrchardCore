@@ -46,6 +46,8 @@
     <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1266" />
     <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1266" />
     <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1266" />
+    <PackageManagement Include="Assent" Version="1.3.1" />
+    <PackageManagement Include="GraphQL" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

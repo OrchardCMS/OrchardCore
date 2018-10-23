@@ -73,7 +73,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]        
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create([FromBody] CreateApiViewModel model)
         {
             if (!IsDefaultShell())
             {
@@ -144,7 +144,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup(SetupApiViewModel model)
+        public async Task<IActionResult> Setup([FromBody] SetupApiViewModel model)
         {
             if (!IsDefaultShell())
             {
