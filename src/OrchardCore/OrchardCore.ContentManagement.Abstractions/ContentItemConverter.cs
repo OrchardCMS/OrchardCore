@@ -8,11 +8,10 @@ namespace OrchardCore.ContentManagement
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            ContentItem contentItem = (ContentItem)value;
+            var contentItem = (ContentItem)value;
             var o = new JObject();
 
             // Write all well-known properties
-            o.Add(new JProperty(nameof(ContentItem.Id), contentItem.Id));
             o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
             o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
             o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
@@ -54,9 +53,6 @@ namespace OrchardCore.ContentManagement
 
                 switch (propertyName)
                 {
-                    case nameof(ContentItem.Id) : 
-                        contentItem.Id = reader.ReadAsInt32() ?? 0;
-                        break;
                     case nameof(ContentItem.ContentItemId):
                         contentItem.ContentItemId = reader.ReadAsString();
                         break;
