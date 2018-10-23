@@ -12,25 +12,27 @@ namespace OrchardCore.Tests.Apis.Context
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static OrchardGraphQLClient GraphQLClient { get; }
         public static Task InitializeSiteAsync() => _initialize;
+        public static HttpClient Client;
 
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
-            GraphQLClient = new OrchardGraphQLClient(Site.CreateClient());
+            Client = Site.CreateClient();
+            GraphQLClient = new OrchardGraphQLClient(Client);
             _initialize = InitializeAsync();
         }
 
         private static async Task InitializeAsync()
         {
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
-            {
-                DatabaseProvider = "Sqlite",
-                RecipeName = "Blog",
-                Name = "Default"
-            };
-            var createResult = await GraphQLClient.Client.PostAsJsonAsync("api/tenants/create", createModel);
+            //var createModel = new Tenants.ViewModels.CreateApiViewModel
+            //{
+            //    DatabaseProvider = "Sqlite",
+            //    RecipeName = "Blog",
+            //    Name = "Default"
+            //};
+            //var createResult = await Client.PostAsJsonAsync("api/tenants/create", createModel);
 
-            createResult.EnsureSuccessStatusCode();
+            //createResult.EnsureSuccessStatusCode();
 
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
@@ -42,7 +44,7 @@ namespace OrchardCore.Tests.Apis.Context
                 Name = "Default",
                 Email = "Nick@Orchard"
             };
-            var setupResult = await GraphQLClient.Client.PostAsJsonAsync("api/tenants/setup", setupModel);
+            var setupResult = await Client.PostAsJsonAsync("api/tenants/setup", setupModel);
 
             setupResult.EnsureSuccessStatusCode();
         }
@@ -55,14 +57,14 @@ namespace OrchardCore.Tests.Apis.Context
 
             func(contentItem);
 
-            var content = await GraphQLClient.Client.PostAsJsonAsync("api/content", contentItem);
+            var content = await Client.PostAsJsonAsync("api/content", contentItem);
             var response = await content.Content.ReadAsAsync<ContentItem>();
 
             return response.ContentItemId;
         }
 
         public static Task DeleteContentItem(string contentItemId) {
-            return GraphQLClient.Client.DeleteAsync("api/content/" + contentItemId);
+            return Client.DeleteAsync("api/content/" + contentItemId);
         }
     }
 }
