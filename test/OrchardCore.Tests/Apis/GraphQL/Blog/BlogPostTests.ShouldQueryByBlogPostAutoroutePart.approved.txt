@@ -1,0 +1,9 @@
+{
+  "data": {
+    "blogPost": [
+      {
+        "displayText": "Some sorta blogpost!"
+      }
+    ]
+  }
+}
