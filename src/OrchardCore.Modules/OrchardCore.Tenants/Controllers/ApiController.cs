@@ -25,7 +25,7 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers
 {
     [Route("api/tenants")]
-    [IgnoreAntiforgeryToken]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IShellHost _shellHost;

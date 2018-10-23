@@ -7,6 +7,7 @@ using OrchardCore.Contents;
 namespace OrchardCore.Content.Controllers
 {
     [Route("api/content")]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -39,7 +40,6 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpDelete]
-        [IgnoreAntiforgeryToken]
         [Route("{contentItemId}")]
         public async Task<IActionResult> Delete(string contentItemId)
         {
@@ -61,7 +61,6 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Post([FromBody] ContentItem newContentItem, bool draft = false)
         {
             var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);

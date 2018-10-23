@@ -7,6 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
