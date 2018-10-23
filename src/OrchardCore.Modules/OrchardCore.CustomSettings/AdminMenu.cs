@@ -27,7 +27,7 @@ namespace OrchardCore.CustomSettings
                 return Task.CompletedTask;
             }
 
-            foreach (var type in _customSettingsService.GetSettingsTypes())
+            foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 builder
                     .Add(T["Configuration"], configuration => configuration
