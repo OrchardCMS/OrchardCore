@@ -443,7 +443,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
@@ -481,7 +482,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });
