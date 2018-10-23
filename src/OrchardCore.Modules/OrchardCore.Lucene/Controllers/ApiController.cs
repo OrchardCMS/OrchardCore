@@ -41,7 +41,9 @@ namespace OrchardCore.Lucene.Controllers
                 ReturnContentItems = true
             };
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
@@ -65,7 +67,9 @@ namespace OrchardCore.Lucene.Controllers
                 Template = query
             };
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
