@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
