@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Services
         protected virtual ContentPickerResult BuildResult(ContentItem contentItem) => new ContentPickerResult
             {
                 ContentItemId = contentItem.ContentItemId,
-                DisplayText = contentItem.DisplayText
+                DisplayText = $"{contentItem.ContentType}{(string.IsNullOrWhiteSpace(contentItem.DisplayText) ? string.Empty : ": " + contentItem.DisplayText)}"
             };
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
