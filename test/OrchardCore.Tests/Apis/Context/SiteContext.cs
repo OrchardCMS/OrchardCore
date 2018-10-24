@@ -34,8 +34,9 @@ namespace OrchardCore.Tests.Apis.Context
 
             createResult.EnsureSuccessStatusCode();
 
-            var u = await createResult.Content.ReadAsAsync<string>();
-            var url = new Uri(u);
+            var x = await createResult.Content.ReadAsStringAsync();
+
+            var url = new Uri(x.Trim('"'));
             url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
 
             var setupModel = new Tenants.ViewModels.SetupApiViewModel

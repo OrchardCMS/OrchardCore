@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -146,9 +147,12 @@ namespace OrchardCore.Tests.Apis.Context
                 Encoding.UTF8,
                 "application/json");
 
-            client.DefaultRequestHeaders
-              .Accept
-              .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!client.DefaultRequestHeaders.Accept.Any(x => x.MediaType == "application/json"))
+            {
+                client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
 
             return client.PostAsync(requestUri, content);
         }
@@ -163,9 +167,12 @@ namespace OrchardCore.Tests.Apis.Context
                 Encoding.UTF8,
                 "application/json");
 
-            client.DefaultRequestHeaders
-              .Accept
-              .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!client.DefaultRequestHeaders.Accept.Any(x => x.MediaType == "application/json"))
+            {
+                client.DefaultRequestHeaders
+                  .Accept
+                  .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            }
 
             return client.PostAsync(requestUri, content);
         }
