@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Deployment;
 using YesSql;
@@ -9,11 +10,11 @@ namespace OrchardCore.ContentTypes.Deployment
 {
     public class ContentDefinitionDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
+        private readonly IContentDefinitionStore _contentDefinitionStore;
 
-        public ContentDefinitionDeploymentSource(ISession session)
+        public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
         {
-            _session = session;
+            _contentDefinitionStore = contentDefinitionStore;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -23,10 +24,8 @@ namespace OrchardCore.ContentTypes.Deployment
                 return;
             }
 
-            var contentTypeDefinitionRecord = await _session
-                .Query<ContentDefinitionRecord>()
-                .FirstOrDefaultAsync();
-
+            var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
+           
             var contentTypes = contentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
                 : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
