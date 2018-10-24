@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Setup;
 
 namespace OrchardCore.Tenants
 {
@@ -16,6 +17,7 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddSetup();
         }
     }
 
