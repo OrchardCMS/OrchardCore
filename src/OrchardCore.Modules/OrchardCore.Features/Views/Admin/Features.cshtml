@@ -71,7 +71,7 @@
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
                 }
-                <h2 data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
+                <h2 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
                 <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
                         foreach (var feature in features)
