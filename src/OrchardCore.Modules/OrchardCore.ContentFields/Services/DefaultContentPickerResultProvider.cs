@@ -20,6 +20,12 @@ namespace OrchardCore.ContentFields.Services
 
         public string Name => "Default";
 
+        protected virtual ContentPickerResult BuildResult(ContentItem contentItem) => new ContentPickerResult
+            {
+                ContentItemId = contentItem.ContentItemId,
+                DisplayText = contentItem.DisplayText
+            };
+
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>()
@@ -36,11 +42,7 @@ namespace OrchardCore.ContentFields.Services
 
             foreach (var contentItem in contentItems)
             {
-                results.Add(new ContentPickerResult
-                {
-                    ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItem.DisplayText
-                });
+                results.Add(BuildResult(contentItem));
             }
 
             return results;
