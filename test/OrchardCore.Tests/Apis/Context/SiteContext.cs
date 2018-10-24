@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
@@ -14,6 +15,8 @@ namespace OrchardCore.Tests.Apis.Context
         public HttpClient Client { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
 
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+
         static SiteContext() {
             Site = new OrchardTestFixture<SiteStartup>();
             DefaultTenantClient = Site.CreateClient();
@@ -23,38 +26,49 @@ namespace OrchardCore.Tests.Apis.Context
         {
             var tenantName = Guid.NewGuid().ToString().Replace("-", "");
 
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
+            await semaphoreSlim.WaitAsync();
+            try
             {
-                DatabaseProvider = "Sqlite",
-                RecipeName = "Blog",
-                Name = tenantName,
-                RequestUrlPrefix = tenantName
-            };
-            var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
 
-            createResult.EnsureSuccessStatusCode();
+                var createModel = new Tenants.ViewModels.CreateApiViewModel
+                {
+                    DatabaseProvider = "Sqlite",
+                    RecipeName = "Blog",
+                    Name = tenantName,
+                    RequestUrlPrefix = tenantName
+                };
+                var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
 
-            var x = await createResult.Content.ReadAsStringAsync();
+                createResult.EnsureSuccessStatusCode();
 
-            var url = new Uri(x.Trim('"'));
-            url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
+                var x = await createResult.Content.ReadAsStringAsync();
 
-            var setupModel = new Tenants.ViewModels.SetupApiViewModel
+                var url = new Uri(x.Trim('"'));
+                url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
+
+                var setupModel = new Tenants.ViewModels.SetupApiViewModel
+                {
+                    SiteName = "Test Site",
+                    DatabaseProvider = "Sqlite",
+                    RecipeName = "Blog",
+                    UserName = "admin",
+                    Password = "Password01_",
+                    Name = tenantName,
+                    Email = "Nick@Orchard"
+                };
+                var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
+
+                setupResult.EnsureSuccessStatusCode();
+
+                Client = Site.CreateDefaultClient(url);
+                GraphQLClient = new OrchardGraphQLClient(Client);
+            }
+            finally
             {
-                SiteName = "Test Site",
-                DatabaseProvider = "Sqlite",
-                RecipeName = "Blog",
-                UserName = "admin",
-                Password = "Password01_",
-                Name = tenantName,
-                Email = "Nick@Orchard"
-            };
-            var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
-
-            setupResult.EnsureSuccessStatusCode();
-
-            Client = Site.CreateDefaultClient(url);
-            GraphQLClient = new OrchardGraphQLClient(Client);
+                //When the task is ready, release the semaphore. It is vital to ALWAYS release the semaphore when we are ready, or else we will end up with a Semaphore that is forever locked.
+                //This is why it is important to do the Release within a try...finally clause; program execution may crash or take a different path, this way you are guaranteed execution
+                semaphoreSlim.Release();
+            }
         }
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func)
