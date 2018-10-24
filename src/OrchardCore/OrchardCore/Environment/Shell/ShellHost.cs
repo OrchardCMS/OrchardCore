@@ -183,7 +183,7 @@ namespace OrchardCore.Environment.Shell
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "A tenant could not be started '{0}'", settings.Name);
+                        _logger.LogError(ex, "A tenant could not be started '{TenantName}'", settings.Name);
 
                         if (ex.IsFatal())
                         {
