@@ -67,20 +67,6 @@ namespace OrchardCore.Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
-
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Content",
-                areaName: "OrchardCore.Lucene",
-                template: "api/lucene/content",
-                defaults: new { controller = "Api", action = "Content" }
-            );
-
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Documents",
-                areaName: "OrchardCore.Lucene",
-                template: "api/lucene/documents",
-                defaults: new { controller = "Api", action = "Documents" }
-            );
         }
     }
 

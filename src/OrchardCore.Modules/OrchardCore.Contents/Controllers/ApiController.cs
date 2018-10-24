@@ -7,6 +7,7 @@ using OrchardCore.Contents;
 namespace OrchardCore.Content.Controllers
 {
     [Route("api/content")]
+    [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
@@ -61,7 +62,7 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ContentItem newContentItem, bool draft = false)
+        public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
         {
             var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
             

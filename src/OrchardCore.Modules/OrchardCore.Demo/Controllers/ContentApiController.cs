@@ -53,7 +53,7 @@ namespace OrchardCore.Demo.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> AddContent([FromBody]ContentItem contentItem)
+        public async Task<IActionResult> AddContent(ContentItem contentItem)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {

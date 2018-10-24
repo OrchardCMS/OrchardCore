@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Route("api/queries")]
+    [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
@@ -22,6 +24,7 @@ namespace OrchardCore.Queries.Controllers
         }
 
         [HttpPost, HttpGet]
+        [Route("{name}")]
         public async Task<IActionResult> Query(
             string name,
             string parameters)

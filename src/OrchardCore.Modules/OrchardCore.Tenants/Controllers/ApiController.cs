@@ -25,6 +25,7 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers
 {
     [Route("api/tenants")]
+    [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
@@ -73,7 +74,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]        
-        public async Task<IActionResult> Create([FromBody] CreateApiViewModel model)
+        public async Task<IActionResult> Create(CreateApiViewModel model)
         {
             if (!IsDefaultShell())
             {
@@ -144,7 +145,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup([FromBody] SetupApiViewModel model)
+        public async Task<ActionResult> Setup(SetupApiViewModel model)
         {
             if (!IsDefaultShell())
             {

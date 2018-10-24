@@ -13,7 +13,7 @@ namespace OrchardCore.Security
         public static IServiceCollection AddSecurity(this IServiceCollection services)
         {
             services.AddAuthorization();
-            services.AddAuthentication().AddScheme<ApiAuthorizationOptions, ApiAuthorizationHandler>("Api", null);
+            services.AddAuthentication().AddScheme<ApiAuthorizationOptions, ApiAuthenticationHandler>("Api", null);
 
             services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();

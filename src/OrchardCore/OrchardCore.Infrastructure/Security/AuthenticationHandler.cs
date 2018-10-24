@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -11,24 +10,12 @@ namespace OrchardCore.Security
     /// Provides a delegating logic for API authentication.
     /// If no specific scheme handler is found it returns an anonymous user.
     /// </summary>
-    public class ApiAuthorizationHandler : AuthenticationHandler<ApiAuthorizationOptions>
+    public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
     {
         private readonly IOptions<AuthenticationOptions> _authenticationOptions;
-        private readonly IAuthenticationService _authenticationService;
-        private static readonly AuthenticateResult Anonymous;
 
-        static ApiAuthorizationHandler()
-        {
-            Anonymous = AuthenticateResult.Success(
-                new AuthenticationTicket(
-                    new ClaimsPrincipal(
-                        new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, "Anonymous") }, "Bearer")), "Bearer")
-                );
-        }
-
-        public ApiAuthorizationHandler(
+        public ApiAuthenticationHandler(
             IOptions<AuthenticationOptions> authenticationOptions,
-            IAuthenticationService authenticationService,
             IOptionsMonitor<ApiAuthorizationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
@@ -36,24 +23,16 @@ namespace OrchardCore.Security
             : base(options, logger, encoder, clock)
         {
             _authenticationOptions = authenticationOptions;
-            _authenticationService = authenticationService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey("Bearer"))
             {
-                return Anonymous;
+                return AuthenticateResult.NoResult();
             }
 
-            try
-            {
-                return await Context.AuthenticateAsync("Bearer");
-            }
-            catch
-            {
-                return Anonymous;
-            }
+            return await Context.AuthenticateAsync("Bearer");
         }
     }
 
