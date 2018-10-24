@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell
     public interface IDefaultShellEvents
     {
         /// <summary>
-        /// Invoked when the 'Default' tenant is 1st created or has changed.
+        /// Invoked when the 'Default' tenant is 1st created or has been updated.
         /// </summary>
         Task CreatedAsync();
 
@@ -16,5 +16,15 @@ namespace OrchardCore.Environment.Shell
         /// Invoked when any tenant has changed.
         /// </summary>
         Task ChangedAsync(string tenant);
+
+        /// <summary>
+        /// Invoked when any tenant has been reloaded.
+        /// </summary>
+        Task ReloadAsync(string tenant);
+
+        /// <summary>
+        /// Invoked when any tenant settings has been updated.
+        /// </summary>
+        Task UpdateSettingsAsync(string tenant);
     }
 }

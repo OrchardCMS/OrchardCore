@@ -144,10 +144,11 @@ namespace OrchardCore.Environment.Shell
             return (scope, shellContext);
         }
 
-        public Task UpdateShellSettingsAsync(ShellSettings settings)
+        public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             _shellSettingsManager.SaveSettings(settings);
-            return ReloadShellContextAsync(settings);
+            await DefaultShellEventAsync(e => e.UpdateSettingsAsync(settings.Name));
+            await ReloadShellContextAsync(settings);
         }
 
         async Task CreateAndRegisterShellsAsync()
@@ -344,7 +345,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="localEvent">If false don't fire again any distributed event.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings)
         {
-            await DefaultShellEventAsync(e => e.ChangedAsync(settings.Name));
+            await DefaultShellEventAsync(e => e.ReloadAsync(settings.Name));
 
             if (settings.State == TenantState.Disabled)
             {
