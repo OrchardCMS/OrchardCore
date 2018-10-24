@@ -48,7 +48,7 @@
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="EnableSsl">
                         <label class="custom-control-label" asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
-                        <span class="hint d-block">@T["Check if the SMTP server requires SSL communications."]</span>
+                        <span class="hint">@T["— {0}", "Check if the SMTP server requires SSL communications."]</span>
                     </div>
                 </fieldset>
 

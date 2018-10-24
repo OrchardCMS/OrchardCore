@@ -5,20 +5,16 @@
 <form asp-action="Create">
     @Html.ValidationSummary()
 
-    <fieldset class="form-group row">
-        <div class="col-md">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" autofocus/>
-            <span class="hint w-100">@T["Name of the type as it will be displayed on screens."]</span>
-        </div>
+    <fieldset class="form-group">
+        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control w-md-25" autofocus />
+        <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
     </fieldset>
 
-    <fieldset class="form-group row">
-        <div class="col-sm">
-            <label asp-for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" />
-            <span class="hint">@T["Technical name of the type."]</span>
-        </div>
+    <fieldset class="form-group">
+        <label asp-for="Name">@T["Technical Name"]</label>
+        <input asp-for="Name" class="form-control w-md-25" />
+        <span class="hint">@T["Technical name of the type."]</span>
     </fieldset>
 
     <fieldset class="form-group">

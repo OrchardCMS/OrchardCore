@@ -42,7 +42,7 @@
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
                     <label class="custom-control-label" asp-for="SetHomepage">@T["Set as homepage"]</label>
-                    <span class="hint">— @T["Check to set this content item as the homepage once published."]</span>
+                    <span class="hint">@T["— {0}", "Check to set this content item as the homepage once published."]</span>
                 </div>
             </fieldset>
         }
