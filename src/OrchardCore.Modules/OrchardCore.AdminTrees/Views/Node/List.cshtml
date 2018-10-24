@@ -87,6 +87,7 @@
 </div>
 
 
+<div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
 
 <script at="Foot">
     function moveNode(AdminTreeId, nodeToMoveId, destinationNodeId, position) {
@@ -104,10 +105,8 @@
             success: function () {
                 location.reload(true);
             },
-            error: function (error) {
-                console.error(error.responseText);
-
-                alert("@T["There was an error when moving the tree node"]");
+            error: function (error) {                
+                alert($('#move-error-message').data("message"));
             }
         });
     }
