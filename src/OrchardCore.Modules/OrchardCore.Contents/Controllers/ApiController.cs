@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
@@ -7,6 +7,8 @@ using OrchardCore.Contents;
 namespace OrchardCore.Content.Controllers
 {
     [Route("api/content")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -39,7 +41,6 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpDelete]
-        [IgnoreAntiforgeryToken]
         [Route("{contentItemId}")]
         public async Task<IActionResult> Delete(string contentItemId)
         {
@@ -61,8 +62,7 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Post([FromBody] ContentItem newContentItem, bool draft = false)
+        public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
         {
             var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
             

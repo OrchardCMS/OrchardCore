@@ -38,16 +38,6 @@ namespace OrchardCore.Queries
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
         }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaRoute(
-                name: "Api.Queries.Query",
-                areaName: "OrchardCore.Queries",
-                template: "api/queries/{name}",
-                defaults: new { controller = "Api", action = "Query" }
-            );
-        }
     }
 
 
