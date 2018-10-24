@@ -50,20 +50,5 @@ namespace OrchardCore.Demo.Controllers
 
             return new ObjectResult(contentItem);
         }
-
-        [Authorize]
-        [IgnoreAntiforgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> AddContent([FromBody]ContentItem contentItem)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
-            {
-                return Unauthorized();
-            }
-
-            await _contentManager.CreateAsync(contentItem);
-
-            return new ObjectResult(contentItem);
-        }
     }
 }
