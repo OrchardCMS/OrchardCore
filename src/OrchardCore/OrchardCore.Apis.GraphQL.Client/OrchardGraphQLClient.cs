@@ -4,15 +4,13 @@ namespace OrchardCore.Apis.GraphQL.Client
 {
     public class OrchardGraphQLClient
     {
-        private readonly HttpClient _client;
-
         public OrchardGraphQLClient(HttpClient client)
         {
-            _client = client;
+            Client = client;
         }
 
-        public ContentResource Content => new ContentResource(_client);
+        public ContentResource Content => new ContentResource(Client);
 
-        public HttpClient Client => _client;
+        public HttpClient Client { get; }
     }
 }

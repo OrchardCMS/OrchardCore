@@ -6,33 +6,41 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext
+    public class SiteContext : IDisposable
     {
-        private static Task _initialize;
         public static OrchardTestFixture<SiteStartup> Site { get; }
-        public static OrchardGraphQLClient GraphQLClient { get; }
-        public static Task InitializeSiteAsync() => _initialize;
-        public static HttpClient Client;
+        public static HttpClient DefaultTenantClient { get; private set; }
 
-        static SiteContext()
-        {
+        public HttpClient Client { get; private set; }
+        public OrchardGraphQLClient GraphQLClient { get; private set; }
+
+        private string TenantName { get; }
+
+        static SiteContext() {
             Site = new OrchardTestFixture<SiteStartup>();
-            Client = Site.CreateClient();
-            GraphQLClient = new OrchardGraphQLClient(Client);
-            _initialize = InitializeAsync();
+            DefaultTenantClient = Site.CreateClient();
         }
 
-        private static async Task InitializeAsync()
+        public SiteContext()
         {
-            //var createModel = new Tenants.ViewModels.CreateApiViewModel
-            //{
-            //    DatabaseProvider = "Sqlite",
-            //    RecipeName = "Blog",
-            //    Name = "Default"
-            //};
-            //var createResult = await Client.PostAsJsonAsync("api/tenants/create", createModel);
+            TenantName = Guid.NewGuid().ToString().Replace("-", "");
+        }
 
-            //createResult.EnsureSuccessStatusCode();
+        public virtual async Task InitializeAsync()
+        {
+            var createModel = new Tenants.ViewModels.CreateApiViewModel
+            {
+                DatabaseProvider = "Sqlite",
+                RecipeName = "Blog",
+                Name = TenantName,
+                RequestUrlPrefix = TenantName
+            };
+            var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
+
+            createResult.EnsureSuccessStatusCode();
+
+            var url = new Uri(await createResult.Content.ReadAsAsync<string>());
+            url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
 
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
@@ -41,15 +49,18 @@ namespace OrchardCore.Tests.Apis.Context
                 RecipeName = "Blog",
                 UserName = "admin",
                 Password = "Password01_",
-                Name = "Default",
+                Name = TenantName,
                 Email = "Nick@Orchard"
             };
-            var setupResult = await Client.PostAsJsonAsync("api/tenants/setup", setupModel);
+            var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
 
             setupResult.EnsureSuccessStatusCode();
+
+            Client = Site.CreateDefaultClient(url);
+            GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
-        public static async Task<string> CreateContentItem(string contentType, Action<ContentItem> func)
+        public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func)
         {
             var contentItem = new ContentItem();
             contentItem.ContentItemId = Guid.NewGuid().ToString();
@@ -63,8 +74,13 @@ namespace OrchardCore.Tests.Apis.Context
             return response.ContentItemId;
         }
 
-        public static Task DeleteContentItem(string contentItemId) {
+        public Task DeleteContentItem(string contentItemId) {
             return Client.DeleteAsync("api/content/" + contentItemId);
+        }
+
+        public void Dispose()
+        {
+            Client?.Dispose();
         }
     }
 }

@@ -65,7 +65,7 @@ namespace OrchardCore.Tests.Apis.Context
                         new System.Security.Claims.ClaimsPrincipal(new StubIdentity()), "Api")));
         }
     }
-
+    
     public class StubIdentity : IIdentity
     {
         public string AuthenticationType => "Dunno";

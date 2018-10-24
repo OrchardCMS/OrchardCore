@@ -4,18 +4,11 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext
     {
-        private static Task _initialize;
-        public static string BlogContentItemId { get; private set; }
-        public static Task InitializeBlogAsync() => _initialize;
+        public string BlogContentItemId { get; private set; }
 
-        static BlogContext()
+        public override async Task InitializeAsync()
         {
-            _initialize = InitializeAsync();
-        }
-
-        private static async Task InitializeAsync()
-        {
-            await InitializeSiteAsync();
+            await base.InitializeAsync();
 
             var result = await GraphQLClient
                 .Content
