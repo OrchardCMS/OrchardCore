@@ -30,16 +30,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var editorPartType = GetEditorShapeType(_typePartDefinition);
 
-                if (GetEditorShapeType(_typePartDefinition) == shapeType)
-                {
-                    // HtmlBodyPart, Services
-                    result.Differentiator($"{partName}");
-
-                    return result;
-                }
-
-                if (partType == shapeType)
+                if (partType == shapeType || editorPartType == shapeType)
                 {
                     // HtmlBodyPart, Services
                     result.Differentiator($"{partName}");
@@ -52,12 +45,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+                    string[] displayTypes;
 
-                    // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    if (editorPartType == shapeType)
+                    {
+                        displayTypes = new[] { "_" + ctx.ShapeMetadata.DisplayType };
+                    }
+                    else
+                    {
+                        displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
 
-                    if (shapeType == partType)
+                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    }
+
+                    if (shapeType == partType || shapeType == editorPartType)
                     {
                         foreach (var displayType in displayTypes)
                         {
