@@ -2,6 +2,10 @@
        debug-src="/OrchardCore.Apis.GraphQL/Styles/graphiql.css">
 </style>
 
+<style asp-src="/OrchardCore.Apis.GraphQL/Styles/graphiql-orchard.min.css"
+       debug-src="/OrchardCore.Apis.GraphQL/Styles/graphiql-orchard.css">
+</style>
+
 <script asp-src="/OrchardCore.Apis.GraphQL/Scripts/react.min.js"
         debug-src="/OrchardCore.Apis.GraphQL/Scripts/react.js"
         at="Foot">
@@ -17,9 +21,9 @@
         at="Foot">
 </script>
 
-<h1>GraphQL Schema</h1>
-
-<div id="graphiql" style="height:800px;">Loading ...</div>
+<div id="graphiql">
+    <div class="loader"></div>
+</div>
 
 <script at="Foot">
     /**
