@@ -94,7 +94,6 @@ Vue.component('folder', {
             return false;
         },
         toggle: function () {
-            console.log('toggling');
             this.open = !this.open;
             if (this.open && !this.children) {
                 this.loadChildren();

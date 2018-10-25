@@ -30,9 +30,9 @@
     cursor: default; }
 
 h1 {
-  /*font-size: 2rem;
-    font-weight: normal;
-    height: 42px;*/ }
+  font-size: 1.8rem;
+  font-weight: normal;
+  height: 42px; }
 
 /*#mediaApp {
     height: 100%;
