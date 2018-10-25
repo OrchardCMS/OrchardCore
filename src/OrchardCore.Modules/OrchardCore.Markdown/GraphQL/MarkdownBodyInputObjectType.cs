@@ -9,7 +9,7 @@ namespace OrchardCore.Markdown.GraphQL
         {
             Name = "MarkdownBodyInput";
 
-            AddInputField("Markdown", x => x.Markdown, true);
+            AddInputField("Markdown", x => x.Markdown, true).Description("the HTML representation of the markdown content");
         }
     }
 }
