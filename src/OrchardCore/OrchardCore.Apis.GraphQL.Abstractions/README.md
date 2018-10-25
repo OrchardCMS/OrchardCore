@@ -24,77 +24,133 @@ In this example, the `blog` is the type, and the `displayText` is the return val
 
 Here we can see that the query is using the arugment `contentItemId` to filter.
 
-### Define a type
+### Define a query type
 
-You can define a type in two ways, through either DI registration or Auto Discovery
+Lets see how to wire a type in to the GraphQL schema;
 
-#### DI Registration.
-
-All query types registered in DI must inherit off the class `QueryFieldType`. 
-
-Once you do this, you can then use the extension AddGraphQueryType to regiser it.
+First: Lets start with a simple C# part
 
 ```c#
-public static class ServiceCollectionExtensions
+public class AutoroutePart : ContentPart
 {
-    public static IServiceCollection AddGraphQL(this IServiceCollection services)
+    public string Path { get; set; }
+    public bool SetHomepage { get; set; }
+}
+```
+
+This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create GraphQL representation of this class;
+
+```c#
+public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
+{
+    public AutorouteQueryObjectType()
     {
-        services.AddGraphQueryType<FooQueryType>();
+        Name = "AutoroutePart";
+
+        // Map the fields you want to expose
+        Field(x => x.Path);
     }
 }
 ```
 
-Once this is done, it will then display within your schema, and will be querable.
+There are two things going on here;
 
-#### Auto Discovery
+1. Inherit off `ObjectGraphType`. GraphQL understands this type.
+2. Field(x => x.Path);. This tells the class from #1 what fields you want exposed publically.
 
-Auto discovery allows you to define Query Types outside of DI. This is specifically useful if you have dynamic content. With in Orchard for example, you can create a new content type without a static representation for that type.
-
-To use this method, you must implement the interface `IQueryFieldTypeProvider`. The Field Types returned will be added to the Schema at runtime, and are not registered in DI. You will however need to register your class that implements `IQueryFieldTypeProvider` in DI.
-
-### Define a Query Argument
-
-Query Arguments and Field Return values are very similar, however there are cases where the seperation comes in handy.
-
-To add a query argument, you inherit off the class `QueryArgumentObjectGraphType`.
-
-Here is an example where im exposing the ability to query by the `alias` field on the AliasPart
+The last part is to tell the Orchard Subsystem about your new type, once this is done, the GraphQL subsystem will pick up your new object from its dependency tree. To do this, simple register it in a Startup class;
 
 ```c#
-public class AliasInputObjectType : QueryArgumentObjectGraphType<AliasPart>
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public class Startup : StartupBase
 {
-    public AliasInputObjectType()
+    public override void ConfigureServices(IServiceCollection services)
     {
-        Name = "AliasPartInput";
-
-        AddInputField("alias", x => x.Alias, true);
+        // I have ommited the registering of the AutoroutePart, as we expect that to already be registered
+        services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
     }
 }
 ```
 
-### Define a return value
+Thats it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
 
-Return values are the values that are returned as part of a query.
+### Define a query filter type
 
-To add return values, you inherit off the class `ObjectGraphType`
+So now you have lots of data coming back, the next thing you want to do is to be able to filter said data.
 
-Here is an example where im exposing the ability to return the values `ListContentItemId` and `Order`.
+We follow a similar process from step #1, so at this point I will make the assumption you have implemented step #1.
+
+What we are going to cover here is;
+
+1. Implement an Input type.
+2. Implement a Filter.
+
+So, lets start. The Input type is similar to the Query type, here we want to tell the GraphQL schema that we accept in this input.
 
 ```c#
-public class ContainedQueryObjectType : ObjectGraphType<ContainedPart>
+public class AutoroutePartInputObjectType : QueryArgumentObjectGraphType<AutoroutePart>
 {
-    public ContainedQueryObjectType()
+    public AutoroutePartInputObjectType()
     {
-        Name = "ContainedPart";
-
-        Field(x => x.ListContentItemId);
-        Field(x => x.Order);
+        Name = "AutoroutePartInput";
+        
+        AddInputField("path", x => x.Path, true);
     }
 }
 ```
 
-## Mutations
+The main thing to take away from this class is that all Input Types must inherit off of QueryArgumentObjectGraphType.
 
-Mutations are a way of manipulating data, rather that just querying.
+When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below;
 
-To create a mutation you start by inheriting off `MutationFieldType`.
+```json
+{
+  blog(autoroutePart: { /* SOME QUERY STUFF HERE */ }) {
+    displayText
+  }
+}
+```
+
+Next we want in implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
+
+```c#
+public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
+{
+    public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
+    {
+        if (!context.HasArgument("autoroutePart"))
+        {
+            return query;
+        }
+
+        var part = context.GetArgument<AutoroutePart>("autoroutePart");
+
+        if (part == null)
+        {
+            return query;
+        }
+
+        var autorouteQuery = query.With<AutoroutePartIndex>();
+
+        if (!string.IsNullOrWhiteSpace(part.Path))
+        {
+            return autorouteQuery.Where(index => index.Path == part.Path);
+        }
+        return query;
+    }
+}
+```
+
+The first thing we notice is
+
+> context.GetArgument<AutoroutePart>("autoroutePart");
+
+Shown in the example above, we have an autoroutePart, this is registered when we register an input type. From there we can deserialize, and perform the query;
+
+```json
+{
+  blog(autoroutePart: { Path: "somewhere" }) {
+    displayText
+  }
+}
+```
