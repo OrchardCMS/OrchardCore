@@ -55,7 +55,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 for (var i = 0; i < _nestedQueryFields.Count; i++)
                 {
                     var item = _nestedQueryFields.ElementAt(i);
-                    sb.AppendFormat("{0}: {{ {1} }}", item.Key, item.Value);
+                    sb.Append($"{item.Key}: {{ {item.Value} }}");
 
                     if (i < (_nestedQueryFields.Count - 1))
                     {
@@ -66,7 +66,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 for (var i = 0; i < _queryFields.Count; i++)
                 {
                     var item = _queryFields.ElementAt(i);
-                    sb.AppendFormat("{0}: \"{1}\"", item.Key, item.Value);
+                    sb.Append($"{item.Key}: \"{item.Value}\"");
 
                     if (i < (_queryFields.Count - 1))
                     {

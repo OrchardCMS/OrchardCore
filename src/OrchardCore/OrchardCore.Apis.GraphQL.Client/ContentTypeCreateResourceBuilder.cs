@@ -16,7 +16,8 @@ namespace OrchardCore.Apis.GraphQL.Client
             ContentType = contentType;
         }
 
-        public ContentPartBuilder WithContentPart(string contentPartName) {
+        public ContentPartBuilder WithContentPart(string contentPartName)
+        {
             var builder = new ContentPartBuilder(contentPartName.ToGraphQLStringFormat());
             contentPartBuilders.Add(builder);
             return builder;

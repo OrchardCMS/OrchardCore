@@ -17,7 +17,8 @@ namespace OrchardCore.Tests.Apis.Context
 
         static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-        static SiteContext() {
+        static SiteContext()
+        {
             Site = new OrchardTestFixture<SiteStartup>();
             DefaultTenantClient = Site.CreateClient();
         }
@@ -85,7 +86,8 @@ namespace OrchardCore.Tests.Apis.Context
             return response.ContentItemId;
         }
 
-        public Task DeleteContentItem(string contentItemId) {
+        public Task DeleteContentItem(string contentItemId)
+        {
             return Client.DeleteAsync("api/content/" + contentItemId);
         }
 

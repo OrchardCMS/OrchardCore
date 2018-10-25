@@ -77,7 +77,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Assent" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Microsoft.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />

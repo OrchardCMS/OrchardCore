@@ -30,15 +30,16 @@ namespace OrchardCore.Apis.GraphQL.Client
             return this;
         }
 
-        internal string Build() {
+        internal string Build()
+        {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}: {{ ", _contentPartName);
+            sb.Append($"{_contentPartName}: {{ ");
 
 
             for (var i = 0; i < _keysWithValues.Count; i++)
             {
                 var item = _keysWithValues.ElementAt(i);
-                sb.AppendFormat("{0}: \"{1}\"", item.Key, item.Value);
+                sb.Append($"{item.Key}: \"{item.Value}\"");
 
                 if (i < (_keysWithValues.Count - 1))
                 {
