@@ -81,11 +81,11 @@ namespace OrchardCore.Apis.GraphQL
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
-            var mediaType = new MediaType(context.Request.ContentType);
-
             switch (context.Request.Method.ToUpper())
             {
                 case "POST":
+
+                    var mediaType = new MediaType(context.Request.ContentType);
 
                     try
                     {
