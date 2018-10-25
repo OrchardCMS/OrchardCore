@@ -36,6 +36,7 @@
 
         // Content Management
         "OrchardCore.Alias",
+        "OrchardCore.AdminTrees",
         "OrchardCore.Autoroute",
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
@@ -862,6 +863,104 @@
           "ReturnContentItems": true
         }
       ]
+    },
+    {
+        "name": "AdminTrees",
+        "data": [
+          {
+            "Id": "baef6f85ad13481681cde70ada401333",
+            "Name": "Admin tree from blog recipe",
+            "Enabled": true,
+            "MenuItems": [
+              {
+                "$type": "OrchardCore.AdminTrees.AdminNodes.LinkAdminNode, OrchardCore.AdminTrees",
+                "LinkText": "Content",
+                "LinkUrl": "dfas",
+                "IconClass": "fas fa-address-card",
+                "UniqueId": "3df52393158943cd8fd7afc8378fae6e",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [
+                  {
+                    "$type": "OrchardCore.Lists.AdminNodes.ListsAdminNode, OrchardCore.Lists",
+                    "ContentTypes": [
+                      "Blog"
+                    ],
+                    "AddContentTypeAsParent": false,
+                    "UniqueId": "69c589778602477583206a29054140ad",
+                    "Enabled": true,
+                    "Text": null,
+                    "Id": null,
+                    "Href": null,
+                    "Url": null,
+                    "Position": null,
+                    "LinkToFirstChild": true,
+                    "LocalNav": false,
+                    "Culture": null,
+                    "Resource": null,
+                    "Items": [],
+                    "RouteValues": null,
+                    "Permissions": [],
+                    "Classes": []
+                  },
+                  {
+                    "$type": "OrchardCore.AdminTrees.AdminNodes.LinkAdminNode, OrchardCore.AdminTrees",
+                    "LinkText": "Content Items",
+                    "LinkUrl": "daf",
+                    "IconClass": "far fa-circle",
+                    "UniqueId": "d49a123aef4f40c48e8d3d4c4b6c23de",
+                    "Enabled": true,
+                    "Text": null,
+                    "Id": null,
+                    "Href": null,
+                    "Url": null,
+                    "Position": null,
+                    "LinkToFirstChild": true,
+                    "LocalNav": false,
+                    "Culture": null,
+                    "Resource": null,
+                    "Items": [
+                      {
+                        "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                        "ShowAll": true,
+                        "ContentTypes": null,
+                        "UniqueId": "dc5cb503c2e44653a88070e491458ff8",
+                        "Enabled": true,
+                        "Text": null,
+                        "Id": null,
+                        "Href": null,
+                        "Url": null,
+                        "Position": null,
+                        "LinkToFirstChild": true,
+                        "LocalNav": false,
+                        "Culture": null,
+                        "Resource": null,
+                        "Items": [],
+                        "RouteValues": null,
+                        "Permissions": [],
+                        "Classes": []
+                      }
+                    ],
+                    "RouteValues": null,
+                    "Permissions": [],
+                    "Classes": []
+                  }
+                ],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              }
+            ]
+          } 
+        ]
     }
   ]
 }
