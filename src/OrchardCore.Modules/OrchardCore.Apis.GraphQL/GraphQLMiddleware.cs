@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,7 @@ namespace OrchardCore.Apis.GraphQL
             _writer = writer;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, ISchemaFactory schemaService)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService)
         {
             if (!IsGraphQLRequest(context))
             {
@@ -42,8 +43,16 @@ namespace OrchardCore.Apis.GraphQL
             }
             else
             {
-                var authorized = await authorizationService.AuthorizeAsync(
-                    context.User, Permissions.ExecuteGraphQL);
+                var principal = context.User;
+
+                var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+
+                if (authenticateResult.Succeeded)
+                {
+                    principal = authenticateResult.Principal;
+                }
+
+                var authorized = await authorizationService.AuthorizeAsync(principal, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
@@ -51,7 +60,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
                 else
                 {
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await context.ChallengeAsync("Api");
                 }
             }
         }
