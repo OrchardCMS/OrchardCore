@@ -18,6 +18,14 @@
     white-space: nowrap;
 }
 
+.graphiql-container .doc-explorer-title, .graphiql-container .history-title, .graphiql-container .doc-explorer-back {
+    overflow: unset;
+}
+
+.graphiql-container .topBar {
+    height: unset;
+}
+
 .loader {
     position: absolute;
     left: 46%;
