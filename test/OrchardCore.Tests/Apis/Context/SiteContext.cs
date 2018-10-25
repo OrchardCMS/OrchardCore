@@ -72,7 +72,7 @@ namespace OrchardCore.Tests.Apis.Context
             }
         }
 
-        public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func)
+        public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
         {
             var contentItem = new ContentItem();
             contentItem.ContentItemId = Guid.NewGuid().ToString();
@@ -80,7 +80,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             func(contentItem);
 
-            var content = await Client.PostAsJsonAsync("api/content", contentItem);
+            var content = await Client.PostAsJsonAsync("api/content" + (draft ? "?draft=true" : ""), contentItem);
             var response = await content.Content.ReadAsAsync<ContentItem>();
 
             return response.ContentItemId;

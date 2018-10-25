@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             Arguments = new QueryArguments(
-                new QueryArgument<BooleanGraphType> { Name = "published", Description = "whether to only include published versions", DefaultValue = true },
+                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", DefaultValue = PublicationStatusEnum.Published },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
                 new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
@@ -44,18 +44,25 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var contentManager = httpContext.RequestServices.GetService<IContentManager>();
 
-            var published = true;
+            PublicationStatusEnum status = PublicationStatusEnum.Published;
 
-            if (context.HasPopulatedArgument("published"))
+            var versionOption = VersionOptions.Published;
+
+            if (context.HasPopulatedArgument("status"))
             {
-                published = context.GetArgument<bool>("published");
+                status = context.GetArgument<PublicationStatusEnum>("status");
+            }
+
+            switch (status)
+            {
+                case PublicationStatusEnum.Published: versionOption = VersionOptions.Published; break;
+                case PublicationStatusEnum.Draft: versionOption = VersionOptions.Draft; break;
+                case PublicationStatusEnum.Latest: versionOption = VersionOptions.Latest; break;
             }
 
             if (context.HasPopulatedArgument("contentItemId"))
             {
                 var contentItemId = context.GetArgument<string>("contentItemId");
-
-                var versionOption = published ? VersionOptions.Published : VersionOptions.Draft;
 
                 var contentItem = await contentManager.GetAsync(contentItemId, versionOption);
 
@@ -84,11 +91,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            if (published)
+            if (versionOption.IsPublished)
             {
                 query = query.Where(q => q.Published == true);
             }
-            else
+            else if (versionOption.IsDraft)
+            {
+                query = query.Where(q => q.Latest == true && q.Published == false);
+            }
+            else if (versionOption.IsLatest)
             {
                 query = query.Where(q => q.Latest == true);
             }

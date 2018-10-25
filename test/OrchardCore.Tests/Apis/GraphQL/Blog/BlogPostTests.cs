@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
@@ -165,6 +166,47 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 Assert.Equal(
                     "Hey - Is this working!?!?!?!?",
                     result["data"]["blogPost"][0]["subtitle"].ToString());
+            }
+        }
+
+
+        [Fact]
+        public async Task ShouldQueryByStatus()
+        {
+            using (var context = new BlogContext())
+            {
+                await context.InitializeAsync();
+
+                var draft = await context
+                    .CreateContentItem("BlogPost", builder =>
+                    {
+                        builder.DisplayText = "Draft blog post";
+                        builder.Published = false;
+                        builder.Latest = true;
+
+                        builder
+                            .Weld(new ContainedPart
+                            {
+                                ListContentItemId = context.BlogContentItemId
+                            });
+                    }, draft: true);
+
+                var result = await context.GraphQLClient.Content
+                    .Query("blogPost(status: PUBLISHED) { displayText, published }");
+
+                Assert.Single(result["data"]["blogPost"]);
+                Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
+
+                result = await context.GraphQLClient.Content
+                    .Query("blogPost(status: DRAFT) { displayText, published }");
+
+                Assert.Single(result["data"]["blogPost"]);
+                Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
+
+                result = await context.GraphQLClient.Content
+                    .Query("blogPost(status: LATEST) { displayText, published }");
+
+                Assert.Equal(2, result["data"]["blogPost"].Count());
             }
         }
     }
