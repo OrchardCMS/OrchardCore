@@ -29,8 +29,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             Arguments = new QueryArguments(
-                new QueryArgument<BooleanGraphType> { Name = "published", Description = "is the content item published", DefaultValue = true },
-                new QueryArgument<BooleanGraphType> { Name = "latest", Description = "is the content item the latest version", DefaultValue = false },
+                new QueryArgument<BooleanGraphType> { Name = "published", Description = "whether to only include published versions", DefaultValue = true },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
                 new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
                 new QueryArgument<StringGraphType> { Name = "contentItemVersionId", Description = "the id of the version" }
@@ -45,13 +44,20 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var contentManager = httpContext.RequestServices.GetService<IContentManager>();
 
-            var versionOptions = GetVersionOptions(context);
+            var published = true;
+
+            if (context.HasPopulatedArgument("published"))
+            {
+                published = context.GetArgument<bool>("published");
+            }
 
             if (context.HasPopulatedArgument("contentItemId"))
             {
                 var contentItemId = context.GetArgument<string>("contentItemId");
 
-                var contentItem = await contentManager.GetAsync(contentItemId, versionOptions);
+                var versionOption = published ? VersionOptions.Published : VersionOptions.Draft;
+
+                var contentItem = await contentManager.GetAsync(contentItemId, versionOption);
 
                 if (contentItem == null)
                 {
@@ -78,12 +84,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            if (versionOptions.IsPublished)
+            if (published)
             {
                 query = query.Where(q => q.Published == true);
             }
-
-            if (versionOptions.IsLatest)
+            else
             {
                 query = query.Where(q => q.Latest == true);
             }
@@ -114,29 +119,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             return contentItems.ToList();
-        }
-
-        private VersionOptions GetVersionOptions(ResolveFieldContext context)
-        {
-            if (context.HasPopulatedArgument("latest"))
-            {
-                var value = context.GetArgument<bool>("latest");
-                if (value)
-                {
-                    return VersionOptions.Latest;
-                }
-            }
-
-            if (context.HasPopulatedArgument("published"))
-            {
-                var value = context.GetArgument<bool>("published");
-                if (value)
-                {
-                    return VersionOptions.Published;
-                }
-            }
-
-            return VersionOptions.Published;
         }
     }
 }
