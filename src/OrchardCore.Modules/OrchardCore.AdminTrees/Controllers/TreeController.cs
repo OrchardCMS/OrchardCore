@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
-using OrchardCore.AdminTrees.Indexes;
 using OrchardCore.AdminTrees.Models;
 using OrchardCore.AdminTrees.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -25,13 +24,13 @@ namespace OrchardCore.AdminTrees.Controllers
     public class TreeController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
+        private readonly IAdminTreeService _adminTreeService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
 
         public TreeController(
             IAuthorizationService authorizationService,
-            ISession session,
+            IAdminTreeService adminTreeService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
@@ -40,7 +39,7 @@ namespace OrchardCore.AdminTrees.Controllers
             ILogger<TreeController> logger)
         {
             _authorizationService = authorizationService;
-            _session = session;
+            _adminTreeService = adminTreeService;
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
@@ -71,14 +70,14 @@ namespace OrchardCore.AdminTrees.Controllers
                 options = new AdminTreeListOptions();
             }
 
-            var trees = _session.Query<AdminTree, AdminTreeIndex>();
-
+            var trees = await _adminTreeService.GetAsync();
+            
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                trees = trees.Where(dp => dp.Name.Contains(options.Search));
+                trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToList();
             }
 
-            var count = await trees.CountAsync();
+            var count = trees.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -88,10 +87,10 @@ namespace OrchardCore.AdminTrees.Controllers
             // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
-                results = await trees
+                results = trees
                 .Skip(startIndex)
                 .Take(pageSize)
-                .ListAsync();
+                .ToList();
             }
             catch (Exception ex)
             {
@@ -141,7 +140,8 @@ namespace OrchardCore.AdminTrees.Controllers
             {
                 var tree = new AdminTree { Name = model.Name, Enabled = model.Enabled };
 
-                _session.Save(tree);
+                await _adminTreeService.SaveAsync(tree);
+                
                 return RedirectToAction(nameof(NodeController.List), "Node", new { Id = tree.Id});
             }
 
@@ -149,14 +149,14 @@ namespace OrchardCore.AdminTrees.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -181,7 +181,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(model.Id);
+            var tree = await _adminTreeService.GetByIdAsync(model.Id);
 
             if (tree == null)
             {
@@ -201,7 +201,8 @@ namespace OrchardCore.AdminTrees.Controllers
                 tree.Name = model.Name;
                 tree.Enabled = model.Enabled;
 
-                _session.Save(tree);
+                await _adminTreeService.SaveAsync(tree);
+                
 
                 _notifier.Success(H["Admin tree updated successfully"]);
 
@@ -212,23 +213,32 @@ namespace OrchardCore.AdminTrees.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
-                return NotFound();
+                _notifier.Error(H["Can't find the admin tree."]);
+                return RedirectToAction(nameof(List));
             }
 
-            _session.Delete(tree);
+            var removed = await _adminTreeService.DeleteAsync(tree);
 
-            _notifier.Success(H["Admin tree deleted successfully"]);
+
+            if (removed == 1)
+            {
+                _notifier.Success(H["Admin tree deleted successfully"]);
+            }
+            else
+            {
+                _notifier.Error(H["Can't delete the admin tree."]);
+            }
 
             return RedirectToAction(nameof(List));
         }

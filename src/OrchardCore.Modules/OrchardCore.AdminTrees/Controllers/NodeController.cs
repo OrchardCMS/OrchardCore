@@ -25,14 +25,14 @@ namespace OrchardCore.AdminTrees.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<MenuItem> _displayManager;
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
-        private readonly ISession _session;
+        private readonly IAdminTreeService _adminTreeService;
         private readonly INotifier _notifier;
 
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
-            ISession session,
+            IAdminTreeService adminTreeService,
             IShapeFactory shapeFactory,
             IStringLocalizer<NodeController> stringLocalizer,
             IHtmlLocalizer<NodeController> htmlLocalizer,
@@ -40,8 +40,9 @@ namespace OrchardCore.AdminTrees.Controllers
         {
             _displayManager = displayManager;
             _factories = factories;
+            _adminTreeService = adminTreeService;
             _authorizationService = authorizationService;
-            _session = session;
+            
             New = shapeFactory;
             _notifier = notifier;
             T = stringLocalizer;
@@ -53,14 +54,14 @@ namespace OrchardCore.AdminTrees.Controllers
         public IHtmlLocalizer H { get; set; }
 
 
-        public async Task<IActionResult> List(int id)
+        public async Task<IActionResult> List(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -70,7 +71,7 @@ namespace OrchardCore.AdminTrees.Controllers
             return View(await BuildDisplayViewModel(tree));
         }
 
-        private async Task<AdminNodeListViewModel> BuildDisplayViewModel(Models.AdminTree tree)
+        private async Task<AdminNodeListViewModel> BuildDisplayViewModel(AdminTree tree)
         {
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _factories)
@@ -90,14 +91,14 @@ namespace OrchardCore.AdminTrees.Controllers
             return model;
         }
 
-        public async Task<IActionResult> Create(int id, string type)
+        public async Task<IActionResult> Create(string id, string type)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -131,7 +132,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(model.AdminTreeId);
+            var tree = await _adminTreeService.GetByIdAsync(model.AdminTreeId);
 
             if (tree == null)
             {
@@ -152,7 +153,7 @@ namespace OrchardCore.AdminTrees.Controllers
             {
                 treeNode.UniqueId = model.AdminNodeId;
                 tree.MenuItems.Add(treeNode);
-                _session.Save(tree);
+                await _adminTreeService.SaveAsync(tree);
 
                 _notifier.Success(H["Admin node added successfully"]);
                 return RedirectToAction("List", new { id = model.AdminTreeId });
@@ -164,14 +165,14 @@ namespace OrchardCore.AdminTrees.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id, string treeNodeId)
+        public async Task<IActionResult> Edit(string id, string treeNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -207,7 +208,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(model.AdminTreeId);
+            var tree = await _adminTreeService.GetByIdAsync(model.AdminTreeId);
 
             if (tree == null)
             {
@@ -225,7 +226,7 @@ namespace OrchardCore.AdminTrees.Controllers
 
             if (ModelState.IsValid)
             {
-                _session.Save(tree);
+                await _adminTreeService.SaveAsync(tree);
 
                 _notifier.Success(H["Admin node updated successfully"]);
                 return RedirectToAction(nameof(List), new { id = model.AdminTreeId});
@@ -239,14 +240,14 @@ namespace OrchardCore.AdminTrees.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, string treeNodeId)
+        public async Task<IActionResult> Delete(string id, string treeNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -264,9 +265,8 @@ namespace OrchardCore.AdminTrees.Controllers
             {
                 return new StatusCodeResult(500);
             }
-            
-            
-            _session.Save(tree);
+
+            await _adminTreeService.SaveAsync(tree);
 
             _notifier.Success(H["Admin node deleted successfully"]);
 
@@ -274,14 +274,14 @@ namespace OrchardCore.AdminTrees.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Toggle(int id, string treeNodeId)
+        public async Task<IActionResult> Toggle(string id, string treeNodeId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
             {
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(id);
+            var tree = await _adminTreeService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -297,7 +297,7 @@ namespace OrchardCore.AdminTrees.Controllers
 
             treeNode.Enabled = !treeNode.Enabled;
 
-            _session.Save(tree);
+            await _adminTreeService.SaveAsync(tree);
 
             _notifier.Success(H["Admin node toggled successfully"]);
 
@@ -306,7 +306,7 @@ namespace OrchardCore.AdminTrees.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> MoveNode(int treeId, string nodeToMoveId,
+        public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
             string destinationNodeId, int position)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
@@ -314,7 +314,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 return Unauthorized();
             }
 
-            var tree = await _session.GetAsync<AdminTree>(treeId);
+            var tree = await _adminTreeService.GetByIdAsync(treeId);
 
             if ((tree == null) || (tree.MenuItems == null))
             {
@@ -340,7 +340,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 return StatusCode(500);
             }
 
-            _session.Save(tree);
+            await _adminTreeService.SaveAsync(tree);
 
             return Ok();
         }

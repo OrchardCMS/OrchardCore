@@ -14,18 +14,18 @@ namespace OrchardCore.AdminTrees.Recipes
     /// </summary>
     public class AdminTreeStep : IRecipeStepHandler
     {
-        private readonly ISession _session;
+        private readonly IAdminTreeService _adminTreeService;
 
-        public AdminTreeStep(ISession session)
+        public AdminTreeStep(IAdminTreeService adminTreeService)
         {
-            _session = session;
+            _adminTreeService = adminTreeService;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "AdminTrees", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var model = context.Step.ToObject<AdminTreeStepModel>();
@@ -35,11 +35,11 @@ namespace OrchardCore.AdminTrees.Recipes
             foreach (JObject token in model.Data)
             {
                 var adminTree = token.ToObject<AdminTree>(serializer);
-                adminTree.Id = 0; // we always add it as a new tree.
-                _session.Save(adminTree);
+                adminTree.Id = Guid.NewGuid().ToString("n");// we always add it as a new tree.
+                await _adminTreeService.SaveAsync(adminTree);
             }
 
-            return Task.CompletedTask;
+            return;
         }
     }
 

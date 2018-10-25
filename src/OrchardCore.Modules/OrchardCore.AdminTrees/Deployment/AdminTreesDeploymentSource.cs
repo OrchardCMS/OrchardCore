@@ -1,22 +1,17 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.AdminTrees.Indexes;
-using OrchardCore.AdminTrees.Models;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
-using YesSql;
 
 namespace OrchardCore.AdminTrees.Deployment
 {
     public class AdminTreesDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
+        private readonly IAdminTreeService _adminTreeService;
 
-        public AdminTreesDeploymentSource(ISession session)
+        public AdminTreesDeploymentSource(IAdminTreeService adminTreeService)
         {
-            _session = session;
+            _adminTreeService = adminTreeService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -37,7 +32,7 @@ namespace OrchardCore.AdminTrees.Deployment
             // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
             var serializer = new JsonSerializer() {  TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (var adminTree in await _session.Query<AdminTree, AdminTreeIndex>().ListAsync())
+            foreach (var adminTree in await _adminTreeService.GetAsync())
             {
                 var objectData = JObject.FromObject(adminTree, serializer);                
                 data.Add(objectData);

@@ -15,16 +15,16 @@ namespace OrchardCore.AdminTrees.Services
     // This class is itself one more INavigationProvider so it can be called from this module's AdminMenu.cs
     public class AdminTreeNavigationProvidersCoordinator : INavigationProvider
     {
+        private readonly IAdminTreeService _adminTreeService;
         private readonly IEnumerable<IAdminNodeNavigationBuilder> _nodeBuilders;
-        private readonly ISession _session;
         private readonly ILogger Logger;
 
         public AdminTreeNavigationProvidersCoordinator(
-            ISession session,
+            IAdminTreeService adminTreeService,
             IEnumerable<IAdminNodeNavigationBuilder> nodeBuilders,
             ILogger<AdminTreeNavigationProvidersCoordinator> logger)
         {
-            _session = session;
+            _adminTreeService = adminTreeService;
             _nodeBuilders = nodeBuilders;
             Logger = logger;
         }
@@ -38,7 +38,7 @@ namespace OrchardCore.AdminTrees.Services
                 return;
             }
 
-            var trees = (await _session.Query<AdminTree>().ListAsync())
+            var trees = (await _adminTreeService.GetAsync())
                                     .Where(x => x.Enabled == true)
                                     .Where( x => x.MenuItems.Count > 0);
 

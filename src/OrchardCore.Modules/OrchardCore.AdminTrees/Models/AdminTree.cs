@@ -6,7 +6,7 @@ namespace OrchardCore.AdminTrees.Models
 {
     public class AdminTree
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("n");
         public string Name { get; set; }
         public bool Enabled { get; set; }
         public List<AdminNode> MenuItems { get; } = new List<AdminNode>();

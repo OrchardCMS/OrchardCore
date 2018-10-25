@@ -28,7 +28,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
         {
             var ltn = menuItem as LinkAdminNode;
 
-            if ((ltn == null) ||( !ltn.Enabled))
+            if (ltn == null || String.IsNullOrEmpty(ltn.LinkText) || !ltn.Enabled)
             {
                 return Task.CompletedTask;
             }

@@ -119,7 +119,7 @@
                 toleranceElement: '> div.menu-item-title',
                 relocate: function (event, helper) {
                     // get var required by rest api
-                    var AdminTreeId = @Model.AdminTree.Id;
+                    var AdminTreeId = '@Model.AdminTree.Id';
                     var nodeToMoveId = helper.item.data('treenode-id');
                     var destinationNodeId = helper.item.parent().closest('[data-treenode-id]').data('treenode-id'); // get the id of the new parent
                     var position = helper.item.index();

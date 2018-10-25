@@ -6,7 +6,7 @@ namespace OrchardCore.AdminTrees.ViewModels
 {
     public class AdminNodeEditViewModel
     {
-        public int AdminTreeId { get; set; }
+        public string AdminTreeId { get; set; }
         public string AdminNodeId { get; set; }
         public string AdminNodeType { get; set; }
         public dynamic Editor { get; set; }

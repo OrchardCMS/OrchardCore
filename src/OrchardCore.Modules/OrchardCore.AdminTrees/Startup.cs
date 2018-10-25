@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.AdminTrees.Indexes;
 using OrchardCore.AdminTrees.Services;
 using OrchardCore.AdminTrees.AdminNodes;
 using OrchardCore.Data.Migration;
@@ -25,9 +24,9 @@ namespace OrchardCore.AdminTrees
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddSingleton<IIndexProvider, AdminTreeIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
 
+            services.AddSingleton<IAdminTreeService, AdminTreeService>();
             services.AddScoped<AdminTreeNavigationProvidersCoordinator, AdminTreeNavigationProvidersCoordinator>();
 
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
