@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\css\graphiql-orchard.css" />
+    <Compile Remove="Assets\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <None Remove="Assets\**" />
   </ItemGroup>
 
   <ItemGroup>

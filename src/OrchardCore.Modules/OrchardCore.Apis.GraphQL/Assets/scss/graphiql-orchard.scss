@@ -4,11 +4,13 @@
     bottom: 0;
     right: 0;
     left: 260px;
-}
 
-    #graphiql .editorWrap {
+    .editorWrap
+    {
         overflow-x: unset;
     }
+}
+
 
 .left-sidebar-compact #graphiql {
     left: 60px;

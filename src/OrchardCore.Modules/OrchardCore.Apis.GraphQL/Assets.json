@@ -16,7 +16,7 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "assets/css/graphiql-orchard.css"
+      "assets/scss/graphiql-orchard.scss"
     ],
     "output": "wwwroot/Styles/graphiql-orchard.css"
   },
