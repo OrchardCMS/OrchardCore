@@ -10,6 +10,14 @@
         overflow-x: unset;
     }
 
+.left-sidebar-compact #graphiql {
+    left: 60px;
+}
+
+.graphiql-container .docExplorerShow {
+    white-space: nowrap;
+}
+
 .loader {
     position: absolute;
     left: 46%;
