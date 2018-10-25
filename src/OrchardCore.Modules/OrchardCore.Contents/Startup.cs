@@ -152,7 +152,7 @@ namespace OrchardCore.Contents
 
 
     [RequireFeatures("OrchardCore.AdminTrees")]
-    public class ContentTreeStartup : StartupBase
+    public class AdminTreesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

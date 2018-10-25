@@ -66,7 +66,7 @@ namespace OrchardCore.Lists
 
 
     [RequireFeatures("OrchardCore.AdminTrees")]
-    public class AdminTreeStartup : StartupBase
+    public class AdminTreesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

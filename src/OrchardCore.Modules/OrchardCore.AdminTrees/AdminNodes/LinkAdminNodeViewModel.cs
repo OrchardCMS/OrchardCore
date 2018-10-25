@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.AdminTrees.AdminNodes
 {
     public class LinkAdminNodeViewModel
     {
+        [Required]
         public string LinkText { get; set; }
 
         public string LinkUrl { get; set; }
