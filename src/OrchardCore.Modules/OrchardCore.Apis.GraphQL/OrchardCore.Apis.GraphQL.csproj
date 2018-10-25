@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Assets\css\graphiql-orchard.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
