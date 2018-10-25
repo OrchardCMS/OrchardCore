@@ -81,7 +81,7 @@ namespace OrchardCore.Apis.GraphQL
             switch(context.Request.Method.ToUpper())
             {
                 case "POST":
-                    if (context.Request.ContentType == "application/json")
+                    if (context.Request.ContentType.Contains("application/json"))
                     {
                         using (var sr = new StreamReader(context.Request.Body))
                         {
@@ -91,7 +91,7 @@ namespace OrchardCore.Apis.GraphQL
                             }
                         }
                     }
-                    else if (context.Request.ContentType == "application/graphql")
+                    else if (context.Request.ContentType.Contains("application/graphql"))
                     {
                         request = new GraphQLRequest();
 
