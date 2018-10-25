@@ -2,6 +2,7 @@ using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -55,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     contentQuery.Arguments.Add(new QueryArgument(inputGraphTypeResolved)
                     {
-                        Name = partName
+                        Name = partName.ToGraphQLStringFormat()
                     });
                 }
             }

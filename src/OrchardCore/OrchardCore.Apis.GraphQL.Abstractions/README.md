@@ -5,17 +5,24 @@
 Queries are made up of three areas, the `type`, `arguments` and `return values`, an example would be;
 
 ```json
-query {  
-    blog (contentItemId:'123')
-    {
-        ContentType
-    }
+{
+  blog {
+    displayText
+  }
 }
 ```
 
-Where `blog` is the type, `contentItemId: '123'` is the argument, and `ContentType` is the return value
+In this example, the `blog` is the type, and the `displayText` is the return value. You could expand this, to add an argument. An argument is used for filtering a query, for example;
 
-In Orchard we allow you to define whatever you want to return, however this must be declared upfront.
+```json
+{
+  blog(contentItemId: "4k5df0kadp9asy1n2ejzs1rz4r") {
+    displayText
+  }
+}
+```
+
+Here we can see that the query is using the arugment `contentItemId` to filter.
 
 ### Define a type
 
