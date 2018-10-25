@@ -9,6 +9,7 @@ using GraphQL.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -23,6 +24,8 @@ namespace OrchardCore.Apis.GraphQL
         private readonly IDocumentWriter _writer;
 
         private readonly static JsonSerializer _serializer = new JsonSerializer();
+        private readonly static MediaType _jsonMediaType = new MediaType("application/json");
+        private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -78,39 +81,56 @@ namespace OrchardCore.Apis.GraphQL
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
-            switch(context.Request.Method.ToUpper())
+            var mediaType = new MediaType(context.Request.ContentType);
+
+            switch (context.Request.Method.ToUpper())
             {
                 case "POST":
-                    if (context.Request.ContentType.Contains("application/json"))
+
+                    try
                     {
-                        using (var sr = new StreamReader(context.Request.Body))
+                        if (mediaType.IsSubsetOf(_jsonMediaType))
                         {
-                            using (var jsonTextReader = new JsonTextReader(sr))
+                            using (var sr = new StreamReader(context.Request.Body))
                             {
-                                request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
+                                using (var jsonTextReader = new JsonTextReader(sr))
+                                {
+                                    request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
+                                }
+                            }
+                        }
+                        else if (mediaType.IsSubsetOf(_graphQlMediaType))
+                        {
+                            request = new GraphQLRequest();
+
+                            using (var sr = new StreamReader(context.Request.Body))
+                            {
+                                request.Query = await sr.ReadToEndAsync();
                             }
                         }
                     }
-                    else if (context.Request.ContentType.Contains("application/graphql"))
+                    catch (Exception e)
                     {
-                        request = new GraphQLRequest();
-
-                        using (var sr = new StreamReader(context.Request.Body))
-                        {
-                            request.Query = await sr.ReadToEndAsync();
-                        }
+                        await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
+                        return;
                     }
                     break;
                 case "GET":
 
-                    request = new GraphQLRequest();
+                    if (!context.Request.Query.ContainsKey("query"))
+                    {
+                        await WriteErrorAsync(context, "The 'query' query string parameter is missing");
+                        return;
+                    }
 
+                    request = new GraphQLRequest();
                     request.Query = context.Request.Query["query"];
 
                     break;
             }
 
             var queryToExecute = request.Query;
+
             if (!String.IsNullOrEmpty(request.NamedQuery))
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
@@ -142,6 +162,32 @@ namespace OrchardCore.Apis.GraphQL
             var json = await _writer.WriteToStringAsync(result);
 
             context.Response.StatusCode = (int)httpResult;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(json, Encoding.UTF8);
+        }
+
+        private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var errorResult = new ExecutionResult();
+            errorResult.Errors = new ExecutionErrors();
+
+            if (e == null)
+            {
+                errorResult.Errors.Add(new ExecutionError(message));
+            }
+            else
+            {
+                errorResult.Errors.Add(new ExecutionError(message, e));
+            }
+
+            var json = await _writer.WriteToStringAsync(errorResult);
+
+            context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(json, Encoding.UTF8);
         }
