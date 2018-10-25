@@ -5,12 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Assets\**" />
-    <EmbeddedResource Remove="Assets\**" />
-    <None Remove="Assets\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
