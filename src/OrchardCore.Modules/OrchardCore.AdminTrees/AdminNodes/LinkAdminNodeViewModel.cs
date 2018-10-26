@@ -6,11 +6,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
     {
         [Required]
         public string LinkText { get; set; }
-
         public string LinkUrl { get; set; }
-
-        public bool Enabled { get; set; }
-
         public string IconClass { get; set; }
     }
 }

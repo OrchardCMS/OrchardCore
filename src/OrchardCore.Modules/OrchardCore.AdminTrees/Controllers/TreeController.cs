@@ -138,11 +138,11 @@ namespace OrchardCore.AdminTrees.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new AdminTree { Name = model.Name, Enabled = model.Enabled };
+                var tree = new AdminTree {Name = model.Name};
 
                 await _adminTreeService.SaveAsync(tree);
                 
-                return RedirectToAction(nameof(NodeController.List), "Node", new { Id = tree.Id});
+                return RedirectToAction(nameof(List));
             }
 
 
@@ -166,8 +166,7 @@ namespace OrchardCore.AdminTrees.Controllers
             var model = new AdminTreeEditViewModel
             {
                 Id = tree.Id,
-                Name = tree.Name,
-                Enabled = tree.Enabled            
+                Name = tree.Name
             };
 
             return View(model);
@@ -190,19 +189,9 @@ namespace OrchardCore.AdminTrees.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(AdminTreeEditViewModel.Name), T["The name is mandatory."]);
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
                 tree.Name = model.Name;
-                tree.Enabled = model.Enabled;
 
-                await _adminTreeService.SaveAsync(tree);
-                
+                await _adminTreeService.SaveAsync(tree);                
 
                 _notifier.Success(H["Admin tree updated successfully"]);
 
@@ -242,5 +231,31 @@ namespace OrchardCore.AdminTrees.Controllers
 
             return RedirectToAction(nameof(List));
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Toggle(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            {
+                return Unauthorized();
+            }
+
+            var tree = await _adminTreeService.GetByIdAsync(id);
+
+            if (tree == null)
+            {
+                return NotFound();
+            }
+
+            tree.Enabled = !tree.Enabled;
+
+            await _adminTreeService.SaveAsync(tree);
+
+            _notifier.Success(H["Admin tree toggled successfully"]);
+
+            return RedirectToAction(nameof(List));
+        }
+
     }
 }

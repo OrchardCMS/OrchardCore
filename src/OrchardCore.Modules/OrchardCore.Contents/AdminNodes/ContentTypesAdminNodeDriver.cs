@@ -23,7 +23,6 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 model.ShowAll = treeNode.ShowAll;
                 model.ContentTypes = treeNode.ContentTypes;
-                model.Enabled = treeNode.Enabled;
             }).Location("Content");
         }
 
@@ -34,11 +33,10 @@ namespace OrchardCore.Contents.AdminNodes
 
             var model = new ContentTypesAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.ContentTypes, x => x.Enabled)) {
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ShowAll, x => x.ContentTypes)) {
 
                 treeNode.ShowAll = model.ShowAll;
                 treeNode.ContentTypes = model.ContentTypes;
-                treeNode.Enabled = model.Enabled;                
             };
 
             return Edit(treeNode);

@@ -22,7 +22,6 @@ namespace OrchardCore.Lists.AdminNodes
             return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", model =>
             {
                 model.ContentTypes = treeNode.ContentTypes;
-                model.Enabled = treeNode.Enabled;
                 model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
             }).Location("Content");
         }
@@ -31,8 +30,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             var model = new ListsAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentTypes, x => x.Enabled, x => x.AddContentTypeAsParent)) {
-                treeNode.Enabled = model.Enabled;
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentTypes, x => x.AddContentTypeAsParent)) {
                 treeNode.ContentTypes = model.ContentTypes;
                 treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
             };
