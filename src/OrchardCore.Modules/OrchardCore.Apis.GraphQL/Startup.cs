@@ -29,9 +29,10 @@ namespace OrchardCore.Apis.GraphQL
         {
             app.UseMiddleware<GraphQLMiddleware>(new GraphQLSettings
             {
-                BuildUserContext = ctx => new GraphQLUserContext
+                BuildUserContext = ctx => new GraphQLContext
                 {
-                    User = ctx.User
+                    User = ctx.User,
+                    ServiceProvider = ctx.RequestServices
                 }
             });
         }
