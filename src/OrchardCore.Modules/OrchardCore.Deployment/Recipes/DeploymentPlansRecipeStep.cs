@@ -74,7 +74,9 @@ namespace OrchardCore.Deployment.Recipes
                 throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
             }
 
-            return _deploymentPlanService.CreateOrUpdateDeploymentPlans(deploymentPlans);
+            _deploymentPlanService.CreateOrUpdateDeploymentPlans(deploymentPlans);
+
+            return Task.CompletedTask;
         }
 
         private class DeploymentPlansModel

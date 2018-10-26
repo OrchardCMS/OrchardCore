@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ namespace OrchardCore.Deployment
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly Lazy<Dictionary<string, DeploymentPlan>> _deploymentPlans;
+        private Dictionary<string, DeploymentPlan> _deploymentPlans;
 
         public DeploymentPlanService(
             YesSql.ISession session,
@@ -24,12 +23,18 @@ namespace OrchardCore.Deployment
             _session = session;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            _deploymentPlans = new Lazy<Dictionary<string, DeploymentPlan>>(() =>
-                {
-                    var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-                    var deploymentPlans = deploymentPlanQuery.ListAsync().Result;
-                    return deploymentPlans.ToDictionary(x => x.Name);
-                });
+        }
+
+        private async Task<Dictionary<string, DeploymentPlan>> GetDeploymentPlans()
+        {
+            if (_deploymentPlans == null)
+            {
+                var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
+                var deploymentPlans = await deploymentPlanQuery.ListAsync();
+                _deploymentPlans = deploymentPlans.ToDictionary(x => x.Name);
+            }
+
+            return _deploymentPlans;
         }
 
         public async Task<bool> DoesUserHavePermissionsAsync()
@@ -44,21 +49,21 @@ namespace OrchardCore.Deployment
 
         public async Task<IEnumerable<string>> GetAllDeploymentPlanNamesAsync()
         {
-            var deploymentPlans = await _deploymentPlans.Value;
+            var deploymentPlans = await GetDeploymentPlans();
 
             return deploymentPlans.Keys;
         }
 
         public async Task<IEnumerable<DeploymentPlan>> GetAllDeploymentPlansAsync()
         {
-            var deploymentPlans = await _deploymentPlans.Value;
+            var deploymentPlans = await GetDeploymentPlans();
 
             return deploymentPlans.Values;
         }
 
         public async Task<IEnumerable<DeploymentPlan>> GetDeploymentPlansAsync(params string[] deploymentPlanNames)
         {
-            var deploymentPlans = await _deploymentPlans.Value;
+            var deploymentPlans = await GetDeploymentPlans();
 
             return GetDeploymentPlans(deploymentPlans, deploymentPlanNames);
         }
@@ -67,15 +72,14 @@ namespace OrchardCore.Deployment
         {
             foreach (var deploymentPlanName in deploymentPlanNames)
             {
-                DeploymentPlan deploymentPlan;
-                if (deploymentPlans.TryGetValue(deploymentPlanName, out deploymentPlan))
+                if (deploymentPlans.TryGetValue(deploymentPlanName, out var deploymentPlan))
                 {
                     yield return deploymentPlan;
                 }
             }
         }
 
-        public async Task CreateOrUpdateDeploymentPlans(IEnumerable<DeploymentPlan> deploymentPlans)
+        public void CreateOrUpdateDeploymentPlans(IEnumerable<DeploymentPlan> deploymentPlans)
         {
             foreach (var deploymentPlan in deploymentPlans)
             {
