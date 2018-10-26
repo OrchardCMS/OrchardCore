@@ -9,9 +9,9 @@ Vue.component('folder', {
                 <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
                   <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
                   <div class="folder-name">{{model.name}}</div>\
-                    <div class="btn-group folder-actions" v-show="isSelected">\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder"> <i class="fa fa-plus"></i></a>\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="!isRoot"><i class="fa fa-trash"></i></a>\
+                    <div class="btn-group folder-actions" >\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
                     </div>\
                 </a>\
             </div>\
