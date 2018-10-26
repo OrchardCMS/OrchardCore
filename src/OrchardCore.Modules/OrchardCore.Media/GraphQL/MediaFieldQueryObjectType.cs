@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Media;
 using OrchardCore.Media.Fields;
 
-namespace OrchardCore.Markdown.GraphQL
+namespace OrchardCore.Media.GraphQL
 {
     public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
     {
@@ -18,13 +18,14 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("paths", x => x.Paths, nullable: true)
                 .Description("the media paths")
-                .Type(new ListGraphType<StringGraphType>())
+                .Type(new StringGraphType())
                 ;
 
             Field("urls", x => ToUrl(x.Paths), nullable: true)
                 .Description("the absolute urls of the media items")
-                .Type(new ListGraphType<StringGraphType>())
+                .Type(new StringGraphType())
                 ;
+
             _httpContextAccessor = httpContextAccessor;
         }
 
