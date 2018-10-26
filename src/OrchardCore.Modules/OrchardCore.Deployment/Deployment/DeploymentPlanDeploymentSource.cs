@@ -15,8 +15,7 @@ namespace OrchardCore.Deployment.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            var deploymentPlanStep = deploymentStep as DeploymentPlanDeploymentStep;
-            if (deploymentPlanStep == null)
+            if (!(deploymentStep is DeploymentPlanDeploymentStep deploymentPlanStep))
             {
                 return;
             }
@@ -42,7 +41,7 @@ namespace OrchardCore.Deployment.Deployment
                                      }).ToArray()
                          }).ToArray();
 
-            // Adding Lucene settings
+            // Adding deployment plans
             result.Steps.Add(new JObject(
                 new JProperty("name", "deployment"),
                 new JProperty("Plans", JArray.FromObject(plans))

@@ -14,7 +14,7 @@ namespace OrchardCore.Deployment
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly Lazy<Task<Dictionary<string, DeploymentPlan>>> _deploymentPlans;
+        private readonly Lazy<Dictionary<string, DeploymentPlan>> _deploymentPlans;
 
         public DeploymentPlanService(
             YesSql.ISession session,
@@ -24,25 +24,20 @@ namespace OrchardCore.Deployment
             _session = session;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            _deploymentPlans = new Lazy<Task<Dictionary<string, DeploymentPlan>>>(() =>
-                Task.Factory.StartNew(async () =>
+            _deploymentPlans = new Lazy<Dictionary<string, DeploymentPlan>>(() =>
                 {
                     var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-                    var deploymentPlans = await deploymentPlanQuery.ListAsync();
+                    var deploymentPlans = deploymentPlanQuery.ListAsync().Result;
                     return deploymentPlans.ToDictionary(x => x.Name);
-                }).Unwrap());
+                });
         }
 
         public async Task<bool> DoesUserHavePermissionsAsync()
         {
             var user = _httpContextAccessor.HttpContext.User;
 
-            var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan);
-
-            if (result)
-            {
-                result = await _authorizationService.AuthorizeAsync(user, Permissions.Export);
-            }
+            var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan) &&
+                         await _authorizationService.AuthorizeAsync(user, Permissions.Export);
 
             return result;
         }
@@ -86,8 +81,6 @@ namespace OrchardCore.Deployment
             {
                 _session.Save(deploymentPlan);
             }
-
-            await _session.CommitAsync();
         }
     }
 }
