@@ -22,7 +22,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 .Type(new StringGraphType())
                 ;
 
-            Field<ListGraphType<ContentItemType>, IEnumerable<ContentItem>>()
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")
                 .Description("the content items")
                 //.Type(new ListGraphType<ContentItemType>())
