@@ -97,7 +97,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             return null;
         }
 
-        public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "")
+        public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "", bool includeSubDirectories = false)
         {
             await _verifyContainerTask;
 
@@ -130,7 +130,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                             break;
                         case CloudBlockBlob blobItem:
                             // Ignore directory marker files.
-                            if (itemName != _directoryMarkerFileName)
+                            if (includeSubDirectories || itemName != _directoryMarkerFileName)
                                 results.Add(new BlobFile(itemPath, blobItem.Properties));
                             break;
                     }

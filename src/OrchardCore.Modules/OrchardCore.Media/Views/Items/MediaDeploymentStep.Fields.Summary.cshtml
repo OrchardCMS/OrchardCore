@@ -1,0 +1,24 @@
+@model ShapeViewModel<MediaDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var paths = Model.Value.Paths;
+}
+
+<h5>@T["Media"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge badge-success">@T["All"]</span>
+}
+else if (paths?.Length > 0)
+{
+    foreach (var path in paths)
+    {
+        <span class="badge badge-info">@path</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No media selected."]</span>
+}

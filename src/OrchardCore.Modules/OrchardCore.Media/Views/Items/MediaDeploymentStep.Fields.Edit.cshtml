@@ -1,0 +1,104 @@
+@model MediaDeploymentStepViewModel
+
+<h5>@T["Media"]</h5>
+
+<fieldset class="form-group mt-4 mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IncludeAll"
+                           data-reverseToggle=".mediasel" />
+                    @T["Include all media."]
+                </label>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="mediasel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="row">
+        <div class="col">
+            <span class="hint">@T["The media to add as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            @Html.RenderMediaStoreEntries(Model)
+        </div>
+    </div>
+</fieldset>
+
+<script at="Foot">
+    function updateChildren(checkbox, checked) {
+        checkbox
+            // parents: li > div > label
+            .parent("label").parent("div").parent("li")
+            // next sibling of parent: li
+            .next("li")
+            // children: ul > li > div > label > input
+            .children("ul").children("li").children("div").children("label").children("input")
+            // for each child input ...
+            .each(function () {
+                var child = $(this);
+
+                this.checked = checked;
+
+                if (child.attr("data-entry-type") == "dir") {
+                    updateChildren(child, checked);
+                }
+            });
+    }
+
+    function updateParent(checkbox, checked) {
+        var parentCheckbox =
+            checkbox
+                // parents: li > ul > li > div > label
+                .parent("label").parent("div").parent("li").parent("ul").parent("li")
+                // previous sibling of parent: li
+                .prev("li")
+                // children: div > label > input
+                .children("div").children("label").children("input")
+                // first one
+                .first();
+
+        if (parentCheckbox.toArray().length != 0) {
+            var areAllChecked = true;
+
+            checkbox
+                // parents: ul > li > div > label
+                .parent("label").parent("div").parent("li").parent("ul")
+                // children: li > div > label > input
+                .children("li").children("div").children("label").children("input")
+                // for each child input ...
+                .each(function () {
+                    areAllChecked &= this.checked;
+                });
+
+            parentCheckbox.prop("checked", areAllChecked);
+
+            updateParent(parentCheckbox, areAllChecked);
+        }
+    }
+
+    $(function () {
+        $("[data-reversetoggle]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-reversetoggle")).collapse('hide');
+            } else {
+                $($(this).attr("data-reversetoggle")).collapse('show');
+            }
+        });
+
+        $("[data-entry-type]").on("click", function () {
+            var checkbox = $(this);
+
+            if (checkbox.attr("data-entry-type") == "dir") {
+                updateChildren(checkbox, this.checked);
+            }
+
+            updateParent(checkbox, this.checked);
+        });
+    });
+</script>

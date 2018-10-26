@@ -35,26 +35,27 @@ namespace OrchardCore.Media.Recipes
             foreach (JObject item in model.Files)
             {
                 var file = item.ToObject<MediaStepFile>();
+
                 using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
                 {
                     await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
                 }
             }
         }
-    }
 
-    public class MediaStepModel
-    {
-        public JArray Files { get; set; }
-    }
+        private class MediaStepModel
+        {
+            public JArray Files { get; set; }
+        }
 
-    public class MediaStepFile
-    {
-        public string Path { get; set; }
+        private class MediaStepFile
+        {
+            public string Path { get; set; }
 
-        /// <summary>
-        /// Base64 encoded content.
-        /// </summary>
-        public string Base64 { get; set; }
+            /// <summary>
+            /// Base64 encoded content.
+            /// </summary>
+            public string Base64 { get; set; }
+        }
     }
 }
