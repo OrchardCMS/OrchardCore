@@ -1,4 +1,4 @@
-﻿@model EditTypeViewModel
+@model EditTypeViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 
@@ -74,7 +74,7 @@
                         }
                         else
                         {
-                            <span class="hint">@T["— Contains the fields for the current type"]</span>
+                            <span class="hint">@T["— {0}", "Contains the fields for the current type"]</span>
                         }
                     </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
