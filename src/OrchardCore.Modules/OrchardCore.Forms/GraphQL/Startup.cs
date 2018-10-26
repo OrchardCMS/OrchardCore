@@ -10,14 +10,14 @@ namespace OrchardCore.Forms.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLQueryType<FormPart, FormPartQueryObjectType>();
-            services.AddGraphQLQueryType<FormElementPart, FormElementPartQueryObjectType>();
-            services.AddGraphQLQueryType<FormInputElementPart, FormInputElementPartQueryObjectType>();
-            services.AddGraphQLQueryType<LabelPart, LabelPartQueryObjectType>();
-            services.AddGraphQLQueryType<ButtonPart, ButtonPartQueryObjectType>();
-            services.AddGraphQLQueryType<InputPart, InputPartQueryObjectType>();
-            services.AddGraphQLQueryType<TextAreaPart, TextAreaPartQueryObjectType>();
-            services.AddGraphQLQueryType<ValidationPart, ValidationPartQueryObjectType>();
+            services.AddObjectGraphType<FormPart, FormPartQueryObjectType>();
+            services.AddObjectGraphType<FormElementPart, FormElementPartQueryObjectType>();
+            services.AddObjectGraphType<FormInputElementPart, FormInputElementPartQueryObjectType>();
+            services.AddObjectGraphType<LabelPart, LabelPartQueryObjectType>();
+            services.AddObjectGraphType<ButtonPart, ButtonPartQueryObjectType>();
+            services.AddObjectGraphType<InputPart, InputPartQueryObjectType>();
+            services.AddObjectGraphType<TextAreaPart, TextAreaPartQueryObjectType>();
+            services.AddObjectGraphType<ValidationPart, ValidationPartQueryObjectType>();
             
             // Broken
             //services.AddGraphQLQueryType<ValidationSummaryPart, ValidationSummaryPartQueryObjectType>();

@@ -18,16 +18,9 @@ namespace OrchardCore.Alias.GraphQL
 
             var part = context.GetArgument<AliasPart>("aliasPart");
 
-            if (part == null)
+            if (!string.IsNullOrWhiteSpace(part?.Alias))
             {
-                return query;
-            }
-
-            var aliasQuery = query.With<AliasPartIndex>();
-
-            if (!string.IsNullOrWhiteSpace(part.Alias))
-            {
-                return aliasQuery.Where(index => index.Alias == part.Alias);
+                return query.With<AliasPartIndex>(index => index.Alias == part.Alias);
             }
 
             return query;

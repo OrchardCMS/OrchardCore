@@ -11,8 +11,8 @@ namespace OrchardCore.Flows.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLQueryType<FlowPart, FlowPartQueryObjectType>();
-            services.AddGraphQLQueryType<FlowMetadata, FlowMetadataQueryObjectType>();
+            services.AddObjectGraphType<FlowPart, FlowPartQueryObjectType>();
+            services.AddObjectGraphType<FlowMetadata, FlowMetadataQueryObjectType>();
 
             services.AddScoped<IContentTypeBuilder, FlowMetadataContentTypeBuilder>();
         }

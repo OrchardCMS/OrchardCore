@@ -18,16 +18,9 @@ namespace OrchardCore.Lists.GraphQL
 
             var part = context.GetArgument<ContainedPart>("containedPart");
 
-            if (part == null)
+            if (!string.IsNullOrWhiteSpace(part?.ListContentItemId))
             {
-                return query;
-            }
-
-            var containedQuery = query.With<ContainedPartIndex>();
-
-            if (!string.IsNullOrWhiteSpace(part.ListContentItemId))
-            {
-                return containedQuery.Where(index => index.ListContentItemId == part.ListContentItemId);
+                return query.With<ContainedPartIndex>(index => index.ListContentItemId == part.ListContentItemId);
             }
 
             return query;

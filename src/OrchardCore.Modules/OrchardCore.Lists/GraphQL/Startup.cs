@@ -11,9 +11,8 @@ namespace OrchardCore.Lists.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<ContainedPart, ContainedInputObjectType>();
-            services.AddGraphQLQueryType<ContainedPart, ContainedQueryObjectType>();
-            services.AddGraphQLQueryArgumentInputType<ContainedInputObjectType>();
+            services.AddInputObjectGraphType<ContainedPart, ContainedInputObjectType>();
+            services.AddObjectGraphType<ContainedPart, ContainedQueryObjectType>();
             services.AddGraphQLFilterType<ContentItem, ContainedGraphQLFilter>();
         }
     }

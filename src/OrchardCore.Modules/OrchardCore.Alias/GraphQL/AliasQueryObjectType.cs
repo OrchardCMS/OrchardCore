@@ -9,7 +9,7 @@ namespace OrchardCore.Alias.GraphQL
         {
             Name = "AliasPart";
 
-            Field(x => x.Alias);
+            Field("alias", x => x.Alias, true);
         }
     }
 }

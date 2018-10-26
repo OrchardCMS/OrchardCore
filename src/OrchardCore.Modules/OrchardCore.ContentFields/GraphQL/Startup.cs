@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.GraphQL
             services.AddScoped<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
             services.AddScoped<IContentFieldProvider, ContentFieldsProvider>();
 
-            services.AddGraphQLQueryType<LinkField, LinkFieldQueryObjectType>();
+            services.AddObjectGraphType<LinkField, LinkFieldQueryObjectType>();
         }
     }
 }

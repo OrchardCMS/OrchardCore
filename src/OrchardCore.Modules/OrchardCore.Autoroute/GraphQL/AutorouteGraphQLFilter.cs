@@ -18,16 +18,9 @@ namespace OrchardCore.Autoroute.GraphQL
 
             var part = context.GetArgument<AutoroutePart>("autoroutePart");
 
-            if (part == null)
+            if (!string.IsNullOrWhiteSpace(part?.Path))
             {
-                return query;
-            }
-
-            var autorouteQuery = query.With<AutoroutePartIndex>();
-
-            if (!string.IsNullOrWhiteSpace(part.Path))
-            {
-                return autorouteQuery.Where(index => index.Path == part.Path);
+                return query.With<AutoroutePartIndex>(index => index.Path == part.Path);
             }
             return query;
         }

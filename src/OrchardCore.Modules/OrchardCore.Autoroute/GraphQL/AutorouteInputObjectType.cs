@@ -1,16 +1,17 @@
-using OrchardCore.Apis.GraphQL.Queries;
+using GraphQL.Types;
 using OrchardCore.Autoroute.Model;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
-    public class AutorouteInputObjectType : QueryArgumentObjectGraphType<AutoroutePart>
+    public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>, IInputObjectGraphType
     {
         public AutorouteInputObjectType()
         {
             Name = "AutoroutePartInput";
             
-            AddInputField("path", x => x.Path, true);
-            AddInputField("setHomepage", x => x.SetHomepage, true);
+            Field("path", x => x.Path, nullable: true)
+                .Type(new StringGraphType())
+                .Description("the path of the content item to filter");
         }
     }
 }

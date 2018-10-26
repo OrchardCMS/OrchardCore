@@ -1,15 +1,19 @@
+using GraphQL.Types;
 using OrchardCore.Alias.Models;
-using OrchardCore.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Alias.GraphQL
 {
-    public class AliasInputObjectType : QueryArgumentObjectGraphType<AliasPart>
+    public class AliasInputObjectType : InputObjectGraphType<AliasPart>
     {
         public AliasInputObjectType()
         {
             Name = "AliasPartInput";
 
-            AddInputField("alias", x => x.Alias, true);
+            Field(x => x.Alias, nullable: true)
+                .Name("alias")
+                .Type(new StringGraphType())
+                .Description("the alias of the content item to filter")
+                ;
         }
     }
 }

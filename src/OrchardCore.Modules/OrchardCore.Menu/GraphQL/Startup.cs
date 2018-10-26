@@ -11,8 +11,8 @@ namespace OrchardCore.Menu.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLQueryType<MenuItemsListPart, MenuItemsListQueryObjectType>();
-            services.AddGraphQLQueryType<LinkMenuItemPart, LinkMenuItemQueryObjectType>();
+            services.AddObjectGraphType<MenuItemsListPart, MenuItemsListQueryObjectType>();
+            services.AddObjectGraphType<LinkMenuItemPart, LinkMenuItemQueryObjectType>();
             services.AddScoped<IContentTypeBuilder, MenuItemContentTypeBuilder>();
         }
     }

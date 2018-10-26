@@ -10,7 +10,7 @@ namespace OrchardCore.Markdown.GraphQL
             Name = "MarkdownBodyPart";
 
             Field(x => x.Markdown);
-            Field("html", x => ToHtml(x.Markdown));
+            Field("html", x => ToHtml(x.Markdown), true).Description("the HTML representation of the markdown content");
         }
 
         private static string ToHtml(string markdown)

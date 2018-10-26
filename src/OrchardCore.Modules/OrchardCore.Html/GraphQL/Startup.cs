@@ -10,8 +10,7 @@ namespace OrchardCore.Html.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<HtmlBodyPart, HtmlBodyInputObjectType>();
-            services.AddGraphQLQueryType<HtmlBodyPart, HtmlBodyQueryObjectType>();
+            services.AddObjectGraphType<HtmlBodyPart, HtmlBodyQueryObjectType>();
         }
     }
 }

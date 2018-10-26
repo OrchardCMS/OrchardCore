@@ -11,9 +11,8 @@ namespace OrchardCore.Alias.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<AliasPart, AliasInputObjectType>();
-            services.AddGraphQLQueryType<AliasPart, AliasQueryObjectType>();
-            services.AddGraphQLQueryArgumentInputType<AliasInputObjectType>();
+            services.AddObjectGraphType<AliasPart, AliasQueryObjectType>();
+            services.AddInputObjectGraphType<AliasPart, AliasInputObjectType>();
             services.AddGraphQLFilterType<ContentItem, AliasGraphQLFilter>();
         }
     }

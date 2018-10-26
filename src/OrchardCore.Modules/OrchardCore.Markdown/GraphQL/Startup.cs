@@ -10,8 +10,7 @@ namespace OrchardCore.Markdown.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<MarkdownBodyPart, MarkdownBodyInputObjectType>();
-            services.AddGraphQLQueryType<MarkdownBodyPart, MarkdownBodyQueryObjectType>();
+            services.AddObjectGraphType<MarkdownBodyPart, MarkdownBodyQueryObjectType>();
         }
     }
 }

@@ -11,9 +11,8 @@ namespace OrchardCore.Autoroute.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddGraphQLInputType<AutoroutePart, AutorouteInputObjectType>();
-            services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
-            services.AddGraphQLQueryArgumentInputType<AutorouteInputObjectType>();
+            services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
+            services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
             services.AddGraphQLFilterType<ContentItem, AutorouteGraphQLFilter>();
         }
     }

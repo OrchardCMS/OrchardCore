@@ -3,7 +3,6 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
@@ -17,8 +16,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, 
-            ContentItemType contentItemType)
+        public void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
@@ -26,19 +24,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             foreach (var part in contentTypeDefinition.Parts)
             {
                 var partName = part.PartDefinition.Name;
-                
+
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName)) continue;
+                if (contentItemType.HasField(partName))
+                {
+                    continue;
+                }
 
                 var activator = typeActivator.GetTypeActivator(partName);
 
                 var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
-                var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
-
-                var queryGraphTypeResolved = (IObjectGraphType)serviceProvider.GetService(queryGraphType);
-
-                if (queryGraphTypeResolved != null)
+                if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
                 {
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
@@ -52,7 +49,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         });
                 }
 
-                if (serviceProvider.GetService(inputGraphType) is IQueryArgumentObjectGraphType inputGraphTypeResolved)
+                var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
+
+                if (serviceProvider.GetService(inputGraphType) is IInputObjectGraphType inputGraphTypeResolved)
                 {
                     contentQuery.Arguments.Add(new QueryArgument(inputGraphTypeResolved)
                     {
