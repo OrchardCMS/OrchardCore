@@ -11,14 +11,10 @@ namespace OrchardCore.CustomSettings.Deployment
 {
     public class CustomSettingsDeploymentSource : IDeploymentSource
     {
-        private readonly ISiteService _siteService;
         private readonly CustomSettingsService _customSettingsService;
 
-        public CustomSettingsDeploymentSource(
-            ISiteService siteService,
-            CustomSettingsService customSettingsService)
+        public CustomSettingsDeploymentSource(CustomSettingsService customSettingsService)
         {
-            _siteService = siteService;
             _customSettingsService = customSettingsService;
         }
 
@@ -30,15 +26,15 @@ namespace OrchardCore.CustomSettings.Deployment
                 return;
             }
 
-            var settingsList = new List<JProperty> { new JProperty("name", "Settings") };
+            var settingsList = new List<JProperty> { new JProperty("name", "custom-settings") };
 
             var settingsTypes = customSettingsStep.IncludeAll
-                ? _customSettingsService.GetAllSettingsTypes()
-                : _customSettingsService.GetSettingsTypes(customSettingsStep.SettingsTypeNames);
+                ? _customSettingsService.GetAllSettingsTypes().ToArray()
+                : _customSettingsService.GetSettingsTypes(customSettingsStep.SettingsTypeNames).ToArray();
 
             var settingsPermissionsTasks =
-                from settingsType in settingsTypes
-                select _customSettingsService.CanUserCreateSettingsAsync(settingsType);
+                (from settingsType in settingsTypes
+                 select _customSettingsService.CanUserCreateSettingsAsync(settingsType)).ToArray();
 
             await Task.WhenAll(settingsPermissionsTasks);
 
@@ -47,8 +43,9 @@ namespace OrchardCore.CustomSettings.Deployment
                 return;
             }
 
-            var settingsTasks = from settingsType in settingsTypes
-                                select _customSettingsService.GetSettingsAsync(settingsType);
+            var settingsTasks =
+                (from settingsType in settingsTypes
+                 select _customSettingsService.GetSettingsAsync(settingsType)).ToArray();
 
             await Task.WhenAll(settingsTasks);
 
