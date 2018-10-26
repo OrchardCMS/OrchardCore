@@ -52,7 +52,7 @@ namespace OrchardCore.CustomSettings.Deployment
             settingsList.AddRange(
                 from settingsTask in settingsTasks
                 let settings = settingsTask.Result
-                select new JProperty(settings.ContentType, JObject.FromObject(settings.Content)));
+                select new JProperty(settings.ContentType, JObject.FromObject(settings)));
 
             // Adding custom settings
             result.Steps.Add(new JObject(settingsList.ToArray()));
