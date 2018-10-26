@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,13 +13,10 @@ namespace OrchardCore.Media.Recipes
     public class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly ILogger _logger;
 
-        public MediaStep(IMediaFileStore mediaFileStore,
-            ILogger<MediaStep> logger)
+        public MediaStep(IMediaFileStore mediaFileStore)
         {
             _mediaFileStore = mediaFileStore;
-            _logger = logger;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -32,10 +28,8 @@ namespace OrchardCore.Media.Recipes
 
             var model = context.Step.ToObject<MediaStepModel>();
 
-            foreach (JObject item in model.Files)
+            foreach (var file in model.Files)
             {
-                var file = item.ToObject<MediaStepFile>();
-
                 using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
                 {
                     await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
@@ -45,7 +39,7 @@ namespace OrchardCore.Media.Recipes
 
         private class MediaStepModel
         {
-            public JArray Files { get; set; }
+            public MediaStepFile[] Files { get; set; }
         }
 
         private class MediaStepFile

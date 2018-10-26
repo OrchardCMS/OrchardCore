@@ -1,32 +1,24 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.Deployment
 {
     public class MediaDeploymentSource : IDeploymentSource
     {
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly IAuthorizationService _authorizationService;
 
-        public MediaDeploymentSource(
-            IMediaFileStore mediaFileStore,
-            IAuthorizationService authorizationService)
+        public MediaDeploymentSource(IMediaFileStore mediaFileStore)
         {
             _mediaFileStore = mediaFileStore;
-            _authorizationService = authorizationService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var mediaStep = step as MediaDeploymentStep;
-            if (mediaStep == null)
+            if (!(step is MediaDeploymentStep mediaStep))
             {
                 return;
             }
@@ -37,27 +29,25 @@ namespace OrchardCore.Media.Deployment
                    select fileStoreEntry.Path).ToArray()
                 : mediaStep.Paths;
 
-            var files = new List<JObject>(paths.Length);
-
             foreach (var path in paths)
             {
-                var base64 = await ReadFileAsBase64Async(path);
+                var content = await ReadFileAsync(path);
 
-                var file = new JObject(
-                    new JProperty("Path", path),
-                    new JProperty("Base64", base64));
-
-                files.Add(file);
+                await result.FileBuilder.SetFileAsync(path, content);
             }
 
             // Adding media files
             result.Steps.Add(new JObject(
                 new JProperty("name", "media"),
-                new JProperty("Files", JArray.FromObject(files.ToArray()))
-            ));
+                new JProperty("Files", JArray.FromObject((from path in paths
+                                                          select new JObject(
+                                                              new JProperty("Path", path),
+                                                              new JProperty("Base64", $"[file:base64('{path}')]")
+                                                          )).ToArray())
+            )));
         }
 
-        private async Task<string> ReadFileAsBase64Async(string path)
+        private async Task<byte[]> ReadFileAsync(string path)
         {
             var fileInfo = await _mediaFileStore.GetFileInfoAsync(path);
 
@@ -65,8 +55,9 @@ namespace OrchardCore.Media.Deployment
             {
                 using (var memoryStream = new MemoryStream(Convert.ToInt32(fileInfo.Length)))
                 {
-                    var bytesRead = 0;
+                    int bytesRead;
                     var buffer = new byte[1024];
+
                     do
                     {
                         bytesRead = await fileStream.ReadAsync(buffer, 0, buffer.Length);
@@ -81,7 +72,7 @@ namespace OrchardCore.Media.Deployment
                     await memoryStream.FlushAsync();
                     buffer = memoryStream.ToArray();
 
-                    return Convert.ToBase64String(buffer);
+                    return buffer;
                 }
             }
         }
