@@ -26,23 +26,25 @@ namespace OrchardCore.ContentFields.GraphQL
 
             var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
-            var queryGraphTypeResolved = (IObjectGraphType)serviceProvider.GetService(queryGraphType);
-            if (queryGraphTypeResolved == null) return null;
-
-            return new FieldType
+            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
             {
-                Name = field.Name,
-                Description = field.FieldDefinition.Name,
-                Type = queryGraphType,
-                Resolver = new FuncFieldResolver<ContentItem, ContentElement>(context =>
+                return new FieldType
                 {
-                    var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                    Name = field.Name,
+                    Description = field.FieldDefinition.Name,
+                    Type = queryGraphType,
+                    Resolver = new FuncFieldResolver<ContentItem, ContentElement>(context =>
+                    {
+                        var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                    var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    var contentField = contentPart.Get(typeToResolve, context.FieldName.FirstCharToUpper());
-                    return contentField;
-                })
-            };
+                        var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                        var contentField = contentPart.Get(typeToResolve, context.FieldName.FirstCharToUpper());
+                        return contentField;
+                    })
+                };
+            }
+
+            return null;
         }
     }
 }

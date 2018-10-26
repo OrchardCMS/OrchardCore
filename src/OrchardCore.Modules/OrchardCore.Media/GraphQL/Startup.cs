@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.Markdown.Fields;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown.GraphQL
@@ -11,8 +10,7 @@ namespace OrchardCore.Markdown.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddObjectGraphType<MarkdownBodyPart, MarkdownBodyQueryObjectType>();
-            services.AddObjectGraphType<MarkdownField, MarkdownFieldQueryObjectType>();
+            // services.AddObjectGraphType<MediaField, MediaFieldQueryObjectType>();
         }
     }
 }

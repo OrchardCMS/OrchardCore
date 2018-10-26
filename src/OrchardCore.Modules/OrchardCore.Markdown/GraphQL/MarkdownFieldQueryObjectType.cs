@@ -1,13 +1,13 @@
 using GraphQL.Types;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Fields;
 
 namespace OrchardCore.Markdown.GraphQL
 {
-    public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
+    public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
     {
-        public MarkdownBodyQueryObjectType()
+        public MarkdownFieldQueryObjectType()
         {
-            Name = nameof(MarkdownBodyPart);
+            Name = nameof(MarkdownField);
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description("the markdown value")
