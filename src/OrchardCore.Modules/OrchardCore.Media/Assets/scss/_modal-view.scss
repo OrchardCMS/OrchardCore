@@ -1,5 +1,16 @@
 .modal-body {
+    padding-bottom: 0px; // to keep the line separating the dir browser from the thumbnails straight to the bottom.
     #mediaContainer {
+
+        #navigationApp {
+            border-right: none !important;
+        }
+
+        #mediaContainerMain {
+            border-left: $media-border-content;
+            padding-left: 1.5rem !important;
+            margin-left: 0 !important;
+        }
         // on modal the available space is smaller. So the buttons overlap.
         // Breakpoints that switches visibility of buttons on full screen are not OK for the modal.
         // So we use these classes to enforce the same layout we have on small screen even when the screen size is not small.
@@ -17,11 +28,6 @@
         }
         // there is a size's range where the table mode overflows the modal.
         // We fix it by hidding extra columns while in that range
-        /*@include media-breakpoint-only(md) {
-        .optional-col {            
-            display:none;
-        }
-    }*/
         @media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
             .optional-col {
                 display: none;
@@ -30,7 +36,7 @@
     }
 
     @media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
-       #mediaApp #mediaContainer {
+        #mediaApp #mediaContainer {
             flex-direction: column;
         }
     }
