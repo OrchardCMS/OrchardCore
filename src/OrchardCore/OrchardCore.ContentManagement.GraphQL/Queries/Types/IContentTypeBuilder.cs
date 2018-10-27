@@ -6,6 +6,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public interface IContentTypeBuilder
     {
-        void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType);
+        void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType);
     }
 }

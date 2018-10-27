@@ -9,7 +9,7 @@ namespace OrchardCore.Flows.GraphQL
 {
     public class FlowMetadataContentTypeBuilder : IContentTypeBuilder
     {
-        public void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var settings = contentTypeDefinition.Settings?.ToObject<ContentTypeSettings>();
 

@@ -9,7 +9,7 @@ namespace OrchardCore.Menu.GraphQL
 {
     public class MenuItemContentTypeBuilder : IContentTypeBuilder
     {
-        public void BuildAsync(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var settings = contentTypeDefinition.Settings?.ToObject<ContentTypeSettings>();
 

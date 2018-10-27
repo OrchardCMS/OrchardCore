@@ -45,7 +45,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 foreach (var builder in contentTypeBuilders)
                 {
-                    builder.BuildAsync(query, typeDefinition, typeType);
+                    builder.Build(query, typeDefinition, typeType);
                 }
 
                 schema.Query.AddField(query);
