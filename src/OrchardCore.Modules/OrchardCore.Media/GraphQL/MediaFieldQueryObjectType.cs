@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Media;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.GraphQL
 {
     public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public MediaFieldQueryObjectType(IHttpContextAccessor httpContextAccessor)
+        public MediaFieldQueryObjectType()
         {
             Name = nameof(MediaField);
 
@@ -21,18 +18,16 @@ namespace OrchardCore.Media.GraphQL
                 .Type(new StringGraphType())
                 ;
 
-            Field("urls", x => ToUrl(x.Paths), nullable: true)
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
+                .Name("urls")
                 .Description("the absolute urls of the media items")
-                .Type(new StringGraphType())
-                ;
-
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        private List<string> ToUrl(string[] path)
-        {
-            var mediaFileStore = _httpContextAccessor.HttpContext.RequestServices.GetService<IMediaFileStore>();
-            return path.Select(x => mediaFileStore.MapPathToPublicUrl(x)).ToList();
+                .Resolve(x =>
+                {
+                    var paths = x.Source.Paths;
+                    var context = (GraphQLContext)x.UserContext;
+                    var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+                    return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
+                });
         }
     }
 }

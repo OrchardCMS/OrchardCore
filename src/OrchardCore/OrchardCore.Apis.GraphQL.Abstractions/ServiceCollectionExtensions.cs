@@ -6,14 +6,6 @@ namespace OrchardCore.Apis
 {
     public static class ServiceCollectionExtensions
     {
-        //public static void AddGraphQLInputType<TInput, TInputType>(this IServiceCollection services) 
-        //    where TInput : class 
-        //    where TInputType : InputObjectGraphType<TInput>
-        //{
-        //    services.AddTransient<InputObjectGraphType<TInput>, TInputType>();
-        //    services.AddTransient<IInputObjectGraphType, TInputType>();
-        //}
-
         /// <summary>
         /// Registers a type describing input arguments
         /// </summary>
@@ -23,9 +15,12 @@ namespace OrchardCore.Apis
             where TObject : class 
             where TObjectType : InputObjectGraphType<TObject>
         {
-            services.AddTransient<TObjectType>();
-            services.AddTransient<InputObjectGraphType<TObject>, TObjectType>();
-            services.AddTransient<IInputObjectGraphType, TObjectType>();
+
+            // Instances are registered as singletons as their constructor holds the logic to configure the type
+            // and doesn't need to run everytime
+            services.AddSingleton<TObjectType>();
+            services.AddSingleton<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
+            services.AddSingleton<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
         }
 
         /// <summary>
@@ -38,9 +33,11 @@ namespace OrchardCore.Apis
             where TInput : class
             where TInputType : ObjectGraphType<TInput>
         {
-            services.AddTransient<TInputType>();
-            services.AddTransient<ObjectGraphType<TInput>, TInputType>();
-            services.AddTransient<IObjectGraphType, TInputType>();
+            // Instances are registered as singletons as their constructor holds the logic to configure the type
+            // and doesn't need to run everytime
+            services.AddSingleton<TInputType>();
+            services.AddSingleton<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
+            services.AddSingleton<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
         }
 
         /// <summary>
