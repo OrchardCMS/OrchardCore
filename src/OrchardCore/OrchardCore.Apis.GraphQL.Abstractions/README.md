@@ -22,7 +22,7 @@ In this example, the `blog` is the type, and the `displayText` is the return val
 }
 ```
 
-Here we can see that the query is using the arugment `contentItemId` to filter.
+Here we can see that the query is using the argument `contentItemId` to filter.
 
 ### Define a query type
 
@@ -38,7 +38,7 @@ public class AutoroutePart : ContentPart
 }
 ```
 
-This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create GraphQL representation of this class;
+This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create a GraphQL representation of this class;
 
 ```c#
 public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
@@ -85,27 +85,27 @@ What we are going to cover here is;
 1. Implement an Input type.
 2. Implement a Filter.
 
-So, lets start. The Input type is similar to the Query type, here we want to tell the GraphQL schema that we accept in this input.
+So, lets start. The Input type is similar to the Query type, here we want to tell the GraphQL schema that we accept this input.
 
 ```c#
-public class AutoroutePartInputObjectType : QueryArgumentObjectGraphType<AutoroutePart>
+public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 {
-    public AutoroutePartInputObjectType()
+    public AutorouteInputObjectType()
     {
         Name = "AutoroutePartInput";
-        
-        AddInputField("path", x => x.Path, true);
+
+        Field(x => x.Path, nullable: true).Description("the path of the content item to filter");
     }
 }
 ```
 
-The main thing to take away from this class is that all Input Types must inherit off of QueryArgumentObjectGraphType.
+The main thing to take away from this class is that all Input Types must inherit off of InputObjectGraphType.
 
 When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below;
 
 ```json
 {
-  blog(autoroutePart: { /* SOME QUERY STUFF HERE */ }) {
+  blog(autoroutePart: { path: "somewhere" }) {
     displayText
   }
 }
@@ -145,14 +145,21 @@ The first thing we notice is
 
 > context.GetArgument<AutoroutePart>("autoroutePart");
 
-Shown in the example above, we have an autoroutePart, this is registered when we register an input type. From there we can deserialize, and perform the query;
+Shown in the example above, we have an autoroutePart argument, this is registered when we register an input type. From there we can deserialize and perform the query;
 
 ```json
 {
-  blog(autoroutePart: { Path: "somewhere" }) {
+  blog(autoroutePart: { path: "somewhere" }) {
     displayText
   }
 }
 ```
 
 Done.
+
+##More Info
+
+For more information on GraphQL you can visit the following links:
+
+- https://graphql.org/learn/
+- https://graphql-dotnet.github.io/docs/getting-started/introduction
