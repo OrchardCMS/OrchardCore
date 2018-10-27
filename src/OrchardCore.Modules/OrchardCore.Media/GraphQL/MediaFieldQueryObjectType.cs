@@ -13,21 +13,28 @@ namespace OrchardCore.Media.GraphQL
         {
             Name = nameof(MediaField);
 
-            Field("paths", x => x.Paths, nullable: true)
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
+                .Name("paths")
                 .Description("the media paths")
-                .Type(new StringGraphType())
-                ;
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    return x.Page(x.Source.Paths);
+                });
+                
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("urls")
                 .Description("the absolute urls of the media items")
+                .PagingArguments()
                 .Resolve(x =>
                 {
-                    var paths = x.Source.Paths;
+                    var paths = x.Page(x.Source.Paths);
                     var context = (GraphQLContext)x.UserContext;
                     var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
         }
+
     }
 }

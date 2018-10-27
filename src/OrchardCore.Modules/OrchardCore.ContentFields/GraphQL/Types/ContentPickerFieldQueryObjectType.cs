@@ -17,18 +17,22 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             Name = nameof(ContentPickerField);
 
-            Field("contentItemIds", x => x.ContentItemIds, nullable: true)
-                .Description("the content item ids")
-                .Type(new StringGraphType())
-                ;
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
+                .Name("contentItemIds")
+                .Description("content item ids")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    return x.Page(x.Source.ContentItemIds);
+                });
 
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")
                 .Description("the content items")
-                //.Type(new ListGraphType<ContentItemType>())
+                .PagingArguments()
                 .ResolveAsync(x =>
                 {
-                    var ids = x.Source.ContentItemIds;
+                    var ids = x.Page(x.Source.ContentItemIds);
                     var context = (GraphQLContext)x.UserContext;
                     var session = context.ServiceProvider.GetService<ISession>();
                     return session.Query<ContentItem, ContentItemIndex>(y => y.ContentItemId.IsIn(ids)).ListAsync();

@@ -9,10 +9,8 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         {
             Name = nameof(LinkField);
 
-            // HACK: Queries fail unless ResolvedType (Type(new StringGraphType()) is set and
-            // name is specified lowercase. Very confusing since this hack isn't necessary anywhere else.
-            Field("url", x => x.Url, nullable: true).Type(new StringGraphType());
-            Field("text", x => x.Text, nullable: true).Type(new StringGraphType());
+            Field(x => x.Url, nullable: true).Description("the url of the link");
+            Field(x => x.Text, nullable: true).Description("the text of the link");
         }
     }
 }
