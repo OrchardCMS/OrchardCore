@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -48,7 +49,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                schema.Query.AddField(query);
+                var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
+
+                // No need for widgets or menu items to be queried directly since they are
+                // usually contained in other higher level structures like Flow and Menu.
+                if (settings != null && settings.Stereotype != "Widget" && settings.Stereotype != "MenuItem")
+                {
+                    schema.Query.AddField(query);
+                }
+                else
+                {
+                    // Register the content item type explicitly since it won't be discovered from the root 'query' type.
+                    schema.RegisterType(typeType);
+                }
             }
 
             return Task.FromResult(contentDefinitionManager.ChangeToken);
