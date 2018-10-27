@@ -157,7 +157,7 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 
 Done.
 
-##More Info
+## More Info
 
 For more information on GraphQL you can visit the following links:
 
