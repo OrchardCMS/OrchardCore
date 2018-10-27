@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.CustomSettings.Deployment;
 using OrchardCore.CustomSettings.Drivers;
+using OrchardCore.CustomSettings.Recipes;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -23,6 +25,8 @@ namespace OrchardCore.CustomSettings
             // Permissions
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
+
+            services.AddRecipeExecutionStep<CustomSettingsStep>();
         }
     }
 
