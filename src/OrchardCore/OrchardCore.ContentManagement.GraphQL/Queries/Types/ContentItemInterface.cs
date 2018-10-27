@@ -14,9 +14,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.DisplayText);
             Field(ci => ci.Published);
             Field(ci => ci.Latest);
-            Field("modifiedUtc", ci => ci.ModifiedUtc.Value);
-            Field(ci => ci.PublishedUtc, nullable: true);
-            Field("createdUtc", ci => ci.CreatedUtc.Value);
+            Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc);
+            Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc);
+            Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc);
             Field(ci => ci.Owner);
             Field(ci => ci.Author);
         }
