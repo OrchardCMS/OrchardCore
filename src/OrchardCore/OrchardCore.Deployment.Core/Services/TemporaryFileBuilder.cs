@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -27,7 +27,7 @@ namespace OrchardCore.Deployment.Core.Services
             }
         }
 
-        public async Task SetFileAsync(string subpath, byte[] content)
+        public async Task SetFileAsync(string subpath, Stream stream)
         {
             var fullname = Path.Combine(Folder, subpath);
 
@@ -40,7 +40,7 @@ namespace OrchardCore.Deployment.Core.Services
 
             using (var fs = File.Create(fullname, 4 * 1024, FileOptions.None))
             {
-                await fs.WriteAsync(content, 0, content.Length);
+                await stream.CopyToAsync(fs);
             }
         }
 

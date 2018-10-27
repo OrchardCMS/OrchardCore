@@ -28,11 +28,27 @@ namespace OrchardCore.Media.Recipes
 
             var model = context.Step.ToObject<MediaStepModel>();
 
-            foreach (var file in model.Files)
+            if (model.Files != null)
             {
-                using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
+                foreach (var file in model.Files)
                 {
-                    await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
+                    using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
+                    {
+                        await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
+                    }
+                }
+            }
+
+            if (model.Paths != null)
+            {
+                foreach (var path in model.Paths)
+                {
+                    var fileInfo = context.RecipeDescriptor.FileProvider.GetFileInfo(path);
+
+                    using (var stream = fileInfo.CreateReadStream())
+                    {
+                        await _mediaFileStore.CreateFileFromStream(path, stream, true);
+                    }
                 }
             }
         }
@@ -40,6 +56,8 @@ namespace OrchardCore.Media.Recipes
         private class MediaStepModel
         {
             public MediaStepFile[] Files { get; set; }
+
+            public string[] Paths { get; set; }
         }
 
         private class MediaStepFile
