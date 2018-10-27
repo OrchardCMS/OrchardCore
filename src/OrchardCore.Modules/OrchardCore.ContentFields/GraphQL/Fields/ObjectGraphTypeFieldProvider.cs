@@ -1,13 +1,14 @@
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.ContentFields.GraphQL
+namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ObjectGraphTypeFieldProvider : IContentFieldProvider
     {
@@ -26,7 +27,7 @@ namespace OrchardCore.ContentFields.GraphQL
 
             var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
-            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
+            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType)
             {
                 return new FieldType
                 {
@@ -38,7 +39,7 @@ namespace OrchardCore.ContentFields.GraphQL
                         var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                         var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                        var contentField = contentPart.Get(typeToResolve, context.FieldName.FirstCharToUpper());
+                        var contentField = contentPart?.Get(typeToResolve, context.FieldName.ToPascalCase());
                         return contentField;
                     })
                 };

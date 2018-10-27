@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentFields.Fields;
@@ -12,7 +13,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
+        private static readonly Dictionary<string, FieldTypeDescriptor> ContentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
         {
             {
                 nameof(BooleanField),
@@ -81,9 +82,9 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         public FieldType GetField(ContentPartFieldDefinition field)
         {
-            if (!_contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
+            if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
 
-            var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
+            var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
             return new FieldType
             {
                 Name = field.Name,
@@ -92,18 +93,9 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 Resolver = new FuncFieldResolver<ContentItem, object>(context =>
                 {
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if (contentPart == null)
-                    {
-                        return null;
-                    }
+                    var contentField = contentPart?.Get(typeof(ContentField), context.FieldName.ToPascalCase());
 
-                    var contentField = contentPart.Get(typeof(ContentField), context.FieldName.FirstCharToUpper());
-                    if (contentField == null)
-                    {
-                        return null;
-                    }
-
-                    return fieldDescriptor.FieldAccessor(contentField);
+                    return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
                 })
             };
         }
