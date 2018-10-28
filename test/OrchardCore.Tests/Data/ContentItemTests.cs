@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Data
 
             var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
-            Assert.Equal(contentItem.Id, contentItem2.Id);
+            Assert.Equal(0, contentItem2.Id); // Should be 0 as we dont serialize it.
             Assert.Equal(contentItem.ContentItemId, contentItem2.ContentItemId);
             Assert.Equal(contentItem.ContentType, contentItem2.ContentType);
             Assert.Equal(contentItem.Latest, contentItem2.Latest);
