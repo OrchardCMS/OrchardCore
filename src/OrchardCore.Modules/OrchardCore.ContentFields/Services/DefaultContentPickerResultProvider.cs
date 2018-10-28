@@ -7,7 +7,7 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Services
 {
-    public class DefaultContentPickerResultProvider : IContentPickerResultProvider
+    public class DefaultContentPickerResultProvider : IContentPickerResultProvider<ContentItem>
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
@@ -20,11 +20,11 @@ namespace OrchardCore.ContentFields.Services
 
         public string Name => "Default";
 
-        protected virtual ContentPickerResult BuildResult(ContentItem contentItem) => new ContentPickerResult
-            {
-                ContentItemId = contentItem.ContentItemId,
-                DisplayText = $"{contentItem.ContentType}{(string.IsNullOrWhiteSpace(contentItem.DisplayText) ? string.Empty : ": " + contentItem.DisplayText)}"
-            };
+        public virtual ContentPickerResult BuildResult(ContentItem contentItem) => new ContentPickerResult
+        {
+            ContentItemId = contentItem.ContentItemId,
+            DisplayText = $"{contentItem.ContentType}{(string.IsNullOrWhiteSpace(contentItem.DisplayText) ? string.Empty : ": " + contentItem.DisplayText)}"
+        };
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {

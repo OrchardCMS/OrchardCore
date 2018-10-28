@@ -12,11 +12,11 @@ namespace OrchardCore.Content.Controllers
     public class ContentPickerController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
+        private readonly IEnumerable<IContentPickerResultProvider<ContentItem>> _resultProviders;
 
         public ContentPickerController(
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentPickerResultProvider> resultProviders
+            IEnumerable<IContentPickerResultProvider<ContentItem>> resultProviders
             )
         {
             _contentDefinitionManager = contentDefinitionManager;

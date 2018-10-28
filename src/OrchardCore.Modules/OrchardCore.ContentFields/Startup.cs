@@ -104,7 +104,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
-            services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+            services.AddScoped<IContentPickerResultProvider<ContentItem>, DefaultContentPickerResultProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
