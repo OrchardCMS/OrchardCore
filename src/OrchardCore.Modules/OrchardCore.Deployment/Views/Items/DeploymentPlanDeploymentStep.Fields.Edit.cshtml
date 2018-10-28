@@ -1,11 +1,11 @@
-@model LuceneIndexDeploymentStepViewModel
+@model DeploymentPlanDeploymentStepViewModel
 
 @{
-    var indexNames = Model.IndexNames;
-    var allIndexNames = Model.AllIndexNames;
+    var deploymentPlanNames = Model.DeploymentPlanNames;
+    var allDeploymentPlanNames = Model.AllDeploymentPlanNames;
 }
 
-<h5>@T["Search Indexes"]</h5>
+<h5>@T["Deployment Plans"]</h5>
 
 <fieldset class="form-group mt-4 mb-5">
     <div class="row">
@@ -13,32 +13,32 @@
             <div class="form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IncludeAll"
-                           data-reverseToggle=".idxsel" />
-                    @T["Include all search indexes."]
+                           data-reverseToggle=".dpsel" />
+                    @T["Include all deployment plans."]
                 </label>
             </div>
         </div>
     </div>
 </fieldset>
 
-<fieldset class="idxsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+<fieldset class="dpsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row">
         <div class="col-sm">
-            <span class="hint">@T["The search indexes to add as part of the plan."]</span>
+            <span class="hint">@T["The deployment plans to add as part of the plan."]</span>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
             <ul class="list-group">
-                @foreach (var indexName in allIndexNames)
+                @foreach (var deploymentPlanName in allDeploymentPlanNames)
                 {
-                    var checkd = indexNames?.Contains(indexName);
+                    var checkd = deploymentPlanNames?.Contains(deploymentPlanName);
 
                     <li class="list-group-item">
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@checkd">
-                                @indexName
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.DeploymentPlanNames)" value="@deploymentPlanName" checked="@checkd">
+                                @deploymentPlanName
                             </label>
                         </div>
                     </li>
