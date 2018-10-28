@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Settings;
@@ -15,18 +16,21 @@ using YesSql;
 namespace OrchardCore.ContentFields.Fields
 {
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
-    {
+    {   
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
+        private readonly IEnumerable<IContentPickerResultProvider<ContentItem>> _resultProviders;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
             ISession session,
-            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
+            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
+            IEnumerable<IContentPickerResultProvider<ContentItem>> resultProviders)
         {
             _contentManager = contentManager;
             _session = session;
             T = localizer;
+            _resultProviders = resultProviders;
         }
 
         public IStringLocalizer T { get; set; }
@@ -56,6 +60,9 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
+                var editor = context.PartFieldDefinition.Editor() ?? "Default";
+                var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor);
+
                 model.SelectedItems = new List<ContentPickerItemViewModel>();
 
                 foreach (var contentItemId in field.ContentItemIds ?? new string[0])
@@ -64,7 +71,7 @@ namespace OrchardCore.ContentFields.Fields
                     model.SelectedItems.Add(new ContentPickerItemViewModel
                     {
                         ContentItemId = contentItemId,
-                        DisplayText = contentItem.DisplayText
+                        DisplayText = resultProvider.BuildResult(contentItem).DisplayText
                     });
                 }
             });
