@@ -6,12 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
-using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -37,7 +35,8 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;        
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private static object _synLock = new object();
 
         public LuceneIndexManager(
             IClock clock,
@@ -94,7 +93,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -246,7 +245,10 @@ namespace OrchardCore.Lucene
                     path.Create();
                 }
 
-                return FSDirectory.Open(path);
+                lock (_synLock)
+                {
+                    return FSDirectory.Open(path);
+                }
             }
         }
 
@@ -351,7 +353,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if(_writers.TryGetValue(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
