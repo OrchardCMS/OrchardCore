@@ -60,7 +60,7 @@ namespace OrchardCore.Environment.Shell
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         await CreateAndRegisterShellsAsync();
-                        await DefaultShellEventAsync(e => e.CreatedAsync());
+                        await FireEventAsync(e => e.CreatedAsync());
                     }
                 }
                 finally
@@ -147,7 +147,7 @@ namespace OrchardCore.Environment.Shell
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             _shellSettingsManager.SaveSettings(settings);
-            await DefaultShellEventAsync(e => e.UpdateSettingsAsync(settings.Name));
+            await FireEventAsync(e => e.UpdatedAsync(settings.Name));
             await ReloadShellContextAsync(settings);
         }
 
@@ -327,7 +327,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            await DefaultShellEventAsync(e => e.ChangedAsync(tenant));
+            await FireEventAsync(e => e.ChangedAsync(tenant));
 
             if (_shellContexts.TryRemove(tenant, out var context))
             {
@@ -345,7 +345,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="localEvent">If false don't fire again any distributed event.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings)
         {
-            await DefaultShellEventAsync(e => e.ReloadAsync(settings.Name));
+            await FireEventAsync(e => e.ReloadedAsync(settings.Name));
 
             if (settings.State == TenantState.Disabled)
             {
@@ -367,13 +367,13 @@ namespace OrchardCore.Environment.Shell
             await GetOrCreateShellContextAsync(settings);
         }
 
-        private async Task DefaultShellEventAsync(Func<IDefaultShellEvents, Task> handler)
+        private async Task FireEventAsync(Func<IShellHostEvents, Task> handler)
         {
             if (TryGetSettings(ShellHelper.DefaultShellName, out var settings))
             {
                 using (var scope = await GetScopeAsync(settings))
                 {
-                    var events = scope.ServiceProvider.GetService<IDefaultShellEvents>();
+                    var events = scope.ServiceProvider.GetService<IShellHostEvents>();
 
                     if (events != null)
                     {

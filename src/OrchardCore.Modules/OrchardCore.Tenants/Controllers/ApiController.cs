@@ -30,7 +30,6 @@ namespace OrchardCore.Tenants.Controllers
     public class ApiController : Controller
     {
         private readonly IShellHost _shellHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
@@ -44,7 +43,6 @@ namespace OrchardCore.Tenants.Controllers
             IShellHost shellHost,
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
-            IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
@@ -60,7 +58,6 @@ namespace OrchardCore.Tenants.Controllers
             _recipeHarvesters = recipeHarvesters;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
-            _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _notifier = notifier;
@@ -131,8 +128,7 @@ namespace OrchardCore.Tenants.Controllers
                         RecipeName = model.RecipeName
                     };
 
-                    _shellSettingsManager.SaveSettings(shellSettings);
-                    var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                     var token = CreateSetupToken(shellSettings);
 

@@ -45,7 +45,7 @@ namespace OrchardCore.Distributed
         {
             if (_shellSettings.Name == ShellHelper.DefaultShellName)
             {
-                services.AddSingleton<IDefaultShellEvents, DistributedShell>();
+                services.AddSingleton<IShellHostEvents, DistributedShell>();
             }
         }
     }

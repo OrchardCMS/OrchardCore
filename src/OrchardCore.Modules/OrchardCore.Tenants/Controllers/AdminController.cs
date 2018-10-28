@@ -21,7 +21,7 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -31,7 +31,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly INotifier _notifier;
 
         public AdminController(
-            IShellHost orchardHost,
+            IShellHost shellHost,
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IEnumerable<DatabaseProvider> databaseProviders,
@@ -45,7 +45,7 @@ namespace OrchardCore.Tenants.Controllers
             _dataProtectorProvider = dataProtectorProvider;
             _clock = clock;
             _recipeHarvesters = recipeHarvesters;
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
             _authorizationService = authorizationService;
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
@@ -141,7 +141,7 @@ namespace OrchardCore.Tenants.Controllers
                     RecipeName = model.RecipeName
                 };
 
-                await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -247,7 +247,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings.Secret = Guid.NewGuid().ToString();
                 }
 
-                await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -308,7 +308,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             shellSettings.State = TenantState.Disabled;
-            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));
         }
@@ -326,7 +326,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellContext = (await _orchardHost.ListShellContextsAsync())
+            var shellContext = (await _shellHost.ListShellContextsAsync())
                 .OrderBy(x => x.Settings.Name)
                 .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
@@ -344,7 +344,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             shellSettings.State = TenantState.Running;
-            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));
         }
@@ -362,7 +362,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellContext = (await _orchardHost.ListShellContextsAsync())
+            var shellContext = (await _shellHost.ListShellContextsAsync())
                 .OrderBy(x => x.Settings.Name)
                 .Where(x => string.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
@@ -379,7 +379,7 @@ namespace OrchardCore.Tenants.Controllers
             var redirectUrl = Url.Action(nameof(Index));
 
             var shellSettings = shellContext.Settings;
-            await _orchardHost.ReloadShellContextAsync(shellSettings);
+            await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
         }
@@ -432,7 +432,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private async Task<IEnumerable<ShellContext>> GetShellsAsync()
         {
-            return (await _orchardHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
+            return (await _shellHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
         }
 
         private bool IsDefaultShell()
