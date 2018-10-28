@@ -1,8 +1,8 @@
-# Content Types (OrchardCore.ContentTypes)
+# Content Types (`OrchardCore.ContentTypes`)
 
 ## View Components
 
-### SelectContentTypes
+### `SelectContentTypes`
 
 Renders an editor to select a list of content types. 
 It can optionally filter content types of a specific stereotype.
@@ -14,20 +14,19 @@ The editor returns the selection as a `string[]` on the model.
 | --------- | ---- | ----------- |
 | `selectedContentTypes` | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
 | `htmlName` | `string` | The name of the model property to bind the result to.
-| `stereotype` (optional) | `string` | A stereotype name to filter the list of content types to be able to select. |
+| `stereotype` (optional) | `string` | A stereotype name to filter the list of content types available to select. |
 
 #### Sample
 
 ```csharp
 @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
-
 ```
 
 ## Migrations
 
 Migration classes can be used to alter the content type definitions, like by adding new __types__, or configuring their __parts__ and __fields__.
 
-### IContentDefinitionManager
+### `IContentDefinitionManager`
 
 This service provides a way to modify the content type definitions. From a migrations class, we can inject an instance of this interface.
 
@@ -103,7 +102,7 @@ For a list of all the settings each type can use, please refer to their respecti
 
 ### Adding Content Fields to a part
 
-Fields can not be attached directly to a Content Type. To add fields to a content type, create a part using with the same name as the type and add fields to this part. 
+Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part. 
 
 ```csharp
  _contentDefinitionManager.AlterTypeDefinition("Product", type => type
