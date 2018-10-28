@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
@@ -51,9 +51,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
 
-                // No need for widgets or menu items to be queried directly since they are
-                // usually contained in other higher level structures like Flow and Menu.
-                if (settings != null && settings.Stereotype != "Widget" && settings.Stereotype != "MenuItem")
+                // Only add queries over standard content types
+                if (settings == null || settings.Stereotype == "")
                 {
                     schema.Query.AddField(query);
                 }
