@@ -10,6 +10,13 @@ namespace OrchardCore.ContentManagement
         Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext);
     }
 
+    public interface IContentPickerResultProvider<T>
+    {
+        string Name { get; }
+        Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext);
+        ContentPickerResult BuildResult(T item);
+    }
+
     public class ContentPickerSearchContext
     {
         public string Query { get; set; }
