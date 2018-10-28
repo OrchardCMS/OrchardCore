@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     Name = typeDefinition.Name
                 };
 
-                var query = new ContentItemsFieldType(_httpContextAccessor)
+                var query = new ContentItemsFieldType()
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)
@@ -52,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var settings = typeDefinition.Settings?.ToObject<ContentTypeSettings>();
 
                 // Only add queries over standard content types
-                if (settings == null || settings.Stereotype == "")
+                if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))
                 {
                     schema.Query.AddField(query);
                 }

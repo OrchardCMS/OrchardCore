@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -18,12 +17,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public ContentItemsFieldType(IHttpContextAccessor httpContextAccessor)
+        public ContentItemsFieldType()
         {
-            _httpContextAccessor = httpContextAccessor;
-
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
@@ -40,11 +35,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
+            var graphContext = (GraphQLContext)context.UserContext;
 
-            var contentManager = httpContext.RequestServices.GetService<IContentManager>();
+            var contentManager = graphContext.ServiceProvider.GetRequiredService<IContentManager>();
 
-            PublicationStatusEnum status = PublicationStatusEnum.Published;
+            var status = PublicationStatusEnum.Published;
 
             var versionOption = VersionOptions.Published;
 
@@ -86,8 +81,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return new[] { contentItem };
             }
 
-            var session = httpContext.RequestServices.GetService<YesSql.ISession>();
-            var queryFilters = httpContext.RequestServices.GetServices<IGraphQLFilter<ContentItem>>();
+            var session = graphContext.ServiceProvider.GetService<YesSql.ISession>();
+            var queryFilters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
