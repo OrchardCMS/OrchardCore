@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Services
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {
-                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query));
+                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
             }
 
             var contentItems = await query.Take(20).ListAsync();
