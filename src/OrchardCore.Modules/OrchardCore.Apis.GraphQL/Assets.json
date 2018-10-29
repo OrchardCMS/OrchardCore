@@ -7,11 +7,18 @@
     "output": "wwwroot/Styles/graphiql.css"
   },
   {
-    "generateSourceMaps": false,
+    "copy": true,
     "inputs": [
       "wwwroot/node_modules/graphiql/graphiql.js"
     ],
     "output": "wwwroot/Scripts/graphiql.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "wwwroot/node_modules/graphiql/graphiql.min.js"
+    ],
+    "output": "wwwroot/Scripts/graphiql.min.js"
   },
   {
     "generateSourceMaps": false,
