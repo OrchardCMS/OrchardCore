@@ -55,13 +55,23 @@ namespace OrchardCore.Media.Recipes
 
         private class MediaStepModel
         {
+            /// <summary>
+            /// Collection of <see cref="MediaStepFile"/> objects.
+            /// </summary>
             public MediaStepFile[] Files { get; set; }
 
+            /// <summary>
+            /// Collection of paths where each path refers to a
+            /// physical file in the recipe step's file provider.
+            /// </summary>
             public string[] Paths { get; set; }
         }
 
         private class MediaStepFile
         {
+            /// <summary>
+            /// Path where the content will be written.
+            /// </summary>
             public string Path { get; set; }
 
             /// <summary>

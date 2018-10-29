@@ -3,12 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Views\Shared\**" />
-    <EmbeddedResource Remove="Views\Shared\**" />
-    <None Remove="Views\Shared\**" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
