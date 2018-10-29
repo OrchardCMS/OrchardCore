@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -28,26 +27,26 @@ namespace OrchardCore.Media.Recipes
 
             var model = context.Step.ToObject<MediaStepModel>();
 
-            if (model.Files != null)
+            foreach (var file in model.Files)
             {
-                foreach (var file in model.Files)
+                Stream stream = null;
+
+                if (!String.IsNullOrWhiteSpace(file.Base64))
                 {
-                    using (var stream = new MemoryStream(Convert.FromBase64String(file.Base64)))
-                    {
-                        await _mediaFileStore.CreateFileFromStream(file.Path, stream, true);
-                    }
+                    stream = new MemoryStream(Convert.FromBase64String(file.Base64));
                 }
-            }
-
-            if (model.Paths != null)
-            {
-                foreach (var path in model.Paths)
+                else if (!String.IsNullOrWhiteSpace(file.SourcePath))
                 {
-                    var fileInfo = context.RecipeDescriptor.FileProvider.GetFileInfo(path);
+                    var fileInfo = context.RecipeDescriptor.FileProvider.GetFileInfo(file.SourcePath);
 
-                    using (var stream = fileInfo.CreateReadStream())
+                    stream = fileInfo.CreateReadStream();
+                }
+
+                if (stream != null)
+                {
+                    using (stream)
                     {
-                        await _mediaFileStore.CreateFileFromStream(path, stream, true);
+                        await _mediaFileStore.CreateFileFromStream(file.TargetPath, stream, true);
                     }
                 }
             }
@@ -59,25 +58,37 @@ namespace OrchardCore.Media.Recipes
             /// Collection of <see cref="MediaStepFile"/> objects.
             /// </summary>
             public MediaStepFile[] Files { get; set; }
-
-            /// <summary>
-            /// Collection of paths where each path refers to a
-            /// physical file in the recipe step's file provider.
-            /// </summary>
-            public string[] Paths { get; set; }
         }
 
         private class MediaStepFile
         {
             /// <summary>
             /// Path where the content will be written.
+            /// Use inter-changeably with <see cref="TargetPath"/>.
             /// </summary>
-            public string Path { get; set; }
+            public string Path { get => TargetPath; set => TargetPath = value; }
 
             /// <summary>
-            /// Base64 encoded content.
+            /// Path where the content will be written.
+            /// Use inter-changeably with <see cref="Path"/>.
+            /// </summary>
+            public string TargetPath { get; set; }
+
+            /// <summary>
+            /// Base64 encoded content. Use when the source file will
+            /// not be available in this recipe step's file provider.
+            /// If both this and SourcePath properties are set with
+            /// non-null values, this property will be used.
             /// </summary>
             public string Base64 { get; set; }
+
+            /// <summary>
+            /// Path where the content is read from. Use when the file
+            /// will be available in this recipe step's file provider.
+            /// If both this and SourcePath properties are set with
+            /// non-null values, the Base64 property will be used.
+            /// </summary>
+            public string SourcePath { get; set; }
         }
     }
 }
