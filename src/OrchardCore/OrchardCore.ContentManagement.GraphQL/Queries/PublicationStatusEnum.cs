@@ -6,7 +6,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     {
         Published,
         Draft,
-        Latest
+        Latest,
+        All
     }
 
     public class PublicationStatusGraphType : EnumerationGraphType
@@ -18,6 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             AddValue("PUBLISHED", "published content item version", PublicationStatusEnum.Published);
             AddValue("DRAFT", "draft content item version", PublicationStatusEnum.Draft);
             AddValue("LATEST", "the latest version, either published or draft", PublicationStatusEnum.Latest);
+            AddValue("ALL", "all historical versions", PublicationStatusEnum.All);
         }
     }
 }

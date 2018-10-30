@@ -32,16 +32,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             Field(x => x.Status, true, typeof(PublicationStatusGraphType))
                 .Description("publication status of the content item")
-                .DefaultValue();
+                .DefaultValue(PublicationStatusEnum.Published);
 
-            Field(x => x.ContentItemId, true).Description("content item id");
-            Field(x => x.DisplayText, true).Description("the display text of the content item");
-            Field(x => x.CreatedUtc, true).Description("the date and time of creation");
-            Field(x => x.ModifiedUtc, true).Description("the date and time of modification");
-            Field(x => x.PublishedUtc, true).Description("the date and time of publication");
-            Field(x => x.Owner, true).Description("the owner of the content item");
-            Field(x => x.Author, true).Description("the author of the content item");
-            Field(x => x.ContentItemVersionId, true).Description("the id of the version");
+            Field(x => x.ContentItemId, nullable: true).Description("content item id");
+            Field(x => x.DisplayText, nullable: true).Description("the display text of the content item");
+            Field(x => x.CreatedUtc, nullable: true).Description("the date and time of creation");
+            Field(x => x.ModifiedUtc, nullable: true).Description("the date and time of modification");
+            Field(x => x.PublishedUtc, nullable: true).Description("the date and time of publication");
+            Field(x => x.Owner, nullable: true).Description("the owner of the content item");
+            Field(x => x.Author, nullable: true).Description("the author of the content item");
+            Field(x => x.ContentItemVersionId, nullable: true).Description("the content item version id");
         }
     }
 }

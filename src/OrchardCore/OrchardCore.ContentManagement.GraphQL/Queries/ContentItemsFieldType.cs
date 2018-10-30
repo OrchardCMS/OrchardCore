@@ -27,8 +27,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemWhereInput> {Name = "where", Description = "filters the content items"},
-                new QueryArgument<ContentItemOrderByInput> {Name = "orderBy", Description = "sort order"}
+                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items" },
+                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
+                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items" },
+                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" }
             );
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
@@ -36,7 +38,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext) context.UserContext;
+            var graphContext = (GraphQLContext)context.UserContext;
 
             var whereInput = context.ArgumentAsObject<ContentItemWhereInputModel>("where");
             var versionOption = GetVersionOption(whereInput);
@@ -68,6 +70,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 contentItemsQuery = filter.PreQuery(query, context);
             }
 
+            contentItemsQuery = PageQuery(contentItemsQuery, context);
+
             var contentItems = await contentItemsQuery.ListAsync();
 
             foreach (var filter in queryFilters)
@@ -76,6 +80,25 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             return contentItems.ToList();
+        }
+
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
+        {
+            if (context.HasPopulatedArgument("first"))
+            {
+                var first = context.GetArgument<int>("first");
+
+                contentItemsQuery = contentItemsQuery.Take(first);
+            }
+
+            if (context.HasPopulatedArgument("skip"))
+            {
+                var skip = context.GetArgument<int>("skip");
+
+                contentItemsQuery = contentItemsQuery.Skip(skip);
+            }
+
+            return contentItemsQuery;
         }
 
         private VersionOptions GetVersionOption(ContentItemWhereInputModel input)
@@ -87,6 +110,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 case PublicationStatusEnum.Published: return VersionOptions.Published;
                 case PublicationStatusEnum.Draft: return VersionOptions.Draft;
                 case PublicationStatusEnum.Latest: return VersionOptions.Latest;
+                case PublicationStatusEnum.All: return VersionOptions.AllVersions;
                 default: return VersionOptions.Published;
             }
         }
@@ -97,7 +121,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
             var contentItem = await contentManager.GetAsync(contentItemId, versionOption);
 
-            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] {contentItem};
+            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] { contentItem };
         }
 
         private async Task<IEnumerable<ContentItem>> GetContentItemByVersion(string contentItemVersionId,
@@ -106,7 +130,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
             var contentItem = await contentManager.GetVersionAsync(contentItemVersionId);
 
-            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] {contentItem};
+            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] { contentItem };
         }
 
         private IQuery<ContentItem, ContentItemIndex> Filter(
@@ -115,7 +139,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             ContentItemWhereInputModel input,
             VersionOptions versionOption)
         {
-            if (input == null) return query;
+            // Applying version
 
             if (versionOption.IsPublished)
             {
@@ -128,6 +152,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             else if (versionOption.IsLatest)
             {
                 query = query.Where(q => q.Latest == true);
+            }
+
+            // Applying content type
+
+            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
+
+            query = query.Where(q => q.ContentType == contentType);
+
+            if (input == null)
+            {
+                return query;
             }
 
             if (!string.IsNullOrEmpty(input.DisplayText))
@@ -160,8 +195,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 query = query.Where(q => q.Author == input.Author);
             }
 
-            var value = ((ListGraphType) context.ReturnType).ResolvedType.Name;
-            return query.Where(q => q.ContentType == value);
+            return query;
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
