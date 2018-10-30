@@ -48,9 +48,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     return await GetContentItemById(whereInput.ContentItemId, versionOption, graphContext);
                 }
 
-                if (!string.IsNullOrEmpty(whereInput.ContentItemId))
+                if (!string.IsNullOrEmpty(whereInput.ContentItemVersionId))
                 {
-                    return await GetContentItemByVersion(whereInput.ContentItemId, graphContext);
+                    return await GetContentItemByVersion(whereInput.ContentItemVersionId, graphContext);
                 }
             }
 
@@ -160,17 +160,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 query = query.Where(q => q.Author == input.Author);
             }
 
-            if (!string.IsNullOrEmpty(input.ContentType))
-            {
-                query = query.Where(q => q.ContentType == input.ContentType);
-            }
-            else
-            {
-                var value = ((ListGraphType) context.ReturnType).ResolvedType.Name;
-                query = query.Where(q => q.ContentType == value);
-            }
-
-            return query;
+            var value = ((ListGraphType) context.ReturnType).ResolvedType.Name;
+            return query.Where(q => q.ContentType == value);
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,

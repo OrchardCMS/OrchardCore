@@ -11,8 +11,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public string ContentItemVersionId { get; set; }
 
-        public string ContentType { get; set; }
-
         public DateTime? ModifiedUtc { get; set; }
 
         public DateTime? PublishedUtc { get; set; }
@@ -37,7 +35,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 .DefaultValue();
 
             Field(x => x.ContentItemId, true).Description("content item id");
-            Field(x => x.ContentType, true).Description("type of content item");
             Field(x => x.DisplayText, true).Description("the display text of the content item");
             Field(x => x.CreatedUtc, true).Description("the date and time of creation");
             Field(x => x.ModifiedUtc, true).Description("the date and time of modification");
