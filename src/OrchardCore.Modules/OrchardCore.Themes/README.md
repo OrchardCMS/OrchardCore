@@ -22,7 +22,7 @@ However there are many different ways to model the content to represent a portfo
 
 - Create a `Portfolio` content type with a `List` content part that is limited to `Project` content items. In this case, projects are independent from the list and can be reused elsewhere in the site (they are referenced by the portfolio).
 - Create a `Portfolio` content type with a `BagPart` content part that is limited to `Project` content items. In this case project content items live inside the portfolio content item (they are contained by the portfolio).
-- Create a `Liquid Page` content item to query and render all content items of type `Project`.
+- Create a Liquid Page content item to query and render all content items of type `Project`.
 - Create a Razor Page that will use a query to load all the project content items.
 
 This article will explain how to do it with a `BagPart` as it will provide the best performance by issuing a single database query, while allowing to do everything from the admin UI. 
@@ -31,49 +31,49 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 
 `Project` is a content type that will be composed of:
 
-- a `Title` part to set a custom name
-- a `Text` field to store the link to the project
-- a `Markdown` part to provide a description in markdown format
+- a `Title` part to set a custom name;
+- a `Text` field to store the link to the project;
+- a `Markdown` part to provide a description in markdown format.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click `Create`.
+In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click **Create**.
 
-Select __Title__ and __Markdown__ for the parts we can add already, then click __Save__.
+Select __Title__ and __Markdown__ for the parts we can add already, then click **Save**.
 
-Click __Edit__ for the __Markdown__ part. Select __Wysiwyg editor__ and click __Save__. This will provide a richer markdown editing experience.
+Click **Edit** for the __Markdown__ part. Select __Wysiwyg editor__ and click **Save**. This will provide a richer markdown editing experience.
 
-Click __Add Field__, give it a display name `Url`, and select __Text Field__. Click __Save__ then __Save__ again.
+Click **Add Field**, give it a display name `Url`, and select __Text Field__. Click **Save** then **Save** again.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click **Save**.
 
 ![New Content Type](./Assets/docs/new-content-type.png)
 
 At that point you could already create all the Project content items you want very easily. However we need to create a `Portfolio` type to contain and organize them.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click `Create`.
+In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click **Create**.
 
-Select __Title__, __Autoroute__ and __Bag__, then click __Save__.
+Select __Title__, __Autoroute__ and __Bag__, then click **Save**.
 
 Now we can configure the `Portfolio` content type to only accept `Project` content items in its bag.
 
-Click __Edit__ for the __Bag__ part. Check __Project__ and click __Save__.
+Click **Edit** for the __Bag__ part. Check __Project__ and click **Save**.
 
-Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click __Save__. This will generate a customizable url or used what the user defines.
+Click **Edit** for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click **Save**. This will generate a customizable url or used what the user defines.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click **Save**.
 
 ![Project](./Assets/docs/project.png)
 
 ## Creating the Portfolio
 
-Click on __New__, then __Portfolio__.
+Click on **New**, then __Portfolio__.
 
 Give it a title like `My Project`.
 
 In __Permalink__ enter `portfolio`. This will be the url to display this content item.
 
-As you click on __Add Item__ you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
+As you click on **Add Item** you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
 
-Create a few Projects, then click __Publish__.
+Create a few Projects, then click **Publish**.
 
 Click on the __View__ button to see how it looks like already.
 
@@ -112,7 +112,7 @@ See [Header](../OrchardCore.Contents/Views/Content.cshtml#L17) where the `Header
 
 ## Customizing templates
 
-We can already see that many shapes, and thus templates, are used to render a single content item. But every piece of HTML can be replaced, locally (for a page) or globally (over the site).
+We can already see that many shapes, and thus templates, are used to render a single content item. But every piece of HTML can be replaced, locally (for a page) or globally (for the whole site).
 
 Templates are usually provided by the modules that create the corresponding shape types, but can always be redefined by a Theme.
 Themes are able to provide custom templates that will be used instead of the default ones. This means that a template can be copied to a theme in order to be customized.
@@ -122,14 +122,14 @@ Themes are able to provide custom templates that will be used instead of the def
 When the __Content__ shape is rendered into HTML, it is done using the `Content.cshtml` file as mentioned earlier.
 Similarly, the __TitlePart__ shape will be converted using a `TitlePart.cshtml` template.
 
-This means that we can copy the `Content.cshtml` file from the __OrchardCore.Contents__ module in order to customize how the __Content__ shape is rendered.
+This means that we can copy the `Content.cshtml` file from the `OrchardCore.Contents` module in order to customize how the __Content__ shape is rendered.
 
 One issue with customizing the `Content.cshtml` file is that it would change how any content item is rendered.
 The original file is generic enough to be usable with any content type, and does so by rendering a generic `<article>` element with a `<header>`, a body and a `<footer>`.
 Each driver provides shapes that will target these predefined zones, and the `Content.cshtml` default template just renders them all in order.
 For this reason it is not recommended to change this file as it may impact too many pages, unless you decide to change the way content items are rendered by default.
 
-To be able to change how specific content types are rendered the theming engine provide the concept of __Alternates__.
+To be able to change how specific content types are rendered, the theming engine provides the concept of __Alternates__.
 An alternate is an optional shape type that should be used if a template can be found for it.
 Alternates provide more specific ways to customize templates.
 In the case of our Portfolio __Content__ shape, a special alternate named `Content__Portfolio` is added so that we can provide a template for the __Content__ shape that will be used only for __Portfolio__ content items. 
@@ -146,7 +146,7 @@ See [Content templates](../OrchardCore.Templates/README/#content-templates)
 It might not be necessary to change the __Content__ template, but only to change how a single part or field is rendered.
 These are also rendered as shapes and have specific templates that can be customized.
 
-The __Title__ part can be customized by creating a template for the `TitlePart` shape. See [Title](../OrchardCore.Title/README/)
+The __Title__ part can be customized by creating a template for the `TitlePart` shape. See [`Title`](../OrchardCore.Title/README/)
 
 Changing how the title is rendered for every content items would mean creating one of these files:
 
@@ -162,7 +162,7 @@ Changing how the title is rendered for every content items would mean creating o
 <h1>{{ Model.Title }}</h1>
 ```
 
-Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent content type, in this case `Portfolio__TitlePart`. see [Content type, Display type, Part type](../OrchardCore.Templates/README/#contenttype_displaytype__parttype)
+Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent's content type, in this case `Portfolio__TitlePart`. see [Content type, Display type, Part type](../OrchardCore.Templates/README/#contenttype_displaytype__parttype)
 
 The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
@@ -178,15 +178,15 @@ The model accessible from this field is described here [Available fields](../Orc
 
 This page explains that the __Text__ field contains a property `Text` that contains the value of the field.
 
-To create a link for this field we can create these templates.
+To create a link for this field we can create these templates:
 
-#### Project-Url.cshtml
+#### `Project-Url.cshtml`
 
 ```razor
 <a href="@Model.Field.Text">External url</a>
 ```
 
-#### Project-Url.liquid
+#### `Project-Url.liquid`
 
 ```liquid
 <a href="{{ Model.Field.Text }}">External url</a>
@@ -206,7 +206,7 @@ Here, the `_` in the shape name is replaced by a dot (`.`) in the template name,
 
 ### Content zones, differentiators
 
-As previously stated, the __Content__ shape is made of zones that contains all the shapes which were provided by the display drivers, and ways to customize the templates for theses shapes was explained.
+As previously stated, the __Content__ shape is made of zones that contains all the shapes which were provided by the display drivers, and ways to customize the templates for these shapes was explained.
 
 Sometimes it is necessary to be able to reorganize the list of shapes that are added in these zones, for instance to remove some shapes of the list, or move them to a different location.
 
@@ -226,7 +226,7 @@ For the `Url` text field the differentiator is `Project-Url`. For the __Markdown
 
 This lets us customize the __Content__ shape template for __Project__.
 
-#### Content-Project.cshtml
+#### `Content-Project.cshtml`
 
 ```razor
 <article>
@@ -250,7 +250,7 @@ This lets us customize the __Content__ shape template for __Project__.
 </article>
 ```
 
-#### Content-Project.liquid
+#### `Content-Project.liquid`
 
 ```liquid
 <article>
@@ -276,7 +276,7 @@ This lets us customize the __Content__ shape template for __Project__.
 ```
 
 Here the known shapes are extracted from their respective zones, then rendered explicitly.
-Finally the rest of the shapes in each zones are rendered in case more content fields or parts are added later on to the content type.
+Finally the rest of the shapes in each of the zones are rendered, in case more content fields or parts are added to the content type later on.
 If the zones weren't being rendered, the new elements would not show up automatically.
 
 Instead of rendering the shapes that have been removed from the zone, some custom rendering can be applied directly.

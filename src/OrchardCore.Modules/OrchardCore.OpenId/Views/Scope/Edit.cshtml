@@ -27,13 +27,10 @@
         <h6>@T["Tenants"]</h6>
         @for (var index = 0; index < Model.Tenants.Count; index++)
         {
-            <div class="form-check">
-                <label class="form-check-label" asp-for="Tenants[index].Selected">
-                    <input class="form-check-input" type="checkbox" asp-for="Tenants[index].Selected"
-                           disabled="@Model.Tenants[index].Current" />
-                    <input type="hidden" asp-for="Tenants[index].Name" />
-                    @Model.Tenants[index].Name
-                </label>
+            <input type="hidden" asp-for="Tenants[index].Name" />
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="Tenants[index].Selected" disabled="@Model.Tenants[index].Current">
+                <label class="custom-control-label" asp-for="Tenants[index].Selected">@Model.Tenants[index].Name</label>
             </div>
         }
     </div>

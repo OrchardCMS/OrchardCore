@@ -1,10 +1,8 @@
-﻿@model MyTestPartViewModel
+@model MyTestPartViewModel
 
 <fieldset class="form-group">
-    <div class="form-check">
-        <label class="form-check-label" asp-for="Show">
-            <input asp-for="Show" type="checkbox" class="form-check-input" />
-            @T["Show"]
-        </label>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Show" />
+        <label class="custom-control-label" asp-for="Show">@T["Show"]</label>
     </div>
 </fieldset>

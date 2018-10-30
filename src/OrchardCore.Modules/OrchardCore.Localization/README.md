@@ -1,4 +1,4 @@
-# Localization (OrchardCore.Localization)
+# Localization (`OrchardCore.Localization`)
 
 This module provides the infrastructure necessary to support the PO (Portable Object) localization file format.
 It also supports plural forms.
@@ -20,7 +20,7 @@ This article explains how PO files are organized, including plural forms.
 
 ## Translation contexts
 
-To prevent different PO files entries from overriding each other, entries define a context for each translation string.
+To prevent entries in different PO files from overriding each other, they define a context for each translation string.
 For instance two views could use the string named `Hello` but they might have different translation. It's then necessary to
 provide two entries and specify which _context_ is associated with each translation. In this case each view name is a context.
 

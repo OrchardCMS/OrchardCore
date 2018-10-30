@@ -108,6 +108,25 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
+        /// Updates the whole content.
+        /// </summary>
+        /// <typeparam name="element">The content element instance to update.</typeparam>
+        /// <returns>The current <see cref="ContentItem"/> instance.</returns>
+        public static ContentElement Apply(this ContentElement contentElement, ContentElement element)
+        {
+            if (contentElement.Data != null)
+            {
+                contentElement.Data.Merge(JObject.FromObject(element.Data), JsonMergeSettings);
+            }
+            else
+            {
+                contentElement.Data = JObject.FromObject(element.Data, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            }
+
+            return contentElement;
+        }
+
+        /// <summary>
         /// Modifies a new or existing content element by name.
         /// </summary>
         /// <typeparam name="name">The name of the content element to update.</typeparam>
