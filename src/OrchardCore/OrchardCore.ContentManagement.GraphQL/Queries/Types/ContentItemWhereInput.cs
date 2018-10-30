@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     public class ContentItemWhereInput : InputObjectGraphType<ContentItemWhereInputModel>
     {
         // Applies to all types
-        public static string[] EqualityOperators = new[] { "", "_ne" };
+        public static string[] EqualityOperators = new[] { "", "_not" };
 
         public static string[] NonStringValueComparisonOperators = new[] { "_gt", "_gte", "_lt", "_lte" };
 

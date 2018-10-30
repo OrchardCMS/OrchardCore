@@ -177,7 +177,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     switch (values[1])
                     {
-                        case "ne": comparison = Expression.NotEqual(left, right); break;
+                        case "not": comparison = Expression.NotEqual(left, right); break;
                         case "gt": comparison = Expression.GreaterThan(left, right); break;
                         case "gte": comparison = Expression.GreaterThanOrEqual(left, right); break;
                         case "lt": comparison = Expression.LessThan(left, right); break;
