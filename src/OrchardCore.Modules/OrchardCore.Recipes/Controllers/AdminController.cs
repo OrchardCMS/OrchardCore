@@ -106,12 +106,9 @@ namespace OrchardCore.Recipes.Controllers
             var executionId = Guid.NewGuid().ToString("n");
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while running the recipe.
-            // And trigger the related event to keep tenant states in sync in a distributed environment.
-            await _shellHost.ShellEventAsync(async e =>
-            {
-                _shellSettings.State = TenantState.Initializing;
-                await e.InitializeAsync(_shellSettings.Name);
-            });
+            _shellSettings.State = TenantState.Initializing;
+
+            await _shellHost.ShellEventAsync(e => e.InitializeAsync(_shellSettings.Name));
 
             try
             {
@@ -125,11 +122,9 @@ namespace OrchardCore.Recipes.Controllers
             finally
             {
                 // Don't lock the tenant if the recipe fails.
-                await _shellHost.ShellEventAsync(async e =>
-                {
-                    _shellSettings.State = TenantState.Running;
-                    await e.ReloadAsync(_shellSettings.Name);
-                });
+                _shellSettings.State = TenantState.Running;
+
+                await _shellHost.ShellEventAsync(e => e.ReloadAsync(_shellSettings.Name));
             }
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);

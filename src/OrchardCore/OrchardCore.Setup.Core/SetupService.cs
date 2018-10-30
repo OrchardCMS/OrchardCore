@@ -102,12 +102,9 @@ namespace OrchardCore.Setup.Services
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            // And trigger the related event to keep tenant states in sync in a distributed environment.
-            await _shellHost.ShellEventAsync(async e =>
-            {
-                context.ShellSettings.State = TenantState.Initializing;
-                await e.InitializeAsync(context.ShellSettings.Name);
-            });
+            context.ShellSettings.State = TenantState.Initializing;
+
+            await _shellHost.ShellEventAsync(e => e.InitializeAsync(context.ShellSettings.Name));
 
             var shellSettings = new ShellSettings(context.ShellSettings.Configuration);
 
