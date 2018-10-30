@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Builders;
 using GraphQL.Types;
 
@@ -16,6 +17,21 @@ namespace OrchardCore.Apis.GraphQL
             };
 
             return false;
+        }
+
+        public static TType ArgumentAsObject<TType>(this ResolveFieldContext context, string name) where TType : class, new()
+        {
+            if (!context.Arguments.ContainsKey(name))
+            {
+                return null;
+            }
+
+            if (context.Arguments[name] is Dictionary<string, object> dict)
+            {
+                return dict.ToObject<TType>();
+            }
+
+            return null;
         }
 
         public static FieldBuilder<TArgumentGraphType, TArgumentType> PagingArguments<TArgumentGraphType, TArgumentType>(this FieldBuilder<TArgumentGraphType, TArgumentType> field)

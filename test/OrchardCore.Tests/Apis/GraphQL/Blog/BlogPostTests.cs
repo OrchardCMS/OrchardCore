@@ -192,19 +192,19 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     }, draft: true);
 
                 var result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: PUBLISHED) { displayText, published }");
+                    .Query("blogPost(where:{status: PUBLISHED}) { displayText, published }");
 
                 Assert.Single(result["data"]["blogPost"]);
                 Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
 
                 result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: DRAFT) { displayText, published }");
+                    .Query("blogPost(where:{status: DRAFT}) { displayText, published }");
 
                 Assert.Single(result["data"]["blogPost"]);
                 Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
 
                 result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: LATEST) { displayText, published }");
+                    .Query("blogPost(where:{status: LATEST}) { displayText, published }");
 
                 Assert.Equal(2, result["data"]["blogPost"].Count());
             }

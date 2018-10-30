@@ -50,7 +50,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             if (_queryFields.Count > 0 || _nestedQueryFields.Count > 0)
             {
-                sb.Append("(");
+                sb.Append("(where:{");
 
                 for (var i = 0; i < _nestedQueryFields.Count; i++)
                 {
@@ -74,7 +74,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                     }
                 }
 
-                sb.Append(")");
+                sb.Append("})");
             }
 
             sb.Append(" { ");
