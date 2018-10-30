@@ -410,8 +410,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Image",
-              "Name": "Image",
+              "PartName": "ImagePart",
+              "Name": "ImagePart",
               "Settings": {
                 "Position": "0"
               }
@@ -452,8 +452,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Image",
-              "Name": "Image",
+              "PartName": "ImagePart",
+              "Name": "ImagePart",
               "Settings": {
                 "Position": "0"
               }
@@ -614,7 +614,7 @@
           ]
         },
         {
-          "Name": "Image",
+          "Name": "ImagePart",
           "Settings": {
             "Attachable": true
           },
@@ -635,7 +635,7 @@
                 "Editor": null,
                 "Position": "0",
                 "Multiple": false,
-                "Required":  true
+                "Required": true
               }
             },
             {
