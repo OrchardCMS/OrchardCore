@@ -3,7 +3,7 @@ using OrchardCore.Autoroute.Model;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
-    public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>, IInputObjectGraphType
+    public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
     {
         public AutorouteInputObjectType()
         {

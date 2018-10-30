@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -13,7 +16,7 @@ using YesSql;
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     /// <summary>
-    /// This type is used by <see cref="ContentItemFieldTypeProvider"/> to represent a query on a content type
+    /// This type is used by <see cref="ContentTypeQuery"/> to represent a query on a content type
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
@@ -24,6 +27,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             Arguments = new QueryArguments(
+                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", DefaultValue = PublicationStatusEnum.Published },
                 new QueryArgument<StringGraphType> { Name = "contentType", Description = "type of content item" },
                 new QueryArgument<StringGraphType> { Name = "contentItemId", Description = "content item id" },
@@ -108,6 +112,60 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 var value = (context.ReturnType as ListGraphType).ResolvedType.Name;
                 query = query.Where(q => q.ContentType == value);
+            }
+
+            if (context.HasPopulatedArgument("orderBy"))
+            {
+                var orderByArguments = JObject.FromObject(context.Arguments["orderBy"]);
+
+                if (orderByArguments != null)
+                {
+                    var thenBy = false;
+
+                    foreach (var property in orderByArguments.Properties())
+                    {
+                        var direction = (OrderByDirection)property.Value.Value<int>();
+
+                        Expression<Func<ContentItemIndex, object>> selector = null;
+
+                        switch (property.Name)
+                        {
+                            case "contentItemId": selector = x => x.ContentItemId; break;
+                            case "contentItemVersionId": selector = x => x.ContentItemVersionId; break;
+                            case "contentType": selector = x => x.ContentType; break;
+                            case "displayText": selector = x => x.DisplayText; break;
+                            case "published": selector = x => x.Published; break;
+                            case "latest": selector = x => x.Latest; break;
+                            case "createdUtc": selector = x => x.CreatedUtc; break;
+                            case "modifiedUtc": selector = x => x.ModifiedUtc; break;
+                            case "publishedUtc": selector = x => x.PublishedUtc; break;
+                            case "owner": selector = x => x.Owner; break;
+                            case "author": selector = x => x.Author; break;
+                        }
+
+                        if (selector != null)
+                        {
+                            if (!thenBy)
+                            {
+                                query = direction == OrderByDirection.Ascending
+                                    ? query = query.OrderBy(selector)
+                                    : query = query.OrderByDescending(selector)
+                                    ;
+                            }
+                            else
+                            {
+                                query = direction == OrderByDirection.Ascending
+                                    ? query = query.ThenBy(selector)
+                                    : query = query.ThenByDescending(selector)
+                                    ;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.CreatedUtc);
             }
 
             IQuery<ContentItem> contentItemsQuery = query;
