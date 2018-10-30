@@ -85,7 +85,7 @@ namespace OrchardCore.Media.Recipes
             /// <summary>
             /// Path where the content is read from. Use when the file
             /// will be available in this recipe step's file provider.
-            /// If both this and SourcePath properties are set with
+            /// If both this and Base64 properties are set with
             /// non-null values, the Base64 property will be used.
             /// </summary>
             public string SourcePath { get; set; }
