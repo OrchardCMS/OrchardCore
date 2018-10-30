@@ -13,7 +13,7 @@
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var tenantPath = string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix) ? string.Empty : "/" + ShellSettings.RequestUrlPrefix;
-    var vueElementId = $"ContentPicker_{partName}_{fieldName}";
+    var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid()}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
