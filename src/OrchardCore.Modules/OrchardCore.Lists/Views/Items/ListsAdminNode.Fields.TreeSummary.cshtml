@@ -4,11 +4,10 @@
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
     var selectedContentTypes = Model.Value.ContentTypes;
+
     var selectedDisplayNames = new List<string>();
 
-    var enabled = Model.Value.Enabled;
-    
-    if (selectedContentTypes != null && selectedContentTypes.Length > 0)
+   if (selectedContentTypes != null && selectedContentTypes.Length > 0)
     {
         foreach (var contentTypeDefinition in allContentTypes)
         {
@@ -20,9 +19,8 @@
     }
 }
 
+<div class="@(Model.Value.Enabled ? "" : "disabled") concrete-link">
 
-<div class="@(enabled ? "" : "disabled") concrete-link">
-    <h5>@T["Lists"]</h5>
     @if (selectedDisplayNames.Count > 0)
     {
         foreach (var displayName in selectedDisplayNames)
@@ -34,4 +32,6 @@
     {
         <span class="badge badge-warning">@T["Nothing here!"]</span>
     }
+
+    <span>- @T["Lists"]</span>
 </div>

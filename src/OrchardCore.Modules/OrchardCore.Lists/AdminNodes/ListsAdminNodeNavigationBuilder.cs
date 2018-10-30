@@ -36,22 +36,23 @@ namespace OrchardCore.Lists.AdminNodes
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
-            var tn = menuItem as ListsAdminNode;
+            var node = menuItem as ListsAdminNode;
 
-            if ((tn == null) || (!tn.Enabled))
+            if ((node == null) || (!node.Enabled))
             {
                 return;
             }
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+            var selectedNames = node.ContentTypes ?? new string[] {};
 
             var selected = contentTypeDefinitions
-                .Where(ctd => tn.ContentTypes.ToList<string>().Contains(ctd.Name))
+                .Where(ctd => selectedNames.ToList<string>().Contains(ctd.Name))
                 .Where(ctd => ctd.DisplayName != null);
 
             foreach (var ctd in selected)
             {
-                if (tn.AddContentTypeAsParent)
+                if (node.AddContentTypeAsParent)
                 {
                     builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), listTypeMenu => { AddContentItems(listTypeMenu, ctd.Name); });
                 }
@@ -62,16 +63,16 @@ namespace OrchardCore.Lists.AdminNodes
             }
 
             // Add external children
-            foreach (var childTreeNode in tn.Items)
+            foreach (var childNode in node.Items)
             {
                 try
                 {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
-                    await treeBuilder.BuildNavigationAsync(childTreeNode, builder, treeNodeBuilders);
+                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
+                    _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
 

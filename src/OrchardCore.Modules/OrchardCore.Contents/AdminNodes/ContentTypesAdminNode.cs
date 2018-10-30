@@ -6,6 +6,6 @@ namespace OrchardCore.Contents.AdminNodes
     {
         public bool ShowAll { get; set; }
 
-        public string[] ContentTypes { get; set; }
+        public string[] ContentTypes { get; set; } = new string[] { };
     }
 }

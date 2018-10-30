@@ -36,60 +36,58 @@ namespace OrchardCore.Contents.AdminNodes
         public string Name => typeof(ContentTypesAdminNode).Name;
 
 
-        public async Task BuildNavigationAsync(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+        public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
-            var tn = treeNode as ContentTypesAdminNode;
+            var node = menuItem as ContentTypesAdminNode;
 
-            if ((tn == null) || (!tn.Enabled))
+            if ((node == null) || (!node.Enabled))
             {
                 return;
             }
 
-            // Add ContentTypes specific children
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
-            var typesToShow = GetContentTypes(tn);
+            // Add ContentTypes specific children            
+            var typesToShow = GetContentTypesToShow(node);
             foreach (var ctd in typesToShow)
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
-                    cTypeMenu.Permission(Permissions.EditOwnContent);                    
+                    cTypeMenu.Permission(Permissions.EditOwnContent);
                 });
             }
+            
 
             // Add external children
-            var itemBuilder = builder as NavigationItemBuilder;
-            if (itemBuilder != null)
+            foreach (var childNode in node.Items)
             {
-                foreach (var childTreeNode in tn.Items)
+                try
                 {
-                    try
-                    {
-                        var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
-                        await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
-                    }
+                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
 
-            return;
         }
 
-
-        private IEnumerable<ContentTypeDefinition> GetContentTypes(ContentTypesAdminNode tn)
+        private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
         {
-            var typesToShow = _contentDefinitionManager.ListTypeDefinitions().
-                Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable);
 
-            if (tn.ShowAll == false)
+            var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
+                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable);
+
+
+            if (!node.ShowAll)
             {
-                typesToShow = typesToShow.Where(ctd => tn.ContentTypes.ToList<string>().Contains(ctd.Name));
+                node.ContentTypes = node.ContentTypes ?? (new string[] { });
+
+                typesToShow = typesToShow.Where(ctd => node.ContentTypes.ToList<string>().Contains(ctd.Name)); ;
             }
 
-            return typesToShow.OrderBy(t => t.Name);
+            return typesToShow;
         }
     }
 

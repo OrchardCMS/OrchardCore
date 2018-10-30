@@ -38,6 +38,11 @@ namespace OrchardCore.AdminTrees
             services.AddScoped<IDisplayDriver<DeploymentStep>, AdminTreesDeploymentStepDriver>();
 
 
+            // placeholder treeNode
+            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<PlaceholderAdminNode>());
+            services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
+            services.AddScoped<IDisplayDriver<MenuItem>, PlaceholderAdminNodeDriver>();
+
             // link treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, LinkAdminNodeNavigationBuilder>();

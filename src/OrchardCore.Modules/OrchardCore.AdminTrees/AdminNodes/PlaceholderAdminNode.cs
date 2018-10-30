@@ -4,14 +4,10 @@ using OrchardCore.AdminTrees.Models;
 
 namespace OrchardCore.AdminTrees.AdminNodes
 {
-    public class LinkAdminNode : AdminNode
+    public class PlaceholderAdminNode : AdminNode
     {
         [Required]
         public string LinkText { get; set; }
-
-        [Required]
-        public string LinkUrl { get; set; }
-
         public string IconClass { get; set; } = "far fa-circle";
     }
 }

@@ -1,12 +1,5 @@
 @model ShapeViewModel<LinkAdminNode>
 
-@{
-    string linkText = Model.Value.LinkText;
-    string linkUrl = Model.Value.LinkUrl;
-    bool enabled = Model.Value.Enabled;
-}
-
-<div class="@(enabled ? "" : "disabled") concrete-link">
-    <h5>@T["Link"]</h5>
-    <span class="text-muted">@T["Link Text: {0}", linkText] | @T["Link Url: {0}", linkUrl]</span>
+<div class="@(Model.Value.Enabled ? "" : "disabled") concrete-link">
+    <span>@Model.Value.LinkText  <code>@Model.Value.LinkUrl</code> <span class="text-muted">- @T["Link"]</span></span>
 </div>

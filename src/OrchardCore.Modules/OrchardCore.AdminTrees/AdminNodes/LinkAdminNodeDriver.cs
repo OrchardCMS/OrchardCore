@@ -35,8 +35,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
         {
             var model = new LinkAdminNodeViewModel();
-            if(await updater.TryUpdateModelAsync(model, Prefix, 
-                x => x.LinkUrl, x => x.LinkText, x => x.IconClass))
+            if(await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass))
             {
                 treeNode.LinkText = model.LinkText;
                 treeNode.LinkUrl = model.LinkUrl;
