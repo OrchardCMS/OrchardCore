@@ -45,8 +45,8 @@ namespace OrchardCore.Distributed.Core.Services
         }
 
         /// <summary>
-        /// Invoked when the 'Default' tenant has been created. Used to
-        /// subscribe to the 'Shell' events coming from other instances.
+        /// Invoked when the 'Default' tenant has been created. Used to subscribe
+        /// to the 'Shell' channel and react to events coming from other instances.
         /// </summary>
         public async Task InitializeAsync()
         {
@@ -133,8 +133,8 @@ namespace OrchardCore.Distributed.Core.Services
         /// </summary>
         public Task ReloadAsync(string tenant)
         {
-            // Check if no message bus and not the 'Default' tenant for which a 
-            // it may have been just enabled, so let's use a deferred task.
+            // Check if no message bus but not for the 'Default' tenant for which a
+            // message bus may have been just enabled, so let's use a deferred task.
             if (_messageBus == null && ShellHelper.DefaultShellName != tenant)
             {
                 // Nothing to do.
@@ -155,7 +155,7 @@ namespace OrchardCore.Distributed.Core.Services
                 return Task.CompletedTask;
             }
 
-            // So, use a deferred task to let any persistent storage be completed.
+            // Use a deferred task to let any persistent storage be completed.
             var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices.GetService<IDeferredTaskEngine>();
 
             deferredTaskEngine?.AddTask(async context =>
@@ -170,7 +170,7 @@ namespace OrchardCore.Distributed.Core.Services
                         await _shellHost.ShellEventAsync(e => e.InitializeAsync());
                     }
 
-                    // Publish the shell 'Reload' event.
+                    // Publish the shell 'Reload' event message.
                     var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
                     await (messageBus?.PublishAsync("Shell", tenant + ":Reload") ?? Task.CompletedTask);
                 }

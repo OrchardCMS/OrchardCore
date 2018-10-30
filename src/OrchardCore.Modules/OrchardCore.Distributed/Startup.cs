@@ -75,6 +75,8 @@ namespace OrchardCore.Distributed
                 ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
 
             services.AddDistributedRedisCache(o => { });
+
+            services.AddTransient<ITagCache, RedisTagCache>();
         }
     }
 
