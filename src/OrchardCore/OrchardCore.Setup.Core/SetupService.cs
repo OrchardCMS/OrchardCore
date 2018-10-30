@@ -22,7 +22,7 @@ namespace OrchardCore.Setup.Services
 {
     public class SetupService : ISetupService
     {
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
@@ -32,7 +32,7 @@ namespace OrchardCore.Setup.Services
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
-            IShellHost orchardHost,
+            IShellHost shellHost,
             IHostingEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
@@ -41,7 +41,7 @@ namespace OrchardCore.Setup.Services
             IStringLocalizer<SetupService> stringLocalizer
             )
         {
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
             _recipeHarvesters = recipeHarvesters;
@@ -102,7 +102,12 @@ namespace OrchardCore.Setup.Services
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            context.ShellSettings.State = TenantState.Initializing;
+            // And trigger the related event to keep tenant states in sync in a distributed environment.
+            await _shellHost.ShellEventAsync(async e =>
+            {
+                context.ShellSettings.State = TenantState.Initializing;
+                await e.InitializeAsync(context.ShellSettings.Name);
+            });
 
             var shellSettings = new ShellSettings(context.ShellSettings.Configuration);
 
@@ -197,7 +202,7 @@ namespace OrchardCore.Setup.Services
             }
 
             // Reloading the shell context as the recipe  has probably updated its features
-            using (var shellContext = await _orchardHost.CreateShellContextAsync(shellSettings))
+            using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
                 using (var scope = shellContext.CreateScope())
                 {
@@ -242,7 +247,7 @@ namespace OrchardCore.Setup.Services
 
             // Update the shell state
             shellSettings.State = TenantState.Running;
-            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return executionId;
         }

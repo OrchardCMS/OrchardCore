@@ -8,7 +8,6 @@ using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Distributed.Core.Services
 {
@@ -16,11 +15,10 @@ namespace OrchardCore.Distributed.Core.Services
     /// In a distributed environment, allows to synchronize the tenant states by subscribing
     /// to the 'Shell' channel, and then by publishing and reacting to shell event messages.
     /// </summary>
-    public class DistributedShell : IShellHostEvents
+    public class DistributedShell : IShellEvents
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IRunningShellTable _runningShellTable;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMessageBus _messageBus;
@@ -30,14 +28,12 @@ namespace OrchardCore.Distributed.Core.Services
         public DistributedShell(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IRunningShellTable runningShellTable,
             IShellSettingsManager shellSettingsManager,
             IHttpContextAccessor httpContextAccessor,
             IEnumerable<IMessageBus> _messageBuses)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _runningShellTable = runningShellTable;
             _shellSettingsManager = shellSettingsManager;
             _httpContextAccessor = httpContextAccessor;
 
@@ -49,40 +45,17 @@ namespace OrchardCore.Distributed.Core.Services
         }
 
         /// <summary>
-        /// Invoked when the 'Default' tenant is 1st created  or updated. Used to
-        /// subscribe to the 'Shell' channel and react to the shell event messages.
+        /// Invoked when the 'Default' tenant has been created. Used to
+        /// subscribe to the 'Shell' events coming from other instances.
         /// </summary>
-        public async Task CreatedAsync()
+        public async Task InitializeAsync()
         {
             if (_messageBus == null)
             {
                 return;
             }
 
-            // If not called from a deferred task or a message handler, this is the 1st creation.
-            if (!(_httpContextAccessor.HttpContext?.Items.ContainsKey("DeferredTask") ?? false) &&
-                !(_httpContextAccessor.HttpContext?.Items.ContainsKey("ShellChannel") ?? false))
-            {
-                // So, use a deferred task to let the 'Default' tenant be fully initialized.
-                var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices?.GetService<IDeferredTaskEngine>();
-
-                deferredTaskEngine?.AddTask(async context =>
-                {
-                    // Mark the context as being part of a 'DeferredTask'.
-                    _httpContextAccessor.HttpContext.Items["DeferredTask"] = true;
-
-                    // Invoke the 'Created' event to subscribe to the 'Shell' channel.
-                    using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
-                    {
-                        var events = scope.ServiceProvider.GetService<IShellHostEvents>();
-                        await (events?.CreatedAsync() ?? Task.CompletedTask);
-                    }
-                }, order: 100);
-
-                return;
-            }
-
-            if (!_initialized && _synLock != null)
+            if (!_initialized)
             {
                 await _synLock.WaitAsync();
 
@@ -112,11 +85,7 @@ namespace OrchardCore.Distributed.Core.Services
                                 _httpContextAccessor.HttpContext = new DefaultHttpContext();
                             }
 
-                            // Mark the context as being part of the 'Shell' channel.
-                            _httpContextAccessor.HttpContext.Items["ShellChannel"] = true;
-
-                            if (tokens[1] == "Changed" || tokens[1] == "Reloaded" || (tokens[1] == "Updated" &&
-                                ShellHelper.DefaultShellName != settings.Name))
+                            if (tokens[1] == "Reload")
                             {
                                 // Reload the shell of the specified tenant.
                                 _shellHost.ReloadShellContextAsync(settings).GetAwaiter().GetResult();
@@ -124,25 +93,24 @@ namespace OrchardCore.Distributed.Core.Services
                                 // If the default shell has been reloaded.
                                 if (settings.Name == ShellHelper.DefaultShellName)
                                 {
-                                    // Invoke the 'Created' event to subscribe again to the 'Shell' channel.
-                                    using (var scope = _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult())
-                                    {
-                                        var events = scope.ServiceProvider.GetService<IShellHostEvents>();
-                                        events?.CreatedAsync().GetAwaiter().GetResult();
-                                    }
+                                    // Invoke the 'Initialize' event to subscribe again to the 'Shell' channel.
+                                    _shellHost.ShellEventAsync(e => e.InitializeAsync()).GetAwaiter().GetResult();
                                 }
                             }
 
-                            else if (tokens[1] == "Updated" && ShellHelper.DefaultShellName == settings.Name)
+                            else if (tokens[1] == "Initialize")
                             {
-                                // The 'Default' tenant needs to stay in a running state in any instances.
-                                // So, we just remove it from the running shell table, so that it is no more served.
-                                // Then the folllowing 'Reloaded' event will register it again in the table.
-                                _runningShellTable.Remove(settings);
+                                // Set the tenant state to "Initializing" waiting for a new 'Reload' event.
+                                using (var scope = _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult())
+                                {
+                                    var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
+                                    shellSettings.State = TenantState.Initializing;
+                                }
                             }
                         });
                     }
                 }
+
                 finally
                 {
                     _initialized = true;
@@ -152,93 +120,63 @@ namespace OrchardCore.Distributed.Core.Services
         }
 
         /// <summary>
-        /// Invoked when any tenant descriptor has changed.
+        /// Invoked before any tenant run a setup or recipe.
         /// </summary>
-        public Task ChangedAsync(string tenant)
+        public Task InitializeAsync(string tenant)
         {
-            return PublishAsync(tenant, "Changed");
+            // Publish the shell 'Initialize' event message.
+            return (_messageBus?.PublishAsync("Shell", tenant + ":Initialize") ?? Task.CompletedTask);
         }
 
         /// <summary>
-        /// Invoked when any tenant has been reloaded.
+        /// Invoked when any tenant is going to be reloaded.
         /// </summary>
-        public Task ReloadedAsync(string tenant)
+        public Task ReloadAsync(string tenant)
         {
-            return PublishAsync(tenant, "Reloaded");
-        }
-
-        /// <summary>
-        /// Invoked when any tenant settings has been updated.
-        /// </summary>
-        public Task UpdatedAsync(string tenant)
-        {
-            return PublishAsync(tenant, "Updated");
-        }
-
-        /// <summary>
-        /// Used to publish shell event messages.
-        /// </summary>
-        private async Task PublishAsync(string tenant, string eventName)
-        {
-            // Nothing to do if no message bus, unless for the 'Default' tenant for which a 
-            // message bus may have been just enabled, so let's use a deferred task further.
+            // Check if no message bus and not the 'Default' tenant for which a 
+            // it may have been just enabled, so let's use a deferred task.
             if (_messageBus == null && ShellHelper.DefaultShellName != tenant)
             {
-                return;
+                // Nothing to do.
+                return Task.CompletedTask;
             }
 
-            // if we are executing a 'Shell' event message handler, break the loop.
-            if (_httpContextAccessor.HttpContext?.Items.ContainsKey("ShellChannel") ?? false)
+            // No shell context feature if we are executing a 'Shell' event handler.
+            if (_httpContextAccessor.HttpContext.Features.Get<ShellContext>() == null)
             {
-                return;
+                // Break the loop.
+                return Task.CompletedTask;
             }
 
-            // Otherwise, normally here we can retrieve the current shell.
-            var currentShell = _httpContextAccessor.HttpContext?.Features.Get<ShellContext>();
-
-            // If not in a request tied to this tenant we can publish immediately. Or
-            // in case of the 'Updated' event which is followed by a 'Reloaded' event.
-            if (currentShell?.Settings.Name != tenant || eventName == "Updated")
+            // Check if the tenant is being initialized.
+            if (!_shellHost.TryGetSettings(tenant, out var settings) || settings.State == TenantState.Initializing)
             {
-                // We publish immediately without waiting for a database session to be committed.
-                await (_messageBus?.PublishAsync("Shell", tenant + ':' + eventName) ?? Task.CompletedTask);
-                return;
+                // Wait for a 'Reload'.
+                return Task.CompletedTask;
             }
 
-            // Nothing to do if, from the last updated settings, the tenant is not yet running.
-            if (!_shellSettingsManager.TryLoadSettings(tenant, out var settings) || settings.State != TenantState.Running)
-            {
-                return;
-            }
+            // So, use a deferred task to let any persistent storage be completed.
+            var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices.GetService<IDeferredTaskEngine>();
 
-            // Here means the request is tied to this running tenant.
-            using (var scope = await _shellHost.GetScopeAsync(settings))
+            deferredTaskEngine?.AddTask(async context =>
             {
-                // So, use a deferred task to let any storage be completed.
-                var deferredTaskEngine = scope.ServiceProvider?.GetService<IDeferredTaskEngine>();
-
-                deferredTaskEngine?.AddTask(async context =>
+                // Shell events are always published using the 'Default' tenant.
+                using (var changedScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
                 {
-                    // Mark the context as being part of a 'DeferredTask'.
-                    _httpContextAccessor.HttpContext.Items["DeferredTask"] = true;
-
-                    // Shell event messages are always published using the 'Default' tenant.
-                    using (var changedScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                    // If the default shell has been reloaded.
+                    if (tenant == ShellHelper.DefaultShellName)
                     {
-                        // If the default shell has changed.
-                        if (tenant == ShellHelper.DefaultShellName)
-                        {
-                            // Invoke the 'Created' event to subscribe again to the 'Shell' channel.
-                            var events = changedScope.ServiceProvider.GetService<IShellHostEvents>();
-                            await (events?.CreatedAsync() ?? Task.CompletedTask);
-                        }
-
-                        // Publish the shell event message.
-                        var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
-                        await (messageBus?.PublishAsync("Shell", tenant + ':' + eventName) ?? Task.CompletedTask);
+                        // Invoke the 'Initialize' event to subscribe again to the 'Shell' channel.
+                        await _shellHost.ShellEventAsync(e => e.InitializeAsync());
                     }
-                }, order: 100);
-            }
+
+                    // Publish the shell 'Reload' event.
+                    var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
+                    await (messageBus?.PublishAsync("Shell", tenant + ":Reload") ?? Task.CompletedTask);
+                }
+            }, order: 100);
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -87,5 +87,24 @@ namespace OrchardCore.Environment.Shell
 
             return shellHost.GetScopeAndContextAsync(settings);
         }
+
+        /// <summary>
+        /// Allows to trigger a shell event through a delegate having an 'IShellEvents' parameter.
+        /// </summary>
+        public static async Task ShellEventAsync(this IShellHost shellHost, Func<IShellEvents, Task> handler)
+        {
+            if (shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
+            {
+                using (var scope = await shellHost.GetScopeAsync(settings))
+                {
+                    var events = scope.ServiceProvider.GetService<IShellEvents>();
+
+                    if (events != null)
+                    {
+                        await handler(events);
+                    }
+                }
+            }
+        }
     }
 }
