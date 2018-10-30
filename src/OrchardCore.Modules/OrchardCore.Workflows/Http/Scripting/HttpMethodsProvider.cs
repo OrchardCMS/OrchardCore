@@ -19,12 +19,12 @@ namespace OrchardCore.Workflows.Http.Scripting
     {
         private readonly GlobalMethod _httpContextMethod;
         private readonly GlobalMethod _queryStringMethod;
-        private readonly GlobalMethod _writeMethod;
+        private readonly GlobalMethod _responseWriteMethod;
         private readonly GlobalMethod _absoluteUrlMethod;
         private readonly GlobalMethod _readBodyMethod;
         private readonly GlobalMethod _requestFormMethod;
-        private readonly GlobalMethod _queryStringJSONMethod;
-        private readonly GlobalMethod _requestFormJSONMethod;
+        private readonly GlobalMethod _queryStringAsJsonMethod;
+        private readonly GlobalMethod _requestFormAsJsonMethod;
 
         public HttpMethodsProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -37,10 +37,37 @@ namespace OrchardCore.Workflows.Http.Scripting
             _queryStringMethod = new GlobalMethod
             {
                 Name = "queryString",
-                Method = serviceProvider => (Func<string, string>)(name => httpContextAccessor.HttpContext.Request.Query[name].ToString())
+                Method = serviceProvider => (Func<string, object>)(name =>
+                {
+                    if (name == null)
+                    {
+                        return httpContextAccessor.HttpContext.Request.QueryString.ToString();
+                    }
+                    object result;
+                    if (httpContextAccessor.HttpContext.Request.Query.TryGetValue(name, out var values))
+                    {
+                        if (values.Count == 0)
+                        {
+                            result = null;
+                        }
+                        else if (values.Count == 1)
+                        {
+                            result = values[0];
+                        }
+                        else
+                        {
+                            result = values.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                    return result;
+                })
             };
 
-            _writeMethod = new GlobalMethod
+            _responseWriteMethod = new GlobalMethod
             {
                 Name = "responseWrite",
                 Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult())
@@ -97,17 +124,17 @@ namespace OrchardCore.Workflows.Http.Scripting
                 })
             };
 
-            _queryStringJSONMethod = new GlobalMethod
+            _queryStringAsJsonMethod = new GlobalMethod
             {
-                Name = "queryStringJSON",
+                Name = "queryStringAsJson",
                 Method = serviceProvider => (Func<JObject>)(() =>
                     new JObject((from param in httpContextAccessor.HttpContext.Request.Query
                                  select new JProperty(param.Key, JArray.FromObject(param.Value.ToArray()))).ToArray()))
             };
 
-            _requestFormJSONMethod = new GlobalMethod
+            _requestFormAsJsonMethod = new GlobalMethod
             {
-                Name = "requestFormJSON",
+                Name = "requestFormAsJson",
                 Method = serviceProvider => (Func<JObject>)(() =>
                     new JObject((from field in httpContextAccessor.HttpContext.Request.Form
                                  select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray()))
@@ -116,7 +143,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _writeMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringJSONMethod, _requestFormJSONMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod };
         }
     }
 }

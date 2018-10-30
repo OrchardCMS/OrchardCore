@@ -134,13 +134,28 @@ The following JavaScript functions are available by default to any activity that
 | Function | Description | Signature |
 | -------- | ----------- | --------- |
 | workflow | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | `workflow(): WorkflowExecutionContext` |
-| workflowId | Returns the unique workflow ID. | `workflowId(): string` |
-| input | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
-| output | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
-| property | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
+| workflowId | Returns the unique workflow ID. | `workflowId(): String` |
+| input | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: String): any` |
+| output | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: String, value: any): void` |
+| property | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: String): any` |
 | lastResult | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
-| correlationId | Returns the correlation value of the workflow instance. | `correlationId(): string` |
-| signalUrl | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is condifured with the same signal name. | `signalUrl(signal: string): string` |
+| correlationId | Returns the correlation value of the workflow instance. | `correlationId(): String` |
+| signalUrl | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is condifured with the same signal name. | `signalUrl(signal: String): String` |
+
+#### JavaScript Functions in HTTP activities
+
+The following JavaScript functions are available by default to any HTTP activity that supports script expressions:
+
+| Function | Description | Signature |
+| -------- | ----------- | --------- |
+| httpContext | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. | `httpContext(): HttpContext` |
+| queryString | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. | `queryString(): String`<br/>`queryString(name: String): String` or `Array` |
+| responseWrite | Writes the argument string directly to the HTTP response stream. | `responseWrite(text: String): void` |
+| absoluteUrl | Returns the absolute URL for the relative path argument. | `absoluteUrl(relativePath: String): String` |
+| readBody | Returns the raw HTTP request body. | `readBody(): String` |
+| requestForm | Returns the value(s) of the form field name passed in as an argument. | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array` |
+| queryStringAsJson | Returns the entire query string as a JSON object. | `queryStringAsJson(): { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
+| requestFormAsJson | Returns the entire request form as a JSON object. | `requestFormAsJson(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
