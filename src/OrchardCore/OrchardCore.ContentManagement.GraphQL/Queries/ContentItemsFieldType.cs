@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -12,6 +13,7 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -20,6 +22,25 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
+        private static ParameterExpression ContentItemParameter = Expression.Parameter(typeof(ContentItemIndex), "x");
+
+        private static Dictionary<string, Expression> ContentItemProperties;
+        private static MethodInfo IsIn = typeof(DefaultQueryExtensions).GetMethod("IsIn");
+        private static MethodInfo IsNotIn = typeof(DefaultQueryExtensions).GetMethod("IsNotIn");
+        private static MethodInfo Contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+        private static MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+        private static MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
+
+        static ContentItemsFieldType()
+        {
+            ContentItemProperties = new Dictionary<string, Expression>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var property in typeof(ContentItemIndex).GetProperties())
+            {
+                ContentItemProperties.Add(property.Name, ConvertToNonNullableExpression(Expression.Property(ContentItemParameter, property)));
+            }
+        }
+
         public ContentItemsFieldType()
         {
             Name = "ContentItems";
@@ -41,25 +62,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var graphContext = (GraphQLContext)context.UserContext;
 
             var whereInput = context.ArgumentAsObject<ContentItemWhereInputModel>("where");
+
             var versionOption = GetVersionOption(whereInput);
 
-            if (whereInput != null)
-            {
-                if (!string.IsNullOrEmpty(whereInput.ContentItemId))
-                {
-                    return await GetContentItemById(whereInput.ContentItemId, versionOption, graphContext);
-                }
-
-                if (!string.IsNullOrEmpty(whereInput.ContentItemVersionId))
-                {
-                    return await GetContentItemByVersion(whereInput.ContentItemVersionId, graphContext);
-                }
-            }
-
             var session = graphContext.ServiceProvider.GetService<ISession>();
+
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            query = Filter(query, context, whereInput, versionOption);
+            var where = context.GetArgument<Dictionary<string, object>>("where");
+
+            query = Filter(query, context, where, versionOption);
             query = OrderBy(query, context);
 
             IQuery<ContentItem> contentItemsQuery = query;
@@ -115,28 +127,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private async Task<IEnumerable<ContentItem>> GetContentItemById(string contentItemId,
-            VersionOptions versionOption, GraphQLContext context)
-        {
-            var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-            var contentItem = await contentManager.GetAsync(contentItemId, versionOption);
-
-            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] { contentItem };
-        }
-
-        private async Task<IEnumerable<ContentItem>> GetContentItemByVersion(string contentItemVersionId,
-            GraphQLContext context)
-        {
-            var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-            var contentItem = await contentManager.GetVersionAsync(contentItemVersionId);
-
-            return contentItem == null ? Enumerable.Empty<ContentItem>() : new[] { contentItem };
-        }
-
         private IQuery<ContentItem, ContentItemIndex> Filter(
             IQuery<ContentItem, ContentItemIndex> query,
             ResolveFieldContext context,
-            ContentItemWhereInputModel input,
+            Dictionary<string, object> where,
             VersionOptions versionOption)
         {
             // Applying version
@@ -160,39 +154,48 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             query = query.Where(q => q.ContentType == contentType);
 
-            if (input == null)
+            if (where == null)
             {
                 return query;
             }
 
-            if (!string.IsNullOrEmpty(input.DisplayText))
+            foreach (var entry in where)
             {
-                query = query.Where(q => q.DisplayText == input.DisplayText);
-            }
+                var values = entry.Key.Split(new[] { '_' }, 2);
 
-            if (input.ModifiedUtc.HasValue)
-            {
-                query = query.Where(q => q.ModifiedUtc == input.ModifiedUtc);
-            }
+                Expression comparison;
 
-            if (input.PublishedUtc.HasValue)
-            {
-                query = query.Where(q => q.PublishedUtc == input.PublishedUtc);
-            }
+                var left = ContentItemProperties[values[0]];
 
-            if (input.CreatedUtc.HasValue)
-            {
-                query = query.Where(q => q.CreatedUtc == input.CreatedUtc);
-            }
+                var right = Expression.Constant(entry.Value);
 
-            if (!string.IsNullOrEmpty(input.Owner))
-            {
-                query = query.Where(q => q.Owner == input.Owner);
-            }
+                if (values.Length == 1)
+                {
+                    comparison = Expression.Equal(left, right);
+                }
+                else
+                {
+                    switch (values[1])
+                    {
+                        case "ne": comparison = Expression.NotEqual(left, right); break;
+                        case "gt": comparison = Expression.GreaterThan(left, right); break;
+                        case "gte": comparison = Expression.GreaterThanOrEqual(left, right); break;
+                        case "lt": comparison = Expression.LessThan(left, right); break;
+                        case "lte": comparison = Expression.LessThanOrEqual(left, right); break;
+                        case "contains": comparison = Expression.Call(left, Contains, right); ; break;
+                        case "not_contains": comparison = Expression.Not(Expression.Call(left, Contains, right)); break;
+                        case "starts_with": comparison = Expression.Call(left, StartsWith, right); ; break;
+                        case "not_starts_with": comparison = Expression.Not(Expression.Call(left, StartsWith, right)); break;
+                        case "ends_with": comparison = Expression.Call(left, EndsWith, right); ; break;
+                        case "not_ends_with": comparison = Expression.Not(Expression.Call(left, EndsWith, right)); break;
+                        case "in": comparison = Expression.Call(null, IsIn, left, right); break;
+                        case "not_in": comparison = Expression.Call(null, IsNotIn, left, right); break;
 
-            if (!string.IsNullOrEmpty(input.Author))
-            {
-                query = query.Where(q => q.Author == input.Author);
+                        default: comparison = Expression.Equal(left, right); break;
+                    }
+                }
+
+                query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(comparison, new ParameterExpression[] { ContentItemParameter }));
             }
 
             return query;
@@ -219,7 +222,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         {
                             case "contentItemId": selector = x => x.ContentItemId; break;
                             case "contentItemVersionId": selector = x => x.ContentItemVersionId; break;
-                            case "contentType": selector = x => x.ContentType; break;
                             case "displayText": selector = x => x.DisplayText; break;
                             case "published": selector = x => x.Published; break;
                             case "latest": selector = x => x.Latest; break;
@@ -259,5 +261,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             return query;
         }
+
+        static Expression ConvertToNonNullableExpression(Expression expression)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException("expression");
+            }
+
+            if (expression.Type.IsGenericType && expression.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return Expression.Convert(expression, expression.Type.GetGenericArguments()[0]);
+            }
+            else
+            {
+                return expression;
+            }
+        }
+
     }
 }
