@@ -6663,8 +6663,11 @@ function setCompactStatus(explicit) {
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
         var labels = $('#left-nav ul.menu-admin > li > label');
+        var anchors = $('#left-nav ul.menu-admin > li > a');
+        anchors.css('background-color', 'transparent');
         labels.css('background-color', 'transparent');
         setTimeout(function () {
+            anchors.css('background-color', '');
             labels.css('background-color', '');
         }, 200);
     }

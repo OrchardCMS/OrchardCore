@@ -7180,9 +7180,6 @@ body {
   color: #343a40;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out; }
-  #ta-left-sidebar #left-nav {
-    position: relative;
-    height: calc(100% - 118px); }
   #ta-left-sidebar ul {
     margin: 0;
     padding: 0; }
@@ -7199,34 +7196,41 @@ body {
     position: relative;
     display: block;
     margin: 0; }
-  #ta-left-sidebar #left-nav ul {
-    margin: 0;
-    padding: 0;
-    white-space: nowrap; }
-    #ta-left-sidebar #left-nav ul li {
-      position: relative;
-      margin: 0;
-      padding: 0;
-      display: list-item;
-      list-style: none;
-      line-height: 2.5em; }
-      #ta-left-sidebar #left-nav ul li label {
-        cursor: pointer; }
-  #ta-left-sidebar #left-nav ul.menu-admin {
-    margin-bottom: 100px; }
   #ta-left-sidebar .chevron {
     position: absolute;
     top: 33%;
     left: 100%;
     margin-left: -25px; }
   #ta-left-sidebar .icon {
-    padding-right: 10px; }
-    #ta-left-sidebar .icon .fa {
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    text-align: center; }
+    #ta-left-sidebar .icon .fa, #ta-left-sidebar .icon .fas {
       min-width: 16px; }
-  #ta-left-sidebar #left-nav ul.menu-admin > li > label {
-    padding-left: 0px !important; }
-    #ta-left-sidebar #left-nav ul.menu-admin > li > label > span.icon {
-      padding-left: 20px; }
+  #ta-left-sidebar #left-nav {
+    position: relative;
+    height: calc(100% - 118px); }
+    #ta-left-sidebar #left-nav ul {
+      margin: 0;
+      padding: 0;
+      white-space: nowrap; }
+      #ta-left-sidebar #left-nav ul li {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        display: list-item;
+        list-style: none;
+        line-height: 2.5em; }
+        #ta-left-sidebar #left-nav ul li label {
+          cursor: pointer; }
+    #ta-left-sidebar #left-nav ul.menu-admin {
+      margin-bottom: 100px; }
+      #ta-left-sidebar #left-nav ul.menu-admin > li > label, #ta-left-sidebar #left-nav ul.menu-admin > li > a {
+        padding-left: 0px !important; }
+        #ta-left-sidebar #left-nav ul.menu-admin > li > label > span.icon, #ta-left-sidebar #left-nav ul.menu-admin > li > a > span.icon {
+          padding-left: 20px; }
   #ta-left-sidebar li label,
   #ta-left-sidebar li a,
   #ta-left-sidebar li a:hover,
@@ -7248,7 +7252,19 @@ body {
     background-color: #6c757d;
     border-left: 4px solid #343a40;
     color: #f8f9fa !important;
+    padding-left: 14px !important; }
+    #ta-left-sidebar li.active > a .icon {
+      margin-left: 16px !important; }
+  #ta-left-sidebar li.has-items > ul > li.active > a {
+    background-color: #6c757d;
+    border-left: 4px solid #343a40;
+    color: #f8f9fa !important;
     padding-left: 34px !important; }
+  #ta-left-sidebar li ul > li.has-items > ul li.active > a {
+    background-color: #6c757d;
+    border-left: 4px solid #343a40;
+    color: #f8f9fa !important;
+    padding-left: 44px !important; }
   #ta-left-sidebar li.has-items.active > a {
     padding-left: 34px !important; }
   #ta-left-sidebar li.active > label {
@@ -7281,12 +7297,14 @@ body {
     left: 60px;
     width: 260px;
     top: 40px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > label, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > a {
     background-color: #495057;
     color: #f8f9fa;
     padding: 0px;
     margin: 0px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li label span.icon {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li.active > a .icon {
+    margin-left: 20px !important; }
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li label span.icon, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li a span.icon {
     display: inline-block !important;
     margin: 0px 20px 0px 0px;
     padding-bottom: 0px;
@@ -7295,7 +7313,9 @@ body {
     color: #495057;
     background-color: #f8f9fa;
     width: 60px; }
-  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.active label span.icon {
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin li.active > a {
+    border-left: none; }
+  .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.active label span.icon, .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li.active a span.icon {
     background-color: #b4bdc4;
     color: #f8f9fa !important; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li:hover span.icon {
