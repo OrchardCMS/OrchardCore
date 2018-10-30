@@ -28,14 +28,14 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
-            context = await GetCachedContextAsync(context.CacheId);
+            var cacheKey = await GetCacheKey(context);
+
+            context = await GetCachedContextAsync(cacheKey);
             if (context == null)
             {
                 // We don't know the context, so we must treat this as a cache miss
                 return null;
             }
-            
-            var cacheKey = await GetCacheKey(context);
 
             var content = await GetCachedStringAsync(cacheKey);
 
@@ -51,7 +51,7 @@ namespace OrchardCore.DynamicCache.Services
             
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
-                SetCachedValueAsync(GetCacheContextCacheKey(context.CacheId), esi, context)
+                SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context)
             );
         }
         
@@ -99,9 +99,9 @@ namespace OrchardCore.DynamicCache.Services
             return key;
         }
 
-        private string GetCacheContextCacheKey(string cacheId)
+        private string GetCacheContextCacheKey(string cacheKey)
         {
-            return "cachecontext-" + cacheId;
+            return "cachecontext-" + cacheKey;
         }
 
         private async Task<string> GetCachedStringAsync(string cacheKey)
@@ -120,9 +120,9 @@ namespace OrchardCore.DynamicCache.Services
             return Encoding.UTF8.GetString(bytes);
         }
 
-        private async Task<CacheContext> GetCachedContextAsync(string cacheId)
+        private async Task<CacheContext> GetCachedContextAsync(string cacheKey)
         {
-            var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheId));
+            var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey));
 
             if (cachedValue == null)
             {
