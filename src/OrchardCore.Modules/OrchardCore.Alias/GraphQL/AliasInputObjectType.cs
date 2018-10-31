@@ -8,6 +8,7 @@ namespace OrchardCore.Alias.GraphQL
         public AliasInputObjectType()
         {
             Name = "AliasPartInput";
+            Description = "the alias part of the content item";
 
             Field(x => x.Alias, nullable: true)
                 .Name("alias")

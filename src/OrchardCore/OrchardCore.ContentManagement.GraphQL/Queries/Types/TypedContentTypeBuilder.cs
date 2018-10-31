@@ -53,10 +53,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (serviceProvider.GetService(inputGraphType) is IInputObjectGraphType inputGraphTypeResolved)
                 {
-                    contentQuery.Arguments.Add(new QueryArgument(inputGraphTypeResolved)
+                    var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
+                    if (whereArgument == null)
                     {
-                        Name = partName.ToCamelCase()
-                    });
+                        return;
+                    }
+
+                    var whereInput = (ContentItemWhereInput) whereArgument.ResolvedType;
+                    whereInput.Field(inputGraphTypeResolved.GetType(), partName.ToCamelCase());
                 }
             }
         }

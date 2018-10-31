@@ -26,9 +26,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
     public class ContentItemWhereInput : InputObjectGraphType<ContentItemWhereInputModel>
     {
-        public ContentItemWhereInput()
+        public ContentItemWhereInput(string contentItemName)
         {
-            Name = nameof(ContentItemWhereInput);
+            Name = contentItemName + "WhereInput";
 
             Field(x => x.Status, true, typeof(PublicationStatusGraphType))
                 .Description("publication status of the content item")

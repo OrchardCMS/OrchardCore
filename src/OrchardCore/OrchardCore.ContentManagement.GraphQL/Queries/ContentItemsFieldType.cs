@@ -20,18 +20,24 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-        public ContentItemsFieldType()
+        public ContentItemsFieldType(string contentItemName, ISchema schema)
         {
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
 
+            var whereInput = new ContentItemWhereInput(contentItemName);
+            schema.RegisterType(whereInput);
+
+            var orderByInput = new ContentItemOrderByInput(contentItemName);
+            schema.RegisterType(orderByInput);
+
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items" },
-                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
-                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items" },
-                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" }
-            );
+                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
+                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
+                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
+                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip", ResolvedType = new IntGraphType() }
+            );  
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
         }
