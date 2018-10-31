@@ -172,9 +172,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            var expressions = CreateExpression(where);
+            var expressions = CreateExpressions(where).ToList();
 
-            if (expressions == null)
+            if (!expressions.Any())
             {
                 return query;
             }
@@ -191,18 +191,39 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private IEnumerable<Expression> CreateExpression(JToken where)
+        private IEnumerable<Expression> CreateExpressions(JToken where)
         {
             if (where is JArray array)
             {
-                where = array.Children().FirstOrDefault();
+                foreach (var child in array.Children())
+                {
+                    if (child is JObject whereObject)
+                    {
+                        var expressions = CreateExpressionsInternal(whereObject);
+                        foreach (var expression in expressions)
+                        {
+                            yield return expression;
+                        }
+                    }
+                }
             }
-
-            foreach (JProperty entry in where)
+            else if(where is JObject whereObject)
             {
-                var values = entry.Name.Split(new[] { '_' }, 2);
+                var expressions = CreateExpressionsInternal(whereObject);
+                foreach (var expression in expressions)
+                {
+                    yield return expression;
+                }
+            }
+        }
 
-                Expression comparison;
+        private IEnumerable<Expression> CreateExpressionsInternal(JObject where)
+        {
+            foreach (var entry in where.Properties())
+            {
+                Expression comparison = null;
+
+                var values = entry.Name.Split(new[] {'_'}, 2);
 
                 Expression left, right;
 
@@ -217,7 +238,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(false);
 
-                        var subExpressions = CreateExpression(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -228,7 +249,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(true);
 
-                        var subExpressions = CreateExpression(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -237,13 +258,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                     else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
-                        comparison = Expression.Constant(false);
-
-                        var subExpressions = CreateExpression(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value);
 
                         foreach (var subExpression in subExpressions)
                         {
-                            comparison = Expression.And(comparison, subExpression);
+                            comparison = Expression.Not(subExpression);
                         }
                     }
                     else
