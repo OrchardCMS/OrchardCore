@@ -51,7 +51,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items" },
                 new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
                 new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items" },
-                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" }
+                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" },
+                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", DefaultValue = PublicationStatusEnum.Published }
             );
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
@@ -61,17 +62,20 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             var graphContext = (GraphQLContext)context.UserContext;
 
-            var whereInput = context.ArgumentAsObject<ContentItemWhereInputModel>("where");
+            var versionOption = VersionOptions.Published;
 
-            var versionOption = GetVersionOption(whereInput);
+            if (context.HasPopulatedArgument("status"))
+            {
+                versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
+            }
+
+            var where = context.GetArgument<Dictionary<string, object>>("where");
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            var where = context.GetArgument<Dictionary<string, object>>("where");
-
-            query = Filter(query, context, where, versionOption);
+            query = Filter(query, context, versionOption, where);
             query = OrderBy(query, context);
 
             IQuery<ContentItem> contentItemsQuery = query;
@@ -113,11 +117,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItemsQuery;
         }
 
-        private VersionOptions GetVersionOption(ContentItemWhereInputModel input)
+        private VersionOptions GetVersionOption(PublicationStatusEnum status)
         {
-            if (input == null) return VersionOptions.Published;
-
-            switch (input.Status)
+            switch (status)
             {
                 case PublicationStatusEnum.Published: return VersionOptions.Published;
                 case PublicationStatusEnum.Draft: return VersionOptions.Draft;
@@ -130,8 +132,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private IQuery<ContentItem, ContentItemIndex> Filter(
             IQuery<ContentItem, ContentItemIndex> query,
             ResolveFieldContext context,
-            Dictionary<string, object> where,
-            VersionOptions versionOption)
+            VersionOptions versionOption,
+            Dictionary<string, object> where)
         {
             // Applying version
 
@@ -159,22 +161,76 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
+            var expressions = CreateExpression(where);
+
+            Expression predicate = Expression.Constant(true);
+
+            foreach (var expression in expressions)
+            {
+                predicate = Expression.And(predicate, expression);
+            }
+
+            query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(predicate, new ParameterExpression[] { ContentItemParameter }));
+
+            return query;
+        }
+
+        private IEnumerable<Expression> CreateExpression(Dictionary<string, object> where)
+        {
             foreach (var entry in where)
             {
                 var values = entry.Key.Split(new[] { '_' }, 2);
 
-                Expression comparison;
+                Expression comparison = null;
 
-                var left = ContentItemProperties[values[0]];
+                Expression left, right;
 
-                var right = Expression.Constant(entry.Value);
+                if (values[0] == "status")
+                {
+                    continue;
+                }
 
                 if (values.Length == 1)
                 {
-                    comparison = Expression.Equal(left, right);
+                    if (String.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
+                    {
+                        comparison = Expression.Constant(false);
+
+                        var subwhere = entry.Value as Dictionary<string, object>;
+
+                        var subExpressions = CreateExpression(subwhere);
+
+                        foreach (var subExpression in subExpressions)
+                        {
+                            comparison = Expression.Or(comparison, subExpression);
+                        }
+                    }
+                    else if (String.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
+                    {
+                        comparison = Expression.Constant(true);
+
+                        var subwhere = entry.Value as Dictionary<string, object>;
+
+                        var subExpressions = CreateExpression(subwhere);
+
+                        foreach (var subExpression in subExpressions)
+                        {
+                            comparison = Expression.And(comparison, subExpression);
+                        }
+                    }
+                    else
+                    {
+                        left = ContentItemProperties[values[0]];
+                        right = Expression.Constant(entry.Value);
+
+                        comparison = Expression.Equal(left, right);
+                    }
                 }
                 else
                 {
+                    left = ContentItemProperties[values[0]];
+                    right = Expression.Constant(entry.Value);
+
                     switch (values[1])
                     {
                         case "not": comparison = Expression.NotEqual(left, right); break;
@@ -195,10 +251,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                 }
 
-                query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(comparison, new ParameterExpression[] { ContentItemParameter }));
+                yield return comparison;
             }
-
-            return query;
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,

@@ -36,6 +36,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                 schema.Query = new ObjectGraphType { Name = "Query" };
                 schema.Mutation = new ObjectGraphType { Name = "Mutation" };
                 schema.Subscription = new ObjectGraphType { Name = "Subscription" };
+                schema.FieldNameConverter = new OrchardFieldNameConverter();
 
                 schema.DependencyResolver = _serviceProvider.GetService<IDependencyResolver>();
 
@@ -76,6 +77,8 @@ namespace OrchardCore.Apis.GraphQL.Services
                 {
                     schema.Subscription = null;
                 }
+
+                schema.Initialize();
 
                 return schema;
             });
