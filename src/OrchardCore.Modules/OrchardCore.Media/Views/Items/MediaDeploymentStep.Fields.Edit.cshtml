@@ -24,13 +24,7 @@
     </div>
     <div class="row">
         <div class="col">
-        @{ 
-            ViewContext.RouteData.Values["area"] = "OrchardCore.Media";
-        }
-        <partial name="MediaStoreEntries" model="@Model" />
-        @{ 
-            ViewContext.RouteData.Values["area"] = "OrchardCore.Deployment";
-        }
+            <partial name="../Shared/MediaStoreEntries.cshtml" model="@Model" />
         </div>
     </div>
 </fieldset>
