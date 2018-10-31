@@ -4,17 +4,18 @@ using OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public enum ScalarType
-    {
-        Identifier,
-        String,
-        DateTime
-    }
-
     [GraphQLFieldName("Or", "OR")]
     [GraphQLFieldName("And", "AND")]
+    [GraphQLFieldName("Not", "NOT")]
     public class ContentItemWhereInput : InputObjectGraphType
     {
+        public class InputOperator
+        {
+            public string Name { get; set; }
+
+            public string Description { get; set; }
+        }
+
         // Applies to all types
         public static string[] EqualityOperators = { "", "_not" };
 
@@ -26,87 +27,88 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         // Applies to all types
         public static string[] MultiValueComparisonOperators = { "_in", "_not_in" };
 
-        public ContentItemWhereInput(string contentItemName, bool addLogicalOperators = true)
+        public static InputOperator[] LogicalOperators =
+        {
+            new InputOperator { Name = "Or", Description = "OR logical operation" },
+            new InputOperator { Name = "And", Description = "AND logical operation" },
+            new InputOperator { Name = "Not", Description = "NOT logical operation" }
+        };
+
+        public ContentItemWhereInput() : this("Article")
+        {
+        }
+
+        public ContentItemWhereInput(string contentItemName)
         {
             Name = contentItemName + "WhereInput";
 
-            AddScalarFilterField<StringGraphType>("contentItemId", "content item id", ScalarType.Identifier);
-            AddScalarFilterField<StringGraphType>("contentItemVersionId", "the content item version id", ScalarType.Identifier);
-            AddScalarFilterField<StringGraphType>("displayText", "the display text of the content item", ScalarType.String);
-            AddScalarFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation", ScalarType.DateTime);
-            AddScalarFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification", ScalarType.DateTime);
-            AddScalarFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication", ScalarType.DateTime);
-            AddScalarFilterField<StringGraphType>("owner", "the owner of the content item", ScalarType.Identifier);
-            AddScalarFilterField<StringGraphType>("author", "the author of the content item", ScalarType.Identifier);
+            AddScalarFilterField<IdGraphType>("contentItemId", "content item id");
+            AddScalarFilterField<IdGraphType>("contentItemVersionId", "the content item version id");
+            AddScalarFilterField<StringGraphType>("displayText", "the display text of the content item");
+            AddScalarFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation");
+            AddScalarFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification");
+            AddScalarFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication");
+            AddScalarFilterField<StringGraphType>("owner", "the owner of the content item");
+            AddScalarFilterField<StringGraphType>("author", "the author of the content item");
 
-            if (addLogicalOperators)
+            AddLogicalOperators(contentItemName);
+        }
+
+        public void AddScalarFilterField<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
+        {
+            AddEqualityOperators<TGraphType>(fieldName, description);
+            AddMultiValueOperators<TGraphType>(fieldName, description);
+
+            var graphType = typeof(TGraphType);
+            if (graphType == typeof(StringGraphType))
             {
-                var orField = Field(typeof(ContentItemWhereInput), "Or", "OR logical operation");
-                orField.ResolvedType = new ContentItemWhereInput(contentItemName, false);
-
-                var andField = Field(typeof(ContentItemWhereInput), "And", "AND logical operation");
-                andField.ResolvedType = new ContentItemWhereInput(contentItemName, false);
+                AddStringOperators<TGraphType>(fieldName, description);
+            }
+            else if (graphType == typeof(DateTimeGraphType))
+            {
+                AddNonStringOperators<TGraphType>(fieldName, description);
             }
         }
 
-        private void AddScalarFilterField<TGraphType>(string fieldName, string description, ScalarType type) where TGraphType : IGraphType
+        public void AddPartFilterField(IInputObjectGraphType inputType, string fieldName, string description)
         {
-            switch (type)
-            {
-                case ScalarType.Identifier:
-                    {
-                        AddEqualityOperators<TGraphType>(fieldName, description);
-                        AddMultiValueOperators<TGraphType>(fieldName, description);
-                        break;
-                    }
-                case ScalarType.String:
-                    {
-                        AddEqualityOperators<TGraphType>(fieldName, description);
-                        AddStringOperators<TGraphType>(fieldName, description);
-                        AddMultiValueOperators<TGraphType>(fieldName, description);
-                        break;
-                    } 
-                case ScalarType.DateTime:
-                    {
-                        AddEqualityOperators<TGraphType>(fieldName, description);
-                        AddNonStringOperators<TGraphType>(fieldName, description);
-                        AddMultiValueOperators<TGraphType>(fieldName, description);
-                        break;
-                    }               
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            } 
+            Field(inputType.GetType(), fieldName, description);
         }
 
-        private void AddEqualityOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        private void AddLogicalOperators(string contentItemName)
         {
-            foreach (var comparison in EqualityOperators)
+            foreach (var filter in LogicalOperators)
             {
-                Field<TGraphType>(fieldName + comparison, description);
+                Field<ListGraphType<ContentItemWhereInput>>(filter.Name, filter.Description);
+                //field.ResolvedType = new ListGraphType(new ContentItemWhereInput(contentItemName, false));
             }
         }
 
-        private void AddStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        private void AddEqualityOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
         {
-            foreach (var comparison in StringComparisonOperators)
-            {
-                Field<TGraphType>(fieldName + comparison, description);
-            }
+            AddOperators<TGraphType>(EqualityOperators, fieldName, description);
         }
 
-        private void AddNonStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        private void AddStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
         {
-            foreach (var comparison in NonStringValueComparisonOperators)
-            {
-                Field<TGraphType>(fieldName + comparison, description);
-            }
+            AddOperators<TGraphType>(StringComparisonOperators, fieldName, description);
+        }
+
+        private void AddNonStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
+        {
+            AddOperators<TGraphType>(NonStringValueComparisonOperators, fieldName, description);
         }
 
         private void AddMultiValueOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
         {
-            foreach (var comparison in MultiValueComparisonOperators)
+            AddOperators<ListGraphType<TGraphType>>(MultiValueComparisonOperators, fieldName, description);
+        }
+
+        private void AddOperators<TGraphType>(string[] filters, string fieldName, string description) where TGraphType : IGraphType, new()
+        {
+            foreach (var comparison in filters)
             {
-                Field<ListGraphType<TGraphType>>(fieldName + comparison, description);
+                Field(typeof(TGraphType), fieldName + comparison, description);
             }
         }
     }

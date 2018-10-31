@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
 
                     var whereInput = (ContentItemWhereInput) whereArgument.ResolvedType;
-                    whereInput.Field(inputGraphTypeResolved.GetType(), partName.ToCamelCase());
+                    whereInput.AddPartFilterField(inputGraphTypeResolved, partName.ToCamelCase(), inputGraphTypeResolved.Description);
                 }
             }
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -11,18 +12,18 @@ namespace OrchardCore.Alias.GraphQL
     public class AliasGraphQLFilter : GraphQLFilter<ContentItem>
     {
         public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context,
-            Dictionary<string, object> whereArguments)
+            JObject whereArguments)
         {
-            if (!whereArguments.ContainsKey("aliasPart"))
+            if (!whereArguments.TryGetValue("aliasPart", out var part))
             {
                 return query;
             }
 
-            var part = whereArguments["aliasPart"] as AliasPart;
+            var aliasPart = part.ToObject<AliasPart>();
 
-            if (!string.IsNullOrWhiteSpace(part?.Alias))
+            if (!string.IsNullOrWhiteSpace(aliasPart?.Alias))
             {
-                return query.With<AliasPartIndex>(index => index.Alias == part.Alias);
+                return query.With<AliasPartIndex>(index => index.Alias == aliasPart.Alias);
             }
 
             return query;

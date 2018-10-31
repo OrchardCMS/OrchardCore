@@ -76,7 +76,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
             }
 
-            var where = context.GetArgument<Dictionary<string, object>>("where");
+            JObject where = null;
+            if (context.HasArgument("where"))
+            {
+                where = JObject.FromObject(context.Arguments["where"]);
+            }
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
@@ -140,7 +144,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             IQuery<ContentItem, ContentItemIndex> query,
             ResolveFieldContext context,
             VersionOptions versionOption,
-            Dictionary<string, object> where)
+            JObject where)
         {
             // Applying version
 
@@ -170,6 +174,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var expressions = CreateExpression(where);
 
+            if (expressions == null)
+            {
+                return query;
+            }
+
             Expression predicate = Expression.Constant(true);
 
             foreach (var expression in expressions)
@@ -177,18 +186,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 predicate = Expression.And(predicate, expression);
             }
 
-            query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(predicate, new ParameterExpression[] { ContentItemParameter }));
+            query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(predicate, ContentItemParameter));
 
             return query;
         }
 
-        private IEnumerable<Expression> CreateExpression(Dictionary<string, object> where)
+        private IEnumerable<Expression> CreateExpression(JToken where)
         {
-            foreach (var entry in where)
+            if (where is JArray array)
             {
-                var values = entry.Key.Split(new[] { '_' }, 2);
+                where = array.Children().FirstOrDefault();
+            }
 
-                Expression comparison = null;
+            foreach (JProperty entry in where)
+            {
+                var values = entry.Name.Split(new[] { '_' }, 2);
+
+                Expression comparison;
 
                 Expression left, right;
 
@@ -203,9 +217,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(false);
 
-                        var subwhere = entry.Value as Dictionary<string, object>;
-
-                        var subExpressions = CreateExpression(subwhere);
+                        var subExpressions = CreateExpression(entry.Value);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -216,9 +228,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(true);
 
-                        var subwhere = entry.Value as Dictionary<string, object>;
+                        var subExpressions = CreateExpression(entry.Value);
 
-                        var subExpressions = CreateExpression(subwhere);
+                        foreach (var subExpression in subExpressions)
+                        {
+                            comparison = Expression.And(comparison, subExpression);
+                        }
+                    }
+                    else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
+                    {
+                        comparison = Expression.Constant(false);
+
+                        var subExpressions = CreateExpression(entry.Value);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -227,16 +248,24 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                     else
                     {
-                        left = ContentItemProperties[values[0]];
-                        right = Expression.Constant(entry.Value);
+                        if (!ContentItemProperties.TryGetValue(values[0], out left))
+                        {
+                            continue;
+                        }
+
+                        right = Expression.Constant(entry.Value.Value<string>());
 
                         comparison = Expression.Equal(left, right);
                     }
                 }
                 else
                 {
-                    left = ContentItemProperties[values[0]];
-                    right = Expression.Constant(entry.Value);
+                    if (!ContentItemProperties.TryGetValue(values[0], out left))
+                    {
+                        continue;
+                    }
+
+                    right = Expression.Constant(entry.Value.Value<string>());
 
                     switch (values[1])
                     {
@@ -245,11 +274,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         case "gte": comparison = Expression.GreaterThanOrEqual(left, right); break;
                         case "lt": comparison = Expression.LessThan(left, right); break;
                         case "lte": comparison = Expression.LessThanOrEqual(left, right); break;
-                        case "contains": comparison = Expression.Call(left, Contains, right); ; break;
+                        case "contains": comparison = Expression.Call(left, Contains, right); break;
                         case "not_contains": comparison = Expression.Not(Expression.Call(left, Contains, right)); break;
-                        case "starts_with": comparison = Expression.Call(left, StartsWith, right); ; break;
+                        case "starts_with": comparison = Expression.Call(left, StartsWith, right); break;
                         case "not_starts_with": comparison = Expression.Not(Expression.Call(left, StartsWith, right)); break;
-                        case "ends_with": comparison = Expression.Call(left, EndsWith, right); ; break;
+                        case "ends_with": comparison = Expression.Call(left, EndsWith, right); break;
                         case "not_ends_with": comparison = Expression.Not(Expression.Call(left, EndsWith, right)); break;
                         case "in": comparison = Expression.Call(null, IsIn, left, right); break;
                         case "not_in": comparison = Expression.Call(null, IsNotIn, left, right); break;
