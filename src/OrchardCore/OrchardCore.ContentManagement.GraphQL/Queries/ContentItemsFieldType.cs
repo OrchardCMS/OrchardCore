@@ -94,7 +94,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var filter in queryFilters)
             {
-                contentItemsQuery = filter.PreQuery(query, context, where);
+                contentItemsQuery = filter.PreQuery(query, context, where ?? new JObject());
             }
 
             contentItemsQuery = PageQuery(contentItemsQuery, context);
