@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
@@ -77,56 +76,55 @@ namespace OrchardCore.Apis.GraphQL
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
         {
             var schema = await schemaService.GetSchema();
+
             GraphQLRequest request = null;
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
-            switch (context.Request.Method.ToUpper())
+            if (HttpMethods.IsPost(context.Request.Method))
             {
-                case "POST":
 
-                    var mediaType = new MediaType(context.Request.ContentType);
+                var mediaType = new MediaType(context.Request.ContentType);
 
-                    try
+                try
+                {
+                    if (mediaType.IsSubsetOf(_jsonMediaType))
                     {
-                        if (mediaType.IsSubsetOf(_jsonMediaType))
+                        using (var sr = new StreamReader(context.Request.Body))
                         {
-                            using (var sr = new StreamReader(context.Request.Body))
+                            using (var jsonTextReader = new JsonTextReader(sr))
                             {
-                                using (var jsonTextReader = new JsonTextReader(sr))
-                                {
-                                    request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
-                                }
-                            }
-                        }
-                        else if (mediaType.IsSubsetOf(_graphQlMediaType))
-                        {
-                            request = new GraphQLRequest();
-
-                            using (var sr = new StreamReader(context.Request.Body))
-                            {
-                                request.Query = await sr.ReadToEndAsync();
+                                request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
                             }
                         }
                     }
-                    catch (Exception e)
+                    else if (mediaType.IsSubsetOf(_graphQlMediaType))
                     {
-                        await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
-                        return;
+                        request = new GraphQLRequest();
+
+                        using (var sr = new StreamReader(context.Request.Body))
+                        {
+                            request.Query = await sr.ReadToEndAsync();
+                        }
                     }
-                    break;
-                case "GET":
+                }
+                catch (Exception e)
+                {
+                    await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
+                    return;
+                }
+            }
+            else if (HttpMethods.IsGet(context.Request.Method))
+            {
+                if (!context.Request.Query.ContainsKey("query"))
+                {
+                    await WriteErrorAsync(context, "The 'query' query string parameter is missing");
+                    return;
+                }
 
-                    if (!context.Request.Query.ContainsKey("query"))
-                    {
-                        await WriteErrorAsync(context, "The 'query' query string parameter is missing");
-                        return;
-                    }
+                request = new GraphQLRequest();
+                request.Query = context.Request.Query["query"];
 
-                    request = new GraphQLRequest();
-                    request.Query = context.Request.Query["query"];
-
-                    break;
             }
 
             var queryToExecute = request.Query;
@@ -149,6 +147,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
+
 #if DEBUG
                 _.ExposeExceptions = true;
 #endif
@@ -158,12 +157,10 @@ namespace OrchardCore.Apis.GraphQL
                 ? HttpStatusCode.BadRequest
                 : HttpStatusCode.OK;
 
-            // TODO: is there a way to prevent the allocation of the results as a string?
-            var json = await _writer.WriteToStringAsync(result);
-
             context.Response.StatusCode = (int)httpResult;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(json, Encoding.UTF8);
+
+            await _writer.WriteAsync(context.Response.Body, result);
         }
 
         private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
@@ -185,11 +182,10 @@ namespace OrchardCore.Apis.GraphQL
                 errorResult.Errors.Add(new ExecutionError(message, e));
             }
 
-            var json = await _writer.WriteToStringAsync(errorResult);
-
             context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(json, Encoding.UTF8);
+
+            await _writer.WriteAsync(context.Response.Body, errorResult);
         }
     }
 }
