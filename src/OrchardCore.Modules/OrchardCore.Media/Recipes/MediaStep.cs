@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -38,9 +38,7 @@ namespace OrchardCore.Media.Recipes
                 }
                 else if (!String.IsNullOrWhiteSpace(file.SourcePath))
                 {
-                    var sourcePath = GetRelativeFile(context.RecipeDescriptor.BasePath, file.SourcePath).Replace('\\', '/');
-
-                    var fileInfo = context.RecipeDescriptor.FileProvider.GetFileInfo(sourcePath);
+                    var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
 
                     stream = fileInfo.CreateReadStream();
                 }
@@ -53,39 +51,6 @@ namespace OrchardCore.Media.Recipes
                     }
                 }
             }
-        }
-
-        private static string GetRelativeFile(string basePath, string relativePath, params char[] pathSeparators)
-        {
-            pathSeparators = pathSeparators?.Length != 0 ? pathSeparators : new[] { '/', '\\' };
-
-            var baseSegments = basePath.Split(pathSeparators);
-            var pathSegments = relativePath.Split(pathSeparators);
-
-            var segments = new List<string>(baseSegments);
-
-            foreach (var segment in pathSegments)
-            {
-                if (segment == ".")
-                {
-                    continue;
-                }
-                else if (segment == "..")
-                {
-                    if (segments.Count == 0)
-                    {
-                        throw new ArgumentException($"Invalid relative path: '{relativePath}'");
-                    }
-
-                    segments.RemoveAt(segments.Count - 1);
-                }
-                else
-                {
-                    segments.Add(segment);
-                }
-            }
-
-            return String.Join("/", segments);
         }
 
         private class MediaStepModel
