@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment.Core.Services
 
         public TemporaryFileBuilder(bool deleteOnDispose = true)
         {
-            Folder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Folder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             _deleteOnDispose = deleteOnDispose;
         }
 
@@ -29,7 +29,7 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task SetFileAsync(string subpath, Stream stream)
         {
-            var fullname = Path.Combine(Folder, subpath);
+            var fullname = PathExtensions.Combine(Folder, subpath);
 
             var directory = new FileInfo(fullname).Directory;
 

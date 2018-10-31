@@ -195,7 +195,7 @@ namespace OrchardCore.Media
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
         {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
         }
     }
 
