@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
@@ -9,14 +10,15 @@ namespace OrchardCore.Alias.GraphQL
 {
     public class AliasGraphQLFilter : GraphQLFilter<ContentItem>
     {
-        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
+        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context,
+            Dictionary<string, object> whereArguments)
         {
-            if (!context.HasArgument("aliasPart"))
+            if (!whereArguments.ContainsKey("aliasPart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<AliasPart>("aliasPart");
+            var part = whereArguments["aliasPart"] as AliasPart;
 
             if (!string.IsNullOrWhiteSpace(part?.Alias))
             {

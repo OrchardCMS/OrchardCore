@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
@@ -9,14 +10,15 @@ namespace OrchardCore.Lists.GraphQL
 {
     public class ContainedGraphQLFilter : GraphQLFilter<ContentItem>
     {
-        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
+        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context,
+            Dictionary<string, object> whereArguments)
         {
-            if (!context.HasArgument("containedPart"))
+            if (!whereArguments.ContainsKey("containedPart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<ContainedPart>("containedPart");
+            var part = whereArguments["containedPart"] as ContainedPart;
 
             if (!string.IsNullOrWhiteSpace(part?.ListContentItemId))
             {

@@ -6,7 +6,8 @@ namespace OrchardCore.Apis.GraphQL.Queries
 {
     public abstract class GraphQLFilter<TSourceType> : IGraphQLFilter<TSourceType> where TSourceType : class
     {
-        public virtual IQuery<TSourceType> PreQuery(IQuery<TSourceType> query, ResolveFieldContext context)
+        public virtual IQuery<TSourceType> PreQuery(IQuery<TSourceType> query, ResolveFieldContext context,
+            Dictionary<string, object> whereArguments)
         {
             return query;
         }

@@ -4,80 +4,110 @@ using OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public class ContentItemWhereInputModel
+    public enum ScalarType
     {
-        public PublicationStatusEnum Status { get; set; }
-
-        public string SingleStringValue { get; set; }
-
-        public string[] MultipleStringValue { get; set; }
-
-        public DateTime SingleDateTimeValue { get; set; }
-
-        public DateTime[] MultipleDateTimeValue { get; set; }
-
-        public ContentItemWhereInputModel[] Or { get; set; }
-
-        public ContentItemWhereInputModel[] And { get; set; }
+        Identifier,
+        String,
+        DateTime
     }
 
     [GraphQLFieldName("Or", "OR")]
     [GraphQLFieldName("And", "AND")]
-    public class ContentItemWhereInput : InputObjectGraphType<ContentItemWhereInputModel>
-
+    public class ContentItemWhereInput : InputObjectGraphType
     {
         // Applies to all types
-        public static string[] EqualityOperators = new[] { "", "_not" };
+        public static string[] EqualityOperators = { "", "_not" };
 
-        public static string[] NonStringValueComparisonOperators = new[] { "_gt", "_gte", "_lt", "_lte" };
+        public static string[] NonStringValueComparisonOperators = { "_gt", "_gte", "_lt", "_lte" };
 
         // Applies to strings
-        public static string[] StringComparisonOperators = new[] { "_contains", "_not_contains", "_starts_with", "_not_starts_with", "_ends_with", "_not_ends_with" };
+        public static string[] StringComparisonOperators = { "_contains", "_not_contains", "_starts_with", "_not_starts_with", "_ends_with", "_not_ends_with" };
 
         // Applies to all types
-        public static string[] MultiValueComparisonOperators = new[] { "_in", "_not_in" };
+        public static string[] MultiValueComparisonOperators = { "_in", "_not_in" };
 
-        public ContentItemWhereInput(string contentItemName)
+        public ContentItemWhereInput(string contentItemName, bool addLogicalOperators = true)
         {
             Name = contentItemName + "WhereInput";
 
-            // TODO: Ideally we should return a custom FieldType that contains the name of the property and the YesSql Expression to filter
+            AddScalarFilterField<StringGraphType>("contentItemId", "content item id", ScalarType.Identifier);
+            AddScalarFilterField<StringGraphType>("contentItemVersionId", "the content item version id", ScalarType.Identifier);
+            AddScalarFilterField<StringGraphType>("displayText", "the display text of the content item", ScalarType.String);
+            AddScalarFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation", ScalarType.DateTime);
+            AddScalarFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification", ScalarType.DateTime);
+            AddScalarFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication", ScalarType.DateTime);
+            AddScalarFilterField<StringGraphType>("owner", "the owner of the content item", ScalarType.Identifier);
+            AddScalarFilterField<StringGraphType>("author", "the author of the content item", ScalarType.Identifier);
+
+            if (addLogicalOperators)
+            {
+                var orField = Field(typeof(ContentItemWhereInput), "Or", "OR logical operation");
+                orField.ResolvedType = new ContentItemWhereInput(contentItemName, false);
+
+                var andField = Field(typeof(ContentItemWhereInput), "And", "AND logical operation");
+                andField.ResolvedType = new ContentItemWhereInput(contentItemName, false);
+            }
+        }
+
+        private void AddScalarFilterField<TGraphType>(string fieldName, string description, ScalarType type) where TGraphType : IGraphType
+        {
+            switch (type)
+            {
+                case ScalarType.Identifier:
+                    {
+                        AddEqualityOperators<TGraphType>(fieldName, description);
+                        AddMultiValueOperators<TGraphType>(fieldName, description);
+                        break;
+                    }
+                case ScalarType.String:
+                    {
+                        AddEqualityOperators<TGraphType>(fieldName, description);
+                        AddStringOperators<TGraphType>(fieldName, description);
+                        AddMultiValueOperators<TGraphType>(fieldName, description);
+                        break;
+                    } 
+                case ScalarType.DateTime:
+                    {
+                        AddEqualityOperators<TGraphType>(fieldName, description);
+                        AddNonStringOperators<TGraphType>(fieldName, description);
+                        AddMultiValueOperators<TGraphType>(fieldName, description);
+                        break;
+                    }               
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            } 
+        }
+
+        private void AddEqualityOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        {
             foreach (var comparison in EqualityOperators)
             {
-                Field("contentItemId" + comparison, x => x.SingleStringValue, nullable: true).Description("content item id");
-                Field("contentItemVersionId" + comparison, x => x.SingleStringValue, nullable: true).Description("the content item version id");
-                Field("displayText" + comparison, x => x.SingleStringValue, nullable: true).Description("the display text of the content item");
-                Field("createdUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of creation");
-                Field("modifiedUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of modification");
-                Field("publishedUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of publication");
-                Field("owner" + comparison, x => x.SingleStringValue, nullable: true).Description("the owner of the content item");
-                Field("author" + comparison, x => x.SingleStringValue, nullable: true).Description("the author of the content item");
+                Field<TGraphType>(fieldName + comparison, description);
             }
+        }
 
-            foreach (var comparison in NonStringValueComparisonOperators)
-            {
-                Field("createdUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of creation");
-                Field("modifiedUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of modification");
-                Field("publishedUtc" + comparison, x => x.SingleDateTimeValue, nullable: true).Description("the date and time of publication");
-            }
-
+        private void AddStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        {
             foreach (var comparison in StringComparisonOperators)
             {
-                Field("displayText" + comparison, x => x.SingleStringValue, nullable: true).Description("the display text of the content item");
+                Field<TGraphType>(fieldName + comparison, description);
             }
+        }
 
+        private void AddNonStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        {
+            foreach (var comparison in NonStringValueComparisonOperators)
+            {
+                Field<TGraphType>(fieldName + comparison, description);
+            }
+        }
+
+        private void AddMultiValueOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
+        {
             foreach (var comparison in MultiValueComparisonOperators)
             {
-                Field("contentItemId" + comparison, x => x.MultipleStringValue, nullable: true).Description("content item id");
-                Field("displayText" + comparison, x => x.MultipleStringValue, nullable: true).Description("the display text of the content item");
-                Field("createdUtc" + comparison, x => x.MultipleDateTimeValue, nullable: true).Description("the date and time of creation");
-                Field("modifiedUtc" + comparison, x => x.MultipleDateTimeValue, nullable: true).Description("the date and time of modification");
-                Field("publishedUtc" + comparison, x => x.MultipleDateTimeValue, nullable: true).Description("the date and time of publication");
-                Field("contentItemVersionId" + comparison, x => x.MultipleStringValue, nullable: true).Description("the content item version id");
+                Field<ListGraphType<TGraphType>>(fieldName + comparison, description);
             }
-
-            Field(x => x.Or, nullable: true, typeof(ContentItemWhereInput)).Description("OR logical operation");
-            Field(x => x.And, nullable: true, typeof(ContentItemWhereInput)).Description("AND logical operation");
         }
     }
 }

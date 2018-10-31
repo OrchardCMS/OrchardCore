@@ -48,20 +48,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             Type = typeof(ListGraphType<ContentItemType>);
 
             var whereInput = new ContentItemWhereInput(contentItemName);
-            schema.RegisterType(whereInput);
-
             var orderByInput = new ContentItemOrderByInput(contentItemName);
-            schema.RegisterType(orderByInput);
 
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items" },
-                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
-                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items" },
-                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" }
-                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", DefaultValue = PublicationStatusEnum.Published }
+                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
+                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
+                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
+                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip", ResolvedType = new IntGraphType() },
+                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+
+            schema.RegisterType(whereInput);
+            schema.RegisterType(orderByInput);
+            schema.RegisterType<PublicationStatusGraphType>();
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -89,7 +90,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var filter in queryFilters)
             {
-                contentItemsQuery = filter.PreQuery(query, context);
+                contentItemsQuery = filter.PreQuery(query, context, where);
             }
 
             contentItemsQuery = PageQuery(contentItemsQuery, context);

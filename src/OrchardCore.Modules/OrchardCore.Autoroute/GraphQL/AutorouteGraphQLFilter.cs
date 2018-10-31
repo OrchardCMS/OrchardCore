@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Autoroute.Model;
@@ -9,14 +10,15 @@ namespace OrchardCore.Autoroute.GraphQL
 {
     public class AutorouteGraphQLFilter : GraphQLFilter<ContentItem>
     {
-        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
+        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context,
+            Dictionary<string, object> whereArguments)
         {
-            if (!context.HasArgument("autoroutePart"))
+            if (!whereArguments.ContainsKey("autoroutePart"))
             {
                 return query;
             }
 
-            var part = context.GetArgument<AutoroutePart>("autoroutePart");
+            var part = whereArguments["autoroutePart"] as AutoroutePart;
 
             if (!string.IsNullOrWhiteSpace(part?.Path))
             {
