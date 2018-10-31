@@ -33,9 +33,9 @@ namespace OrchardCore.Distributed.Redis.Services
             _logger = logger;
         }
 
-        public void Tag(string key, params string[] tags)
+        public async Task TagAsync(string key, params string[] tags)
         {
-            _redis.ConnectAsync().GetAwaiter().GetResult();
+            await _redis.ConnectAsync();
 
             if (!_redis.IsConnected)
             {
@@ -44,20 +44,20 @@ namespace OrchardCore.Distributed.Redis.Services
 
             foreach (var tag in tags)
             {
-                _redis.Database.SetAdd(_prefix + ":Tag:" + tag, key);
+                await _redis.Database.SetAddAsync(_prefix + ":Tag:" + tag, key);
             }
         }
 
-        public IEnumerable<string> GetTaggedItems(string tag)
+        public async Task<IEnumerable<string>> GetTaggedItemsAsync(string tag)
         {
-            _redis.ConnectAsync().GetAwaiter().GetResult();
+            await _redis.ConnectAsync();
 
             if (!_redis.IsConnected)
             {
                 return Enumerable.Empty<string>();
             }
 
-            var values = _redis.Database.SetMembers(_prefix + ":Tag:" + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + ":Tag:" + tag);
 
             if (values == null || values.Length == 0)
             {
@@ -76,7 +76,7 @@ namespace OrchardCore.Distributed.Redis.Services
                 return;
             }
 
-            var values = _redis.Database.SetMembers(_prefix + ":Tag:" + tag);
+            var values = await _redis.Database.SetMembersAsync(_prefix + ":Tag:" + tag);
 
             if (values == null || values.Length == 0)
             {
