@@ -1,0 +1,41 @@
+@model MediaDeploymentStepViewModel
+
+<ul class="list-group">
+
+    @foreach (var entry in Model.Entries)
+    {
+        var checkd = Model.Paths?.Contains(entry.Path);
+        var hasChildren = entry.Entries?.Length != 0;
+
+        <li class="list-group-item">
+            <div class="form-check">
+                <label class="form-check-label">
+                    @if (hasChildren)
+                    {
+                        <input class="form-check-input" data-entry-type="dir" type="checkbox" checked="@checkd">
+                    }
+                    else
+                    {
+                        <input class="form-check-input" data-entry-type="file" type="checkbox" name="@Html.NameFor(m => m.Paths)" value="@entry.Path" checked="@checkd">
+                    }
+                    @entry.Name
+                </label>
+            </div>
+        </li>
+
+        @if (hasChildren)
+        {
+            var partialModel = new MediaDeploymentStepViewModel
+            {
+                IncludeAll = Model.IncludeAll,
+                Paths = Model.Paths,
+                Entries = entry.Entries
+            };
+
+            <li class="list-group-item">
+                <partial name="MediaStoreEntries" model="@partialModel" />
+            </li>
+        }
+    }
+
+</ul>

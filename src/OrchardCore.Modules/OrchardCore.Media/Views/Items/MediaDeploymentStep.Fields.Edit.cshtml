@@ -24,7 +24,13 @@
     </div>
     <div class="row">
         <div class="col">
-            @Html.RenderMediaStoreEntries(Model)
+        @{ 
+            ViewContext.RouteData.Values["area"] = "OrchardCore.Media";
+        }
+        <partial name="MediaStoreEntries" model="@Model" />
+        @{ 
+            ViewContext.RouteData.Values["area"] = "OrchardCore.Deployment";
+        }
         </div>
     </div>
 </fieldset>
