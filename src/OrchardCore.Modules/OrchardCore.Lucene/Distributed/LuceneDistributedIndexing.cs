@@ -48,15 +48,20 @@ namespace OrchardCore.Lucene.Distributed
             {
                 var tokens = message.Split(':').ToArray();
 
-                // Validate the message {event}:{contentitemid}
+                // Validate the message {event}:{name or id}
                 if (tokens.Length != 2 || tokens[1].Length == 0)
                 {
                     return;
                 }
 
-                using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
+                if (tokens[0] == "Delete")
                 {
-                    if (tokens[0] == "Published")
+                    _luceneIndexManager.DeleteIndex(tokens[1]);
+                }
+
+                else if (tokens[0] == "Published")
+                {
+                    using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
                     {
                         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
 
@@ -77,13 +82,13 @@ namespace OrchardCore.Lucene.Distributed
                             _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
                         }
                     }
+                }
 
-                    else if (tokens[0] == "Removed" || tokens[0] == "Unpublished")
+                else if (tokens[0] == "Removed" || tokens[0] == "Unpublished")
+                {
+                    foreach (var index in _luceneIndexManager.List())
                     {
-                        foreach (var index in _luceneIndexManager.List())
-                        {
-                            _luceneIndexManager.DeleteDocuments(index, new string[] { tokens[1] });
-                        }
+                        _luceneIndexManager.DeleteDocuments(index, new string[] { tokens[1] });
                     }
                 }
             }) ?? Task.CompletedTask);
@@ -94,38 +99,27 @@ namespace OrchardCore.Lucene.Distributed
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices.GetService<IDeferredTaskEngine>();
-
-            deferredTaskEngine?.AddTask(async taskContext =>
-            {
-                var messageBus = taskContext.ServiceProvider.GetService<IMessageBus>();
-                await (_messageBus?.PublishAsync("Indexing", "Published:" + context.ContentItem.ContentItemId) ?? Task.CompletedTask);
-            }, order: 50);
-
-            return Task.CompletedTask;
+            return PublishAsync(context.ContentItem, "Published");
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices.GetService<IDeferredTaskEngine>();
-
-            deferredTaskEngine?.AddTask(async taskContext =>
-            {
-                var messageBus = taskContext.ServiceProvider.GetService<IMessageBus>();
-                await (_messageBus?.PublishAsync("Indexing", "Removed:" + context.ContentItem.ContentItemId) ?? Task.CompletedTask);
-            }, order: 50);
-
-            return Task.CompletedTask;
+            return PublishAsync(context.ContentItem, "Removed");
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
+        {
+            return PublishAsync(context.ContentItem, "Unpublished");
+        }
+
+        private Task PublishAsync(ContentItem contentItem, string eventName)
         {
             var deferredTaskEngine = _httpContextAccessor.HttpContext.RequestServices.GetService<IDeferredTaskEngine>();
 
             deferredTaskEngine?.AddTask(async taskContext =>
             {
                 var messageBus = taskContext.ServiceProvider.GetService<IMessageBus>();
-                await (_messageBus?.PublishAsync("Indexing", "Unpublished:" + context.ContentItem.ContentItemId) ?? Task.CompletedTask);
+                await (_messageBus?.PublishAsync("Indexing", eventName + ':' + contentItem.ContentItemId) ?? Task.CompletedTask);
             }, order: 50);
 
             return Task.CompletedTask;

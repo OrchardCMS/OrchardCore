@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Distributed;
 using OrchardCore.Liquid;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
@@ -28,6 +29,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IMessageBus _messageBus;
 
         public AdminController(
             LuceneIndexManager luceneIndexManager,
@@ -36,6 +38,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
+            IEnumerable<IMessageBus> _messageBuses,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
@@ -47,6 +50,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
+            _messageBus = _messageBuses.LastOrDefault();
             _notifier = notifier;
             S = s;
             H = h;
@@ -178,6 +182,8 @@ namespace OrchardCore.Lucene.Controllers
             try
             {
                 _luceneIndexManager.DeleteIndex(model.IndexName);
+
+                await (_messageBus?.PublishAsync("Indexing", "Delete" + ':' + model.IndexName) ?? Task.CompletedTask);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
