@@ -1,4 +1,3 @@
-using System;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 
@@ -16,17 +15,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             public string Description { get; set; }
         }
 
-        // Applies to all types
-        public static string[] EqualityOperators = { "", "_not" };
-
-        public static string[] NonStringValueComparisonOperators = { "_gt", "_gte", "_lt", "_lte" };
-
-        // Applies to strings
-        public static string[] StringComparisonOperators = { "_contains", "_not_contains", "_starts_with", "_not_starts_with", "_ends_with", "_not_ends_with" };
-
-        // Applies to all types
-        public static string[] MultiValueComparisonOperators = { "_in", "_not_in" };
-
         public static InputOperator[] LogicalOperators =
         {
             new InputOperator { Name = "Or", Description = "OR logical operation" },
@@ -42,73 +30,35 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             Name = contentItemName + "WhereInput";
 
-            AddScalarFilterField<IdGraphType>("contentItemId", "content item id");
-            AddScalarFilterField<IdGraphType>("contentItemVersionId", "the content item version id");
-            AddScalarFilterField<StringGraphType>("displayText", "the display text of the content item");
-            AddScalarFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation");
-            AddScalarFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification");
-            AddScalarFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication");
-            AddScalarFilterField<StringGraphType>("owner", "the owner of the content item");
-            AddScalarFilterField<StringGraphType>("author", "the author of the content item");
+            var fields = new[] {
+                new { Type = typeof(IdGraphType),  Name = "contentItemId",  Description = "content item id" },
+                new { Type = typeof(IdGraphType),  Name = "contentItemVersionId",  Description = "the content item version id" },
+                new { Type = typeof(StringGraphType),  Name = "displayText",  Description = "the display text of the content item" },
+                new { Type = typeof(DateTimeGraphType),  Name = "createdUtc",  Description = "the date and time of creation" },
+                new { Type = typeof(DateTimeGraphType),  Name = "modifiedUtc",  Description = "the date and time of modification" },
+                new { Type = typeof(DateTimeGraphType),  Name = "publishedUtc",  Description = "the date and time of publication" },
+                new { Type = typeof(StringGraphType),  Name = "owner",  Description = "the owner of the content item" },
+                new { Type = typeof(StringGraphType),  Name = "author",  Description = "the author of the content item" }
+            };
+
+            foreach (var field in fields)
+            {
+                this.AddScalarFilterFields(field.Type, field.Name, field.Description);
+            }
 
             AddLogicalOperators(contentItemName);
         }
 
-        public void AddScalarFilterField<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
-        {
-            AddEqualityOperators<TGraphType>(fieldName, description);
-            AddMultiValueOperators<TGraphType>(fieldName, description);
-
-            var graphType = typeof(TGraphType);
-            if (graphType == typeof(StringGraphType))
-            {
-                AddStringOperators<TGraphType>(fieldName, description);
-            }
-            else if (graphType == typeof(DateTimeGraphType))
-            {
-                AddNonStringOperators<TGraphType>(fieldName, description);
-            }
-        }
-
-        public void AddPartFilterField(IInputObjectGraphType inputType, string fieldName, string description)
-        {
-            Field(inputType.GetType(), fieldName, description);
-        }
-
-        private void AddLogicalOperators(string contentItemName)
+        public void AddLogicalOperators(string contentItemName)
         {
             foreach (var filter in LogicalOperators)
             {
-                Field<ListGraphType<ContentItemWhereInput>>(filter.Name, filter.Description);
-                //field.ResolvedType = new ListGraphType(new ContentItemWhereInput(contentItemName, false));
-            }
-        }
-
-        private void AddEqualityOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
-        {
-            AddOperators<TGraphType>(EqualityOperators, fieldName, description);
-        }
-
-        private void AddStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
-        {
-            AddOperators<TGraphType>(StringComparisonOperators, fieldName, description);
-        }
-
-        private void AddNonStringOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType, new()
-        {
-            AddOperators<TGraphType>(NonStringValueComparisonOperators, fieldName, description);
-        }
-
-        private void AddMultiValueOperators<TGraphType>(string fieldName, string description) where TGraphType : IGraphType
-        {
-            AddOperators<ListGraphType<TGraphType>>(MultiValueComparisonOperators, fieldName, description);
-        }
-
-        private void AddOperators<TGraphType>(string[] filters, string fieldName, string description) where TGraphType : IGraphType, new()
-        {
-            foreach (var comparison in filters)
-            {
-                Field(typeof(TGraphType), fieldName + comparison, description);
+                AddField(new FieldType
+                {
+                    Type = typeof(ListGraphType<ContentItemWhereInput>),
+                    Name = filter.Name,
+                    Description = filter.Description
+                });
             }
         }
     }

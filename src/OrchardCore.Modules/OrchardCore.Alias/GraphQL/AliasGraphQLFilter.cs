@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using GraphQL.Types;
+using System.Linq.Expressions;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
@@ -9,24 +8,37 @@ using YesSql;
 
 namespace OrchardCore.Alias.GraphQL
 {
-    public class AliasGraphQLFilter : GraphQLFilter<ContentItem>
+    public class AliasWhereFilter : IWhereFilter<ContentItem>
     {
-        public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context,
-            JObject whereArguments)
+        private static readonly ParameterExpression AliasPartIndexParameter = Expression.Parameter(typeof(AliasPartIndex), "x");
+
+        public void OnBeforeQuery(IQuery<ContentItem> query)
         {
-            if (!whereArguments.TryGetValue("aliasPart", out var part))
+            query.With<AliasPartIndex>();
+        }
+
+        public bool TryGetPropertyComparison(JProperty property, out Expression left, out Expression right)
+        {
+            if (property != null)
             {
-                return query;
+                if (property.Name == "aliasPart")
+                {
+                    var aliasPart = property.Value.ToObject<AliasPart>();
+                    if (!string.IsNullOrWhiteSpace(aliasPart?.Alias))
+                    {
+                        var aliasProperty = typeof(AliasPartIndex).GetProperty(nameof(AliasPartIndex.Alias));
+                        
+                        right = Expression.Constant(aliasPart.Alias);
+                        left = Expression.Property(AliasPartIndexParameter, aliasProperty);
+
+                        return true;
+                    }
+                }
             }
 
-            var aliasPart = part.ToObject<AliasPart>();
-
-            if (!string.IsNullOrWhiteSpace(aliasPart?.Alias))
-            {
-                return query.With<AliasPartIndex>(index => index.Alias == aliasPart.Alias);
-            }
-
-            return query;
+            left = null;
+            right = null;
+            return false;
         }
     }
 }

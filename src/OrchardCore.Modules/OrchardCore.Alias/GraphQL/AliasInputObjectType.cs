@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using OrchardCore.Alias.Models;
+using OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.Alias.GraphQL
 {
@@ -10,11 +11,7 @@ namespace OrchardCore.Alias.GraphQL
             Name = "AliasPartInput";
             Description = "the alias part of the content item";
 
-            Field(x => x.Alias, nullable: true)
-                .Name("alias")
-                .Type(new StringGraphType())
-                .Description("the alias of the content item to filter")
-                ;
+            this.AddScalarFilterFields(typeof(StringGraphType), "alias", "the alias of the content item to filter");
         }
     }
 }

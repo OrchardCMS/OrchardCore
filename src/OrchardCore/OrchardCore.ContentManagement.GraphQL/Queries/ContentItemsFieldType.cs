@@ -86,25 +86,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            query = Filter(query, context, versionOption, where);
+            var whereFilters = graphContext.ServiceProvider.GetServices<IWhereFilter<ContentItem>>().ToList();
+
+            query = Filter(query, context, versionOption, where, whereFilters);
             query = OrderBy(query, context);
 
             IQuery<ContentItem> contentItemsQuery = query;
-            var queryFilters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>().ToList();
 
-            foreach (var filter in queryFilters)
+            foreach (var filter in whereFilters)
             {
-                contentItemsQuery = filter.PreQuery(query, context, where ?? new JObject());
+                filter.OnBeforeQuery(contentItemsQuery);
             }
 
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
-
-            foreach (var filter in queryFilters)
-            {
-                contentItems = filter.PostQuery(contentItems, context);
-            }
 
             return contentItems.ToList();
         }
@@ -140,11 +136,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IQuery<ContentItem, ContentItemIndex> Filter(
-            IQuery<ContentItem, ContentItemIndex> query,
+        private IQuery<ContentItem, ContentItemIndex> Filter(IQuery<ContentItem, ContentItemIndex> query,
             ResolveFieldContext context,
             VersionOptions versionOption,
-            JObject where)
+            JObject where, 
+            IList<IWhereFilter<ContentItem>> filters)
         {
             // Applying version
 
@@ -172,7 +168,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            var expressions = CreateExpressions(where).ToList();
+            var expressions = CreateExpressions(where, filters).ToList();
 
             if (!expressions.Any())
             {
@@ -191,7 +187,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private IEnumerable<Expression> CreateExpressions(JToken where)
+        private IEnumerable<Expression> CreateExpressions(JToken where, IList<IWhereFilter<ContentItem>> filters)
         {
             if (where is JArray array)
             {
@@ -199,7 +195,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     if (child is JObject whereObject)
                     {
-                        var expressions = CreateExpressionsInternal(whereObject);
+                        var expressions = CreateExpressionsInternal(whereObject, filters);
                         foreach (var expression in expressions)
                         {
                             yield return expression;
@@ -209,7 +205,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
             else if(where is JObject whereObject)
             {
-                var expressions = CreateExpressionsInternal(whereObject);
+                var expressions = CreateExpressionsInternal(whereObject, filters);
                 foreach (var expression in expressions)
                 {
                     yield return expression;
@@ -217,7 +213,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IEnumerable<Expression> CreateExpressionsInternal(JObject where)
+        private IEnumerable<Expression> CreateExpressionsInternal(JObject where, IList<IWhereFilter<ContentItem>> filters)
         {
             foreach (var entry in where.Properties())
             {
@@ -238,7 +234,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(false);
 
-                        var subExpressions = CreateExpressions(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value, filters);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -249,7 +245,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     {
                         comparison = Expression.Constant(true);
 
-                        var subExpressions = CreateExpressions(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value, filters);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -258,7 +254,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                     else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
-                        var subExpressions = CreateExpressions(entry.Value);
+                        var subExpressions = CreateExpressions(entry.Value, filters);
 
                         foreach (var subExpression in subExpressions)
                         {
@@ -267,24 +263,36 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                     else
                     {
-                        if (!ContentItemProperties.TryGetValue(values[0], out left))
+                        if (ContentItemProperties.TryGetValue(values[0], out left))
                         {
-                            continue;
+                            right = Expression.Constant(entry.Value.ToObject<object>());
                         }
-
-                        right = Expression.Constant(entry.Value.Value<string>());
-
+                        else
+                        {
+                            // An unknown property - See if any Where Filters can provide an expression for it.
+                            if (!TryGetPropertyComparison(filters, entry, out left, out right))
+                            {
+                                continue;
+                            }
+                        }      
+                        
                         comparison = Expression.Equal(left, right);
                     }
                 }
                 else
                 {
-                    if (!ContentItemProperties.TryGetValue(values[0], out left))
+                    if (ContentItemProperties.TryGetValue(values[0], out left))
                     {
-                        continue;
+                        right = Expression.Constant(entry.Value.ToObject<object>());
                     }
-
-                    right = Expression.Constant(entry.Value.Value<string>());
+                    else
+                    {
+                        // An unknown property - See if any Where Filters can provide an expression for it.
+                        if (!TryGetPropertyComparison(filters, entry, out left, out right))
+                        {
+                            continue;
+                        }
+                    } 
 
                     switch (values[1])
                     {
@@ -308,6 +316,26 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 yield return comparison;
             }
+        }
+
+        private bool TryGetPropertyComparison(
+            IEnumerable<IWhereFilter<ContentItem>> filters, 
+            JProperty property, 
+            out Expression left,
+            out Expression right)
+        {
+            foreach (var filter in filters)
+            {
+                if(filter.TryGetPropertyComparison(property, out left, out right))
+                {
+                    return true;
+                }
+            }
+
+            left = null;
+            right = null;
+
+            return false;
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
