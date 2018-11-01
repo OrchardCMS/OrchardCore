@@ -39,7 +39,7 @@ namespace OrchardCore.ReverseProxy
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
-            services.AddSingleton<IReverseProxyService, ReverseProxyService>();
+            services.AddSingleton<ReverseProxyService>();
 
             services.TryAddEnumerable(ServiceDescriptor
                 .Transient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>());

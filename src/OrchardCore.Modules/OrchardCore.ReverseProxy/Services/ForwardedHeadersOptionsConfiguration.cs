@@ -6,9 +6,9 @@ namespace OrchardCore.ReverseProxy.Services
 {
     public class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
     {
-        private readonly IReverseProxyService _reverseProxyService;
+        private readonly ReverseProxyService _reverseProxyService;
 
-        public ForwardedHeadersOptionsConfiguration(IReverseProxyService reverseProxyService)
+        public ForwardedHeadersOptionsConfiguration(ReverseProxyService reverseProxyService)
         {
             _reverseProxyService = reverseProxyService;
         }

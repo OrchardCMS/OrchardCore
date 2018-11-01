@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReverseProxy.Services
 {
-    public class ReverseProxyService : IReverseProxyService
+    public class ReverseProxyService
     {
         private readonly ISiteService _siteService;
 
