@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Shell.Data
 
         public void AddSource(IConfigurationBuilder builder)
         {
-            var tenantSettingsPath = Path.Combine(
+            var tenantSettingsPath = PathExtensions.Combine(
                         _optionsAccessor.Value.ShellsApplicationDataPath,
                         _optionsAccessor.Value.ShellsContainerName);
 
@@ -61,7 +61,7 @@ namespace OrchardCore.Environment.Shell.Data
 
         public void SaveToSource(string name, IDictionary<string, string> configuration)
         {
-            var settingsFile = GetSettingsFilePath(Path.Combine(
+            var settingsFile = GetSettingsFilePath(PathExtensions.Combine(
                         _optionsAccessor.Value.ShellsApplicationDataPath,
                         _optionsAccessor.Value.ShellsContainerName,
                         name));
@@ -91,6 +91,6 @@ namespace OrchardCore.Environment.Shell.Data
             return (value ?? "~");
         }
 
-        private string GetSettingsFilePath(string tenantFolderPath) => Path.Combine(tenantFolderPath, "Settings.txt");
+        private string GetSettingsFilePath(string tenantFolderPath) => PathExtensions.Combine(tenantFolderPath, "Settings.txt");
     }
 }

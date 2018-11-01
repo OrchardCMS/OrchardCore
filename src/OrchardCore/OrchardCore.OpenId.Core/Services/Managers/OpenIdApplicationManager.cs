@@ -17,10 +17,11 @@ namespace OrchardCore.OpenId.Services.Managers
         IOpenIdApplicationManager where TApplication : class
     {
         public OpenIdApplicationManager(
+            IOpenIddictApplicationCache<TApplication> cache,
             IOpenIddictApplicationStoreResolver resolver,
             ILogger<OpenIdApplicationManager<TApplication>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(resolver, logger, options)
+            : base(cache, resolver, logger, options)
         {
         }
 

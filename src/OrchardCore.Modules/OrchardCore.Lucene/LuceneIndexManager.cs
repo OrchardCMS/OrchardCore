@@ -35,7 +35,8 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;        
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private static object _synLock = new object();
 
         public LuceneIndexManager(
             IClock clock,
@@ -47,7 +48,7 @@ namespace OrchardCore.Lucene
         {
             _clock = clock;
             _logger = logger;
-            _rootPath = Path.Combine(
+            _rootPath = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
@@ -93,7 +94,7 @@ namespace OrchardCore.Lucene
 
                 _timestamps.TryRemove(indexName, out var timestamp);
                 
-                var indexFolder = Path.Combine(_rootPath, indexName);
+                var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
                 {
@@ -115,7 +116,7 @@ namespace OrchardCore.Lucene
                 return false;
             }
 
-            return Directory.Exists(Path.Combine(_rootPath, indexName));
+            return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
         public IEnumerable<string> List()
@@ -237,14 +238,18 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+                var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
 
                 if (!path.Exists)
                 {
                     path.Create();
                 }
 
-                return FSDirectory.Open(path);
+                // Lucene is not thread safe on this call
+                lock (_synLock)
+                {
+                    return FSDirectory.Open(path);
+                }
             }
         }
 
@@ -312,7 +317,7 @@ namespace OrchardCore.Lucene
 
         private string GetFilename(string indexName, int documentId)
         {
-            return Path.Combine(_rootPath, indexName, documentId + ".json");
+            return PathExtensions.Combine(_rootPath, indexName, documentId + ".json");
         }
 
         /// <summary>
@@ -356,7 +361,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if(_writers.TryGetValue(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
