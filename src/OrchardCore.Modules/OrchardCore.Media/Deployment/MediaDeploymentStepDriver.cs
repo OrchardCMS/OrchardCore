@@ -30,47 +30,59 @@ namespace OrchardCore.Media.Deployment
 
         public override IDisplayResult Edit(MediaDeploymentStep step)
         {
-            return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", model =>
+            return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
-                model.Paths = step.Paths;
-                model.Entries = GetMediaStoreEntries().ToArray();
+                model.FilePaths = step.FilePaths;
+                model.DirectoryPaths = step.DirectoryPaths;
+                model.Entries = await GetMediaStoreEntries();
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, IUpdateModel updater)
         {
-            step.Paths = Array.Empty<string>();
+            step.FilePaths = Array.Empty<string>();
+            step.DirectoryPaths = Array.Empty<string>();
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
-                                              x => x.Paths,
+                                              x => x.FilePaths,
+                                              x => x.DirectoryPaths,
                                               x => x.IncludeAll);
 
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.Paths = Array.Empty<string>();
+                step.FilePaths = Array.Empty<string>();
+                step.DirectoryPaths = Array.Empty<string>();
             }
 
             return Edit(step);
         }
 
-        private IEnumerable<MediaStoreEntryViewModel> GetMediaStoreEntries(string path = null)
+        private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
-            var fileStoreEntries = _mediaFileStore.GetDirectoryContentAsync(path).Result;
+            var fileStoreEntries = (await _mediaFileStore.GetDirectoryContentAsync(path)).ToArray();
+
+            var mediaStoreEntries = new List<MediaStoreEntryViewModel>(fileStoreEntries.Length);
 
             foreach (var fileStoreEntry in fileStoreEntries)
             {
-                yield return new MediaStoreEntryViewModel
+                var mediaStoreEntry = new MediaStoreEntryViewModel
                 {
                     Name = fileStoreEntry.Name,
                     Path = fileStoreEntry.Path,
-                    Entries = fileStoreEntry.IsDirectory
-                        ? GetMediaStoreEntries(fileStoreEntry.Path).ToArray()
-                        : Array.Empty<MediaStoreEntryViewModel>()
+                    Parent = parent
                 };
+
+                mediaStoreEntry.Entries = fileStoreEntry.IsDirectory
+                    ? await GetMediaStoreEntries(fileStoreEntry.Path, mediaStoreEntry)
+                    : Array.Empty<MediaStoreEntryViewModel>();
+
+                mediaStoreEntries.Add(mediaStoreEntry);
             }
+
+            return mediaStoreEntries;
         }
     }
 }

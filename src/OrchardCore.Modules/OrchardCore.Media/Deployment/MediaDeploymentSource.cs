@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Deployment
 {
@@ -21,11 +24,35 @@ namespace OrchardCore.Media.Deployment
                 return;
             }
 
-            var paths = mediaStep.IncludeAll
-                ? (from fileStoreEntry in await _mediaFileStore.GetDirectoryContentAsync(null, true)
-                   where !fileStoreEntry.IsDirectory
-                   select fileStoreEntry.Path).ToArray()
-                : mediaStep.Paths;
+            List<string> paths;
+
+            if (mediaStep.IncludeAll)
+            {
+                var fileStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(null, true);
+
+                paths =
+                (
+                    from fileStoreEntry in fileStoreEntries
+                    where !fileStoreEntry.IsDirectory
+                    select fileStoreEntry.Path
+                ).ToList();
+            }
+            else
+            {
+                paths = new List<string>(mediaStep.FilePaths ?? Array.Empty<string>());
+
+                foreach (var directoryPath in mediaStep.DirectoryPaths ?? Array.Empty<string>())
+                {
+                    var fileStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(directoryPath, true);
+
+                    paths.AddRange(
+                        from fileStoreEntry in fileStoreEntries
+                        where !fileStoreEntry.IsDirectory
+                        select fileStoreEntry.Path);
+                }
+
+                paths.Sort();
+            }
 
             foreach (var path in paths)
             {
@@ -37,8 +64,15 @@ namespace OrchardCore.Media.Deployment
             // Adding media files
             result.Steps.Add(new JObject(
                 new JProperty("name", "media"),
-                new JProperty("Paths", JArray.FromObject(paths)
-            )));
+                new JProperty("Files", JArray.FromObject(
+                    (from path in paths
+                     select new
+                     {
+                         SourcePath = path,
+                         TargetPath = path
+                     }).ToArray()
+                ))
+            ));
         }
     }
 }
