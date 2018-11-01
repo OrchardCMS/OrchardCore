@@ -245,6 +245,7 @@ namespace OrchardCore.Lucene
                     path.Create();
                 }
 
+                // Lucene is not thread safe on this call
                 lock (_synLock)
                 {
                     return FSDirectory.Open(path);
