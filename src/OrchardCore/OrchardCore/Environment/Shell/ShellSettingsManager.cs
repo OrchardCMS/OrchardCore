@@ -14,16 +14,6 @@ namespace OrchardCore.Environment.Shell
             _configurationProviders = configurationProviders.OrderBy(x => x.Order);
         }
 
-        public ShellSettings GetSettings(string name)
-        {
-            if (!TryGetSettings(name, out ShellSettings settings))
-            {
-                throw new ArgumentException("The specified tenant name is not valid.", nameof(name));
-            }
-
-            return settings;
-        }
-
         public IEnumerable<ShellSettings> LoadSettings()
         {
             var configurationBuilder = new ConfigurationBuilder();
@@ -85,22 +75,6 @@ namespace OrchardCore.Environment.Shell
             {
                 provider.SaveToSource(settings.Name, configuration);
             }
-        }
-
-        /// <summary>
-        /// Tries to retrieve the shell settings associated with the specified tenant.
-        /// </summary>
-        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
-        public bool TryGetSettings(string name, out ShellSettings settings)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The tenant name cannot be null or empty.", nameof(name));
-            }
-
-            settings = LoadSettings().FirstOrDefault(s => string.Equals(s.Name, name, StringComparison.Ordinal));
-
-            return settings != null;
         }
     }
 }

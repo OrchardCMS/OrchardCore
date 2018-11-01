@@ -70,7 +70,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
-            if (luceneSettings == null)
+            if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
 

@@ -12,8 +12,11 @@
         </div>
     }
 
-    <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
-        
+    <div class="custom-control custom-checkbox float-left">
+        <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
+        <label class="custom-control-label" for="itemIds-@contentItem.Id">&nbsp;</label>
+    </div>
+
     <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
 
     @if (Model.Header != null)

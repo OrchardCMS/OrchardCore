@@ -16,5 +16,11 @@
     "inputFiles": [
       "Content/Styles/orchard-workflows-admin.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/Scripts/crossbrowserclipboardcopy.min.js",
+    "inputFiles": [
+      "wwwroot/Scripts/crossbrowserclipboardcopy.js"
+    ]
   }
 ]

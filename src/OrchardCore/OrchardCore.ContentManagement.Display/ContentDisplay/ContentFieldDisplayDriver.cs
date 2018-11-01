@@ -21,7 +21,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            // This should only be set in Display methods
             if (_typePartDefinition != null && _partFieldDefinition != null)
             {
                 var partType = _typePartDefinition.PartDefinition.Name;
@@ -29,6 +28,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldType = _partFieldDefinition.FieldDefinition.Name;
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+
+                if (GetEditorShapeType(_partFieldDefinition) == shapeType)
+                {
+                    // HtmlBodyPart-Description, Services-Description
+                    result.Differentiator($"{partName}-{fieldName}");
+
+                    // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
+                    return result;
+                }
 
                 if (fieldType == shapeType)
                 {
@@ -89,7 +97,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            if(!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
                 return Task.FromResult(default(IDisplayResult));
@@ -126,11 +134,24 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
-            BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
+            if (field != null)
+            {
+                BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
-            var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+                var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
-            return EditAsync(field, fieldEditorContext);
+                _typePartDefinition = typePartDefinition;
+                _partFieldDefinition = partFieldDefinition;
+
+                var result = EditAsync(field, fieldEditorContext);
+
+                _typePartDefinition = null;
+                _partFieldDefinition = null;
+
+                return result;
+            }
+
+            return Task.FromResult(default(IDisplayResult));
         }
 
         async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
@@ -155,7 +176,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             contentPart.Apply(partFieldDefinition.Name, field);
-            
+
             return result;
         }
 
@@ -189,18 +210,42 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
+        protected string GetEditorShapeType(string shapeType, ContentPartFieldDefinition partFieldDefinition)
         {
-            var editor = context.PartFieldDefinition.Editor();
+            var editor = partFieldDefinition.Editor();
             return !String.IsNullOrEmpty(editor)
                 ? shapeType + "__" + editor
                 : shapeType;
         }
 
+        protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
+        {
+            return GetEditorShapeType(shapeType, context.PartFieldDefinition);
+        }
+
+        protected string GetEditorShapeType(ContentPartFieldDefinition partFieldDefinition)
+        {
+            return GetEditorShapeType(typeof(TField).Name + "_Edit", partFieldDefinition);
+        }
+
         protected string GetEditorShapeType(BuildFieldEditorContext context)
         {
-            return GetEditorShapeType(typeof(TField).Name + "_Edit", context);
+            return GetEditorShapeType(context.PartFieldDefinition);
         }
+
+        protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
+        {
+            var displayMode = context.PartFieldDefinition.DisplayMode();
+            return !String.IsNullOrEmpty(displayMode)
+                ? shapeType + "_Display__" + displayMode
+                : shapeType;
+        }
+
+        protected string GetDisplayShapeType(BuildFieldDisplayContext context)
+        {
+            return GetDisplayShapeType(typeof(TField).Name, context);
+        }
+
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)
         {

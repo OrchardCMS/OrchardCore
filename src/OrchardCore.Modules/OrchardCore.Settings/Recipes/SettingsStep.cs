@@ -46,43 +46,43 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "SupportedCultures":
-                        site.SupportedCultures = property.Value<string[]>();
+                        site.SupportedCultures = property.Value.ToObject<string[]>();
                         break;
 
                     case "MaxPagedCount":
-                        site.MaxPagedCount = property.Value<int>();
+                        site.MaxPagedCount = property.Value.Value<int>();
                         break;
 
                     case "MaxPageSize":
-                        site.MaxPageSize = property.Value<int>();
+                        site.MaxPageSize = property.Value.Value<int>();
                         break;
 
                     case "PageSize":
-                        site.PageSize = property.Value<int>();
+                        site.PageSize = property.Value.Value<int>();
                         break;
 
                     case "ResourceDebugMode":
-                        site.ResourceDebugMode = property.Value<ResourceDebugMode>();
+                        site.ResourceDebugMode = (ResourceDebugMode) property.Value.Value<int>();
                         break;
 
                     case "SiteName":
-                        site.SiteName = property.ToString();
+                        site.SiteName = property.Value.ToString();
                         break;
 
                     case "SiteSalt":
-                        site.SiteSalt = property.ToString();
+                        site.SiteSalt = property.Value.ToString();
                         break;
 
                     case "SuperUser":
-                        site.SuperUser = property.ToString();
+                        site.SuperUser = property.Value.ToString();
                         break;
 
                     case "TimeZoneId":
-                        site.TimeZoneId = property.ToString();
+                        site.TimeZoneId = property.Value.ToString();
                         break;
 
                     case "UseCdn":
-                        site.UseCdn = property.Value<bool>();
+                        site.UseCdn = property.Value.Value<bool>();
                         break;
 
                     case "HomeRoute":

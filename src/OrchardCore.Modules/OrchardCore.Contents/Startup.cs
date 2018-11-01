@@ -129,6 +129,7 @@ namespace OrchardCore.Contents
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
+            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
         }
     }
 
@@ -144,6 +145,15 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Contents.FileContentDefinition")]
+    public class FileContentDefinitionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddFileContentDefinitionStore();
         }
     }
 }

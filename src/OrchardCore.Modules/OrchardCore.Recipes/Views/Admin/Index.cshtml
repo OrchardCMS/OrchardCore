@@ -21,7 +21,7 @@
                 @{
                     var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.Name));
                 }
-                <h4 data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
+                <h4 class="mb-2 mt-3" data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
                 <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
                     @{
                         foreach (var recipe in recipeGroup)

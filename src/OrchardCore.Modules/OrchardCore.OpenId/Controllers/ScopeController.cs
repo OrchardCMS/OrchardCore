@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
@@ -31,7 +32,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IShellHost _shellHost;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -43,7 +44,7 @@ namespace OrchardCore.OpenId.Controllers
             INotifier notifier,
             ShellDescriptor shellDescriptor,
             ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager)
+            IShellHost shellHost)
         {
             _scopeManager = scopeManager;
             _shapeFactory = shapeFactory;
@@ -54,7 +55,7 @@ namespace OrchardCore.OpenId.Controllers
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
+            _shellHost = shellHost;
         }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
@@ -99,7 +100,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellSettingsManager.LoadSettings())
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
@@ -186,7 +187,7 @@ namespace OrchardCore.OpenId.Controllers
                 where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant)
                 select resource);
 
-            foreach (var tenant in _shellSettingsManager.LoadSettings())
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
