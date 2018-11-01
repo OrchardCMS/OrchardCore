@@ -7,8 +7,12 @@ namespace OrchardCore.Mvc.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, string subPath,
-            string[] extensions, string viewsFolder = null, bool inViewsFolder = false, bool inDepth = true)
+        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider, 
+            string subPath,
+            string[] extensions, 
+            string viewsFolder = null, 
+            bool inViewsFolder = false, 
+            bool inDepth = true)
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 
@@ -23,8 +27,7 @@ namespace OrchardCore.Mvc.FileProviders
 
                 if (viewsFolderInfo != null)
                 {
-                    foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, viewsFolderInfo.Name), extensions, viewsFolder, inViewsFolder: true))
+                    foreach (var filePath in GetViewFilePaths(fileProvider, $"{subPath}/{viewsFolderInfo.Name}", extensions, viewsFolder, inViewsFolder: true))
                     {
                         yield return filePath;
                     }
@@ -37,8 +40,7 @@ namespace OrchardCore.Mvc.FileProviders
             {
                 if (content.IsDirectory && inDepth)
                 {
-                    foreach (var filePath in GetViewFilePaths(fileProvider, string.Format("{0}/{1}",
-                        subPath, content.Name), extensions, viewsFolder, inViewsFolder))
+                    foreach (var filePath in GetViewFilePaths(fileProvider, $"{subPath}/{content.Name}", extensions, viewsFolder, inViewsFolder))
                     {
                         yield return filePath;
                     }
@@ -47,7 +49,7 @@ namespace OrchardCore.Mvc.FileProviders
                 {
                     if (extensions.Contains(Path.GetExtension(content.Name)))
                     {
-                        yield return string.Format("{0}/{1}", subPath, content.Name);
+                        yield return $"{subPath}/{content.Name}";
                     }
                 }
             }
