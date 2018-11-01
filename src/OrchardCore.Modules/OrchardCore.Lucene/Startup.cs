@@ -10,14 +10,15 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Lucene.Deployment;
+using OrchardCore.Lucene.Distributed;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -102,6 +103,17 @@ namespace OrchardCore.Lucene
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
             services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
+        }
+    }
+
+    [Feature("OrchardCore.Lucene.Distributed")]
+    public class DistributedStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<LuceneDistributedIndexing>();
+            services.AddSingleton<IContentHandler>(sp => sp.GetRequiredService<LuceneDistributedIndexing>());
+            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<LuceneDistributedIndexing>());
         }
     }
 }

@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using OrchardCore.Modules;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Indexing;
-using System.Threading.Tasks;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene.Handlers
 {

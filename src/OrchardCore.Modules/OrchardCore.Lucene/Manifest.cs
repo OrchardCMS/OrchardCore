@@ -34,3 +34,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Lucene", "OrchardCore.ContentFields" },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Lucene.Distributed",
+    Name = "Lucene Distributed",
+    Description = "Fire content items events through a Message Bus, so that indices are updated by the instance owning the lucene writer.",
+    Dependencies = new[] { "OrchardCore.Lucene" },
+    Category = "Content Management"
+)]

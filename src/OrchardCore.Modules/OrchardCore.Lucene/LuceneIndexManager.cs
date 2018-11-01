@@ -6,12 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
-using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -70,12 +68,12 @@ namespace OrchardCore.Lucene
                 writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
 
                 writer.Commit();
+            });
 
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
-                }
-            }, true);
+            if (_indexPools.TryRemove(indexName, out var pool))
+            {
+                pool.MakeDirty();
+            }
         }
 
         public void DeleteIndex(string indexName)
@@ -137,12 +135,12 @@ namespace OrchardCore.Lucene
                 }
 
                 writer.Commit();
+            });
 
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
-                }
-            }, true);
+            if (_indexPools.TryRemove(indexName, out var pool))
+            {
+                pool.MakeDirty();
+            }
         }
 
         public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
@@ -259,6 +257,12 @@ namespace OrchardCore.Lucene
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
+
+                        if (IndexWriter.IsLocked(directory))
+                        {
+                            return;
+                        }
+
                         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
