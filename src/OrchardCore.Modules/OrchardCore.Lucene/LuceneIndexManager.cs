@@ -258,6 +258,7 @@ namespace OrchardCore.Lucene
                     {
                         var directory = CreateDirectory(indexName);
 
+                        // Check if already owned by another instance.
                         if (IndexWriter.IsLocked(directory))
                         {
                             return;
