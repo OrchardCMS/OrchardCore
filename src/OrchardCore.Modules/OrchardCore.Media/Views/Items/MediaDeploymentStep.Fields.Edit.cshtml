@@ -16,14 +16,6 @@
     </div>
 </fieldset>
 
-<h6>NOTE:</h6>
-<ul>
-    <li>Selecting "Include all media." will ensure that all media is added to the package when this deployment plan executes, regardless of what you see here now.</li>
-    <li>Selecting a file will ensure that only that file is added to the package when this deployment plan executes, regardless of what you see here now.</li>
-    <li>Selecting a directory will ensure that all the files in that directory at the time this deployment plan executes, are added to the package during execution, regardless of what you see here now.</li>
-    <li>Selecting all files in a directory will ensure that only those files are added to the package when this deployment plan executes, even if at that time, that directory has more files than what you see here now.</li>
-</ul>
-
 <fieldset class="media-sel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row">
         <div class="col">

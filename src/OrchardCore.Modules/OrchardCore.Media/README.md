@@ -125,6 +125,15 @@ Alternatively the Asset Url can be resolved independently and the `src` attribut
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
+## Deployment Step Editor
+
+Keep these things in mind when working with the deployment step editor:
+
+* Selecting "Include all media." will ensure that all media is added to the package when this deployment plan executes, regardless of what you see here now.
+* Selecting a file will ensure that only that file is added to the package when this deployment plan executes, regardless of what you see here now.
+* Selecting a directory will ensure that all the files in that directory at the time this deployment plan executes, are added to the package during execution, regardless of what you see here now.
+* Selecting all files in a directory will ensure that only those files are added to the package when this deployment plan executes, even if at that time, that directory has more files than what you see here now.
+
 ## CREDITS
 
 ### ImageSharp
