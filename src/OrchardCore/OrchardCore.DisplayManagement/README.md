@@ -55,7 +55,7 @@ Placement information consists of:
 
 ### Placing Fields
 
-Fields have a custom differentiator as their shape is used in many places. It is built using the Part it's contained
+Fields have a custom differentiator as their shape is used in many places. It is built using the `Part` it's contained
 in, and the name of the field. For instance, if a field named `MyField` would be added to an `Article` content type,
 its differentiator would be `Article.MyField`. If a field named `City` was added to an `Address` part then its differentiator would
 be `Address.City`.
@@ -95,9 +95,9 @@ Metadata tag helper example:
 
 ### Date Time shapes
 
-#### DateTime
+#### `DateTime`
 
-Renders a Date and Time value using the time zone of the request.
+Renders a `Date` and `Time` value using the timezone of the request.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
@@ -110,9 +110,9 @@ Tag helper example:
 <datetime utc="@contentItem.CreatedUtc" />
 ```
 
-#### TimeSpan
+#### `TimeSpan`
 
-Renders a relative textual representation of a Date and Time interval.
+Renders a relative textual representation of a `Date` and `Time` interval.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |

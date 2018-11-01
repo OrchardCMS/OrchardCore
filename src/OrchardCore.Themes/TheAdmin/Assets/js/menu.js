@@ -37,7 +37,7 @@ function setCompactStatus(explicit) {
     // This if is to avoid that when sliding from expanded to compact the 
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
-        var labels = $('#left-nav ul.menu-admin > li > label');
+        var labels = $('#left-nav ul.menu-admin > li > .item-label');
         labels.css('background-color', 'transparent');
         setTimeout(function () {
             labels.css('background-color', '');

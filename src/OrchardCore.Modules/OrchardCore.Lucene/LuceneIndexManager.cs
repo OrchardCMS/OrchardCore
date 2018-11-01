@@ -48,7 +48,7 @@ namespace OrchardCore.Lucene
         {
             _clock = clock;
             _logger = logger;
-            _rootPath = Path.Combine(
+            _rootPath = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
@@ -93,8 +93,8 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-
-                var indexFolder = Path.Combine(_rootPath, indexName);
+                
+                var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
                 {
@@ -116,7 +116,7 @@ namespace OrchardCore.Lucene
                 return false;
             }
 
-            return Directory.Exists(Path.Combine(_rootPath, indexName));
+            return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
         public IEnumerable<string> List()
@@ -238,7 +238,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+                var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
 
                 if (!path.Exists)
                 {
@@ -310,7 +310,7 @@ namespace OrchardCore.Lucene
 
         private string GetFilename(string indexName, int documentId)
         {
-            return Path.Combine(_rootPath, indexName, documentId + ".json");
+            return PathExtensions.Combine(_rootPath, indexName, documentId + ".json");
         }
 
         /// <summary>

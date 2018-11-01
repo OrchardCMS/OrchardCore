@@ -1,4 +1,4 @@
-# Queries (OrchardCore.Queries)
+# Queries (`OrchardCore.Queries`)
 
 The queries module provides a management UI and APIs for querying data.
 
@@ -13,7 +13,7 @@ Create a class inheriting from `Query` which will represent the state that is ne
 Create a class implementing `IQuerySource` in order to expose the new type of query.
 The query source can be registered like this:
 
-```
+```csharp
 services.AddScoped<IQuerySource, LuceneQuerySource>();
 ```
 
@@ -21,7 +21,7 @@ services.AddScoped<IQuerySource, LuceneQuerySource>();
 
 Queries are edited by providing a custom implementation of a `DisplayDriver` for the type `Query`. 
 
-```
+```csharp
 public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
 {
 ...
@@ -55,7 +55,7 @@ Here is a sample step:
 
 ## Web APIs
 
-### api/queries/{name}
+### `api/queries/{name}`
 
 Executes a query with the specified name.
 
@@ -63,10 +63,10 @@ Verbs: **POST** and **GET**
 
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
-| `name` | `myQuery` | The name of the query to execute |
-| `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
+| `name` | `myQuery` | The name of the query to execute. |
+| `parameters` | `{ size: 3}` | A Json object representing the parameters of the query. |
 
-# SQL Queries (OrchardCore.Queries.Sql)
+# SQL Queries (`OrchardCore.Queries.Sql`)
 
 This feature provide a new type of query targeting the SQL database.
 
@@ -91,8 +91,7 @@ You can access queries from liquid views and templates by using the `Queries` pr
 
 The `query` filter provides a way to execute queries. 
 
-
-```
+```liquid
 {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
 {% for item in recentBlogPosts %}
 {{ item | display_text }}
@@ -104,9 +103,9 @@ Any available property on the results of the queries can be used. This example a
 
 ### Parameters
 
-The `query` filter allows you to pass in parameters to your paramterized queries. For example, a query called `ContentItems` that has two parameters (`contentType` and `limit`) can be called like this:
+The `query` filter allows you to pass in parameters to your parameterized queries. For example, a query called `ContentItems` that has two parameters (`contentType` and `limit`) can be called like this:
 
-```
+```liquid
 {% assign fiveBlogPosts = Queries.ContentItems | query: contentType: "BlogPost", limit: 5 %}
 ```
 
@@ -116,9 +115,9 @@ The `QueryAsync` and `ContentQueryAsync` Orchard Helper extension methods (in th
 
 You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
 
-For example, to run a query called LatestBlogPosts, and display the results:
+For example, to run a query called `LatestBlogPosts`, and display the results:
 
-```
+```liquid
 @foreach (var contentItem in await OrchardCore.ContentQueryAsync("AllContent"))
 {
     @await Orchard.DisplayAsync(contentItem)
@@ -162,14 +161,11 @@ group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 
 Parameters can be provided when running queries.
 Parameters are safe to use as they will always be parsed before being included in a query.
-The syntax of a parameter is 
-
-`@name:default_value`
-
-Where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
+The syntax of a parameter is `@name:default_value`,
+where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
 the parameter is not defined.
 
-The following example loads the document ids for a parameterized content type.
+The following example loads the document ids for a parameterized content type:
 
 ```sql
 select DocumentId
@@ -189,7 +185,7 @@ It is recommended to use parameters to inject values in the queries, and only us
 
 This example checks that a `limit` parameter is provided and if so uses it:
 
-```
+```liquid
 {% if limit > 0 %}
     select ... limit @limit
 {% else %}
@@ -209,9 +205,9 @@ The SQL parser is also able to convert some specific functions to the intended d
 
 | Name             | Description                        |
 | ---------------- |----------------------------------- |
-| `second(_date_)` | Returns the seconds part of a date |
-| `minute(_date_)` | Returns the minutes part of a date |
-| `hour(_date_)`   | Returns the hours part of a date   |
-| `day(_date_)`    | Returns the days part of a date    |
-| `month(_date_)`  | Returns the months part of a date  |
-| `year(_date_)`   | Returns the years part of a date   |
+| `second(_date_)` | Returns the seconds part of a date. |
+| `minute(_date_)` | Returns the minutes part of a date. |
+| `hour(_date_)`   | Returns the hours part of a date.   |
+| `day(_date_)`    | Returns the days part of a date.    |
+| `month(_date_)`  | Returns the months part of a date.  |
+| `year(_date_)`   | Returns the years part of a date.   |

@@ -32,7 +32,7 @@ namespace OrchardCore.Scripting.Files
             if (script.StartsWith("text('") && script.EndsWith("')"))
             {
                 var filePath = script.Substring(6, script.Length - 8);
-                var fileInfo = fileScope.FileProvider.GetFileInfo(fileScope.GetRelativeFile(filePath));
+                var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
@@ -49,7 +49,7 @@ namespace OrchardCore.Scripting.Files
             else if(script.StartsWith("base64('") && script.EndsWith("')"))
             {
                 var filePath = script.Substring(8, script.Length - 10);
-                var fileInfo = fileScope.FileProvider.GetFileInfo(fileScope.GetRelativeFile(filePath));
+                var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
