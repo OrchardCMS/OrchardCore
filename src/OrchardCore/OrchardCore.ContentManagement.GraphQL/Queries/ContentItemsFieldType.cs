@@ -2,18 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
-using YesSql.Services;
+using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -22,22 +21,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-        private static ParameterExpression ContentItemParameter = Expression.Parameter(typeof(ContentItemIndex), "x");
 
-        private static Dictionary<string, Expression> ContentItemProperties;
-        private static MethodInfo IsIn = typeof(DefaultQueryExtensions).GetMethod("IsIn");
-        private static MethodInfo IsNotIn = typeof(DefaultQueryExtensions).GetMethod("IsNotIn");
-        private static MethodInfo Contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-        private static MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-        private static MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
+        private static readonly List<string> ContentItemProperties;
 
         static ContentItemsFieldType()
         {
-            ContentItemProperties = new Dictionary<string, Expression>(StringComparer.OrdinalIgnoreCase);
+            ContentItemProperties = new List<string>();
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {
-                ContentItemProperties.Add(property.Name, ConvertToNonNullableExpression(Expression.Property(ContentItemParameter, property)));
+                ContentItemProperties.Add(property.Name);
             }
         }
 
@@ -86,18 +79,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            var whereFilters = graphContext.ServiceProvider.GetServices<IWhereFilter<ContentItem>>().ToList();
-
-            query = Filter(query, context, versionOption, where, whereFilters);
+            query = FilterVersion(query, versionOption);
+            query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
+            var expressions = Expression.Conjunction();
+            BuildWhereExpressions(where, expressions);
+
+            var predicateQuery = graphContext.ServiceProvider.GetService<IPredicateQuery>();
+            query = query.Where(expressions.ToSqlString(predicateQuery));
+
             IQuery<ContentItem> contentItemsQuery = query;
-
-            foreach (var filter in whereFilters)
-            {
-                //filter.OnBeforeQuery(contentItemsQuery);
-            }
-
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
@@ -136,14 +128,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IQuery<ContentItem, ContentItemIndex> Filter(IQuery<ContentItem, ContentItemIndex> query,
-            ResolveFieldContext context,
-            VersionOptions versionOption,
-            JObject where, 
-            IList<IWhereFilter<ContentItem>> filters)
+        private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, ResolveFieldContext context)
         {
-            // Applying version
+            var contentType = ((ListGraphType) context.ReturnType).ResolvedType.Name;
 
+            return query.Where(q => q.ContentType == contentType);
+        }
+
+        private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)
+        {
             if (versionOption.IsPublished)
             {
                 query = query.Where(q => q.Published == true);
@@ -157,37 +150,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 query = query.Where(q => q.Latest == true);
             }
 
-            // Applying content type
-
-            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
-
-            query = query.Where(q => q.ContentType == contentType);
-
-            if (where == null)
-            {
-                return query;
-            }
-
-            var expressions = CreateExpressions(where, filters).ToList();
-
-            if (!expressions.Any())
-            {
-                return query;
-            }
-
-            Expression predicate = Expression.Constant(true);
-
-            foreach (var expression in expressions)
-            {
-                predicate = Expression.And(predicate, expression);
-            }
-
-            query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(predicate, ContentItemParameter));
-
             return query;
         }
 
-        private IEnumerable<Expression> CreateExpressions(JToken where, IList<IWhereFilter<ContentItem>> filters)
+        private void BuildWhereExpressions(JToken where, Junction expressions)
         {
             if (where is JArray array)
             {
@@ -195,147 +161,84 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     if (child is JObject whereObject)
                     {
-                        var expressions = CreateExpressionsInternal(whereObject, filters);
-                        foreach (var expression in expressions)
-                        {
-                            yield return expression;
-                        }
+                        BuildExpressionsInternal(whereObject, expressions);
                     }
                 }
             }
             else if(where is JObject whereObject)
             {
-                var expressions = CreateExpressionsInternal(whereObject, filters);
-                foreach (var expression in expressions)
-                {
-                    yield return expression;
-                }
+                BuildExpressionsInternal(whereObject, expressions);
             }
         }
 
-        private IEnumerable<Expression> CreateExpressionsInternal(JObject where, IList<IWhereFilter<ContentItem>> filters)
+        private void BuildExpressionsInternal(JObject where, Junction expressions)
         {
             foreach (var entry in where.Properties())
             {
-                Expression comparison = null;
-
                 var values = entry.Name.Split(new[] {'_'}, 2);
 
-                Expression left, right;
+                var property = values[0];
 
-                if (values[0] == "status")
+                if (property == "status")
                 {
                     continue;
                 }
 
                 if (values.Length == 1)
                 {
-                    if (String.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(property, "or", StringComparison.OrdinalIgnoreCase))
                     {
-                        comparison = Expression.Constant(false);
-
-                        var subExpressions = CreateExpressions(entry.Value, filters);
-
-                        foreach (var subExpression in subExpressions)
-                        {
-                            comparison = Expression.Or(comparison, subExpression);
-                        }
+                        var comparison = Expression.Disjunction();
+                        BuildWhereExpressions(entry.Value, comparison);
+                        expressions.Add(comparison);
                     }
-                    else if (String.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(property, "and", StringComparison.OrdinalIgnoreCase))
                     {
-                        comparison = Expression.Constant(true);
-
-                        var subExpressions = CreateExpressions(entry.Value, filters);
-
-                        foreach (var subExpression in subExpressions)
-                        {
-                            comparison = Expression.And(comparison, subExpression);
-                        }
+                        var comparison = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, comparison);
+                        expressions.Add(comparison);
                     }
-                    else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(property, "not", StringComparison.OrdinalIgnoreCase))
                     {
-                        var subExpressions = CreateExpressions(entry.Value, filters);
-
-                        foreach (var subExpression in subExpressions)
-                        {
-                            comparison = Expression.Not(subExpression);
-                        }
+                        var comparison = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, comparison);
+                        expressions.Add(Expression.Not(comparison));
                     }
                     else
-                    {
-                        if (ContentItemProperties.TryGetValue(values[0], out left))
-                        {
-                            right = Expression.Constant(entry.Value.ToObject<object>());
-                        }
-                        else
-                        {
-                            // An unknown property - See if any Where Filters can provide an expression for it.
-                            if (!TryGetPropertyComparison(filters, entry, out left, out right))
-                            {
-                                continue;
-                            }
-                        }      
-                        
-                        comparison = Expression.Equal(left, right);
+                    {     
+                        var propertyValue = entry.Value.ToObject<object>();
+                        var comparison = Expression.Equal(property, propertyValue);
+                        expressions.Add(comparison);
                     }
                 }
                 else
                 {
-                    if (ContentItemProperties.TryGetValue(values[0], out left))
-                    {
-                        right = Expression.Constant(entry.Value.ToObject<object>());
-                    }
-                    else
-                    {
-                        // An unknown property - See if any Where Filters can provide an expression for it.
-                        if (!TryGetPropertyComparison(filters, entry, out left, out right))
-                        {
-                            continue;
-                        }
-                    } 
+                    IPredicate comparison;
+
+                    var value = entry.Value.ToObject<object>();
 
                     switch (values[1])
                     {
-                        case "not": comparison = Expression.NotEqual(left, right); break;
-                        case "gt": comparison = Expression.GreaterThan(left, right); break;
-                        case "gte": comparison = Expression.GreaterThanOrEqual(left, right); break;
-                        case "lt": comparison = Expression.LessThan(left, right); break;
-                        case "lte": comparison = Expression.LessThanOrEqual(left, right); break;
-                        case "contains": comparison = Expression.Call(left, Contains, right); break;
-                        case "not_contains": comparison = Expression.Not(Expression.Call(left, Contains, right)); break;
-                        case "starts_with": comparison = Expression.Call(left, StartsWith, right); break;
-                        case "not_starts_with": comparison = Expression.Not(Expression.Call(left, StartsWith, right)); break;
-                        case "ends_with": comparison = Expression.Call(left, EndsWith, right); break;
-                        case "not_ends_with": comparison = Expression.Not(Expression.Call(left, EndsWith, right)); break;
-                        case "in": comparison = Expression.Call(null, IsIn, left, right); break;
-                        case "not_in": comparison = Expression.Call(null, IsNotIn, left, right); break;
+                        case "not": comparison = Expression.Not(Expression.Equal(property, value)); break;
+                        case "gt": comparison = Expression.GreaterThan(property, value); break;
+                        case "gte": comparison = Expression.GreaterThanOrEqual(property, value); break;
+                        case "lt": comparison = Expression.LessThan(property, value); break;
+                        case "lte": comparison = Expression.LessThanOrEqual(property, value); break;
+                        case "contains": comparison = Expression.Like(property, (string)value, MatchOptions.Contains); break;
+                        case "not_contains": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
+                        case "starts_with": comparison = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
+                        case "not_starts_with": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
+                        case "ends_with": comparison = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
+                        case "not_ends_with": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
+                        case "in": comparison = Expression.In(property, entry.Value.ToObject<object[]>()); break;
+                        case "not_in": comparison = Expression.In(property, entry.Value.ToObject<object[]>()); break;
 
-                        default: comparison = Expression.Equal(left, right); break;
+                        default: comparison = Expression.Equal(property, value); break;
                     }
-                }
 
-                yield return comparison;
+                    expressions.Add(comparison);
+                }    
             }
-        }
-
-        private bool TryGetPropertyComparison(
-            IEnumerable<IWhereFilter<ContentItem>> filters, 
-            JProperty property, 
-            out Expression left,
-            out Expression right)
-        {
-            foreach (var filter in filters)
-            {
-                if(filter.TryGetPropertyComparison(property, out left, out right))
-                {
-                    return true;
-                }
-            }
-
-            left = null;
-            right = null;
-
-            return false;
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
@@ -398,23 +301,5 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             return query;
         }
-
-        static Expression ConvertToNonNullableExpression(Expression expression)
-        {
-            if (expression == null)
-            {
-                throw new ArgumentNullException("expression");
-            }
-
-            if (expression.Type.IsGenericType && expression.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                return Expression.Convert(expression, expression.Type.GetGenericArguments()[0]);
-            }
-            else
-            {
-                return expression;
-            }
-        }
-
     }
 }
