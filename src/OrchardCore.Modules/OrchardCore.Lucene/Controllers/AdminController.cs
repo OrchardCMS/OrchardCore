@@ -136,6 +136,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 return NotFound();
             }
+            await (_messageBus?.PublishAsync("Indexing", "Reset:" + id) ?? Task.CompletedTask);
 
             _luceneIndexingService.ResetIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
@@ -160,7 +161,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                await (_messageBus?.PublishAsync("Indexing", "Delete" + ':' + id) ?? Task.CompletedTask);
+                await (_messageBus?.PublishAsync("Indexing", "Rebuild:" + id) ?? Task.CompletedTask);
 
                 _luceneIndexingService.RebuildIndex(id);
                 await _luceneIndexingService.ProcessContentItemsAsync();
@@ -170,7 +171,7 @@ namespace OrchardCore.Lucene.Controllers
             catch (Exception e)
             {
                 _notifier.Error(H["An error occurred while rebuilding the index"]);
-                Logger.LogError("An error occurred while rebuilding the index " + id, e);
+                Logger.LogError(e, "An error occurred while rebuilding the index " + id);
             }
 
             return RedirectToAction("Index");
@@ -191,7 +192,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                await (_messageBus?.PublishAsync("Indexing", "Delete" + ':' + model.IndexName) ?? Task.CompletedTask);
+                await (_messageBus?.PublishAsync("Indexing", "Delete:" + model.IndexName) ?? Task.CompletedTask);
 
                 _luceneIndexManager.DeleteIndex(model.IndexName);
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
@@ -199,7 +200,7 @@ namespace OrchardCore.Lucene.Controllers
             catch(Exception e)
             {
                 _notifier.Error(H["An error occurred while deleting the index"]);
-                Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                Logger.LogError(e, "An error occurred while deleting the index " + model.IndexName);
             }
 
             return RedirectToAction("Index");

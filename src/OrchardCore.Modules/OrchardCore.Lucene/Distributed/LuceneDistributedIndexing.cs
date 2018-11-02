@@ -48,42 +48,37 @@ namespace OrchardCore.Lucene.Distributed
             {
                 var tokens = message.Split(':').ToArray();
 
-                // Validate the message {event}:{name or id}
+                // {eventname}:{indexname or contentitemid}
                 if (tokens.Length != 2 || tokens[1].Length == 0)
                 {
                     return;
                 }
 
-                if (tokens[0] == "Delete")
-                {
-                    _luceneIndexManager.DeleteIndex(tokens[1]);
-                }
-
-                else if (tokens[0].StartsWith("Delete|") && tokens[0].Length > "Delete|".Length)
-                {
-                    var index = tokens[0].Substring("Delete|".Length);
-                    _luceneIndexManager.DeleteDocuments(index, new string[] { tokens[1] });
-                }
-
-                else if (tokens[0].StartsWith("Store|") && tokens[0].Length > "Store|".Length)
+                if (tokens[0] == "Reset")
                 {
                     using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
                     {
-                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var contentItem = contentManager.GetAsync(tokens[1]).GetAwaiter().GetResult();
+                        var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
 
-                        if (contentItem == null)
-                        {
-                            return;
-                        }
-
-                        var context = new BuildIndexContext(new DocumentIndex(tokens[1]), contentItem, new string[] { contentItem.ContentType });
-                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-                        indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), _logger).GetAwaiter().GetResult();
-
-                        var index = tokens[0].Substring("Store|".Length);
-                        _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { context.DocumentIndex });
+                        luceneIndexingService.ResetIndex(tokens[1]);
+                        luceneIndexingService.ProcessContentItemsAsync().GetAwaiter().GetResult();
                     }
+                }
+
+                else if (tokens[0] == "Rebuild")
+                {
+                    using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
+                    {
+                        var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+
+                        luceneIndexingService.RebuildIndex(tokens[1]);
+                        luceneIndexingService.ProcessContentItemsAsync().GetAwaiter().GetResult();
+                    }
+                }
+
+                else if (tokens[0] == "Delete")
+                {
+                    _luceneIndexManager.DeleteIndex(tokens[1]);
                 }
 
                 else if (tokens[0] == "Published")

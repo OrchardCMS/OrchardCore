@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -28,7 +27,6 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
-        private readonly IMessageBus _messageBus;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -37,7 +35,6 @@ namespace OrchardCore.Lucene
             LuceneIndexManager indexManager, 
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
-            IEnumerable<IMessageBus> _messageBuses,
             ILogger<LuceneIndexingService> logger)
         {
             _shellHost = shellHost;
@@ -46,7 +43,6 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
-            _messageBus = _messageBuses.LastOrDefault();
 
             Logger = logger;
         }
@@ -99,7 +95,6 @@ namespace OrchardCore.Lucene
 
                             if (index.Value < task.Id)
                             {
-                                await (_messageBus?.PublishAsync("Indexing", "Delete|" + index.Key + ':' + task.ContentItemId) ?? Task.CompletedTask);
                                 _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
                             }
                         }
@@ -122,7 +117,6 @@ namespace OrchardCore.Lucene
                             {
                                 if (index.Value < task.Id)
                                 {
-                                    await (_messageBus?.PublishAsync("Indexing", "Store|" + index.Key + ':' + task.ContentItemId) ?? Task.CompletedTask);
                                     _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
                                 }
                             }
