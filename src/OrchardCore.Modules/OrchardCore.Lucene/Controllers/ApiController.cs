@@ -7,6 +7,9 @@ using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
 {
+    [Route("api/lucene")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -24,6 +27,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost, HttpGet]
+        [Route("content")]
         public async Task<IActionResult> Content(
             string indexName,
             string query,
@@ -49,6 +53,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost, HttpGet]
+        [Route("documents")]
         public async Task<IActionResult> Documents(
             string indexName,
             string query,

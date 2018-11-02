@@ -28,5 +28,10 @@ namespace OrchardCore.ContentTypes.ViewModels
         /// </summary>
         public string Editor { get; set; }
 
+        /// <summary>
+        /// The display mode of the field
+        /// </summary>
+        public string DisplayMode { get; set; }
+
     }
 }

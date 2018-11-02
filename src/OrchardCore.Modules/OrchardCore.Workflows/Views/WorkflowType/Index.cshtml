@@ -38,9 +38,13 @@
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Properties"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Duplicate"]</a>
                         </div>
 
-                        <input type="checkbox" asp-for="@Model.WorkflowTypes[i].IsChecked" />
+                        <div class="custom-control custom-checkbox float-left">
+                            <input type="checkbox" class="custom-control-input" asp-for="@Model.WorkflowTypes[i].IsChecked">
+                            <label class="custom-control-label" asp-for="@Model.WorkflowTypes[i].IsChecked">&nbsp;</label>
+                        </div>
                         <input type="hidden" asp-for="@Model.WorkflowTypes[i].Id" />
                         <input type="hidden" asp-for="@Model.WorkflowTypes[i].Name" />
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
@@ -52,7 +56,7 @@
                             }
                             @if (entry.WorkflowCount > 0)
                             {
-                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances", entry.WorkflowCount)</a>
+                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
                             }
                         </div>
                     </div>

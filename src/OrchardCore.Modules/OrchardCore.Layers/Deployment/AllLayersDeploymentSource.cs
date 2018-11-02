@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Deployment
             // Adding Layer settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "Settings"),
-                new JProperty("LayerSettings", siteSettings.As<LayerSettings>().Zones)
+                new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
             ));
         }
     }

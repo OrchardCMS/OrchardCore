@@ -1,4 +1,4 @@
-﻿@model AddPartsViewModel
+@model AddPartsViewModel
 @{
     int i = 0;
 }
@@ -13,17 +13,14 @@
             @foreach (var partSelection in Model.PartSelections)
             {
                 <li class="list-group-item">
-                    <div class="checkbox">
-                        <label asp-for="PartSelections[i].IsSelected">
-                            <input asp-for="PartSelections[i].IsSelected" type="checkbox" />
-                            @partSelection.PartDisplayName
-                        </label>
-                        <input asp-for="PartSelections[i].IsSelected" type="hidden" />
-                        <input asp-for="PartSelections[i].PartName" type="hidden" />
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="PartSelections[i].IsSelected">
+                        <label class="custom-control-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
                         <span class="hint">@T["— {0}", @partSelection.PartDescription]</span>
                     </div>
+                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    <input asp-for="PartSelections[i].PartName" type="hidden" />
                 </li>
-
                 i++;
             }
         </ul>
