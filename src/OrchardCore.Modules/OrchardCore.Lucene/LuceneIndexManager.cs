@@ -119,6 +119,55 @@ namespace OrchardCore.Lucene
             return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
+        public bool TryGetWriter(string indexName, out IndexWriterWrapper writer)
+        {
+            if (_writers.TryGetValue(indexName, out writer))
+            {
+                return true;
+            }
+
+            lock (this)
+            {
+                if (_writers.TryGetValue(indexName, out writer))
+                {
+                    return true;
+                }
+
+                var directory = CreateDirectory(indexName);
+
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
+                {
+                    OpenMode = OpenMode.CREATE_OR_APPEND
+                };
+
+                try
+                {
+                    if (IndexWriter.IsLocked(directory))
+                    {
+                        writer = null;
+                        return false;
+                    }
+                }
+
+                catch (UnauthorizedAccessException)
+                {
+                }
+
+                try
+                {
+                    writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
+                    return true;
+                }
+                catch (LockObtainFailedException)
+                {
+                }
+
+                writer = null;
+                return false;
+            }
+        }
+
         public IEnumerable<string> List()
         {
             return _rootDirectory
@@ -255,45 +304,9 @@ namespace OrchardCore.Lucene
 
         private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
-            if (!_writers.TryGetValue(indexName, out var writer))
+            if (!TryGetWriter(indexName, out var writer))
             {
-                lock (this)
-                {
-                    if (!_writers.TryGetValue(indexName, out writer))
-                    {
-                        var directory = CreateDirectory(indexName);
-
-                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-                        var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
-                        {
-                            OpenMode = OpenMode.CREATE_OR_APPEND
-                        };
-
-                        using (var writeLock = directory.MakeLock(IndexWriter.WRITE_LOCK_NAME))
-                        {
-                            try
-                            {
-                                // Check if the index is already owned by another instance.
-                                if (writeLock.IsLocked())
-                                {
-                                    return;
-                                }
-                            }
-
-                            // We get this exception when the lock file is just going to be deleted
-                            // by another instance. So we retry but by using the write lock timeout.
-                            catch (UnauthorizedAccessException)
-                            {
-                                if (!writeLock.Obtain(config.WriteLockTimeout))
-                                {
-                                    return;
-                                }
-                            }
-                        }
-
-                        writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
-                    }
-                }
+                return;
             }
 
             if (writer.IsClosing)
@@ -422,7 +435,7 @@ namespace OrchardCore.Lucene
         }
     }
 
-    internal class IndexWriterWrapper : IndexWriter
+    public class IndexWriterWrapper : IndexWriter
     {
         public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
         {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DeferredTasks;
@@ -10,7 +11,6 @@ using OrchardCore.Distributed;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Lucene.Distributed
 {
@@ -59,12 +59,17 @@ namespace OrchardCore.Lucene.Distributed
                     _luceneIndexManager.DeleteIndex(tokens[1]);
                 }
 
-                else if (tokens[0] == "Published")
+                else if (tokens[0].StartsWith("Delete|") && tokens[0].Length > "Delete|".Length)
+                {
+                    var index = tokens[0].Substring("Delete|".Length);
+                    _luceneIndexManager.DeleteDocuments(index, new string[] { tokens[1] });
+                }
+
+                else if (tokens[0].StartsWith("Store|") && tokens[0].Length > "Store|".Length)
                 {
                     using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
                     {
                         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-
                         var contentItem = contentManager.GetAsync(tokens[1]).GetAwaiter().GetResult();
 
                         if (contentItem == null)
@@ -72,14 +77,35 @@ namespace OrchardCore.Lucene.Distributed
                             return;
                         }
 
-                        var buildIndexContext = new BuildIndexContext(new DocumentIndex(tokens[1]), contentItem, new string[] { contentItem.ContentType });
-                        var contentItemIndexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-                        contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger).GetAwaiter().GetResult();
+                        var context = new BuildIndexContext(new DocumentIndex(tokens[1]), contentItem, new string[] { contentItem.ContentType });
+                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+                        indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), _logger).GetAwaiter().GetResult();
+
+                        var index = tokens[0].Substring("Store|".Length);
+                        _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { context.DocumentIndex });
+                    }
+                }
+
+                else if (tokens[0] == "Published")
+                {
+                    using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
+                    {
+                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                        var contentItem = contentManager.GetAsync(tokens[1]).GetAwaiter().GetResult();
+
+                        if (contentItem == null)
+                        {
+                            return;
+                        }
+
+                        var context = new BuildIndexContext(new DocumentIndex(tokens[1]), contentItem, new string[] { contentItem.ContentType });
+                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+                        indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), _logger).GetAwaiter().GetResult();
 
                         foreach (var index in _luceneIndexManager.List())
                         {
                             _luceneIndexManager.DeleteDocuments(index, new string[] { tokens[1] });
-                            _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                            _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { context.DocumentIndex });
                         }
                     }
                 }
