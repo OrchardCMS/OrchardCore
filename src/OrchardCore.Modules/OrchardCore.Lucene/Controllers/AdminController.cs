@@ -158,10 +158,20 @@ namespace OrchardCore.Lucene.Controllers
                 return NotFound();
             }
 
-            _luceneIndexingService.RebuildIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync();
+            try
+            {
+                await (_messageBus?.PublishAsync("Indexing", "Delete" + ':' + id) ?? Task.CompletedTask);
 
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
+                _luceneIndexingService.RebuildIndex(id);
+                await _luceneIndexingService.ProcessContentItemsAsync();
+
+                _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
+            }
+            catch (Exception e)
+            {
+                _notifier.Error(H["An error occurred while rebuilding the index"]);
+                Logger.LogError("An error occurred while rebuilding the index " + id, e);
+            }
 
             return RedirectToAction("Index");
         }
@@ -181,10 +191,9 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                _luceneIndexManager.DeleteIndex(model.IndexName);
-
                 await (_messageBus?.PublishAsync("Indexing", "Delete" + ':' + model.IndexName) ?? Task.CompletedTask);
 
+                _luceneIndexManager.DeleteIndex(model.IndexName);
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
             catch(Exception e)

@@ -263,17 +263,33 @@ namespace OrchardCore.Lucene
                     {
                         var directory = CreateDirectory(indexName);
 
-                        // Check if already owned by another instance.
-                        if (IndexWriter.IsLocked(directory))
-                        {
-                            return;
-                        }
-
                         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
                         };
+
+                        using (var writeLock = directory.MakeLock(IndexWriter.WRITE_LOCK_NAME))
+                        {
+                            try
+                            {
+                                // Check if the index is already owned by another instance.
+                                if (writeLock.IsLocked())
+                                {
+                                    return;
+                                }
+                            }
+
+                            // We get this exception when the lock file is just going to be deleted
+                            // by another instance. So we retry but by using the write lock timeout.
+                            catch (UnauthorizedAccessException)
+                            {
+                                if (!writeLock.Obtain(config.WriteLockTimeout))
+                                {
+                                    return;
+                                }
+                            }
+                        }
 
                         writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
                     }
