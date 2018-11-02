@@ -41,6 +41,7 @@
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -716,6 +717,7 @@
         {
           "ContentType": "Menu",
           "ContentItemId": "[js: uuid()]",
+          "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
           "MenuPart": {},
@@ -745,6 +747,7 @@
         {
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
+          "DisplayText":  "Blog",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -763,6 +766,7 @@
         {
           "ContentType": "BlogPost",
           "ContentItemId": "[js: uuid()]",
+          "DisplayText": "Man must explore, and this is exploration at its greatest",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -789,6 +793,7 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "Article",
+          "DisplayText": "About",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -812,12 +817,12 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
+          "Displaytext": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Footer",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,

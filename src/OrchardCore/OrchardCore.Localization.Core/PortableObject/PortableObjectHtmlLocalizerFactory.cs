@@ -31,9 +31,9 @@ namespace OrchardCore.Localization.PortableObject
                 index += 1;
             }
 
-            if (baseName.Length > index && baseName.IndexOf(".Modules.", index) == index)
+            if (baseName.Length > index && baseName.IndexOf("Areas.", index) == index)
             {
-                index += ".Modules.".Length;
+                index += "Areas.".Length;
             }
 
             var relativeName = baseName.Substring(index);

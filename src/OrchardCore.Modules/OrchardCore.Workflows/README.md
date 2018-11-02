@@ -4,7 +4,7 @@ The Workflows module provides a way for users to visually implement business rul
 
 ## General Concepts
 
-A workflow is a collection of **activities** that are connected to eachother. These connections are called **transitions**.
+A workflow is a collection of **activities** that are connected to each other. These connections are called **transitions**.
 Activities and their transitions are stored in a **Workflow Definition**.
 
 A workflow is essentially a visual script, where each activity is a statement of that script.
@@ -18,7 +18,7 @@ A workflow can have more than one start event. This allows you to trigger (run) 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.
 By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events.
 
-![The workflow editor ](docs/workflow-editor.png)
+![The workflow editor](docs/workflow-editor.png)
 
 1. Activity Picker (Task / Event)
 2. Activity actions (click an activity to display activity actions)
@@ -64,7 +64,7 @@ Most activities expose settings that can be configured via the activity editor. 
 
 ### Activity Picker
 
-When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface. Open the activity picker by clicking _Add Task_ or _Add Event_ to add a task or event, respectively.
+When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface. Open the activity picker by clicking **Add Task** or **Add Event** to add a task or event, respectively.
 
 ### Outcome
 
@@ -124,7 +124,7 @@ When the appropriate event is triggered (which could happen seconds, days, weeks
 ## Scripts and Expressions
 
 Many activities have settings that can contain either **JavaScript** or **Liquid** syntax.
-For example, when adding the **Notify** activity, its editor shows the folling fields:
+For example, when adding the **Notify** activity, its editor shows the following fields:
 These type of fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
 
 ### JavaScript Functions
@@ -133,14 +133,29 @@ The following JavaScript functions are available by default to any activity that
 
 | Function | Description | Signature |
 | -------- | ----------- | --------- |
-| workflow | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | `workflow(): WorkflowExecutionContext` |
-| workflowId | Returns the unique workflow ID. | `workflowId(): string` |
-| input | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
-| output | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
-| property | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
-| lastResult | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
-| correlationId | Returns the correlation value of the workflow instance. | `correlationId(): string` |
-| signalUrl | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is condifured with the same signal name. | `signalUrl(signal: string): string` |
+| `workflow` | Returns the `WorkflowExecutionContext` which provides access to all information related to the current workflow execution context. | `workflow(): WorkflowExecutionContext` |
+| `workflowId` | Returns the unique workflow ID. | `workflowId(): String` |
+| `input` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
+| `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
+| `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
+| `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
+| `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
+| `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
+
+#### JavaScript Functions in HTTP activities
+
+The following JavaScript functions are available by default to any HTTP activity that supports script expressions:
+
+| Function | Description | Signature |
+| -------- | ----------- | --------- |
+| `httpContext` | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. | `httpContext(): HttpContext` |
+| `queryString` | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. | `queryString(): String`<br/>`queryString(name: String): String` or `Array` |
+| `responseWrite` | Writes the argument string directly to the HTTP response stream. | `responseWrite(text: String): void` |
+| `absoluteUrl` | Returns the absolute URL for the relative path argument. | `absoluteUrl(relativePath: String): String` |
+| `readBody` | Returns the raw HTTP request body. | `readBody(): String` |
+| `requestForm` | Returns the value(s) of the form field name passed in as an argument. | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array` |
+| `queryStringAsJson` | Returns the entire query string as a JSON object. | `queryStringAsJson(): { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
+| `requestFormAsJson` | Returns the entire request form as a JSON object. | `requestFormAsJson(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
@@ -148,10 +163,10 @@ The following Liquid tags, properties and filters are available by default to an
 
 | Expression | Type | Description | Example |
 | ---------- | ---- | ----------- | ------- |
-| Workflow.CorrelationId | Property | Returns the correlation value of the workflow instance. | `{{ Workflow.CorrelationId }}` |
-| Workflow.Input | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
-| Workflow.Output | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
-| Workflow.Properties | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
+| `Workflow.CorrelationId` | Property | Returns the correlation value of the workflow instance. | `{{ Workflow.CorrelationId }}` |
+| `Workflow.Input` | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
+| `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
+| `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you cal also use dot notation, e.g.:
 
@@ -162,15 +177,15 @@ Instead of using the indexer syntax on the three workflow dictionaries `Input`, 
 ### Liquid Expressions and ContentItem Events
 
 When handling content related events using a workflow, the content item in question is made available to the workflow via the `Input` dictionary.
-For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from fieldsliquid-ebabled fields as follows:
+For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from liquid-ebabled fields as follows:
 
 ```liquid
 {{ Workflow.Input.ContentItem | display_url }}
 {{ Workflow.Input.ContentItem | display_text }}
-{{ Workflow.Input.ContentItem.Content.TitlePart.Title }}
+{{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
+For more examples of supported content item filters, see the documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
 
 ## Activities out of the box
 
@@ -216,12 +231,12 @@ The following activities are available with any default Orchard installation:
 
 ## Developing Custom Activities
 
-Orchard is built to be extended, and the Workflows module is no different. When creating your own module, you can develop custom workflow activities. Developing custom activities involve the following steps:
+Orchard is built to be extended, and the `Workflows` module is no different. When creating your own module, you can develop custom workflow activities. Developing custom activities involve the following steps:
 
-1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called **Activities**.
-2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called **Drivers**. 
+1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called `Activities`.
+2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`. 
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
-4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the **Views/Items** folder. Note that it is required for your views to be discoverable by the display engine.  
+4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
 ### Activity Display Types
 An activity has the following display types:
@@ -238,25 +253,25 @@ Used when the activity is rendered as part of the workflow editor design surface
 ### IActivity
 `IActivity` has the following members:
 
-- Name
-- Category
-- Properties
-- HasEditor
-- GetPossibleOutcomes
-- CanExecuteAsync
-- ExecuteAsync
-- ResumeAsync
-- OnInputReceivedAsync
-- OnWorkflowStartingAsync
-- OnWorkflowStartedAsync
-- OnWorkflowResumingAsync
-- OnWorkflowResumedAsync
-- OnActivityExecutingAsync
-- OnActivityExecutedAsync
+- `Name`
+- `Category`
+- `Properties`
+- `HasEditor`
+- `GetPossibleOutcomes`
+- `CanExecuteAsync`
+- `ExecuteAsync`
+- `ResumeAsync`
+- `OnInputReceivedAsync`
+- `OnWorkflowStartingAsync`
+- `OnWorkflowStartedAsync`
+- `OnWorkflowResumingAsync`
+- `OnWorkflowResumedAsync`
+- `OnActivityExecutingAsync
+- `OnActivityExecutedAsync`
 
 The `IEvent` interface adds the following member:
 
-- CanStartWorkflow
+- `CanStartWorkflow`
 
 The following is an example of a simple activity implementation that displays a notification:
 
@@ -375,9 +390,9 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
 Notice that the shape names are derived from the activity type, effectively implementing a naming convention for the shape template names to use.
 Continuing with the `NotifyTask` example, we now need to create the following Razor files:
 
-- NotifyTask.Fields.Design.cshtml
-- NotifyTask.Fields.Thumbnail.cshtml
-- NotifyTask.Fields.Edit.cshtml
+- `NotifyTask.Fields.Design.cshtml`
+- `NotifyTask.Fields.Thumbnail.cshtml`
+- `NotifyTask.Fields.Edit.cshtml`
 
 ## CREDITS
 

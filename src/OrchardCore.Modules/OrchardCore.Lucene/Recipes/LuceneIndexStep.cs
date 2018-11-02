@@ -34,12 +34,12 @@ namespace OrchardCore.Lucene.Recipes
                 }
             }
 
-            return Task.CompletedTask;  
+            return Task.CompletedTask;
         }
-    }
 
-    public class LuceneIndexModel
-    {
-        public string[] Indices { get; set; }
+        private class LuceneIndexModel
+        {
+            public string[] Indices { get; set; }
+        }
     }
 }

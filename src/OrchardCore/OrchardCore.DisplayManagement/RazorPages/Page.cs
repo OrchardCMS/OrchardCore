@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 
@@ -15,6 +16,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
+        private IOrchardDisplayHelper _orchardHelper;
 
         private void EnsureDisplayHelper()
         {
@@ -97,6 +99,20 @@ namespace OrchardCore.DisplayManagement.RazorPages
             set
             {
                 _themeLayout = value;
+            }
+        }
+
+        public IOrchardDisplayHelper Orchard
+        {
+            get
+            {
+                if (_orchardHelper == null)
+                {
+                    EnsureDisplayHelper();
+                    _orchardHelper = new OrchardDisplayHelper(HttpContext, _displayHelper);
+                }
+
+                return _orchardHelper;
             }
         }
 

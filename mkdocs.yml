@@ -23,8 +23,7 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
-  - markdown.extensions.toc(permalink=Link)
-  - markdown_fenced_code_tabs
+#  - markdown_fenced_code_tabs
 
 # Page tree
 pages:
@@ -32,8 +31,8 @@ pages:
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
-    - Code Generation Templates: Templates/README.MD
-    - Orchard Core Modules: OrchardCore/OrchardCore.Modules/README.md
+    - Code Generation Templates: docs/templates/README.md
+    - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
         - Title: OrchardCore.Modules/OrchardCore.Title/README.md
         - Alias: OrchardCore.Modules/OrchardCore.Alias/README.md

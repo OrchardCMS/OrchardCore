@@ -27,7 +27,7 @@ namespace OrchardCore.OpenId.Controllers
             _userManager = userManager;
         }
 
-        // GET/POST: /OrchardCore.OpenId/UserInfo/Me
+        // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
@@ -82,7 +82,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the complete list of standard claims supported by the OpenID Connect specification
             // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
 
-            return Json(claims);
+            return Ok(claims);
         }
     }
 }

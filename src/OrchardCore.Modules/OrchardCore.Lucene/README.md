@@ -30,32 +30,32 @@ Here is an example for creating a Lucene query from a Queries recipe step:
 
 ## Web APIs
 
-### api/lucene/content
+### `api/lucene/content`
 
 Executes a query with the specified name and returns the corresponding content items.
 
-Verbs: **POST** and **GET**
+Verbs: `POST` and `GET`
 
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query |
-| `query` | `{ "query": { "match_all": {} } }` | A Json object representing the query |
-| `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
+| `indexName` | `search` | The name of the index to query. |
+| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
-### api/lucene/documents
+### `api/lucene/documents`
 
 Executes a query with the specified name and returns the corresponding Lucene documents.
 Only the stored fields are returned.
 
-Verbs: **POST** and **GET**
+Verbs: `POST` and `GET`
 
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query |
-| `query` | `{ "query": { "match_all": {} } }` | A Json object representing the query |
-| `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
+| `indexName` | `search` | The name of the index to query. |
+| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
-## Lucene Worker (OrchardCore.Lucene.Worker)
+## Lucene Worker (`OrchardCore.Lucene.Worker`)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index. It is recommended to use it only if you are 

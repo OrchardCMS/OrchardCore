@@ -1,6 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Forms.Drivers;
 
 namespace OrchardCore.Forms
@@ -14,11 +15,11 @@ namespace OrchardCore.Forms
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -28,6 +29,8 @@ namespace OrchardCore.Forms
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = NoCaptchaSettingsDisplay.GroupId })
                             .LocalNav()
                         )));
+
+            return Task.CompletedTask;
         }
     }
 }
