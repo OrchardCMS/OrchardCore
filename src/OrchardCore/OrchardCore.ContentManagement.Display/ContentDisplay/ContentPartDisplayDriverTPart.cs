@@ -24,7 +24,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-
             if (_typePartDefinition != null)
             {
                 var partName = _typePartDefinition.Name;
