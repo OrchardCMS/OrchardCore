@@ -17,14 +17,16 @@ namespace OrchardCore.Lucene.Controllers
     {
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
-        private readonly LuceneSettingsService _luceneSettingsService;
+        private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneAnalyzerSettingsService _luceneSettingsService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
 
         public SearchController(
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
-            LuceneSettingsService luceneSettingsService,
+            LuceneIndexingService luceneIndexingService,
+            LuceneAnalyzerSettingsService luceneSettingsService,
             ISearchQueryService searchQueryService,
             IContentManager contentManager,
             ILogger<SearchController> logger
@@ -32,6 +34,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexingService = luceneIndexingService;
             _luceneSettingsService = luceneSettingsService;
             _searchQueryService = searchQueryService;
             _contentManager = contentManager;
@@ -68,9 +71,10 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var luceneSettings = await _luceneSettingsService.GetLuceneSettingsAsync();
-
-            if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
+            var luceneAnalyzerSettings = await _luceneSettingsService.GetLuceneAnalyzerSettingsAsync();
+            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+            
+            if (luceneAnalyzerSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
 
@@ -84,7 +88,7 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var queryParser = new MultiFieldQueryParser(luceneSettings.Version, luceneSettings.DefaultSearchFields, new StandardAnalyzer(luceneSettings.Version));
+            var queryParser = new MultiFieldQueryParser(luceneAnalyzerSettings.Version, luceneSettings.DefaultSearchFields, new StandardAnalyzer(luceneAnalyzerSettings.Version));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links

@@ -1,0 +1,13 @@
+@using Lucene.Net.Util
+@model LuceneSettingsViewModel
+<fieldset class="form-group" asp-validation-class-for="Version">
+    <label asp-for="Version" class="control-label"><span asp-validation-for="Version"></span></label>
+    <select asp-for="Version" asp-items="Html.GetEnumSelectList<LuceneVersion>()" class="form-control"></select>
+    <span class="hint">@T["A lucene version to use which can be left with default value."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Analyzer">
+    <label asp-for="Analyzer">@T["Lucene Analyzer"] <span asp-validation-for="Analyzer"></span></label>
+    <input asp-for="Analyzer" class="form-control" />
+    <span class="hint">@T["A lucene analyzer to use which can be empty."]</span>
+</fieldset>

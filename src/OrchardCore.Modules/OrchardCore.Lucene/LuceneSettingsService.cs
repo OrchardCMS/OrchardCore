@@ -4,24 +4,28 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene
 {
-    public class LuceneSettingsService
+    public class LuceneAnalyzerSettingsService
     {
         private readonly ISiteService _siteService;
-        public LuceneSettingsService(
+        public LuceneAnalyzerSettingsService(
             ISiteService siteService)
         {
             _siteService = siteService;
         }
-        public async Task<LuceneSettings> GetLuceneSettingsAsync()
+        public async Task<LuceneAnalyzerSettings> GetLuceneAnalyzerSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            if (siteSettings.Has<LuceneSettings>())
+            if (siteSettings.Has<LuceneAnalyzerSettings>())
             {
-                return siteSettings.As<LuceneSettings>();
+                return siteSettings.As<LuceneAnalyzerSettings>();
             }
 
-            return null;
+            return new LuceneAnalyzerSettings
+            {
+                Analyzer = DefaultLuceneAnalyzerSettings.StandardAnalyzer,
+                Version = DefaultLuceneAnalyzerSettings.DefaultVersion
+            };
         }
     }
 }

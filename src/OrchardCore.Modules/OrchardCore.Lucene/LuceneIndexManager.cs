@@ -36,7 +36,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly LuceneSettingsService _luceneSettingsService;
+        private readonly LuceneAnalyzerSettingsService _luceneSettingsService;
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -45,7 +45,7 @@ namespace OrchardCore.Lucene
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            LuceneSettingsService luceneSettingsService
+            LuceneAnalyzerSettingsService luceneSettingsService
             )
         {
             _clock = clock;
@@ -259,7 +259,7 @@ namespace OrchardCore.Lucene
         {
             if (!_writers.TryGetValue(indexName, out var writer))
             {
-                var luceneSettings = await _luceneSettingsService.GetLuceneSettingsAsync();
+                var luceneSettings = await _luceneSettingsService.GetLuceneAnalyzerSettingsAsync();
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
