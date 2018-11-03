@@ -22,6 +22,7 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using Lucene.Net.Util;
 
 namespace OrchardCore.Lucene
 {
@@ -44,8 +45,8 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneAnalyzerManager>();
 
             services.Configure<LuceneOptions>(o =>
-                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+                o.Analyzers.Add(new LuceneAnalyzer("standardanalyzer",
+                    new StandardAnalyzer(LuceneVersion.LUCENE_48))));
 
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();

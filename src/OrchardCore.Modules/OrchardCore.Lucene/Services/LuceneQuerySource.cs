@@ -64,9 +64,9 @@ namespace OrchardCore.Lucene
 
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
-
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-                var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
+                var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
+                var context = new LuceneQueryContext(searcher, luceneSettings.Version, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
 
                 if (luceneQuery.ReturnContentItems)

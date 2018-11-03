@@ -36,6 +36,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private readonly LuceneIndexingService _luceneIndexingService;
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -43,7 +44,8 @@ namespace OrchardCore.Lucene
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger,
-            LuceneAnalyzerManager luceneAnalyzerManager
+            LuceneAnalyzerManager luceneAnalyzerManager,
+            LuceneIndexingService luceneIndexingService
             )
         {
             _clock = clock;
@@ -52,19 +54,19 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
-
             _rootDirectory = Directory.CreateDirectory(_rootPath);
+            _luceneIndexingService = luceneIndexingService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
         }
 
-        public void CreateIndex(string indexName)
+        public async Task CreateIndex(string indexName)
         {
-            Write(indexName, _ => { }, true);
+           await Write(indexName, _ => { }, true);
         }
 
-        public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
+        public async Task DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
         {
-            Write(indexName, writer =>
+            await Write(indexName, writer =>
             {
                 writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
 
@@ -126,9 +128,9 @@ namespace OrchardCore.Lucene
                 .Select(x => x.Name);
         }
 
-        public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+        public async Task StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            Write(indexName, writer =>
+            await Write(indexName, writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
@@ -253,17 +255,19 @@ namespace OrchardCore.Lucene
             }
         }
 
-        private void Write(string indexName, Action<IndexWriter> action, bool close = false)
+        private async Task Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
             if (!_writers.TryGetValue(indexName, out var writer))
             {
+                var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-                        var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
+                        
+                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
+                        var config = new IndexWriterConfig(luceneSettings.Version, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
                         };

@@ -84,7 +84,7 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
+            var queryParser = new MultiFieldQueryParser(luceneSettings.Version, luceneSettings.DefaultSearchFields, new StandardAnalyzer(luceneSettings.Version));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links

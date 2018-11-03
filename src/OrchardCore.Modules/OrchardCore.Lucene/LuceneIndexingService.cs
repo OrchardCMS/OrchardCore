@@ -95,7 +95,7 @@ namespace OrchardCore.Lucene
 
                             if (index.Value < task.Id)
                             {
-                                _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
+                                await _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
                             }
                         }
 
@@ -117,7 +117,7 @@ namespace OrchardCore.Lucene
                             {
                                 if (index.Value < task.Id)
                                 {
-                                    _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    await _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
                                 }
                             }
                         }
@@ -154,10 +154,10 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Deletes and recreates the full index content.
         /// </summary>
-        public void RebuildIndex(string indexName)
+        public async Task RebuildIndex(string indexName)
         {
             _indexManager.DeleteIndex(indexName);
-            _indexManager.CreateIndex(indexName);
+            await _indexManager.CreateIndex(indexName);
 
             ResetIndex(indexName);
         }
