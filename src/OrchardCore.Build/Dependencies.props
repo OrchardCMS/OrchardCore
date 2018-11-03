@@ -8,7 +8,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0-rc3-final" />
+    <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0" />
     <PackageManagement Include="Castle.Core" Version="4.3.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9461" />
