@@ -5,14 +5,14 @@ using YesSql;
 namespace OrchardCore.Recipes.Services
 {
     /// <summary>
-    /// And implementation of <see cref="IRecipeStore"/> that stores the recipe<see cref="RecipeResult"/>
+    /// And implementation of <see cref="IRecipeResultStore"/> that stores the recipe<see cref="RecipeResult"/>
     /// object in YesSql.
     /// </summary>
-    public class RecipeStore : IRecipeStore
+    public class RecipeResultStore : IRecipeResultStore
     {
         private readonly ISession _session;
 
-        public RecipeStore(ISession session)
+        public RecipeResultStore(ISession session)
         {
             _session = session;
         }
