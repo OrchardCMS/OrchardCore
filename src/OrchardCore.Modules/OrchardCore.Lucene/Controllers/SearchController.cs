@@ -16,26 +16,26 @@ namespace OrchardCore.Lucene.Controllers
     public class SearchController : Controller
     {
         private readonly ISiteService _siteService;
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneAnalyzerSettingsService _luceneSettingsService;
+        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
 
         public SearchController(
             ISiteService siteService,
-            LuceneIndexManager luceneIndexProvider,
+            LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
-            LuceneAnalyzerSettingsService luceneSettingsService,
+            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService,
             ISearchQueryService searchQueryService,
             IContentManager contentManager,
             ILogger<SearchController> logger
             )
         {
             _siteService = siteService;
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
-            _luceneSettingsService = luceneSettingsService;
+            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
             _searchQueryService = searchQueryService;
             _contentManager = contentManager;
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Lucene.Controllers
                 indexName = id;
             }
 
-            if (!_luceneIndexProvider.Exists(indexName))
+            if (!_luceneIndexManager.Exists(indexName))
             {
                 return NotFound();
             }
@@ -71,7 +71,7 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var luceneAnalyzerSettings = await _luceneSettingsService.GetLuceneAnalyzerSettingsAsync();
+            var luceneAnalyzerSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
             
             if (luceneAnalyzerSettings == null || luceneSettings?.DefaultSearchFields == null)

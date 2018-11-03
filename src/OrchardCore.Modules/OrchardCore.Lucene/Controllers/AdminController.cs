@@ -23,7 +23,7 @@ namespace OrchardCore.Lucene.Controllers
     {
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneAnalyzerSettingsService _luceneSettingsService;
+        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
@@ -33,7 +33,7 @@ namespace OrchardCore.Lucene.Controllers
         public AdminController(
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
-            LuceneAnalyzerSettingsService luceneSettingsService,
+            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService,
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
@@ -45,7 +45,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
-            _luceneSettingsService = luceneSettingsService;
+            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
@@ -235,7 +235,7 @@ namespace OrchardCore.Lucene.Controllers
                 model.Parameters = "{ }";
             }
 
-            var luceneSettings = await _luceneSettingsService.GetLuceneAnalyzerSettingsAsync();
+            var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
