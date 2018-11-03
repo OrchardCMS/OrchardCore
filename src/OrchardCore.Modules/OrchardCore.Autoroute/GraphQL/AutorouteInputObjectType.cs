@@ -1,18 +1,17 @@
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Autoroute.Model;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
-    public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
+    public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
     {
         public AutorouteInputObjectType()
         {
             Name = "AutoroutePartInput";
             Description = "the custom URL part of the content item";
 
-            Field("path", x => x.Path, nullable: true)
-                .Type(new StringGraphType())
-                .Description("the path of the content item to filter");
+            AddScalarFilterFields<StringGraphType>("path", "the path of the content item to filter");
         }
     }
 }

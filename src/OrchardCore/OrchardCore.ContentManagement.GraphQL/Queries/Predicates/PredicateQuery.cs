@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         public string NewQueryParameter(object value)
         {
             var count = Parameters.Count;
-            var parameterName = $"@pa{count + 1}";
+            var parameterName = $"@x{count + 1}";
 
             Parameters.Add(parameterName, value);
 
