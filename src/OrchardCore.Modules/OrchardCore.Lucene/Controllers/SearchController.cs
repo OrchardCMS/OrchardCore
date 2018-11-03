@@ -17,14 +17,14 @@ namespace OrchardCore.Lucene.Controllers
     {
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
-        private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneSettingsService _luceneSettingsService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
 
         public SearchController(
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
-            LuceneIndexingService luceneIndexingService,
+            LuceneSettingsService luceneSettingsService,
             ISearchQueryService searchQueryService,
             IContentManager contentManager,
             ILogger<SearchController> logger
@@ -32,7 +32,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
-            _luceneIndexingService = luceneIndexingService;
+            _luceneSettingsService = luceneSettingsService;
             _searchQueryService = searchQueryService;
             _contentManager = contentManager;
 
@@ -68,7 +68,7 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+            var luceneSettings = await _luceneSettingsService.GetLuceneSettingsAsync();
 
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {

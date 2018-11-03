@@ -16,7 +16,7 @@ namespace OrchardCore.Lucene
     public class LuceneQuerySource : IQuerySource
     {
         private readonly LuceneIndexManager _luceneIndexProvider;
-        private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneSettingsService _luceneSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -24,14 +24,14 @@ namespace OrchardCore.Lucene
 
         public LuceneQuerySource(
             LuceneIndexManager luceneIndexProvider,
-            LuceneIndexingService luceneIndexingService,
+            LuceneSettingsService _luceneSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session)
         {
             _luceneIndexProvider = luceneIndexProvider;
-            _luceneIndexingService = luceneIndexingService;
+            this._luceneSettingsService = _luceneSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
@@ -64,7 +64,7 @@ namespace OrchardCore.Lucene
 
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
-                var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+                var luceneSettings = await _luceneSettingsService.GetLuceneSettingsAsync();
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
                 var context = new LuceneQueryContext(searcher, luceneSettings.Version, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);

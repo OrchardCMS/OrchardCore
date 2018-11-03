@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene
 {
@@ -26,23 +24,20 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexingState _indexingState;
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
-        private readonly ISiteService _siteService;
-
+        
         public LuceneIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
             LuceneIndexingState indexingState, 
             LuceneIndexManager indexManager, 
-            IIndexingTaskManager indexingTaskManager,
-            ISiteService siteService,
+            IIndexingTaskManager indexingTaskManager,            
             ILogger<LuceneIndexingService> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _indexingState = indexingState;
             _indexManager = indexManager;
-            _indexingTaskManager = indexingTaskManager;
-            _siteService = siteService;
+            _indexingTaskManager = indexingTaskManager;     
 
             Logger = logger;
         }
@@ -160,18 +155,6 @@ namespace OrchardCore.Lucene
             await _indexManager.CreateIndex(indexName);
 
             ResetIndex(indexName);
-        }
-
-        public async Task<LuceneSettings> GetLuceneSettingsAsync()
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            if (siteSettings.Has<LuceneSettings>())
-            {
-                return siteSettings.As<LuceneSettings>();
-            }
-
-            return null;
-        }
+        }        
     }
 }

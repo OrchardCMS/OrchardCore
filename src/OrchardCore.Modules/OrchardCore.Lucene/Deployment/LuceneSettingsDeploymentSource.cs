@@ -7,12 +7,12 @@ namespace OrchardCore.Lucene.Deployment
 {
     public class LuceneSettingsDeploymentSource : IDeploymentSource
     {
-        private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneSettingsService _luceneSettingsService;
         private readonly ISiteService _siteService;
 
-        public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService, ISiteService siteService)
+        public LuceneSettingsDeploymentSource(LuceneSettingsService luceneSettingsService, ISiteService siteService)
         {
-            _luceneIndexingService = luceneIndexingService;
+            _luceneSettingsService = luceneSettingsService;
             _siteService = siteService;
         }
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Lucene.Deployment
                 return;
             }
 
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+            var luceneSettings = await _luceneSettingsService.GetLuceneSettingsAsync();
 
             // Adding Lucene settings
             result.Steps.Add(new JObject(
