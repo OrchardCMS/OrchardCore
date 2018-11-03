@@ -1,7 +1,7 @@
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
     /// <summary>
-    /// An <see cref="IPredicate"/> that combines together multiple <see cref="IPredicate"/>s with an <c>and</c>
+    /// An <see cref="IPredicate" /> that combines together multiple <see cref="IPredicate" />s with an <c>and</c>
     /// </summary>
     public class Conjunction : Junction
     {

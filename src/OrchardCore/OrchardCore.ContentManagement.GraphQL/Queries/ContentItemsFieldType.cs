@@ -8,6 +8,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
@@ -83,18 +84,61 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var expressions = Expression.Conjunction();
-            BuildWhereExpressions(where, expressions);
-
-            var predicateQuery = graphContext.ServiceProvider.GetService<IPredicateQuery>();
-            query = query.Where(expressions.ToSqlString(predicateQuery));
-
-            IQuery<ContentItem> contentItemsQuery = query;
+            var contentItemsQuery = FilterWhereArguments(query, where, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
             return contentItems.ToList();
+        }
+
+        private IQuery<ContentItem> FilterWhereArguments(
+            IQuery<ContentItem, ContentItemIndex> query, 
+            JObject where, 
+            ISession session, 
+            GraphQLContext context)
+        {
+            var expressions = Expression.Conjunction();
+            BuildWhereExpressions(where, expressions);
+
+            var transaction = session.Demand();
+            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
+
+            // Create the default alias
+            predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+
+			// Add all provided alias to the current predicate query
+            var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
+            var indexes = new Dictionary<string, IndexAlias>();
+            foreach (var aliasProvider in providers)
+            {
+                foreach (var alias in aliasProvider.GetAliases())
+                {
+                    predicateQuery.CreateAlias(alias.Alias, alias.Index);
+                    indexes.Add(alias.Index, alias);
+                }
+            }
+
+            var whereSqlClause = expressions.ToSqlString(predicateQuery);
+            query = query.Where(whereSqlClause);
+
+			// Add all parameters that were used in the predicate query
+            foreach (var parameter in predicateQuery.Parameters)
+            {
+                query = query.WithParameter(parameter.Key, parameter.Value);
+            }
+
+            // Add all Indexes that were used in the predicate query
+            IQuery<ContentItem> contentQuery = query;
+            foreach (var usedAlias in predicateQuery.GetUsedAliases())
+            {
+                if (indexes.ContainsKey(usedAlias))
+                {
+                    contentQuery = indexes[usedAlias].With(contentQuery);
+                }
+            }
+
+            return contentQuery;
         }
 
         private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
@@ -130,7 +174,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, ResolveFieldContext context)
         {
-            var contentType = ((ListGraphType) context.ReturnType).ResolvedType.Name;
+            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
 
             return query.Where(q => q.ContentType == contentType);
         }
@@ -165,7 +209,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                 }
             }
-            else if(where is JObject whereObject)
+            else if (where is JObject whereObject)
             {
                 BuildExpressionsInternal(whereObject, expressions);
             }
@@ -175,69 +219,71 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             foreach (var entry in where.Properties())
             {
-                var values = entry.Name.Split(new[] {'_'}, 2);
+                IPredicate expression = null;
 
-                var property = values[0];
+                var values = entry.Name.Split(new[] { '_' }, 2);
 
-                if (property == "status")
-                {
-                    continue;
-                }
+                // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
+                var property = entry.Path.Split(new[] { '_' }, 2)[0]; 
 
                 if (values.Length == 1)
                 {
-                    if (String.Equals(property, "or", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
-                        var comparison = Expression.Disjunction();
-                        BuildWhereExpressions(entry.Value, comparison);
-                        expressions.Add(comparison);
+                        expression = Expression.Disjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression);
                     }
-                    else if (String.Equals(property, "and", StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
-                        var comparison = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, comparison);
-                        expressions.Add(comparison);
+                        expression = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression);
                     }
-                    else if (String.Equals(property, "not", StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
-                        var comparison = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, comparison);
-                        expressions.Add(Expression.Not(comparison));
+                        expression = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression);
+                        expression = Expression.Not(expression);
+                    }
+                    else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
+                    {
+                        // Loop through the part's properties, passing the name of the part as the table alias.
+                        // This alias can then be used with the alias to index mappings to join with the correct table.
+                        BuildWhereExpressions(entry.Value, expressions);
                     }
                     else
-                    {     
+                    {
                         var propertyValue = entry.Value.ToObject<object>();
-                        var comparison = Expression.Equal(property, propertyValue);
-                        expressions.Add(comparison);
+                        expression = Expression.Equal(property, propertyValue);
                     }
                 }
                 else
                 {
-                    IPredicate comparison;
-
                     var value = entry.Value.ToObject<object>();
 
                     switch (values[1])
                     {
-                        case "not": comparison = Expression.Not(Expression.Equal(property, value)); break;
-                        case "gt": comparison = Expression.GreaterThan(property, value); break;
-                        case "gte": comparison = Expression.GreaterThanOrEqual(property, value); break;
-                        case "lt": comparison = Expression.LessThan(property, value); break;
-                        case "lte": comparison = Expression.LessThanOrEqual(property, value); break;
-                        case "contains": comparison = Expression.Like(property, (string)value, MatchOptions.Contains); break;
-                        case "not_contains": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
-                        case "starts_with": comparison = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
-                        case "not_starts_with": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
-                        case "ends_with": comparison = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
-                        case "not_ends_with": comparison = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
-                        case "in": comparison = Expression.In(property, entry.Value.ToObject<object[]>()); break;
-                        case "not_in": comparison = Expression.In(property, entry.Value.ToObject<object[]>()); break;
+                        case "not": expression = Expression.Not(Expression.Equal(property, value)); break;
+                        case "gt": expression = Expression.GreaterThan(property, value); break;
+                        case "gte": expression = Expression.GreaterThanOrEqual(property, value); break;
+                        case "lt": expression = Expression.LessThan(property, value); break;
+                        case "lte": expression = Expression.LessThanOrEqual(property, value); break;
+                        case "contains": expression = Expression.Like(property, (string)value, MatchOptions.Contains); break;
+                        case "not_contains": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
+                        case "starts_with": expression = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
+                        case "not_starts_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
+                        case "ends_with": expression = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
+                        case "not_ends_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
+                        case "in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
+                        case "not_in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
 
-                        default: comparison = Expression.Equal(property, value); break;
+                        default: expression = Expression.Equal(property, value); break;
                     }
+                }
 
-                    expressions.Add(comparison);
-                }    
+                if (expression != null)
+                {
+                    expressions.Add(expression);
+                }
             }
         }
 

@@ -1,9 +1,9 @@
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
-    /// <summary> 
-    /// Represents the built-in <see cref="IPredicate"/> expressions used for building SQL expressions.
+    /// <summary>
+    /// Represents the built-in <see cref="IPredicate" /> expressions used for building SQL expressions.
     /// </summary>
-    /// <seealso cref="IPredicate"/>
+    /// <seealso cref="IPredicate" />
     public class Expression
     {
         /// <summary>Constructs a new instance of <see cref="Expression"></see>.</summary>
@@ -74,7 +74,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply an "in" constraint to the named property 
+        /// Apply an "in" constraint to the named property
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="values">An array of values.</param>
