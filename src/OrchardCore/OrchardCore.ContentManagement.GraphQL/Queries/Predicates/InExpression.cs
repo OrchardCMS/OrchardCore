@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             }
 
             var columnName = predicateQuery.GetColumnName(_propertyName);
-            var inClause = predicateQuery.Dialect.InOperator(array.ToString());
+            var inClause = predicateQuery.Dialect.InSelectOperator(array.ToString());
 
             return $"{columnName} {inClause}";
         }

@@ -98,16 +98,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             ISession session, 
             GraphQLContext context)
         {
+            if (where == null)
+            {
+                return query;
+            }
+
             var expressions = Expression.Conjunction();
-            BuildWhereExpressions(where, expressions);
+            BuildWhereExpressions(where, expressions, null);
 
             var transaction = session.Demand();
             IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
 
-            // Create the default alias
+            // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
 
-			// Add all provided alias to the current predicate query
+            // Add all provided table alias to the current predicate query
             var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
             var indexes = new Dictionary<string, IndexAlias>();
             foreach (var aliasProvider in providers)
@@ -122,7 +127,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
             query = query.Where(whereSqlClause);
 
-			// Add all parameters that were used in the predicate query
+            // Add all parameters that were used in the predicate query
             foreach (var parameter in predicateQuery.Parameters)
             {
                 query = query.WithParameter(parameter.Key, parameter.Value);
@@ -197,7 +202,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private void BuildWhereExpressions(JToken where, Junction expressions)
+        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias)
         {
             if (where is JArray array)
             {
@@ -205,17 +210,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     if (child is JObject whereObject)
                     {
-                        BuildExpressionsInternal(whereObject, expressions);
+                        BuildExpressionsInternal(whereObject, expressions, tableAlias);
                     }
                 }
             }
             else if (where is JObject whereObject)
             {
-                BuildExpressionsInternal(whereObject, expressions);
+                BuildExpressionsInternal(whereObject, expressions, tableAlias);
             }
         }
 
-        private void BuildExpressionsInternal(JObject where, Junction expressions)
+        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias)
         {
             foreach (var entry in where.Properties())
             {
@@ -224,31 +229,35 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var values = entry.Name.Split(new[] { '_' }, 2);
 
                 // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
-                var property = entry.Path.Split(new[] { '_' }, 2)[0]; 
+                var property = values[0];
+                if (!string.IsNullOrEmpty(tableAlias))
+                {
+                    property = tableAlias + "." + property;
+                }
 
                 if (values.Length == 1)
                 {
                     if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Disjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
                     }
                     else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
                     }
                     else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
                         expression = Expression.Not(expression);
                     }
                     else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
                     {
-                        // Loop through the part's properties, passing the name of the part as the table alias.
-                        // This alias can then be used with the alias to index mappings to join with the correct table.
-                        BuildWhereExpressions(entry.Value, expressions);
+                        // Loop through the part's properties, passing the name of the part as the table tableAlias.
+                        // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
+                        BuildWhereExpressions(entry.Value, expressions, values[0]);
                     }
                     else
                     {
@@ -274,7 +283,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         case "ends_with": expression = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
                         case "not_ends_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
                         case "in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
-                        case "not_in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
+                        case "not_in": expression = Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())); break;
 
                         default: expression = Expression.Equal(property, value); break;
                     }
