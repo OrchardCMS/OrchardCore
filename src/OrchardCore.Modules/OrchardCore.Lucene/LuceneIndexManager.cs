@@ -59,9 +59,9 @@ namespace OrchardCore.Lucene
             _luceneAnalyzerManager = luceneAnalyzerManager;
         }
 
-        public async Task CreateIndex(string indexName)
+        public Task CreateIndex(string indexName)
         {
-           await Write(indexName, _ => { }, true);
+           return Write(indexName, _ => { }, true);
         }
 
         public async Task DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
