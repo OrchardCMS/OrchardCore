@@ -73,6 +73,7 @@ namespace OrchardCore.Lucene
                 if (_indexPools.TryRemove(indexName, out var pool))
                 {
                     pool.MakeDirty();
+                    pool.Release();
                 }
             });
         }
@@ -140,6 +141,7 @@ namespace OrchardCore.Lucene
                 if (_indexPools.TryRemove(indexName, out var pool))
                 {
                     pool.MakeDirty();
+                    pool.Release();
                 }
             });
         }
