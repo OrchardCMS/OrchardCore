@@ -68,6 +68,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<NamedHelperTag>("script");
             Factory.RegisterTag<NamedHelperTag>("style");
 
+            Factory.RegisterBlock<ScriptBlock>("scriptblock");
+
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
