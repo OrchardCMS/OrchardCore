@@ -2,36 +2,11 @@
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
-    var selectedContentTypes = Model.Value.ContentTypes;
 
-    var selectedDisplayNames = new List<string>();
-
-   if (selectedContentTypes != null && selectedContentTypes.Length > 0)
-    {
-        foreach (var contentTypeDefinition in allContentTypes)
-        {
-            if (selectedContentTypes.Contains(contentTypeDefinition.Name))
-            {
-                selectedDisplayNames.Add(contentTypeDefinition.DisplayName);
-            }
-        }
-    }
+    var displayName = ContentDefinitionManager.GetTypeDefinition(Model.Value.ContentType);
 }
 
 <div class="@(Model.Value.Enabled ? "" : "disabled") concrete-link">
-
-    @if (selectedDisplayNames.Count > 0)
-    {
-        foreach (var displayName in selectedDisplayNames)
-        {
-            <span class="badge badge-info">@displayName</span>
-        }
-    }
-    else
-    {
-        <span class="badge badge-warning">@T["Nothing here!"]</span>
-    }
-
-    <span>- @T["Lists"]</span>
+    <span>@displayName</span>
+    <span class="text-muted">- @T["Lists"]</span>
 </div>

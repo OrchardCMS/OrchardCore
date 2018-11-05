@@ -2,7 +2,7 @@
 
 <h1>@RenderTitleSegments(T["Edit Node"])</h1>
 
-<div asp-validation-summary="ModelOnly"></div>
+<div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post">
     @await DisplayAsync(Model.Editor.Content)
 

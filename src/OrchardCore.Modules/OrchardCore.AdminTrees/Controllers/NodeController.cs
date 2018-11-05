@@ -42,7 +42,7 @@ namespace OrchardCore.AdminTrees.Controllers
             _factories = factories;
             _adminTreeService = adminTreeService;
             _authorizationService = authorizationService;
-            
+
             New = shapeFactory;
             _notifier = notifier;
             T = stringLocalizer;
@@ -229,7 +229,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 await _adminTreeService.SaveAsync(tree);
 
                 _notifier.Success(H["Admin node updated successfully"]);
-                return RedirectToAction(nameof(List), new { id = model.AdminTreeId});
+                return RedirectToAction(nameof(List), new { id = model.AdminTreeId });
             }
 
             _notifier.Error(H["The admin node has validation errors"]);
@@ -301,7 +301,7 @@ namespace OrchardCore.AdminTrees.Controllers
 
             _notifier.Success(H["Admin node toggled successfully"]);
 
-            return RedirectToAction(nameof(List), new { id = id});
+            return RedirectToAction(nameof(List), new { id = id });
         }
 
 

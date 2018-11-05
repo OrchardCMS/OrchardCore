@@ -8,6 +8,6 @@ namespace OrchardCore.AdminTrees.AdminNodes
     {
         [Required]
         public string LinkText { get; set; }
-        public string IconClass { get; set; } = "far fa-circle";
+        public string IconClass { get; set; }
     }
 }

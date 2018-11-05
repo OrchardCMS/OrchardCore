@@ -1,21 +1,21 @@
 @model ShapeViewModel<ContentTypesAdminNode>
+@using OrchardCore.ContentManagement.Metadata.Models
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
-    var selectedContentTypes = Model.Value.ContentTypes;
 
-    var selectedDisplayNames = new List<string>();
+    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeEntry[] { } ;
 
-    if (selectedContentTypes != null && selectedContentTypes.Length > 0)
+    var selectedDisplayNames = allContentTypes
+        .Where(x => isSelected(x, selectedContentTypes))
+        .Select(x => x.DisplayName)
+        .ToList();
+
+    bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
     {
-        foreach (var contentTypeDefinition in allContentTypes)
-        {
-            if (selectedContentTypes.Contains(contentTypeDefinition.Name))
-            {
-                selectedDisplayNames.Add(contentTypeDefinition.DisplayName);
-            }
-        }
+        return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
     }
 }
 
@@ -39,5 +39,5 @@
             <span class="badge badge-warning">@T["Nothing here!"]</span>
         }
     }
-    <span>- @T["Content Types"]</span>
+    <span class="text-muted">- @T["Content Types"]</span>
 </div>

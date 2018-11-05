@@ -53,6 +53,8 @@ namespace OrchardCore.Contents.AdminNodes
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
                     cTypeMenu.Permission(Permissions.EditOwnContent);
+
+                    GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
             }
             
@@ -82,13 +84,43 @@ namespace OrchardCore.Contents.AdminNodes
 
             if (!node.ShowAll)
             {
-                node.ContentTypes = node.ContentTypes ?? (new string[] { });
+                node.ContentTypes = node.ContentTypes ?? (new ContentTypeEntry[] { });
 
-                typesToShow = typesToShow.Where(ctd => node.ContentTypes.ToList<string>().Contains(ctd.Name)); ;
+                typesToShow = typesToShow
+                    .Where(ctd => node.ContentTypes.ToList()
+                                    .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));
+
             }
 
             return typesToShow;
         }
+
+        private List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)
+        {
+            if (node.ShowAll)
+            {
+              return AddPrefixToClasses(node.IconClass);
+            }
+            else
+            {
+                var typeEntry = node.ContentTypes
+                                .Where(x => String.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
+                                .FirstOrDefault();
+
+                return AddPrefixToClasses(typeEntry.IconClass);
+
+            }
+        }
+
+        private List<string> AddPrefixToClasses(string unprefixed)
+        {
+            return unprefixed?.Split(' ')
+                .ToList()
+                .Select(c => "icon-class-" + c)
+                .ToList<string>()
+                ?? new List<string>();
+        }
+        
     }
 
 }

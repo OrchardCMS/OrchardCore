@@ -45,6 +45,30 @@ html, body, .ta-wrapper {
     cursor: move;
 }
 
-.iconpicker-popover.popover.fade {
-    opacity: 1;
+.concrete-link {
+    min-height: 30px;
+}
+
+.card-columns {
+    column-count: 1;
+
+    .card.admin-node-thumbnail {
+        .card-body {
+            height: 160px;
+            overflow: hidden;
+        }
+    }
+}
+
+
+@media only screen and ( min-width: 768px ) {
+    .card-columns {
+        column-count: 2;
+
+        .card.admin-node-thumbnail {
+            .card-body {
+                height: 200px;
+            }
+        }
+    }
 }

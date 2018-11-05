@@ -1,8 +1,15 @@
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.ContentManagement.Metadata.Models;
+
 namespace OrchardCore.Lists.AdminNodes
 {
     public class ListsAdminNodeViewModel
     {
-        public string[] ContentTypes { get; set; }
-        public bool AddContentTypeAsParent { get; set; }
+        public string ContentType { get; set; }        
+        public bool AddContentTypeAsParent { get; set; }        
+        public string IconForParentLink { get; set; }
+        public string IconForContentItems { get; set; }
+        public List<SelectListItem> ContentTypes { get; set; }
     }
 }

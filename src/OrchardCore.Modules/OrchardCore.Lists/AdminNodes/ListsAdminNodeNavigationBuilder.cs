@@ -19,6 +19,8 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
+        private ListsAdminNode _node;
+        private const int MaxItemsInNode = 100; // security check
 
         public ListsAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
@@ -36,34 +38,36 @@ namespace OrchardCore.Lists.AdminNodes
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
-            var node = menuItem as ListsAdminNode;
+            _node = menuItem as ListsAdminNode;
 
-            if ((node == null) || (!node.Enabled))
+            if ((_node == null) || (!_node.Enabled))
             {
                 return;
             }
 
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
-            var selectedNames = node.ContentTypes ?? new string[] {};
-
-            var selected = contentTypeDefinitions
-                .Where(ctd => selectedNames.ToList<string>().Contains(ctd.Name))
-                .Where(ctd => ctd.DisplayName != null);
-
-            foreach (var ctd in selected)
+            if (_node.AddContentTypeAsParent)
             {
-                if (node.AddContentTypeAsParent)
+                var contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+                if (contentType == null)
                 {
-                    builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), listTypeMenu => { AddContentItems(listTypeMenu, ctd.Name); });
+                    _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
                 }
-                else
+
+                builder.Add(new LocalizedString(contentType.DisplayName, contentType.DisplayName), listTypeMenu =>
                 {
-                    AddContentItems(builder, ctd.Name);
-                }
+                    AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
+
+                    AddContentItems(listTypeMenu);
+                });
+            }
+            else
+            {
+                AddContentItems(builder);
             }
 
+
             // Add external children
-            foreach (var childNode in node.Items)
+            foreach (var childNode in _node.Items)
             {
                 try
                 {
@@ -78,27 +82,46 @@ namespace OrchardCore.Lists.AdminNodes
 
         }
 
-        private async void AddContentItems(NavigationBuilder listTypeMenu, string contentTypeName)
+        private async void AddContentItems(NavigationBuilder listTypeMenu)
         {
-            var ListContentItems = await _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.Latest)
-                .With<ContentItemIndex>(x => x.ContentType == contentTypeName)
-                .ListAsync();
-
-            foreach (var ci in ListContentItems)
+            foreach (var ci in await getContentItems())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
                 if (cim.AdminRouteValues.Any() && ci.DisplayText != null)
                 {
-                    listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m => m
-                        .Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues)
-                        .Permission(Contents.Permissions.EditOwnContent)
-                        .Resource(ci)
-                        .LocalNav());
+                    listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
+                    {
+                        m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
+                        m.Permission(Contents.Permissions.EditOwnContent);
+                        m.Resource(ci);
+                        m.LocalNav();
+                        AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));                     
+                    });
                 }
-
             }
+        }
+
+
+        private async Task<List<ContentItem>> getContentItems()
+        {
+            return (await _session.Query<ContentItem, ContentItemIndex>()
+                .With<ContentItemIndex>(x => x.Latest)
+                .With<ContentItemIndex>(x => x.ContentType == _node.ContentType)
+                .Take(MaxItemsInNode)
+                .ListAsync())
+                .OrderBy(x => x.DisplayText)
+                .ToList();
+        }
+
+
+        private List<string> AddPrefixToClasses(string unprefixed)
+        {
+            return unprefixed?.Split(' ')
+                .ToList()
+                .Select(c => "icon-class-" + c)
+                .ToList<string>()
+                ?? new List<string>();
         }
     }
 }
