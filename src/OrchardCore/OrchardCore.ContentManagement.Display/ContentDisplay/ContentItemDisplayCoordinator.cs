@@ -110,7 +110,9 @@ namespace OrchardCore.ContentManagement.Display
                         var contentPartShape = shapeResult.Shape;
 
                         // Make the ContentPart name property available on the shape
-                        ((dynamic)contentPartShape)[contentTypePartDefinition.PartDefinition.Name] = part.Content;
+                        dynamic dynamicContentPartShape = contentPartShape;
+                        dynamicContentPartShape[contentTypePartDefinition.PartDefinition.Name] = part.Content;
+                        dynamicContentPartShape["ContentItem"] = part.ContentItem;
 
                         contentPartShape.Metadata.Alternates.Add(contentTypePartDefinition.PartDefinition.Name);
 
