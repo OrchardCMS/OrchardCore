@@ -11,61 +11,72 @@ namespace OrchardCore.Lucene
     /// </summary>
     public class LuceneIndexingState
     {
-        private readonly string _indexSettingsFilename;
-        private readonly JObject _content;
+        private readonly string _rootPath;
+        private readonly JObject _content = new JObject();
 
         public LuceneIndexingState(
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings
             )
         {
-            _indexSettingsFilename = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath, 
-                shellOptions.Value.ShellsContainerName, 
-                shellSettings.Name, 
-                "lucene.status.json");
-
-            if (!File.Exists(_indexSettingsFilename))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
-
-                File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
-            }
-
-            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+            _rootPath = PathExtensions.Combine(
+                shellOptions.Value.ShellsApplicationDataPath,
+                shellOptions.Value.ShellsContainerName,
+                shellSettings.Name, "Lucene");
         }
 
         public int GetLastTaskId(string indexName)
         {
-            JToken value;
-            if (_content.TryGetValue(indexName, out value))
+            if (!_content.TryGetValue(indexName, out var value))
             {
-                return value.Value<int>();
-            }
-            else
-            {
+                var statusFile = PathExtensions.Combine(_rootPath, indexName, "status.json");
+
                 lock (this)
                 {
-                    _content.Add(new JProperty(indexName, 0));
+                    if (File.Exists(statusFile))
+                    {
+                        value = _content[indexName] = JObject.Parse(File.ReadAllText(statusFile));
+                    }
+                    else
+                    {
+                        value = _content[indexName] = new JObject(new JProperty("taskId", 0));
+                    }
                 }
-
-                return 0;
             }
+
+            return value["taskId"]?.Value<int>() ?? 0;
         }
 
         public void SetLastTaskId(string indexName, int taskId)
         {
             lock (this)
             {
-                _content[indexName] = taskId;
+                if (!_content.ContainsKey(indexName))
+                {
+                    _content[indexName] = new JObject(new JProperty("taskId", 0));
+                }
+
+                _content[indexName]["taskId"] = taskId;
             }
         }
 
-        public void Update()
+        public void Update(string indexName)
         {
+            var statusFile = PathExtensions.Combine(_rootPath, indexName, "status.json");
+
+            if (!Directory.Exists(Path.GetDirectoryName(statusFile)))
+            {
+                return;
+            }
+
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+                if (!_content.ContainsKey(indexName))
+                {
+                    _content[indexName] = new JObject(new JProperty("taskId", 0));
+                }
+
+                File.WriteAllText(statusFile, _content[indexName].ToString(Newtonsoft.Json.Formatting.Indented));
             }
         }
     }

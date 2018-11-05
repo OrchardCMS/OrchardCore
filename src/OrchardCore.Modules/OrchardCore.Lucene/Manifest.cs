@@ -38,7 +38,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Lucene.Distributed",
     Name = "Lucene Distributed",
-    Description = "Fire content items events through a Message Bus, so that indices are updated by the instance owning the lucene writer.",
+    Description = "Distributed Lucene indices using a Message Bus.",
     Dependencies = new[] { "OrchardCore.Lucene" },
     Category = "Content Management"
 )]

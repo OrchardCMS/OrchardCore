@@ -74,6 +74,7 @@ namespace OrchardCore.Lucene
             if (_indexPools.TryRemove(indexName, out var pool))
             {
                 pool.MakeDirty();
+                pool.Release();
             }
         }
 
@@ -119,53 +120,14 @@ namespace OrchardCore.Lucene
             return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
-        public bool TryGetWriter(string indexName, out IndexWriterWrapper writer)
+        public bool HasIndex(string indexName)
         {
-            if (_writers.TryGetValue(indexName, out writer))
-            {
-                return true;
-            }
+            return _writers.ContainsKey(indexName);
+        }
 
-            lock (this)
-            {
-                if (_writers.TryGetValue(indexName, out writer))
-                {
-                    return true;
-                }
-
-                var directory = CreateDirectory(indexName);
-
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
-                var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
-                {
-                    OpenMode = OpenMode.CREATE_OR_APPEND
-                };
-
-                try
-                {
-                    if (IndexWriter.IsLocked(directory))
-                    {
-                        writer = null;
-                        return false;
-                    }
-                }
-
-                catch (UnauthorizedAccessException)
-                {
-                }
-
-                try
-                {
-                    writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
-                    return true;
-                }
-                catch (LockObtainFailedException)
-                {
-                }
-
-                writer = null;
-                return false;
-            }
+        public bool TryGetIndex(string indexName)
+        {
+            return TryGetWriter(indexName, out var writer);
         }
 
         public IEnumerable<string> List()
@@ -190,6 +152,7 @@ namespace OrchardCore.Lucene
             if (_indexPools.TryRemove(indexName, out var pool))
             {
                 pool.MakeDirty();
+                pool.Release();
             }
         }
 
@@ -332,6 +295,49 @@ namespace OrchardCore.Lucene
             _timestamps[indexName] = _clock.UtcNow;
         }
 
+        private bool TryGetWriter(string indexName, out IndexWriterWrapper writer)
+        {
+            if (_writers.TryGetValue(indexName, out writer))
+            {
+                return true;
+            }
+
+            lock (this)
+            {
+                if (_writers.TryGetValue(indexName, out writer))
+                {
+                    return true;
+                }
+
+                var directory = CreateDirectory(indexName);
+
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
+                {
+                    OpenMode = OpenMode.CREATE_OR_APPEND
+                };
+
+                try
+                {
+                    if (IndexWriter.IsLocked(directory))
+                    {
+                        writer = null;
+                        return false;
+                    }
+                }
+
+                catch { }
+
+                try
+                {
+                    writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
+                    return true;
+                }
+
+                catch (LockObtainFailedException) { return false; }
+            }
+        }
+
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
         {
             var pool = _indexPools.GetOrAdd(indexName, n =>
@@ -435,7 +441,7 @@ namespace OrchardCore.Lucene
         }
     }
 
-    public class IndexWriterWrapper : IndexWriter
+    internal class IndexWriterWrapper : IndexWriter
     {
         public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
         {

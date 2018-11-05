@@ -14,7 +14,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene.Distributed
 {
-    public class LuceneDistributedIndexing : ContentHandlerBase, IModularTenantEvents
+    public class DistributedIndexing : ContentHandlerBase, IModularTenantEvents
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -22,15 +22,15 @@ namespace OrchardCore.Lucene.Distributed
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LuceneIndexManager _luceneIndexManager;
-        private readonly ILogger<LuceneDistributedIndexing> _logger;
+        private readonly ILogger<DistributedIndexing> _logger;
 
-        public LuceneDistributedIndexing(
+        public DistributedIndexing(
             IShellHost shellHost,
             ShellSettings shellSettings,
             IEnumerable<IMessageBus> _messageBuses,
             IHttpContextAccessor httpContextAccessor,
             LuceneIndexManager luceneIndexManager,
-            ILogger<LuceneDistributedIndexing> logger)
+            ILogger<DistributedIndexing> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -65,12 +65,11 @@ namespace OrchardCore.Lucene.Distributed
                     }
                 }
 
-                else if (tokens[0] == "Rebuild")
+                else if (tokens[0] == "Create" || tokens[0] == "Rebuild")
                 {
                     using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
                     {
                         var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-
                         luceneIndexingService.RebuildIndex(tokens[1]);
                         luceneIndexingService.ProcessContentItemsAsync().GetAwaiter().GetResult();
                     }

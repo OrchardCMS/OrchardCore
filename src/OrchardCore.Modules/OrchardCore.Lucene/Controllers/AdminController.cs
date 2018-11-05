@@ -109,6 +109,8 @@ namespace OrchardCore.Lucene.Controllers
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
+                await (_messageBus?.PublishAsync("Indexing", "Create:" + model.IndexName) ?? Task.CompletedTask);
+
                 _luceneIndexingService.RebuildIndex(model.IndexName);
                 await _luceneIndexingService.ProcessContentItemsAsync();
             }
@@ -136,6 +138,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 return NotFound();
             }
+
             await (_messageBus?.PublishAsync("Indexing", "Reset:" + id) ?? Task.CompletedTask);
 
             _luceneIndexingService.ResetIndex(id);

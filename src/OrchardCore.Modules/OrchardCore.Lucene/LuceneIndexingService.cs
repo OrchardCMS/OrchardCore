@@ -128,14 +128,13 @@ namespace OrchardCore.Lucene
 
                     foreach (var index in allIndices)
                     {
-                        if (index.Value < lastTaskId)
+                        _indexingState.SetLastTaskId(index.Key, lastTaskId);
+
+                        if (index.Value < lastTaskId && _indexManager.HasIndex(index.Key))
                         {
-                            _indexingState.SetLastTaskId(index.Key, lastTaskId);
+                            _indexingState.Update(index.Key);
                         }
                     }
-
-                    _indexingState.Update();
-
                 } 
             } while (batch.Length == BatchSize);
         }
@@ -147,7 +146,11 @@ namespace OrchardCore.Lucene
         public void ResetIndex(string indexName)
         {
             _indexingState.SetLastTaskId(indexName, 0);
-            _indexingState.Update();
+
+            if (_indexManager.TryGetIndex(indexName))
+            {
+                _indexingState.Update(indexName);
+            }
         }
 
         /// <summary>

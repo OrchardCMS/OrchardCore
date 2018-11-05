@@ -111,9 +111,9 @@ namespace OrchardCore.Lucene
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<LuceneDistributedIndexing>();
-            services.AddSingleton<IContentHandler>(sp => sp.GetRequiredService<LuceneDistributedIndexing>());
-            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<LuceneDistributedIndexing>());
+            services.AddSingleton<DistributedIndexing>();
+            services.AddSingleton<IContentHandler>(sp => sp.GetRequiredService<DistributedIndexing>());
+            services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<DistributedIndexing>());
         }
     }
 }
