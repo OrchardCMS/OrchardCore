@@ -20,8 +20,8 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public RedisLock(ShellSettings shellSettings, IRedisClient redis, ILogger<RedisLock> logger)
         {
-            _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _prefix = shellSettings.Name + ":";
+            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
+            _prefix = shellSettings.Name + ':';
             _redis = redis;
             Logger = logger;
         }

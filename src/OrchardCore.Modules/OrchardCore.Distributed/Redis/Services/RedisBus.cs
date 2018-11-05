@@ -17,7 +17,7 @@ namespace OrchardCore.Distributed.Redis.Services
 
         public RedisBus(ShellSettings shellSettings, IRedisClient redis, ILogger<RedisBus> logger)
         {
-            _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
+            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
             _channelPrefix = shellSettings.Name + ':';
             _messagePrefix = _hostName + '/';
             _redis = redis;

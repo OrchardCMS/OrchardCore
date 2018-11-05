@@ -27,8 +27,8 @@ namespace OrchardCore.Distributed.Redis.Services
             ILogger<RedisTagCache> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ":" + Process.GetCurrentProcess().Id;
-            _prefix = shellSettings.Name + ":";
+            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
+            _prefix = shellSettings.Name + ':';
             _tagRemovedEventHandlers = tagRemovedEventHandlers;
             _logger = logger;
         }

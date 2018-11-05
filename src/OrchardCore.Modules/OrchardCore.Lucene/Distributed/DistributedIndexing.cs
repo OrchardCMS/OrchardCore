@@ -59,7 +59,6 @@ namespace OrchardCore.Lucene.Distributed
                     using (var scope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult())
                     {
                         var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-
                         luceneIndexingService.ResetIndex(tokens[1]);
                         luceneIndexingService.ProcessContentItemsAsync().GetAwaiter().GetResult();
                     }
@@ -94,7 +93,7 @@ namespace OrchardCore.Lucene.Distributed
 
                         var context = new BuildIndexContext(new DocumentIndex(tokens[1]), contentItem, new string[] { contentItem.ContentType });
                         var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-                        indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), _logger).GetAwaiter().GetResult();
+                        indexHandlers.InvokeAsync(h => h.BuildIndexAsync(context), _logger).GetAwaiter().GetResult();
 
                         foreach (var index in _luceneIndexManager.List())
                         {

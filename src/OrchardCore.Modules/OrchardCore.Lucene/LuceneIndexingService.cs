@@ -128,11 +128,14 @@ namespace OrchardCore.Lucene
 
                     foreach (var index in allIndices)
                     {
-                        _indexingState.SetLastTaskId(index.Key, lastTaskId);
-
-                        if (index.Value < lastTaskId && _indexManager.HasIndex(index.Key))
+                        if (index.Value < lastTaskId)
                         {
-                            _indexingState.Update(index.Key);
+                            _indexingState.SetLastTaskId(index.Key, lastTaskId);
+
+                            if (_indexManager.HasIndex(index.Key))
+                            {
+                                _indexingState.Update(index.Key);
+                            }
                         }
                     }
                 } 
