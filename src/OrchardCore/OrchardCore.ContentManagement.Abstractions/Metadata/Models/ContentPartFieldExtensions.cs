@@ -26,5 +26,10 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             return partField.Settings.ToObject<ContentPartFieldSettings>().Editor;
         }
+
+        public static string DisplayMode(this ContentPartFieldDefinition partField)
+        {
+            return partField.Settings.ToObject<ContentPartFieldSettings>().DisplayMode;
+        }
     }
 }

@@ -63,5 +63,17 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <remarks>A shell might not be listed if it hasn't been created yet, for instance if it has been removed and not yet recreated.</remarks>
         Task<IEnumerable<ShellContext>> ListShellContextsAsync();
+
+        /// <summary>
+        /// Tries to retrieve the shell settings associated with the specified tenant.
+        /// </summary>
+        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
+        bool TryGetSettings(string name, out ShellSettings settings);
+
+        /// <summary>
+        /// Retrieves all shell settings.
+        /// </summary>
+        /// <returns>All shell settings.</returns>
+        IEnumerable<ShellSettings> GetAllSettings();
     }
 }

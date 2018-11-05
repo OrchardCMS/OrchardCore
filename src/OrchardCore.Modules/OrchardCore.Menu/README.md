@@ -1,4 +1,4 @@
-# Menu (OrchardCore.Menu)
+# Menu (`OrchardCore.Menu`)
 
 ## Shapes
 
@@ -132,7 +132,7 @@ available on the `MenuItem` shape are still available.
 | `Model.Items` | The list of sub menu items shapes. These are shapes of type `MenuItem`. |
 | `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
 
-#### MenuItemLink Alternates
+#### `MenuItemLink` Alternates
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
@@ -144,7 +144,7 @@ available on the `MenuItem` shape are still available.
 | `MenuItemLink__[MenuName]__[ContentType]` | `MenuItemLink__MainMenu__HtmlMenuItem` | `MenuItemLink-MainMenu-HtmlMenuItem.cshtml` |
 | `MenuItemLink__[MenuName]__[ContentType]__level__[level]` | `MenuItemLink__MainMenu__HtmlMenuItem__level__2` | `MenuItemLink-MainMenu-HtmlMenuItem-level-2.cshtml` |
 
-#### MenuItemLink Example
+#### `MenuItemLink` Example
 
 ```liquid
 {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}

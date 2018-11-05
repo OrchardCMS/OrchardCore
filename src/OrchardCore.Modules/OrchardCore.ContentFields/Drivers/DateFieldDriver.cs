@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         public override IDisplayResult Display(DateField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayDateFieldViewModel>("DateField", model =>
+            return Initialize<DisplayDateFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;

@@ -1,6 +1,6 @@
-# Tenants (OrchardCore.Tenants)
+# Tenants (`OrchardCore.Tenants`)
 
-The Tenants module allows to manage tenants.
+The `Tenants` module allows to manage tenants.
 
 ## Static File Provider Feature
 

@@ -27,6 +27,10 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
 
+                // To let the application behave as a module, its views are requested under the virtual
+                // "Areas" folder, but they are still served from the file system by this custom provider.
+                options.FileProviders.Insert(0, new ApplicationViewFileProvider(_applicationContext));
+
                 if (_hostingEnvironment.IsDevelopment())
                 {
                     // While in development, liquid files are 1st served from their module project locations.

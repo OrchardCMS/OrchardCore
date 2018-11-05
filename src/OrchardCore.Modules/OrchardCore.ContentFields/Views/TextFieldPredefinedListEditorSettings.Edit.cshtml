@@ -8,7 +8,7 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue');
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">
@@ -20,24 +20,17 @@
                 <th scope="col" colspan="3">@T["Default?"]</th>
             </tr>
         </thead>
-        <draggable v-model="options" :element="'tbody'">
-            <tr v-for="(option, index) in options" :key="option.value" class="ui-sortable-handle">
+        <draggable v-model="data.options" :element="'tbody'">
+            <tr v-for="(option, index) in data.options" :key="index" class="ui-sortable-handle">
                 <td>
                     <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
                 </td>
                 <td>
-                    <input type="text" class="form-control" v-model="option.value" placeholder="Enter a value" style="font-family: Courier New, Courier, monospace" />
+                    <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
                 </td>
                 <td class="text-center">
                     <div class="custom-control custom-radio ml-2">
-                        @if (Model.DefaultValue != null)
-                        {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-model="selected" v-on:click="uncheck(index, option.value)" >
-                        }
-                        else
-                        {
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" :value="option.value" v-on:click="uncheck(index, option.value)">
-                        }
+                        <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
@@ -52,13 +45,43 @@
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100"><i class="fas fa-plus"></i> @T["Add an option"]</a>
-                    
-                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getFormattedList()" />
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getOptionsFormattedList()" />
                 </td>
             </tr>
         </tfoot>
     </table>
+</script>
+
+<script type="text/x-template" id="options-modal">
+    <div class="modal fade @Html.IdFor(m => m)-ModalBody text-left" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Edit Data"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <fieldset class="form-group">
+                        <label for="options-textarea">@T["Options"]</label>
+                        <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
+                        <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <label for="options-defaultvalue">@T["Default value"]</label>
+                        <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
+                        <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">@T["OK"]</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
@@ -75,7 +98,10 @@
     <div class="row">
         <fieldset class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
-            <options-table></options-table>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+            <options-table :data="sharedState"></options-table>
+            <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </fieldset>
     </div>
 </div>
+

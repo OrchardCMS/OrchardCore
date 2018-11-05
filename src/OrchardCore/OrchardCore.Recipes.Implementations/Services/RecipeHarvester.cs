@@ -37,7 +37,7 @@ namespace OrchardCore.Recipes.Services
         
         private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
         {
-            var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
+            var folderSubPath = PathExtensions.Combine(extension.SubPath, "Recipes");
             return HarvestRecipesAsync(folderSubPath, _hostingEnvironment);
         }
 

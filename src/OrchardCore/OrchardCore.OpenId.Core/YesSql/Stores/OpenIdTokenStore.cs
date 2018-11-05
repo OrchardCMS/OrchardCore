@@ -571,7 +571,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the token type associated with the specified token.
         /// </returns>
-        public virtual ValueTask<string> GetTokenTypeAsync(TToken token, CancellationToken cancellationToken)
+        public virtual ValueTask<string> GetTypeAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -910,7 +910,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <returns>
         /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetTokenTypeAsync(TToken token, string type, CancellationToken cancellationToken)
+        public virtual Task SetTypeAsync(TToken token, string type, CancellationToken cancellationToken)
         {
             if (token == null)
             {
