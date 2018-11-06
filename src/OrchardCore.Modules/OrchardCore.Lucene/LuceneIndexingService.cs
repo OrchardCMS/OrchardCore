@@ -27,7 +27,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
-        private readonly Lock _localLock;
+        private readonly LocalLock _localLock;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -36,7 +36,7 @@ namespace OrchardCore.Lucene
             LuceneIndexManager indexManager, 
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
-            Lock localLock,
+            LocalLock localLock,
             ILogger<LuceneIndexingService> logger)
         {
             _shellHost = shellHost;
@@ -54,14 +54,7 @@ namespace OrchardCore.Lucene
 
         public async Task ProcessContentItemsAsync()
         {
-            var (locker, locked) = await _localLock.TryAcquireLockAsync("LuceneIndexing");
-
-            if (!locked)
-            {
-                return;
-            }
-
-            using (locker)
+            using (await _localLock.AcquireLockAsync("LuceneIndexing"))
             {
                 var allIndices = new Dictionary<string, int>();
 
@@ -159,14 +152,7 @@ namespace OrchardCore.Lucene
         /// </summary>
         public void ResetIndex(string indexName)
         {
-            var (locker, locked) = _localLock.TryAcquireLockAsync("LuceneIndexing:" + indexName).GetAwaiter().GetResult();
-
-            if (!locked)
-            {
-                return;
-            }
-
-            using (locker)
+            using (_localLock.AcquireLockAsync("LuceneIndexing").GetAwaiter().GetResult())
             {
                 _indexingState.SetLastTaskId(indexName, 0);
 
@@ -182,14 +168,7 @@ namespace OrchardCore.Lucene
         /// </summary>
         public void RebuildIndex(string indexName)
         {
-            var (locker, locked) = _localLock.TryAcquireLockAsync("LuceneIndexing:" + indexName).GetAwaiter().GetResult();
-
-            if (!locked)
-            {
-                return;
-            }
-
-            using (locker)
+            using (_localLock.AcquireLockAsync("LuceneIndexing").GetAwaiter().GetResult())
             {
                 _indexManager.DeleteIndex(indexName);
                 _indexManager.CreateIndex(indexName);

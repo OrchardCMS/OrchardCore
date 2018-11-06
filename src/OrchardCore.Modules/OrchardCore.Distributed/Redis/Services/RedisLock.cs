@@ -29,9 +29,10 @@ namespace OrchardCore.Distributed.Redis.Services
         public ILogger Logger { get; set; }
 
         /// <summary>
-		/// Tries to immediately acquire a named lock with a given expiration time within the current tenant.
+        /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
+        /// Todo: timeout is not yet implemented.
         /// </summary>
-        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? expiration = null)
+        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? timeout = null, TimeSpan? expiration = null)
         {
             return (new Locker(this, key), await LockAsync(key, expiration ?? TimeSpan.FromSeconds(1)));
         }

@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore
 {
@@ -11,22 +10,26 @@ namespace OrchardCore
     /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
     /// This is a non distributed version where expiration times are not used to auto release locks.
     /// </summary>
-    public class Lock : ILock, IDisposable
+    public class LocalLock : ILock, IDisposable
     {
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        public Lock(ShellSettings shellSettings)
-        {
-        }
-
         /// <summary>
-		/// Tries to immediately acquire a named lock with a given expiration time within the current tenant.
+        /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
         /// This is a non distributed version where the expiration time is not used to auto release the lock.
         /// </summary>
-        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? expiration = null)
+        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? timeout = null, TimeSpan? expiration = null)
         {
             var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
-            return (new Locker(semaphore), await semaphore.WaitAsync(TimeSpan.FromMilliseconds(1)));
+            return (new Locker(semaphore), await semaphore.WaitAsync(timeout ?? TimeSpan.FromMilliseconds(-1)));
+        }
+
+        public async Task<IDisposable> AcquireLockAsync(string key)
+        {
+            var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
+
+            await semaphore.WaitAsync();
+            return new Locker(semaphore);
         }
 
         private class Locker : IDisposable

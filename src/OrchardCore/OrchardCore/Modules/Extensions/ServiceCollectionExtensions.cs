@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                AddDefaultServices(services);
+                AddDefaultServices(builder);
                 AddShellServices(services);
                 AddExtensionServices(builder);
 
@@ -53,8 +53,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void AddDefaultServices(IServiceCollection services)
+        private static void AddDefaultServices(OrchardCoreBuilder builder)
         {
+            var services = builder.ApplicationServices;
+
             services.AddLogging();
             services.AddOptions();
 
@@ -69,6 +71,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
+
+            builder.ConfigureServices(s =>
+            {
+                s.AddSingleton<LocalLock>();
+                s.AddSingleton<ILock>(sp => sp.GetRequiredService<LocalLock>());
+            });
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
             services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
