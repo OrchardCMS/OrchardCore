@@ -39,9 +39,7 @@ using OrchardCore.OpenId;
     Dependencies = new[]
     {
         OpenIdConstants.Features.Core,
-        OpenIdConstants.Features.Management,
-        "OrchardCore.Users",
-        "OrchardCore.Roles"
+        OpenIdConstants.Features.Management
     }
 )]
 
