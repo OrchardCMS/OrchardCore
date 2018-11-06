@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ResourceManagement;
 
@@ -16,6 +16,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
         {
+            if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
+            {
+                throw new ArgumentException("Services missing while invoking 'cache' block");
+            }
+
+            var services = servicesObj as IServiceProvider;
+
+            var resourceManager = services.GetService<IResourceManager>();
+
+            var builder = new TagBuilder("script");
+
             var at = "Foot";
 
             foreach (var argument in arguments)
@@ -28,28 +39,36 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 at = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
             }
 
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
-            {
-                throw new ArgumentException("Services missing while invoking 'cache' block");
-            }
-
-            var services = servicesObj as IServiceProvider;
-
-            var resourceManager = services.GetService<IResourceManager>();
-
             using (var sw = new StringWriter())
             {
                 await RenderStatementsAsync(sw, encoder, context, statements);
 
-                if (String.Equals(at, "Head", StringComparison.OrdinalIgnoreCase))
+                builder.InnerHtml.AppendHtml(sw.ToString());
+            }
+
+            foreach (var argument in arguments)
+            {
+                if (argument.Name != "at" && !string.IsNullOrEmpty(argument.Name))
                 {
-                    resourceManager.RegisterHeadScript(new HtmlString(sw.ToString()));
+                    var value = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    builder.Attributes.Add(argument.Name, value);
                 }
-                else
-                {
-                    resourceManager.RegisterFootScript(new HtmlString(sw.ToString()));
-                }
-            }                
+            }
+
+            // If no type was specified, define a default one
+            if (!builder.Attributes.ContainsKey("type"))
+            {
+                builder.Attributes.Add("type", "text/javascript");
+            }
+
+            if (String.Equals(at, "Head", StringComparison.OrdinalIgnoreCase))
+            {
+                resourceManager.RegisterHeadScript(builder);
+            }
+            else
+            {
+                resourceManager.RegisterFootScript(builder);
+            }
 
             return Completion.Normal;
         }

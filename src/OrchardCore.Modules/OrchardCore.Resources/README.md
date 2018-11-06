@@ -176,6 +176,12 @@ You can also do the same for a stylesheet:
 
 The following example demonstrates how to inject a custom script in the footer section.
 
+```liquid
+{% scriptblock at: "Foot" %}
+	document.write('<!-- some script -->');
+{% endscriptblock %}
+```
+
 ```razor
 <script at="Foot">
     document.write('<!-- some script -->');
