@@ -27,6 +27,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+        private readonly Lock _localLock;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -35,6 +36,7 @@ namespace OrchardCore.Lucene
             LuceneIndexManager indexManager, 
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
+            Lock localLock,
             ILogger<LuceneIndexingService> logger)
         {
             _shellHost = shellHost;
@@ -43,6 +45,7 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
+            _localLock = localLock;
 
             Logger = logger;
         }
@@ -51,95 +54,103 @@ namespace OrchardCore.Lucene
 
         public async Task ProcessContentItemsAsync()
         {
-            // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
+            var (locker, locked) = await _localLock.TryAcquireLockAsync("LuceneIndexing");
 
-            var allIndices = new Dictionary<string, int>();
-
-            // Find the lowest task id to process
-            int lastTaskId = int.MaxValue;
-            foreach (var indexName in _indexManager.List())
-            {
-                var taskId = _indexingState.GetLastTaskId(indexName);
-                lastTaskId = Math.Min(lastTaskId, taskId);
-                allIndices.Add(indexName, taskId);
-            }
-
-            if (!allIndices.Any())
+            if (!locked)
             {
                 return;
             }
 
-            IndexingTask[] batch;
-
-            do
+            using (locker)
             {
-                // Create a scope for the content manager
-                using (var scope = await _shellHost.GetScopeAsync(_shellSettings))
+                var allIndices = new Dictionary<string, int>();
+
+                // Find the lowest task id to process
+                int lastTaskId = int.MaxValue;
+                foreach (var indexName in _indexManager.List())
                 {
-                    // Load the next batch of tasks
-                    batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
+                    var taskId = _indexingState.GetLastTaskId(indexName);
+                    lastTaskId = Math.Min(lastTaskId, taskId);
+                    allIndices.Add(indexName, taskId);
+                }
 
-                    if (!batch.Any())
+                if (!allIndices.Any())
+                {
+                    return;
+                }
+
+                IndexingTask[] batch;
+
+                do
+                {
+                    // Create a scope for the content manager
+                    using (var scope = await _shellHost.GetScopeAsync(_shellSettings))
                     {
-                        break;
-                    }
+                        // Load the next batch of tasks
+                        batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    foreach (var task in batch)
-                    {
-                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-
-                        foreach (var index in allIndices)
+                        if (!batch.Any())
                         {
-                            // TODO: ignore if this index is not configured for the content type
-
-                            if (index.Value < task.Id)
-                            {
-                                _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
-                            }
+                            break;
                         }
 
-                        if (task.Type == IndexingTaskTypes.Update)
+                        foreach (var task in batch)
                         {
-                            var contentItem = await contentManager.GetAsync(task.ContentItemId);
-
-                            if (contentItem == null)
-                            {
-                                continue;
-                            }
-
-                            var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-
-                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
-                            await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
+                            var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                            var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
                             foreach (var index in allIndices)
                             {
+                                // TODO: ignore if this index is not configured for the content type
+
                                 if (index.Value < task.Id)
                                 {
-                                    _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
+                                }
+                            }
+
+                            if (task.Type == IndexingTaskTypes.Update)
+                            {
+                                var contentItem = await contentManager.GetAsync(task.ContentItemId);
+
+                                if (contentItem == null)
+                                {
+                                    continue;
+                                }
+
+                                var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+
+                                // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                                await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
+
+                                foreach (var index in allIndices)
+                                {
+                                    if (index.Value < task.Id)
+                                    {
+                                        _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    }
+                                }
+                            }
+                        }
+
+                        // Update task ids
+                        lastTaskId = batch.Last().Id;
+
+                        foreach (var index in allIndices)
+                        {
+                            if (index.Value < lastTaskId)
+                            {
+                                _indexingState.SetLastTaskId(index.Key, lastTaskId);
+
+                                if (_indexManager.HasIndex(index.Key))
+                                {
+                                    _indexingState.Update(index.Key);
                                 }
                             }
                         }
                     }
-
-                    // Update task ids
-                    lastTaskId = batch.Last().Id;
-
-                    foreach (var index in allIndices)
-                    {
-                        if (index.Value < lastTaskId)
-                        {
-                            _indexingState.SetLastTaskId(index.Key, lastTaskId);
-
-                            if (_indexManager.HasIndex(index.Key))
-                            {
-                                _indexingState.Update(index.Key);
-                            }
-                        }
-                    }
-                } 
-            } while (batch.Length == BatchSize);
+                } while (batch.Length == BatchSize);
+            }
         }
 
         /// <summary>
@@ -148,11 +159,21 @@ namespace OrchardCore.Lucene
         /// </summary>
         public void ResetIndex(string indexName)
         {
-            _indexingState.SetLastTaskId(indexName, 0);
+            var (locker, locked) = _localLock.TryAcquireLockAsync("LuceneIndexing:" + indexName).GetAwaiter().GetResult();
 
-            if (_indexManager.TryGetIndex(indexName))
+            if (!locked)
             {
-                _indexingState.Update(indexName);
+                return;
+            }
+
+            using (locker)
+            {
+                _indexingState.SetLastTaskId(indexName, 0);
+
+                if (_indexManager.TryGetIndex(indexName))
+                {
+                    _indexingState.Update(indexName);
+                }
             }
         }
 
@@ -161,8 +182,18 @@ namespace OrchardCore.Lucene
         /// </summary>
         public void RebuildIndex(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
-            _indexManager.CreateIndex(indexName);
+            var (locker, locked) = _localLock.TryAcquireLockAsync("LuceneIndexing:" + indexName).GetAwaiter().GetResult();
+
+            if (!locked)
+            {
+                return;
+            }
+
+            using (locker)
+            {
+                _indexManager.DeleteIndex(indexName);
+                _indexManager.CreateIndex(indexName);
+            }
 
             ResetIndex(indexName);
         }

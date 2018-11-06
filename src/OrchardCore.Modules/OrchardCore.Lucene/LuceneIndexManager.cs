@@ -99,6 +99,15 @@ namespace OrchardCore.Lucene
 
                 if (Directory.Exists(indexFolder))
                 {
+                    foreach (var file in Directory.GetFiles(indexFolder))
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch { }
+                    }
+
                     try
                     {
                         Directory.Delete(indexFolder, true);
