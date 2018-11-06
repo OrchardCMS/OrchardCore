@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Alias.Models;
 using OrchardCore.Apis;
-using OrchardCore.ContentManagement;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Alias.GraphQL
@@ -13,7 +13,7 @@ namespace OrchardCore.Alias.GraphQL
         {
             services.AddObjectGraphType<AliasPart, AliasQueryObjectType>();
             services.AddInputObjectGraphType<AliasPart, AliasInputObjectType>();
-            services.AddGraphQLFilterType<ContentItem, AliasGraphQLFilter>();
+            services.AddTransient<IIndexAliasProvider, AliasPartIndexAliasProvider>();
         }
     }
 }

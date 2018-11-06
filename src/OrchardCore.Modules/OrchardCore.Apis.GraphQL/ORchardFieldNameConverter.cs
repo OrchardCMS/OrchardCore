@@ -5,7 +5,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class OrchardFieldNameConverter : IFieldNameConverter
     {
-        private IFieldNameConverter defaultConverter = new CamelCaseFieldNameConverter();
+        private readonly IFieldNameConverter _defaultConverter = new CamelCaseFieldNameConverter();
 
         public string NameFor(string field, Type parentType)
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
             }
 
-            return defaultConverter.NameFor(field, parentType);
+            return _defaultConverter.NameFor(field, parentType);
         }
     }
 }

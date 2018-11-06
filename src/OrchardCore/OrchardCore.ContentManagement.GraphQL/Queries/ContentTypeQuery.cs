@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     Name = typeDefinition.Name
                 };
 
-                var query = new ContentItemsFieldType()
+                var query = new ContentItemsFieldType(typeDefinition.Name, schema)
                 {
                     Name = typeDefinition.Name,
                     ResolvedType = new ListGraphType(typeType)

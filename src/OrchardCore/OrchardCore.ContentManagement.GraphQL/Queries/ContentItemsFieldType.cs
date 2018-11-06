@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -10,10 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
-using YesSql.Services;
+using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -22,40 +22,41 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-        private static ParameterExpression ContentItemParameter = Expression.Parameter(typeof(ContentItemIndex), "x");
 
-        private static Dictionary<string, Expression> ContentItemProperties;
-        private static MethodInfo IsIn = typeof(DefaultQueryExtensions).GetMethod("IsIn");
-        private static MethodInfo IsNotIn = typeof(DefaultQueryExtensions).GetMethod("IsNotIn");
-        private static MethodInfo Contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-        private static MethodInfo StartsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
-        private static MethodInfo EndsWith = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
+        private static readonly List<string> ContentItemProperties;
 
         static ContentItemsFieldType()
         {
-            ContentItemProperties = new Dictionary<string, Expression>(StringComparer.OrdinalIgnoreCase);
+            ContentItemProperties = new List<string>();
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {
-                ContentItemProperties.Add(property.Name, ConvertToNonNullableExpression(Expression.Property(ContentItemParameter, property)));
+                ContentItemProperties.Add(property.Name);
             }
         }
 
-        public ContentItemsFieldType()
+        public ContentItemsFieldType(string contentItemName, ISchema schema)
         {
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
 
+            var whereInput = new ContentItemWhereInput(contentItemName);
+            var orderByInput = new ContentItemOrderByInput(contentItemName);
+
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items" },
-                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order" },
-                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items" },
-                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip" },
-                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", DefaultValue = PublicationStatusEnum.Published }
+                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
+                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
+                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
+                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of elements to skip", ResolvedType = new IntGraphType() },
+                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
             Resolver = new AsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+
+            schema.RegisterType(whereInput);
+            schema.RegisterType(orderByInput);
+            schema.RegisterType<PublicationStatusGraphType>();
         }
 
         private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
@@ -69,33 +70,80 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
             }
 
-            var where = context.GetArgument<Dictionary<string, object>>("where");
+            JObject where = null;
+            if (context.HasArgument("where"))
+            {
+                where = JObject.FromObject(context.Arguments["where"]);
+            }
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
             var query = session.Query<ContentItem, ContentItemIndex>();
 
-            query = Filter(query, context, versionOption, where);
+            query = FilterVersion(query, versionOption);
+            query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            IQuery<ContentItem> contentItemsQuery = query;
-            var queryFilters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>().ToList();
-
-            foreach (var filter in queryFilters)
-            {
-                contentItemsQuery = filter.PreQuery(query, context);
-            }
-
+            var contentItemsQuery = FilterWhereArguments(query, where, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
-            foreach (var filter in queryFilters)
+            return contentItems.ToList();
+        }
+
+        private IQuery<ContentItem> FilterWhereArguments(
+            IQuery<ContentItem, ContentItemIndex> query, 
+            JObject where, 
+            ISession session, 
+            GraphQLContext context)
+        {
+            if (where == null)
             {
-                contentItems = filter.PostQuery(contentItems, context);
+                return query;
             }
 
-            return contentItems.ToList();
+            var expressions = Expression.Conjunction();
+            BuildWhereExpressions(where, expressions, null);
+
+            var transaction = session.Demand();
+            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
+
+            // Create the default table alias
+            predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+
+            // Add all provided table alias to the current predicate query
+            var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
+            var indexes = new Dictionary<string, IndexAlias>();
+            foreach (var aliasProvider in providers)
+            {
+                foreach (var alias in aliasProvider.GetAliases())
+                {
+                    predicateQuery.CreateAlias(alias.Alias, alias.Index);
+                    indexes.Add(alias.Index, alias);
+                }
+            }
+
+            var whereSqlClause = expressions.ToSqlString(predicateQuery);
+            query = query.Where(whereSqlClause);
+
+            // Add all parameters that were used in the predicate query
+            foreach (var parameter in predicateQuery.Parameters)
+            {
+                query = query.WithParameter(parameter.Key, parameter.Value);
+            }
+
+            // Add all Indexes that were used in the predicate query
+            IQuery<ContentItem> contentQuery = query;
+            foreach (var usedAlias in predicateQuery.GetUsedAliases())
+            {
+                if (indexes.ContainsKey(usedAlias))
+                {
+                    contentQuery = indexes[usedAlias].With(contentQuery);
+                }
+            }
+
+            return contentQuery;
         }
 
         private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context)
@@ -129,14 +177,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IQuery<ContentItem, ContentItemIndex> Filter(
-            IQuery<ContentItem, ContentItemIndex> query,
-            ResolveFieldContext context,
-            VersionOptions versionOption,
-            Dictionary<string, object> where)
+        private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, ResolveFieldContext context)
         {
-            // Applying version
+            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
 
+            return query.Where(q => q.ContentType == contentType);
+        }
+
+        private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)
+        {
             if (versionOption.IsPublished)
             {
                 query = query.Where(q => q.Published == true);
@@ -150,108 +199,100 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 query = query.Where(q => q.Latest == true);
             }
 
-            // Applying content type
-
-            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
-
-            query = query.Where(q => q.ContentType == contentType);
-
-            if (where == null)
-            {
-                return query;
-            }
-
-            var expressions = CreateExpression(where);
-
-            Expression predicate = Expression.Constant(true);
-
-            foreach (var expression in expressions)
-            {
-                predicate = Expression.And(predicate, expression);
-            }
-
-            query = query.Where(Expression.Lambda<Func<ContentItemIndex, bool>>(predicate, new ParameterExpression[] { ContentItemParameter }));
-
             return query;
         }
 
-        private IEnumerable<Expression> CreateExpression(Dictionary<string, object> where)
+        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias)
         {
-            foreach (var entry in where)
+            if (where is JArray array)
             {
-                var values = entry.Key.Split(new[] { '_' }, 2);
-
-                Expression comparison = null;
-
-                Expression left, right;
-
-                if (values[0] == "status")
+                foreach (var child in array.Children())
                 {
-                    continue;
+                    if (child is JObject whereObject)
+                    {
+                        BuildExpressionsInternal(whereObject, expressions, tableAlias);
+                    }
+                }
+            }
+            else if (where is JObject whereObject)
+            {
+                BuildExpressionsInternal(whereObject, expressions, tableAlias);
+            }
+        }
+
+        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias)
+        {
+            foreach (var entry in where.Properties())
+            {
+                IPredicate expression = null;
+
+                var values = entry.Name.Split(new[] { '_' }, 2);
+
+                // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
+                var property = values[0];
+                if (!string.IsNullOrEmpty(tableAlias))
+                {
+                    property = tableAlias + "." + property;
                 }
 
                 if (values.Length == 1)
                 {
-                    if (String.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
-                        comparison = Expression.Constant(false);
-
-                        var subwhere = entry.Value as Dictionary<string, object>;
-
-                        var subExpressions = CreateExpression(subwhere);
-
-                        foreach (var subExpression in subExpressions)
-                        {
-                            comparison = Expression.Or(comparison, subExpression);
-                        }
+                        expression = Expression.Disjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
                     }
-                    else if (String.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
-                        comparison = Expression.Constant(true);
-
-                        var subwhere = entry.Value as Dictionary<string, object>;
-
-                        var subExpressions = CreateExpression(subwhere);
-
-                        foreach (var subExpression in subExpressions)
-                        {
-                            comparison = Expression.And(comparison, subExpression);
-                        }
+                        expression = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
+                    }
+                    else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
+                    {
+                        expression = Expression.Conjunction();
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
+                        expression = Expression.Not(expression);
+                    }
+                    else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
+                    {
+                        // Loop through the part's properties, passing the name of the part as the table tableAlias.
+                        // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
+                        BuildWhereExpressions(entry.Value, expressions, values[0]);
                     }
                     else
                     {
-                        left = ContentItemProperties[values[0]];
-                        right = Expression.Constant(entry.Value);
-
-                        comparison = Expression.Equal(left, right);
+                        var propertyValue = entry.Value.ToObject<object>();
+                        expression = Expression.Equal(property, propertyValue);
                     }
                 }
                 else
                 {
-                    left = ContentItemProperties[values[0]];
-                    right = Expression.Constant(entry.Value);
+                    var value = entry.Value.ToObject<object>();
 
                     switch (values[1])
                     {
-                        case "not": comparison = Expression.NotEqual(left, right); break;
-                        case "gt": comparison = Expression.GreaterThan(left, right); break;
-                        case "gte": comparison = Expression.GreaterThanOrEqual(left, right); break;
-                        case "lt": comparison = Expression.LessThan(left, right); break;
-                        case "lte": comparison = Expression.LessThanOrEqual(left, right); break;
-                        case "contains": comparison = Expression.Call(left, Contains, right); ; break;
-                        case "not_contains": comparison = Expression.Not(Expression.Call(left, Contains, right)); break;
-                        case "starts_with": comparison = Expression.Call(left, StartsWith, right); ; break;
-                        case "not_starts_with": comparison = Expression.Not(Expression.Call(left, StartsWith, right)); break;
-                        case "ends_with": comparison = Expression.Call(left, EndsWith, right); ; break;
-                        case "not_ends_with": comparison = Expression.Not(Expression.Call(left, EndsWith, right)); break;
-                        case "in": comparison = Expression.Call(null, IsIn, left, right); break;
-                        case "not_in": comparison = Expression.Call(null, IsNotIn, left, right); break;
+                        case "not": expression = Expression.Not(Expression.Equal(property, value)); break;
+                        case "gt": expression = Expression.GreaterThan(property, value); break;
+                        case "gte": expression = Expression.GreaterThanOrEqual(property, value); break;
+                        case "lt": expression = Expression.LessThan(property, value); break;
+                        case "lte": expression = Expression.LessThanOrEqual(property, value); break;
+                        case "contains": expression = Expression.Like(property, (string)value, MatchOptions.Contains); break;
+                        case "not_contains": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
+                        case "starts_with": expression = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
+                        case "not_starts_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
+                        case "ends_with": expression = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
+                        case "not_ends_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
+                        case "in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
+                        case "not_in": expression = Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())); break;
 
-                        default: comparison = Expression.Equal(left, right); break;
+                        default: expression = Expression.Equal(property, value); break;
                     }
                 }
 
-                yield return comparison;
+                if (expression != null)
+                {
+                    expressions.Add(expression);
+                }
             }
         }
 
@@ -315,23 +356,5 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             return query;
         }
-
-        static Expression ConvertToNonNullableExpression(Expression expression)
-        {
-            if (expression == null)
-            {
-                throw new ArgumentNullException("expression");
-            }
-
-            if (expression.Type.IsGenericType && expression.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                return Expression.Convert(expression, expression.Type.GetGenericArguments()[0]);
-            }
-            else
-            {
-                return expression;
-            }
-        }
-
     }
 }
