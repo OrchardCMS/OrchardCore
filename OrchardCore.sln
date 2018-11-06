@@ -345,6 +345,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Apis.GraphQL.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentManagement.GraphQL", "src\OrchardCore\OrchardCore.ContentManagement.GraphQL\OrchardCore.ContentManagement.GraphQL.csproj", "{45CCB478-6339-4FC6-8BD9-456D0BEBDC05}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ReverseProxy", "src\OrchardCore.Modules\OrchardCore.ReverseProxy\OrchardCore.ReverseProxy.csproj", "{76871CE0-43F9-49D3-AAAB-4A8510F76447}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -903,6 +905,10 @@ Global
 		{45CCB478-6339-4FC6-8BD9-456D0BEBDC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45CCB478-6339-4FC6-8BD9-456D0BEBDC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45CCB478-6339-4FC6-8BD9-456D0BEBDC05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76871CE0-43F9-49D3-AAAB-4A8510F76447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76871CE0-43F9-49D3-AAAB-4A8510F76447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76871CE0-43F9-49D3-AAAB-4A8510F76447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76871CE0-43F9-49D3-AAAB-4A8510F76447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1063,6 +1069,7 @@ Global
 		{A0B71FF5-2E4D-4B17-99D9-B3C2C1C593E6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{B0FA3A30-E3AE-470A-9102-9EB107482254} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{45CCB478-6339-4FC6-8BD9-456D0BEBDC05} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{76871CE0-43F9-49D3-AAAB-4A8510F76447} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

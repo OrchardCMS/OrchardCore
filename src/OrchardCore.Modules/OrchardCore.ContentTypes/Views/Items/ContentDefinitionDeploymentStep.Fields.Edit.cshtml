@@ -17,13 +17,9 @@
 <fieldset class="form-group mt-4 mb-5">
     <div class="row">
         <div class="col">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll"
-                        data-reverseToggle=".cdsel"
-                        />
-                    Include all content types and parts definitions.
-                </label>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="IncludeAll" data-reverseToggle=".cdsel">
+                <label class="custom-control-label" asp-for="IncludeAll">@T["Include all content types and parts definitions."]</label>
             </div>
         </div>
     </div>
@@ -46,20 +42,18 @@
                     var checkd = contentTypes?.Contains(ctypename);
 
                     <li class="list-group-item">
-                        <div class="form-check">
-                            @* Make sure that the part with the same name is included in the step if the content type is selected. *@
-                            @if (contentTypeDefinition.Parts.Any(x => x.Name == ctypename))
-                            {
-                                <input class="invisible" style="position:absolute" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@ctypename"
-                                       id="part_@ctypename" checked="@checkd" />
-                            }
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentTypes)" value="@ctypename" checked="@checkd"
-                                       data-toggle="collapse" data-target="#sub_@ctypename"
-                                       data-checkbox="#part_@ctypename" />
-                                @contentTypeDefinition.DisplayName
-                            </label>
+                        @* Make sure that the part with the same name is included in the step if the content type is selected. *@
+                        @if (contentTypeDefinition.Parts.Any(x => x.Name == ctypename))
+                        {
+                            <input class="invisible" style="position:absolute" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@ctypename"
+                                   id="part_@ctypename" checked="@checkd" />
+                        }
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)" name="@Html.NameFor(m => m.ContentTypes)" value="@ctypename" checked="@checkd" data-toggle="collapse" data-target="#sub_@ctypename" data-checkbox="#part_@ctypename">
+                            <label class="custom-control-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)">@contentTypeDefinition.DisplayName</label>
                         </div>
+
+
                         <ul class="list-group @(checkd??false ? "" : "collapse")" id="sub_@ctypename">
                             @foreach (var part in contentTypeDefinition.Parts.Where(x => x.Name != ctypename))
                             {
@@ -67,10 +61,9 @@
                                 var partChecked = contentParts?.Contains(partName);
 
                                 <li class="list-group-item">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input part_@partName" name="tempparts" value="" type="checkbox" checked="@partChecked"
-                                                   data-checkboxChecked="#part_@part.PartDefinition.Name" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input part_@partName" id="@(ctypename + "_" + partName + '_' + part.Name)" name="tempparts" value="" type="checkbox" checked="@partChecked" data-checkboxChecked="#part_@part.PartDefinition.Name">
+                                        <label class="custom-control-label" for="@(ctypename + "_" + partName + '_' + part.Name)">
                                             @if (part.PartDefinition.Name == part.Name)
                                             {
                                                 @part.Name
@@ -81,6 +74,8 @@
                                             }
                                         </label>
                                     </div>
+
+
                                 </li>
                             }
                         </ul>
@@ -108,13 +103,9 @@
                     var checkd = contentParts?.Contains(partName);
 
                     <li class="list-group-item">
-                        <div class="form-check">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentParts)" value="@partName" checked="@checkd"
-                                       id="part_@partName"
-                                       data-checkboxUnchecked=".part_@partName" />
-                                @partName
-                            </label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" name="@Html.NameFor(m => m.ContentParts)" value="@partName" checked="@checkd" id="part_@partName" data-checkboxUnchecked=".part_@partName">
+                            <label class="custom-control-label" for="part_@partName">@partName</label>
                         </div>
                     </li>
                 }

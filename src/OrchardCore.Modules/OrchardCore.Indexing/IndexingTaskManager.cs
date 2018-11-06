@@ -79,7 +79,7 @@ namespace OrchardCore.Indexing.Services
                 return;
             }
 
-            var transaction = _session.Demand();
+            var transaction = await _session.DemandAsync();
             var dialect = SqlDialectFactory.For(transaction.Connection);
 
             try
@@ -125,7 +125,7 @@ namespace OrchardCore.Indexing.Services
         {
             await FlushAsync();
 
-            var transaction = _session.Demand();
+            var transaction = await _session.DemandAsync();
 
             try
             {
