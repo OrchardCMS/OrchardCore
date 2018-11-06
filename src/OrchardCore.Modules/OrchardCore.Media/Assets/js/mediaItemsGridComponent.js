@@ -1,7 +1,7 @@
 // <media-items-grid> component
 Vue.component('mediaItemsGrid', {
     template: '\
-        <ol class="row">\
+        <ol class="row media-items-grid">\
                 <li v-for="media in filteredMediaItems" \
                     :key="media.name" \
                     class="media-item media-container-main-list-item card" \

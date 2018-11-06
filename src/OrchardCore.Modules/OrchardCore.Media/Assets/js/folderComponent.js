@@ -5,32 +5,38 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select" draggable="false" >\
-                    <i class="folder fa fa-folder"></i>\
-                    {{model.name}}\
+            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
+                <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
+                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
+                  <div class="folder-name">{{model.name}}</div>\
+                    <div class="btn-group folder-actions" >\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
+                    </div>\
                 </a>\
             </div>\
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
                         :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp">\
+                        :selected-in-media-app="selectedInMediaApp" \
+                        :level="level + 1">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
         model: Object,
-        selectedInMediaApp: Object
+        selectedInMediaApp: Object,
+        level: Number
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
             parent: null,
-            isHovered : false
+            isHovered: false,
+            padding: 0
         }
     },
     computed: {
@@ -39,12 +45,17 @@ Vue.component('folder', {
         },
         isSelected: function () {
             return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
+        },
+        isRoot: function () {
+            return this.model.path === '';
         }
     },
     mounted: function () {
-        if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
+        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())){
             this.toggle();
         }
+
+        this.padding = this.level < 3 ?  26 : 26 + (this.level * 8);
     },
     created: function () {
         var self = this;
@@ -71,9 +82,6 @@ Vue.component('folder', {
         });
     },
     methods: {
-        isRoot: function () {
-            return this.model.path === '';
-        },
         isAncestorOfSelectedFolder: function () {
             parentFolder = mediaApp.selectedFolder;
             while (parentFolder) {
@@ -94,6 +102,12 @@ Vue.component('folder', {
         select: function () {
             bus.$emit('folderSelected', this.model);
             this.loadChildren();
+        },
+        createFolder: function () {           
+            bus.$emit('createFolderRequested');
+        },
+        deleteFolder: function () {
+            bus.$emit('deleteFolderRequested');
         },
         loadChildren: function () {            
             var self = this;
