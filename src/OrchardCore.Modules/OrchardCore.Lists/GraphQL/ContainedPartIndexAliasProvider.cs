@@ -6,7 +6,7 @@ namespace OrchardCore.Lists.GraphQL
 {
     public class ContainedPartIndexAliasProvider : IIndexAliasProvider
     {
-        private static IndexAlias[] Aliases = new []
+        private static readonly IndexAlias[] _aliases = new []
         {
             new IndexAlias
             {
@@ -18,7 +18,7 @@ namespace OrchardCore.Lists.GraphQL
 
         public IEnumerable<IndexAlias> GetAliases()
         {
-            return Aliases;
+            return _aliases;
         }
     }
 }

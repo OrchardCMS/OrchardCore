@@ -6,7 +6,7 @@ namespace OrchardCore.Autoroute.GraphQL
 {
     public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
     {
-        private static IndexAlias[] Aliases = new[]
+        private static readonly IndexAlias[] _aliases = new[]
         {
             new IndexAlias
             {
@@ -18,7 +18,7 @@ namespace OrchardCore.Autoroute.GraphQL
 
         public IEnumerable<IndexAlias> GetAliases()
         {
-            return Aliases;
+            return _aliases;
         }
     }
 }
