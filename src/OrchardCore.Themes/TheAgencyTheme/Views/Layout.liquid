@@ -6,7 +6,6 @@
     {% render_section "HeadMeta", required: false %}
     <title>{% page_title Site.SiteName %}</title>
 
-
     {% script source:"/TheAgencyTheme/js/agency.min.js", debug_src:"/TheAgencyTheme/js/agency.js", at:"Foot" %}
 
     {% style name:"bootstrap", use_cdn:"true", version:"4" %}
@@ -42,13 +41,13 @@
         {% render_section "Content" %}
     </div>
     {% render_section "Footer", required: false %}
-
-    <!-- Plugin JavaScript -->
-    <script src="/TheAgencyTheme/vendor/jquery-easing/jquery.easing.min.js"></script>
     
     <!-- Bootstrap core JavaScript -->
     <script src="/TheAgencyTheme/vendor/jquery/jquery.min.js"></script>
     <script src="/TheAgencyTheme/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="/TheAgencyTheme/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     {% resources type: "FootScript" %}
         
