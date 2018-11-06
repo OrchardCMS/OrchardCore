@@ -13,7 +13,7 @@ namespace OrchardCore.Autoroute.GraphQL
         {
             services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
             services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
-            services.AddScoped<IIndexAliasProvider, AutoroutePartIndexAliasProvider>();
+            services.AddTransient<IIndexAliasProvider, AutoroutePartIndexAliasProvider>();
         }
     }
 }

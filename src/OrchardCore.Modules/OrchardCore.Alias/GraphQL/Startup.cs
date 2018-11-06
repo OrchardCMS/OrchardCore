@@ -13,7 +13,7 @@ namespace OrchardCore.Alias.GraphQL
         {
             services.AddObjectGraphType<AliasPart, AliasQueryObjectType>();
             services.AddInputObjectGraphType<AliasPart, AliasInputObjectType>();
-            services.AddScoped<IIndexAliasProvider, AliasPartIndexAliasProvider>();
+            services.AddTransient<IIndexAliasProvider, AliasPartIndexAliasProvider>();
         }
     }
 }

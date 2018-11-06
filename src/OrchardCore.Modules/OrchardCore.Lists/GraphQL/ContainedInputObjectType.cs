@@ -9,7 +9,7 @@ namespace OrchardCore.Lists.GraphQL
         public ContainedInputObjectType()
         {
             Name = "ContainedPartInput";
-            Description = "the custom URL part of the content item";
+            Description = "the list part of the content item";
 
             AddScalarFilterFields<IdGraphType>("listContentItemId", "the content item id of the parent list of the content item to filter");
         }
