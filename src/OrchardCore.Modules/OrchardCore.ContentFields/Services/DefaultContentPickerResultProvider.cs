@@ -7,7 +7,7 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Services
 {
-    public class DefaultContentPickerResultProvider : IContentPickerResultProvider<ContentItem>
+    public class DefaultContentPickerResultProvider : IContentPickerResultProvider
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
@@ -20,12 +20,6 @@ namespace OrchardCore.ContentFields.Services
 
         public string Name => "Default";
 
-        public virtual ContentPickerResult BuildResult(ContentItem contentItem) => new ContentPickerResult
-        {
-            ContentItemId = contentItem.ContentItemId,
-            DisplayText = $"{contentItem.ContentType}{(string.IsNullOrWhiteSpace(contentItem.DisplayText) ? string.Empty : ": " + contentItem.DisplayText)}"
-        };
-
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>()
@@ -33,7 +27,7 @@ namespace OrchardCore.ContentFields.Services
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {
-                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
+                query.With<ContentItemIndex>(x => x.ToString().Contains(searchContext.Query));
             }
 
             var contentItems = await query.Take(20).ListAsync();
@@ -42,7 +36,11 @@ namespace OrchardCore.ContentFields.Services
 
             foreach (var contentItem in contentItems)
             {
-                results.Add(BuildResult(contentItem));
+                results.Add(new ContentPickerResult
+                {
+                    ContentItemId = contentItem.ContentItemId,
+                    DisplayText = contentItem.ToString()
+                });
             }
 
             return results;
