@@ -17,6 +17,7 @@
     {% script name:"bootstrap-bundle", use_cdn:"true", version:"4", at:"Foot" %}
     {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
     {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
+    {% script source:"/TheBlogTheme/js/clean-blog-menu.min.js", debug_src:"/TheBlogTheme/js/clean-blog-menu.js", at:"Foot" %}
     {% resources type: "HeadScript" %}
 
     <!-- CSS -->
@@ -58,6 +59,5 @@
         {% render_section "Footer", required: false %}
     </footer>
     {% resources type: "FootScript" %}
-    <script type="text/javascript">(function($) { $('#mainNav').activateLinks(); })(jQuery);</script>
 </body>
 </html>
