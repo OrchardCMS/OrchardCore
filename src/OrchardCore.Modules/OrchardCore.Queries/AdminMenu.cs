@@ -21,7 +21,7 @@ namespace OrchardCore.Queries
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Content"], content => content
+            builder.Add(T["Configuration"], content => content
                 .Add(T["Queries"], "1", contentItems => contentItems
                     .Action("Index", "Admin", new { area = "OrchardCore.Queries" })
                     .Permission(Permissions.ManageQueries)
