@@ -171,7 +171,7 @@ It's also not currently possible to order responses by their parts or custom fie
 #### Filtering
 
 When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements. 
-The available options depend on the scalar and relational fields defined on the type in question.
+The available options depend on the scalar and part fields defined on the type in question.
 
 ##### Single Filters
 
