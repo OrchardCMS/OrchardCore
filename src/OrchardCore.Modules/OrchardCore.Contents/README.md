@@ -144,7 +144,7 @@ Order the list of all `BlogPost` content items ascending by `displayText`:
 
 ```graphql
 query {
-  blogPost(orderBy: { displayText }) {
+  blogPost(orderBy: { displayText: ASC }) {
     contentItemId
     displayText
     publishedUtc
