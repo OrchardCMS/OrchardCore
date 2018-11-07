@@ -244,7 +244,7 @@ query {
 
 For content parts, you can define conditions on the part by nesting the according argument in `where`.
 
-Query all `BlostPost` content items where the `autoroutePart` has a specific value in its `path`:
+Query all `BlogPost` content items where the `autoroutePart` has a specific value in its `path`:
 
 ```graphql
 query {
