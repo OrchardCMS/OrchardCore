@@ -152,7 +152,7 @@ query {
 }
 ```
 
-Order the list of all `BlogPost` content items descending by `publishedUtc`:
+Order the list of all `BlogPost` content items descending by `publishedUtc` and then ascending by `displayText`:
 
 ```graphql
 query {
