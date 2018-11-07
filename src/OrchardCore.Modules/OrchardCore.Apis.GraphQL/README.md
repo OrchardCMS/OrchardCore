@@ -47,7 +47,7 @@ Another option is to use the `application/graphql` content-type header, and the 
 
 #### query string
 
-In addition to the above, If the "query" query string parameter is present (as in the GET example above), it is be parsed and handled in the same way as the HTTP GET case.
+In addition to the above, If the "query" query string parameter is present (as in the GET example above), it will be parsed and handled in the same way as the HTTP GET case.
 
 ### Response 
 
