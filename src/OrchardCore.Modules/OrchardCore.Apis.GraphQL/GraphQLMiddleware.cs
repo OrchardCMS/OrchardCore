@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Apis.GraphQL
@@ -107,6 +108,22 @@ namespace OrchardCore.Apis.GraphQL
                             request.Query = await sr.ReadToEndAsync();
                         }
                     }
+                    else if (context.Request.Query.ContainsKey("query"))
+                    {
+                        request = new GraphQLRequest();
+
+                        request.Query = context.Request.Query["query"];
+
+                        if (context.Request.Query.ContainsKey("variables"))
+                        {
+                            request.Variables = JObject.Parse(context.Request.Query["variables"]);
+                        }
+
+                        if (context.Request.Query.ContainsKey("operationName"))
+                        {
+                            request.OperationName = context.Request.Query["operationName"];
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -123,8 +140,8 @@ namespace OrchardCore.Apis.GraphQL
                 }
 
                 request = new GraphQLRequest();
-                request.Query = context.Request.Query["query"];
 
+                request.Query = context.Request.Query["query"];
             }
 
             var queryToExecute = request.Query;
