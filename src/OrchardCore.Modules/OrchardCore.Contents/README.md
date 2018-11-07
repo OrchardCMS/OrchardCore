@@ -166,7 +166,7 @@ query {
 
 The field you are ordering by does not have to be selected in the actual query.
 
-It's also not possible to order responses by multiple fields or by related fields.
+It's also not currently possible to order responses by their parts or custom fields.
 
 #### Filtering
 
