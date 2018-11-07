@@ -31,8 +31,6 @@
   <ItemGroup>
     <EmbeddedResource Remove="wwwroot\about.html" />
     <EmbeddedResource Remove="wwwroot\contact.html" />
-    <EmbeddedResource Remove="wwwroot\css\clean-blog.css" />
-    <EmbeddedResource Remove="wwwroot\css\clean-blog.min.css" />
     <EmbeddedResource Remove="wwwroot\gulpfile.js" />
     <EmbeddedResource Remove="wwwroot\index.html" />
     <EmbeddedResource Remove="wwwroot\package-lock.json" />

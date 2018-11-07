@@ -18,6 +18,8 @@ namespace OrchardCore.Queries.Services
 
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
 
+        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
+
         public QueryManager(
             ISignal signal,
             ISession session,
