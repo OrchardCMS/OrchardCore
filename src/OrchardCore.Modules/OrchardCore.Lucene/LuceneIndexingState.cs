@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
@@ -23,24 +24,38 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
+
+            var rootDirectory = Directory.CreateDirectory(_rootPath);
+
+            foreach (var indexName in rootDirectory.GetDirectories().Select(d => d.Name))
+            {
+                var statusFile = PathExtensions.Combine(_rootPath, indexName, "status.json");
+
+                try
+                {
+                    if (File.Exists(statusFile))
+                    {
+                        _content[indexName] = JObject.Parse(File.ReadAllText(statusFile));
+                    }
+                    else
+                    {
+                        _content[indexName] = new JObject(new JProperty("taskId", 0));
+                    }
+                }
+                catch
+                {
+                    _content[indexName] = new JObject(new JProperty("taskId", 0));
+                }
+            }
         }
 
         public int GetLastTaskId(string indexName)
         {
             if (!_content.TryGetValue(indexName, out var value))
             {
-                var statusFile = PathExtensions.Combine(_rootPath, indexName, "status.json");
-
                 lock (this)
                 {
-                    if (File.Exists(statusFile))
-                    {
-                        value = _content[indexName] = JObject.Parse(File.ReadAllText(statusFile));
-                    }
-                    else
-                    {
-                        value = _content[indexName] = new JObject(new JProperty("taskId", 0));
-                    }
+                    value = _content[indexName] = new JObject(new JProperty("taskId", 0));
                 }
             }
 
