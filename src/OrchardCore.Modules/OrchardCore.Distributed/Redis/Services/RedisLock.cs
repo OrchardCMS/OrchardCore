@@ -29,12 +29,37 @@ namespace OrchardCore.Distributed.Redis.Services
         public ILogger Logger { get; set; }
 
         /// <summary>
-        /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
-        /// Todo: timeout is not yet implemented.
+        /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
         /// </summary>
-        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan? timeout = null, TimeSpan? expiration = null)
+        public async Task<IDisposable> AcquireLockAsync(string key, TimeSpan? expiration = null)
         {
-            return (new Locker(this, key), await LockAsync(key, expiration ?? TimeSpan.FromSeconds(1)));
+            return (await TryAcquireLockAsync(key, TimeSpan.MaxValue, expiration)).locker;
+        }
+
+        /// <summary>
+        /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
+        /// </summary>
+        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
+        {
+            long maxCount = (long)(timeout.TotalMilliseconds / 1000);
+
+            long count = 0;
+            while (true)
+            {
+                var locked = await LockAsync(key, expiration ?? TimeSpan.FromSeconds(1));
+
+                if (locked)
+                {
+                    return (new Locker(this, key), locked);
+                }
+
+                if (count++ > maxCount)
+                {
+                    return (null, locked);
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
         }
 
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
