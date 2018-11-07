@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -92,6 +92,11 @@ namespace OrchardCore.Contents.Controllers
                 default:
                     query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
+            }
+
+            if (typeId != "")
+            {
+                model.Id = typeId;
             }
 
             if (!string.IsNullOrEmpty(model.TypeName))
