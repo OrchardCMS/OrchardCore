@@ -30,6 +30,7 @@ namespace OrchardCore.Distributed.Redis.Services
 
         /// <summary>
         /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
+        /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
         public async Task<IDisposable> AcquireLockAsync(string key, TimeSpan? expiration = null)
         {
@@ -38,6 +39,7 @@ namespace OrchardCore.Distributed.Redis.Services
 
         /// <summary>
         /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
+        /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
         public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
@@ -46,7 +48,7 @@ namespace OrchardCore.Distributed.Redis.Services
             long count = 0;
             while (true)
             {
-                var locked = await LockAsync(key, expiration ?? TimeSpan.FromSeconds(1));
+                var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue);
 
                 if (locked)
                 {

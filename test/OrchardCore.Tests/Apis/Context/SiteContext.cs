@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.Context
     public class SiteContext : IDisposable
     {
         public static OrchardTestFixture<SiteStartup> Site { get; }
-        public static HttpClient DefaultTenantClient; // { get; private set; }
+        public static HttpClient DefaultTenantClient;
 
         public HttpClient Client { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
@@ -20,7 +20,6 @@ namespace OrchardCore.Tests.Apis.Context
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
-            //DefaultTenantClient = Site.CreateClient();
         }
 
         public virtual async Task InitializeAsync()
