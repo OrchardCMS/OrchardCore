@@ -156,7 +156,7 @@ Order the list of all `BlogPost` content items descending by `publishedUtc` and 
 
 ```graphql
 query {
-  blogPost(orderBy: { publishedUtc: DESC }) {
+  blogPost(orderBy: { publishedUtc: DESC, displayText: ASC  }) {
     contentItemId
     displayText
     publishedUtc
