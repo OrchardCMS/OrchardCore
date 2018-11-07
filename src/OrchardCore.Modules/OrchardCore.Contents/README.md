@@ -301,7 +301,6 @@ query {
     OR: {
       AND: {
         displayText_in: ["My biggest Adventure", "My latest Hobbies"]
-      }, {
         publishedUtc_gt: "2018"
       },
 
