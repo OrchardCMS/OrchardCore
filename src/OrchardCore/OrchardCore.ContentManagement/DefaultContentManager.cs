@@ -115,8 +115,8 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems[i] = await LoadAsync(contentItems[i]);
             }
-            
-            return contentItems;
+
+            return contentItems.OrderBy(c => contentItemIds.ToList().IndexOf(c.ContentItemId));
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
