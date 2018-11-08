@@ -10,7 +10,6 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class EditYoutubeFieldViewModel : YoutubeFieldDisplayViewModel
     {
-        [Required(ErrorMessage = "Youtube field is required")]
         [DataType(DataType.Url, ErrorMessage = "The field only accepts Urls")]
         public string RawAddress { get; set; }
         public string EmbeddedAddress { get; set; }

@@ -42,11 +42,11 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 s.AddResourceManagement();
 
-                services.AddTagHelpers<LinkTagHelper>();
-                services.AddTagHelpers<MetaTagHelper>();
-                services.AddTagHelpers<ResourcesTagHelper>();
-                services.AddTagHelpers<ScriptTagHelper>();
-                services.AddTagHelpers<StyleTagHelper>();
+                s.AddTagHelpers<LinkTagHelper>();
+                s.AddTagHelpers<MetaTagHelper>();
+                s.AddTagHelpers<ResourcesTagHelper>();
+                s.AddTagHelpers<ScriptTagHelper>();
+                s.AddTagHelpers<StyleTagHelper>();
             });
 
 

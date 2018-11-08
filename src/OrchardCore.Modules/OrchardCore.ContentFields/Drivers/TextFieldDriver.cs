@@ -22,7 +22,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTextFieldViewModel>("TextField", model =>
+            return Initialize<DisplayTextFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;

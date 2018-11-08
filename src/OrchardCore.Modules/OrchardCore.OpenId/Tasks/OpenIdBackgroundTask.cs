@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.OpenId.Abstractions.Managers;
-using OrchardCore.OpenId.Services.Managers;
 
 namespace OrchardCore.OpenId.Tasks
 {
@@ -34,7 +33,7 @@ namespace OrchardCore.OpenId.Tasks
             {
                 await serviceProvider.GetRequiredService<IOpenIdAuthorizationManager>().PruneAsync(cancellationToken);
             }
-            catch (OpenIddictException exception) when (exception.Reason == OpenIddictConstants.Exceptions.ConcurrencyError)
+            catch (OpenIddictExceptions.ConcurrencyException exception)
             {
                 _logger.LogDebug(exception, "A concurrency error occurred while pruning authorizations from the database.");
             }
@@ -51,7 +50,7 @@ namespace OrchardCore.OpenId.Tasks
             {
                 await serviceProvider.GetRequiredService<IOpenIdTokenManager>().PruneAsync(cancellationToken);
             }
-            catch (OpenIddictException exception) when (exception.Reason == OpenIddictConstants.Exceptions.ConcurrencyError)
+            catch (OpenIddictExceptions.ConcurrencyException exception)
             {
                 _logger.LogDebug(exception, "A concurrency error occurred while pruning tokens from the database.");
             }

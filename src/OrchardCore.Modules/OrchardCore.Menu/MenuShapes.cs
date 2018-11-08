@@ -49,6 +49,8 @@ namespace OrchardCore.Menu
                         return;
                     }
 
+                    menu.ContentItem = menuContentItem;
+
                     menu.MenuName = menuContentItem.DisplayText;
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;

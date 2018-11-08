@@ -26,7 +26,7 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 - **Portable**. You can now develop and deploy Orchard Core CMS on Windows, Linux and macOS. We also have Docker images ready for use.
 
-- **Document database **abstraction. Orchard Core CMS still requires a relational database, and is compatible with SQL Server, MySQL, PostgreSQL and SQLite, but it’s now using a document abstraction (YesSql) that provides a document database API to store and query documents. This is a much better approach for CMS systems and helps performance significantly.
+- **Document database** abstraction. Orchard Core CMS still requires a relational database, and is compatible with SQL Server, MySQL, PostgreSQL and SQLite, but it’s now using a document abstraction (YesSql) that provides a document database API to store and query documents. This is a much better approach for CMS systems and helps performance significantly.
 
 - **NuGet Packages**. Modules and themes are now shared as NuGet packages. Creating a new website with Orchard Core CMS is actually as simple as referencing a single meta package from the NuGet gallery. It also means that updating to a newer version only involves updating the version number of this package.
 
@@ -34,11 +34,25 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 - **Liquid templates support**. Editors can safely change the HTML templates with the Liquid template language. It was chosen as it’s both very well documented (Jekyll, Shopify, …) and secure.
 
-- **Custom queries**. We wanted to provide a way for developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL, and Lucene queries that can be re-used to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
+- **Custom queries**. We wanted to provide a way for developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL and Lucene queries that can be re-used to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
 
-- **Recipes**. Recipes are scripts that can contain content and metadata to build a website. You can now include binary files, and even use them to deploy your sites remotely from a staging to a production environment for instance. They can also be part of NuGet Packages, allowing you to ship predefined websites.
+- **Deployment plans**. Deployment plans are scripts that can contain content and metadata to build a website. You can now include binary files, and even use them to deploy your sites remotely from a staging to a production environment for instance. They can also be part of NuGet Packages, allowing you to ship predefined websites.
 
 - **Scalability**. Because Orchard Core is a multi-tenant system, you can host as many websites as you want with a single deployment. A typical cloud machine can then host thousands of sites in parallel, with database, content, theme and user isolation.
+
+- **Workflows**. Create content approval workflows, react to webhooks, take actions when forms are submitted, and any other process you'd like to implement with a user friendly UI.
+
+- **GraphQL**. We provide a very flexible GraphQL API, such that any authorized external application can reuse your content, like SPA applications or static site generators.
+
+### Different website building strategies
+
+Orchard Core CMS supports all major site building strategies:
+
+- **Full CMS**. In this mode, the website uses a theme and templates to render your content, aiming for little to no custom development at all.
+
+- **Decoupled CMS**. The site starts off blank, apart from the content management back-end. You create all the templates you need with Razor Pages or MVC actions and access your content via the content services.
+
+- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs.
 
 ## Status
 
@@ -59,9 +73,9 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Command line
 
-- Install the latest versions of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
+- Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
 - Call `dotnet build`.
-- Next navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your respective folder is on the command line in Administrator mode.
+- Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
@@ -69,9 +83,9 @@ You can also read the [Code Generation Templates documentation](Templates/README
 
 ### Visual Studio 2017
 
-- Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>
-- Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages
-- Ensure `OrchardCore.Cms.Web` is the startup project and run it
+- Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>.
+- Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
+- Ensure `OrchardCore.Cms.Web` is the startup project and run it.
 
 ### Contributing
 

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
-using StackExchange.Profiling.Data;
 using YesSql;
 
 namespace OrchardCore.MiniProfiler

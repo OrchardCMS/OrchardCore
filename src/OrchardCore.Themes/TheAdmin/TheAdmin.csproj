@@ -15,8 +15,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\Scripts\" />
-  </ItemGroup>
-
 </Project>

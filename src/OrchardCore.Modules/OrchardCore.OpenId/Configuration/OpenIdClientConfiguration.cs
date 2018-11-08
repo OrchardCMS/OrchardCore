@@ -43,11 +43,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(OpenIdConnectDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = settings.DisplayName;
-                builder.HandlerType = typeof(OpenIdConnectHandler);
-            });
+            options.AddScheme<OpenIdConnectHandler>(OpenIdConnectDefaults.AuthenticationScheme, settings.DisplayName);
         }
 
         public void Configure(string name, OpenIdConnectOptions options)
