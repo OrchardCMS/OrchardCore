@@ -72,7 +72,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = Path.Combine(Path.GetTempPath(), filename);
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);

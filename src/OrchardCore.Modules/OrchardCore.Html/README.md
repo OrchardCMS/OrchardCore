@@ -1,10 +1,10 @@
-# Body (OrchardCore.Html)
+# Body (`OrchardCore.Html`)
 
 ## Theming
 
 ### Shapes
 
-The following shapes are rendered when the **HtmlBodyPart** is attached to a content type
+The following shapes are rendered when the `HtmlBodyPart` is attached to a content type:
 
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
@@ -13,25 +13,25 @@ The following shapes are rendered when the **HtmlBodyPart** is attached to a con
 
 ### HtmlBodyPartViewModel
 
-The following properties are available on the `HtmlBodyPartViewModel` class.
+The following properties are available on the `HtmlBodyPartViewModel` class:
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
 | `Body` | `string` | The content that was edited. It might contain tokens. |
-| `Html` | `string` | The HTML content once all tokens have been processed |
-| `ContentItem` | `ContentItem` | The content item of the part |
-| `HtmlBodyPart` | `HtmlBodyPart` | The `HtmlBodyPart` instance|
-| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part |
+| `Html` | `string` | The HTML content once all tokens have been processed. |
+| `ContentItem` | `ContentItem` | The content item of the part. |
+| `HtmlBodyPart` | `HtmlBodyPart` | The `HtmlBodyPart` instance. |
+| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part. |
 
 ### HtmlBodyPart
 
-The following properties are available on `HtmlBodyPart`
+The following properties are available on `HtmlBodyPart`:
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead |
-| `Content` | The raw content of the part |
-| `ContentItem` | The content item containing this part |
+| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead. |
+| `Content` | The raw content of the part. |
+| `ContentItem` | The content item containing this part. |
 
 ## Editors
 
@@ -40,8 +40,8 @@ content type, just select the one that needs to be used.
 
 There are two predefined editor names:
 
-- `Default` is the editor that is used by default
-- `Wysiwyg` is the editor that provides a WYSIWYG experience
+- `Default` is the editor that is used by default.
+- `Wysiwyg` is the editor that provides a WYSIWYG experience.
 
 ### Custom Editors
 

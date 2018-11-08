@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(NumericField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayNumericFieldViewModel>("NumericField", model =>
+            return Initialize<DisplayNumericFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;

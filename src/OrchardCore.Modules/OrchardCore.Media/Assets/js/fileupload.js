@@ -34,10 +34,9 @@ $(document).bind('dragover', function (e) {
             dropZone.addClass('in');
         }
         var hoveredDropZone = $(e.target).closest(dropZone);
-        dropZone.toggleClass('hover', hoveredDropZone.length);
         window.dropZoneTimeout = setTimeout(function () {
             window.dropZoneTimeout = null;
-            dropZone.removeClass('in hover');
+            dropZone.removeClass('in');
         }, 100);
     }    
 });
