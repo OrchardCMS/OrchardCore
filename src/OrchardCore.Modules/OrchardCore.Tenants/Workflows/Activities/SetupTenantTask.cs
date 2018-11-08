@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -17,14 +18,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
     public class SetupTenantTask : TenantTask
     {
         private readonly IClock _clock;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetupTenantTask> localizer) 
+        public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer) 
             : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
         {
             SetupService = setupService;
             _clock = clock;
             _expressionEvaluator = expressionEvaluator;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         protected ISetupService SetupService { get; }
@@ -82,7 +85,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Running"]);
+            return Outcomes(T["Done"], T["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -98,8 +101,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
 
             await Task.WhenAll(tenantNameTask, siteNameTask, adminUsernameTask, adminEmailTask, adminPasswordTask, databaseProviderTask, databaseConnectionStringTask, databaseTablePrefixTask, recipeNameTask);
-
-            if (!ShellSettingsManager.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
+                        
+            if (!ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
             {
                 if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
                 {
@@ -143,16 +146,20 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var executionId = await SetupService.SetupAsync(setupContext);
 
-            //// Check if a component in the Setup failed
-            //if (setupContext.Errors.Any())
-            //{
-            //    foreach (var error in setupContext.Errors)
-            //    {
-            //        ModelState.AddModelError(error.Key, error.Value);
-            //    }
-            //}
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                var updater = _updateModelAccessor.ModelUpdater;
 
-            return Outcomes("Setup");
+                foreach (var error in setupContext.Errors)
+                {
+                    updater.ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return Outcomes("Failed");
+            }
+
+            return Outcomes("Done");
         }
     }
 }

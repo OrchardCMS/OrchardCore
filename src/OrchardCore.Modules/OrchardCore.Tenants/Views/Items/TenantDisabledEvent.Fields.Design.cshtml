@@ -1,6 +1,0 @@
-@model TenantEventViewModel<TenantDisabledEvent>
-
-<header>
-    <h4><i class="fa fa-bolt"></i>@Model.Activity.GetTitleOrDefault(() => T["Tenant Disabled"])</h4>
-</header>
-@*<em>@(Model.ContentTypeFilter.Any() ? (object)string.Join(", ", Model.ContentTypeFilter.Select(x => x.DisplayName)) : T["Any content type"])</em>*@
