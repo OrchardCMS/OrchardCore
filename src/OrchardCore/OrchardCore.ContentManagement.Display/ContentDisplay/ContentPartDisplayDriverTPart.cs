@@ -34,7 +34,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 if (partType == shapeType || editorPartType == shapeType)
                 {
                     // HtmlBodyPart, Services
-                    result.Differentiator($"{partName}");
+                    result.Differentiator(partName);
                 }
                 else
                 {
