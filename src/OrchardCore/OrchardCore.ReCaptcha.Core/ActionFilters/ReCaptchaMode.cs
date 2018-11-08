@@ -1,4 +1,4 @@
-namespace OrchardCore.ReCaptcha.Core.ActionFilters
+namespace OrchardCore.ReCaptcha.ActionFilters
 {
     public enum ReCaptchaMode
     {

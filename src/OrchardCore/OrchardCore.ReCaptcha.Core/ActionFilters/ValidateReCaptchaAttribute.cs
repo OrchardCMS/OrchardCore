@@ -11,11 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.Core.ActionFilters.Abuse;
-using OrchardCore.ReCaptcha.Core.Configuration;
-using OrchardCore.ReCaptcha.Core.Services;
+using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.Configuration;
+using OrchardCore.ReCaptcha.Services;
 
-namespace OrchardCore.ReCaptcha.Core.ActionFilters
+namespace OrchardCore.ReCaptcha.ActionFilters
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class ValidateReCaptchaAttribute : ActionFilterAttribute
@@ -30,9 +30,9 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
 
         public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            var recaptchaService = context.HttpContext.RequestServices.GetService<IReCaptchaService>();
+            var recaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
             var isValidCaptcha = false;
-            var reCaptchaResponse = context.HttpContext.Request?.Form?["g-recaptcha-response"].ToString();
+            var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
             if (!String.IsNullOrWhiteSpace(reCaptchaResponse))
                 isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
@@ -42,7 +42,7 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
             switch (_mode)
             {
                 case ReCaptchaMode.PreventAbuse:
-                    isConvicted = await recaptchaService.IsConvictedAsync();
+                    isConvicted = recaptchaService.IsConvicted();
                     break;
                 case ReCaptchaMode.AlwaysShow:
                     isConvicted = true;
@@ -57,11 +57,11 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters
 
             if (context.ModelState.IsValid)
             {
-                await recaptchaService.MarkAsInnocentAsync();
+                recaptchaService.MarkAsInnocent();
             }
             else
             {
-                await recaptchaService.FlagAsSuspectAsync();
+                recaptchaService.FlagAsSuspect();
             }
         }
     }

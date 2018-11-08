@@ -1,26 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.ReCaptcha.Core.Services;
-using OrchardCore.Users.Shapes;
+using OrchardCore.ReCaptcha.Services;
 
 namespace OrchardCore.ReCaptcha.Users.Shapes
 {
     public class AfterLoginShapes : IShapeFactoryEvents
     {
-        private readonly IReCaptchaService _captchaService;
+        private readonly ReCaptchaService _captchaService;
 
-        public AfterLoginShapes(IReCaptchaService captchaService)
+        public AfterLoginShapes(ReCaptchaService captchaService)
         {
             _captchaService = captchaService;
         }
 
         public async void Created(ShapeCreatedContext context)
         {
-            if (context.ShapeType == "AfterLogin" && await _captchaService.IsConvictedAsync())
+            if (context.ShapeType == "AfterLogin" && _captchaService.IsConvicted())
             {
                 dynamic layout = context.Shape;   
                 layout.Add(await context.ShapeFactory.New.ReCaptcha());

@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OrchardCore.ReCaptcha.Core.ActionFilters.Abuse
+namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
 {
     public interface IDetectAbuse
     {
-        AbuseDetectResult DetectAbuse(HttpContext context);
+        AbuseDetectResult DetectAbuse();
 
-        void ClearAbuseFlags(HttpContext context);
+        void ClearAbuseFlags();
 
-        void FlagPossibleAbuse(HttpContext context);
+        void FlagPossibleAbuse();
     }
 
     public class AbuseDetectResult

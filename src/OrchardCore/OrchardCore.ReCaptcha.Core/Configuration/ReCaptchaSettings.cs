@@ -1,4 +1,4 @@
-namespace OrchardCore.ReCaptcha.Core.Configuration
+namespace OrchardCore.ReCaptcha.Configuration
 {
     public class ReCaptchaSettings
     {

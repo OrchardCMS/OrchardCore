@@ -1,5 +1,4 @@
 using System.Linq;
-using Castle.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -7,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.ReCaptcha.Core.ActionFilters;
-using OrchardCore.ReCaptcha.Core.ActionFilters.Abuse;
-using OrchardCore.ReCaptcha.Core.Configuration;
+using OrchardCore.ReCaptcha.ActionFilters;
+using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.ReCaptcha.Core.TagHelpers
+namespace OrchardCore.ReCaptcha.TagHelpers
 {
     [HtmlTargetElement("captcha", TagStructure = TagStructure.WithoutEndTag)]
     [HtmlTargetElement("captcha", Attributes = "mode", TagStructure = TagStructure.WithoutEndTag)]
@@ -39,7 +38,7 @@ namespace OrchardCore.ReCaptcha.Core.TagHelpers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var abuse = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectAbuse>();
-            var abuseDetected = abuse.Invoke(d => d.DetectAbuse(httpContext), _logger).Any(d => d.SuspectAbuse) && Mode == ReCaptchaMode.PreventAbuse;
+            var abuseDetected = abuse.Invoke(d => d.DetectAbuse(), _logger).Any(d => d.SuspectAbuse) && Mode == ReCaptchaMode.PreventAbuse;
             var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
             var isConfigured = _settings != null;
 

@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.ReCaptcha.Core.Services;
-using OrchardCore.Users.Shapes;
 
 namespace OrchardCore.ReCaptcha.Users.Shapes
 {

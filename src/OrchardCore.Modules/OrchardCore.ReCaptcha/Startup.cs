@@ -6,7 +6,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
-using OrchardCore.ReCaptcha.Shapes;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.ReCaptcha.Users.Shapes;
 using OrchardCore.Settings;
@@ -20,8 +19,6 @@ namespace OrchardCore.ReCaptcha
         {
             services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IShapeTableProvider, ReCaptchaShapes>();
-
             services.AddReCaptcha();
         }
     }

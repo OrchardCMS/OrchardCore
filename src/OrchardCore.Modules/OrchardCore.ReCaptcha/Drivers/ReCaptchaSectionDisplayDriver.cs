@@ -3,7 +3,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.ReCaptcha.Core.Configuration;
+using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
 using OrchardCore.Settings;
 

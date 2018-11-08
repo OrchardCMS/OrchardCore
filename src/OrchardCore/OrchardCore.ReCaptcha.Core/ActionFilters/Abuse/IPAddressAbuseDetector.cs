@@ -6,38 +6,40 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace OrchardCore.ReCaptcha.Core.ActionFilters.Abuse
+namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
 {
     public class IpAddressAbuseDetector : IDetectAbuse
     {
         private const string IpAddressAbuseDetectorCacheKey = "IpAddressAbuseDetector";
 
         private readonly IMemoryCache _memoryCache;
+        private readonly HttpContext _httpContext;
 
-        public IpAddressAbuseDetector(IMemoryCache memoryCache)
+        public IpAddressAbuseDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
         {
+            _httpContext = httpContextAccessor.HttpContext;
             _memoryCache = memoryCache;
         }
 
-        public void ClearAbuseFlags(HttpContext context)
+        public void ClearAbuseFlags()
         {
-            var ipAddressKey = GetIpAddressCacheKey(context);
+            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             _memoryCache.Remove(ipAddressKey);
         }
 
         private string GetIpAddressCacheKey(HttpContext context)
         {
-            return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress(context)}";
+            return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress()}";
         }
 
-        private string GetIpAddress(HttpContext context)
+        private string GetIpAddress()
         {
-            return context.Connection.RemoteIpAddress.ToString();
+            return _httpContext.Connection.RemoteIpAddress.ToString();
         }
 
-        public AbuseDetectResult DetectAbuse(HttpContext context)
+        public AbuseDetectResult DetectAbuse()
         {
-            var ipAddressKey = GetIpAddressCacheKey(context);
+            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);
 
             return new AbuseDetectResult()
@@ -47,9 +49,9 @@ namespace OrchardCore.ReCaptcha.Core.ActionFilters.Abuse
             };
         }
 
-        public void FlagPossibleAbuse(HttpContext context)
+        public void FlagPossibleAbuse()
         {
-            var ipAddressKey = GetIpAddressCacheKey(context);
+            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             
             // this has race conditions, but it's ok
             var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);

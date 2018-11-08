@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.ReCaptcha.Core.Configuration
+namespace OrchardCore.ReCaptcha.Configuration
 {
     public class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
     {
