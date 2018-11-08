@@ -18,13 +18,26 @@ namespace OrchardCore.Navigation
         /// <param name="menuItems">The current level to populate.</param>
         public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
+            await PopulateMenuLevelAsync(shapeFactory,parentShape,menu,menuItems,viewContext);
+            ApplySelection(parentShape);
+        }
+        
+        /// <summary>
+        /// Populates the menu shapes for the level recursively.
+        /// </summary>
+        /// <param name="shapeFactory">The shape factory.</param>
+        /// <param name="parentShape">The menu parent shape.</param>
+        /// <param name="menu">The menu shape.</param>
+        /// <param name="menuItems">The current level to populate.</param>
+        public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
+        {
             foreach (MenuItem menuItem in menuItems)
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
                 if (menuItem.Items != null && menuItem.Items.Any())
                 {
-                    await PopulateMenuAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
+                    await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
 
                 parentShape.Add(menuItemShape, menuItem.Position);
@@ -51,11 +64,12 @@ namespace OrchardCore.Navigation
                 .Menu(menu)
                 .Parent(parentShape)
                 .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
+                .SelectionPriority(menuItem.SelectionPriority)
                 .Local(menuItem.LocalNav);
 
 			menuItemShape.Id = menuItem.Id;
 
-			ApplySelection(menuItem, menuItemShape, viewContext);
+			MarkAsSelectedIfMatchesRouteOrUrl(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);
@@ -63,7 +77,7 @@ namespace OrchardCore.Navigation
             return menuItemShape;
         }
 
-        private static void ApplySelection(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+        private static void MarkAsSelectedIfMatchesRouteOrUrl(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
             // compare route values (if any) first
             bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
@@ -76,16 +90,6 @@ namespace OrchardCore.Navigation
             }
 
             menuItemShape.Selected = match;
-
-            // Apply the selection to the hierarchy
-            if (match)
-            {
-                while (menuItemShape.Parent != null)
-                {
-                    menuItemShape = menuItemShape.Parent;
-                    menuItemShape.Selected = true;
-                }
-            }
         }
 
         /// <summary>
@@ -113,5 +117,76 @@ namespace OrchardCore.Navigation
 
             return itemValues.Keys.All(key => string.Equals(Convert.ToString(itemValues[key]), Convert.ToString(requestValues[key]), StringComparison.OrdinalIgnoreCase));
         }
+
+
+        /// <summary>
+        /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
+        /// </summary>
+        /// <param name="parentShape">The menu shape.</param>    
+        private static void ApplySelection(dynamic parentShape)
+        {
+            var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
+
+            // Apply the selection to the hierarchy
+            if (selectedItem != null)
+            {   
+                while (selectedItem.Parent != null)
+                {
+                    selectedItem = selectedItem.Parent;
+                    selectedItem.Selected = true;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Traverses the menu and returns the selected item with the highest priority
+        /// </summary>
+        /// <param name="parentShape">The menu shape.</param>
+        /// /// <returns>The selected menu item shape</returns>
+        private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
+        {
+            dynamic result = null;
+
+            var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
+
+            while (tempStack.Any())
+            {
+                // evaluate first
+                dynamic item = tempStack.Pop();
+
+                
+                if (item.Selected == true)
+                {
+                    if (result == null) // found the first one
+                    {
+                        result = item;
+                    }
+                    else // found more selected: tie break required.
+                    {
+                        if (item.SelectionPriority > result.SelectionPriority)
+                        {
+                            result.Selected = false;
+                            result = item;
+                        }
+                        else
+                        {
+                            item.Selected = false;
+                        }
+                    }
+                }
+
+                // add children to the stack to be evaluated too
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push(i);
+                }
+            }
+
+            return result;
+        }
     }
+
+
+
 }
