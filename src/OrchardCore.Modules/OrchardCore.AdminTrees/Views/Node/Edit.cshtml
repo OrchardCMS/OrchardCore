@@ -12,6 +12,12 @@
 
     <fieldset>
         <div class="form-group">
+            <label asp-for="SelectionPriority">@T["Selection Priority"]</label>
+            <input asp-for="SelectionPriority" class="form-control col-sm-1" >
+            <span class="hint">@T["There can be only one item selected at the same time. In case there are more than one competing the system will use this value to determine which one wins."]</span>
+        </div>
+
+        <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Save"]</button>
 
             <a asp-action="Delete"
