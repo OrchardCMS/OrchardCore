@@ -33,7 +33,6 @@ namespace OrchardCore.AdminTrees
             _memoryCache = memoryCache;
         }
 
-
         public IChangeToken ChangeToken => _signal.GetToken(AdminTreesCacheKey);
 
         public async Task<List<AdminTree>> GetAsync()
@@ -46,11 +45,10 @@ namespace OrchardCore.AdminTrees
             var adminTreeList = await GetAdminTreeList();
             var session = GetSession();
 
-            
             var preexisting = adminTreeList.AdminTrees.Where(x => x.Id == tree.Id).FirstOrDefault();
 
             // it's new? add it
-            if (preexisting == null) 
+            if (preexisting == null)
             {
                 adminTreeList.AdminTrees.Add(tree);
             }
@@ -62,10 +60,9 @@ namespace OrchardCore.AdminTrees
 
             session.Save(adminTreeList);
 
-            _memoryCache.Set(AdminTreesCacheKey, adminTreeList);
-            _signal.SignalToken(AdminTreesCacheKey);
+            await _signal.SignalTokenAsync(AdminTreesCacheKey);
+            _memoryCache.Set(AdminTreesCacheKey, adminTreeList, ChangeToken);
         }
-
 
         public async Task<AdminTree> GetByIdAsync(string id)
         {
@@ -75,7 +72,6 @@ namespace OrchardCore.AdminTrees
                 .FirstOrDefault();
         }
 
-        
         public async Task<int> DeleteAsync(AdminTree tree)
         {
             var adminTreeList = await GetAdminTreeList();
@@ -85,13 +81,11 @@ namespace OrchardCore.AdminTrees
 
             session.Save(adminTreeList);
 
-            _memoryCache.Set(AdminTreesCacheKey, adminTreeList);
-            _signal.SignalToken(AdminTreesCacheKey);
+            await _signal.SignalTokenAsync(AdminTreesCacheKey);
+            _memoryCache.Set(AdminTreesCacheKey, adminTreeList, ChangeToken);
 
             return count;
         }
-
-
 
         private async Task<AdminTreeList> GetAdminTreeList()
         {
@@ -111,29 +105,23 @@ namespace OrchardCore.AdminTrees
                         {
                             treeList = new AdminTreeList();
                             session.Save(treeList);
-                            _memoryCache.Set(AdminTreesCacheKey, treeList);
-                            _signal.SignalToken(AdminTreesCacheKey);
+                            _memoryCache.Set(AdminTreesCacheKey, treeList, ChangeToken);
                         }
                     }
                 }
                 else
                 {
-                    _memoryCache.Set(AdminTreesCacheKey, treeList);
-                    _signal.SignalToken(AdminTreesCacheKey);
+                    _memoryCache.Set(AdminTreesCacheKey, treeList, ChangeToken);
                 }
             }
 
             return treeList;
         }
 
-        
-
         private YesSql.ISession GetSession()
         {
             var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
             return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
         }
-
-
     }
 }
