@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,15 +59,17 @@ namespace OrchardCore.Queries.Sql
                         
             if (sqlQuery.ReturnDocuments)
             {
-                IEnumerable<int> documentIds;
+                int[] documentIds;
 
                 using (connection)
                 {
                     connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    documentIds = (await connection.QueryAsync<int>(rawQuery, parameters)).ToArray();
                 }
+                
+                var documents = await _session.GetAsync<object>(documentIds);
 
-                return await _session.GetAsync<object>(documentIds.ToArray());
+                return documents.OrderBy(d => Array.IndexOf(documentIds, ((dynamic)d).Id));
             }
             else
             {
