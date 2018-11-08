@@ -80,8 +80,6 @@ namespace OrchardCore.Modules
                                         await tenantEvent.ActivatingAsync();
                                     }
 
-                                    httpContext.Items["BuildPipeline"] = true;
-
                                     foreach (var tenantEvent in tenantEvents.Reverse())
                                     {
                                         await tenantEvent.ActivatedAsync();

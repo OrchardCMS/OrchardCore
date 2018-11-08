@@ -35,10 +35,6 @@ namespace OrchardCore.ContentTypes
             // Content Types management UI
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
 
-            // Deployment step
-            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -63,6 +59,18 @@ namespace OrchardCore.ContentTypes
                 template: "Admin/ContentTypes/{id}/ContentParts/{name}/Remove",
                 defaults: new { controller = "Admin", action = "RemovePart" }
             );
+        }
+    }
+
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
         }
     }
 }

@@ -113,6 +113,11 @@ namespace OrchardCore.Setup.Services
                 shellSettings.TablePrefix = context.DatabaseTablePrefix;
             }
 
+            if (String.IsNullOrWhiteSpace(shellSettings.DatabaseProvider))
+            {
+                throw new ArgumentException($"{nameof(shellSettings.DatabaseProvider)} is required");
+            }
+
             // Creating a standalone environment based on a "minimum shell descriptor".
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect

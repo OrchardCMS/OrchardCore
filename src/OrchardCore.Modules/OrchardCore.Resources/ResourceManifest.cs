@@ -10,22 +10,22 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.js")
-                .SetCdnIntegrity("sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ", "sha384-KcyRSlC9FQog/lJsT+QA8AUIFBgnwKM7bxm7/YaX+NTr4D00npYawrX0h+oXI3a2")
+                .SetCdn("https://code.jquery.com/jquery-1.12.4.min.js", "https://code.jquery.com/jquery-1.12.4.js")
+                .SetCdnIntegrity("sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=", "sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=")
                 .SetVersion("1.12.4")
                 ;
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.js")
-                .SetCdnIntegrity("sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB", "sha384-TlQc6091kl7Au04dPgLW7WK3iey+qO8dAi/LdwxaGBbszLxnizZ4xjPyNrEf+aQt")
+                .SetCdn("https://code.jquery.com/jquery-2.2.4.min.js", "https://code.jquery.com/jquery-2.2.4.js")
+                .SetCdnIntegrity("sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=", "sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=")
                 .SetVersion("2.2.4")
                 ;
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js", "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js")
-                .SetCdnIntegrity("sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT", "sha384-fJU6sGmyn07b+uD1nMk7/iSb4yvaowcueiQhfVgQuD98rfva8mcr1eSvjchfpMrH")
+                .SetCdn("https://code.jquery.com/jquery-3.3.1.min.js", "https://code.jquery.com/jquery-3.3.1.js")
+                .SetCdnIntegrity("sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=", "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=")
                 .SetVersion("3.3.1")
                 ;
 
@@ -85,10 +85,19 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("bootstrap")
-                .SetDependencies("jQuery", "popper")
+                .SetDependencies("jQuery")
                 .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.min.js", "/OrchardCore.Resources/Scripts/bootstrap.js")
                 .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js")
                 .SetCdnIntegrity("sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy", "sha384-fyOlGC+soQAvVFysE2KxkXaVKf75M1Zyo6RG7thLEEwD7p6/Cso7G/iV9tPM0C/a")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("bootstrap-bundle")
+                .SetDependencies("jQuery", "popper")
+                .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl", "sha384-DWBJ4L0qV7ffH95jHsoooM04DWR2qtntWspYadu41Wx5kw6d0Cs7W+7C2v2bh7vX")
                 .SetVersion("4.1.3")
                 ;
 
@@ -110,23 +119,23 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/css/all.css")
-                .SetCdnIntegrity("sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU")
-                .SetVersion("5.3.1")
+                .SetCdn("https://use.fontawesome.com/releases/v5.4.1/css/all.css")
+                .SetCdnIntegrity("sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz")
+                .SetVersion("5.4.1")
                 ;
 
             manifest
                 .DefineScript("font-awesome")
-                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/js/all.js")
-                .SetCdnIntegrity("sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB")
-                .SetVersion("5.3.1")
+                .SetCdn("https://use.fontawesome.com/releases/v5.4.1/js/all.js")
+                .SetCdnIntegrity("sha384-L469/ELG4Bg9sDQbl0hvjMq8pOcqFgkSpwhwnslzvVVGpDjYJ6wJJyYjvG3u8XW7")
+                .SetVersion("5.4.1")
                 ;
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetCdn("https://use.fontawesome.com/releases/v5.3.1/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-DtdEw3/pBQuSag11V3is/UZMjGkGMLDRBgk1UVAOvH6cYoqKjBmCEhePm13skjRV")
-                .SetVersion("5.3.1")
+                .SetCdn("https://use.fontawesome.com/releases/v5.4.1/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-/s2EnwEz7C3ziRundAGzeOAoGYffu84oY4SOHjhI/2Wqk3Z0usUm9bjdduzhZ9+z")
+                .SetVersion("5.4.1")
                 ;
         }
     }

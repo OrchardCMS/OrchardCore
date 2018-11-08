@@ -35,14 +35,16 @@ namespace OrchardCore.Users.Controllers
         protected async Task<bool> SendEmailAsync(string email, string subject, object model, string viewName)
         {
             var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-            ControllerContext.RouteData.Values["action"] = viewName;
-            ControllerContext.RouteData.Values["controller"] = "";
-            var viewEngineResult = options.Value.ViewEngines.Select(x => x.FindView(ControllerContext, viewName, true)).FirstOrDefault(x => x != null);
+
+            // Just use the current context to get a view and then create a view context.
+            var view = options.Value.ViewEngines.Select(x => x.FindView(ControllerContext,
+                ControllerContext.ActionDescriptor.ActionName, false)).FirstOrDefault()?.View;
+
             var displayContext = new DisplayContext()
             {
                 ServiceProvider = ControllerContext.HttpContext.RequestServices,
                 Value = await _shapeFactory.CreateAsync(viewName, model),
-                ViewContext = new ViewContext(ControllerContext, viewEngineResult.View, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
+                ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
             };
             var htmlContent = await _displayManager.ExecuteAsync(displayContext);
 

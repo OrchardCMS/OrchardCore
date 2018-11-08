@@ -27,12 +27,14 @@ namespace OrchardCore.Queries.Drivers
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
                 Dynamic("Query_Buttons_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Actions:5")
             );
@@ -45,12 +47,14 @@ namespace OrchardCore.Queries.Drivers
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
                 Initialize<EditQueryViewModel>("Query_Fields_Buttons", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Actions:5")
             );
@@ -58,7 +62,7 @@ namespace OrchardCore.Queries.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(Query model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source);
+            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
             if (String.IsNullOrEmpty(model.Name))
             {

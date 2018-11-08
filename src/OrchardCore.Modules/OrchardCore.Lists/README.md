@@ -1,4 +1,4 @@
-# Lists (OrchardCore.Lists)
+# Lists (`OrchardCore.Lists`)
 
 ## Theming
 
@@ -10,26 +10,26 @@ These shapes are available for theming when a `ListPart` is attached to a conten
 | ------| ------------ |----------------- | ---------- |
 | `ListPart` | `Detail`, `DetailAdmin` | `Content:10` | `ListPartViewModel` |
 
-### ListPartViewModel
+### `ListPartViewModel`
 
 The following properties are available on the `ListPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `ListPart` | `ListPart` | The `ListPart` instance |
-| `ContentItems` | `IEnumerable<ContentItem>` | The content items the part is made of |
-| `ContainedContentTypeDefinitions` | `IEnumerable<ContentTypeDefinition>` | The content types the list accepts |
-| `Context` | `BuildPartDisplayContext` | The current display context |
-| `Pager` | `dynamic` | The pager for the list |
+| `ListPart` | `ListPart` | The `ListPart` instance. |
+| `ContentItems` | `IEnumerable<ContentItem>` | The content items the part is made of. |
+| `ContainedContentTypeDefinitions` | `IEnumerable<ContentTypeDefinition>` | The content types the list accepts. |
+| `Context` | `BuildPartDisplayContext` | The current display context. |
+| `Pager` | `dynamic` | The pager for the list. |
 
-### ListPart
+### `ListPart`
 
 The following properties are available on the `ListPart` class.
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Content` | The raw content of the part |
-| `ContentItem` | The content item containing this part |
+| `Content` | The raw content of the part. |
+| `ContentItem` | The content item containing this part. |
 
 ### Template
 
