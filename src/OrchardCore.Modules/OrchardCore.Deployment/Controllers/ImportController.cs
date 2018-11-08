@@ -53,7 +53,7 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             var tempArchiveName = Path.GetTempFileName() + ".zip";
-            var tempArchiveFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
             {

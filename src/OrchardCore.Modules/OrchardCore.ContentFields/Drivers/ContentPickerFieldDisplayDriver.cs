@@ -64,7 +64,7 @@ namespace OrchardCore.ContentFields.Fields
                     model.SelectedItems.Add(new ContentPickerItemViewModel
                     {
                         ContentItemId = contentItemId,
-                        DisplayText = contentItem.DisplayText
+                        DisplayText = contentItem.ToString()
                     });
                 }
             });

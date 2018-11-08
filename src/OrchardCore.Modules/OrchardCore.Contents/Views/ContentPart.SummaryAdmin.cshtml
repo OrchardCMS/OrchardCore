@@ -1,0 +1,12 @@
+@using OrchardCore.Mvc.Utilities
+
+@{
+    string name = Model.Metadata.Name;
+}
+
+@if (Model.Content != null)
+{
+    <div class="contentpart contentpart-@name.HtmlClassify()">
+        @await DisplayAsync(Model.Content)
+    </div>
+}

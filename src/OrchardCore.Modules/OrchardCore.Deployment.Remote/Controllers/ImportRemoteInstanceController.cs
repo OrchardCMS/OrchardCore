@@ -57,7 +57,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var tempArchiveName = Path.GetTempFileName() + ".zip";
 
             // Create a temporary folder to extract the archive to
-            var tempArchiveFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try
             {

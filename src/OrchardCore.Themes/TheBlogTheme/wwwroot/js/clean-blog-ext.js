@@ -1,0 +1,3 @@
+(function ($) {
+    $('#mainNav').activateLinks();
+})(jQuery);
