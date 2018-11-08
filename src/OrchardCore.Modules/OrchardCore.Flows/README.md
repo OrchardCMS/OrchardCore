@@ -1,4 +1,4 @@
-# Flows (OrchardCore.Flows)
+# Flows (`OrchardCore.Flows`)
 
 The Flows module provides methods to display content items directly within another content item. This is achieved with the Flow Part and the Bag Part.
 
@@ -10,7 +10,7 @@ Flows and Bags that do not contain any content items will be displayed with a di
 
 This allows you to conditionally show or hide empty Flows or Bags. For example, to hide a Flow part that has no items, you can add this to your placement file:
 
-```
+```json
   "FlowPart_Empty": [
     {
       "place": "-"
@@ -20,7 +20,7 @@ This allows you to conditionally show or hide empty Flows or Bags. For example, 
 
 And if you'd like to use the same template for Flow parts that have items and Flow parts that have no items, you could add this:
 
-```
+```json
   "FlowPart_Empty": [
     {
       "shape": "FlowPart" 

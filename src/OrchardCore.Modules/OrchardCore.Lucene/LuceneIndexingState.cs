@@ -19,7 +19,7 @@ namespace OrchardCore.Lucene
             ShellSettings shellSettings
             )
         {
-            _indexSettingsFilename = Path.Combine(
+            _indexSettingsFilename = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath, 
                 shellOptions.Value.ShellsContainerName, 
                 shellSettings.Name, 

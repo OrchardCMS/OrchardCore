@@ -22,8 +22,8 @@ namespace OrchardCore.Mvc
             options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
 
             // To let the application behave as a module, its razor files are requested under the virtual
-            // "Areas" folder, but there are still served from the file system by this custom provider.
-            options.FileProviders.Insert(0, new ApplicationRazorFileProvider(_applicationContext));
+            // "Areas" folder, but they are still served from the file system by this custom provider.
+            options.FileProviders.Insert(0, new ApplicationViewFileProvider(_applicationContext));
 
             if (_hostingEnvironment.IsDevelopment())
             {

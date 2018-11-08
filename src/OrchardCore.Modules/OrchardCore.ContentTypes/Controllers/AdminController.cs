@@ -596,6 +596,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Name = partFieldDefinition.Name,
                 Editor = partFieldDefinition.Editor(),
+                DisplayMode = partFieldDefinition.DisplayMode(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
                 Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)

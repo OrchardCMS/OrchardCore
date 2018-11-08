@@ -1,4 +1,4 @@
-# Content Fields (OrchardCore.ContentFields)
+# Content Fields (`OrchardCore.ContentFields`)
 
 ## Purpose
 
@@ -44,13 +44,13 @@ The convention for a field view model is to also expose these properties:
 
 Some view models have special properties that are computed from the actual field data and which are more useful for templating.
 
-### DisplayHtmlFieldViewModel
+### `DisplayHtmlFieldViewModel`
 
 | Property | Description |
 | --- | --- |
-| `Html` | The processed Html once all liquid tags are processed. |
+| `Html` | The processed HTML, once all liquid tags have been processed. |
 
-#### HtmlField Example
+#### `HtmlField` Example
 
 ```liquid
 {{ Model.Html }}
@@ -62,13 +62,13 @@ or, to display the raw content before the tags are converted:
 {{ Model.Field.Html }}
 ```
 
-### DisplayDateTimeFieldViewModel
+### `DisplayDateTimeFieldViewModel`
 
 | Property | Description |
 | --- | --- |
 | `LocalDateTime` | The date time in the time zone of the site. |
 
-#### DateTimeField Example
+#### `DateTimeField` example
 
 ```liquid
 {{ Model.LocalDateTime }}
@@ -84,14 +84,14 @@ or, to display the UTC value before is it converted:
 
 ### What to extend
 
-Before creating a new field the solution might be to provide a custom editor and formatter 
+Before creating a new field, the solution might be to provide a custom editor and formatter 
 instead.
 
 A field should represent some specific physical data and logical data. The same field can be customized
 to be edited and rendered differently using both Editors and Formatters. Editors are shapes that can
 be used to edit a field differently, for instance the WYSIWYG HTML editor is a custom editor for the HTML
 field. Formatters are alternate shapes that can be used to render a field on the front end, for instance
-a Link field could be rendered as a Youtube video player. 
+a `Link` field could be rendered as a Youtube video player. 
 
 ### Model Class
 
@@ -106,7 +106,6 @@ public class TextField : ContentField
 {
     public string Text { get; set; }
 }
-
 ```
 
 This class needs to be registered in the DI like this:

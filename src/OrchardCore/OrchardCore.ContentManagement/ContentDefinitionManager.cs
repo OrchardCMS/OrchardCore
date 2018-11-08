@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.ContentManagement.Metadata.Records;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
-using YesSql;
 
 namespace OrchardCore.ContentManagement
 {
@@ -15,47 +15,26 @@ namespace OrchardCore.ContentManagement
     {
         private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
 
-        private readonly ISession _session;
         private ContentDefinitionRecord _contentDefinitionRecord;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
-
+        private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
 
+        public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
+
         public ContentDefinitionManager(
-            ISession session,
             IMemoryCache memoryCache,
-            ISignal signal)
+            ISignal signal,
+            IContentDefinitionStore contentDefinitionStore)
         {
             _signal = signal;
+            _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
-            _session = session;
 
             _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
             _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
-        }
-
-        private ContentDefinitionRecord GetContentDefinitionRecord()
-        {
-            // cache in the current work context
-            if (_contentDefinitionRecord != null)
-            {
-                return _contentDefinitionRecord;
-            }
-
-            _contentDefinitionRecord = _session
-                .Query<ContentDefinitionRecord>()
-                .FirstOrDefaultAsync()
-                .GetAwaiter().GetResult();
-
-            if (_contentDefinitionRecord == null)
-            {
-                _contentDefinitionRecord = new ContentDefinitionRecord();
-                UpdateContentDefinitionRecord();
-            }
-
-            return _contentDefinitionRecord;
         }
 
         public ContentTypeDefinition GetTypeDefinition(string name)
@@ -284,20 +263,9 @@ namespace OrchardCore.ContentManagement
             return source == null ? null : new ContentFieldDefinition(source.Name);
         }
 
-        private void UpdateContentDefinitionRecord()
-        {
-            _contentDefinitionRecord.Serial++;
-            _session.Save(_contentDefinitionRecord);
-            _signal.SignalToken(TypeHashCacheKey);
-
-            // Release cached values
-            _typeDefinitions.Clear();
-            _partDefinitions.Clear();
-        }
-
         public Task<int> GetTypesHashAsync()
         {
-            // The serial number is store in local cache in order to prevent
+            // The serial number is stored in local cache in order to prevent
             // loading the record if it's not necessary
 
             int serial;
@@ -312,5 +280,29 @@ namespace OrchardCore.ContentManagement
 
             return Task.FromResult(serial);
         }
+
+        private ContentDefinitionRecord GetContentDefinitionRecord()
+        {
+            if (_contentDefinitionRecord != null)
+            {
+                return _contentDefinitionRecord;
+            }
+
+            return _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+        }
+
+        private void UpdateContentDefinitionRecord()
+        {
+            _contentDefinitionRecord.Serial++;
+            _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
+
+            _signal.SignalToken(TypeHashCacheKey);
+
+
+            // Release cached values
+            _typeDefinitions.Clear();
+            _partDefinitions.Clear();
+        }
+
     }
 }

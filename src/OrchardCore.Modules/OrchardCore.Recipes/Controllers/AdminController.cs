@@ -20,7 +20,6 @@ namespace OrchardCore.Recipes.Controllers
     [Admin]
     public class AdminController : Controller
     {
-        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
@@ -30,7 +29,6 @@ namespace OrchardCore.Recipes.Controllers
         private readonly ISiteService _siteService;
 
         public AdminController(
-            IShellHost shellHost,
             ShellSettings shellSettings,
             ISiteService siteService,
             IAdminThemeService adminThemeService,
@@ -41,7 +39,6 @@ namespace OrchardCore.Recipes.Controllers
             IRecipeExecutor recipeExecutor,
             INotifier notifier)
         {
-            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _siteService = siteService;
             _recipeExecutor = recipeExecutor;
@@ -123,9 +120,6 @@ namespace OrchardCore.Recipes.Controllers
                 // Don't lock the tenant if the recipe fails.
                 _shellSettings.State = TenantState.Running;
             }
-
-            // Reload the tenant so that the pipeline will be rebuilt.
-            await _shellHost.ReloadShellContextAsync(_shellSettings);
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
             return RedirectToAction("Index");
