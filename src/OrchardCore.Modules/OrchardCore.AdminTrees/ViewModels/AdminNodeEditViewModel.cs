@@ -9,6 +9,9 @@ namespace OrchardCore.AdminTrees.ViewModels
         public string AdminTreeId { get; set; }
         public string AdminNodeId { get; set; }
         public string AdminNodeType { get; set; }
+
+        public int SelectionPriority { get; set; }
+
         public dynamic Editor { get; set; }
 
         [BindNever]
