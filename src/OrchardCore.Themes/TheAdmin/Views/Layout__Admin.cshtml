@@ -11,15 +11,17 @@
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    @*<link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
-        <style>
-            .fa {
-                font-size: 18px;
-            }
-            #left-nav i.fa {
-                font-size: 22px;
-            }
-        </style>*@
+    @*
+    <link rel="stylesheet" href="https://maxcdn.icons8.com/fonts/line-awesome/1.1/css/line-awesome-font-awesome.min.css">
+    <style>
+        .fa {
+            font-size: 18px;
+        }
+
+        #left-nav i.fa {
+            font-size: 22px;
+        }
+    </style>*@
 
     <script asp-name="font-awesome" use-cdn="true" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" use-cdn="true" at="Foot" version="5"></script>
@@ -35,7 +37,7 @@
 <body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
+            <a class="ta-navbar-brand" href="@Url.Content(" ~/")"><span>@Site.SiteName</span></a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
@@ -53,7 +55,7 @@
 
         <div id="ta-left-sidebar">
             <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
-            @await RenderSectionAsync("Navigation", required: false)            
+            @await RenderSectionAsync("Navigation", required: false)
         </div>
 
         <div class="ta-content">
@@ -62,11 +64,10 @@
             @await RenderBodyAsync()
         </div>
     </div><!-- /.ta-wrapper -->
-
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
+    <div id="confirmRemoveMessage" data-value="@T[" Are you sure you want to remove this element?"]"></div>
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>
