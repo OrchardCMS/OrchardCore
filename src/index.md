@@ -40,6 +40,20 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 - **Scalability**. Because Orchard Core is a multi-tenant system, you can host as many websites as you want with a single deployment. A typical cloud machine can then host thousands of sites in parallel, with database, content, theme and user isolation.
 
+- **Workflows**. Create content approval workflows, react to webhooks, take actions when forms are submitted, and any other process you'd like to implement with a user friendly UI.
+
+- **GraphQL**. We provide a very flexible GraphQL API such that any authorized external application can reuse your content, like SPA applications or static sites generation.
+
+### Different website building strategies
+
+Orchard Core CMS supports all major site building strategies
+
+- **Full CMS**. In this mode, the website uses a theme and templates to render your content, aiming for few to no custom development at all.
+
+- **Decoupled CMS**. The site starts blank apart from the content management back-end. You create all the pages your need with Razor Pages or MVC actions and access your content with the content services.
+
+- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs.
+
 ## Status
 
 The latest released version of Orchard Core is `1.0.0-beta2`.

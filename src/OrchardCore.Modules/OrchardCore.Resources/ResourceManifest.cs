@@ -85,10 +85,19 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("bootstrap")
-                .SetDependencies("jQuery", "popper")
+                .SetDependencies("jQuery")
                 .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.min.js", "/OrchardCore.Resources/Scripts/bootstrap.js")
                 .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.js")
                 .SetCdnIntegrity("sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy", "sha384-fyOlGC+soQAvVFysE2KxkXaVKf75M1Zyo6RG7thLEEwD7p6/Cso7G/iV9tPM0C/a")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("bootstrap-bundle")
+                .SetDependencies("jQuery", "popper")
+                .SetUrl("/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl", "sha384-DWBJ4L0qV7ffH95jHsoooM04DWR2qtntWspYadu41Wx5kw6d0Cs7W+7C2v2bh7vX")
                 .SetVersion("4.1.3")
                 ;
 

@@ -50,7 +50,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 @-ms-viewport {
   width: device-width; }
@@ -6987,6 +6987,10 @@ div.CodeMirror-dragcursors {
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext {
   background: none; }
+
+html, body, .ta-wrapper, .ta-content {
+  /*border: solid 1px blue !important;*/
+  height: 100%; }
 
 body {
   margin-bottom: 40px; }

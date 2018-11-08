@@ -29,9 +29,8 @@ namespace OrchardCore.Layers
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
-                        )))
-                .Add(T["Content"], content => content
-                    .Add(T["Layers"], T["Layers"], layers => layers
+                        ))
+                .Add(T["Layers"], T["Layers"], layers => layers
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()

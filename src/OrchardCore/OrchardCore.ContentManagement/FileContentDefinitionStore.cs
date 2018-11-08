@@ -51,7 +51,7 @@ namespace OrchardCore.ContentManagement
             return Task.CompletedTask;
         }
 
-        private string Filename => Path.Combine(
+        private string Filename => PathExtensions.Combine(
                 _shellOptions.Value.ShellsApplicationDataPath,
                 _shellOptions.Value.ShellsContainerName,
                 _shellSettings.Name, "ContentDefinition.json");
