@@ -525,13 +525,13 @@ Renders a specific named tag with its properties
 Input
 
 ```liquid
-{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
+{% shape "Menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
 ```
 
 When using the shape tag a specific wrapper and / or alternate can be specified.
 
 ```liquid
-{% shape "menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
+{% shape "Menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
 ```
 
 ### `zone`

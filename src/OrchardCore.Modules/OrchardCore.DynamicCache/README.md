@@ -138,7 +138,7 @@ When using shape tag helpers, the following attributes can be used:
 
 For example, to cache the menu shape in a liquid template, you would use this markup:
 
-`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}`
+`{% shape "Menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}`
 
 ### Liquid cache block
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.

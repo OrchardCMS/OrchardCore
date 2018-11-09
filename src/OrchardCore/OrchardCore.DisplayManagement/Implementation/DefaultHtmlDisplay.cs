@@ -191,20 +191,17 @@ namespace OrchardCore.DisplayManagement.Implementation
             ShapeBinding resolved = null;
             foreach (var shapeAlternate in shapeAlternates.Reverse())
             {
-                if (resolved == null)
+                foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    foreach (var shapeBindingResolver in _shapeBindingResolvers)
+                    if (shapeBindingResolver.TryGetDescriptorBinding(shapeAlternate, out resolved))
                     {
-                        if (shapeBindingResolver.TryGetDescriptorBinding(shapeAlternate, out resolved))
+                        if (resolved.ShapeDescriptor != null)
                         {
-                            if (resolved.ShapeDescriptor != null)
-                            {
-                                shapeBinding = resolved;
-                                return true;
-                            }
-
-                            break;
+                            shapeBinding = resolved;
+                            return true;
                         }
+
+                        break;
                     }
                 }
 
