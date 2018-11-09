@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestEvent : EventActivity
     {
-        public static string EventName => nameof(HttpRequestEvent);
+        public static string EventName => nameof(HttpRequestEvent);        
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -42,6 +42,12 @@ namespace OrchardCore.Workflows.Http.Activities
         public bool ValidateAntiforgeryToken
         {
             get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
+        public int TokenLifeSpan
+        {
+            get => GetProperty(() => 0);
             set => SetProperty(value);
         }
 
