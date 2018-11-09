@@ -57,6 +57,7 @@ pages:
         - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Flows: OrchardCore.Modules/OrchardCore.Flows/README.md
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
+        - Admin Trees: OrchardCore.Modules/OrchardCore.AdminTrees/README.md
     - Core Modules:
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
