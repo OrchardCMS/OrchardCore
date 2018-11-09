@@ -8,6 +8,14 @@
 </fieldset>
 
 <fieldset class="form-group">
+    <div class="switch">
+        <input asp-for="PagerSlimDisabled" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.PagerSlimDisabled" />
+        <label asp-for="PagerSlimDisabled">@T["Disable PagerSlim"]</label>
+    </div>
+    <span class="hint">@T["Full Pager Will be enabled if DisablePagerSlim is checked."]</span>
+</fieldset>
+
+<fieldset class="form-group">
     <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
     <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
