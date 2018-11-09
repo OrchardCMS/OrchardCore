@@ -309,6 +309,7 @@
                   "Template": null
                 },
                 "PageSize": 10,
+                "PagerSlimDisabled": "False",
                 "ContainedContentTypes": [
                   "BlogPost"
                 ]

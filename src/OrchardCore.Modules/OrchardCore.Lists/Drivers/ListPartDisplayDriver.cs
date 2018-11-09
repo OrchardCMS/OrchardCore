@@ -42,27 +42,27 @@ namespace OrchardCore.Lists.Drivers
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
             return
-                Combine( 
+                Combine(
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
-                        var pager = await GetPagerAsync(context.Updater, listPart);
+                        var pager = await GetPagerObjectAsync(context.Updater, listPart);
 
                         model.ListPart = listPart;
-                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
+                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, true, pager.GetType().Name == "Pager")).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
-                        model.Pager = await context.New.PagerSlim(pager);
+                        model.Pager = await GetViewModelPagerAsync(context, pager, listPart, false);
                     })
                     .Location("Detail", "Content:10"),
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
-                        var pager = await GetPagerAsync(context.Updater, listPart);
+                        var pager = await GetPagerObjectAsync(context.Updater, listPart);
 
                         model.ListPart = listPart;
-                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
+                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, false, pager.GetType().Name == "Pager")).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
-                        model.Pager = await context.New.PagerSlim(pager);
+                        model.Pager = await GetViewModelPagerAsync(context, pager, listPart, false);
                     })
                     .Location("DetailAdmin", "Content:10")
                 );
@@ -77,6 +77,41 @@ namespace OrchardCore.Lists.Drivers
             PagerSlim pager = new PagerSlim(pagerParameters, settings.PageSize);
 
             return pager;
+        }
+
+        private async Task<object> GetPagerObjectAsync(IUpdateModel updater, ListPart part)
+        {
+            var settings = GetSettings(part);
+            if (settings.PagerSlimDisabled)
+            {
+                var pagerParameters = new PagerParameters();
+                await updater.TryUpdateModelAsync(pagerParameters);
+
+                var pager = new Pager(pagerParameters, settings.PageSize);
+
+                return pager;
+            }
+            else
+            {
+                var pagerParameters = new PagerSlimParameters();
+                await updater.TryUpdateModelAsync(pagerParameters);
+
+                var pager = new PagerSlim(pagerParameters, settings.PageSize);
+
+                return pager;
+            }
+        }
+
+        private async Task<dynamic> GetViewModelPagerAsync(BuildPartDisplayContext context, object pager, ListPart part, bool publishedOnly)
+        {
+            if (pager.GetType().Name == "PagerSlim")
+            {
+                return await context.New.PagerSlim(pager);
+            }
+            else
+            {
+                return (await context.New.Pager(pager)).TotalItemCount(await QueryListCountAsync(part, publishedOnly));
+            }
         }
 
         private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool publishedOnly)
@@ -165,6 +200,134 @@ namespace OrchardCore.Lists.Drivers
 
                 return containedItems;
             }
+        }
+
+        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, object pager, bool publishedOnly, bool pagerSlimDisabled)
+        {
+            if (pagerSlimDisabled)
+            {
+                var realPager = (Pager)pager;
+                var query = _session.Query<ContentItem>()
+                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
+                    .OrderByDescending(x => x.CreatedUtc)
+                    .Skip((realPager.Page - 1) * realPager.PageSize)
+                    .Take(realPager.PageSize + 1);
+
+                var containedItems = await query.ListAsync();
+
+                if (containedItems.Count() == 0)
+                {
+                    return containedItems;
+                }
+
+                //pager.Before = null;
+                //pager.After = null;
+
+                if (containedItems.Count() == realPager.PageSize + 1)
+                {
+                    containedItems = containedItems.Take(realPager.PageSize);
+                }
+
+                return containedItems;
+            }
+            else
+            {
+                var realPager = (PagerSlim)pager;
+                if (realPager.Before != null)
+                {
+                    var beforeValue = new DateTime(long.Parse(realPager.Before));
+                    var query = _session.Query<ContentItem>()
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                        .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, publishedOnly))
+                        .OrderBy(x => x.CreatedUtc)
+                        .Take(realPager.PageSize + 1);
+
+                    var containedItems = await query.ListAsync();
+
+                    if (containedItems.Count() == 0)
+                    {
+                        return containedItems;
+                    }
+
+                    containedItems = containedItems.Reverse();
+
+                    // There is always an After as we clicked on Before
+                    realPager.Before = null;
+                    realPager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+
+                    if (containedItems.Count() == realPager.PageSize + 1)
+                    {
+                        containedItems = containedItems.Skip(1);
+                        realPager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+                    }
+
+                    return containedItems;
+                }
+                else if (realPager.After != null)
+                {
+                    var afterValue = new DateTime(long.Parse(realPager.After));
+                    var query = _session.Query<ContentItem>()
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                        .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, publishedOnly))
+                        .OrderByDescending(x => x.CreatedUtc)
+                        .Take(realPager.PageSize + 1);
+
+                    var containedItems = await query.ListAsync();
+
+                    if (containedItems.Count() == 0)
+                    {
+                        return containedItems;
+                    }
+
+                    // There is always a Before page as we clicked on After
+                    realPager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+                    realPager.After = null;
+
+                    if (containedItems.Count() == realPager.PageSize + 1)
+                    {
+                        containedItems = containedItems.Take(realPager.PageSize);
+                        realPager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+                    }
+
+                    return containedItems;
+                }
+                else
+                {
+                    var query = _session.Query<ContentItem>()
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                        .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
+                        .OrderByDescending(x => x.CreatedUtc)
+                        .Take(realPager.PageSize + 1);
+
+                    var containedItems = await query.ListAsync();
+
+                    if (containedItems.Count() == 0)
+                    {
+                        return containedItems;
+                    }
+
+                    realPager.Before = null;
+                    realPager.After = null;
+
+                    if (containedItems.Count() == realPager.PageSize + 1)
+                    {
+                        containedItems = containedItems.Take(realPager.PageSize);
+                        realPager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+                    }
+
+                    return containedItems;
+                }
+            }
+        }
+
+        private async Task<int> QueryListCountAsync(ListPart listPart, bool publishedOnly)
+        {
+            var result = await _session.Query<ContentItem>()
+                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
+                    .CountAsync();
+            return result;
         }
 
         private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)

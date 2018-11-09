@@ -39,8 +39,9 @@ namespace OrchardCore.Lists.Settings
                 model.PageSize = model.ListPartSettings.PageSize;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
+                model.PagerSlimDisabled = model.ListPartSettings.PagerSlimDisabled;
 
-                foreach(var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
@@ -56,7 +57,7 @@ namespace OrchardCore.Lists.Settings
 
             var model = new ListPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.PagerSlimDisabled);
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
@@ -65,6 +66,7 @@ namespace OrchardCore.Lists.Settings
             else
             {
                 context.Builder.WithSetting("PageSize", model.PageSize.ToString());
+                context.Builder.WithSetting("PagerSlimDisabled", model.PagerSlimDisabled.ToString());
                 context.Builder.ContainedContentTypes(model.ContainedContentTypes);
             }
 
