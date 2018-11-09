@@ -103,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
-            var newShape = await _shapeBuilder(context);
+            var newShape = Shape = await _shapeBuilder(context);
 
             // Ignore it if the driver returned a null shape.
             if (newShape == null)
@@ -272,5 +272,7 @@ namespace OrchardCore.DisplayManagement.Views
             _cache = cache;
             return this;
         }
+
+        public IShape Shape { get; private set; }
     }
 }
