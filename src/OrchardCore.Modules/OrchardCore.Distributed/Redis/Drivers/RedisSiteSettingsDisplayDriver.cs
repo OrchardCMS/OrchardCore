@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,15 +18,30 @@ namespace OrchardCore.Distributed.Redis.Drivers
         public const string GroupId = "redis";
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public RedisSiteSettingsDisplayDriver(IShellHost shellHost, ShellSettings shellSettings)
+        public RedisSiteSettingsDisplayDriver(
+            IShellHost shellHost,
+            ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Edit(RedisSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(RedisSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, RedisPermissions.ManageRedisServices))
+            {
+                return null;
+            }
+
             return Initialize<RedisSettingsViewModel>("RedisSettings_Edit", model =>
                 {
                     model.Configuration = section.Configuration;

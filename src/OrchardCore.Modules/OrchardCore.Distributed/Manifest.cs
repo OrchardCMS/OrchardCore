@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Distributed.Signal",
     Name = "Distributed Signal",
     Description = "Distributed Signal using a Message bus.",
-    Category = "Hosting"
+    Category = "Distributed"
 )]
 
 [assembly: Feature(
@@ -19,14 +19,14 @@ using OrchardCore.Modules.Manifest;
     Name = "Distributed Shell",
     Description = "Distributed Shell using a Message Bus.",
     DefaultTenantOnly = true,
-    Category = "Hosting"
+    Category = "Distributed"
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Distributed.Redis",
     Name = "Redis",
     Description = "Allows to configure and connect to Redis.",
-    Category = "Hosting"
+    Category = "Distributed"
 )]
 
 [assembly: Feature(
@@ -34,7 +34,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Redis Cache",
     Description = "Distributed cache using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
-    Category = "Hosting"
+    Category = "Distributed"
 )]
 
 [assembly: Feature(
@@ -42,7 +42,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Redis Bus",
     Description = "Message bus using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
-    Category = "Hosting"
+    Category = "Distributed"
 )]
 
 [assembly: Feature(
@@ -50,5 +50,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Redis Lock",
     Description = "Distributed Lock using Redis.",
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
-    Category = "Hosting"
+    Category = "Distributed"
 )]

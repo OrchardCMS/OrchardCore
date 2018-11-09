@@ -37,8 +37,8 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Lucene.Distributed",
-    Name = "Lucene Distributed",
+    Name = "Distributed Lucene indices",
     Description = "Distributed Lucene indices using a Message Bus.",
     Dependencies = new[] { "OrchardCore.Lucene" },
-    Category = "Content Management"
+    Category = "Distributed"
 )]
