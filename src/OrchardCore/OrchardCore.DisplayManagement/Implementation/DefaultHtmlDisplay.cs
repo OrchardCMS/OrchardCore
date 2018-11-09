@@ -53,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             var shapeMetadata = shape.Metadata;
-            
+
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {
@@ -188,19 +188,41 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the earliest added alternates have the lowest priority
             // the descriptor returned is based on the binding that is matched, so it may be an entirely
             // different descriptor if the alternate has a different base name
+            ShapeBinding resolved = null;
             foreach (var shapeAlternate in shapeAlternates.Reverse())
             {
-                foreach (var shapeBindingResolver in _shapeBindingResolvers)
+                if (resolved == null)
                 {
-                    if (shapeBindingResolver.TryGetDescriptorBinding(shapeAlternate, out shapeBinding))
+                    foreach (var shapeBindingResolver in _shapeBindingResolvers)
                     {
-                        return true;
+                        if (shapeBindingResolver.TryGetDescriptorBinding(shapeAlternate, out resolved))
+                        {
+                            if (resolved.ShapeDescriptor != null)
+                            {
+                                shapeBinding = resolved;
+                                return true;
+                            }
+
+                            break;
+                        }
                     }
                 }
 
                 if (shapeTable.Bindings.TryGetValue(shapeAlternate, out shapeBinding))
                 {
+                    if (resolved == null)
+                    {
+                        return true;
+                    }
+
+                    resolved.ShapeDescriptor = shapeBinding.ShapeDescriptor;
+                    shapeBinding = resolved;
                     return true;
+                }
+
+                if (resolved != null)
+                {
+                    break;
                 }
             }
 
@@ -208,26 +230,49 @@ namespace OrchardCore.DisplayManagement.Implementation
             // the shapetype name can break itself into shorter fallbacks at double-underscore marks
             // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one
             var shapeTypeScan = shapeType;
-            for (;;)
+            for (; ; )
             {
-                foreach (var shapeBindingResolver in _shapeBindingResolvers)
+                if (resolved == null)
                 {
-                    if (shapeBindingResolver.TryGetDescriptorBinding(shapeTypeScan, out shapeBinding))
+                    foreach (var shapeBindingResolver in _shapeBindingResolvers)
                     {
-                        return true;
+                        if (shapeBindingResolver.TryGetDescriptorBinding(shapeTypeScan, out resolved))
+                        {
+                            if (resolved.ShapeDescriptor != null)
+                            {
+                                shapeBinding = resolved;
+                                return true;
+                            }
+
+                            break;
+                        }
                     }
                 }
 
                 if (shapeTable.Bindings.TryGetValue(shapeTypeScan, out shapeBinding))
                 {
+                    if (resolved == null)
+                    {
+                        return true;
+                    }
+
+                    resolved.ShapeDescriptor = shapeBinding.ShapeDescriptor;
+                    shapeBinding = resolved;
                     return true;
                 }
 
                 var delimiterIndex = shapeTypeScan.LastIndexOf("__");
                 if (delimiterIndex < 0)
                 {
-                    shapeBinding = null;
-                    return false;
+                    if (resolved == null)
+                    {
+                        shapeBinding = null;
+                        return false;
+                    }
+
+                    resolved.ShapeDescriptor = new ShapeDescriptor() { ShapeType = shapeTypeScan };
+                    shapeBinding = resolved;
+                    return true;
                 }
 
                 shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
@@ -268,6 +313,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 // todo: create result from all child shapes
                 return shape.Metadata.ChildContent ?? HtmlString.Empty;
             }
+
             return CoerceHtmlString(await shapeBinding.BindingAsync(context));
         }
     }

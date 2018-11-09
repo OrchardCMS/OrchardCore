@@ -13,7 +13,7 @@ namespace OrchardCore.Menu
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
-                .OnProcessing(async context =>
+                .OnDisplaying(async context =>
                 {
                     dynamic menu = context.Shape;
                     string identifier = menu.ContentItemId ?? menu.Alias;
