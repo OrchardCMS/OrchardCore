@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -47,6 +48,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         }
 
         [HttpPost]
+        [Admin]
         public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
