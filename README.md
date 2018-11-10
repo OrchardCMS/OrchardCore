@@ -1,6 +1,6 @@
 # Orchard Core 
 
-Orchard Core is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET Core](http://www.asp.net/vnext). You can check out the [Orchard Core presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
+[Orchard Core](https://github.com/OrchardCMS/OrchardCore) is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET Core](http://www.asp.net/vnext). You can check out the [Orchard Core presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
@@ -23,7 +23,7 @@ Nightly (dev):
 
 ## Orchard CMS
 
-Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), community-focused Content Management System built on the ASP.NET MVC platform.
+Orchard is a free, [open source](https://github.com/OrchardCMS/OrchardCore/blob/dev/LICENSE), community-focused Content Management System built on the ASP.NET MVC platform.
 
 ## Status
 
@@ -58,7 +58,7 @@ Docker images and parameters can be found at https://hub.docker.com/u/orchardpro
 
 ### Contributing
 
-We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
+We currently follow these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
 
 ### Documentation
 

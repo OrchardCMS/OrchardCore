@@ -89,6 +89,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
+                    bus.$on('createFolderRequested', function (media) {
+                        self.createFolder();                        
+                    });
+
+                    bus.$on('deleteFolderRequested', function (media) {
+                        self.deleteFolder();
+                    });
+
                     // common handlers for actions in both grid and table view.
                     bus.$on('sortChangeRequested', function (newSort) {
                         self.changeSort(newSort);
@@ -435,7 +443,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
@@ -473,7 +482,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });
@@ -526,10 +536,9 @@ $(document).bind('dragover', function (e) {
             dropZone.addClass('in');
         }
         var hoveredDropZone = $(e.target).closest(dropZone);
-        dropZone.toggleClass('hover', hoveredDropZone.length);
         window.dropZoneTimeout = setTimeout(function () {
             window.dropZoneTimeout = null;
-            dropZone.removeClass('in hover');
+            dropZone.removeClass('in');
         }, 100);
     }    
 });
@@ -540,32 +549,38 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select" draggable="false" >\
-                    <i class="folder fa fa-folder"></i>\
-                    {{model.name}}\
+            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
+                <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
+                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
+                  <div class="folder-name">{{model.name}}</div>\
+                    <div class="btn-group folder-actions" >\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
+                    </div>\
                 </a>\
             </div>\
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
                         :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp">\
+                        :selected-in-media-app="selectedInMediaApp" \
+                        :level="level + 1">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
         model: Object,
-        selectedInMediaApp: Object
+        selectedInMediaApp: Object,
+        level: Number
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
             parent: null,
-            isHovered : false
+            isHovered: false,
+            padding: 0
         }
     },
     computed: {
@@ -574,12 +589,17 @@ Vue.component('folder', {
         },
         isSelected: function () {
             return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
+        },
+        isRoot: function () {
+            return this.model.path === '';
         }
     },
     mounted: function () {
-        if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
+        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())){
             this.toggle();
         }
+
+        this.padding = this.level < 3 ?  26 : 26 + (this.level * 8);
     },
     created: function () {
         var self = this;
@@ -606,9 +626,6 @@ Vue.component('folder', {
         });
     },
     methods: {
-        isRoot: function () {
-            return this.model.path === '';
-        },
         isAncestorOfSelectedFolder: function () {
             parentFolder = mediaApp.selectedFolder;
             while (parentFolder) {
@@ -629,6 +646,12 @@ Vue.component('folder', {
         select: function () {
             bus.$emit('folderSelected', this.model);
             this.loadChildren();
+        },
+        createFolder: function () {           
+            bus.$emit('createFolderRequested');
+        },
+        deleteFolder: function () {
+            bus.$emit('deleteFolderRequested');
         },
         loadChildren: function () {            
             var self = this;
@@ -2568,7 +2591,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
 // <media-items-grid> component
 Vue.component('mediaItemsGrid', {
     template: '\
-        <ol class="row">\
+        <ol class="row media-items-grid">\
                 <li v-for="media in filteredMediaItems" \
                     :key="media.name" \
                     class="media-item media-container-main-list-item card" \
@@ -2633,7 +2656,7 @@ Vue.component('mediaItemsTable', {
         <table class="table media-items-table"> \
             <thead> \
                 <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column" style="padding-left:16px;">{{ T.imageHeader }}</th> \
+                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
                     <th scope="col" v-on:click="changeSort(\'name\')"> \
                        {{ T.nameHeader }} \
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
@@ -2658,7 +2681,7 @@ Vue.component('mediaItemsTable', {
                           :class="{selected: isMediaSelected(media)}" \
                           v-on:click.stop="toggleSelectionOfMedia(media)" \
                           draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name" style="height: 80px;"> \
+                          :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
                                     <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
@@ -2735,7 +2758,7 @@ Vue.component('mediaItemsTable', {
 // <sort-indicator> component
 Vue.component('sortIndicator', {
     template: '\
-        <div v-show="isActive" style="display: inline-block;"> \
+        <div v-show="isActive" class="sort-indicator"> \
             <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
             <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
         </div> \
@@ -2756,7 +2779,7 @@ Vue.component('sortIndicator', {
 Vue.component('upload', {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \

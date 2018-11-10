@@ -1,0 +1,16 @@
+.media-field-toolbar {
+    display: flex;
+
+    .selected-media-name {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex-grow: 1;
+    }
+
+    code {
+        flex-grow: 1;
+        padding: 4px;
+        white-space: nowrap;
+    }
+}
