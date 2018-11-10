@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class BasicShapeTemplateHarvester : IShapeTemplateHarvester
     {
-        public IEnumerable<string> SubPaths()
+        public virtual IEnumerable<string> SubPaths()
         {
             return new[] { "Views", "Views/Items", "Views/Parts", "Views/Fields", "Views/Elements" };
         }
@@ -31,19 +31,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
         }
 
-        public bool InDepth => false;
+        public virtual bool InDepth => false;
 
-        static string Adjust(string subPath, string fileName, string displayType)
+        protected virtual string leader(string subPath) => 
+            (subPath.StartsWith("Views/") && subPath != "Views/Items") ? subPath.Substring("Views/".Length) + "_" : "";
+
+        string Adjust(string subPath, string fileName, string displayType)
         {
-            var leader = "";
-            if (subPath.StartsWith("Views/") && subPath != "Views/Items")
-            {
-                leader = subPath.Substring("Views/".Length) + "_";
-            }
-
             // canonical shape type names must not have - or . to be compatible
             // with display and shape api calls)))
-            var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
+            var shapeType = leader(subPath) + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
 
             if (string.IsNullOrEmpty(displayType))
             {
