@@ -10,5 +10,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
     {
         IEnumerable<string> SubPaths();
         IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info);
+        bool InDepth { get; }
     }
 }

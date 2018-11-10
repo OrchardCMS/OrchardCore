@@ -31,6 +31,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
         }
 
+        public bool InDepth => false;
+
         static string Adjust(string subPath, string fileName, string displayType)
         {
             var leader = "";

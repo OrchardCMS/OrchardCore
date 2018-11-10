@@ -93,7 +93,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
                         PathExtensions.Combine(extensionDescriptor.SubPath, subPath), 
                         _viewEnginesByExtension.Keys.ToArray(),
-                        inViewsFolder: true, inDepth: false).ToArray();
+                        inViewsFolder: true, inDepth: harvesterInfo.harvester.InDepth).ToArray();
 
                     return new { harvesterInfo.harvester, subPath, filePaths };
                 }))
