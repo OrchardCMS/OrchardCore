@@ -52,3 +52,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Distributed.Redis" },
     Category = "Distributed"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Distributed.Redis.DataProtection",
+    Name = "Redis DataProtection",
+    Description = "Distributed DataProtection key storage using Redis.",
+    Dependencies = new[] { "OrchardCore.Distributed.Redis" },
+    Category = "Distributed"
+)]

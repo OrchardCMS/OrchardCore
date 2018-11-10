@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Distributed.Core.Services;
 using OrchardCore.Distributed.Redis;
+using OrchardCore.Distributed.Redis.DataProtection;
 using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Distributed.Redis.Services;
-using OrchardCore.Distributed.Core.Services;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -95,6 +98,32 @@ namespace OrchardCore.Distributed
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ILock, RedisLock>();
+        }
+    }
+
+    [Feature("OrchardCore.Distributed.Redis.DataProtection")]
+    public class RedisDataProtectionStartup : StartupBase
+    {
+        private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RedisDataProtectionStartup(ShellSettings shellSettings, IHttpContextAccessor httpContextAccessor)
+        {
+            _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public override int Order => 10;
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDataProtection().Services.Configure<KeyManagementOptions>(options =>
+            {
+                options.XmlRepository = new RedisXmlRepository(() =>
+                    _httpContextAccessor.HttpContext.RequestServices
+                        .GetRequiredService<IRedisClient>().Database,
+                    _shellSettings.Name + ":DataProtection-Keys");
+            });
         }
     }
 }
