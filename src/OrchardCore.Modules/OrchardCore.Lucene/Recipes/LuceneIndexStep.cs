@@ -17,22 +17,24 @@ namespace OrchardCore.Lucene.Recipes
             _luceneIndexManager = luceneIndexManager;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var model = context.Step.ToObject<LuceneIndexModel>();
 
-            foreach(var index in model.Indices)
+            foreach (var index in model.Indices)
             {
                 if (!_luceneIndexManager.Exists(index))
                 {
-                    await _luceneIndexManager.CreateIndex(index);
+                    _luceneIndexManager.CreateIndex(index);
                 }
-            }            
+            }
+
+            return Task.CompletedTask;
         }
 
         private class LuceneIndexModel

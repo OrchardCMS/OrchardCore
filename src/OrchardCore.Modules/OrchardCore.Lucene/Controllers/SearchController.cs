@@ -16,26 +16,26 @@ namespace OrchardCore.Lucene.Controllers
     public class SearchController : Controller
     {
         private readonly ISiteService _siteService;
-        private readonly LuceneIndexManager _luceneIndexManager;
+        private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
         private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
 
         public SearchController(
+            LuceneAnalyzerManager luceneAnalyzerManager,
             ISiteService siteService,
-            LuceneIndexManager luceneIndexManager,
+            LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
-            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService,
             ISearchQueryService searchQueryService,
             IContentManager contentManager,
             ILogger<SearchController> logger
             )
         {
+            _luceneAnalyzerManager = luceneAnalyzerManager;
             _siteService = siteService;
-            _luceneIndexManager = luceneIndexManager;
+            _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
-            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
             _searchQueryService = searchQueryService;
             _contentManager = contentManager;
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Lucene.Controllers
                 indexName = id;
             }
 
-            if (!_luceneIndexManager.Exists(indexName))
+            if (!_luceneIndexProvider.Exists(indexName))
             {
                 return NotFound();
             }
@@ -71,10 +71,9 @@ namespace OrchardCore.Lucene.Controllers
                 });
             }
 
-            var luceneAnalyzerSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-            
-            if (luceneAnalyzerSettings == null || luceneSettings?.DefaultSearchFields == null)
+
+            if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
 
@@ -87,8 +86,10 @@ namespace OrchardCore.Lucene.Controllers
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
-
-            var queryParser = new MultiFieldQueryParser(luceneAnalyzerSettings.Version, luceneSettings.DefaultSearchFields, new StandardAnalyzer(luceneAnalyzerSettings.Version));
+            var provider = _luceneAnalyzerManager.GetLuceneAnalyzerProvider();
+            var analyzer = provider.LuceneAnalyzer().CreateAnalyzer();
+            
+            var queryParser = new MultiFieldQueryParser(provider.Version, luceneSettings.DefaultSearchFields, analyzer);
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links

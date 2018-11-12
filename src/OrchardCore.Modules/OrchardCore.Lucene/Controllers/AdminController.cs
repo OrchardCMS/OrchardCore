@@ -22,8 +22,7 @@ namespace OrchardCore.Lucene.Controllers
     public class AdminController : Controller
     {
         private readonly LuceneIndexManager _luceneIndexManager;
-        private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
+        private readonly LuceneIndexingService _luceneIndexingService;      
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
@@ -32,8 +31,7 @@ namespace OrchardCore.Lucene.Controllers
 
         public AdminController(
             LuceneIndexManager luceneIndexManager,
-            LuceneIndexingService luceneIndexingService,
-            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService,
+            LuceneIndexingService luceneIndexingService,          
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
@@ -44,8 +42,7 @@ namespace OrchardCore.Lucene.Controllers
             ILogger<AdminController> logger)
         {
             _luceneIndexManager = luceneIndexManager;
-            _luceneIndexingService = luceneIndexingService;
-            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
+            _luceneIndexingService = luceneIndexingService;         
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
@@ -108,7 +105,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-                await _luceneIndexingService.RebuildIndex(model.IndexName);
+                _luceneIndexingService.RebuildIndex(model.IndexName);
                 await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
@@ -157,7 +154,7 @@ namespace OrchardCore.Lucene.Controllers
                 return NotFound();
             }
 
-            await _luceneIndexingService.RebuildIndex(id);
+            _luceneIndexingService.RebuildIndex(id);
             await _luceneIndexingService.ProcessContentItemsAsync();
 
             _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
@@ -235,15 +232,15 @@ namespace OrchardCore.Lucene.Controllers
                 model.Parameters = "{ }";
             }
 
-            var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
-
+         
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
-                var context = new LuceneQueryContext(searcher, luceneSettings.Version, analyzer);
+                var provider = _luceneAnalyzerManager.GetLuceneAnalyzerProvider();
+                var analyzer = provider.LuceneAnalyzer().CreateAnalyzer();
+                var context = new LuceneQueryContext(searcher, provider.Version, analyzer);
 
                 var templateContext = new TemplateContext();
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);

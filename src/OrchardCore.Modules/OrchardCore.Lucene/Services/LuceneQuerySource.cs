@@ -15,23 +15,23 @@ namespace OrchardCore.Lucene
 {
     public class LuceneQuerySource : IQuerySource
     {
-        private readonly LuceneIndexManager _luceneIndexManager;
-        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
+        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
 
         public LuceneQuerySource(
-            LuceneIndexManager luceneIndexManager,
-            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService,
+            LuceneIndexManager luceneIndexProvider,
+            LuceneIndexingService luceneIndexingService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session)
         {
-            _luceneIndexManager = luceneIndexManager;
-            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
+            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexingService = luceneIndexingService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
@@ -50,7 +50,7 @@ namespace OrchardCore.Lucene
             var luceneQuery = query as LuceneQuery;
             object result = null;
 
-            await _luceneIndexManager.SearchAsync (luceneQuery.Index, async searcher =>
+            await _luceneIndexProvider.SearchAsync(luceneQuery.Index, async searcher =>
             {
                 var templateContext = new TemplateContext();
 
@@ -64,9 +64,11 @@ namespace OrchardCore.Lucene
 
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
-                var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
-                var context = new LuceneQueryContext(searcher, luceneSettings.Version, analyzer);
+
+                var provider = _luceneAnalyzerManager.GetLuceneAnalyzerProvider();
+                var analyzer = provider.LuceneAnalyzer().CreateAnalyzer();
+                var context = new LuceneQueryContext(searcher, provider.Version, analyzer);
+                
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
 
                 if (luceneQuery.ReturnContentItems)

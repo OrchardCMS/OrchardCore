@@ -2,40 +2,28 @@ using System;
 using System.Collections.Generic;
 using Lucene.Net.Analysis;
 using Microsoft.Extensions.Options;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Services
 {
-    /// <summary>
-    /// Coordinates <see cref="ILuceneAnalyzer"/> implementations provided by <see cref="LuceneOptions"/>
-    /// to return the list of all available <see cref="ILuceneAnalyzer"/> objects.
-    /// </summary>
+   
     public class LuceneAnalyzerManager
     {
-        private readonly Dictionary<string, ILuceneAnalyzer> _analyzers;
-
-        public LuceneAnalyzerManager(IOptions<LuceneOptions> options)
+        private readonly ISiteService _siteService;
+        ILuceneAnalyzerProviderManager _luceneAnalyzerProviderManager;
+        public LuceneAnalyzerManager(
+            ISiteService siteService,
+            ILuceneAnalyzerProviderManager luceneAnalyzerProviderManager)
         {
-            _analyzers = new Dictionary<string, ILuceneAnalyzer>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var analyzer in options.Value.Analyzers)
-            {
-                _analyzers[analyzer.Name] = analyzer;
-            }
+            _siteService = siteService;
+            _luceneAnalyzerProviderManager = luceneAnalyzerProviderManager;
         }
 
-        public IEnumerable<ILuceneAnalyzer> GetAnalyzers()
+        public ILuceneAnalyzerProvider GetLuceneAnalyzerProvider()
         {
-            return _analyzers.Values;
-        }
-
-        public Analyzer CreateAnalyzer(string name)
-        {
-            if (_analyzers.TryGetValue(name, out var analyzer))
-            {
-                return analyzer.CreateAnalyzer();
-            }
-
-            return null;
+            var siteSettings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+            var culture = siteSettings.Culture;
+            return _luceneAnalyzerProviderManager.GetLuceneAnalyzerProvider(culture);
         }
     }
 }

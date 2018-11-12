@@ -36,29 +36,33 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                await _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-                await _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+                _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
             }
         }
 
-        public override async Task RemovedAsync(RemoveContentContext context)
+        public override Task RemovedAsync(RemoveContentContext context)
         {
             // TODO: ignore if this index is not configured for the content type
 
             foreach (var index in _luceneIndexManager.List())
             {
-                await _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-            }           
+                _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+            }
+
+            return Task.CompletedTask;
         }
 
-        public override async Task UnpublishedAsync(PublishContentContext context)
+        public override Task UnpublishedAsync(PublishContentContext context)
         {
             // TODO: ignore if this index is not configured for the content type
 
             foreach (var index in _luceneIndexManager.List())
             {
-                await _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
-            }           
+                _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

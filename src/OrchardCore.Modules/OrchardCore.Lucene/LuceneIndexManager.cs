@@ -35,8 +35,8 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
+        private readonly ILuceneAnalyzerProviderManager _luceneAnalyzerManager;
+       // private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -44,8 +44,8 @@ namespace OrchardCore.Lucene
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger,
-            LuceneAnalyzerManager luceneAnalyzerManager,
-            LuceneAnalyzerSettingsService luceneAnalyzerSettingsService
+            ILuceneAnalyzerProviderManager luceneAnalyzerManager
+            //LuceneAnalyzerSettingsService luceneAnalyzerSettingsService
             )
         {
             _clock = clock;
@@ -55,18 +55,18 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
             _rootDirectory = Directory.CreateDirectory(_rootPath);
-            _luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
+            //_luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
         }
 
-        public Task CreateIndex(string indexName)
+        public void CreateIndex(string indexName)
         {
-           return Write(indexName, _ => { }, true);
+            Write(indexName, _ => { }, true);
         }
 
-        public async Task DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
+        public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
         {
-            await Write(indexName, writer =>
+            Write(indexName, writer =>
             {
                 writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
 
@@ -128,9 +128,9 @@ namespace OrchardCore.Lucene
                 .Select(x => x.Name);
         }
 
-        public async Task StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+        public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            await Write(indexName, writer =>
+            Write(indexName, writer =>
             {
                 foreach (var indexDocument in indexDocuments)
                 {
@@ -255,19 +255,20 @@ namespace OrchardCore.Lucene
             }
         }
 
-        private async Task Write(string indexName, Action<IndexWriter> action, bool close = false)
+        private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
             if (!_writers.TryGetValue(indexName, out var writer))
             {
-                var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
+              //  var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-                        
-                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(luceneSettings.Analyzer);
-                        var config = new IndexWriterConfig(luceneSettings.Version, analyzer)
+                        var provider = _luceneAnalyzerManager.GetLuceneAnalyzerProvider();                        
+                        var analyzer = provider.LuceneAnalyzer().CreateAnalyzer();
+                       
+                        var config = new IndexWriterConfig(provider.Version, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
                         };

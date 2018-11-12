@@ -23,6 +23,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Lucene.Net.Util;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Lucene
 {
@@ -34,8 +35,7 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<LuceneIndexingState>();
-            services.AddScoped<LuceneIndexingService>();
-            services.AddSingleton<LuceneAnalyzerSettingsService>();
+            services.AddScoped<LuceneIndexingService>();          
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
@@ -43,11 +43,10 @@ namespace OrchardCore.Lucene
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
 
-            services.Configure<LuceneOptions>(o =>
-                o.Analyzers.Add(new LuceneAnalyzer(DefaultLuceneAnalyzerSettings.StandardAnalyzer,
-                    new StandardAnalyzer(DefaultLuceneAnalyzerSettings.DefaultVersion))));
+            services.AddSingleton<ILuceneAnalyzerProvider, DefaultLuceneAnalyzerProvider>();
+            services.AddSingleton<ILuceneAnalyzerProviderManager, LuceneAnalyzerProviderManager>();
+            services.AddSingleton<LuceneAnalyzerManager>();
 
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();

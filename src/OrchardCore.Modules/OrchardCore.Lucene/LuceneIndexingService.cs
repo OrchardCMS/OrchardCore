@@ -27,11 +27,12 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+
         public LuceneIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            LuceneIndexingState indexingState, 
-            LuceneIndexManager indexManager, 
+            LuceneIndexingState indexingState,
+            LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
             ILogger<LuceneIndexingService> logger)
@@ -42,6 +43,7 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
+
             Logger = logger;
         }
 
@@ -93,7 +95,7 @@ namespace OrchardCore.Lucene
 
                             if (index.Value < task.Id)
                             {
-                                await _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
+                                _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
                             }
                         }
 
@@ -115,7 +117,7 @@ namespace OrchardCore.Lucene
                             {
                                 if (index.Value < task.Id)
                                 {
-                                    await _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
                                 }
                             }
                         }
@@ -135,7 +137,7 @@ namespace OrchardCore.Lucene
 
                     _indexingState.Update();
 
-                } 
+                }
             } while (batch.Length == BatchSize);
         }
 
@@ -152,10 +154,10 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Deletes and recreates the full index content.
         /// </summary>
-        public async Task RebuildIndex(string indexName)
+        public void RebuildIndex(string indexName)
         {
             _indexManager.DeleteIndex(indexName);
-            await _indexManager.CreateIndex(indexName);
+            _indexManager.CreateIndex(indexName);
 
             ResetIndex(indexName);
         }
