@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -23,6 +24,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
         private readonly ILogger<HttpWorkflowController> _logger;
+        private const int _tokenLifeSpan = 36500;
 
         public HttpWorkflowController(
             IAuthorizationService authorizationService,
@@ -46,7 +48,8 @@ namespace OrchardCore.Workflows.Http.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId)
+        [Admin]
+        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -60,7 +63,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(7));
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan==0?_tokenLifeSpan: tokenLifeSpan));
             var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
 
             return Ok(url);

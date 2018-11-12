@@ -24,7 +24,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-
             if (_typePartDefinition != null)
             {
                 var partName = _typePartDefinition.Name;
@@ -35,7 +34,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 if (partType == shapeType || editorPartType == shapeType)
                 {
                     // HtmlBodyPart, Services
-                    result.Differentiator($"{partName}");
+                    result.Differentiator(partName);
                 }
                 else
                 {

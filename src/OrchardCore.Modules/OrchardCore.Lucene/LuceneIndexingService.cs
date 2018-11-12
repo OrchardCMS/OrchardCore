@@ -56,7 +56,7 @@ namespace OrchardCore.Lucene
             var allIndices = new Dictionary<string, int>();
 
             // Find the lowest task id to process
-            int lastTaskId = int.MaxValue;
+            var lastTaskId = int.MaxValue;
             foreach (var indexName in _indexManager.List())
             {
                 var taskId = _indexingState.GetLastTaskId(indexName);
@@ -64,7 +64,7 @@ namespace OrchardCore.Lucene
                 allIndices.Add(indexName, taskId);
             }
 
-            if (!allIndices.Any())
+            if (allIndices.Count == 0)
             {
                 return;
             }

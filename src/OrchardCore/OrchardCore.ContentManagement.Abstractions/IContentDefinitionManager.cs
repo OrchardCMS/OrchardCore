@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.ContentManagement.Metadata
 {
@@ -33,6 +34,8 @@ namespace OrchardCore.ContentManagement.Metadata
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
         Task<int> GetTypesHashAsync();
+
+        IChangeToken ChangeToken { get; }
     }
 
     public static class ContentDefinitionManagerExtensions
