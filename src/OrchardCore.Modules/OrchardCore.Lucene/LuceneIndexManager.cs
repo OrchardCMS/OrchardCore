@@ -35,8 +35,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-        private readonly ILuceneAnalyzerProviderManager _luceneAnalyzerManager;
-       // private readonly LuceneAnalyzerSettingsService _luceneAnalyzerSettingsService;
+        private readonly ILuceneAnalyzerProviderManager _luceneAnalyzerManager;      
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -44,8 +43,7 @@ namespace OrchardCore.Lucene
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger,
-            ILuceneAnalyzerProviderManager luceneAnalyzerManager
-            //LuceneAnalyzerSettingsService luceneAnalyzerSettingsService
+            ILuceneAnalyzerProviderManager luceneAnalyzerManager           
             )
         {
             _clock = clock;
@@ -54,8 +52,7 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
-            _rootDirectory = Directory.CreateDirectory(_rootPath);
-            //_luceneAnalyzerSettingsService = luceneAnalyzerSettingsService;
+            _rootDirectory = Directory.CreateDirectory(_rootPath);           
             _luceneAnalyzerManager = luceneAnalyzerManager;
         }
 
@@ -260,8 +257,7 @@ namespace OrchardCore.Lucene
         private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
             if (!_writers.TryGetValue(indexName, out var writer))
-            {
-              //  var luceneSettings = await _luceneAnalyzerSettingsService.GetLuceneAnalyzerSettingsAsync();
+            {           
                 lock (this)
                 {
                     if (!_writers.TryGetValue(indexName, out writer))
