@@ -10,7 +10,7 @@
     <fieldset class="form-group">
         <div class="form-row">
             <div class="col">
-                <label for="CultureName">@T["Add a culture..."]</label>
+                <label for="SystemCultureName">@T["Add a culture..."]</label>
                 <select name="SystemCultureName" class="form-control">
                     @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
                     {
