@@ -104,7 +104,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
 
     @if (Model.ContentItems.Count > 0)
     {
-        <ul class="list-group mb-3">
+        <ul class="list-group">
             @foreach (var contentItemSummary in Model.ContentItems)
             {
                 <li class="list-group-item">
