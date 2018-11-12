@@ -70,6 +70,7 @@ namespace OrchardCore.Setup.Services
                 if (context.Errors.Any())
                 {
                     context.ShellSettings.State = initialState;
+                    await _shellHost.ShellEventAsync(e => e.ReloadAsync(context.ShellSettings.Name));
                 }
 
                 return executionId;

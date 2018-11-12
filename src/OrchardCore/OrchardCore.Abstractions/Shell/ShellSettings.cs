@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
@@ -9,7 +11,7 @@ namespace OrchardCore.Environment.Shell
     /// model is obtained from the IShellSettingsManager, which by default reads this
     /// from the App_Data settings.txt files.
     /// </summary>
-    public class ShellSettings
+    public class ShellSettings : IEquatable<ShellSettings>
     {
         private TenantState _tenantState;
 
@@ -21,7 +23,8 @@ namespace OrchardCore.Environment.Shell
         {
             _values = new Dictionary<string, string>(configuration);
 
-            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
+            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState))
+            {
                 _tenantState = TenantState.Invalid;
             }
         }
@@ -85,7 +88,7 @@ namespace OrchardCore.Environment.Shell
             get { return this["Secret"]; }
             set { _values["Secret"] = value; }
         }
-        
+
         public TenantState State
         {
             get => _tenantState;
@@ -94,6 +97,22 @@ namespace OrchardCore.Environment.Shell
                 _tenantState = value;
                 this["State"] = value.ToString();
             }
+        }
+
+        public bool Equals(ShellSettings other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            return GetHashCode() == other.GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            return new StringValues(_values.OrderBy(kv => kv.Key)
+                .Select(kv => kv.Value).ToArray()).GetHashCode();
         }
     }
 }

@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -66,27 +70,50 @@ namespace OrchardCore.Distributed.Core.Services
                         // Subscribe to the 'Shell' channel.
                         await _messageBus.SubscribeAsync("Shell", (channel, message) =>
                         {
-                            var tokens = message.Split(':').ToArray();
+                            var tokens = message.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
-                            // Validate the message {tenant}:{event}
-                            if (tokens.Length != 2 || tokens[0].Length == 0)
+                            // Validate the message {tenant}:{event}[:{settings}]
+                            if (tokens.Length < 2)
                             {
                                 return;
                             }
 
                             // Try to load the last settings of the specified tenant.
-                            if (!_shellSettingsManager.TryLoadSettings(tokens[0], out var settings))
-                            {
-                                return;
-                            }
+                            _shellSettingsManager.TryLoadSettings(tokens[0], out var settings);
 
                             if (_httpContextAccessor.HttpContext == null)
                             {
                                 _httpContextAccessor.HttpContext = new DefaultHttpContext();
                             }
 
-                            if (tokens[1] == "Reload")
+                            if (tokens[1] == "Reload" && tokens.Length > 2)
                             {
+                                ShellSettings publishedSettings = null;
+
+                                try
+                                {
+                                    var json = Encoding.UTF8.GetString(Convert.FromBase64String(tokens[2]));
+                                    publishedSettings = JObject.Parse(json).ToObject<ShellSettings>();
+                                }
+                                catch { }
+
+                                // Settings may not be in sync on a non shared storage.
+                                if (publishedSettings != null && !publishedSettings.Equals(settings))
+                                {
+                                    try
+                                    {
+                                        // Sync the tenant settings.
+                                        settings = publishedSettings;
+                                        _shellSettingsManager.SaveSettings(publishedSettings);
+                                    }
+                                    catch { }
+                                }
+
+                                if (settings == null)
+                                {
+                                    return;
+                                }
+
                                 // Reload the shell of the specified tenant.
                                 _shellHost.ReloadShellContextAsync(settings).GetAwaiter().GetResult();
 
@@ -98,7 +125,7 @@ namespace OrchardCore.Distributed.Core.Services
                                 }
                             }
 
-                            else if (tokens[1] == "Initialize")
+                            else if (tokens[1] == "Initialize" && settings != null)
                             {
                                 // Set the tenant state to "Initializing" waiting for a new 'Reload' event.
                                 using (var scope = _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult())
@@ -161,7 +188,7 @@ namespace OrchardCore.Distributed.Core.Services
             deferredTaskEngine?.AddTask(async context =>
             {
                 // Shell events are always published using the 'Default' tenant.
-                using (var changedScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
                 {
                     // If the default shell has been reloaded.
                     if (tenant == ShellHelper.DefaultShellName)
@@ -170,9 +197,15 @@ namespace OrchardCore.Distributed.Core.Services
                         await _shellHost.ShellEventAsync(e => e.InitializeAsync());
                     }
 
-                    // Publish the shell 'Reload' event message.
-                    var messageBus = changedScope.ServiceProvider.GetService<IMessageBus>();
-                    await (messageBus?.PublishAsync("Shell", tenant + ":Reload") ?? Task.CompletedTask);
+                    if (_shellHost.TryGetSettings(tenant, out var tenantSettings))
+                    {
+                        var json = JObject.FromObject(tenantSettings).ToString(Formatting.None);
+                        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+
+                        // Publish the shell 'Reload' event message.
+                        var messageBus = scope.ServiceProvider.GetService<IMessageBus>();
+                        await (messageBus?.PublishAsync("Shell", tenant + ":Reload:" + encoded) ?? Task.CompletedTask);
+                    }
                 }
             }, order: 100);
 

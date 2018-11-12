@@ -117,11 +117,10 @@ namespace OrchardCore.Distributed
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataProtection().Services.Configure<KeyManagementOptions>(options =>
+            services.Configure<KeyManagementOptions>(options =>
             {
-                options.XmlRepository = new RedisXmlRepository(() =>
-                    _httpContextAccessor.HttpContext.RequestServices
-                        .GetRequiredService<IRedisClient>().Database,
+                options.XmlRepository = new RedisXmlRepository(() => 
+                    _httpContextAccessor.HttpContext.RequestServices.GetService<IRedisClient>().Database,
                     _shellSettings.Name + ":DataProtection-Keys");
             });
         }
