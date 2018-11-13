@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -72,47 +73,44 @@ namespace OrchardCore.Distributed.Core.Services
                         {
                             var tokens = message.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
-                            // Validate the message {tenant}:{event}[:{settings}]
-                            if (tokens.Length < 2)
+                            // {tenant}:{event}:{settings}
+                            if (tokens.Length != 3)
                             {
                                 return;
                             }
 
-                            // Try to load the last settings of the specified tenant.
-                            _shellSettingsManager.TryLoadSettings(tokens[0], out var settings);
-
+                            // Ensures a valid context for the handler.
                             if (_httpContextAccessor.HttpContext == null)
                             {
                                 _httpContextAccessor.HttpContext = new DefaultHttpContext();
                             }
 
-                            if (tokens[1] == "Reload" && tokens.Length > 2)
+                            // Get the current settings of the specified tenant.
+                            _shellHost.TryGetSettings(tokens[0], out var settings);
+
+                            if (tokens[1] == "Reload")
                             {
-                                ShellSettings shellSettings = null;
+                                // Decode the tenant settings from the message.
+                                var json = Encoding.UTF8.GetString(Convert.FromBase64String(tokens[2]));
+                                var decoded = JObject.Parse(json).ToObject<ShellSettings>();
 
-                                try
+                                // Check if need to be synced.
+                                if (!decoded.Equals(settings))
                                 {
-                                    // Retrieve the tenant settings from the message.
-                                    var json = Encoding.UTF8.GetString(Convert.FromBase64String(tokens[2]));
-                                    shellSettings = JObject.Parse(json).ToObject<ShellSettings>();
-                                }
-                                catch { }
+                                    // Sync settings.
+                                    settings = decoded;
 
-                                // Settings may not be in sync on a non shared storage.
-                                if (shellSettings != null && !shellSettings.Equals(settings))
-                                {
                                     try
                                     {
-                                        // Sync tenant settings.
-                                        settings = shellSettings;
+                                        // Not yet multi-threads (or processes) safe.
                                         _shellSettingsManager.SaveSettings(settings);
                                     }
-                                    catch { }
-                                }
 
-                                if (settings == null)
-                                {
-                                    return;
+                                    catch (IOException)
+                                    {
+                                        // 'Setting.txt' may be own by another process or
+                                        // already exists when trying to create a new one.
+                                    }
                                 }
 
                                 // Reload the shell of the specified tenant.
@@ -124,17 +122,13 @@ namespace OrchardCore.Distributed.Core.Services
                                     // Invoke the 'Initialize' event to subscribe again to the 'Shell' channel.
                                     _shellHost.ShellEventAsync(e => e.InitializeAsync()).GetAwaiter().GetResult();
                                 }
-
-                                return;
                             }
 
-                            if (tokens[1] == "Initialize" && settings != null)
+                            else if (tokens[1] == "Initialize")
                             {
-                                // Set the tenant state to "Initializing" waiting for a new 'Reload' event.
-                                using (var scope = _shellHost.GetScopeAsync(settings).GetAwaiter().GetResult())
+                                if (settings != null)
                                 {
-                                    var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
-                                    shellSettings.State = TenantState.Initializing;
+                                    settings.State = TenantState.Initializing;
                                 }
                             }
                         });
@@ -155,7 +149,7 @@ namespace OrchardCore.Distributed.Core.Services
         public Task InitializeAsync(string tenant)
         {
             // Publish the shell 'Initialize' event message.
-            return (_messageBus?.PublishAsync("Shell", tenant + ":Initialize") ?? Task.CompletedTask);
+            return (_messageBus?.PublishAsync("Shell", tenant + ":Initialize:_") ?? Task.CompletedTask);
         }
 
         /// <summary>
@@ -204,17 +198,15 @@ namespace OrchardCore.Distributed.Core.Services
                     {
                         var messageBus = scope.ServiceProvider.GetService<IMessageBus>();
 
-                        if (messageBus == null)
+                        if (messageBus != null)
                         {
-                            return;
+                            // Encode the tenant settings to be part of the message.
+                            var json = JObject.FromObject(shellSettings).ToString(Formatting.None);
+                            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+
+                            // Publish the shell 'Reload' event message.
+                            await (messageBus.PublishAsync("Shell", tenant + ":Reload:" + encoded) ?? Task.CompletedTask);
                         }
-
-                        // Encode the tenant settings to be part of the message.
-                        var json = JObject.FromObject(shellSettings).ToString(Formatting.None);
-                        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
-
-                        // Publish the shell 'Reload' event message.
-                        await (messageBus.PublishAsync("Shell", tenant + ":Reload:" + encoded) ?? Task.CompletedTask);
                     }
                 }
             }, order: 100);
