@@ -66,7 +66,7 @@ The following methods are available from the Razor helper.
 ## GraphQL
 
 The contents module provides a feature to provide GraphQL queries for content items.
-For more information about how to send GraphQL queries, please refer to [this section](OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md).
+For more information about how to send GraphQL queries, please refer to [this section](../OrchardCore.Apis.GraphQL/README.md).
 
 ### Content Type Queries
 
