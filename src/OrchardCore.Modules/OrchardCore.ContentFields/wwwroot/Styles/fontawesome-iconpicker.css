@@ -2,10 +2,9 @@
  * Font Awesome Icon Picker
  * https://farbelous.github.io/fontawesome-iconpicker/
  *
- * Originally written by (c) 2016 Javi Aguilar
- * Licensed under the MIT License
- * https://github.com/farbelous/fontawesome-iconpicker/blob/master/LICENSE
- *
+ * @author Javi Aguilar, itsjavi.com
+ * @license MIT License
+ * @see https://github.com/farbelous/fontawesome-iconpicker/blob/master/LICENSE
  */
 .iconpicker-popover.popover {
   position: absolute;
@@ -142,7 +141,7 @@
   bottom: 1px;
   margin-left: -10px;
   border-bottom-width: 0;
-  border-top-color: #ffffff;
+  border-top-color: #fff;
 }
 .iconpicker-popover.popover.topLeft > .arrow {
   left: 8px;
@@ -170,7 +169,7 @@
   left: 1px;
   bottom: -10px;
   border-left-width: 0;
-  border-right-color: #ffffff;
+  border-right-color: #fff;
 }
 .iconpicker-popover.popover.rightTop > .arrow {
   top: auto;
@@ -198,7 +197,7 @@
   top: 1px;
   margin-left: -10px;
   border-top-width: 0;
-  border-bottom-color: #ffffff;
+  border-bottom-color: #fff;
 }
 .iconpicker-popover.popover.bottomLeft > .arrow {
   left: 8px;
@@ -225,7 +224,7 @@
   content: " ";
   right: 1px;
   border-right-width: 0;
-  border-left-color: #ffffff;
+  border-left-color: #fff;
   bottom: -10px;
 }
 .iconpicker-popover.popover.leftBottom > .arrow {
@@ -290,7 +289,7 @@
   cursor: pointer;
   border-radius: 3px;
   font-size: 14px;
-  box-shadow: 0 0 0 1px #dddddd;
+  box-shadow: 0 0 0 1px #ddd;
   color: inherit;
   /*&:nth-child(4n+4) {
         margin-right: 0;
@@ -300,7 +299,7 @@
     }*/
 }
 .iconpicker .iconpicker-item:hover:not(.iconpicker-selected) {
-  background-color: #eeeeee;
+  background-color: #eee;
 }
 .iconpicker .iconpicker-item.iconpicker-selected {
   box-shadow: none;
