@@ -4,6 +4,6 @@ namespace OrchardCore.Lucene.Services
 {
     public interface ILuceneAnalyzerProviderManager
     {        
-        ILuceneAnalyzerProvider GetLuceneAnalyzerProvider(string key = "");
+        ILuceneAnalyzerProvider GetLuceneAnalyzerProvider(string key);
     }
 }

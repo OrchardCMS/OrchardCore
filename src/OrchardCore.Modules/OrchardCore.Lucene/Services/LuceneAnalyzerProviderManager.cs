@@ -13,7 +13,7 @@ namespace OrchardCore.Lucene.Services
             _luceneAnalyzerProviders = luceneAnalyzerProviders;
         }
 
-        public ILuceneAnalyzerProvider GetLuceneAnalyzerProvider(string key = "")
+        public ILuceneAnalyzerProvider GetLuceneAnalyzerProvider(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
