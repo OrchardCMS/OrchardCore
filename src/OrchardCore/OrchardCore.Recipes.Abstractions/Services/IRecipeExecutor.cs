@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services
@@ -6,5 +6,6 @@ namespace OrchardCore.Recipes.Services
     public interface IRecipeExecutor
     {
         Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment);
+        Task<string> ExecuteMigrationAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment);
     }
 }

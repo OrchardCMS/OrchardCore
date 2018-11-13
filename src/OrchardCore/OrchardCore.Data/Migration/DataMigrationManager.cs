@@ -106,6 +106,12 @@ namespace OrchardCore.Data.Migration
                     uninstallMethod.Invoke(migration, new object[0]);
                 }
 
+                var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
+                if (uninstallAsyncMethod != null)
+                {
+                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
+                }
+
                 if (dataMigrationRecord == null)
                 {
                     continue;
@@ -186,6 +192,14 @@ namespace OrchardCore.Data.Migration
                         {
                             current = (int)createMethod.Invoke(migration, new object[0]);
                         }
+
+                        // try to resolve a CreateAsync method
+
+                        var createAsyncMethod = GetCreateAsyncMethod(migration);
+                        if (createAsyncMethod != null)
+                        {
+                            current = await (Task<int>)createAsyncMethod.Invoke(migration, new object[0]);
+                        }
                     }
 
                     var lookupTable = CreateUpgradeLookupTable(migration);
@@ -197,7 +211,14 @@ namespace OrchardCore.Data.Migration
                             _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
                         }
 
-                        current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                        if (lookupTable[current].Async)
+                        {
+                            current = await (Task<int>)lookupTable[current].Method.Invoke(migration, new object[0]);
+                        }
+                        else
+                        {
+                            current = (int)lookupTable[current].Method.Invoke(migration, new object[0]);
+                        }
                     }
 
                     // if current is 0, it means no upgrade/create method was found or succeeded
@@ -239,18 +260,13 @@ namespace OrchardCore.Data.Migration
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
                     .ToList();
 
-            //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {
-            //    migration.SchemaBuilder = new SchemaBuilder(_interpreter, migration.Feature.Descriptor.Extension.Id, s => s.Replace(".", "_") + "_");
-            //    migration.ContentDefinitionManager = _contentDefinitionManager;
-            //}
-
             return migrations;
         }
 
         /// <summary>
         /// Create a list of all available Update methods from a data migration class, indexed by the version number
         /// </summary>
-        private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
+        private static Dictionary<int, UpdateMethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
         {
             return dataMigration
                 .GetType()
@@ -260,17 +276,28 @@ namespace OrchardCore.Data.Migration
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
-        private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo mi)
+        private static Tuple<int, UpdateMethodInfo> GetUpdateMethod(MethodInfo mi)
         {
-            const string updatefromPrefix = "UpdateFrom";
+            const string updateFromPrefix = "UpdateFrom";
+            const string asyncSuffix = "Async";
+            var isAsync = false;
 
-            if (mi.Name.StartsWith(updatefromPrefix))
+            if (mi.Name.StartsWith(updateFromPrefix))
             {
-                var version = mi.Name.Substring(updatefromPrefix.Length);
-                int versionValue;
-                if (int.TryParse(version, out versionValue))
+                string version;
+                if (mi.Name.EndsWith(asyncSuffix))
                 {
-                    return new Tuple<int, MethodInfo>(versionValue, mi);
+                    isAsync = true;
+                    version = mi.Name.Substring(updateFromPrefix.Length, mi.Name.Length - updateFromPrefix.Length - asyncSuffix.Length);
+                }
+                else
+                {
+                    version = mi.Name.Substring(updateFromPrefix.Length);
+                }
+
+                if (Int32.TryParse(version, out var versionValue))
+                {
+                    return new Tuple<int, UpdateMethodInfo>(versionValue, new UpdateMethodInfo { Method = mi, Async = isAsync });
                 }
             }
 
@@ -292,12 +319,40 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
+        /// Returns the CreateAsync method from a data migration class if it's found
+        /// </summary>
+        private static MethodInfo GetCreateAsyncMethod(IDataMigration dataMigration)
+        {
+            var methodInfo = dataMigration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
+            if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+            {
+                return methodInfo;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Returns the Uninstall method from a data migration class if it's found
         /// </summary>
         private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
         {
             var methodInfo = dataMigration.GetType().GetMethod("Uninstall", BindingFlags.Public | BindingFlags.Instance);
             if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            {
+                return methodInfo;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the UninstallAsync method from a data migration class if it's found
+        /// </summary>
+        private static MethodInfo GetUninstallAsyncMethod(IDataMigration dataMigration)
+        {
+            var methodInfo = dataMigration.GetType().GetMethod("UninstallAsync", BindingFlags.Public | BindingFlags.Instance);
+            if (methodInfo != null && methodInfo.ReturnType == typeof(Task))
             {
                 return methodInfo;
             }
@@ -325,6 +380,12 @@ namespace OrchardCore.Data.Migration
                     _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }
+        }
+
+        private class UpdateMethodInfo
+        {
+            public MethodInfo Method { get; set; }
+            public bool Async { get; set; }
         }
     }
 }

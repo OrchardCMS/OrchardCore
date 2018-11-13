@@ -11,5 +11,6 @@ namespace OrchardCore.Recipes.Models
         public JObject Step { get; set; }
         public RecipeDescriptor RecipeDescriptor { get; set; }
         public IEnumerable<RecipeDescriptor> InnerRecipes { get; set; }
+        public bool IsMigration { get; set; }
     }
 }

@@ -1,42 +1,38 @@
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Data.Migration;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Menu
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private readonly IRecipeReader _recipeReader;
+        private readonly IRecipeExecutor _recipeExecutor;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IRecipeReader recipeReader,
+            IRecipeExecutor recipeExecutor,
+            IHostingEnvironment hostingEnvironment)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _recipeReader = recipeReader;
+            _recipeExecutor = recipeExecutor;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Menu", menu => menu
-                .Draftable()
-                .Versionable()
-                .Creatable()
-                .Listable()
-                .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
-                .WithPart("MenuPart", part => part.WithPosition("3"))
-                .WithPart("MenuItemsListPart", part => part.WithPosition("4"))
-            );
+            var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(
+                "Areas/OrchardCore.Menu/Migrations/menu.recipe.json",
+                _hostingEnvironment.ContentRootFileProvider);
 
-            _contentDefinitionManager.AlterTypeDefinition("LinkMenuItem", menu => menu
-                .WithPart("LinkMenuItemPart")
-                .Stereotype("MenuItem")
-            );
+            var executionId = Guid.NewGuid().ToString("n");
+
+            await _recipeExecutor.ExecuteMigrationAsync(executionId, recipeDescriptor, new object());
 
             return 1;
         }
-    }
-
-    class AliasPartSettings
-    {
-        public string Pattern { get; set; }
     }
 }

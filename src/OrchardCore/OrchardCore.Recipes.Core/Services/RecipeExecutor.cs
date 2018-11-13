@@ -51,7 +51,17 @@ namespace OrchardCore.Recipes.Services
         public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
-        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
+        public Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
+        {
+            return ExecuteAsync(executionId, recipeDescriptor, environment, false);
+        }
+
+        public Task<string> ExecuteMigrationAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
+        {
+            return ExecuteAsync(executionId, recipeDescriptor, environment, true);
+        }
+
+        private async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, bool isMigration)
         {
             await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
 
@@ -94,7 +104,8 @@ namespace OrchardCore.Recipes.Services
                                                 Step = child,
                                                 ExecutionId = executionId,
                                                 Environment = environment,
-                                                RecipeDescriptor = recipeDescriptor
+                                                RecipeDescriptor = recipeDescriptor,
+                                                IsMigration = isMigration
                                             };
 
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
@@ -157,11 +168,11 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var (scope, shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
+            (var scope, var shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
 
             using (scope)
             {
-                if (!shellContext.IsActivated)
+                if (!recipeStep.IsMigration && !shellContext.IsActivated)
                 {
                     using (var activatingScope = shellContext.CreateScope())
                     {
