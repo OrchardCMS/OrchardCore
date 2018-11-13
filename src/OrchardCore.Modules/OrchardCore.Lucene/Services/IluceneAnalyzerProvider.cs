@@ -10,7 +10,7 @@ namespace OrchardCore.Lucene.Services
         /// <summary>
         /// Use the tenant's culture
         /// </summary>
-        string Key { get; set; }
+        string Key { get; }
         LuceneVersion Version { get; }
         string AnalyzerName { get; }
         ILuceneAnalyzer LuceneAnalyzer();

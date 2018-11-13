@@ -8,7 +8,7 @@ namespace OrchardCore.Lucene.Services
 {
     public class DefaultLuceneAnalyzerProvider : ILuceneAnalyzerProvider
     {
-        public string Key { get; set; }
+        public string Key { get; }
 
         public string AnalyzerName { get; } = "standardanalyzer";
 
