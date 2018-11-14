@@ -8,9 +8,7 @@ namespace OrchardCore.Yaml
 {
     public class YamlConfigurationProvider : FileConfigurationProvider
     {
-        public const char Separator = ':';
         public const string EmptyValue = "null";
-        public const char ThemesSeparator = ';';
 
         public YamlConfigurationProvider(FileConfigurationSource source) : base(source)
         {
@@ -103,7 +101,7 @@ namespace OrchardCore.Yaml
             var docMapping = new YamlMappingNode();
             foreach (var item in Data.Skip(1))
             {
-                docMapping.Add(item.Key.Replace((rootNodeName + ":"), string.Empty), (item.Value ?? EmptyValue));
+                docMapping.Add(item.Key.Replace((rootNodeName + ':'), String.Empty), (item.Value ?? EmptyValue));
                 // TODO: If contains ":" then Mapping node etc
             }
 

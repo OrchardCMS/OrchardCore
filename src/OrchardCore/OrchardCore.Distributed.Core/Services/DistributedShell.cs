@@ -116,6 +116,7 @@ namespace OrchardCore.Distributed.Core.Services
                             {
                                 if (settings != null)
                                 {
+                                    // Set the tenant state to "Initializing".
                                     settings.State = TenantState.Initializing;
                                 }
                             }
@@ -193,7 +194,7 @@ namespace OrchardCore.Distributed.Core.Services
                             var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
                             // Publish the shell 'Reload' event message.
-                            await (messageBus.PublishAsync("Shell", tenant + ":Reload:" + encoded) ?? Task.CompletedTask);
+                            await messageBus.PublishAsync("Shell", tenant + ":Reload:" + encoded);
                         }
                     }
                 }
