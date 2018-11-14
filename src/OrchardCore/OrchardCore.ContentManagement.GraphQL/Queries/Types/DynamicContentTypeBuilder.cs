@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public class DynamicContentTypeBuilder: IContentTypeBuilder
+    public class DynamicContentTypeBuilder : IContentTypeBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -27,7 +27,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 // Check if another builder has already added a field for this part.
                 if (contentItemType.HasField(partName)) continue;
-                
+
+                // This builder only handles parts with fields.
+                if (!part.PartDefinition.Fields.Any()) continue;
+
                 // When the part has the same name as the content type, it is the main part for
                 // the content type's fields so we collapse them into the parent type.
                 if (part.ContentTypeDefinition.Name == part.PartDefinition.Name)
