@@ -41,6 +41,9 @@ namespace OrchardCore.Liquid
             services.AddScoped<ISlugService, SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
+            services.AddScoped<ILiquidTemplateEventHandler, ConfigurationLiquidTemplateEventHandler>();
+            services.AddScoped<ILiquidTemplateEventHandler, HostingEnvironmentLiquidTemplateEventHandler>();
+
             services.AddLiquidFilter<TimeZoneFilter>("local");
             services.AddLiquidFilter<SlugifyFilter>("slugify");
             services.AddLiquidFilter<ContainerFilter>("container");
