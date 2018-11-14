@@ -27,7 +27,7 @@ markdown_extensions:
       template: 'default'
 
 # Page tree
-pages:
+nav:
     - About Orchard Core: index.md
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
