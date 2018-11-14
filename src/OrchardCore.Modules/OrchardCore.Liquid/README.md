@@ -284,8 +284,8 @@ The following properties are available on the `HostingEnvironment` object:
 | `EnvironmentName` | see [`IHostingEnvironment.EnvironmentName`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.environmentname) |
 | `WebRootPath` | see [`IHostingEnvironment.WebRootPath`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.webrootpath) |
 | `IsDevelopment` | see [`IHostingEnvironmentExtensions.IsDevelopment()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isdevelopment) |
-| `IsProduction` | see [`IHostingEnvironment.IsProduction()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isproduction) |
-| `IsStaging` | see [`IHostingEnvironment.IsStaging()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isstaging) |
+| `IsProduction` | see [`IHostingEnvironmentExtensions.IsProduction()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isproduction) |
+| `IsStaging` | see [`IHostingEnvironmentExtensions.IsStaging()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isstaging) |
 
 ## Shape Filters
 
