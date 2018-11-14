@@ -1,0 +1,216 @@
+@using Newtonsoft.Json
+@model CorsSettingsViewModel
+
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot" depends-on="jQuery"></script>
+
+<div id="corsAdmin">
+    <input type="hidden" name="ISite.Policies" id="ISite_Policies" value='@Html.Raw(JsonConvert.SerializeObject(Model.Policies))' />
+    <h1>@T["CORS Settings"]</h1>
+    <span class="subscript">@T["CORS stands for Cross-Origin Request more information can be found here"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
+    <nav class="admin-toolbar">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <button class="btn btn-primary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
+            </li>
+        </ul>
+    </nav>
+
+    <ul class="list-group" v-for="policy in policies" v-cloak>
+        <li class="list-group-item">
+            <div class="properties">
+                <div class="related float-xs-right">
+                    <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">Edit</button>
+                    <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">Delete</button>
+                </div>
+                {{ policy.Name }}
+            </div>
+        </li>
+    </ul>
+
+    <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:ok="updatePolicy" v-on:cancel="cancelUpdate" />
+</div>
+
+<script type="text/x-template" id="policy-details">
+    <div>
+        <h3>{{ policy.Name }}</h3>
+
+        <fieldset class="form-group">
+            <label>@T["Policy name"]</label>
+            <input v-model="policy.Name" placeholder="edit me" type="text" class="form-control" />
+            <span class="hint">@T["Name of the policy"]</span>
+        </fieldset>
+
+        <ul class="nav nav-tabs" id="profileDetailsTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="credentials-tab" data-toggle="tab" href="#credentials" aria-controls="credentials" aria-selected="true">@T["Credentials"]</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="origins-tab" data-toggle="tab" href="#origins" aria-controls="origins" aria-selected="false">@T["Origins"]</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="headers-tab" data-toggle="tab" href="#headers" aria-controls="headers" aria-selected="false">@T["Headers"]</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="methods-tab" data-toggle="tab" href="#methods" aria-controls="methods" aria-selected="false">@T["Methods"]</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="corsTabContent">
+            <div class="tab-pane fade show active" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                <fieldset class="form-group">
+                    <div class="form-check">
+                        <label><input class="form-check-input" v-model="policy.AllowCredentials" type="checkbox" />@T["Allow credentials"]</label>
+                    </div>
+                    <span class="hint">@T["Allows credentials to be transported in requests."]</span>
+                </fieldset>
+            </div>
+
+            <div class="tab-pane fade" id="origins" role="tabpanel" aria-labelledby="origins-tab">
+                <fieldset class="form-group">
+                    <div class="form-check">
+                        <label>
+                            <input class="form-check-input" v-model="policy.AllowAnyOrigin" type="checkbox" />
+                            @T["Allow any origin"]
+                        </label>
+                    </div>
+                    <span class="hint">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
+                </fieldset>
+
+                <options-list v-bind:options="policy.AllowedOrigins" optionType="@T["Origin"]" title="@T["Allowed origins"]" subTitle="" />
+            </div>
+
+            <div class="tab-pane fade" id="headers" role="tabpanel" aria-labelledby="headers-tab">
+                <fieldset class="form-group">
+                    <div class="form-check">
+                        <label>
+                            <input class="form-check-input" v-model="policy.AllowAnyHeader" type="checkbox" />
+                            @T["Allow any header"]
+                        </label>
+                    </div>
+                    <span class="hint">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
+                </fieldset>
+
+                <options-list v-bind:options="policy.AllowedHeaders" optionType="@T["Header"]" title="@T["Allowed headers"]" subTitle="" />
+            </div>
+
+            <div class="tab-pane fade" id="methods" role="tabpanel" aria-labelledby="methods-tab">
+                <fieldset class="form-group">
+                    <div class="form-check">
+                        <label><input class="form-check-input" v-model="policy.AllowAnyMethod" type="checkbox" />@T["Allow any method"]</label>
+                    </div>
+                    <span class="hint">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
+                </fieldset>
+
+                <options-list v-bind:options="policy.AllowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
+            </div>
+        </div>
+
+        <fieldset class="form-group">
+            <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">Ok</button>
+            <button type="button" class="btn btn-warning" v-on:click="$emit('cancel')">Cancel</button>
+        </fieldset>
+    </div>
+</script>
+
+<script type="text/x-template" id="options-list">
+    <div>
+        <label>{{ title }}</label>
+        <span class="hint" v-if="subTitle">{{ subTitle }}</span>
+        <nav class="admin-toolbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <div class="row">
+                        <div class="col">
+                            <input v-model="newOption" type="text" class="form-control" />
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-primary btn-sm" v-on:click="addOption(newOption)">@T["Add"] {{ optionType }}</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <ul class="list-group" v-for="option in options">
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="related float-xs-right">
+                        <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteOption(option)">@T["Delete"]</button>
+                    </div>
+                    {{ option }}
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</script>
+
+<script at="Foot">
+    var optionsList = Vue.component('options-list',
+        {
+            props: ['options', 'optionType', 'title', 'subTitle'],
+            template: '#options-list',
+            data: function() {
+                return {
+                    'newOption' : ''
+                };
+            },
+            methods: {
+                addOption: function(value) {
+                    this.options.push(value);
+                },
+                deleteOption: function(value) {
+                    this.options.splice($.inArray(value[0], this.options), 1);
+                }
+            }
+        });
+
+    var policyDetails = Vue.component('policy-details',
+        {
+            components: { optionsList },
+            props: ['policy'],
+            template: '#policy-details'
+        });
+
+    var corsApp = new Vue({
+        el: '#corsAdmin',
+        components: { policyDetails, optionsList },
+        data: {
+            policies: @Html.Raw(JsonConvert.SerializeObject(Model.Policies)),
+            selectedPolicy: null
+        },
+        methods: {
+            newPolicy: function() {
+                this.selectedPolicy = {
+                    Name: 'New policy',
+                    AllowedOrigins: [],
+                    AllowAnyOrigin: true,
+                    AllowedMethods: [],
+                    AllowAnyMethod: true,
+                    AllowedHeaders: [],
+                    AllowAnyHeader: true,
+                    AllowCredentials : true
+                };
+            },
+            editPolicy: function (policy) {
+                this.selectedPolicy = Object.assign({}, policy);
+            },
+            deletePolicy: function(policy, event) {
+                this.selectedPolicy = null;
+                var policyToRemove = this.policies.filter(function (item) { return item.Name === policy.Name; });
+                if (policyToRemove.length > 0)
+                    this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
+                document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
+                event.stopPropagation();
+            },
+            updatePolicy: function(policy, event) {
+                this.deletePolicy(policy, event);
+                this.policies.push(policy);
+                document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
+            },
+            cancelUpdate: function() {
+                this.selectedPolicy = null;
+            }
+        }
+    });
+</script>
