@@ -61,7 +61,9 @@ namespace OrchardCore.Yaml
 
                 // We could think about a retry logic to honour each "transaction" and preserve some order.
                 // But here we create a new settings file, so, anyway, only one concurrent writer will win.
-                // Another issue is when reading the file on startup while another instance is creating it.
+
+                // Another potential issue is when one instance is reading the settings file while another
+                // instance is re-creating it. But currently this can only occur when an instance startups.
             }
 
             try
