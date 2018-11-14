@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 if (contentItemType.HasField(partName)) continue;
                 
                 // When the part has the same name as the content type, it is the main part for
-                // the content type's fields so we collpase them into the parent type.
+                // the content type's fields so we collapse them into the parent type.
                 if (part.ContentTypeDefinition.Name == part.PartDefinition.Name)
                 {
                     foreach (var field in part.PartDefinition.Fields)
