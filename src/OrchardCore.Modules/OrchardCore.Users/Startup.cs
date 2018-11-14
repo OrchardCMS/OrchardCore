@@ -105,9 +105,6 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-
-            services.AddScoped<IShapeTableProvider, AfterLoginShapes>();
-            services.AddShapeAttributes<AfterLoginShapes>();
         }
     }
 
@@ -130,9 +127,6 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
-
-            services.AddScoped<IShapeTableProvider, AfterRegisterShapes>();
-            services.AddShapeAttributes<AfterRegisterShapes>();
         }
     }
 
@@ -176,9 +170,6 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
-
-            services.AddScoped<IShapeTableProvider, AfterForgotPasswordShapes>();
-            services.AddShapeAttributes<AfterForgotPasswordShapes>();
         }
     }
 }

@@ -5,7 +5,11 @@ namespace OrchardCore.ReCaptcha
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageReCaptchaSettings = new Permission("ManageReCaptchaSettings", "Manage ReCaptcha Settings");
+        public static readonly Permission ManageReCaptchaSettings = 
+            new Permission(
+                "ManageReCaptchaSettings", 
+                "Manage ReCaptcha Settings"
+                );
 
         public IEnumerable<Permission> GetPermissions()
         {

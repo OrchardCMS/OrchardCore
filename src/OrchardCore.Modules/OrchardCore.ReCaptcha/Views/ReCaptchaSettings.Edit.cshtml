@@ -1,5 +1,4 @@
-@using OrchardCore.ReCaptcha.ViewModels
-@model OrchardCore.ReCaptcha.ViewModels.ReCaptchaSettingsViewModel
+@model ReCaptchaSettingsViewModel
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
@@ -16,5 +15,26 @@
 </fieldset>
 
 <fieldset class="form-group">
-    <span class="hint">@T["Get your NoCaptcha at"] <a href="https://developers.google.com/recaptcha/" target="_blank">https://developers.google.com/recaptcha/</a></span>
+    <div class="form-check">
+        <label><input class="form-check-input" asp-for="HardenLoginProcess" type="checkbox" />@T["Harden login process"]</label>
+    </div>
+    <span class="hint">@T["Shows a reCaptcha after 5 failed login attempts."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label><input class="form-check-input" asp-for="HardenForgotPasswordProcess" type="checkbox" />@T["Harden password recovery process"]</label>
+    </div>
+    <span class="hint">@T["Shows a reCaptcha when a user attempts to recover his password."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label><input class="form-check-input" asp-for="HardenRegisterProcess"  type="checkbox" />@T["Harden registration process"]</label>
+    </div>
+    <span class="hint">@T["Shows a reCaptcha when a user tries to register."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <span class="hint">@T["Get your reCaptcha at"] <a href="https://developers.google.com/recaptcha/" target="_blank">https://developers.google.com/recaptcha/</a></span>
 </fieldset>
