@@ -31,22 +31,38 @@ namespace OrchardCore.Yaml
 
         public virtual void Commit()
         {
-            if (File.Exists(Source.Path))
+            FileStream newConfigFileStream = null;
+            try
             {
-                File.Delete(Source.Path);
+                if (File.Exists(Source.Path))
+                {
+                    File.Delete(Source.Path);
+                }
+
+                var fileInfo = new FileInfo(Source.Path);
+
+                if (!fileInfo.Directory.Exists)
+                {
+                    Directory.CreateDirectory(fileInfo.Directory.FullName);
+                }
+
+                // TODO: Revisit to make fully atomic.
+                // https://github.com/aspnet/Configuration/pull/147/files
+
+                newConfigFileStream = new FileStream(Source.Path, FileMode.CreateNew);
             }
 
-            var fileInfo = new FileInfo(Source.Path);
-
-            if (!fileInfo.Directory.Exists)
+            catch (IOException)
             {
-                Directory.CreateDirectory(fileInfo.Directory.FullName);
-            }
-            
-            // TODO: Revisit to make fully atomic.
-            // https://github.com/aspnet/Configuration/pull/147/files
+                // The settings file may be own by another process or already exists when trying to create
+                // a new one. So, nothing more that we can do. Note: Other exceptions are normally thrown.
 
-            var newConfigFileStream = new FileStream(Source.Path, FileMode.CreateNew);
+                return;
+
+                // We could think about a retry logic to honour each "transaction" and preserve some order.
+                // But here we create a new settings file, so, anyway, only one concurrent writer will win.
+                // Another issue is when reading the file on startup while another instance is creating it.
+            }
 
             try
             {
@@ -88,7 +104,7 @@ namespace OrchardCore.Yaml
                 docMapping.Add(item.Key.Replace((rootNodeName + ":"), string.Empty), (item.Value ?? EmptyValue));
                 // TODO: If contains ":" then Mapping node etc
             }
-            
+
             var yamlStream = new YamlStream(
                 new YamlDocument(
                     new YamlMappingNode(
@@ -97,7 +113,7 @@ namespace OrchardCore.Yaml
                     )
                 )
             );
-            
+
             yamlStream.Save(outputWriter);
             outputWriter.Flush();
         }

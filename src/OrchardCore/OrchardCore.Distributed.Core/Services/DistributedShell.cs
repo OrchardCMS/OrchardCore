@@ -99,18 +99,7 @@ namespace OrchardCore.Distributed.Core.Services
                                 {
                                     // Sync settings.
                                     settings = decoded;
-
-                                    try
-                                    {
-                                        // Not yet multi-threads (or processes) safe.
-                                        _shellSettingsManager.SaveSettings(settings);
-                                    }
-
-                                    catch (IOException)
-                                    {
-                                        // 'Setting.txt' may be own by another process or
-                                        // already exists when trying to create a new one.
-                                    }
+                                    _shellSettingsManager.SaveSettings(settings);
                                 }
 
                                 // Reload the shell of the specified tenant.
