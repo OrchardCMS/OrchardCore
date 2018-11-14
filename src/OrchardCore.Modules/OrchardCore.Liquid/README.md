@@ -269,7 +269,7 @@ The following properties are available on the `Culture` object.
 
 Gives access to the host configuration, e.g. `Configuration["Logging:LogLevel:Default"]` or `Configuration.Sample`.
 
-The values returned are those defined in the appsettings.json and are access via the `[IConfiguration](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration)` interface.
+The values returned are those defined in the appsettings.json and are access via the [`IConfiguration`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration) interface.
 
 ### HostingEnvironment
 
@@ -279,13 +279,13 @@ The following properties are available on the `HostingEnvironment` object:
 
 | Property | Description |
 | -------- | ----------- |
-| `ApplicationName` | see `[IHostingEnvironment.ApplicationName](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.applicationname)` |
-| `ContentRootPath` | see `[IHostingEnvironment.ContentRootPath](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.contentrootpath)` |
-| `EnvironmentName` | see `[IHostingEnvironment.EnvironmentName](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.environmentname)` |
-| `WebRootPath` | see `[IHostingEnvironment.WebRootPath](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.webrootpath)` |
-| `IsDevelopment` | see `[IHostingEnvironmentExtensions.IsDevelopment()](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isdevelopment)` |
-| `IsProduction` | see `[IHostingEnvironment.IsProduction()](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isproduction)` |
-| `IsStaging` | see `[IHostingEnvironment.IsStaging()](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isstaging)` |
+| `ApplicationName` | see [`IHostingEnvironment.ApplicationName`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.applicationname) |
+| `ContentRootPath` | see [`IHostingEnvironment.ContentRootPath`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.contentrootpath) |
+| `EnvironmentName` | see [`IHostingEnvironment.EnvironmentName`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.environmentname) |
+| `WebRootPath` | see [`IHostingEnvironment.WebRootPath`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.ihostingenvironment.webrootpath) |
+| `IsDevelopment` | see [`IHostingEnvironmentExtensions.IsDevelopment()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isdevelopment) |
+| `IsProduction` | see [`IHostingEnvironment.IsProduction()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isproduction) |
+| `IsStaging` | see [`IHostingEnvironment.IsStaging()`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isstaging) |
 
 ## Shape Filters
 
