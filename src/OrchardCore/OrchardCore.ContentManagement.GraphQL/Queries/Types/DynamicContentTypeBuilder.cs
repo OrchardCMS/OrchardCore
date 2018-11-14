@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +23,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             foreach (var part in contentTypeDefinition.Parts)
             {
-                // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(part.Name)) continue;
+                var partName = part.Name;
 
-                // This builder only handles parts with fields.
-                if (!part.PartDefinition.Fields.Any()) continue;
+                // Check if another builder has already added a field for this part.
+                if (contentItemType.HasField(partName)) continue;
                 
                 // When the part has the same name as the content type, it is the main part for
                 // the content type's fields so we collpase them into the parent type.
@@ -50,11 +49,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
-                        part.Name,
+                        partName,
                         part.PartDefinition.Name,
                         resolve: context =>
                         {
-                            var nameToResolve = context.ReturnType.Name;
+                            var nameToResolve = partName;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
