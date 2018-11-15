@@ -1,13 +1,4 @@
 {
-  "name": "",
-  "displayName": "",
-  "description": "",
-  "author": "",
-  "website": "",
-  "version": "",
-  "issetuprecipe": false,
-  "categories": [],
-  "tags": [],
   "steps": [
     {
       "name": "ContentDefinition",
@@ -18,10 +9,7 @@
           "Settings": {
             "Draftable": "True",
             "Versionable": "True",
-            "Creatable": "False",
-            "Listable": "True",
-            "Securable": "False",
-            "Stereotype": null
+            "Listable": "True"
           },
           "ContentTypePartDefinitionRecords": [
             {
@@ -62,11 +50,6 @@
           "DisplayName": "Link Menu Item",
           "Settings": {
             "Stereotype": "MenuItem",
-            "Creatable": "False",
-            "Listable": "False",
-            "Draftable": "False",
-            "Versionable": "False",
-            "Securable": "False"
           },
           "ContentTypePartDefinitionRecords": [
             {
