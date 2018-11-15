@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Data.Migration;
 using OrchardCore.Recipes.Services;
 
@@ -8,29 +6,16 @@ namespace OrchardCore.Menu
 {
     public class Migrations : DataMigration
     {
-        private readonly IRecipeReader _recipeReader;
-        private readonly IRecipeExecutor _recipeExecutor;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IRecipeMigrator _recipeMigrator;
 
-        public Migrations(
-            IRecipeReader recipeReader,
-            IRecipeExecutor recipeExecutor,
-            IHostingEnvironment hostingEnvironment)
+        public Migrations(IRecipeMigrator recipeMigrator)
         {
-            _recipeReader = recipeReader;
-            _recipeExecutor = recipeExecutor;
-            _hostingEnvironment = hostingEnvironment;
+            _recipeMigrator = recipeMigrator;
         }
 
         public async Task<int> CreateAsync()
         {
-            var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(
-                "Areas/OrchardCore.Menu/Migrations/menu.recipe.json",
-                _hostingEnvironment.ContentRootFileProvider);
-
-            var executionId = Guid.NewGuid().ToString("n");
-
-            await _recipeExecutor.ExecuteMigrationAsync(executionId, recipeDescriptor, new object());
+            await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
             return 1;
         }

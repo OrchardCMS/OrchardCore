@@ -8,14 +8,7 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeReader : IRecipeReader
     {
-        public Task<RecipeDescriptor> GetRecipeDescriptor(string recipeFilePath, IFileProvider recipeFileProvider)
-        {
-            var recipeFileInfo = recipeFileProvider.GetFileInfo(recipeFilePath);
-
-            return GetRecipeDescriptor(recipeFilePath, recipeFileInfo, recipeFileProvider);
-        }
-
-        public Task<RecipeDescriptor> GetRecipeDescriptor(string recipeFilePath, IFileInfo recipeFileInfo, IFileProvider recipeFileProvider)
+        public Task<RecipeDescriptor> GetRecipeDescriptor(string recipeBasePath, IFileInfo recipeFileInfo, IFileProvider recipeFileProvider)
         {
             // TODO: Try to optimize by only reading the required metadata instead of the whole file
 
@@ -29,7 +22,7 @@ namespace OrchardCore.Recipes.Services
                         var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(jsonReader);
 
                         recipeDescriptor.FileProvider = recipeFileProvider;
-                        recipeDescriptor.BasePath = recipeFilePath;
+                        recipeDescriptor.BasePath = recipeBasePath;
                         recipeDescriptor.RecipeFileInfo = recipeFileInfo;
 
                         return Task.FromResult(recipeDescriptor);

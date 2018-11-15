@@ -51,17 +51,7 @@ namespace OrchardCore.Recipes.Services
         public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
-        public Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
-        {
-            return ExecuteAsync(executionId, recipeDescriptor, environment, false);
-        }
-
-        public Task<string> ExecuteMigrationAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
-        {
-            return ExecuteAsync(executionId, recipeDescriptor, environment, true);
-        }
-
-        private async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, bool isMigration)
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
         {
             await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
 
@@ -104,8 +94,7 @@ namespace OrchardCore.Recipes.Services
                                                 Step = child,
                                                 ExecutionId = executionId,
                                                 Environment = environment,
-                                                RecipeDescriptor = recipeDescriptor,
-                                                IsMigration = isMigration
+                                                RecipeDescriptor = recipeDescriptor
                                             };
 
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
@@ -172,7 +161,7 @@ namespace OrchardCore.Recipes.Services
 
             using (scope)
             {
-                if (!recipeStep.IsMigration && !shellContext.IsActivated)
+                if (!recipeStep.RecipeDescriptor.RequireNewScope && !shellContext.IsActivated)
                 {
                     using (var activatingScope = shellContext.CreateScope())
                     {

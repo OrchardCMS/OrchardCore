@@ -1,4 +1,5 @@
 {
+  "requirenewscope": true,
   "steps": [
     {
       "name": "ContentDefinition",

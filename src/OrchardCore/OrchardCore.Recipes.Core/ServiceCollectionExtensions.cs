@@ -10,6 +10,7 @@ namespace OrchardCore.Recipes
             services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
             services.AddScoped<IRecipeExecutor, RecipeExecutor>();
+            services.AddScoped<IRecipeMigrator, RecipeMigrator>();
             services.AddScoped<IRecipeReader, RecipeReader>();
 
             return services;

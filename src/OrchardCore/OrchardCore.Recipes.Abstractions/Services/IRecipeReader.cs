@@ -6,8 +6,6 @@ namespace OrchardCore.Recipes.Services
 {
     public interface IRecipeReader
     {
-        Task<RecipeDescriptor> GetRecipeDescriptor(string recipeFilePath, IFileProvider fileProvider);
-
-        Task<RecipeDescriptor> GetRecipeDescriptor(string recipeFilePath, IFileInfo recipeFileInfo, IFileProvider fileProvider);
+        Task<RecipeDescriptor> GetRecipeDescriptor(string recipeBasePath, IFileInfo recipeFileInfo, IFileProvider fileProvider);
     }
 }
