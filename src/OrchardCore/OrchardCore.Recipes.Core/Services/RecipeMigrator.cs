@@ -34,7 +34,7 @@ namespace OrchardCore.Recipes.Services
             var recipeFilePath = Path.Combine(recipeBasePath, recipeFileName).Replace('\\', '/');
             var recipeFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(recipeFilePath);
             var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
-            recipeDescriptor.RequireNewScope = true;
+            recipeDescriptor.RequireNewScope = false;
 
             var executionId = Guid.NewGuid().ToString("n");
             return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());

@@ -161,7 +161,7 @@ namespace OrchardCore.Recipes.Services
 
             using (scope)
             {
-                if (!recipeStep.RecipeDescriptor.RequireNewScope && !shellContext.IsActivated)
+                if (recipeStep.RecipeDescriptor.RequireNewScope && !shellContext.IsActivated)
                 {
                     using (var activatingScope = shellContext.CreateScope())
                     {
