@@ -59,7 +59,6 @@ And here are the migration recipes referenced in the code above:
 
 ```json
 {
-    "requirenewscope": true,
     "steps": [
         {
           "name": "media",
@@ -81,7 +80,6 @@ And here are the migration recipes referenced in the code above:
 
 ```json
 {
-    "requirenewscope": true,
     "steps": [
         {
           "name": "media",
