@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
 {
-    public interface IRegistrationEvents
+    public interface IRegistrationFormEvents
     {
-        Task RegisteringAsync(Action<string, string> reportError);
+        Task RegistrationValidationAsync(Action<string, string> reportError);
 
         Task RegisteredAsync();
     }

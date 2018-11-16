@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
-        private readonly IEnumerable<IAccountEvents> _accountEvents;
+        private readonly IEnumerable<ILoginFormEvent> _accountEvents;
 
         public AccountController(
             IUserService userService,
@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Controllers
             ILogger<AccountController> logger,
             ISiteService siteService,
             IStringLocalizer<AccountController> stringLocalizer,
-            IEnumerable<IAccountEvents> accountEvents)
+            IEnumerable<ILoginFormEvent> accountEvents)
         {
             _signInManager = signInManager;
             _userManager = userManager;

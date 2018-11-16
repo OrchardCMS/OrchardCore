@@ -56,30 +56,25 @@ namespace OrchardCore.ReCaptcha
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
             if (!settings.IsValid())
+            { 
                 await next();
+                return; 
+            }
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
 
-            if (settings.HardenLoginProcess)
-            {
-                var afterLoginZone = layout.Zones["AfterLogin"];
-                if (_reCaptchaService.IsConvicted())
-                    afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());
-            }
+            var afterLoginZone = layout.Zones["AfterLogin"];
+            if (_reCaptchaService.IsThisARobot())
+                afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());
 
-            if (settings.HardenForgotPasswordProcess)
-            {
-                var afterForgotPassword = layout.Zones["AfterForgotPassword"];
-                afterForgotPassword.Add(await _shapeFactory.New.ReCaptcha());
-            }
+            var afterForgotPassword = layout.Zones["AfterForgotPassword"];
+            afterForgotPassword.Add(await _shapeFactory.New.ReCaptcha());
 
-            if (settings.HardenRegisterProcess)
-            {
-                var afterRegister = layout.Zones["AfterRegister"];
-                afterRegister.Add(await _shapeFactory.New.ReCaptcha());
-            }
+            var afterRegister = layout.Zones["AfterRegister"];
+            afterRegister.Add(await _shapeFactory.New.ReCaptcha());
 
             await next();
+            return;
         }
     }
 }

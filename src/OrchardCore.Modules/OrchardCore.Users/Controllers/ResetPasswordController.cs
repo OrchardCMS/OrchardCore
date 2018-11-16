@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
-        private readonly IEnumerable<IForgotPasswordEvents> _forgotPasswordEvents;
+        private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger<ResetPasswordController> _logger;
 
         public ResetPasswordController(
@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Controllers
             IHtmlDisplay displayManager,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IForgotPasswordEvents> forgotPasswordEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, shapeFactory, displayManager)
         {
             _userService = userService;
             _userManager = userManager;
@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Controllers
 
             T = stringLocalizer;
             _logger = logger;
-            _forgotPasswordEvents = forgotPasswordEvents;
+            _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         }
 
         IStringLocalizer T { get; set; }
@@ -74,7 +74,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _forgotPasswordEvents.InvokeAsync(i => i.ForgettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync(i => i.RecoveringPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
 
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace OrchardCore.Users.Controllers
                 // send email with callback link
                 await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl }, "TemplateUserLostPassword");
 
-                await _forgotPasswordEvents.InvokeAsync(i => i.ForgotPasswordAsync(), _logger);
+                await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
             }
 
             // If we got this far, something failed, redisplay form
@@ -129,13 +129,13 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _forgotPasswordEvents.InvokeAsync(i => i.ResettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync(i => i.ResettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
 
             if (ModelState.IsValid)
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    await _forgotPasswordEvents.InvokeAsync(i => i.PasswordResetAsync(), _logger);
+                    await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordResetAsync(), _logger);
 
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }

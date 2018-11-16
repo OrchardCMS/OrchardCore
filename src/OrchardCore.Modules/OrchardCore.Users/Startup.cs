@@ -24,7 +24,6 @@ using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.Shapes;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users

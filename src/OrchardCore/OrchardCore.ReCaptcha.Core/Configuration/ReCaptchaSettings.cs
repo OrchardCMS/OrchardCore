@@ -10,11 +10,10 @@ namespace OrchardCore.ReCaptcha.Configuration
 
         public string ReCaptchaApiUri { get; set; } = Constants.ReCaptchaApiUri;
 
-        public bool HardenLoginProcess { get; set; } = true;
-
-        public bool HardenForgotPasswordProcess { get; set; } = true;
-
-        public bool HardenRegisterProcess { get;set; } = true;
+        /// <summary>
+        /// Value for supplying the amount of lenience we are willing to show robots
+        /// </summary>
+        public int DetectionThreshold { get; set; } = 5;
 
         public bool IsValid()
         {

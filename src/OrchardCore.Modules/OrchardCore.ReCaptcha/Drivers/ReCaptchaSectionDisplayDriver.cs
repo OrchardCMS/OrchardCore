@@ -27,9 +27,6 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     model.SiteKey = section.SiteKey;
                     model.SecretKey = section.SecretKey;
-                    model.HardenForgotPasswordProcess = section.HardenForgotPasswordProcess;
-                    model.HardenLoginProcess = section.HardenLoginProcess;
-                    model.HardenRegisterProcess = section.HardenRegisterProcess;
                 })
                 .Location("Content")
                 .OnGroup(GroupId);
@@ -45,9 +42,6 @@ namespace OrchardCore.ReCaptcha.Drivers
                 {
                     section.SiteKey = model.SiteKey?.Trim();
                     section.SecretKey = model.SecretKey?.Trim();
-                    section.HardenForgotPasswordProcess = model.HardenForgotPasswordProcess;
-                    section.HardenLoginProcess = model.HardenLoginProcess;
-                    section.HardenRegisterProcess = model.HardenRegisterProcess;
 
                     // Reload tenant to apply settings.
                     await _shellHost.ReloadShellContextAsync(_shellSettings);

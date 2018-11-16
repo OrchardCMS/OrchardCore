@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
@@ -15,45 +16,47 @@ namespace OrchardCore.ReCaptcha.Services
     {
         private readonly ReCaptchaClient _reCaptchaClient;
         private readonly ReCaptchaSettings _settings;
-        private readonly IEnumerable<IDetectAbuse> _abuseDetection;
+        private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<ReCaptchaService> _logger;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectAbuse> abuseDetection, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger)    
+        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)    
         {
             _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;
-            _abuseDetection = abuseDetection;
+            _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            T = stringLocalizer;
+        }
+
+        private IStringLocalizer T { get; }
+
+        /// <summary>
+        /// Flags the behavior as that of a robot 
+        /// </summary>
+        public void MaybeThisIsARobot()
+        {
+            _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
         }
 
         /// <summary>
-        /// Flags the behavior of the request as suspect, internal implementations will decide if the behavior is convicted 
+        /// Determines if the request has been made by a robot
         /// </summary>
-        /// <returns></returns>
-        public void FlagAsSuspect()
+        /// <returns>Yes (true) or no (false)</returns>
+        public bool IsThisARobot()
         {
-            _abuseDetection.Invoke(i => i.FlagPossibleAbuse(), _logger);
+            var result = _robotDetectors.Invoke(i => i.DetectRobot(), _logger);
+            return result.Any(a => a.IsRobot);
         }
 
         /// <summary>
-        /// Determines if the request has been convicted as abuse
+        /// Clears all robot markers, we are dealing with a human
         /// </summary>
         /// <returns></returns>
-        public bool IsConvicted()
+        public void ThisIsAHuman()
         {
-            var result = _abuseDetection.Invoke(i => i.DetectAbuse(), _logger);
-            return result.Any(a => a.SuspectAbuse);
-        }
-
-        /// <summary>
-        /// Clears all convictions and resets all flags
-        /// </summary>
-        /// <returns></returns>
-        public void MarkAsInnocent()
-        {
-            _abuseDetection.Invoke(i => i.ClearAbuseFlags(), _logger);
+            _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
         }
 
         /// <summary>
@@ -64,6 +67,22 @@ namespace OrchardCore.ReCaptcha.Services
         public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
             return !String.IsNullOrWhiteSpace(reCaptchaResponse) && await _reCaptchaClient.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
+        }
+
+        /// <summary>
+        /// Validates the captcha that is in the Form of the current request
+        /// </summary>
+        /// <param name="reportError">Lambda for reporting errors</param>
+        public async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
+        {
+            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+
+            var isValid = !String.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);
+
+            if (!isValid)
+                reportError("ReCaptcha", T["Failed to validate captcha"]);
+
+            return isValid;
         }
     }
 }

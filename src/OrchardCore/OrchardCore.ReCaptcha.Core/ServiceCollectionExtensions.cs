@@ -17,7 +17,7 @@ namespace OrchardCore.ReCaptcha.Core
             services.AddHttpClient<ReCaptchaClient>()
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
 
-            services.AddTransient<IDetectAbuse, IpAddressAbuseDetector>();
+            services.AddTransient<IDetectRobots, IpAddressRobotDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
             services.AddTransient<ReCaptchaService>();
 

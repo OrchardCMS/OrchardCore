@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Controllers
         private readonly SignInManager<IUser> _signInManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IEnumerable<IRegistrationEvents> _registrationEvents;
+        private readonly IEnumerable<IRegistrationFormEvents> _registrationEvents;
 
         private readonly INotifier _notifier;
 
@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Controllers
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer,
-            IEnumerable<IRegistrationEvents> registrationEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, shapeFactory, displayManager)
         {
             _userService = userService;
             _userManager = userManager;
@@ -94,7 +94,7 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            await _registrationEvents.InvokeAsync(i => i.RegisteringAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+            await _registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
 
             if (ModelState.IsValid)
             {

@@ -8,8 +8,8 @@ namespace OrchardCore.ReCaptcha.ActionFilters
         AlwaysShow,
 
         /// <summary>
-        /// Captcha initially is not shown, but when abuse is detected it will show on until dismissed
+        /// Captcha initially is not shown, but when a robot is detected it will show on until dismissed
         /// </summary>
-        PreventAbuse
+        PreventRobots
     }
 }

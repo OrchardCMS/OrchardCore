@@ -27,7 +27,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
-            Mode = ReCaptchaMode.PreventAbuse;
+            Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
         }
 
@@ -37,12 +37,12 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var abuse = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectAbuse>();
-            var abuseDetected = abuse.Invoke(d => d.DetectAbuse(), _logger).Any(d => d.SuspectAbuse) && Mode == ReCaptchaMode.PreventAbuse;
+            var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
+            var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
             var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
             var isConfigured = _settings != null;
 
-            if (isConfigured && (abuseDetected || alwaysShow))
+            if (isConfigured && (robotDetected || alwaysShow))
             {
                 ShowCaptcha(output);
             }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
@@ -31,38 +32,41 @@ namespace OrchardCore.ReCaptcha.ActionFilters
         public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             var recaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
+            var T = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
             var isValidCaptcha = false;
             var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
             if (!String.IsNullOrWhiteSpace(reCaptchaResponse))
                 isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
 
-            var isConvicted = false;
+            var isRobot = false;
 
             switch (_mode)
             {
-                case ReCaptchaMode.PreventAbuse:
-                    isConvicted = recaptchaService.IsConvicted();
+                case ReCaptchaMode.PreventRobots:
+                    isRobot = recaptchaService.IsThisARobot();
                     break;
                 case ReCaptchaMode.AlwaysShow:
-                    isConvicted = true;
+                    isRobot = true;
                     break;
 
             }
 
-            if (isConvicted && !isValidCaptcha)
-                context.ModelState.AddModelError("ReCaptcha", "Failed to validate captcha");
+            if (isRobot && !isValidCaptcha)
+                context.ModelState.AddModelError("ReCaptcha", T["Failed to validate captcha"]);
 
             await next();
 
             if (context.ModelState.IsValid)
             {
-                recaptchaService.MarkAsInnocent();
+                recaptchaService.ThisIsAHuman();
             }
             else
             {
-                recaptchaService.FlagAsSuspect();
+                recaptchaService.MaybeThisIsARobot();
             }
+
+            return;
         }
     }
 }

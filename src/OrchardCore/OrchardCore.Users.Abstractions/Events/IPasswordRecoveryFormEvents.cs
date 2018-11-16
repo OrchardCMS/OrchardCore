@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
 {
-    public interface IForgotPasswordEvents
+    public interface IPasswordRecoveryFormEvents
     {
         Task ResettingPasswordAsync(Action<string, string> reportError);
 
         Task PasswordResetAsync();
 
-        Task ForgettingPasswordAsync(Action<string, string> reportError);
+        Task RecoveringPasswordAsync(Action<string, string> reportError);
 
-        Task ForgotPasswordAsync();
+        Task PasswordRecoveredAsync();
     }
 }

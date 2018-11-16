@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
 {
-    public interface IAccountEvents
+    public interface ILoginFormEvent
     {
         Task LoggingInAsync(Action<string, string> reportError);
 

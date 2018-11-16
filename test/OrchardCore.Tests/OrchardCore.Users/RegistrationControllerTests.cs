@@ -52,7 +52,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),
-                Mock.Of<IEnumerable<IRegistrationEvents>>());
+                Mock.Of<IEnumerable<IRegistrationFormEvents>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -87,7 +87,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),
-                Enumerable.Empty<IRegistrationEvents>());
+                Enumerable.Empty<IRegistrationFormEvents>());
 
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);

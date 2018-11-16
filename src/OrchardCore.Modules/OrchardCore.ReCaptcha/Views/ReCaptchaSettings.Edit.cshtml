@@ -5,34 +5,13 @@
 <fieldset class="form-group" asp-validation-class-for="SiteKey">
     <label asp-for="SiteKey">@T["Site Key"] <span asp-validation-for="SiteKey"></span></label>
     <input asp-for="SiteKey" class="form-control" type="text" />
-    <span class="hint">@T["Your Google's NoCaptcha Site Key."]</span>
+    <span class="hint">@T["Your Google's reCaptcha Site Key."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="SecretKey">
     <label asp-for="SecretKey">@T["Secret Key"] <span asp-validation-for="SecretKey"></span></label>
     <input asp-for="SecretKey" class="form-control" type="text" />
-    <span class="hint">@T["Your Google's NoCaptcha Secret Key."]</span>
-</fieldset>
-
-<fieldset class="form-group">
-    <div class="form-check">
-        <label><input class="form-check-input" asp-for="HardenLoginProcess" type="checkbox" />@T["Harden login process"]</label>
-    </div>
-    <span class="hint">@T["Shows a reCaptcha after 5 failed login attempts."]</span>
-</fieldset>
-
-<fieldset class="form-group">
-    <div class="form-check">
-        <label><input class="form-check-input" asp-for="HardenForgotPasswordProcess" type="checkbox" />@T["Harden password recovery process"]</label>
-    </div>
-    <span class="hint">@T["Shows a reCaptcha when a user attempts to recover his password."]</span>
-</fieldset>
-
-<fieldset class="form-group">
-    <div class="form-check">
-        <label><input class="form-check-input" asp-for="HardenRegisterProcess"  type="checkbox" />@T["Harden registration process"]</label>
-    </div>
-    <span class="hint">@T["Shows a reCaptcha when a user tries to register."]</span>
+    <span class="hint">@T["Your Google's reCaptcha Secret Key."]</span>
 </fieldset>
 
 <fieldset class="form-group">

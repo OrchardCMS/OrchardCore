@@ -6,28 +6,30 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    public class AccountEventHandlers : ReCaptchaEventHandler, IAccountEvents
+    public class LoginFormEventEventHandlers : ILoginFormEvent
     {
-        public AccountEventHandlers(ReCaptchaService reCaptchaService, IHttpContextAccessor httpContextAccessor) : base(reCaptchaService, httpContextAccessor)
-        {
+        private readonly ReCaptchaService _reCaptchaService;
 
+        public LoginFormEventEventHandlers(ReCaptchaService reCaptchaService) 
+        {
+            _reCaptchaService = reCaptchaService;
         }
 
         public Task LoggedInAsync()
         {
-            ReCaptchaService.MarkAsInnocent();
+            _reCaptchaService.ThisIsAHuman();
             return Task.CompletedTask;
         }
 
         public async Task LoggingInAsync(Action<string, string> reportError)
         {
-            if(ReCaptchaService.IsConvicted())
-                await ValidateCaptchaAsync(reportError);
+            if(_reCaptchaService.IsThisARobot())
+                await _reCaptchaService.ValidateCaptchaAsync(reportError);
         }
 
         public Task LoggingInFailedAsync()
         {
-            ReCaptchaService.FlagAsSuspect();
+            _reCaptchaService.MaybeThisIsARobot();
             return Task.CompletedTask;
         }
     }

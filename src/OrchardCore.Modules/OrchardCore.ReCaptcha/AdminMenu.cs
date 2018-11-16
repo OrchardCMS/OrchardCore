@@ -24,7 +24,7 @@ namespace OrchardCore.ReCaptcha
 
             builder
                 .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Security"], settings => settings
+                    .Add(T["Settings"], settings => settings
                         .Add(T["reCaptcha"], T["reCaptcha"], registration => registration
                             .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })

@@ -5,23 +5,27 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
 {
-    public class IpAddressAbuseDetector : IDetectAbuse
+    public class IpAddressRobotDetector : IDetectRobots
     {
-        private const string IpAddressAbuseDetectorCacheKey = "IpAddressAbuseDetector";
+        private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
         private readonly IMemoryCache _memoryCache;
         private readonly HttpContext _httpContext;
+        private readonly ReCaptchaSettings _settings;
 
-        public IpAddressAbuseDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
+        public IpAddressRobotDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IOptions<ReCaptchaSettings> settingsAccessor)
         {
             _httpContext = httpContextAccessor.HttpContext;
             _memoryCache = memoryCache;
+            _settings = settingsAccessor.Value;
         }
 
-        public void ClearAbuseFlags()
+        public void IsNotARobot()
         {
             var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             _memoryCache.Remove(ipAddressKey);
@@ -37,19 +41,18 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Abuse
             return _httpContext.Connection.RemoteIpAddress.ToString();
         }
 
-        public AbuseDetectResult DetectAbuse()
+        public RobotDetectionResult DetectRobot()
         {
             var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);
 
-            return new AbuseDetectResult()
+            return new RobotDetectionResult()
             {
-                // this should be configurable
-                SuspectAbuse = faultyRequestCount > 5
+                IsRobot = faultyRequestCount > _settings.DetectionThreshold
             };
         }
 
-        public void FlagPossibleAbuse()
+        public void FlagAsRobot()
         {
             var ipAddressKey = GetIpAddressCacheKey(_httpContext);
             
