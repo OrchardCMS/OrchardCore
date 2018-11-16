@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.BackgroundTasks
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Data.Abstractions", "src\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj", "{FDB57330-DBB0-466C-B488-C81F8BFC6BDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Recipes.Implementations", "src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj", "{F1A7EE1A-DB21-40E9-A215-B9093CBE3116}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Recipes.Core", "src\OrchardCore\OrchardCore.Recipes.Core\OrchardCore.Recipes.Core.csproj", "{F1A7EE1A-DB21-40E9-A215-B9093CBE3116}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Deployment.Abstractions", "src\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj", "{F889E955-77A9-44FA-8663-674BE39C23F0}"
 EndProject

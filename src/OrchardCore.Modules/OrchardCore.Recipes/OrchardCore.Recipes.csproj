@@ -9,7 +9,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\OrchardCore.Features\OrchardCore.Features.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Core\OrchardCore.Recipes.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

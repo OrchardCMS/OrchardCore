@@ -25,14 +25,14 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _orchardHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
-        private readonly IRecipeStore _recipeStore;
+        private readonly IRecipeResultStore _recipeResultStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            IRecipeStore recipeStore,
+            IRecipeResultStore recipeResultStore,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IShellHost orchardHost,
@@ -43,7 +43,7 @@ namespace OrchardCore.Recipes.Services
             _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
-            _recipeStore = recipeStore;
+            _recipeResultStore = recipeResultStore;
             Logger = logger;
             T = localizer;
         }
@@ -61,7 +61,7 @@ namespace OrchardCore.Recipes.Services
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
-                await _recipeStore.CreateAsync(result);
+                await _recipeResultStore.CreateAsync(result);
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
@@ -99,7 +99,7 @@ namespace OrchardCore.Recipes.Services
 
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
                                             result.Steps.Add(stepResult);
-                                            await _recipeStore.UpdateAsync(result);
+                                            await _recipeResultStore.UpdateAsync(result);
 
                                             ExceptionDispatchInfo capturedException = null;
                                             try
@@ -119,7 +119,7 @@ namespace OrchardCore.Recipes.Services
                                             }
 
                                             stepResult.IsCompleted = true;
-                                            await _recipeStore.UpdateAsync(result);
+                                            await _recipeResultStore.UpdateAsync(result);
 
                                             if (stepResult.IsSuccessful == false)
                                             {
@@ -157,11 +157,11 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var (scope, shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
+            (var scope, var shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
 
             using (scope)
             {
-                if (!shellContext.IsActivated)
+                if (recipeStep.RecipeDescriptor.RequireNewScope && !shellContext.IsActivated)
                 {
                     using (var activatingScope = shellContext.CreateScope())
                     {
