@@ -93,12 +93,16 @@ namespace OrchardCore.Email.Controllers
         {
             var message = new MailMessage();
 
-            if (ValidateEmail(testSettings.To))
+            foreach (var email in ParseEmailAddresses(testSettings.To))
             {
-                message.To.Add(testSettings.To);
-            }
-            else {
-                ModelState.AddModelError(string.Empty, T["Invalid \"To\" email : "] + testSettings.To);
+                if (ValidateEmail(email))
+                {
+                    message.To.Add(email);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, T["Invalid \"To\" email : "] + email);
+                }
             }
 
             foreach (var email in ParseEmailAddresses(testSettings.Bcc))
