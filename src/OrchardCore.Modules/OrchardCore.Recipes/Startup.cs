@@ -19,7 +19,7 @@ namespace OrchardCore.Recipes
         {
             services.AddRecipes();
 
-            services.AddScoped<IRecipeStore, RecipeStore>();
+            services.AddScoped<IRecipeResultStore, RecipeResultStore>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<IIndexProvider, RecipeResultIndexProvider>();
