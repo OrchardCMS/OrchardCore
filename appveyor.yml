@@ -10,7 +10,7 @@ environment:
     MYGET_API_KEY:
         secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     NUGET_API_KEY:
-        secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+        secure: y1uE7a17poYIpeANV8vixPkrwnrQMW8Xnd+fWS2YFK2EERN+HetKHqHLT0NArXRU
 
 stack: node 9, docker
 
