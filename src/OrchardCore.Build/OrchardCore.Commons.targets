@@ -40,7 +40,7 @@
       <UnmanagedPackageReference Remove="@(UnmanagedPackageReference)" Condition=" '%(UnmanagedPackageReference.IsImplicitlyDefined)' == 'true' " />
       <UnmanagedPackageReference Remove="@(UnmanagedPackageReference)" Condition=" $([System.String]::Copy('%(Identity)').StartsWith('System.')) " />
     </ItemGroup>
-    <Warning Condition=" '@(UnmanagedPackageReference)' != '' "
+    <Warning Condition=" '@(UnmanagedPackageReference)' != '' and '%(Identity)' != 'Microsoft.AspNetCore.App' "
              Code="OC2003"
              Text="%(UnmanagedPackageReference.Identity)@%(UnmanagedPackageReference.Version) is an unmanaged PackageReference" 
              File="$(MSBuildProjectFullPath)" />
