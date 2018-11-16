@@ -2,9 +2,9 @@
 
 <h1>@RenderTitleSegments(T["Create Node"])</h1>
 
-<div asp-validation-summary="ModelOnly"></div>
+<div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">
-    @await DisplayAsync(Model.Editor)
+    @await DisplayAsync(Model.Editor.Content)
 
     <input type="hidden" asp-for="AdminTreeId" />
     <input type="hidden" asp-for="AdminNodeId" />
