@@ -154,17 +154,17 @@ namespace OrchardCore.Email.Controllers
             return message;
         }
 
-        private IEnumerable<string> ParseEmailAddresses(string adresses)
+        private static IEnumerable<string> ParseEmailAddresses(string adresses)
         {
             if (String.IsNullOrWhiteSpace(adresses))
             {
                 return Array.Empty<string>();
             }
 
-            return adresses.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+            return adresses.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public bool ValidateEmail(string email)
+        private static bool ValidateEmail(string email)
         {
             var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
             // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
