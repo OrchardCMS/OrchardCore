@@ -41,13 +41,19 @@ namespace OrchardCore.Tests.Apis.Context
                     Name = tenantName,
                     RequestUrlPrefix = tenantName
                 };
-                var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
 
-                createResult.EnsureSuccessStatusCode();
+                var content = String.Empty;
 
-                var x = await createResult.Content.ReadAsStringAsync();
+                while (String.IsNullOrWhiteSpace(content))
+                {
+                    var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
 
-                var url = new Uri(x.Trim('"'));
+                    createResult.EnsureSuccessStatusCode();
+
+                    content = await createResult.Content.ReadAsStringAsync();
+                }
+
+                var url = new Uri(content.Trim('"'));
                 url = new Uri(url.Scheme + "://" + url.Authority + url.LocalPath + "/");
 
                 var setupModel = new Tenants.ViewModels.SetupApiViewModel
@@ -60,9 +66,17 @@ namespace OrchardCore.Tests.Apis.Context
                     Name = tenantName,
                     Email = "Nick@Orchard"
                 };
-                var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
 
-                setupResult.EnsureSuccessStatusCode();
+                content = String.Empty;
+
+                while (String.IsNullOrWhiteSpace(content))
+                {
+                    var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
+
+                    setupResult.EnsureSuccessStatusCode();
+
+                    content = await setupResult.Content.ReadAsStringAsync();
+                }
 
                 Client = Site.CreateDefaultClient(url);
                 GraphQLClient = new OrchardGraphQLClient(Client);
