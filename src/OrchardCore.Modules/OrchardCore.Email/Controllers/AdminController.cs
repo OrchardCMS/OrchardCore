@@ -163,11 +163,11 @@ namespace OrchardCore.Email.Controllers
         public bool ValidateEmail(string email)
         {
             var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
-            // From https://html.spec.whatwg.org/multipage/forms.html#valid-e-mail-address
-            // Retrieved 2018-07-28
-            var Pattern = @"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+            // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
+            // Retrieved 2018-11-16
+            string pattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
 
-            return Regex.IsMatch(email, Pattern, regexOptions);
+            return Regex.IsMatch(email, pattern, regexOptions);
         }
     }
 }
