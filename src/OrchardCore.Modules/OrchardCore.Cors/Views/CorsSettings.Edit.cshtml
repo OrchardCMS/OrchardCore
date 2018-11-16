@@ -4,7 +4,7 @@
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot" depends-on="jQuery"></script>
 
 <div id="corsAdmin">
-    <input type="hidden" name="ISite.Policies" id="ISite_Policies" value='@Html.Raw(JsonConvert.SerializeObject(Model.Policies))' />
+    <input type="hidden" name="ISite.Policies" id="ISite_Policies" value='@Html.Raw(Json.Serialize(Model.Policies))' />
     <h1>@T["CORS Settings"]</h1>
     <span class="subscript">@T["CORS stands for Cross-Origin Request more information can be found here"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
     <nav class="admin-toolbar">
@@ -176,7 +176,7 @@
         el: '#corsAdmin',
         components: { policyDetails, optionsList },
         data: {
-            policies: @Html.Raw(JsonConvert.SerializeObject(Model.Policies)),
+            policies: @Html.Raw(Json.Serialize(Model.Policies)),
             selectedPolicy: null
         },
         methods: {
