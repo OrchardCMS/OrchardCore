@@ -151,9 +151,9 @@ using OrchardCore.Modules.Manifest;
 ```
 
 For this module to start, we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
-[`OrchardCore.Templates.Module/Startup.cs`](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.Cms.Templates/content/OrchardCore.Templates.Module/Startup.cs)
+[`OrchardCore.Templates.Module/Startup.cs`](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.ProjectTemplates/content/OrchardCore.Templates.Module/Startup.cs)
 
-Last step is to add our new module to the `OrchardCore.Cms.Web` project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our [template module](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.Cms.Templates/content/OrchardCore.Templates.Module/) for examples of what's basically needed normally.
+Last step is to add our new module to the `OrchardCore.Cms.Web` project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our [template module](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.ProjectTemplates/content/OrchardCore.Templates.Module/) for examples of what's basically needed normally.
 
 ## Create a new theme
 
