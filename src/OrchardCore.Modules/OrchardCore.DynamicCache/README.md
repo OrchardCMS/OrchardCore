@@ -133,12 +133,12 @@ When using shape tag helpers, the following attributes can be used:
 | `cache-context` | `cache_context` | A set of space/comma-separated context values. | No |
 | `cache-dependency` | `cache_dependency` | A set of space/comma-separated dependency values. | No |
 | `cache-tag` | `cache_tag` | A set of space/comma-separated tag values. | No |
-| `cache-fixed-duration` | `cache_expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `cache-sliding-duration` | `cache_expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-fixed-duration` | `cache_fixed_duration` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-sliding-duration` | `cache_sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 
 For example, to cache the menu shape in a liquid template, you would use this markup:
 
-`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}`
+`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
 
 ### Liquid cache block
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.

@@ -1,42 +1,23 @@
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Menu
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private readonly IRecipeMigrator _recipeMigrator;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(IRecipeMigrator recipeMigrator)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _recipeMigrator = recipeMigrator;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Menu", menu => menu
-                .Draftable()
-                .Versionable()
-                .Creatable()
-                .Listable()
-                .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
-                .WithPart("MenuPart", part => part.WithPosition("3"))
-                .WithPart("MenuItemsListPart", part => part.WithPosition("4"))
-            );
-
-            _contentDefinitionManager.AlterTypeDefinition("LinkMenuItem", menu => menu
-                .WithPart("LinkMenuItemPart")
-                .Stereotype("MenuItem")
-            );
+            await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
             return 1;
         }
-    }
-
-    class AliasPartSettings
-    {
-        public string Pattern { get; set; }
     }
 }
