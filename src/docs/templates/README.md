@@ -38,7 +38,7 @@ Options:
   -lo|--logger           Configures the logger component.
                              nlog       - Configures NLog as the logger component.
                              serilog    - Configures Serilog as the logger component.
-                             none       - Do not configure logger.
+                             none       - Do not use a logger.
                          Default: nlog
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
@@ -50,6 +50,12 @@ Logging can be ignored with this command:
 
 ```CMD
 dotnet new occms --logger none
+```
+
+#### Generate a modular ASP.NET MVC Core Web Application
+
+```CMD
+dotnet new ocmvc  
 ```
 
 ### From Visual Studio (manual way)
