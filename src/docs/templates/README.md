@@ -6,16 +6,16 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 
 ## Installing the Orchard CMS templates
 
-Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core Cms web applications:
+Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta3-*
+dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-*
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta3-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
 ```
 
 ## Create a new website
@@ -103,18 +103,18 @@ namespace MyNewWebsite
 }
 ```
 
-## Create a new module
+## Create a new CMS module
 
 ### New module from Command Shell (automated way)
 
 #### Module commands
 
 ```CMD
-dotnet new ocmodule -n ModuleName.OrchardCore
+dotnet new occmsmodule -n ModuleName.OrchardCore
 
-dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart
+dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart
 
-dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
+dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
 ```
 
 ### New module from Visual Studio (manual way)
