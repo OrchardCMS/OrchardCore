@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Templates.Mvc.Module.Controllers
+namespace Module1.Controllers
 {
     public class HomeController : Controller
     {

@@ -5,7 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.Module.Models;
 
-namespace OrchardCore.Templates.Module.Settings
+namespace OrchardCore.Templates.Cms.Module.Settings
 {
     public class MyTestPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
