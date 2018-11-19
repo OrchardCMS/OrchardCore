@@ -29,12 +29,12 @@ namespace OrchardCore.ReCaptcha
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandlers>();
-            services.AddScoped<ILoginFormEvent, LoginFormEventEventHandlers>();
-            services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandlers>();
+            services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
+            services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
+            services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(ReCaptchaFilter));
+                options.Filters.Add(typeof(ReCaptchaLoginFilter));
             });
         }
     }

@@ -1,7 +1,9 @@
+using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
@@ -13,20 +15,20 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.ReCaptcha
 {
-    public class ReCaptchaFilter : IActionFilter, IAsyncResultFilter
+    public class ReCaptchaLoginFilter : IAsyncResultFilter
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ISiteService _siteService;
-        private readonly ILogger<ReCaptchaFilter> _logger;
+        private readonly ILogger<ReCaptchaLoginFilter> _logger;
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IShapeFactory _shapeFactory;
 
-        public ReCaptchaFilter(
+        public ReCaptchaLoginFilter(
             ILayoutAccessor layoutAccessor,
             ISiteService siteService,
             ReCaptchaService reCaptchaService,
             IShapeFactory shapeFactory,
-            ILogger<ReCaptchaFilter> logger)
+            ILogger<ReCaptchaLoginFilter> logger)
         {
             _layoutAccessor = layoutAccessor;
             _siteService = siteService;
@@ -35,19 +37,10 @@ namespace OrchardCore.ReCaptcha
             _logger = logger;
         }
 
-        public void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-
-        }
-
-        public void OnActionExecuted(ActionExecutedContext filterContext)
-        {
-
-        }
-
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
-            if (!(filterContext.Result is ViewResult))
+            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult)
+                || !String.Equals("OrchardCore.Users", Convert.ToString(filterContext.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;
@@ -64,8 +57,11 @@ namespace OrchardCore.ReCaptcha
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
 
             var afterLoginZone = layout.Zones["AfterLogin"];
+            
             if (_reCaptchaService.IsThisARobot())
+            {
                 afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());
+            }
 
             var afterForgotPassword = layout.Zones["AfterForgotPassword"];
             afterForgotPassword.Add(await _shapeFactory.New.ReCaptcha());

@@ -6,11 +6,11 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    public class RegistrationFormEventHandlers : IRegistrationFormEvents
+    public class RegistrationFormEventHandler : IRegistrationFormEvents
     {
         private readonly ReCaptchaService _reCaptchaService;
 
-        public RegistrationFormEventHandlers(ReCaptchaService recaptchaService)
+        public RegistrationFormEventHandler(ReCaptchaService recaptchaService)
         {
             _reCaptchaService = recaptchaService;
         }

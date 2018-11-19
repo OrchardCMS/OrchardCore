@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
@@ -91,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             // Result is not a view, so assume a redirect and assign values to TemData.
             // String data type used instead of complex array to be session-friendly.
-            if (!(filterContext.Result is ViewResult) && _existingEntries.Length > 0)
+            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult) && _existingEntries.Length > 0)
             {
                 filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
             }
@@ -107,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (!(filterContext.Result is ViewResult))
+            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult))
             {
                 await next();
                 return;

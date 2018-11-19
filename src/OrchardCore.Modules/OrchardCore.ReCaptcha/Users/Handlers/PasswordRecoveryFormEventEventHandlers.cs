@@ -6,11 +6,11 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers
 {
-    public class PasswordRecoveryFormEventEventHandlers : IPasswordRecoveryFormEvents
+    public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
     {
         private readonly ReCaptchaService _recaptchaService;
 
-        public PasswordRecoveryFormEventEventHandlers(ReCaptchaService recaptchaService)
+        public PasswordRecoveryFormEventEventHandler(ReCaptchaService recaptchaService)
         {
             _recaptchaService = recaptchaService;
         }
