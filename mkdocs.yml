@@ -23,10 +23,11 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
-#  - markdown_fenced_code_tabs
+  - markdown_fenced_code_tabs:
+      template: 'default'
 
 # Page tree
-pages:
+nav:
     - About Orchard Core: index.md
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
@@ -57,12 +58,14 @@ pages:
         - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Flows: OrchardCore.Modules/OrchardCore.Flows/README.md
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
+        - Admin Trees: OrchardCore.Modules/OrchardCore.AdminTrees/README.md
     - Core Modules:
-        - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
+        - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
+        - Placement: OrchardCore/OrchardCore.DisplayManagement/README.md
         - Recipes: OrchardCore.Modules/OrchardCore.Recipes/README.md
         - Resources: OrchardCore.Modules/OrchardCore.Resources/README.md
         - Roles: OrchardCore.Modules/OrchardCore.Roles/README.md

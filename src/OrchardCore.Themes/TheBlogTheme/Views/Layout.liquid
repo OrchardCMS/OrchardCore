@@ -6,21 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
-    {% script name:"jQuery", use_cdn:"true", at:"Foot" %}
-    {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
-    {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
-    {% style name:"font-awesome", use_cdn:"true", version:"4" %}
-    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="/TheBlogTheme/css/clean-blog-orchard.min.css">
+    {% resources type: "Meta" %}
+
+    <!-- javascript -->
+
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    {% resources type: "Meta" %}
+    {% script name:"bootstrap-bundle", use_cdn:"true", version:"4", at:"Foot" %}
+    {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
+    {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
+    {% script source:"/TheBlogTheme/js/clean-blog-ext.min.js", debug_src:"/TheBlogTheme/js/clean-blog-ext.js", at:"Foot" %}
+    {% resources type: "HeadScript" %}
+
+    <!-- CSS -->
+
+    <!-- Custom fonts for this template -->
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    {% style name:"bootstrap", use_cdn:"true", version:"4" %}    
+    {% style name:"font-awesome", use_cdn:"true", version:"4" %}
+
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
-    {% resources type: "HeadScript" %}
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/TheBlogTheme/css/bootstrap-grid-ext.min.css">
+    <link rel="stylesheet" href="/TheBlogTheme/css/clean-blog.min.css">
 </head>
 <body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
@@ -30,7 +44,7 @@
                 <span class="sr-only">{{ "Toggle navigation" | t }}</span>
                 {{ "Menu" | t }} <i class="fa fa-bars"></i>
             </button>
-            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
+            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
         </div>
     </nav>
     {% render_section "Header", required: false %}
@@ -45,6 +59,5 @@
         {% render_section "Footer", required: false %}
     </footer>
     {% resources type: "FootScript" %}
-    <script type="text/javascript">(function($) { $('#mainNav').activateLinks(); })(jQuery);</script>
 </body>
 </html>

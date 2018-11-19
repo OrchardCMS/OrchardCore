@@ -1,4 +1,4 @@
-﻿.edit-container {
+.edit-container {
     display: table;
     border-collapse: separate;
     border-spacing: 8px; 
@@ -26,4 +26,12 @@
     vertical-align: top;
     display: table-cell;
     padding-left: 15px;
+}
+
+#show-selected-card .list-group-item {
+    min-height: 64px;
+}
+
+.list-group-item.disabled .icon-toolbar {
+    display: none;
 }

@@ -18,6 +18,7 @@ var fs = require("file-system"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
     eol = require("gulp-eol");
+    util = require('gulp-util');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -74,6 +75,18 @@ gulp.task("watch", function () {
     });
 });
 
+gulp.task( 'default', [ 'build' ] )
+
+gulp.task('help', function() {
+    util.log(`
+  Usage: gulp [TASK]
+  Tasks:
+      build     Incremental build (each asset group is built only if one or more inputs are newer than the output).
+      rebuild   Full rebuild (all assets groups are built regardless of timestamps).
+      watch     Continuous watch (each asset group is built whenever one of its inputs changes).
+    `);
+  });
+
 /*
 ** ASSET GROUPS
 */
@@ -119,15 +132,17 @@ function createAssetGroupTask(assetGroup, doRebuild) {
         var outputStats = fs.existsSync(assetGroup.outputPath) ? fs.statSync(assetGroup.outputPath) : null;
         doRebuild = !outputStats || assetManifestStats.mtime > outputStats.mtime;
     }
-    switch (outputExt) {
-        case ".css":
-            return buildCssPipeline(assetGroup, doConcat, doRebuild);
-        case ".js":
-            return buildJsPipeline(assetGroup, doConcat, doRebuild);
-    }
-    
+
     if(assetGroup.copy === true){
         return buildCopyPipeline(assetGroup, doRebuild);
+    }
+    else{
+        switch (outputExt) {
+            case ".css":
+                return buildCssPipeline(assetGroup, doConcat, doRebuild);
+            case ".js":
+                return buildJsPipeline(assetGroup, doConcat, doRebuild);
+        }
     }
 }
 
@@ -268,8 +283,12 @@ function buildCopyPipeline(assetGroup, doRebuild) {
     if(!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))
     }
-  
-    stream = stream.pipe(gulp.dest(assetGroup.outputDir));
+    
+    var renameFile = assetGroup.outputFileName != "@";
+
+    stream = stream
+                .pipe(gulpif(renameFile, rename(assetGroup.outputFileName)))
+                .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
 

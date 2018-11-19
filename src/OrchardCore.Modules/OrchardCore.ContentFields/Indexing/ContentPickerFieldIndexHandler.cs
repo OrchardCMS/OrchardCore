@@ -12,7 +12,10 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var contentItemId in field.ContentItemIds)
             {
-                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(contentItemId, DocumentIndex.Types.Text, options));
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key, contentItemId, options);
+                }
             }
 
             return Task.CompletedTask;

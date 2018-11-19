@@ -1,21 +1,21 @@
 # Code Generation Templates
 
-Orchard Core Templates uses `dotnet new` templates configurations for creating new websites, themes and modules from the command shell. 
+Orchard Core Templates uses `dotnet new` template configurations for creating new websites, themes and modules from the command shell. 
 
 More information about `dotnet new` can be found at <https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new>
 
-## Installing the Orchard Cms templates
+## Installing the Orchard CMS templates
 
-Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core Cms web applications.
+Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-*
+dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-*
 ```
 
-This will use the most stable release of Orchard Core. In order to use the latest __dev__ branch of Orchard Core, the following command can be used:
+This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.Cms.Templates::1.0.0-beta2-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
 ```
 
 ## Create a new website
@@ -38,7 +38,7 @@ Options:
   -lo|--logger           Configures the logger component.
                              nlog       - Configures NLog as the logger component.
                              serilog    - Configures Serilog as the logger component.
-                             none       - Do not configure logger.
+                             none       - Do not use a logger.
                          Default: nlog
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
@@ -52,13 +52,19 @@ Logging can be ignored with this command:
 dotnet new occms --logger none
 ```
 
+#### Generate a modular ASP.NET MVC Core Web Application
+
+```CMD
+dotnet new ocmvc  
+```
+
 ### From Visual Studio (manual way)
 
-Fire up Visual Studio, create a new solution file (.sln) by creating a new ASP.NET Core Web Application :
+Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application :
 
 ![image](../assets/images/templates/orchard-screencast-1.gif)
 
-Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targetted as an Orchard Core application.
+Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
 
 See [Adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
 
@@ -97,35 +103,35 @@ namespace MyNewWebsite
 }
 ```
 
-## Create a new module
+## Create a new CMS module
 
 ### New module from Command Shell (automated way)
 
 #### Module commands
 
 ```CMD
-dotnet new ocmodule -n ModuleName.OrchardCore
+dotnet new occmsmodule -n ModuleName.OrchardCore
 
-dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart
+dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart
 
-dotnet new ocmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
+dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
 ```
 
 ### New module from Visual Studio (manual way)
 
-Fire up Visual Studio, open Orchard Core solution file (.sln), select OrchardCore.Modules folder, right click and select "add --> new project" and create a new .NET Standard Class Library:
+Fire up Visual Studio, open Orchard Core solution file (`.sln`), select `OrchardCore.Modules` folder, right click and select "add --> new project" and create a new .NET Standard Class Library:
 
 ![image](../assets/images/templates/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
 
-For marking this new Class Library as an Orchard Module we will now need to reference OrchardCore.Module.Targets Nuget package.
+For marking this new Class Library as an Orchard Module we will now need to reference `OrchardCore.Module.Targets` Nuget package.
 
-[See adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
+See [adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed).
 
-Each of these "*.Targets" Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. OrchardCore.Module.Targets is the one we are interested in for now. We will mark our new Class Library as a module by adding OrchardCore.Module.Targets as a dependency. For doing so you will need to right click on MyModule.OrchardCore project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected. Once you have found it click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
+Each of these `*.Targets` Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. `OrchardCore.Module.Targets` is the one we are interested in for now. We will mark our new Class Library as a module by adding `OrchardCore.Module.Targets` as a dependency. For doing so you will need to right click on `MyModule.OrchardCore` project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected. Once you have found it, click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
 
 ![image](../assets/images/templates/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
 
-Once done your new module will look like this :
+Once done, your new module will look like this :
 
 ![image](../assets/images/templates/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
@@ -144,10 +150,10 @@ using OrchardCore.Modules.Manifest;
 
 ```
 
-For this module to start we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
-[OrchardCore.Templates.Module/Startup.cs](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.Cms.Templates/content/OrchardCore.Templates.Module/Startup.cs)
+For this module to start, we now will need to add a `Startup.cs` file to our new module. See this file as an example:  
+[`OrchardCore.Templates.Module/Startup.cs`](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.ProjectTemplates/content/OrchardCore.Templates.Module/Startup.cs)
 
-Last step is to add our new module to the OrchardCore.Cms.Web project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our [template module](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.Cms.Templates/content/OrchardCore.Templates.Module/) for examples of what's basically needed normally.
+Last step is to add our new module to the `OrchardCore.Cms.Web` project as a reference for including it as part as our website modules. After that, you should be all set for starting building your custom module. You can refer to our [template module](https://github.com/OrchardCMS/OrchardCore/tree/dev/src/Templates/OrchardCore.ProjectTemplates/content/OrchardCore.Templates.Module/) for examples of what's basically needed normally.
 
 ## Create a new theme
 
@@ -159,7 +165,7 @@ Last step is to add our new module to the OrchardCore.Cms.Web project as a refer
 
 ### New theme from Visual Studio (manual way)
 
-Should be the same procedure as with modules but instead we need to reference OrchardCore.Theme.Targets and `Manifest.cs` file slightly differ:
+Should be the same procedure as with modules, but instead we need to reference `OrchardCore.Theme.Targets`, and the `Manifest.cs` file differs slightly:
 
 ```C#
 using OrchardCore.DisplayManagement.Manifest;

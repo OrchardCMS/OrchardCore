@@ -20,7 +20,7 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(DateTimeField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayDateTimeFieldViewModel>("DateTimeField", async model =>
+            return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
                 model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;

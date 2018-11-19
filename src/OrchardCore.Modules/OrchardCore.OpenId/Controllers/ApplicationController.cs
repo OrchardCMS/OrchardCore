@@ -140,7 +140,7 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(string.Empty, "At least one flow must be enabled.");
             }
 
-            if (await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
+            if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
             {
                 ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
             }
@@ -287,7 +287,7 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required for confidential applications."]);
             }
 
-            if (!model.UpdateClientSecret  &&
+            if (!model.UpdateClientSecret &&
                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, T["Setting a new client secret is required"]);
