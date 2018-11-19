@@ -12,13 +12,13 @@ namespace OrchardCore.Users.Services
     /// <summary>
     /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
     /// </summary>
-    public class UserService : UserClaimsPrincipalFactory<IUser>, IUserService
+    public class UserService : IUserService
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IStringLocalizer<UserService> T;
 
-        public UserService(UserManager<IUser> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer) : base(userManager, identityOptions)
+        public UserService(UserManager<IUser> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer)
         {
             _userManager = userManager;
             _identityOptions = identityOptions;
@@ -203,27 +203,5 @@ namespace OrchardCore.Users.Services
                 }
             }
         }
-
-        #region UserClaimsPrincipalFactory<IUser>
-
-        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
-        {
-            var claims = await base.GenerateClaimsAsync(user);
-
-            var email = await _userManager.GetEmailAsync(user);
-            if (email != null)
-                claims.AddClaim(new Claim("email", email));
-                       
-            if (await _userManager.IsEmailConfirmedAsync(user))
-            {
-                claims.AddClaim(new Claim("email_verified", "true"));
-            }
-
-            return claims;
-        }
-
-        #endregion
-
-
     }
 }
