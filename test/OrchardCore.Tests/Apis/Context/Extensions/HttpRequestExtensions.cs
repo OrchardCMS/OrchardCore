@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -151,12 +150,9 @@ namespace OrchardCore.Tests.Apis.Context
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Content = content;
 
-            if (!client.DefaultRequestHeaders.Accept.Any(x => x.MediaType == "application/json"))
-            {
-                request.Headers
-                    .Accept
-                    .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            }
+            request.Headers
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return client.SendAsync(request);
         }
@@ -174,12 +170,9 @@ namespace OrchardCore.Tests.Apis.Context
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Content = content;
 
-            if (!client.DefaultRequestHeaders.Accept.Any(x => x.MediaType == "application/json"))
-            {
-                request.Headers
-                    .Accept
-                    .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            }
+            request.Headers
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return client.SendAsync(request);
         }
@@ -197,12 +190,9 @@ namespace OrchardCore.Tests.Apis.Context
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Content = content;
 
-            if (!client.DefaultRequestHeaders.Accept.Any(x => x.MediaType == "application/vnd.api+json"))
-            {
-                request.Headers
-                    .Accept
-                    .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
-            }
+            request.Headers
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
 
             return client.SendAsync(request);
         }
