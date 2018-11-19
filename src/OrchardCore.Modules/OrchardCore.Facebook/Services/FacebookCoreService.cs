@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -46,18 +46,18 @@ namespace OrchardCore.Facebook.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(FacebookCoreSettings settings)
+        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookCoreSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var results = ImmutableArray.CreateBuilder<ValidationResult>();
+            var results = new List<ValidationResult>();
 
             if (string.IsNullOrEmpty(settings.AppId))
             {
-                results.Add(new ValidationResult(T["The AppId cannot be null or empty."], new[]
+                results.Add(new ValidationResult(T["The AppId is required."], new[]
                 {
                     nameof(settings.AppId)
                 }));
@@ -65,13 +65,13 @@ namespace OrchardCore.Facebook.Services
 
             if (string.IsNullOrEmpty(settings.AppSecret))
             {
-                results.Add(new ValidationResult(T["The App Secret cannot be null or empty."], new[]
+                results.Add(new ValidationResult(T["The App Secret is required."], new[]
                 {
                     nameof(settings.AppSecret)
                 }));
             }
 
-            return Task.FromResult(results.ToImmutable());
+            return Task.FromResult<IEnumerable<ValidationResult>>(results);
         }
     }
 }

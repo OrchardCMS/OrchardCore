@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -46,7 +46,7 @@ namespace OrchardCore.Facebook.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)
+        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)
         {
             if (settings == null)
             {
@@ -55,15 +55,15 @@ namespace OrchardCore.Facebook.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            //if (string.IsNullOrEmpty(settings.CallbackPath))
-            //{
-            //    results.Add(new ValidationResult(T["The CallbackPath cannot be null or empty."], new[]
-            //    {
-            //        nameof(settings.CallbackPath)
-            //    }));
-            //}
+            if (string.IsNullOrEmpty(settings.CallbackPath))
+            {
+                results.Add(new ValidationResult(T["The callback path is required."], new[]
+                {
+                    nameof(settings.CallbackPath)
+                }));
+            }
 
-            return Task.FromResult(results.ToImmutable());
+            return Task.FromResult<IEnumerable<ValidationResult>>(results);
         }
     }
 }

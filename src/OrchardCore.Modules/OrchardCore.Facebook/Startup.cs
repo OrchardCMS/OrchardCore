@@ -20,19 +20,11 @@ namespace OrchardCore.Facebook
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-        }
-    }
 
-    [Feature(FacebookConstants.Features.Core)]
-    public class CoreStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
             services.AddSingleton<IFacebookCoreService, FacebookCoreService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookCoreSettingsDisplayDriver>();
         }
     }
-
 
     [Feature(FacebookConstants.Features.Login)]
     public class LoginStartup : StartupBase
@@ -41,6 +33,7 @@ namespace OrchardCore.Facebook
         {
             services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenuLogin>();
 
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]

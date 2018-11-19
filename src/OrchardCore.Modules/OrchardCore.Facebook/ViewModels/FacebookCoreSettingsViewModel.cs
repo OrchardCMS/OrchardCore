@@ -6,6 +6,8 @@ namespace OrchardCore.Facebook.ViewModels
     {
         [Required]
         public string AppId { get; set; }
+
+        [Required]
         public string AppSecret { get; set; }
     }
 }

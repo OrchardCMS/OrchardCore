@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
@@ -23,7 +22,6 @@ namespace OrchardCore.Facebook.Drivers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<FacebookCoreSettingsDisplayDriver> T;
         private readonly IFacebookCoreService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -34,7 +32,6 @@ namespace OrchardCore.Facebook.Drivers
             IFacebookCoreService clientService,
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
-            IHtmlLocalizer<FacebookCoreSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
@@ -45,7 +42,6 @@ namespace OrchardCore.Facebook.Drivers
             _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(FacebookCoreSettings settings, BuildEditorContext context)
@@ -58,38 +54,27 @@ namespace OrchardCore.Facebook.Drivers
 
             return Initialize<FacebookCoreSettingsViewModel>("FacebookCoreSettings_Edit", model =>
             {
+                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+
                 model.AppId = settings.AppId;
-                model.AppSecret = settings.AppSecret;
+                model.AppSecret = protector.Unprotect(settings.AppSecret);
 
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookCoreSettings settings, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
-            {
-                return null;
-            }
-
             if (context.GroupId == FacebookConstants.Features.Core)
             {
-                var previousClientSecret = settings.AppSecret;
+                var user = _httpContextAccessor.HttpContext?.User;
+
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                {
+                    return null;
+                }
+
                 var model = new FacebookCoreSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.AppId = model.AppId;
-
-                // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-                if (string.IsNullOrEmpty(model.AppSecret))
-                {
-                    settings.AppSecret = previousClientSecret;
-                }
-                else
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-                    settings.AppSecret = protector.Protect(model.AppSecret);
-                }
 
                 foreach (var result in await _clientService.ValidateSettingsAsync(settings))
                 {
@@ -103,6 +88,11 @@ namespace OrchardCore.Facebook.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
+                    var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+
+                    settings.AppId = model.AppId;
+                    settings.AppSecret = protector.Protect(model.AppSecret);
+
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }

@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.Facebook.Settings;
@@ -9,6 +9,6 @@ namespace OrchardCore.Facebook.Services
     {
         Task<FacebookCoreSettings> GetSettingsAsync();
         Task UpdateSettingsAsync(FacebookCoreSettings settings);
-        Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(FacebookCoreSettings settings);
+        Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookCoreSettings settings);
     }
 }
