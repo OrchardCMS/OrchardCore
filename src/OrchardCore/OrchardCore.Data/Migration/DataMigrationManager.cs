@@ -77,7 +77,7 @@ namespace OrchardCore.Data.Migration
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
                 }
 
-                return (GetCreateMethod(dataMigration) != null);
+                return ((GetCreateMethod(dataMigration) ?? GetCreateAsyncMethod(dataMigration)) != null);
             });
 
             return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
