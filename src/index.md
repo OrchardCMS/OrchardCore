@@ -56,8 +56,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.0.0-beta2`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-beta2>
+The latest released version of Orchard Core is `1.0.0-beta3`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-beta3>
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
