@@ -53,7 +53,9 @@ namespace OrchardCore.ReCaptcha.ActionFilters
             }
 
             if (isRobot && !isValidCaptcha)
+            {
                 context.ModelState.AddModelError("ReCaptcha", T["Failed to validate captcha"]);
+            }
 
             await next();
 

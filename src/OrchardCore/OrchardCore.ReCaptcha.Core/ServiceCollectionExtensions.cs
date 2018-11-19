@@ -22,7 +22,9 @@ namespace OrchardCore.ReCaptcha.Core
             services.AddTransient<ReCaptchaService>();
 
             if (configure != null)
+            {
                 services.Configure(configure);
+            }
 
             return services;
         }

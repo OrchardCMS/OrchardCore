@@ -80,7 +80,9 @@ namespace OrchardCore.ReCaptcha.Services
             var isValid = !String.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);
 
             if (!isValid)
+            {
                 reportError("ReCaptcha", T["Failed to validate captcha"]);
+            }
 
             return isValid;
         }

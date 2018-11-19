@@ -24,7 +24,9 @@ namespace OrchardCore.ReCaptcha.Users.Handlers
         public async Task LoggingInAsync(Action<string, string> reportError)
         {
             if(_reCaptchaService.IsThisARobot())
+            {
                 await _reCaptchaService.ValidateCaptchaAsync(reportError);
+            }
         }
 
         public Task LoggingInFailedAsync()

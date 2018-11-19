@@ -13,14 +13,16 @@ namespace OrchardCore.ReCaptcha
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] {
+            return new[] 
+            {
                 ManageReCaptchaSettings,
             };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
+            return new[] 
+            {
                 new PermissionStereotype 
                 {
                     Name = "Administrator",
