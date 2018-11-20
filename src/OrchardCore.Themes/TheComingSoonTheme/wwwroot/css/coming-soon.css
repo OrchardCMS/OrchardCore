@@ -1,5 +1,19 @@
+/*!
+ * Start Bootstrap - Coming Soon v5.0.0 (https://startbootstrap.com/template-overviews/coming-soon)
+ * Copyright 2013-2018 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-coming-soon/blob/master/LICENSE)
+ */
+
 html {
   height: 100%;
+}
+
+body {
+  height: 100%;
+  min-height: 35rem;
+  position: relative;
+  font-family: 'Source Sans Pro';
+  font-weight: 300;
 }
 
 h1,
@@ -12,14 +26,6 @@ h6 {
   font-weight: 700;
 }
 
-body {
-  height: 100%;
-  min-height: 35rem;
-  position: relative;
-  font-family: 'Source Sans Pro';
-  font-weight: 300;
-}
-
 video {
   position: fixed;
   top: 50%;
@@ -28,6 +34,7 @@ video {
   min-height: 100%;
   width: auto;
   height: auto;
+  -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   z-index: 0;
 }
@@ -70,7 +77,9 @@ video {
   min-height: 35rem;
   height: 100%;
   background-color: rgba(0, 46, 102, 0.8);
+  -webkit-transform: skewY(4deg);
   transform: skewY(4deg);
+  -webkit-transform-origin: bottom right;
   transform-origin: bottom right;
 }
 
@@ -87,6 +96,7 @@ video {
 }
 
 .masthead .masthead-content .input-group-newsletter input {
+  height: auto;
   font-size: 1rem;
   padding: 1rem;
 }
@@ -108,7 +118,9 @@ video {
   }
   .masthead .masthead-bg {
     min-height: 0;
+    -webkit-transform: skewX(-8deg);
     transform: skewX(-8deg);
+    -webkit-transform-origin: top right;
     transform-origin: top right;
   }
   .masthead .masthead-content {
@@ -175,6 +187,7 @@ video {
     margin-bottom: 0;
   }
   .social-icons ul > li > a {
+    -webkit-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     font-size: 2rem;
     line-height: 4rem;
