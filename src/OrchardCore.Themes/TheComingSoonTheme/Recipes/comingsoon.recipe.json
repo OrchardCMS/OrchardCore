@@ -465,7 +465,7 @@
           "Name": "User Registration",
           "IsEnabled": true,
           "IsSingleton": false,
-          "DeleteFinishedWorkflows": false,
+          "DeleteFinishedWorkflows": true,
           "Activities": [
             {
               "ActivityId": "[js: variables('workflowActivityId')]",
