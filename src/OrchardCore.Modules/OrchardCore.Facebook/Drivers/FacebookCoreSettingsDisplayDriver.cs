@@ -57,7 +57,8 @@ namespace OrchardCore.Facebook.Drivers
                 var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
 
                 model.AppId = settings.AppId;
-                model.AppSecret = protector.Unprotect(settings.AppSecret);
+                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                    model.AppSecret = protector.Unprotect(settings.AppSecret);
 
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
@@ -76,6 +77,10 @@ namespace OrchardCore.Facebook.Drivers
                 var model = new FacebookCoreSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+                settings.AppId = model.AppId;
+                settings.AppSecret = protector.Protect(model.AppSecret);
+
                 foreach (var result in await _clientService.ValidateSettingsAsync(settings))
                 {
                     if (result != ValidationResult.Success)
@@ -88,11 +93,7 @@ namespace OrchardCore.Facebook.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-
-                    settings.AppId = model.AppId;
-                    settings.AppSecret = protector.Protect(model.AppSecret);
-
+                    await _clientService.UpdateSettingsAsync(settings);
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }

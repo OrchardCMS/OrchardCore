@@ -30,7 +30,7 @@ namespace OrchardCore.Facebook.Services
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();
+            var container = await _siteService.GetSiteSettingsAsync();            
             return container.As<FacebookLoginSettings>();
         }
 
