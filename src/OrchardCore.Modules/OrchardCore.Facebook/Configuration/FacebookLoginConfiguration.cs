@@ -79,9 +79,20 @@ namespace OrchardCore.Facebook.Configuration
                 return;
             }
             options.AppId = coreSettings.AppId;
-            options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(coreSettings.AppSecret);
+
+            try
+            {
+                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(coreSettings.AppSecret);
+            }
+            catch
+            {
+                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+            }
+
             if (!string.IsNullOrWhiteSpace(loginSettings.CallbackPath))
+            {
                 options.CallbackPath = loginSettings.CallbackPath;
+            }
         }
 
         public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
