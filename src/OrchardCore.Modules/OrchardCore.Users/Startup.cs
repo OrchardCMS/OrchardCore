@@ -24,6 +24,8 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
+using OrchardCore.Users.ViewModels;
+using Fluid;
 
 namespace OrchardCore.Users
 {
@@ -114,6 +116,11 @@ namespace OrchardCore.Users
     {
         private const string RegisterPath = "Register";
 
+        static RegistrationStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        }
+
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
@@ -138,6 +145,11 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
+
+        static ResetPasswordStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {

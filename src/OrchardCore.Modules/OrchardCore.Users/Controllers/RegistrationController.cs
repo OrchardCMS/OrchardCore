@@ -120,14 +120,22 @@ namespace OrchardCore.Users.Controllers
             {
                 return RedirectToAction(nameof(RegistrationController.Register), "Registration");
             }
+
             var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
-                return  NotFound();
+                return NotFound();
             }
+
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            return NotFound();
         }
 
         [Authorize]
@@ -155,7 +163,7 @@ namespace OrchardCore.Users.Controllers
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl }, "TemplateUserConfirmEmail");
+            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
 
             return callbackUrl;
         }
