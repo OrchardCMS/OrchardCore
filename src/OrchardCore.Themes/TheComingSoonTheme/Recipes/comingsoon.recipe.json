@@ -64,6 +64,7 @@
         "OrchardCore.Title",
 
         "OrchardCore.Users",
+        "OrchardCore.Users.Registration",
 
         "OrchardCore.Widgets",
         "OrchardCore.Workflows",
@@ -590,6 +591,20 @@
                 },
                 "Permanent": false
               }
+            },
+            {
+              "ActivityId": "44jhxf8baxnbe4g5z9gkc96g5b",
+              "Name": "AddModelValidationErrorTask",
+              "X": 650,
+              "Y": 520,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Inform user"
+                },
+                "Key": "Registration",
+                "ErrorMessage": "Thank you. A confirmation email has been sent."
+              }
             }
           ],
           "Transitions": [
@@ -650,6 +665,12 @@
             {
               "Id": 0,
               "SourceActivityId": "4h209bxt4e3yj73a9kk4dgtmcn",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "44jhxf8baxnbe4g5z9gkc96g5b"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "44jhxf8baxnbe4g5z9gkc96g5b",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "4pfedcmhy0ka66t6bds315vxw5"
             }

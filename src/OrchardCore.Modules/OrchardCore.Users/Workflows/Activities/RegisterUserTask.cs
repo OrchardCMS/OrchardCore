@@ -106,9 +106,9 @@ namespace OrchardCore.Users.Workflows.Activities
                     var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
-                    uriBuilder.Path = string.Format("OrchardCore.Users/Registration/ConfirmEmail?userId={0}&code={1}", user.Id, code);
+                    uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
+                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, code);
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
-
 
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
