@@ -70,6 +70,7 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -92,6 +93,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
