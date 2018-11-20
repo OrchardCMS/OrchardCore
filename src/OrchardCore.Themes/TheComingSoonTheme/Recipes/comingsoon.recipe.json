@@ -122,18 +122,17 @@
                 "ContentItemId": "4gjxgam51tfyf5vhj02zhvqecb",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
-                "DisplayText": null,
+                "DisplayText": "Twitter",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fa fa-twitter"
+                    "Text": "fab fa-twitter"
                   },
-                  "Link": {
-                    "Url": "https://twitter.com",
-                    "Text": "Twitter"
+                  "Url": {
+                    "Text": "https://twitter.com"
                   }
                 }
               },
@@ -142,18 +141,17 @@
                 "ContentItemId": "4e73aztdqsycs0ygegr02rjkx1",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
-                "DisplayText": null,
+                "DisplayText": "Facebook",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fa fa-facebook"
+                    "Text": "fab fa-facebook"
                   },
-                  "Link": {
-                    "Url": "https://facebook.com",
-                    "Text": "Facebook"
+                  "Url": {
+                    "Text": "https://facebook.com"
                   }
                 }
               },
@@ -162,18 +160,17 @@
                 "ContentItemId": "4kn15ap88bg611z3ynjvewxpdz",
                 "ContentItemVersionId": null,
                 "ContentType": "SocialIcon",
-                "DisplayText": null,
+                "DisplayText": "Instagram",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fa fa-instagram"
+                    "Text": "fab fa-instagram"
                   },
-                  "Link": {
-                    "Url": "https://instagram.com",
-                    "Text": "Instagram"
+                  "Url": {
+                    "Text": "https://instagram.com"
                   }
                 }
               }
@@ -335,6 +332,13 @@
               "PartName": "SocialIcon",
               "Name": "SocialIcon",
               "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
                 "Position": "0"
               }
             }
@@ -383,25 +387,19 @@
               "Name": "IconClass",
               "Settings": {
                 "DisplayName": "Icon Class",
-                "Editor": null,
-                "Hint": "The icon class to use",
+                "Editor": "IconPicker",
+                "Hint": "Select which icon to use for this social site.",
                 "Position": "0"
               }
             },
             {
-              "FieldName": "LinkField",
-              "Name": "Link",
+              "FieldName": "TextField",
+              "Name": "Url",
               "Settings": {
-                "DisplayName": "Link",
+                "DisplayName": "Social Site Url",
                 "Editor": null,
-                "Hint": null,
-                "HintLinkText": null,
-                "Required": false,
-                "LinkTextMode": 0,
-                "UrlPlaceholder": null,
-                "TextPlaceholder": null,
-                "DefaultUrl": null,
-                "DefaultText": null,
+                "Hint": "The url where the icon will link to.",
+                "Required": true,
                 "Position": "1"
               }
             }
@@ -427,7 +425,7 @@
               "Settings": {
                 "DisplayName": "Button",
                 "Editor": null,
-                "Hint": "text to display on submit button",
+                "Hint": "Text to display on submit button",
                 "Position": "2"
               }
             },
