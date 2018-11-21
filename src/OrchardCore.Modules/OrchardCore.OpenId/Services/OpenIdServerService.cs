@@ -94,7 +94,7 @@ namespace OrchardCore.OpenId.Services
             {
                 if (settings.CertificateStoreName == null)
                 {
-                    results.Add(new ValidationResult(T["A Certificate Store Name is required."], new[]
+                    results.Add(new ValidationResult(T["The certificate store name is required."], new[]
                     {
                         nameof(settings.CertificateStoreName)
                     }));
@@ -102,7 +102,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (settings.CertificateStoreLocation == null)
                 {
-                    results.Add(new ValidationResult(T["A Certificate Store Location is required."], new[]
+                    results.Add(new ValidationResult(T["The certificate store location is required."], new[]
                     {
                         nameof(settings.CertificateStoreLocation)
                     }));
