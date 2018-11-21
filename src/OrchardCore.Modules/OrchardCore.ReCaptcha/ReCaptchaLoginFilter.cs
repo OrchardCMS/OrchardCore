@@ -69,6 +69,9 @@ namespace OrchardCore.ReCaptcha
             var afterRegister = layout.Zones["AfterRegister"];
             afterRegister.Add(await _shapeFactory.New.ReCaptcha());
 
+            var afterResetPassword = layout.Zones["AfterResetPassword"];
+            afterResetPassword.Add(await _shapeFactory.New.ReCaptcha());
+
             await next();
             return;
         }
