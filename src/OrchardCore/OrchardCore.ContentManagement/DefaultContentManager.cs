@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -116,7 +117,7 @@ namespace OrchardCore.ContentManagement
                 contentItems[i] = await LoadAsync(contentItems[i]);
             }
             
-            return contentItems;
+            return contentItems.OrderBy(c => contentItemIds.ToImmutableArray().IndexOf(c.ContentItemId));
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
