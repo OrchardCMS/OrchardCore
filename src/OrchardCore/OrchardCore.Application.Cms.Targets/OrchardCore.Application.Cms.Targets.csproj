@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
   </ItemGroup>
 
@@ -37,6 +36,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
@@ -48,6 +48,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Facebook\OrchardCore.Facebook.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Feeds\OrchardCore.Feeds.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Flows\OrchardCore.Flows.csproj" PrivateAssets="none" />
@@ -92,6 +93,7 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 

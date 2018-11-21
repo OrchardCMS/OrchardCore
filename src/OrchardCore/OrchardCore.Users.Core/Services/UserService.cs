@@ -75,7 +75,7 @@ namespace OrchardCore.Users.Services
             }
 
             var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
-            
+
             if (user == null)
             {
                 return await Task.FromResult<IUser>(null);

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,9 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore\OrchardCore.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.BackgroundTasks.Abstractions\OrchardCore.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
@@ -18,7 +16,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
@@ -30,7 +27,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" />
-    <PackageReference Include="ncrontab" />
   </ItemGroup>
 
   <ItemGroup>

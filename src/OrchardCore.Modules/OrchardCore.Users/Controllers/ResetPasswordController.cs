@@ -88,9 +88,10 @@ namespace OrchardCore.Users.Controllers
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                 var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
-                await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl }, "TemplateUserLostPassword");
+                await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
+                
             }
 
             // If we got this far, something failed, redisplay form

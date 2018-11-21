@@ -23,10 +23,11 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
 #  - markdown.extensions.nl2br
-#  - markdown_fenced_code_tabs
+  - markdown_fenced_code_tabs:
+      template: 'default'
 
 # Page tree
-pages:
+nav:
     - About Orchard Core: index.md
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
@@ -57,6 +58,7 @@ pages:
         - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Flows: OrchardCore.Modules/OrchardCore.Flows/README.md
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
+        - Admin Trees: OrchardCore.Modules/OrchardCore.AdminTrees/README.md
     - Core Modules:
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
@@ -72,3 +74,4 @@ pages:
         - Tenants: OrchardCore.Modules/OrchardCore.Tenants/README.md
         - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md
         - DataProtection (Azure Storage): OrchardCore.Modules/OrchardCore.DataProtection.Azure/README.md
+        - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md

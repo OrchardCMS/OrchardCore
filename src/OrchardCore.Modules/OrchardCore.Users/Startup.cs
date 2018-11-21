@@ -25,6 +25,8 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
+using OrchardCore.Users.ViewModels;
+using Fluid;
 
 namespace OrchardCore.Users
 {
@@ -69,6 +71,7 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -91,6 +94,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
@@ -111,6 +116,11 @@ namespace OrchardCore.Users
     public class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = "Register";
+
+        static RegistrationStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -136,6 +146,11 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
+
+        static ResetPasswordStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {

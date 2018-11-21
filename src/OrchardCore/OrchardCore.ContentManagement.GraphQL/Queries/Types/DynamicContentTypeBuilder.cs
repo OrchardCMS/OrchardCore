@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public class DynamicContentTypeBuilder: IContentTypeBuilder
+    public class DynamicContentTypeBuilder : IContentTypeBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -23,14 +23,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             foreach (var part in contentTypeDefinition.Parts)
             {
+                var partName = part.Name;
+
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(part.Name)) continue;
+                if (contentItemType.HasField(partName)) continue;
 
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
-                
+
                 // When the part has the same name as the content type, it is the main part for
-                // the content type's fields so we collpase them into the parent type.
+                // the content type's fields so we collapse them into the parent type.
                 if (part.ContentTypeDefinition.Name == part.PartDefinition.Name)
                 {
                     foreach (var field in part.PartDefinition.Fields)
@@ -50,11 +52,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
-                        part.Name,
+                        partName,
                         part.PartDefinition.Name,
                         resolve: context =>
                         {
-                            var nameToResolve = context.ReturnType.Name;
+                            var nameToResolve = partName;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
