@@ -3,33 +3,33 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Forms.Services;
+using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Forms.Workflows.Activities
+namespace OrchardCore.ReCaptcha.Workflows
 {
-    public class ValidateNoCaptchaTask : TaskActivity
+    public class ValidateReCaptchaTask : TaskActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly NoCaptchaClient _noCaptchaClient;
+        private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public ValidateNoCaptchaTask(
+        public ValidateReCaptchaTask(
             IHttpContextAccessor httpContextAccessor,
-            NoCaptchaClient noCaptchaClient,
+            ReCaptchaService reCaptchaService,
             IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<ValidateNoCaptchaTask> localizer
+            IStringLocalizer<ValidateReCaptchaTask> localizer
         )
         {
             _httpContextAccessor = httpContextAccessor;
-            _noCaptchaClient = noCaptchaClient;
+            _reCaptchaService = reCaptchaService;
             _updateModelAccessor = updateModelAccessor;
             T = localizer;
         }
 
-        public override string Name => nameof(ValidateNoCaptchaTask);
+        public override string Name => nameof(ValidateReCaptchaTask);
         public override LocalizedString Category => T["Validation"];
         public override bool HasEditor => false;
 
@@ -42,20 +42,17 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var captchaResponse = httpContext.Request.Form["g-recaptcha-response"];
-            var isValid = await _noCaptchaClient.VerifyAsync(captchaResponse);
-            var outcome = isValid ? "Valid" : "Invalid";
+            var outcome = "Valid";
 
-            if (!isValid)
+            await _reCaptchaService.ValidateCaptchaAsync((key, error) =>
             {
                 var updater = _updateModelAccessor.ModelUpdater;
-
+                outcome = "Invalid";
                 if (updater != null)
                 {
-                    updater.ModelState.TryAddModelError("g-recaptcha-response", T["Captcha validation failed. Try again."]);
+                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, T["Captcha validation failed. Try again."]);
                 }
-            }
+            });
 
             return Outcomes("Done", outcome);
         }

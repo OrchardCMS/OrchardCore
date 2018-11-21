@@ -37,6 +37,7 @@
         "OrchardCore.DynamicCache",
 
         "OrchardCore.Email",
+        "OrchardCore.ReCaptcha",
 
         "OrchardCore.Features",
         "OrchardCore.Flows",
@@ -228,13 +229,13 @@
                 "Id": 0,
                 "ContentItemId": "4tnv3pbfg0wpn7r9vv9tmfg6nm",
                 "ContentItemVersionId": null,
-                "ContentType": "NoCaptcha",
+                "ContentType": "ReCaptcha",
                 "DisplayText": null,
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
                 "Author": "admin",
-                "NoCaptchaPart": {},
+                "ReCaptchaPart": {},
                 "FlowMetadata": {
                   "Alignment": 3,
                   "Size": 100
@@ -505,7 +506,7 @@
                 },
                 "Forks": [
                   "Validate Email",
-                  "Validate NoCaptcha"
+                  "Validate ReCaptcha"
                 ]
               }
             },
@@ -525,7 +526,7 @@
             },
             {
               "ActivityId": "45gqn0c34pnzv0e0z5anc3dpmk",
-              "Name": "ValidateNoCaptchaTask",
+              "Name": "ValidateReCaptchaTask",
               "X": 1110,
               "Y": 90,
               "IsStart": false,
@@ -623,7 +624,7 @@
             {
               "Id": 0,
               "SourceActivityId": "4whqxbdn0d42524swmh49era4x",
-              "SourceOutcomeName": "Validate NoCaptcha",
+              "SourceOutcomeName": "Validate ReCaptcha",
               "DestinationActivityId": "45gqn0c34pnzv0e0z5anc3dpmk"
             },
             {
