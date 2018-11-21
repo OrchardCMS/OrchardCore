@@ -13,7 +13,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var menuItems = contentItem.As<MenuItemsListPart>();
+    JArray termsArray = contentItem.Content.Terms;
     var index = 0;
 }
 
@@ -23,25 +23,34 @@
             <div class="related">
                 <a asp-action="Edit"
                    asp-controller="Admin"
-                   asp-route-area="OrchardCore.Menu"
-                   asp-route-menuContentItemId="@Model.MenuPart.ContentItem.ContentItemId"
-                   asp-route-menuItemId="@Model.ContentItem.ContentItemId"
+                   asp-route-area="OrchardCore.Taxonomies"
+                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
                    class="btn btn-success btn-sm">
                     @T["Edit"]
                 </a>
-                <button type="button" class="btn btn-primary btn-sm " data-toggle="modal" data-target="#modalMenuItems" data-menuitemid="@Model.ContentItem.ContentItemId">
+                <a class="btn btn-primary btn-sm" 
+                    asp-route-action="Create" 
+                    asp-route-controller="Admin" 
+                    asp-route-id="@Model.TaxonomyPart.TermContentType" 
+                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId" 
+                    asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                    asp-route-area="OrchardCore.Taxonomies">
                     @T["Add"]
-                </button>
+                </a>
                 <a asp-action="Delete"
                    asp-controller="Admin"
-                   asp-route-area="OrchardCore.Menu"
-                   asp-route-menuContentItemId="@Model.MenuPart.ContentItem.ContentItemId"
-                   asp-route-menuItemId="@Model.ContentItem.ContentItemId"
+                   asp-route-area="OrchardCore.Taxonomies"
+                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
                    itemprop="RemoveUrl UnsafeUrl"
                    class="btn btn-danger btn-sm">
                     @T["Delete"]
                 </a>
             </div>
+            
+            <span>@contentItem</span>
+            
             @if (Model.Content != null)
             {
                 @await DisplayAsync(Model.Content)
@@ -50,21 +59,18 @@
     </div>
 
     <ol class="menu-item menu-item-links">
-        @if (menuItems != null)
+        @if (termsArray != null)
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            @foreach (var menuItem in menuItems.MenuItems)
+            @foreach (JObject termObject in termsArray)
             {
-
-                dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                menuItemShape.MenuPart = Model.MenuPart;
-                menuItemShape.Index = Model.Index + "-" + index++;
-                @await DisplayAsync(menuItemShape)
+                var term = termObject.ToObject<ContentItem>();
+                dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
+                termShape.TaxonomyPart = Model.TaxonomyPart;
+                termShape.Index = Model.Index + "-" + index++;
+                @await DisplayAsync(termShape)
             }
         }
     </ol>
-    @*<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalMenuItems" data-menuitemid="@Model.ContentItem.ContentItemId">
-            @T["+"]
-        </button>*@
 </li>

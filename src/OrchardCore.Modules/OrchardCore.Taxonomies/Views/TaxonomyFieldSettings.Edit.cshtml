@@ -1,0 +1,59 @@
+
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Records
+@using YesSql;
+
+@model OrchardCore.Taxonomies.Settings.TaxonomyFieldSettings
+
+@inject ISession Session
+
+@{
+    var taxonomies = await Session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentType == "Taxonomy" && x.Latest).ListAsync();
+}
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
+</fieldset>
+
+<div class="row">
+    <fieldset class="form-group col-sm-6">
+        <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
+        <select asp-for="TaxonomyContentItemId" class="form-control">
+            @foreach (var taxonomy in taxonomies)
+            {
+                <option value="@taxonomy.ContentItemId">@taxonomy</option>
+            }
+        </select>
+    </fieldset>
+</div>
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="Required" type="checkbox" class="form-check-input" />
+            <span class="hint">@T["Check if the field is required."]</span>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="Unique" type="checkbox" class="form-check-input" />
+            <span class="hint">@T["Check if only one value can be selected."]</span>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="LeavesOnly" type="checkbox" class="form-check-input" />
+            <span class="hint">@T["Check if only the leaves of the taxonomy can be selected."]</span>
+        </label>
+    </div>
+</fieldset>
