@@ -39,7 +39,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddDefaultServices(services);
                 AddShellServices(services);
                 AddExtensionServices(builder);
-
                 AddStaticFiles(builder);
 
                 AddAntiForgery(builder);

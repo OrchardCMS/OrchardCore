@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Features
+namespace OrchardCore.BackgroundTasks
 {
     public class AdminMenu : INavigationProvider
     {
@@ -22,12 +22,13 @@ namespace OrchardCore.Features
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Modules"], "6", deployment => deployment
-                        .Action("Features", "Admin", new { area = "OrchardCore.Features" })
-                        .Permission(Permissions.ManageFeatures)
-                        .LocalNav()
+                .Add(T["Configuration"], configuration => configuration
+                    .Add(T["Tasks"], "10", tasks => tasks
+                        .Add(T["Background Tasks"], "10", backgroundTasks => backgroundTasks
+                            .Action("Index", "BackgroundTask", new { area = "OrchardCore.BackgroundTasks" })
+                            .Permission(Permissions.ManageBackgroundTasks)
+                            .LocalNav()
+                        )
                     )
                 );
 

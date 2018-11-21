@@ -9,7 +9,7 @@ using OrchardCore.OpenId.Abstractions.Managers;
 
 namespace OrchardCore.OpenId.Tasks
 {
-    [BackgroundTask(Group = "OrchardCore.OpenId")]
+    [BackgroundTask(Schedule = "*/30 * * * *", Description = "Remove orphaned tokens / authorizations.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger<OpenIdBackgroundTask> _logger;

@@ -111,6 +111,7 @@ namespace OrchardCore.Environment.Shell
 
             return shell;
         }
+
         public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
         {
             return (await GetScopeAndContextAsync(settings)).Scope;
