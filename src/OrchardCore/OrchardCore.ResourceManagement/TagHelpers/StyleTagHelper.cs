@@ -21,10 +21,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
 
-        public bool UseCdn { get; set; }
+        public bool? UseCdn { get; set; }
         public string Condition { get; set; }
         public string Culture { get; set; }
-        public bool Debug { get; set; }
+        public bool? Debug { get; set; }
         public string Dependencies { get; set; }
         public string Version { get; set; }
 
@@ -60,7 +60,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
@@ -82,14 +85,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                setting.UseCdn(UseCdn);
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
@@ -141,14 +150,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                setting.UseCdn(UseCdn);
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
