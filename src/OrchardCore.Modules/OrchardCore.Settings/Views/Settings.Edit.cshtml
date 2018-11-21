@@ -14,12 +14,12 @@
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
-<fieldset class="form-group form-check" asp-validation-class-for="UseCdn">
-    <label class="form-check-label" asp-for="UseCdn">
-        <input asp-for="UseCdn" type="checkbox" class="form-check-input content-preview-select" checked="@Model.UseCdn" /> 
-        @T["Use CDN (Content Delivery Network)"]
+<fieldset class="form-group" asp-validation-class-for="UseCdn">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
+        <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use CDN (Content Delivery Network)"]</label>
         <span class="hint">@T[" — Whether the defined CDN value is used for scripts and stylesheets, or their local version"]</span>
-    </label>
+    </div>
 </fieldset>
 
 <div class="row">
