@@ -58,44 +58,43 @@ namespace OrchardCore.Facebook.Drivers
 
                 model.AppId = settings.AppId;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
+                }
 
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookCoreSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == FacebookConstants.Features.Core)
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
+                return null;
+            }
 
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            var model = new FacebookCoreSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+            settings.AppId = model.AppId;
+            settings.AppSecret = protector.Protect(model.AppSecret);
+
+            foreach (var result in await _clientService.ValidateSettingsAsync(settings))
+            {
+                if (result != ValidationResult.Success)
                 {
-                    return null;
+                    var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                    context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                 }
+            }
 
-                var model = new FacebookCoreSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-                settings.AppId = model.AppId;
-                settings.AppSecret = protector.Protect(model.AppSecret);
-
-                foreach (var result in await _clientService.ValidateSettingsAsync(settings))
-                {
-                    if (result != ValidationResult.Success)
-                    {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
-                    }
-                }
-
-                // If the settings are valid, reload the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _clientService.UpdateSettingsAsync(settings);
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
-                }
+            // If the settings are valid, reload the current tenant.
+            if (context.Updater.ModelState.IsValid)
+            {
+                await _clientService.UpdateSettingsAsync(settings);
+                await _shellHost.ReloadShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(settings, context);
