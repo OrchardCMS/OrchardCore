@@ -67,7 +67,7 @@ namespace OrchardCore.Facebook.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookCoreSettings settings, BuildEditorContext context)
         {
-            //if (context.GroupId == FacebookConstants.Features.Core)
+            if (context.GroupId == FacebookConstants.Features.Core)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
 
