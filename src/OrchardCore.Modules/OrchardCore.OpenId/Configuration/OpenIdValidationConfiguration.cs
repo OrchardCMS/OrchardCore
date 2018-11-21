@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -143,7 +144,7 @@ namespace OrchardCore.OpenId.Configuration
                 // to choose the valid audiences, as this would otherwise allow it
                 // to validate/introspect tokens meant to be used with another tenant.
                 options.TokenValidationParameters.ValidAudience = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                options.TokenValidationParameters.IssuerSigningKeys = service.GetSigningKeysAsync().GetAwaiter().GetResult();
+                options.TokenValidationParameters.IssuerSigningKeys = GetSigningKeysAsync(service).GetAwaiter().GetResult();
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
@@ -252,6 +253,21 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             return settings;
+        }
+
+        private async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync(IOpenIdServerService service)
+        {
+            // If no signing credentials were found, generate a new key and persist it.
+            var keys = await service.GetSigningKeysAsync();
+            if (keys.IsDefaultOrEmpty)
+            {
+                var key = await service.GenerateSigningKeyAsync();
+                await service.AddSigningKeyAsync(key);
+
+                return ImmutableArray.Create(key);
+            }
+
+            return keys;
         }
     }
 }

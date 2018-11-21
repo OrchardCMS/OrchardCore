@@ -58,7 +58,6 @@ namespace OrchardCore.OpenId.Drivers
 
             return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
-                model.TestingModeEnabled = settings.TestingModeEnabled;
                 model.AccessTokenFormat = settings.AccessTokenFormat;
                 model.Authority = settings.Authority;
 
@@ -111,7 +110,6 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdServerSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.TestingModeEnabled = model.TestingModeEnabled;
                 settings.AccessTokenFormat = model.AccessTokenFormat;
                 settings.Authority = model.Authority;
 

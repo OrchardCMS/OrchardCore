@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 
@@ -7,7 +8,6 @@ namespace OrchardCore.OpenId.Settings
 {
     public class OpenIdServerSettings
     {
-        public bool TestingModeEnabled { get; set; }
         public TokenFormat AccessTokenFormat { get; set; }
         public string Authority { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }
@@ -19,11 +19,20 @@ namespace OrchardCore.OpenId.Settings
         public PathString UserinfoEndpointPath { get; set; }
         public ISet<string> GrantTypes { get; } = new HashSet<string>(StringComparer.Ordinal);
         public bool UseRollingTokens { get; set; }
+        public IList<SigningKey> SigningKeys { get; } = new List<SigningKey>();
 
         public enum TokenFormat
         {
             Encrypted = 0,
             JWT = 1
+        }
+
+        public class SigningKey
+        {
+            public DateTimeOffset? CreationDate { get; set; }
+            public DateTimeOffset? ExpirationDate { get; set; }
+            public byte[] Payload { get; set; }
+            public string Type { get; set; }
         }
     }
 }

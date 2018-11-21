@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -97,13 +98,17 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+            // To make configuration easier and avoid having to configure it in two different features,
+            // the transport security requirement enforced by OpenIddict by default is always turned off.
+            options.AllowInsecureHttp = true;
+
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
             options.UseRollingTokens = settings.UseRollingTokens;
-            options.AllowInsecureHttp = settings.TestingModeEnabled;
 
-            foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
+            foreach (var key in GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
             }
@@ -149,7 +154,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             options.TokenValidationParameters.ValidAudience = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-            options.TokenValidationParameters.IssuerSigningKeys = _serverService.GetSigningKeysAsync().GetAwaiter().GetResult();
+            options.TokenValidationParameters.IssuerSigningKeys = GetSigningKeysAsync().GetAwaiter().GetResult();
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
@@ -203,6 +208,21 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             return settings;
+        }
+
+        private async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
+        {
+            // If no signing credentials were found, generate a new key and persist it.
+            var keys = await _serverService.GetSigningKeysAsync();
+            if (keys.IsDefaultOrEmpty)
+            {
+                var key = await _serverService.GenerateSigningKeyAsync();
+                await _serverService.AddSigningKeyAsync(key);
+
+                return ImmutableArray.Create(key);
+            }
+
+            return keys;
         }
     }
 }

@@ -178,5 +178,6 @@
 
   <PropertyGroup>
     <SystemComponentModelAnnotations>4.5.0</SystemComponentModelAnnotations>
+    <SystemSecurityCryptographyCng>4.5.0</SystemSecurityCryptographyCng>
   </PropertyGroup>
 </Project>
