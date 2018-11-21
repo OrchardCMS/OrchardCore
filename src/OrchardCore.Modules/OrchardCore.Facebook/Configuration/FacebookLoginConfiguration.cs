@@ -89,7 +89,7 @@ namespace OrchardCore.Facebook.Configuration
                 _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (!string.IsNullOrWhiteSpace(loginSettings.CallbackPath))
+            if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }

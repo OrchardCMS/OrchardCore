@@ -223,16 +223,18 @@ namespace OrchardCore.Users.Controllers
                 else
                     model.UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.GivenName) ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Name);
 
+                ViewData["ReturnUrl"] = returnUrl;
+
                 // If the user does not have an account, check if he can create an account.
                 if ((!model.IsExistingUser && !(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister))
                 {
-                    _logger.LogInformation("Site does not allow user registration.");
-                    return NotFound();
+                    string message = T["Site does not allow user registration."];
+                    _logger.LogInformation(message);
+                    ModelState.AddModelError("", message);
+                    return View(nameof(Login));
                 }
 
-                ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
-
                 return View("ExternalLogin", model);
             }
         }
