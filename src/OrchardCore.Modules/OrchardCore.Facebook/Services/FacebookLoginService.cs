@@ -30,7 +30,7 @@ namespace OrchardCore.Facebook.Services
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();            
+            var container = await _siteService.GetSiteSettingsAsync();
             return container.As<FacebookLoginSettings>();
         }
 
@@ -40,7 +40,6 @@ namespace OrchardCore.Facebook.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-
             var container = await _siteService.GetSiteSettingsAsync();
             container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
@@ -54,15 +53,6 @@ namespace OrchardCore.Facebook.Services
             }
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
-
-            if (string.IsNullOrEmpty(settings.CallbackPath))
-            {
-                results.Add(new ValidationResult(T["The callback path is required."], new[]
-                {
-                    nameof(settings.CallbackPath)
-                }));
-            }
-
             return Task.FromResult<IEnumerable<ValidationResult>>(results);
         }
     }

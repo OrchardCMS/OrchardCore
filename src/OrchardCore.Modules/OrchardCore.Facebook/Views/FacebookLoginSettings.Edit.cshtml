@@ -7,8 +7,8 @@
 
 <fieldset class="form-group" asp-validation-class-for="CallbackPath">
     <label>@T["CallbackPath"] <span asp-validation-for="CallbackPath"></span></label>
-    <input asp-for="CallbackPath" class="form-control" />
-    <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives. e.g, <em>/signin-facebook</em>"]</span>
+    <input asp-for="CallbackPath" class="form-control" placeholder="/signin-facebook"/>
+    <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
 </fieldset>
 
 

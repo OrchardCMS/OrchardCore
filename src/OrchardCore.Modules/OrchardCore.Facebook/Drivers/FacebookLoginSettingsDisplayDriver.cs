@@ -46,26 +46,23 @@ namespace OrchardCore.Facebook.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
-            {
-                return null;
-            }
-
             if (context.GroupId == FacebookConstants.Features.Login)
             {
+                var user = _httpContextAccessor.HttpContext?.User;
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                {
+                    return null;
+                }
+
                 var model = new FacebookLoginSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
                     settings.CallbackPath = model.CallbackPath;
-
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
-
             return await EditAsync(settings, context);
         }
     }
