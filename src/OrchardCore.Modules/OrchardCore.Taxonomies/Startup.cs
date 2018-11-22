@@ -1,5 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -7,12 +8,15 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.GraphQL;
 using OrchardCore.Taxonomies.Handlers;
 using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
@@ -47,6 +51,26 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
+            services.AddLiquidFilter<InheritedTermsFilter>("inherited_terms");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    public class GraphQLStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddObjectGraphType<TaxonomyPart, TaxonomyPartQueryObjectType>();
+            services.AddObjectGraphType<TaxonomyField, TaxonomyFieldQueryObjectType>();
         }
     }
 }

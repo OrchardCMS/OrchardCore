@@ -65,7 +65,7 @@ public static class TaxonomyOrchardHelperExtensions
         return await contentManager.LoadAsync(contentItems);
     }
 
-    private static ContentItem FindTerm(JArray termsArray, string termContentItemId)
+    internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
     {
         foreach(JObject term in termsArray)
         {
@@ -90,7 +90,7 @@ public static class TaxonomyOrchardHelperExtensions
         return null;
     }
 
-    private static bool FindTermHierarchy(JArray termsArray, string termContentItemId, List<ContentItem> terms)
+    internal static bool FindTermHierarchy(JArray termsArray, string termContentItemId, List<ContentItem> terms)
     {
         foreach (JObject term in termsArray)
         {

@@ -63,6 +63,51 @@ Returns the list of terms including their parents.
 
 Provides a way to query content items that are categorized with specific terms.
 
+
+## Liquid Tags
+
+### taxonomy_terms
+
+The `taxonomy_terms` filter loads the specified term content items.
+
+#### Example 
+
+The following example lists all the terms related to the **Colors** field on the **BlogPost**
+content type, then renders them.
+
+```liquid
+{% assign colors = Model.ContentItem.Content.BlogPost.Colors | taxonomy_terms %}
+{% for c in colors %}
+  {{ c }}
+{% endfor %}
+```
+
+The `taxonomy_terms` also accepts term content item ids as input, as long as the first
+argument is a taxonomy content item id.
+
+#### Example
+
+The following example displays all the colors and their hierarchy
+
+```liquid
+{% assign taxonomyId = Model.ContentItem.Content.BlogPost.Colors.TaxonomyContentItemId %}
+
+{% for colorId in Model.ContentItem.Content.BlogPost.Colors.TermContentItemIds %}
+  <div>
+    {% assign parentColors = colorId | inherited_terms: taxonomyId %}
+    {% for c in  parentColors %}
+      {{ c }}
+    {% endfor %}
+  </div>
+{% endfor %}
+```
+
+### inherited_terms
+
+The `inherited_terms` filter loads all the parents of a given term. The input must be
+a term content item or content item id. The first argument must be the taxonomy content 
+item or content item id.
+
 ## Taxonomy Index
 
 The `TaxonomyIndex` SQL table containes a list of all content items that are associated 
