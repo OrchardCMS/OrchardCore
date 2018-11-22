@@ -23,22 +23,9 @@ namespace OrchardCore.Taxonomies
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
                 .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
-            );
-
-            return 1;
-        }
-
-        public int UpdateFrom1()
-        {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", menu => menu
                 .WithPart("TaxonomyPart", part => part.WithPosition("3"))
             );
 
-            return 2;
-        }
-
-        public int UpdateFrom2()
-        {
             SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -56,7 +43,7 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
-            return 3;
+            return 1;
         }
     }
 

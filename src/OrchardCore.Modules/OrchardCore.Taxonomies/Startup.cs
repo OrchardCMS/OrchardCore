@@ -14,7 +14,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
-using OrchardCore.Taxonomies.Handlers;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
@@ -40,7 +39,6 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IPermissionProvider, Permissions>();
 
             // Taxonomy Part
-            services.AddScoped<IContentHandler, TaxonomyContentHandler>();
             services.AddScoped<IContentPartDisplayDriver, TaxonomyPartDisplayDriver>();
             services.AddSingleton<ContentPart, TaxonomyPart>();
 
