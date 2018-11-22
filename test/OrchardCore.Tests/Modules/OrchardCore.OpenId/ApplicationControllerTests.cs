@@ -98,9 +98,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             Assert.Equal(expectValidModel, controller.ModelState.IsValid);
         }
 
-        [Theory(Skip = "Multi uri is not implemented yet see https://github.com/OrchardCMS/OrchardCore/pull/2165")]
-        [InlineData("nonUrlString", false)]
-        [InlineData("http://localhost http://localhost:8080 nonUrlString", false)]
+        [Theory]
+        //[InlineData("nonUrlString", false)]
+        //[InlineData("http://localhost http://localhost:8080 nonUrlString", false)]
         [InlineData("http://localhost http://localhost:8080", true)]
         public async Task RedirectUrisAreValid(string uris, bool expectValidModel)
         {
