@@ -245,8 +245,8 @@ namespace OrchardCore.Lucene
                         }
                         break;
                     case DocumentIndex.Types.GeoPoint:
-                        var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Key);
-                        if (entry.Value.Value is DocumentIndex.Point point)
+                        var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
+                        if (entry.Value is DocumentIndex.Point point)
                         {
                             var geoPoint = _ctx.MakePoint(point.X, point.Y);
                             foreach (var field in strategy.CreateIndexableFields(geoPoint))

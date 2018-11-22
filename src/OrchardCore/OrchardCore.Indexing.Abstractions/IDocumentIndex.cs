@@ -49,6 +49,11 @@ namespace OrchardCore.Indexing
             Entries.Add(new DocumentIndexEntry(name, value, Types.Number, options));
         }
 
+        public void Set(string name, Point value, DocumentIndexOptions options)
+        {
+            Entries.Add(new DocumentIndexEntry(name, value, Types.GeoPoint, options));
+        }
+
         public string ContentItemId { get; }
 
         public enum Types

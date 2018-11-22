@@ -9,12 +9,14 @@ namespace OrchardCore.Spatial.Indexing
         public override Task BuildIndexAsync(CoordinateField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(
-                new DocumentIndex.Point
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, new DocumentIndex.Point
                 {
                     X = field.Longitude,
                     Y = field.Latitude
-                }, DocumentIndex.Types.GeoPoint, options));
+                }, options);
+            }
 
             return Task.CompletedTask;
         }
