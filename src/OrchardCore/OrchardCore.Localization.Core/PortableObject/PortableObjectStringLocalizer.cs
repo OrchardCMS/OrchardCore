@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Localization.PortableObject
 {
-    public class PortableObjectStringLocalizer : IStringLocalizer
+    public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
         private readonly ILogger _logger;
@@ -48,37 +48,10 @@ namespace OrchardCore.Localization.PortableObject
         {
             get
             {
-                if (name == null)
-                {
-                    throw new ArgumentNullException(nameof(name));
-                }
+                var (translation, argumentsWithCount) = GetTranslation(name, arguments);
+                var formatted = string.Format(translation.Value, argumentsWithCount);
 
-                // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
-                if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
-                {
-                    var translation = GetTranslation(name, Context, pluralArgument.Count);
-                    object[] argumentsWithCount;
-
-                    if (pluralArgument.Arguments.Length > 0)
-                    {
-                        argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
-                        argumentsWithCount[0] = pluralArgument.Count;
-                        Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
-                    }
-                    else
-                    {
-                        argumentsWithCount = new object[] { pluralArgument.Count };
-                    }
-
-                    var formatted = string.Format(translation ?? GetTranslation(pluralArgument.Forms, pluralArgument.Count), argumentsWithCount);
-                    return new LocalizedString(name, formatted, translation == null);
-                }
-                else
-                {
-                    var translation = this[name];
-                    var formatted = string.Format(translation, arguments);
-                    return new LocalizedString(name, formatted, translation.ResourceNotFound);
-                }
+                return new LocalizedString(name, formatted, translation.ResourceNotFound);
             }
         }
 
@@ -90,6 +63,40 @@ namespace OrchardCore.Localization.PortableObject
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             return new PortableObjectStringLocalizer(culture, Context, _localizationManager, _logger);
+        }
+
+        public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
+            if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+            {
+                var translation = GetTranslation(name, Context, pluralArgument.Count);
+                object[] argumentsWithCount;
+
+                if (pluralArgument.Arguments.Length > 0)
+                {
+                    argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
+                    argumentsWithCount[0] = pluralArgument.Count;
+                    Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
+                }
+                else
+                {
+                    argumentsWithCount = new object[] { pluralArgument.Count };
+                }
+
+                translation = translation ?? GetTranslation(pluralArgument.Forms, pluralArgument.Count);
+                return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
+            }
+            else
+            {
+                var translation = this[name];
+                return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
+            }
         }
 
         private string GetTranslation(string[] pluralForms, int? count)

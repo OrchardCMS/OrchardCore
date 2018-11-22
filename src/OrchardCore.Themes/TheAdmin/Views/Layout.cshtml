@@ -10,14 +10,16 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
 
-    <script asp-name="font-awesome" use-cdn="true" at="Foot" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" use-cdn="true" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script asp-name="font-awesome" at="Foot" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.min.js" debug-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
 
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
 
     @await RenderSectionAsync("Header", required: false)
 </head>
@@ -41,7 +43,7 @@
         </div>
 
         <div id="ta-left-sidebar">
-            <button class="leftbar-compactor" type="button"><span> <i class="fas fa-bars" aria-hidden="false"></i> </span></button>
+            <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
             @await RenderSectionAsync("Navigation", required: false)            
         </div>
 

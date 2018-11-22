@@ -11,17 +11,5 @@
       "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/editors/trumbowyg.media.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.media.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/editors/simplemde.media.js"
-    ],
-    "output": "wwwroot/Scripts/simplemde.media.js"
   }
 ]

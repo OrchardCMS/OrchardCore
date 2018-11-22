@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Services;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;

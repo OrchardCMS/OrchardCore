@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
-                    services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
+                    services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                     services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
                     services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();

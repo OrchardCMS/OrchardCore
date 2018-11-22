@@ -30,7 +30,7 @@ the `ShapeMetadata`). The markup will be retrieved from the cache and returned a
 ## Invalidating cached sections
 If a cached section is invalidated, the markup for the section will be regenerated on the next request, and then placed back into the cache for subsequent requests to take advantage of.
 
-- If its children are still cached then their cached value will be used.
+- If its children are still cached, then their cached value will be used.
 - Invalidating a block will also invalidate all parent blocks.
 
 For instance, if `Section B2` is invalidated, `Section B` will also be invalidated. When the Layout is rendered, the `Section B` code will run 
@@ -38,7 +38,7 @@ again, as will `Section B2`, but the cached content of `Section B1` will be reus
 
 Cached sections can define dependencies, which allows the cache to know when the cached value should be invalidated. 
 
-For example- if a cache section includes the body of a content item, you may want to automatically invalidate this cache section whenever that content item changes.
+For example, if a cache section includes the body of a content item, you may want to automatically invalidate this cache section whenever that content item changes.
 You can do this by adding the dependencies `contentitemid:{ContentItemId}` to the cache section. 
 
 Cached sections can also be configured with a sliding expiration window, an absolute expiration window, or both. 
@@ -61,7 +61,7 @@ An example of this would be a header section that is included on every page on t
 
 You can do this by adding 'vary by' values (called contexts) to the cache policy of a cached section.
 
-Adding a `user` context to the header example given above would create a unique cache item for each user that logs in to your site
+Adding a `user` context to the header example given above would create a unique cache item for each user that logs in to your site.
 
 Contexts are hierarchical. For instance if a shape varies by `user` and `user.roles` contexts, only the `user` value will be used
 as it's more specialized than the `user.roles` one.
@@ -88,7 +88,7 @@ Sometimes you may want to vary by a known value that is not an available context
 
 For example: You may wish to cache all your blog posts so that you can quickly display lists of your posts throughout your site. If the cache ID for the cache block was `blog-post`, you can use a known value as a context to vary the cache item for each blog post. In this case, you could use the Content Item ID as a context:
 
-```
+```liquid
 {% cache "blog-post-summary", vary_by: Model.ContentItemId %}
     ...
 {% endcache %}
@@ -101,7 +101,7 @@ Cached sections can be configured to encompass a shape, or they can be explicitl
 
 `ShapeMetadata.Cache(string cacheId)`
 
-When called on a shape instances, marks the shape as being cached. Returns a `CacheContext` object.
+When called on a shape instance, marks the shape as being cached. Returns a `CacheContext` object.
 
 Example: `myShape.Cache("myshape")`
 
@@ -109,7 +109,7 @@ Example: `myShape.Cache("myshape")`
 
 | Method | Description |
 | --------- | ----------- |
-| `WithDuration(Timespan)` | Cache the shape for the specific amount of time. |
+| `WithDuration(Timespan)` | Cache the shape for the specified amount of time. |
 | `WithSlidingExpiration(Timespan)` | Cache the shape for a specific amount of time with a sliding window. |
 | `AddContext(params string[])` | Varies the cached content on the specified context values. |
 | `RemoveContext(string)` | Removes the specified context. |
@@ -133,12 +133,12 @@ When using shape tag helpers, the following attributes can be used:
 | `cache-context` | `cache_context` | A set of space/comma-separated context values. | No |
 | `cache-dependency` | `cache_dependency` | A set of space/comma-separated dependency values. | No |
 | `cache-tag` | `cache_tag` | A set of space/comma-separated tag values. | No |
-| `cache-fixed-duration` | `cache_expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `cache-sliding-duration` | `cache_expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-fixed-duration` | `cache_fixed_duration` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| `cache-sliding-duration` | `cache_sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 
-e.g.: to cache the menu shape in a liquid template, you would use this markup:
+For example, to cache the menu shape in a liquid template, you would use this markup:
 
-`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}`
+`{% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}`
 
 ### Liquid cache block
 The liquid `cache` block can be used to cache sections of markup. `cache` blocks can be nested.
@@ -146,23 +146,23 @@ The liquid `cache` block can be used to cache sections of markup. `cache` blocks
 #### Arguments
 | Liquid Attribute | Description | Required |
 | --------- | ----------- | ----------- |
-| `id` | The identifier of the cached shape. | Yes (this is the default first argument- no need to explicitly specify the name of this argument)  |
+| `id` | The identifier of the cached shape. | Yes (this is the default first argument --- no need to explicitly specify the name of this argument.)  |
 | `contexts` | A set of space/comma-separated context values. | No |
 | `dependencies` | A set of space/comma-separated dependency values. | No |
 | `expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 | `expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
 
 #### Examples
+
 Simple block:
-```
+```liquid
 {% cache "my-cache-block" %}
     ...
 {% endcache %}
 ```
 
-
 Nested blocks:
-```
+```liquid
 {% cache "a" %}
     A {{ "now" | date: "%T" }} (No Duration) <br />
     {% cache "a1", dependencies: "a1", vary_by: "user", expires_after: "0:5:0" %}
@@ -180,13 +180,13 @@ Nested blocks:
 ### Altering a cache scope
 
 You may not yet know all the child dependencies, or even how long the cache block should be cached for when you enter a cache block. 
-An example might be a cache block around a list of content items from a query- because you do not know which content items will be displayed by the query, you cannot define the correct dependencies when you enter the cache block.
+An example might be a cache block around a list of content items from a query --- because you do not know which content items will be displayed by the query, you cannot define the correct dependencies when you enter the cache block.
 
 There are four tags that allow you to alter the current cache scope. It's safe to use these tags even if you don't necessarily know if you're inside a cache block:
 
 | Liquid Tag | Description | Example |
 | --------- | ----------- | ----------- |
-| `cache_dependency` | Adds a dependency to the current cache scope | `{% cache_dependency "alias:{Alias}" %}` |
+| `cache_dependency` | Adds a dependency to the current cache scope. | `{% cache_dependency "alias:{Alias}" %}` |
 | `cache_expires_on` | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.  | `{% cache_expires_on {A DateTime or DateTimeOffset instance %}` (e.g. from a date/time field on a content item) |
 | `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_after "01:00:00" %}` (One hour) |
 | `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_sliding "00:01:00" %}` (One minute) |
@@ -195,7 +195,7 @@ There are four tags that allow you to alter the current cache scope. It's safe t
 
 Displaying content items from a query:
 
-```
+```liquid
 {% cache "recent-blog-posts"}
     {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
     {% for item in recentBlogPosts %}

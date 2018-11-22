@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/favicon.ico" />
-    <script asp-name="bootstrap" use-cdn="true" version="4" at="Foot"></script>
-    <style asp-name="bootstrap" use-cdn="true" version="4"></style>
-    <style asp-name="font-awesome" use-cdn="true" version="5"></style>
+    <script asp-name="bootstrap" version="4" at="Foot"></script>
+    <style asp-name="bootstrap" version="4"></style>
+    <style asp-name="font-awesome" version="5"></style>
     <style asp-src="/TheTheme/css/sticky-footer-navbar.css"></style>
     <resources type="Meta" />
     <resources type="HeadLink" />
@@ -23,7 +23,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbar">
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" cache-tag="alias:main-menu" />
+                <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
                 @Html.Partial("LoginMenu")
             </div>
         </div>

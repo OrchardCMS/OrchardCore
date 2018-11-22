@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Antiforgery" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" />    
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />    
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />   
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />   
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Localization" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="NodaTime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

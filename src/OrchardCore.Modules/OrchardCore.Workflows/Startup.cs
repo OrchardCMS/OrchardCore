@@ -8,8 +8,9 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Deployment;
@@ -22,7 +23,6 @@ using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using YesSql.Indexes;
-using OrchardCore.Recipes;
 
 namespace OrchardCore.Workflows
 {
@@ -36,7 +36,7 @@ namespace OrchardCore.Workflows
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
 
             services.AddScoped(typeof(Resolver<>));
-            services.AddScoped<ISecurityTokenService, SecurityTokenService>();
+            services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
             services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
             services.AddScoped<IWorkflowStore, WorkflowStore>();

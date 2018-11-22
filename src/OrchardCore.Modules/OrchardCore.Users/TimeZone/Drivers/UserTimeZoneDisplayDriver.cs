@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;

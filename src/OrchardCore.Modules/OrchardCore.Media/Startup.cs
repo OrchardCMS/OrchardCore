@@ -11,11 +11,14 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
@@ -27,7 +30,6 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using SixLabors.ImageSharp;
@@ -173,7 +175,7 @@ namespace OrchardCore.Media
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-            string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
 
             if (!Directory.Exists(mediaPath))
             {
@@ -193,7 +195,18 @@ namespace OrchardCore.Media
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
         {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
         }
     }
 }

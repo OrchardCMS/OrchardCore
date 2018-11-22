@@ -20,11 +20,11 @@ Once created, open the Setting menu item and each of these sections should appea
 
 Each Custom Settings sections gets a dedicated permission to allow specific users to edit them.
 
-To edit this permission open the Roles editor and go to the OrchardCore.CustomSettings Feature group.
+To edit this permission open the Roles editor and go to the `OrchardCore.CustomSettings` Feature group.
 
 ### Templates
 
-The Custom Settings like other settings are available in the `{{ Site.Properties }}` object.
+The Custom Settings (like other settings) are available in the `{{ Site.Properties }}` object.
 Each section is made available using its name. 
 
 For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.HtmlBodyPart }}`.

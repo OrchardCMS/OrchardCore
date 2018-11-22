@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +48,7 @@ namespace OrchardCore.Deployment.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = Path.Combine(Path.GetTempPath(), filename );
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename );
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);

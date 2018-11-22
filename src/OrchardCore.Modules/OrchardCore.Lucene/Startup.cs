@@ -7,9 +7,11 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
+using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
 using OrchardCore.Lucene.Recipes;
@@ -65,20 +67,21 @@ namespace OrchardCore.Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
+        }
+    }
 
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Content",
-                areaName: "OrchardCore.Lucene",
-                template: "api/lucene/content",
-                defaults: new { controller = "Api", action = "Content" }
-            );
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
 
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Documents",
-                areaName: "OrchardCore.Lucene",
-                template: "api/lucene/documents",
-                defaults: new { controller = "Api", action = "Documents" }
-            );
+            services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
         }
     }
 

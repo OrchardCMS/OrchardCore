@@ -4,6 +4,7 @@
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
 @import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+@import "modules/_sizes.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
 
@@ -13,6 +14,12 @@ $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
+
+html, body, .ta-wrapper, .ta-content,  {
+    /*border: solid 1px blue !important;*/
+    height: 100%;
+}
+
 
 @mixin word-wrap() {
     overflow-wrap: break-word;
@@ -187,7 +194,7 @@ body {
             list-style: none;
             line-height: 2.5em;
 
-            label {
+            .item-label {
                 cursor: pointer;
             }
         }
@@ -214,7 +221,7 @@ body {
     // changing the padding of the icons on the first level to match
     // the padding when leftbar is collapsed. Avoid small movement
     // when switching between the two states
-    #left-nav ul.menu-admin > li > label {
+    #left-nav ul.menu-admin > li > .item-label {
         padding-left: 0px !important;
 
         > span.icon {
@@ -222,8 +229,7 @@ body {
         }
     }
 
-    li label,
-    li a,
+    li .item-label,
     li a:hover,
     li a:active,
     li a:visited {
@@ -232,44 +238,41 @@ body {
         padding-left: $link-padding-left;
     }
 
-    li.has-items label,
-    li.has-items a,
+    li.has-items .item-label,
     li.has-items a:hover,
     li.has-items a:active,
     li.has-items a:visited {
         padding-left: $link-padding-left - 4px;
     }
     // Hovering the navigation items
-    li a:hover, li label:hover {
+    li .item-label:hover {
         background-color: $gray-700;
         color: $gray-100;
     }
     // Current page
-    li.active > a {
+    li > ul > li.active > .item-label {
         background-color: $gray-600;
         border-left: 4px solid $gray-800;
         color: $gray-100 !important;
         padding-left: (2 * $link-padding-left + 2) !important;
     }
 
-    li.has-items.active > a {
+    li.has-items.active > .item-label {
         padding-left: (2 * $link-padding-left) + 2 !important;
     }
 
-    li.active > label {
+    li.active > .item-label {
         background-color: #b4bdc4;
         color: $gray-100 !important;
     }
     // Second level colors and indent
-    li ul > li > a,
-    li ul > li > label {
+    li ul > li > .item-label {
         background-color: $gray-200;
         color: $gray-700 !important;
         padding-left: (2 * $link-padding-left) + 6 !important;
     }
 
-    li ul > li > a:hover,
-    li ul > li > label:hover {
+    li ul > li > .item-label:hover {
         color: $gray-100 !important;
     }
     // third level indent
@@ -311,14 +314,14 @@ body {
             top: 40px;
         }
 
-        > li > label {
+        > li > .item-label {
             background-color: $gray-700;
             color: $gray-100;
             padding: 0px;
             margin: 0px;
         }
         // formatting of icons
-        > li label span.icon {
+        > li .item-label span.icon {
             display: inline-block !important;
             margin: 0px 20px 0px 0px;
             padding-bottom: 0px;
@@ -329,7 +332,7 @@ body {
             width: $left-navigation-width-when-compact;
         }
 
-        > li.active label span.icon {
+        > li.active .item-label span.icon {
             background-color: #b4bdc4;
             color: $gray-100 !important;
         }
@@ -339,13 +342,13 @@ body {
             background-color: $gray-700;
         }
         // hide chevrons on first level
-        > li > label span:last-child {
+        > li > .item-label > .collapse-icon {
             color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity. Because of IE/Edge
         }
     }
 }
 // fixing a flickering that occurs on compact leftbar while icons load.
-html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > label {
+html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
     background-color: $gray-100 !important;
 }
 // Layout 5 : leftbar compactor button
@@ -468,6 +471,7 @@ select[multiple] {
 // ------------------------------
 ul.pager {
     @extend .pagination;
+    margin-top: 1rem;
 }
 
 ul.pager li {
@@ -481,6 +485,10 @@ ul.pager li a {
 // ------------------------------
 .ui-sortable-handle {
     cursor: move;
+}
+
+.btn.ui-sortable-handle {
+    cursor: move !important;
 }
 
 .ui-sortable {

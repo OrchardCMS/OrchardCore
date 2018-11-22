@@ -1,12 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>OrchardCore.Users</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
-  </ItemGroup>
 
 </Project>

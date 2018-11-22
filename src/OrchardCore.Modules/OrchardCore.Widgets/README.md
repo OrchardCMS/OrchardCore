@@ -1,4 +1,4 @@
-# Widgets (OrchardCore.Widgets)
+# Widgets (`OrchardCore.Widgets`)
 
 Widgets are content items of a specific category (stereotype) that can be rendered in custom locations of a page.
 The Widgets modules provides a `Widget` stereotype and some templates to render it. Widgets are used by different modules that need to
@@ -6,15 +6,15 @@ render specialized pieces of content like Layers or Forms.
 
 ## Creating custom Widgets
 
-Many types of Widgets can be created and the default recipes do create some custom ones like `Paragraph`, `Blockquote`, `MediaWidget` that you can 
+Many types of Widgets can be created and the default recipes do create some custom ones like `Paragraph`, `Blockquote`, and `MediaWidget` that you can 
 use as examples.
 
 Widgets are content items, and as such they can be composed of content fields and content parts. For instance the `Paragraph` widget that is included with the 
-TheBlogTheme recipe is made out of an Html field with a Wysiwyg editor.
+`TheBlogTheme` recipe is made out of an HTML field with a WYSIWYG editor.
 
 Widgets can then be composed from the Admin UI during the lifetime of the site, from migrations files to include them as part of custom modules, or recipe files
-when a site is set up. The only requirement to create a Widget is to mark a content type with the `Widget` stereotype. By doing so the different services that look
-for Widgets will treat this content item in accordance. This is how the Layers module, or the Page editor can display the list of available Widget types.
+when a site is set up. The only requirement to create a Widget is to mark a content type with the `Widget` stereotype. By doing so, the different services that look
+for Widgets will treat this content item accordingly. This is how the `Layers` module or the Page editor can display the list of available Widget types.
 
 ## Theming
 
@@ -54,7 +54,7 @@ The `Widget` shape is used to render a Widget. The default template will render 
 </div>
 ```
 
-If the HTML contains `<div class="widget-container">` then your widget has been rendered by the Layers modules which will add this automatically as it needs to 
+If the HTML contains `<div class="widget-container">` then your widget has been rendered by the `Layers` modules which will add this automatically, as it needs to 
 be able to render a title, and uses it as a container for both the title and the widget's actual content.
 
 The actual template for the `Widget` shape can be found in `src/OrchardCore.Modules/OrchardCore.Widgets/Views/Widgets.cshtml` but can be simplified to this:
@@ -83,8 +83,7 @@ Alternates are available per Content Type.
 
 ### Customizing the `Widget_Wrapper` template
 
-As mentioned in the previous section, the Layers module uses a template to wrap the widgets that it renders and insert a custom title for each of them.
-
+As mentioned in the previous section, the `Layers` module uses a template to wrap the widgets that it renders and insert a custom title for each of them.
 
 The actual template for this wrapper shape can be found in `src/OrchardCore.Modules/OrchardCore.Layers/Views/Widget.Wrapper.cshtml`.
 
@@ -98,7 +97,7 @@ A common requirement is to remove these tags, which can be done by creating this
 @await DisplayAsync(Model.Content)
 ```
 
-Optionally you change 
+Optionally, you can change these alternates:
 
 | Definition | Template | Filename|
 | ---------- | --------- | ------------ |
