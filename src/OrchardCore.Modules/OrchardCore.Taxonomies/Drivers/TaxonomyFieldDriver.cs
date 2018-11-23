@@ -50,11 +50,15 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                var termEntries = new List<TermEntry>();
-                PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                if (model.Taxonomy != null )
+                {
+                    var termEntries = new List<TermEntry>();
+                    PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
-                model.TermEntries = termEntries;
-                model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
+                    model.TermEntries = termEntries;
+                    model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
+                }
+
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

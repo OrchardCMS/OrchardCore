@@ -32,28 +32,25 @@
 </div>
 
 <fieldset class="form-group">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="Required" type="checkbox" class="form-check-input" />
-            <span class="hint">@T["Check if the field is required."]</span>
-        </label>
+    <div class="custom-control custom-checkbox">
+        <input asp-for="Required" type="checkbox" class="custom-control-input" />
+        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint">@T["— Whether at least one element is selected."]</span>
     </div>
 </fieldset>
 
 <fieldset class="form-group">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="Unique" type="checkbox" class="form-check-input" />
-            <span class="hint">@T["Check if only one value can be selected."]</span>
-        </label>
+    <div class="custom-control custom-checkbox">
+        <input asp-for="Unique" type="checkbox" class="custom-control-input" />
+        <label class="custom-control-label" asp-for="Unique">@T["Unique"]</label>
+        <span class="hint">@T["— Whether only one element is selected."]</span>
     </div>
 </fieldset>
 
 <fieldset class="form-group">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="LeavesOnly" type="checkbox" class="form-check-input" />
-            <span class="hint">@T["Check if only the leaves of the taxonomy can be selected."]</span>
-        </label>
+    <div class="custom-control custom-checkbox">
+        <input asp-for="LeavesOnly" type="checkbox" class="custom-control-input" />
+        <label class="custom-control-label" asp-for="LeavesOnly">@T["Leaves only"]</label>
+        <span class="hint">@T["— Whether leaves are the only items that can be selected."]</span>
     </div>
 </fieldset>
