@@ -63,7 +63,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings.Remove(name);
             _session.Save(document);
 
-            _signal.SignalToken(CacheKey);
+            await _signal.SignalTokenAsync(CacheKey);
             _memoryCache.Set(CacheKey, document, ChangeToken);
         }
         
@@ -74,7 +74,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings[name] = settings;
             _session.Save(document);
 
-            _signal.SignalToken(CacheKey);
+            await _signal.SignalTokenAsync(CacheKey);
             _memoryCache.Set(CacheKey, document, ChangeToken);
         }
     }
