@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Flows.Models;
 
@@ -10,10 +13,11 @@ namespace OrchardCore.Flows.GraphQL
         {
             Name = "BagPart";
 
-            Field<ListGraphType<ContentItemInterface>>(
-                "items",
-                "The items.",
-                resolve: context => context.Source.ContentItems);
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
+                .Name("contentItems")
+                .Description("the content items")
+                .PagingArguments()
+                .Resolve(x => x.Page(x.Source.ContentItems));
         }
     }
 }

@@ -5,7 +5,7 @@
 @using Newtonsoft.Json.Serialization;
 @using OrchardCore.Environment.Shell;
 
-@inject ShellSettings ShellSettings;
+@inject ShellSettings ShellSettings
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
@@ -22,24 +22,47 @@
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
 <style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
+<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
-<div id="@vueElementId" class="content-picker-multiselect">
-    <fieldset class="form-group">
-        <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
+<label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
+
+<div id="@vueElementId" class="content-picker-default">
+
+<fieldset class="form-group" >
+    <ul class="list-group col-xl-6 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+        <draggable v-model="arrayOfItems" >
+            <li v-for="(item, i) in arrayOfItems"
+            class="list-group-item content-picker-default__list-item" 
+            :key="item.contentItemId">{{ item.displayText }}
+
+                <div class="btn-group btn-group-sm float-right" role="group">
+                    <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete" ><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
+                </div>
+            </li>
+        </draggable>        
+    </ul>
+</fieldset>
+
+<fieldset class="form-group row">
+    <div class="col-xl-6">
         <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
-        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" label="displayText"
-                         @@input="onInput" @@search-change="asyncFind"
-                         :multiple="@multiple" :searchable="true" :close-on-select="true"
-                         :show-labels="true" :hide-selected="@multiple" placeholder=""
-                         select-label="Select" deselect-label="Remove">
+        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" 
+                         label="displayText" placeholder="@T["Type to search"]"
+                         @@search-change="asyncFind" @@select="onSelect"
+                         :searchable="true" :close-on-select="true" :reset-after="true"
+                         :show-labels="true" :hide-selected="@multiple"
+                         :disabled="isDisabled"
+                         select-label="@T["Select"]" deselect-label="@T["Remove"]">
         </vue-multiselect>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
-    </fieldset>
+    </div>
+</fieldset>
+    
 </div>
-
 <script at="Foot">
-    initializeContentPickerFieldEditor('@vueElementId', @selectedItems, '@Model.ContentItemIds', '@tenantPath', '@partName', '@fieldName');
+    initializeContentPickerFieldEditor('@vueElementId', @selectedItems, '@tenantPath', '@partName', '@fieldName', @multiple.ToLowerInvariant());
 </script>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Navigation;
@@ -24,6 +25,8 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using YesSql.Indexes;
+using OrchardCore.Users.ViewModels;
+using Fluid;
 
 namespace OrchardCore.Users
 {
@@ -68,6 +71,7 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserRoleStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -82,6 +86,11 @@ namespace OrchardCore.Users
                 options.Cookie.Path = _tenantPrefix;
                 options.LoginPath = "/" + LoginPath;
                 options.AccessDeniedPath = options.LoginPath;
+
+                // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
+                // Note: it has no practical impact on the security of the site since all endpoints are always
+                // protected by antiforgery checks, that are enforced with or without this setting being changed.
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
@@ -90,6 +99,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
@@ -110,6 +121,11 @@ namespace OrchardCore.Users
     public class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = "Register";
+
+        static RegistrationStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -135,6 +151,11 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
+
+        static ResetPasswordStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
