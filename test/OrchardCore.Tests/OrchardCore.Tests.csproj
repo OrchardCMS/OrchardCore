@@ -44,9 +44,6 @@
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
   </ItemGroup>
 
-  <!-- 'OrchardCore.Tests' needs to be a modular Application (see the related import at the end).
-       So that the testing modules and those referenced by 'OrchardCore.Cms.Web' are discovered. -->
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
@@ -76,9 +73,6 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
-  <!-- Necessary as we reference the Project (here indirectly) and not the Package (directly
-       or with all transitive package references using the 'PrivateAssets="none"' metadata). -->
-  <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
