@@ -367,21 +367,8 @@ namespace OrchardCore.Environment.Shell
             await GetOrCreateShellContextAsync(settings);
         }
 
-        private async Task ShellEventAsync(Func<IShellEvents, Task> handler)
-        {
-            if (TryGetSettings(ShellHelper.DefaultShellName, out var settings))
-            {
-                using (var scope = await GetScopeAsync(settings))
-                {
-                    var events = scope.ServiceProvider.GetService<IShellEvents>();
-
-                    if (events != null)
-                    {
-                        await handler(events);
-                    }
-                }
-            }
-        }
+        private Task ShellEventAsync(Func<IShellEvents, Task> processEvent) =>
+            ShellHostExtensions.ShellEventAsync(this, processEvent);
 
         public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
         {

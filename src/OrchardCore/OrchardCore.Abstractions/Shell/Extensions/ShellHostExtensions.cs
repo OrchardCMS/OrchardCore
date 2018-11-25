@@ -91,17 +91,17 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Allows to trigger a shell event through a delegate having an 'IShellEvents' parameter.
         /// </summary>
-        public static async Task ShellEventAsync(this IShellHost shellHost, Func<IShellEvents, Task> handler)
+        public static async Task ShellEventAsync(this IShellHost shellHost, Func<IShellEvents, Task> processEvent)
         {
             if (shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var settings))
             {
                 using (var scope = await shellHost.GetScopeAsync(settings))
                 {
-                    var events = scope.ServiceProvider.GetService<IShellEvents>();
+                    var shellEvents = scope.ServiceProvider.GetServices<IShellEvents>();
 
-                    if (events != null)
+                    foreach (var events in shellEvents)
                     {
-                        await handler(events);
+                        await processEvent(events);
                     }
                 }
             }

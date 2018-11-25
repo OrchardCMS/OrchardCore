@@ -119,9 +119,13 @@ namespace OrchardCore.Distributed
         {
             services.Configure<KeyManagementOptions>(options =>
             {
-                options.XmlRepository = new RedisXmlRepository(() => 
-                    _httpContextAccessor.HttpContext.RequestServices.GetService<IRedisClient>().Database,
-                    _shellSettings.Name + ":DataProtection-Keys");
+                var redis = _httpContextAccessor.HttpContext.RequestServices.GetService<IRedisClient>();
+
+                if (redis.IsConnected)
+                {
+                    options.XmlRepository = new RedisXmlRepository(() => redis.Database,
+                        _shellSettings.Name + ":DataProtection-Keys");
+                }
             });
         }
     }
