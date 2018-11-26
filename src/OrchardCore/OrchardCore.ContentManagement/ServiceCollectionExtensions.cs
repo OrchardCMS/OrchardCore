@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Drivers.Coordinators;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagment.Routable;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
 using YesSql.Indexes;
@@ -26,6 +27,7 @@ namespace OrchardCore.ContentManagement
             services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();
             services.AddSingleton<ITypeActivatorFactory<ContentPart>, ContentPartFactory>();
             services.AddSingleton<ITypeActivatorFactory<ContentField>, ContentFieldFactory>();
+            services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
             services.AddScoped<IContentAliasManager, ContentAliasManager>();

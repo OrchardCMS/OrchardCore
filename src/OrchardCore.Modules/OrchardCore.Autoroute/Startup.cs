@@ -17,6 +17,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagment.Routable;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -48,7 +49,6 @@ namespace OrchardCore.Autoroute
             services.AddSingleton<IIndexProvider, AutoroutePartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
-            services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();

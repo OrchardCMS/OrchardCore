@@ -54,7 +54,7 @@ namespace OrchardCore.Taxonomies.GraphQL
                     foreach (var termContentItemId in ids)
                     {
                         var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
-                        terms.Add(term);
+                        terms.Add(term.ToObject<ContentItem>());
                     }
 
                     return terms;

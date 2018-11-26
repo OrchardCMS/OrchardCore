@@ -55,7 +55,7 @@ namespace OrchardCore.HomeRoute
                 }
                 else
                 {
-                    if (!context.Values.TryGetValue(entry.Key, out value) || !String.Equals(value.ToString(), entry.Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (!context.Values.TryGetValue(entry.Key, out value) || !String.Equals((string) value, (string) entry.Value, StringComparison.OrdinalIgnoreCase))
                     {
                         return null;
                     }

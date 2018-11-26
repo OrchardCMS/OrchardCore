@@ -8,6 +8,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Models;
+using OrchardCore.ContentManagment.Routable;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Taxonomies.Models;
@@ -21,6 +23,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IAutorouteEntries _autorouteEntries;
         private readonly ISession _session;
         private readonly INotifier _notifier;
 
@@ -30,6 +33,7 @@ namespace OrchardCore.Taxonomies.Controllers
             IAuthorizationService authorizationService,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
+            IAutorouteEntries autorouteEntries,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
         {
@@ -37,6 +41,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _autorouteEntries = autorouteEntries;
             _session = session;
             _notifier = notifier;
             H = h;
@@ -116,7 +121,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 if (parentTaxonomyItem == null)
                 {
                     return NotFound();
-                } 
+                }
 
                 var taxonomyItems = parentTaxonomyItem?.Terms as JArray;
 
@@ -127,6 +132,12 @@ namespace OrchardCore.Taxonomies.Controllers
 
                 taxonomyItems.Add(JObject.FromObject(contentItem));
             }
+
+            var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, contentItem.ContentItemId);
+            term.TryGetJsonPath(out var jsonPath);
+            var routableAspect = await _contentManager.PopulateAspectAsync<RoutableAspect>(contentItem);
+            _autorouteEntries.RemoveEntriesByContentItemId(new[] { contentItem.ContentItemId });
+            _autorouteEntries.AddEntry(contentItem.ContentItemId, routableAspect.Path, taxonomy.ContentItemId, jsonPath);
 
             _session.Save(taxonomy);
 
@@ -219,6 +230,12 @@ namespace OrchardCore.Taxonomies.Controllers
 
             // Merge doesn't copy the properties
             taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
+
+            var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, contentItem.ContentItemId);
+            term.TryGetJsonPath(out var jsonPath);
+            var routableAspect = await _contentManager.PopulateAspectAsync<RoutableAspect>(contentItem);
+            _autorouteEntries.RemoveEntriesByContentItemId(new[] { contentItem.ContentItemId });
+            _autorouteEntries.AddEntry(contentItem.ContentItemId, routableAspect.Path, taxonomy.ContentItemId, jsonPath);
 
             _session.Save(taxonomy);
 

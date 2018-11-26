@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagment.Routable;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;
@@ -71,7 +72,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+                _entries.RemoveEntriesByPath(new[] { part.Path });
 
                 // Evict any dependent item from cache
                 return RemoveTagAsync(part);
@@ -84,7 +85,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+                _entries.RemoveEntriesByPath(new[] { part.Path });
 
                 // Evict any dependent item from cache
                 return RemoveTagAsync(part);
@@ -119,7 +120,17 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        private Task RemoveTagAsync(AutoroutePart part)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
+        {
+            context.For<RoutableAspect>(routableAspect =>
+            {
+                routableAspect.Path = part.Path;
+            });
+
+            return Task.CompletedTask;
+        }
+
+    private Task RemoveTagAsync(AutoroutePart part)
         {
             return _tagCache.RemoveTagAsync($"alias:{part.Path}");
         }

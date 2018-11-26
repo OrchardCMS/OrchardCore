@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagment.Routable;
 
 namespace OrchardCore.Autoroute.Services
 {
@@ -25,10 +26,9 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
-                string contentItemId;
-                if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+                if (_autorouteEntries.TryGetAutorouteEntryByPath(alias, out var entry))
                 {
-                    return Task.FromResult(contentItemId);
+                    return Task.FromResult(entry.ActualContentItemId);
                 }
             }
 

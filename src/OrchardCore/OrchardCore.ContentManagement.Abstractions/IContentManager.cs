@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -127,6 +128,21 @@ namespace OrchardCore.ContentManagement
             }
 
             return results;
+        }
+
+        public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string contentItemId, string jsonPath)
+        {
+            var contentItem = await contentManager.GetAsync(contentItemId);
+
+            if (string.IsNullOrEmpty(jsonPath))
+            {
+                return contentItem;
+            }
+
+            var root = contentItem.Content as JObject;
+            contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+
+            return contentItem;
         }
     }
 

@@ -26,7 +26,7 @@ public static class TaxonomyOrchardHelperExtensions
             return null;
         }
 
-        return FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+        return FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId).ToObject<ContentItem>();
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public static class TaxonomyOrchardHelperExtensions
         return await contentManager.LoadAsync(contentItems);
     }
 
-    internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
+    internal static JObject FindTerm(JArray termsArray, string termContentItemId)
     {
         foreach(JObject term in termsArray)
         {
@@ -73,7 +73,7 @@ public static class TaxonomyOrchardHelperExtensions
 
             if (contentItemId == termContentItemId)
             {
-                return term.ToObject<ContentItem>();
+                return term;
             }
 
             if (term.GetValue("Terms") is JArray children)
@@ -119,4 +119,18 @@ public static class TaxonomyOrchardHelperExtensions
         return false;
     }
 
+    internal static void FindAllTerms(JArray termsArray, List<JObject> terms)
+    {
+        foreach (JObject term in termsArray)
+        {
+            var contentItemId = term.GetValue("ContentItemId").ToString();
+
+            terms.Add(term);
+
+            if (term.GetValue("Terms") is JArray children)
+            {
+                FindAllTerms(children, terms);
+            }
+        }
+    }
 }

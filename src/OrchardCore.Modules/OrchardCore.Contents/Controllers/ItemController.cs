@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -24,7 +25,7 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
         }
 
-        public async Task<IActionResult> Display(string contentItemId)
+        public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
@@ -36,6 +37,18 @@ namespace OrchardCore.Contents.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return Unauthorized();
+            }
+
+            // It represents a contained content item
+            if (!string.IsNullOrEmpty(jsonPath))
+            {
+                var root = contentItem.Content as JObject;
+                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);

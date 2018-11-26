@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagment.Routable;
 
 namespace OrchardCore.Autoroute.Routing
 {
@@ -14,7 +14,7 @@ namespace OrchardCore.Autoroute.Routing
     {
         private readonly IAutorouteEntries _entries;
         private readonly IRouter _target;
-        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "contentItemId" }, StringComparer.OrdinalIgnoreCase); 
+        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "contentItemId", "jsonPath" }, StringComparer.OrdinalIgnoreCase); 
 
         public AutorouteRoute(IAutorouteEntries entries, IRouter target)
         {
@@ -34,11 +34,15 @@ namespace OrchardCore.Autoroute.Routing
             var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
             
             if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
-                && string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
-                && string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                && string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+                && string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+                && string.Equals(context.Values["jsonPath"]?.ToString(), displayRouteData?["jsonPath"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+                )
             {
-                if (_entries.TryGetPath(contentItemId, out string path))
+                if (_entries.TryGetAutorouteEntryByContentItemId(contentItemId, out var entry))
                 {
+                    var path = entry.Path;
+
                     if (context.Values.Count > 4)
                     {
                         foreach (var data in context.Values)
@@ -61,9 +65,9 @@ namespace OrchardCore.Autoroute.Routing
         {
             var requestPath = context.HttpContext.Request.Path.Value;
 
-            if (_entries.TryGetContentItemId(requestPath, out var contentItemId))
+            if (_entries.TryGetAutorouteEntryByPath(requestPath, out var entry))
             {
-                await EnsureRouteData(context, contentItemId);
+                await EnsureRouteData(context, entry);
                 await _target.RouteAsync(context);
             }
         }
@@ -86,9 +90,9 @@ namespace OrchardCore.Autoroute.Routing
             return (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
         }
 
-        private async Task EnsureRouteData(RouteContext context, string contentItemId)
+        private async Task EnsureRouteData(RouteContext context, AutorouteEntry entry)
         {
-            var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, contentItemId);
+            var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, entry.ActualContentItemId);
 
             if (displayRoutes == null)
             {
@@ -101,6 +105,11 @@ namespace OrchardCore.Autoroute.Routing
                 {
                     context.RouteData.Values[key] = displayRoutes[key];
                 }
+            }
+
+            if (!String.IsNullOrEmpty(entry.JsonPath))
+            {
+                context.RouteData.Values["jsonPath"] = entry.JsonPath;
             }
 
             context.RouteData.Routers.Add(_target);

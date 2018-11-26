@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
@@ -211,6 +213,52 @@ namespace OrchardCore.ContentManagement
         public static bool HasDraft(this IContent content)
         {
             return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
+        }
+
+        /// <summary>
+        /// Returns the JsonPath of the element to its root object
+        /// </summary>
+        public static bool TryGetJsonPath(this JObject element, out string jsonPath)
+        {
+            var segments = new List<string>();
+
+            if (element.Root == element)
+            {
+                jsonPath = null;
+                return false;
+            }
+
+            JToken current = element;
+            JToken parent = element.Parent;
+
+            while (true)
+            {
+                if (parent == null)
+                {
+                    break;
+                }
+
+                if (parent is JObject jobj)
+                {
+                    // Skip
+                }
+                else if (parent is JArray jarr)
+                {
+                    segments.Insert(0, $"[{jarr.IndexOf(current)}]");
+                }
+                else if (parent is JProperty jprop)
+                {
+                    segments.Insert(0, jprop.Name);
+                    segments.Insert(0, ".");
+                }
+
+                current = parent;
+                parent = current.Parent as JToken;
+            }
+
+            jsonPath = String.Concat(segments);
+
+            return true;
         }
     }
 }

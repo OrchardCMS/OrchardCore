@@ -1,9 +1,15 @@
+using System;
+using System.Linq;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Routable;
+using OrchardCore.ContentManagment.Routable;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -19,6 +25,7 @@ using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Taxonomies
 {
@@ -49,6 +56,16 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, TaxonomyPartIndexProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
+            var session = serviceProvider.GetRequiredService<ISession>();
+            var routables = session.QueryIndex<RoutableIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
+
+            entries.AddEntries(routables.Select(x => new AutorouteEntry(x.Path, x.ContentItemId, x.RootContentItemId, x.JsonPath)));
         }
     }
 

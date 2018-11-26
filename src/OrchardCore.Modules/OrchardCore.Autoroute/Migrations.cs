@@ -1,4 +1,4 @@
-﻿using OrchardCore.Autoroute.Drivers;
+using OrchardCore.Autoroute.Drivers;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
@@ -19,6 +19,7 @@ namespace OrchardCore.Autoroute
         {
             _contentDefinitionManager.AlterPartDefinition("AutoroutePart", builder => builder
                 .Attachable()
+                .WithDefaultPosition("2")
                 .WithDescription("Provides a custom url for your content item."));
 
             SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table

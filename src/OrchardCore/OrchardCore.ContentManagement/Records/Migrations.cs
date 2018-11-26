@@ -1,3 +1,4 @@
+using OrchardCore.ContentManagement.Routable;
 using OrchardCore.Data.Migration;
 using System;
 
@@ -60,6 +61,19 @@ namespace OrchardCore.ContentManagement.Records
             );
 
             return 3;
+        }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.CreateMapIndexTable(nameof(RoutableIndex), table => table
+                .Column<string>(nameof(RoutableIndex.ContentItemId), c => c.WithLength(26))
+                .Column<string>(nameof(RoutableIndex.RootContentItemId), c => c.WithLength(26))
+                .Column<string>(nameof(RoutableIndex.Path), col => col.WithLength(RoutableIndex.MaxPathLength))
+                .Column<string>(nameof(RoutableIndex.JsonPath), col => col.WithLength(RoutableIndex.MaxPathLength))
+                .Column<bool>(nameof(RoutableIndex.Published))
+            );
+
+            return 4;
         }
     }
 }

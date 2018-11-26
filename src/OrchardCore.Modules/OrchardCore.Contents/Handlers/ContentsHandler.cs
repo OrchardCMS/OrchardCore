@@ -40,7 +40,7 @@ namespace OrchardCore.Contents.Handlers
                         {"Area", "OrchardCore.Contents"},
                         {"Controller", "Admin"},
                         {"Action", "Create"},
-                        {"Id", context.ContentItem.ContentType}
+                        {"Id", context.ContentItem.ContentType},
                     };
                 }
 
@@ -70,7 +70,7 @@ namespace OrchardCore.Contents.Handlers
                         {"Area", "OrchardCore.Contents"},
                         {"Controller", "Item"},
                         {"Action", "Display"},
-                        {"ContentItemId", context.ContentItem.ContentItemId}
+                        {"ContentItemId", context.ContentItem.ContentItemId},
                     };
                 }
 

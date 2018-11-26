@@ -61,7 +61,7 @@ namespace OrchardCore.Taxonomies.Liquid
             foreach (var termContentItemId in termContentItemIds)
             {
                 var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
-                terms.Add(term);
+                terms.Add(term.ToObject<ContentItem>());
             }
 
             return FluidValue.Create(terms);
