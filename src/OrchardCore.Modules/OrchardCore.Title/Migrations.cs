@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
@@ -17,7 +17,9 @@ namespace OrchardCore.Title
         {
             _contentDefinitionManager.AlterPartDefinition("TitlePart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a Title for your content item."));
+                .WithDescription("Provides a Title for your content item.")
+                .WithDefaultPosition("0")
+                );
 
             return 1;
         }

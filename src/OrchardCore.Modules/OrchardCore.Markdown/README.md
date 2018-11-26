@@ -4,7 +4,7 @@
 
 ### Shapes
 
-The following shapes are rendered when the `BodyPMarkdownBodyPartart` is attached to a content type:
+The following shapes are rendered when the `MarkdownBodyPart` is attached to a content type:
 
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
