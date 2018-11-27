@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Microsoft.Authentication
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageFacebookApp
-            = new Permission(nameof(ManageFacebookApp), "View and edit the Facebook app.");
+        public static readonly Permission ManageAuthentication
+            = new Permission(nameof(ManageAuthentication), "View and edit Authentication Providers.");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            yield return ManageFacebookApp;
+            yield return ManageAuthentication;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +20,7 @@ namespace OrchardCore.Facebook
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageFacebookApp
+                    ManageAuthentication
                 }
             };
         }

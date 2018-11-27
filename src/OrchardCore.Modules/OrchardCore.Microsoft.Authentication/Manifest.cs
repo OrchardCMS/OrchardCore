@@ -10,7 +10,7 @@ using OrchardCore.Microsoft.Authentication;
 )]
 
 [assembly: Feature(
-    Id = MicrosoftAuthenticationConstants.Features.MSE,
+    Id = MicrosoftAuthenticationConstants.Features.MicrosoftAccount,
     Name = "Microsoft Account Authentication",
     Category = "Authentication",
     Description = "Authenticates users with their Microsoft Account."

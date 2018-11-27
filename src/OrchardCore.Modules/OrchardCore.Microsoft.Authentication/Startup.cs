@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
-using OrchardCore.Facebook.Configuration;
-using OrchardCore.Facebook.Drivers;
-using OrchardCore.Facebook.Services;
+using OrchardCore.Microsoft.Authentication.Configuration;
+using OrchardCore.Microsoft.Authentication.Drivers;
+using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Microsoft.Authentication
 {
     public class Startup : StartupBase
     {
@@ -21,12 +21,12 @@ namespace OrchardCore.Facebook
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<IAzureADAuthenticationService, AzureADAuthenticationService>();
-            services.AddScoped<IDisplayDriver<ISite>, AzureADAuthenticationSettingsDisplayDriver>();
+            //services.AddSingleton<IAzureADAuthenticationService, AzureADAuthenticationService>();
+            //services.AddScoped<IDisplayDriver<ISite>, AzureADAuthenticationSettingsDisplayDriver>();
         }
     }
 
-    [Feature(FacebookConstants.Features.Login)]
+    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class LoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -39,11 +39,11 @@ namespace OrchardCore.Facebook
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAuthenticationConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAuthenticationConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions,FacebookHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
             });
         }
     }

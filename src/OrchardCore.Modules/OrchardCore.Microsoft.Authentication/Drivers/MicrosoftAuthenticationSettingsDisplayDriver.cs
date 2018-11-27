@@ -5,11 +5,11 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Settings;
-using OrchardCore.Facebook.ViewModels;
+using OrchardCore.Microsoft.Authentication.Settings;
+using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Drivers
+namespace OrchardCore.Microsoft.Authentication.Drivers
 {
     public class MicrosoftAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, MicrosoftAuthenticationSettings>
     {
@@ -33,23 +33,23 @@ namespace OrchardCore.Facebook.Drivers
         public override async Task<IDisplayResult> EditAsync(MicrosoftAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageAuthentication))
             {
                 return null;
             }
 
-            return Initialize<MicrosoftAuthenticationSettingsViewModel>("FacebookLoginSettings_Edit", model =>
+            return Initialize<MicrosoftAuthenticationSettingsViewModel>("MicrosoftAuthenticationSettings_Edit", model =>
             {
                 model.CallbackPath = settings.CallbackPath;
-            }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
+            }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MicrosoftAuthenticationSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == FacebookConstants.Features.Login)
+            if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageAuthentication))
                 {
                     return null;
                 }

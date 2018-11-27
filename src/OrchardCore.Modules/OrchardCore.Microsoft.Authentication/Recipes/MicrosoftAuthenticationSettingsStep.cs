@@ -1,12 +1,12 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using OrchardCore.Facebook.Services;
+using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OrchardCore.Facebook.Settings.AzureADAuthenticationSettings;
+//using static OrchardCore.Microsoft.Authentication.Settings.AzureADAuthenticationSettings;
 
-namespace OrchardCore.Facebook.Recipes
+namespace OrchardCore.Microsoft.Authentication.Recipes
 {
     /// <summary>
     /// This recipe step sets general OpenID Connect Client settings.
@@ -22,7 +22,7 @@ namespace OrchardCore.Facebook.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "FacebookLoginSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "MicrosoftAuthenticationSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

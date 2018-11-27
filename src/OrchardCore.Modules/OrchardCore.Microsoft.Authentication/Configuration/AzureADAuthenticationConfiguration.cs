@@ -4,21 +4,20 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.Modules;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
 
-namespace OrchardCore.Facebook.Configuration
+namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    [Feature(FacebookConstants.Features.Login)]
+    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AzureADAuthenticationConfiguration :
         IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<FacebookOptions>
+        IConfigureNamedOptions<MicrosoftAccountOptions>
     {
         private readonly IAzureADAuthenticationService _coreService;
         private readonly IMicrosoftAuthenticationService _loginService;

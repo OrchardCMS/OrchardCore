@@ -6,7 +6,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Microsoft.Authentication
 {
     public class AdminMenu : INavigationProvider
     {
@@ -27,19 +27,17 @@ namespace OrchardCore.Facebook
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Facebook"], "1", settings =>
-                        settings.AddClass("facebook").Id("facebook")
-                                .Add(T["Application"], "1", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
-                                .Permission(Permissions.ManageFacebookApp)
+                    category.Add(T["Authentication"], "1", settings =>
+                        settings.AddClass("microsoft").Id("microsoft")
+                                .Permission(Permissions.ManageAuthentication)
                                 .LocalNav())
-                        ));
+                        );
             }
             return Task.CompletedTask;
         }
     }
 
-    [Feature(FacebookConstants.Features.Login)]
+    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
@@ -60,10 +58,9 @@ namespace OrchardCore.Facebook
             {
                 builder.Add(T["Configuration"], "15", category =>
                     category.Add(T["Facebook"], "1", settings =>
-                        settings.AddClass("facebook").Id("facebook")
-                                .Add(T["Login"], "2", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
-                                .Permission(Permissions.ManageFacebookApp)
+                        settings.Add(T["Microsoft Account"], "2", client => client
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount})
+                                .Permission(Permissions.ManageAuthentication)
                                 .LocalNav())
                     ));
             }

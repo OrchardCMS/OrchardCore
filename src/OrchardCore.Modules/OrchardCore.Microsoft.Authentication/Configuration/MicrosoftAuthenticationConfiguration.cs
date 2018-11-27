@@ -4,34 +4,30 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.Modules;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    [Feature(MicrosoftAuthentication.Features.MSE)]
+    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class MicrosoftAuthenticationConfiguration :
         IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<FacebookOptions>
+        IConfigureNamedOptions<MicrosoftAccountOptions>
     {
-        private readonly IFacebookCoreService _coreService;
-        private readonly IFacebookLoginService _loginService;
+        private readonly IMicrosoftAuthenticationService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<FacebookLoginConfiguration> _logger;
+        private readonly ILogger<MicrosoftAuthenticationConfiguration> _logger;
 
-        public FacebookLoginConfiguration(
-            IFacebookCoreService coreService,
-            IFacebookLoginService loginService,
+        public MicrosoftAuthenticationConfiguration(
+            IMicrosoftAuthenticationService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<FacebookLoginConfiguration> logger)
+            ILogger<MicrosoftAuthenticationConfiguration> logger)
         {
-            _coreService = coreService;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
@@ -39,12 +35,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
-            {
-                return;
-            }
-
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
             if (loginSettings == null)
             {
@@ -52,23 +42,17 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(FacebookDefaults.AuthenticationScheme, builder =>
+            options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
             {
-                builder.DisplayName = "Facebook";
-                builder.HandlerType = typeof(FacebookHandler);
+                builder.DisplayName = "Microsoft Account";
+                builder.HandlerType = typeof(MicrosoftAccountHandler);
             });
         }
 
-        public void Configure(string name, FacebookOptions options)
+        public void Configure(string name, MicrosoftAccountOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
+            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }
@@ -78,15 +62,15 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
-            options.AppId = coreSettings.AppId;
+            options.ClientId= loginSettings.AppId;
 
             try
             {
-                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(coreSettings.AppSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(loginSettings.AppSecret);
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The MicrosoftAccount secret keycould not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
@@ -95,9 +79,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
         }
 
-        public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<FacebookLoginSettings> GetFacebookLoginSettingsAsync()
+        private async Task<MicrosoftAuthenticationSettings> GetFacebookLoginSettingsAsync()
         {
             var settings = await _loginService.GetSettingsAsync();
             if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
@@ -108,19 +92,5 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             return settings;
         }
-
-        private async Task<FacebookCoreSettings> GetFacebookCoreSettingsAsync()
-        {
-            var settings = await _coreService.GetSettingsAsync();
-            if ((await _coreService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The Facebook Core module is not correctly configured.");
-
-                return null;
-            }
-
-            return settings;
-        }
-
     }
 }
