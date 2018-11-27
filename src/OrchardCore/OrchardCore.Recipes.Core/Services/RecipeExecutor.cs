@@ -39,12 +39,12 @@ namespace OrchardCore.Recipes.Services
             IRecipeResultStore recipeResultStore,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
-            IShellHost orchardHost,
+            IShellHost shellHost,
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = orchardHost;
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
