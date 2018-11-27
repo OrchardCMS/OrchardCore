@@ -99,7 +99,7 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+            services.AddScoped<IUserClaimsPrincipalFactory<User>, DefaultUserClaimsPrincipalFactory>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
