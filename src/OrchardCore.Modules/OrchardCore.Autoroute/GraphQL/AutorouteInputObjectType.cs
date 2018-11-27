@@ -8,7 +8,7 @@ namespace OrchardCore.Autoroute.GraphQL
     {
         public AutorouteInputObjectType()
         {
-            Name = "AutoroutePartInput";
+            Name = "AutoroutePart";
             Description = "the custom URL part of the content item";
 
             AddScalarFilterFields<StringGraphType>("path", "the path of the content item to filter");

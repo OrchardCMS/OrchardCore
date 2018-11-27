@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         public ContentItemOrderByInput(string contentItemName)
         {
-            Name = contentItemName + "OrderByInput";
+            Name = contentItemName + "OrderBy";
 
             Field<OrderByDirectionGraphType>("contentItemId");
             Field<OrderByDirectionGraphType>("contentItemVersionId");
