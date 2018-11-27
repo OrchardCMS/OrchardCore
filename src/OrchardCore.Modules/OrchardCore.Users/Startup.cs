@@ -27,6 +27,7 @@ using OrchardCore.Users.Services;
 using YesSql.Indexes;
 using OrchardCore.Users.ViewModels;
 using Fluid;
+using Microsoft.AspNetCore.Authentication;
 
 namespace OrchardCore.Users
 {
@@ -99,7 +100,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+
+            services.AddTransient<IClaimsTransformation, EmailClaimsTransformer>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
