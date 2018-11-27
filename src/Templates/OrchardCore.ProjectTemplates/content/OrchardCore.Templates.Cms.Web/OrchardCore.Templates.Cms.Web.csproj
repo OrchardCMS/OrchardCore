@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Hosting.Console" Version="$(TemplateOrchardPackageVersion)" />
     <!--#if (UseNLog) -->
     <PackageReference Include="OrchardCore.Logging.NLog" Version="$(TemplateOrchardPackageVersion)" />
     <!--#endif -->
