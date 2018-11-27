@@ -39,7 +39,7 @@ namespace OrchardCore.Microsoft.Authentication
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAuthenticationConfiguration>(),
+                //ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAuthenticationConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAuthenticationConfiguration>(),
 
                 // Built-in initializers:

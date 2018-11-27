@@ -35,7 +35,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
+            var loginSettings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
             if (loginSettings == null)
             {
                 return;
@@ -57,12 +57,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
-            {
-                return;
-            }
-            options.ClientId= loginSettings.AppId;
+            var loginSettings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
+
+            options.ClientId = loginSettings?.AppId ?? string.Empty;
 
             try
             {
@@ -81,7 +78,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<MicrosoftAuthenticationSettings> GetFacebookLoginSettingsAsync()
+        private async Task<MicrosoftAuthenticationSettings> GetMicrosoftAccountSettingsAsync()
         {
             var settings = await _loginService.GetSettingsAsync();
             if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))

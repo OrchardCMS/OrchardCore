@@ -16,11 +16,6 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="Views\AzureADAuthenticationSettings.Edit.cshtml" />
-    <EmbeddedResource Remove="Views\MicrosoftAuthenticationSettings.Edit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\MicrosoftAuthenticationSettings.Edit.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
