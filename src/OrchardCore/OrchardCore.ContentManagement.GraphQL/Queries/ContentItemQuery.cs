@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     new QueryArgument<NonNullGraphType<StringGraphType>>
                     {
                         Name = "contentItemId",
-                        Description = "content item id"
+                        Description = "Content item id"
                     }
                 ),
                 Resolver = new AsyncFieldResolver<ContentItem>(ResolveAsync)

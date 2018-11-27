@@ -30,8 +30,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     continue;
                 }
-
-                contentItemType.Metadata.Add("PartName", partName);
+                
+                contentItemType.Metadata.Add(partName, part.PartDefinition.Name);
 
                 var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
 
