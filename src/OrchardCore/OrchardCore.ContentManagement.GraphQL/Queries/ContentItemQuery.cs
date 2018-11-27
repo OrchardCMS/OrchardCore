@@ -3,6 +3,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -13,16 +14,22 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ContentItemQuery(IHttpContextAccessor httpContextAccessor)
+        public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<ContentItemQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
                 Name = "ContentItem",
+                Description = T["Content items are instances of content types, just like objects are instances of classes."],
                 Type = typeof(ContentItemInterface),
                 Arguments = new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>>
