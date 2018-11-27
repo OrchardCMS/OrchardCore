@@ -12,18 +12,21 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Scripting;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly IRecipeResultStore _recipeResultStore;
 
@@ -31,6 +34,7 @@ namespace OrchardCore.Recipes.Services
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
             IRecipeResultStore recipeResultStore,
             IApplicationLifetime applicationLifetime,
@@ -39,7 +43,8 @@ namespace OrchardCore.Recipes.Services
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {
-            _orchardHost = orchardHost;
+            _httpContextAccessor = httpContextAccessor;
+            _shellHost = orchardHost;
             _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
@@ -157,7 +162,20 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            (var scope, var shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
+            IServiceScope scope;
+            ShellContext shellContext;
+            IServiceProvider serviceProvider;
+
+            if (recipeStep.RecipeDescriptor.RequireNewScope)
+            {
+                (scope, shellContext) = await _shellHost.GetScopeAndContextAsync(_shellSettings);
+                serviceProvider = scope.ServiceProvider;
+            }
+            else
+            {
+                (scope, shellContext) = (null, null);
+                serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+            }
 
             using (scope)
             {
@@ -181,8 +199,8 @@ namespace OrchardCore.Recipes.Services
                     shellContext.IsActivated = true;
                 }
 
-                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
-                var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+                var recipeStepHandlers = serviceProvider.GetServices<IRecipeStepHandler>();
+                var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
                 // Substitutes the script elements by their actual values
@@ -210,7 +228,7 @@ namespace OrchardCore.Recipes.Services
 
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
-            using (var localScope = await _orchardHost.GetScopeAsync(_shellSettings))
+            using (var localScope = await _shellHost.GetScopeAsync(_shellSettings))
             {
                 var deferredTaskEngine = localScope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
