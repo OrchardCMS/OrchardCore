@@ -81,7 +81,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(result.Principal),
+                subject: result.Principal.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(User),
+                subject: User.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -346,7 +346,7 @@ namespace OrchardCore.OpenId.Controllers
             Debug.Assert(principal != null, "The user principal shouldn't be null.");
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(principal),
+                subject: principal.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -424,7 +424,7 @@ namespace OrchardCore.OpenId.Controllers
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
             if (string.IsNullOrEmpty(principal.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value))
             {
-                identity.AddClaim(new Claim(OpenIdConnectConstants.Claims.Subject, GetUserIdentifier(principal)));
+                identity.AddClaim(new Claim(OpenIdConnectConstants.Claims.Subject, principal.GetUserIdentifier()));
             }
 
             // Create a new authentication ticket holding the user identity.
@@ -447,7 +447,7 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     authorization = await _authorizationManager.CreateAsync(
                         principal : ticket.Principal,
-                        subject   : GetUserIdentifier(principal),
+                        subject   : principal.GetUserIdentifier(),
                         client    : await _applicationManager.GetIdAsync(application),
                         type      : OpenIddictConstants.AuthorizationTypes.Permanent,
                         scopes    : ImmutableArray.CreateRange(ticket.GetScopes()),
@@ -545,11 +545,5 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUri = GetRedirectUrl()
             });
         }
-
-        private static string GetUserIdentifier(ClaimsPrincipal principal)
-            => principal.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value ??
-               principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-               principal.FindFirst(ClaimTypes.Upn)?.Value ??
-               throw new InvalidOperationException("No suitable user identifier can be found in the principal.");
     }
 }
