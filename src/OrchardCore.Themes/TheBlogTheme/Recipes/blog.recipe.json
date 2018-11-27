@@ -412,8 +412,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "ImagePart",
-              "Name": "ImagePart",
+              "PartName": "Image",
+              "Name": "Image",
               "Settings": {
                 "Position": "0"
               }
@@ -454,8 +454,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "ImagePart",
-              "Name": "ImagePart",
+              "PartName": "Image",
+              "Name": "Image",
               "Settings": {
                 "Position": "0"
               }
@@ -616,7 +616,7 @@
           ]
         },
         {
-          "Name": "ImagePart",
+          "Name": "Image",
           "Settings": {
             "Attachable": true
           },
