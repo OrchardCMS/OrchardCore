@@ -11,6 +11,8 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
     public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
     {
+        public string DisplayName { get; set; }
+
         // Applies to all types
         public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string> 
         { 

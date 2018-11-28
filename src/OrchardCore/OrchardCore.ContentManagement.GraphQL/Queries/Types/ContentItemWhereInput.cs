@@ -11,7 +11,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         public ContentItemWhereInput(string contentItemName)
         {
-            Name =  $"{contentItemName}Where";
+            Name =  $"{contentItemName}WhereInput";
+            DisplayName = $"{contentItemName}Where";
             
             Description = $"the {contentItemName} content item filters";
 
