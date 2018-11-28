@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using OrchardCore.Alias.Models;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 
 namespace OrchardCore.Alias.GraphQL

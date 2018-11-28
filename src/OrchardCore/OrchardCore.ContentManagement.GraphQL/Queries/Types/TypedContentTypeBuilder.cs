@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
-                        name: queryGraphTypeResolved.Name,
+                        queryGraphTypeResolved.Name,
                         description: queryGraphTypeResolved.Description,
                         resolve: context =>
                         {
