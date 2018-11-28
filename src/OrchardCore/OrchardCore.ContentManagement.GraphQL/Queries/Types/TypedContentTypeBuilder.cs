@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     whereInput.AddField(new FieldType
                     {
                         Type = inputGraphTypeResolved.GetType(),
-                        Name = inputGraphTypeResolved.Name,
+                        Name = inputGraphTypeResolved.Name.ToCamelCase(),
                         Description = inputGraphTypeResolved.Description
                     });
                 }
