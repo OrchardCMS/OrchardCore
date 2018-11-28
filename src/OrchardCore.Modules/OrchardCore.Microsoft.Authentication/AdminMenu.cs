@@ -57,7 +57,7 @@ namespace OrchardCore.Microsoft.Authentication
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Facebook"], "1", settings =>
+                    category.Add(T["Authentication"], "1", settings =>
                         settings.Add(T["Microsoft Account"], "2", client => client
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount})
                                 .Permission(Permissions.ManageAuthentication)

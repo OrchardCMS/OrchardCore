@@ -15,18 +15,18 @@ using OrchardCore.Microsoft.Authentication.Settings;
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class MicrosoftAuthenticationConfiguration :
+    public class MicrosoftAccountConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<MicrosoftAccountOptions>
     {
-        private readonly IMicrosoftAuthenticationService _loginService;
+        private readonly IMicrosoftAccountService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAuthenticationConfiguration> _logger;
+        private readonly ILogger<MicrosoftAccountConfiguration> _logger;
 
-        public MicrosoftAuthenticationConfiguration(
-            IMicrosoftAuthenticationService loginService,
+        public MicrosoftAccountConfiguration(
+            IMicrosoftAccountService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<MicrosoftAuthenticationConfiguration> logger)
+            ILogger<MicrosoftAccountConfiguration> logger)
         {
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -78,12 +78,12 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<MicrosoftAuthenticationSettings> GetMicrosoftAccountSettingsAsync()
+        private async Task<MicrosoftAccountSettings> GetMicrosoftAccountSettingsAsync()
         {
             var settings = await _loginService.GetSettingsAsync();
-            if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+            if ((_loginService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The Facebook Login module is not correctly configured.");
+                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
 
                 return null;
             }

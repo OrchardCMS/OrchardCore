@@ -11,11 +11,11 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// <summary>
     /// This recipe step sets general OpenID Connect Client settings.
     /// </summary>
-    public class MicrosoftAuthenticationSettingsStep : IRecipeStepHandler
+    public class MicrosoftAccountSettingsStep : IRecipeStepHandler
     {
-        private readonly IMicrosoftAuthenticationService _loginService;
+        private readonly IMicrosoftAccountService _loginService;
 
-        public MicrosoftAuthenticationSettingsStep(IMicrosoftAuthenticationService loginService)
+        public MicrosoftAccountSettingsStep(IMicrosoftAccountService loginService)
         {
             _loginService = loginService;
         }

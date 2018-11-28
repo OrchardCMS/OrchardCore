@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Microsoft.Authentication.ViewModels
 {
-    public class MicrosoftAuthenticationSettingsViewModel
+    public class MicrosoftAccountSettingsViewModel
     {
-        [Required]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Application Id is required")]
         public string AppId { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Application Secret is required")]
         public string AppSecret { get; set; }
 
         [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]

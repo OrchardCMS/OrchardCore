@@ -31,16 +31,16 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IMicrosoftAuthenticationService, MicrosoftAuthenticationService>();
-            services.AddScoped<IDisplayDriver<ISite>, MicrosoftAuthenticationSettingsDisplayDriver>();
+            services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
+            services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuLogin>();
 
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                //ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAuthenticationConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAuthenticationConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
