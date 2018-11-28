@@ -62,12 +62,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         return;
                     }
 
-                    var whereInput = (ContentItemWhereInput) whereArgument.ResolvedType;
+                    var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
 
                     whereInput.AddField(new FieldType
                     {
                         Type = inputGraphTypeResolved.GetType(),
-                        Name = inputGraphTypeResolved.Name.ToCamelCase(),
+                        Name = inputGraphTypeResolved.Name,
                         Description = inputGraphTypeResolved.Description
                     });
                 }
