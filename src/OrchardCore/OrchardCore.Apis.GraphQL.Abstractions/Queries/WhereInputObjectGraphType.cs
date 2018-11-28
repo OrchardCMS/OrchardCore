@@ -11,7 +11,10 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
     public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
     {
-        public string DisplayName { get; set; }
+        public string DisplayName { set {
+                Metadata.Add("DisplayName", value);
+            }
+        }
 
         // Applies to all types
         public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string> 
