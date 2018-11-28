@@ -5,27 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Configuration\AzureADAuthenticationConfiguration.cs" />
-    <Compile Remove="Drivers\AzureADAuthenticationSettingsDisplayDriver.cs" />
-    <Compile Remove="Recipes\AzureADAuthenticationSettingsStep.cs" />
-    <Compile Remove="Services\AzureADAuthenticationService.cs" />
-    <Compile Remove="Services\IAzureADAuthenticationService.cs" />
-    <Compile Remove="Settings\AzureADAuthenticationSettings.cs" />
-    <Compile Remove="ViewModels\AzureADAuthenticationSettingsViewModel.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Remove="Views\AzureADAuthenticationSettings.Edit.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Configuration\AzureADAuthenticationConfiguration.cs" />
-    <None Include="Drivers\AzureADAuthenticationSettingsDisplayDriver.cs" />
-    <None Include="Recipes\AzureADAuthenticationSettingsStep.cs" />
-    <None Include="Services\AzureADAuthenticationService.cs" />
-    <None Include="Services\IAzureADAuthenticationService.cs" />
-    <None Include="Settings\AzureADAuthenticationSettings.cs" />
-    <None Include="ViewModels\AzureADAuthenticationSettingsViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>

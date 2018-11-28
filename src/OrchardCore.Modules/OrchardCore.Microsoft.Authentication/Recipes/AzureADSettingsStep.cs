@@ -1,20 +1,20 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using OrchardCore.Facebook.Services;
+using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Facebook.Recipes
+namespace OrchardCore.Microsoft.Authentication.Recipes
 {
     /// <summary>
     /// This recipe step sets general OpenID Connect Client settings.
     /// </summary>
-    public class AzureADAuthenticationSettingsStep : IRecipeStepHandler
+    public class AzureADSettingsStep : IRecipeStepHandler
     {
-        private readonly IAzureADAuthenticationService _loginService;
+        private readonly IAzureADService _loginService;
 
-        public AzureADAuthenticationSettingsStep(IAzureADAuthenticationService loginService)
+        public AzureADSettingsStep(IAzureADService loginService)
         {
             _loginService = loginService;
         }

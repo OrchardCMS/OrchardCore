@@ -11,6 +11,8 @@ using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -27,13 +29,13 @@ namespace OrchardCore.Microsoft.Authentication
     }
 
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class LoginStartup : StartupBase
+    public class MicrosoftAccountStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuLogin>();
+            services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
 
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
@@ -47,4 +49,27 @@ namespace OrchardCore.Microsoft.Authentication
             });
         }
     }
+
+    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
+    public class AzureADStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IAzureADService, AzureADService>();
+            services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenuAAD>();
+
+            // Register the options initializers required by the OpenID Connect client handler.
+            services.TryAddEnumerable(new[]
+            {
+                // Orchard-specific initializers:
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADConfiguration>(),
+
+                // Built-in initializers:
+                //ServiceDescriptor.Transient<IPostConfigureOptions<AzureADOptions>, OpenIdConnectPostConfigureOptions>()
+            });
+        }
+    }
+
 }

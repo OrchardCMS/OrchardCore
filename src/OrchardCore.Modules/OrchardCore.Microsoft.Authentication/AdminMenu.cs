@@ -38,12 +38,12 @@ namespace OrchardCore.Microsoft.Authentication
     }
 
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class AdminMenuLogin : INavigationProvider
+    public class AdminMenuMicrosoftAccount : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuLogin(
-            IStringLocalizer<AdminMenuLogin> localizer,
+        public AdminMenuMicrosoftAccount(
+            IStringLocalizer<AdminMenuMicrosoftAccount> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;
@@ -58,7 +58,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(T["Configuration"], "15", category =>
                     category.Add(T["Authentication"], "1", settings =>
-                        settings.Add(T["Microsoft Account"], "2", client => client
+                        settings.Add(T["Microsoft Account"], "10", client => client
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount})
                                 .Permission(Permissions.ManageAuthentication)
                                 .LocalNav())
@@ -68,4 +68,37 @@ namespace OrchardCore.Microsoft.Authentication
             return Task.CompletedTask;
         }
     }
+
+    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
+    public class AdminMenuAAD : INavigationProvider
+    {
+        private readonly ShellDescriptor _shellDescriptor;
+
+        public AdminMenuAAD(
+            IStringLocalizer<AdminMenuAAD> localizer,
+            ShellDescriptor shellDescriptor)
+        {
+            T = localizer;
+            _shellDescriptor = shellDescriptor;
+        }
+
+        public IStringLocalizer T { get; set; }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                builder.Add(T["Configuration"], "15", category =>
+                    category.Add(T["Authentication"], "1", settings =>
+                        settings.Add(T["Azure Active Directory"], "20", client => client
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
+                                .Permission(Permissions.ManageAuthentication)
+                                .LocalNav())
+                    ));
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
 }

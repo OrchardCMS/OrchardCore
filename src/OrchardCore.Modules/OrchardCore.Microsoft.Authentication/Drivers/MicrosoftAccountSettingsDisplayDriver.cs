@@ -50,7 +50,8 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
-                model.CallbackPath = settings.CallbackPath;
+                if (settings.CallbackPath.HasValue)
+                    model.CallbackPath = settings.CallbackPath;
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 

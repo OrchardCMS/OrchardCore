@@ -1,0 +1,30 @@
+@using OrchardCore.Microsoft.Authentication.ViewModels;
+@model AzureADSettingsViewModel;
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<h3>@T["Microsoft Account Authentication Settings"]</h3>
+
+<fieldset class="form-group" asp-validation-class-for="AppId">
+    <label>@T["AppId"] <span asp-validation-for="AppId"></span></label>
+    <input asp-for="AppId" class="form-control" />
+    <span class="hint">@T["The Application ID found on the Azure AD App registration parameters."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="TenantId">
+    <label>@T["TenantId"] <span asp-validation-for="TenantId"></span></label>
+    <input asp-for="TenantId" class="form-control" />
+    <span class="hint">@T["The Tenant (Directory) ID found on the Azure AD App registration parameters."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="AppSecret">
+    <label>@T["Secret Key"] <span asp-validation-for="AppSecret"></span></label>
+    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" />
+    <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="CallbackPath">
+    <label>@T["CallbackPath"] <span asp-validation-for="CallbackPath"></span></label>
+    <input asp-for="CallbackPath" class="form-control" placeholder="/signin-microsoft" />
+    <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+</fieldset>
