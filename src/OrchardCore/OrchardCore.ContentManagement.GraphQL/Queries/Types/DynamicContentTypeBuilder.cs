@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 else
                 {
                     var field = contentItemType.Field(
-                        typeof(DynamicPartGraphType),   
+                        typeof(DynamicPartGraphType),
                         partName.ToFieldName(),
                         description: T["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
