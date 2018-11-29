@@ -31,12 +31,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasMetadata(partName))
-                {
-                    continue;
-                }
-
-                contentItemType.Metadata.Add(partName, part.PartDefinition.Name);
+                if (contentItemType.HasField(partName)) continue;
 
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
@@ -60,13 +55,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
                 else
                 {
+                    var name = part.DisplayName();
+
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
-                        partName,
+                        name,
                         description: T["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
                         {
-                            var nameToResolve = partName;
+                            var nameToResolve = name;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);

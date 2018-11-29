@@ -1,9 +1,11 @@
+using System;
 using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
@@ -26,12 +28,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasMetadata(partName))
-                {
-                    continue;
-                }
-                
-                contentItemType.Metadata.Add(partName, part.PartDefinition.Name);
+                if (contentItemType.HasField(partName)) continue;
 
                 var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
 
@@ -39,13 +36,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
                 {
+                    var name = part.DisplayName();
+
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
-                        queryGraphTypeResolved.Name,
+                        name,
                         description: queryGraphTypeResolved.Description,
                         resolve: context =>
                         {
-                            var nameToResolve = queryGraphTypeResolved.Name;
+                            var nameToResolve = name;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
@@ -67,7 +66,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     whereInput.AddField(new FieldType
                     {
                         Type = inputGraphTypeResolved.GetType(),
-                        Name = inputGraphTypeResolved.HasMetadata("FieldName") ? inputGraphTypeResolved.GetMetadata<string>("FieldName").ToCamelCase() : partName.ToCamelCase(),
+                        Name = partName.ToCamelCase(),
                         Description = inputGraphTypeResolved.Description
                     });
                 }
