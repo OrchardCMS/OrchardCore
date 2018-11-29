@@ -1,11 +1,9 @@
-using System;
 using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
@@ -36,15 +34,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
                 {
-                    var name = part.DisplayName();
-
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
-                        name,
+                        partName.ToFieldName(),
                         description: queryGraphTypeResolved.Description,
                         resolve: context =>
                         {
-                            var nameToResolve = name;
+                            var nameToResolve = partName;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
