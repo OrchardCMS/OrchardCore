@@ -1,8 +1,8 @@
 using System.Linq;
-using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
@@ -11,10 +11,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor)
+        public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<DynamicContentTypeBuilder> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
@@ -52,8 +57,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
-                        partName,
-                        part.PartDefinition.Name,
+                        partName.ToFieldName(),
+                        description: T["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
                         {
                             var nameToResolve = partName;
