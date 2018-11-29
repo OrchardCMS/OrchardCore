@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
@@ -13,21 +16,41 @@ namespace OrchardCore.Apis.GraphQL.Services
     {
         private readonly IMemoryCache _memoryCache;
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISiteService _siteService;
         private readonly IServiceProvider _serviceProvider;
 
         public SchemaService(
             IMemoryCache memoryCache,
             IEnumerable<ISchemaBuilder> schemaBuilders,
+            IHttpContextAccessor httpContextAccessor,
+            ISiteService siteService,
             IServiceProvider serviceProvider)
         {
             _memoryCache = memoryCache;
             _schemaBuilders = schemaBuilders;
+            _httpContextAccessor = httpContextAccessor;
+            _siteService = siteService;
             _serviceProvider = serviceProvider;
         }
 
-        public Task<ISchema> GetSchema()
+        public async Task<ISchema> GetSchema()
         {
-            return _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
+            var cultureFeature = _httpContextAccessor
+                       .HttpContext
+                       .Features
+                       .Get<IRequestCultureFeature>();
+
+            var culture = cultureFeature?.RequestCulture.Culture.ToString();
+
+            if (culture == null)
+            {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+                culture = siteSettings.Culture;
+            }
+
+            return await _memoryCache.GetOrCreateAsync($"GraphQLSchema.{culture}", async f =>
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
