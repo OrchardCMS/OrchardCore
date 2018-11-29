@@ -1,0 +1,23 @@
+@model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
+    decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
+    decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
+}
+
+<fieldset class="form-group">
+    <div class="row col-xs">
+        <label asp-for="Value">@name</label>
+        <select asp-for="Value" class="form-control content-preview-select">
+            @for (decimal d = from; d <= to; d += step)
+            {
+                <option value="@d">@d</option>
+            }
+        </select>
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>

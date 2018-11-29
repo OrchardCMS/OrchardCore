@@ -41,6 +41,8 @@ namespace OrchardCore.Settings.Drivers
                         model.TimeZone = site.TimeZoneId;
                         model.Culture = site.Culture;
                         model.SiteCultures = site.SupportedCultures.Select(x => CultureInfo.GetCultureInfo(x));
+                        model.UseCdn = site.UseCdn;
+                        model.ResourceDebugMode = site.ResourceDebugMode;
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
@@ -51,16 +53,18 @@ namespace OrchardCore.Settings.Drivers
             {
                 var model = new SiteSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone, t => t.Culture))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
                     site.SiteName = model.SiteName;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
                     site.Culture = model.Culture;
+                    site.UseCdn = model.UseCdn;
+                    site.ResourceDebugMode = model.ResourceDebugMode;
                 }
 
                 // We always reset the tenant for the default culture and also supported cultures to take effect
-                _shellHost.ReloadShellContext(_shellSettings);
+                await _shellHost.ReloadShellContextAsync(_shellSettings);
 
                 _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
             }

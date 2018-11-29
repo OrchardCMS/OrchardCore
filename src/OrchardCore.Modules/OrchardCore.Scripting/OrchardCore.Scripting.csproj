@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Scripting.Core\OrchardCore.Scripting.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
   </ItemGroup>
 

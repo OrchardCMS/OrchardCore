@@ -41,6 +41,7 @@
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -1041,12 +1042,12 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "HtmlWidget",
+          "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Footer",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,
@@ -1079,72 +1080,72 @@
       "name": "media",
       "Files": [
         {
-          "Path": "about/1.jpg",
-          "Base64": "[file:base64('../wwwroot/img/about/1.jpg')]"
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/img/about/1.jpg"
         },
         {
-          "Path": "about/2.jpg",
-          "Base64": "[file:base64('../wwwroot/img/about/2.jpg')]"
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/img/about/2.jpg"
         },
         {
-          "Path": "about/3.jpg",
-          "Base64": "[file:base64('../wwwroot/img/about/3.jpg')]"
+          "TargetPath": "about/3.jpg",
+          "SourcePath": "../wwwroot/img/about/3.jpg"
         },
         {
-          "Path": "about/4.jpg",
-          "Base64": "[file:base64('../wwwroot/img/about/4.jpg')]"
+          "TargetPath": "about/4.jpg",
+          "SourcePath": "../wwwroot/img/about/4.jpg"
         },
         {
-          "Path": "logos/creative-market.jpg",
-          "Base64": "[file:base64('../wwwroot/img/logos/creative-market.jpg')]"
+          "TargetPath": "logos/creative-market.jpg",
+          "SourcePath": "../wwwroot/img/logos/creative-market.jpg"
         },
         {
-          "Path": "logos/designmodo.jpg",
-          "Base64": "[file:base64('../wwwroot/img/logos/designmodo.jpg')]"
+          "TargetPath": "logos/designmodo.jpg",
+          "SourcePath": "../wwwroot/img/logos/designmodo.jpg"
         },
         {
-          "Path": "logos/envato.jpg",
-          "Base64": "[file:base64('../wwwroot/img/logos/envato.jpg')]"
+          "TargetPath": "logos/envato.jpg",
+          "SourcePath": "../wwwroot/img/logos/envato.jpg"
         },
         {
-          "Path": "logos/themeforest.jpg",
-          "Base64": "[file:base64('../wwwroot/img/logos/themeforest.jpg')]"
+          "TargetPath": "logos/themeforest.jpg",
+          "SourcePath": "../wwwroot/img/logos/themeforest.jpg"
         },
         {
-          "Path": "portfolio/01-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/01-full.jpg')]"
+          "TargetPath": "portfolio/01-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/01-full.jpg"
         },
         {
-          "Path": "portfolio/02-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/02-full.jpg')]"
+          "TargetPath": "portfolio/02-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/02-full.jpg"
         },
         {
-          "Path": "portfolio/03-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/03-full.jpg')]"
+          "TargetPath": "portfolio/03-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/03-full.jpg"
         },
         {
-          "Path": "portfolio/04-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/04-full.jpg')]"
+          "TargetPath": "portfolio/04-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/04-full.jpg"
         },
         {
-          "Path": "portfolio/05-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/05-full.jpg')]"
+          "TargetPath": "portfolio/05-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/05-full.jpg"
         },
         {
-          "Path": "portfolio/06-full.jpg",
-          "Base64": "[file:base64('../wwwroot/img/portfolio/06-full.jpg')]"
+          "TargetPath": "portfolio/06-full.jpg",
+          "SourcePath": "../wwwroot/img/portfolio/06-full.jpg"
         },
         {
-          "Path": "team/1.jpg",
-          "Base64": "[file:base64('../wwwroot/img/team/1.jpg')]"
+          "TargetPath": "team/1.jpg",
+          "SourcePath": "../wwwroot/img/team/1.jpg"
         },
         {
-          "Path": "team/2.jpg",
-          "Base64": "[file:base64('../wwwroot/img/team/2.jpg')]"
+          "TargetPath": "team/2.jpg",
+          "SourcePath": "../wwwroot/img/team/2.jpg"
         },
         {
-          "Path": "team/3.jpg",
-          "Base64": "[file:base64('../wwwroot/img/team/3.jpg')]"
+          "TargetPath": "team/3.jpg",
+          "SourcePath": "../wwwroot/img/team/3.jpg"
         }
       ]
     },
@@ -1155,6 +1156,7 @@
           "ContentItemId": "[js:uuid()]",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "Menu",
+          "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -1215,6 +1217,7 @@
           "ContentItemId": "[js:uuid()]",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "LandingPage",
+          "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -1233,6 +1236,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
+                "DisplayText": "E-Commerce",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1253,6 +1257,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
+                "DisplayText": "Responsive Design",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1273,6 +1278,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Service",
+                "DisplayText": "Web Security",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1297,6 +1303,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Threads",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1322,6 +1329,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Explore",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1347,6 +1355,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Finish",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1372,6 +1381,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Lines",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1397,6 +1407,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Southwest",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1422,6 +1433,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Project",
+                "DisplayText": "Window",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1451,6 +1463,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
+                "DisplayText": "Our Humble Beginnings",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1476,6 +1489,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
+                "DisplayText": "An Agency is Born",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1501,6 +1515,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
+                "DisplayText": "Transition to Full Service",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1526,6 +1541,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Milestone",
+                "DisplayText": "Phase Two Expansion",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1555,6 +1571,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
+                "DisplayText": "Kay Garland",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1586,6 +1603,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
+                "DisplayText": "Larry Parker",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1617,6 +1635,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
+                "DisplayText": "Diana Pertersen",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1652,6 +1671,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
+                "DisplayText": "Envato",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1674,6 +1694,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
+                "DisplayText": "Design Moto",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1696,6 +1717,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
+                "DisplayText": "ThemeForest",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1718,6 +1740,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
+                "DisplayText": "Creative",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,

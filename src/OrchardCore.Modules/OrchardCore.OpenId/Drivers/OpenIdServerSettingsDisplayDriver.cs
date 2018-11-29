@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Settings;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
@@ -61,18 +61,22 @@ namespace OrchardCore.OpenId.Drivers
                 model.TestingModeEnabled = settings.TestingModeEnabled;
                 model.AccessTokenFormat = settings.AccessTokenFormat;
                 model.Authority = settings.Authority;
+
                 model.CertificateStoreLocation = settings.CertificateStoreLocation;
                 model.CertificateStoreName = settings.CertificateStoreName;
                 model.CertificateThumbprint = settings.CertificateThumbprint;
-                model.EnableTokenEndpoint = settings.EnableTokenEndpoint;
-                model.EnableAuthorizationEndpoint = settings.EnableAuthorizationEndpoint;
-                model.EnableLogoutEndpoint = settings.EnableLogoutEndpoint;
-                model.EnableUserInfoEndpoint = settings.EnableUserInfoEndpoint;
-                model.AllowPasswordFlow = settings.AllowPasswordFlow;
-                model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
-                model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
-                model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
-                model.AllowImplicitFlow = settings.AllowImplicitFlow;
+
+                model.EnableAuthorizationEndpoint = settings.AuthorizationEndpointPath.HasValue;
+                model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
+                model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
+                model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
+
+                model.AllowPasswordFlow = settings.GrantTypes.Contains(GrantTypes.Password);
+                model.AllowClientCredentialsFlow = settings.GrantTypes.Contains(GrantTypes.ClientCredentials);
+                model.AllowAuthorizationCodeFlow = settings.GrantTypes.Contains(GrantTypes.AuthorizationCode);
+                model.AllowRefreshTokenFlow = settings.GrantTypes.Contains(GrantTypes.RefreshToken);
+                model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
+
                 model.UseRollingTokens = settings.UseRollingTokens;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
@@ -110,18 +114,65 @@ namespace OrchardCore.OpenId.Drivers
                 settings.TestingModeEnabled = model.TestingModeEnabled;
                 settings.AccessTokenFormat = model.AccessTokenFormat;
                 settings.Authority = model.Authority;
+
                 settings.CertificateStoreLocation = model.CertificateStoreLocation;
                 settings.CertificateStoreName = model.CertificateStoreName;
                 settings.CertificateThumbprint = model.CertificateThumbprint;
-                settings.EnableTokenEndpoint = model.EnableTokenEndpoint;
-                settings.EnableAuthorizationEndpoint = model.EnableAuthorizationEndpoint;
-                settings.EnableLogoutEndpoint = model.EnableLogoutEndpoint;
-                settings.EnableUserInfoEndpoint = model.EnableUserInfoEndpoint;
-                settings.AllowPasswordFlow = model.AllowPasswordFlow;
-                settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-                settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-                settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-                settings.AllowImplicitFlow = model.AllowImplicitFlow;
+
+                settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
+                    new PathString("/connect/authorize") : PathString.Empty;
+                settings.LogoutEndpointPath = model.EnableLogoutEndpoint ?
+                    new PathString("/connect/logout") : PathString.Empty;
+                settings.TokenEndpointPath = model.EnableTokenEndpoint ?
+                    new PathString("/connect/token") : PathString.Empty;
+                settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
+                    new PathString("/connect/userinfo") : PathString.Empty;
+
+                if (model.AllowAuthorizationCodeFlow)
+                {
+                    settings.GrantTypes.Add(GrantTypes.AuthorizationCode);
+                }
+                else
+                {
+                    settings.GrantTypes.Remove(GrantTypes.AuthorizationCode);
+                }
+
+                if (model.AllowImplicitFlow)
+                {
+                    settings.GrantTypes.Add(GrantTypes.Implicit);
+                }
+                else
+                {
+                    settings.GrantTypes.Remove(GrantTypes.Implicit);
+                }
+
+                if (model.AllowClientCredentialsFlow)
+                {
+                    settings.GrantTypes.Add(GrantTypes.ClientCredentials);
+                }
+                else
+                {
+                    settings.GrantTypes.Remove(GrantTypes.ClientCredentials);
+                }
+
+                if (model.AllowPasswordFlow)
+                {
+                    settings.GrantTypes.Add(GrantTypes.Password);
+                }
+                else
+                {
+                    settings.GrantTypes.Remove(GrantTypes.Password);
+                }
+
+                if (model.AllowRefreshTokenFlow)
+                {
+                    settings.GrantTypes.Add(GrantTypes.RefreshToken);
+                }
+                else
+                {
+                    settings.GrantTypes.Remove(GrantTypes.RefreshToken);
+                }
+
                 settings.UseRollingTokens = model.UseRollingTokens;
 
                 foreach (var result in await _serverService.ValidateSettingsAsync(settings))
@@ -136,7 +187,7 @@ namespace OrchardCore.OpenId.Drivers
                 // If the settings are valid, reload the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 

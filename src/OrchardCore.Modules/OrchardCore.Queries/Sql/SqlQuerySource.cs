@@ -75,7 +75,7 @@ namespace OrchardCore.Queries.Sql
                 using (connection)
                 {
                     connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery);
+                    queryResults = await connection.QueryAsync(rawQuery, parameters);
                 }
 
                 var results = new List<JObject>();

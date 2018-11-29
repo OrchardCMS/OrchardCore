@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +15,8 @@ using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
-using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 
@@ -68,17 +67,14 @@ namespace OrchardCore.Demo
 
             services.Configure<RazorPagesOptions>(options =>
             {
-                // The module name (if specified) is already defined as a default folder path
-                // options.Conventions.AddModularFolderRoute("/OrchardCore.Demo/Pages", "Orchard Demo");
-
-                // Add a custom folder path
-                options.Conventions.AddModularFolderRoute("/OrchardCore.Demo/Pages", "Demo");
+                // Add a custom folder route
+                options.Conventions.AddAreaFolderRoute("OrchardCore.Demo", "/", "Demo");
 
                 // Add a custom page route
-                options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "Hello");
+                options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "Hello");
 
                 // This declaration would define an home page
-                // options.Conventions.AddModularPageRoute("/OrchardCore.Demo/Pages/Hello", "");
+                //options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "");
             });
 
             services.AddTagHelpers(typeof(BazTagHelper).Assembly);

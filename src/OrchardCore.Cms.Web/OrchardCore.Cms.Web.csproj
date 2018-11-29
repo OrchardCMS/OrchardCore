@@ -1,10 +1,11 @@
-<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
 
   <Import Project="..\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,9 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
-    <ProjectReference Include="..\OrchardCore\OrchardCore.Logging.NLog\OrchardCore.Logging.NLog.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
+    <ProjectReference Include="..\OrchardCore\OrchardCore.Logging.NLog\OrchardCore.Logging.NLog.csproj" />
   </ItemGroup>
 
   <ItemGroup>

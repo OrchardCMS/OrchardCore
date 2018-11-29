@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.10.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.11.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -130,10 +130,11 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         urlProtocol: false,
         minimalLinks: false
     },
-        writable: false,
-        enumerable: true,
-        configurable: false
+    writable: false,
+    enumerable: true,
+    configurable: false
 });
+
 
 (function (navigator, window, document, $) {
     'use strict';
@@ -288,7 +289,8 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             };
         t.btnsDef = {
             viewHTML: {
-                fn: 'toggle'
+                fn: 'toggle',
+                class: 'trumbowyg-not-disable',
             },
 
             undo: {
@@ -500,7 +502,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                 return;
             }
 
-            if (typeof (protocol) !== 'string') {
+            if (typeof(protocol) !== 'string') {
                 return 'https://';
             }
             return /:\/\/$/.test(protocol) ? protocol : protocol + '://';
@@ -542,7 +544,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             t.$ta
                 .addClass(prefix + 'textarea')
                 .attr('tabindex', -1)
-                ;
+            ;
 
             t.$ed
                 .addClass(prefix + 'editor')
@@ -551,7 +553,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     dir: t.lang._dir || 'ltr'
                 })
                 .html(html)
-                ;
+            ;
 
             if (t.o.tabindex) {
                 t.$ed.attr('tabindex', t.o.tabindex);
@@ -655,7 +657,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                             t.autogrowEditorOnEnter();
                         }
                         else if (!t.o.autogrow) {
-                            t.$ed.css({ height: t.$ed.css('min-height') });
+                            t.$ed.css({height: t.$ed.css('min-height')});
                             t.$c.trigger('tbwresize');
                         }
                     }
@@ -732,7 +734,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             if (oldHeight !== totalHeight) {
                 t.$ed.height(oldHeight);
                 setTimeout(function () {
-                    t.$ed.css({ height: totalHeight });
+                    t.$ed.css({height: totalHeight});
                     t.$c.trigger('tbwresize');
                 }, 0);
             }
@@ -930,7 +932,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                                 left: fixedFullWidth ? '0' : 'auto',
                                 zIndex: 7
                             });
-                            $([t.$ta, t.$ed]).css({ marginTop: bp.height() });
+                            $([t.$ta, t.$ed]).css({marginTop: bp.height()});
                         }
                         bp.css({
                             width: fixedFullWidth ? '100%' : (($box.width() - 1) + 'px')
@@ -944,7 +946,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     } else if (t.isFixed) {
                         t.isFixed = false;
                         bp.removeAttr('style');
-                        $([t.$ta, t.$ed]).css({ marginTop: 0 });
+                        $([t.$ta, t.$ed]).css({marginTop: 0});
                         $('.' + t.o.prefix + 'fixed-top', $box).css({
                             position: 'absolute',
                             top: oh
@@ -977,7 +979,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             if (t.isTextarea) {
                 t.$box.after(
                     t.$ta
-                        .css({ height: '' })
+                        .css({height: ''})
                         .val(t.html())
                         .removeClass(prefix + 'textarea')
                         .show()
@@ -985,7 +987,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             } else {
                 t.$box.after(
                     t.$ed
-                        .css({ height: '' })
+                        .css({height: ''})
                         .removeClass(prefix + 'editor')
                         .removeAttr('contenteditable')
                         .removeAttr('dir')
@@ -1108,7 +1110,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             if (t.o.autogrow) {
                 t.height = t.$ed.height();
                 if (t.height !== t.$ta.css('height')) {
-                    t.$ta.css({ height: t.height });
+                    t.$ta.css({height: t.height});
                     t.$c.trigger('tbwresize');
                 }
             }
@@ -1117,7 +1119,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                 t.$ed.height('auto');
                 var totalheight = t.autogrowOnEnterWasFocused ? t.$ed[0].scrollHeight : t.$ed.css('min-height');
                 if (totalheight !== t.$ta.css('height')) {
-                    t.$ed.css({ height: totalheight });
+                    t.$ed.css({height: totalheight});
                     t.$c.trigger('tbwresize');
                 }
             }
@@ -1267,7 +1269,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                     return false;
                 }
 
-                var link = $(['<a href="', v.url, '">', v.text || v.url, '</a>'].join(''));
+                var link = $(['<a href="', url, '">', v.text || v.url, '</a>'].join(''));
 
                 if (!t.o.minimalLinks) {
                     if (v.title.length > 0) {
@@ -1290,15 +1292,15 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                 return url;
             }
 
-            //const VALID_LINK_PREFIX = /^([a-z][-+.a-z0-9]*:|\/|#)/i;
-            //if (VALID_LINK_PREFIX.test(url)) {
-            //    return url;
-            //}
+            var VALID_LINK_PREFIX = /^([a-z][-+.a-z0-9]*:|\/|#)/i;
+            if (VALID_LINK_PREFIX.test(url)) {
+                return url;
+            }
 
-            //const SIMPLE_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            //if (SIMPLE_EMAIL_REGEX.test(url)) {
-            //    return 'mailto:' + url;
-            //}
+            var SIMPLE_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (SIMPLE_EMAIL_REGEX.test(url)) {
+                return 'mailto:' + url;
+            }
 
             return t.urlPrefix + url;
         },
@@ -1659,7 +1661,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
                 }
 
                 t.openModalInsert(t.lang.insertImage, options, function (v) {
-                    if (v.src !== base64) {
+                    if (v.url !== base64) {
                         $img.attr({
                             src: v.url
                         });

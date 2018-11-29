@@ -6,7 +6,7 @@ namespace OrchardCore.Liquid
 {
     /// <summary>
     /// Can be used to provide a factory to return a value based on a property name 
-    /// that is unkown at registration time. 
+    /// that is unknown at registration time. 
     /// 
     /// e.g. {{ LiquidPropertyAccessor.MyPropertyName }} (MyPropertyName will be passed as the identifier argument to the factory)
     /// </summary>

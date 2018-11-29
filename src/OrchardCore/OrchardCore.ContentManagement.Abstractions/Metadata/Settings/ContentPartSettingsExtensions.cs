@@ -37,6 +37,16 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return builder.WithSetting(nameof(ContentPartSettings.DisplayName), description);
         }
 
+        public static ContentPartDefinitionBuilder WithDefaultPosition(this ContentPartDefinitionBuilder builder, string position)
+        {
+            return builder.WithSetting(nameof(ContentPartSettings.DefaultPosition), position);
+        }
+
+        public static string DefaultPosition(this ContentPartDefinition part)
+        {
+            return part.Settings.ToObject<ContentPartSettings>().DefaultPosition;
+        }
+
         public static string Description(this ContentPartDefinition part)
         {
             return part.Settings.ToObject<ContentPartSettings>().Description;

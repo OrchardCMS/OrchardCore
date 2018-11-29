@@ -14,8 +14,28 @@
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="UseCdn">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
+        <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use CDN (Content Delivery Network)"]</label>
+        <span class="hint">@T[" — Whether the defined CDN value is used for scripts and stylesheets, or their local version"]</span>
+    </div>
+</fieldset>
+
 <div class="row">
-    <fieldset class="form-group col-lg-6" asp-validation-class-for="TimeZone">
+<fieldset class="from-group col-xl-6" asp-validation-class-for="ResourceDebugMode">
+    <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
+    <select asp-for="ResourceDebugMode" class="form-control">
+        <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise)"]</option>
+        <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
+        <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
+    </select>
+    <span class="hint">@T["Determines whether scripts and stylesheets load in their debuggable or minified form."]</span>
+</fieldset>
+</div>
+
+<div class="row">
+    <fieldset class="form-group col-xl-6" asp-validation-class-for="TimeZone">
         <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
         <select asp-for="TimeZone" class="form-control">
             <option value="">@T["Local to server"]</option>
@@ -29,7 +49,7 @@
         <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
     </fieldset>
 
-    <fieldset class="form-group col-lg-6" asp-validation-class-for="Culture">
+    <fieldset class="form-group col-xl-6" asp-validation-class-for="Culture">
         <label asp-for="Culture">@T["Default Culture"] <span asp-validation-for="Culture"></span></label>
         <select asp-for="Culture" class="form-control">
             <option value="">@T["System ({0} | {1})", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</option>

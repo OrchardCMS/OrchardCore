@@ -1,0 +1,797 @@
+{
+  "name": "OrchardCore.Templates.Theme",
+  "displayName": "OrchardCore.Templates.Theme",
+  "description": "Provides a theme.",
+  "author": "The Orchard Team",
+  "website": "http://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": true,
+  "categories": [ "default" ],
+  "tags": [ "blog" ],
+
+  // The variables are evaluated the first time they are accessed, and reused across steps
+  "variables": {
+    "blogContentItemId": "[js:uuid()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        // SaaS
+        "OrchardCore.Mvc",
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Commons",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Settings",
+        "OrchardCore.Templates.Themes",
+        "OrchardCore.Users",
+
+        // Content Management
+        "OrchardCore.Alias",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Body",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.CustomSettings",
+        "OrchardCore.Deployment",
+        "OrchardCore.Deployment.Remote",
+        "OrchardCore.Feeds",
+        "OrchardCore.Flows",
+        "OrchardCore.Indexing",
+        "OrchardCore.Layers",
+        "OrchardCore.Lucene",
+        "OrchardCore.Lists",
+        "OrchardCore.Liquid",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Queries",
+        "OrchardCore.Title",
+        "OrchardCore.Templates",
+        "OrchardCore.Widgets",
+
+        // Themes
+        "OrchardCore.Templates.Theme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "OrchardCore.Templates.Theme"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "OrchardCore.Contents",
+        "ContentItemId": "[js: variables('blogContentItemId')]"
+      },
+      "LayerSettings": {
+        "Zones": [ "Top", "BeforeContent", "Content", "Sidebar", "Footer" ]
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Article",
+              "Name": "Article",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "BodyPartSettings": {
+                  "Editor": "Wysiwyg"
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LiquidPage",
+          "DisplayName": "Liquid Page",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPage",
+              "Name": "LiquidPage",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "BlogPost",
+          "DisplayName": "Blog Post",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "BlogPost",
+              "Name": "BlogPost",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "1",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "False"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blog",
+          "DisplayName": "Blog",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blog",
+              "Name": "Blog",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "2",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True"
+              }
+            },
+            {
+              "PartName": "ListPart",
+              "Name": "ListPart",
+              "Settings": {
+                "Position": "4",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "PageSize": 10,
+                "ContainedContentTypes": [
+                  "BlogPost"
+                ]
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "Position": "3"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Container",
+          "DisplayName": "Container",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Container",
+              "Name": "Container",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "Position": "1"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ImageWidget",
+          "DisplayName": "Image",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Image",
+              "Name": "Image",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LiquidWidget",
+          "DisplayName": "Liquid",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "DisplayName": "Image",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Listable": "False",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Image",
+              "Name": "Image",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "DisplayName": "Paragraph",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Paragraph",
+              "Name": "Paragraph",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "DisplayName": "Raw Html",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Page",
+          "DisplayName": "Page",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Page",
+              "Name": "Page",
+              "Settings": {
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "1",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "True"
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "BlogPost",
+          "Settings": {}
+        },
+        {
+          "Name": "Article",
+          "Settings": {}
+        },
+        {
+          "Name": "Blockquote",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Quote",
+              "Settings": {
+                "DisplayName": "Quote",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false
+                },
+                "Hint": null,
+                "Editor": "TextArea",
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "Settings": {
+            "Attachable": true
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Media",
+              "Settings": {
+                "DisplayName": "Image",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false
+                },
+                "Hint": null,
+                "Editor": null,
+                "Position": "0",
+                "Multiple": false,
+                "Required": true
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Caption",
+              "Settings": {
+                "DisplayName": "Caption",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": "A description of the image used as title or alternate text",
+                "Editor": null,
+                "Position": "1"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "DisplayName": "Content",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false
+                },
+                "Hint": null,
+                "Editor": "Wysiwyg",
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "DisplayName": "Content",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false
+                },
+                "Hint": null,
+                "Editor": "Multiline",
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "lucene-index",
+      "Indices": [ "Search" ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentType": "Menu",
+          "ContentItemId": "[js: uuid()]",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "MenuPart": {},
+          "TitlePart": { "Title": "Main Menu" },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js: uuid()]",
+                "LinkMenuItemPart": {
+                  "Name": "Home",
+                  "Url": "~/"
+                }
+              },
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js: uuid()]",
+                "LinkMenuItemPart": {
+                  "Name": "About",
+                  "Url": "~/about"
+                }
+              }
+            ]
+          },
+          "AliasPart": { "Alias": "main-menu" }
+        },
+        {
+          "ContentType": "Blog",
+          "ContentItemId": "[js: variables('blogContentItemId')]",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": {
+            "Title": "Blog"
+          },
+          "AutoroutePart": {
+            "Path": "blog"
+          },
+          "ListPart": {}
+        },
+        {
+          "ContentType": "BlogPost",
+          "ContentItemId": "[js: uuid()]",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": {
+            "Title": "Man must explore, and this is exploration at its greatest"
+          },
+          "ContainedPart": {
+            "ListContentItemId": "[js: variables('blogContentItemId')]",
+            "Order": 0
+          },
+          "BodyPart": {
+            "Body": "Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.<br />Science cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.<br />What was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.<br />A Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.<br />For those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us."
+          },
+          "AutoroutePart": {
+            "Path": "blog/post-1"
+          }
+        },
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "Article",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "AutoroutePart": {
+            "Path": "about",
+            "SetHomepage": false
+          },
+          "BodyPart": {
+            "Body": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum molestiae debitis nobis, quod sapiente qui voluptatum, placeat magni repudiandae accusantium fugit quas labore non rerum possimus, corrupti enim modi! Et.</p>"
+          },
+          "TitlePart": {
+            "Title": "About"
+          }
+        },
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "RawHtml",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LayerMetadata": {
+            "Title": "Footer",
+            "Layer": "Always",
+            "Zone": "Footer",
+            "RenderTitle": false,
+            "Position": 10
+          },
+          "RawHtml": {
+            "Content": {
+              "Html": "<div class=\"col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1\">\n    <ul class=\"list-inline text-center\">\n        <li class=\"list-inline-item\">\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li class=\"list-inline-item\">\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li class=\"list-inline-item\">\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n    </ul>"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "Rule": "true",
+          "Description": "The widgets in this layer are displayed on any page of this site."
+        },
+        {
+          "Name": "Homepage",
+          "Rule": "isHomepage()",
+          "Description": "The widgets in this layer are only displayed on the homepage."
+        }
+      ]
+    }
+  ]
+}

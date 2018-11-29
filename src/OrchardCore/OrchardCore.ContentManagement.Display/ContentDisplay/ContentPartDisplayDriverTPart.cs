@@ -24,17 +24,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            // This should only be set in Display methods
             if (_typePartDefinition != null)
             {
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var editorPartType = GetEditorShapeType(_typePartDefinition);
 
-                if (partType == shapeType)
+                if (partType == shapeType || editorPartType == shapeType)
                 {
                     // HtmlBodyPart, Services
-                    result.Differentiator($"{partName}");
+                    result.Differentiator(partName);
                 }
                 else
                 {
@@ -44,12 +44,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+                    string[] displayTypes;
 
-                    // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    if (editorPartType == shapeType)
+                    {
+                        displayTypes = new[] { "_" + ctx.ShapeMetadata.DisplayType };
+                    }
+                    else
+                    {
+                        displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
 
-                    if (shapeType == partType)
+                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    }
+
+                    if (shapeType == partType || shapeType == editorPartType)
                     {
                         foreach (var displayType in displayTypes)
                         {
@@ -111,27 +120,33 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
-        Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
+        async Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
             var part = contentPart as TPart;
 
             if (part == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
+            _typePartDefinition = typePartDefinition;
+
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
-            return EditAsync(part, buildEditorContext);
+            var result = await EditAsync(part, buildEditorContext);
+
+            _typePartDefinition = null;
+
+            return result;
         }
 
         async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
             var part = contentPart as TPart;
 
-            if(part == null)
+            if (part == null)
             {
                 return null;
             }
@@ -143,7 +158,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
             part.ContentItem.Apply(typePartDefinition.Name, part);
-            
+
             return result;
         }
 
@@ -190,6 +205,29 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater)
         {
             return Task.FromResult<IDisplayResult>(null);
+        }
+
+        protected string GetEditorShapeType(string shapeType, ContentTypePartDefinition typePartDefinition)
+        {
+            var editor = typePartDefinition.Editor();
+            return !String.IsNullOrEmpty(editor)
+                ? shapeType + "__" + editor
+                : shapeType;
+        }
+
+        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(shapeType, context.TypePartDefinition);
+        }
+
+        protected string GetEditorShapeType(ContentTypePartDefinition typePartDefinition)
+        {
+            return GetEditorShapeType(typeof(TPart).Name + "_Edit", typePartDefinition);
+        }
+
+        protected string GetEditorShapeType(BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(context.TypePartDefinition);
         }
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)

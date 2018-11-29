@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Lucene.Deployment
+
+@model ShapeViewModel<LuceneIndexDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var indexNames = Model.Value.IndexNames;
+}
+
+<h5>@T["Search Indexes"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge badge-success">@T["All"]</span>
+}
+else if (indexNames?.Length > 0)
+{
+    foreach (var indexName in indexNames)
+    {
+        <span class="badge badge-info">@indexName</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No index selected."]</span>
+}

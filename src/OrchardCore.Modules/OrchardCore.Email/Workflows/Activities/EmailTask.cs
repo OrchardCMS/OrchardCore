@@ -60,6 +60,12 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public bool IsBodyHtml
+        {
+            get => GetProperty(() => true);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(T["Done"], T["Failed"]);
@@ -73,12 +79,12 @@ namespace OrchardCore.Email.Workflows.Activities
             var bodyTask = _expressionEvaluator.EvaluateAsync(Body, workflowContext);
 
             await Task.WhenAll(senderTask, recipientsTask, subjectTask, bodyTask);
-            var sender = !string.IsNullOrWhiteSpace(senderTask.Result) ? senderTask.Result.Trim() : null;
+
             var message = new MailMessage
             {
                 Subject = subjectTask.Result.Trim(),
                 Body = bodyTask.Result?.Trim(),
-                IsBodyHtml = true
+                IsBodyHtml = IsBodyHtml
             };
 
             message.To.Add(recipientsTask.Result.Trim());

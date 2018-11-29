@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             get
             {
                 return _shape.Properties
-                    .Cast<DictionaryEntry>()
+                    .Cast<KeyValuePair<object,object>>()
                     .Select(entry => new KeyValuePairs(entry.Key, entry.Value))
                     .ToArray();
             }

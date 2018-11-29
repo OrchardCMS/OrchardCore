@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Environment.Shell;
 
@@ -15,6 +15,7 @@ namespace OrchardCore.Tenants.ViewModels
         public string Name { get; set; }
         public bool IsDefaultTenant { get; set; }
 
+        public string Token { get; set; }
         [BindNever]
         public ShellSettings ShellSettings { get; set; }
     }

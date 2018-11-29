@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using YesSql;
@@ -71,10 +71,10 @@ namespace OrchardCore.Contents.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
@@ -92,6 +92,11 @@ namespace OrchardCore.Contents.Controllers
                 default:
                     query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
+            }
+
+            if (typeId != "")
+            {
+                model.Id = typeId;
             }
 
             if (!string.IsNullOrEmpty(model.TypeName))
@@ -125,6 +130,9 @@ namespace OrchardCore.Contents.Controllers
                     break;
                 case ContentsOrder.Created:
                     query = query.OrderByDescending(cr => cr.CreatedUtc);
+                    break;
+                case ContentsOrder.Title:
+                    query = query.OrderBy(cr => cr.DisplayText);
                     break;
                 default:
                     query = query.OrderByDescending(cr => cr.ModifiedUtc);
@@ -431,13 +439,9 @@ namespace OrchardCore.Contents.Controllers
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Save")]
         public Task<IActionResult> EditPOST(string contentItemId, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
-        {            
-            if (submitSave == "submit.SaveAndContinue")
-            {
-                returnUrl = Request.Path.Add(Request.QueryString);
-            }
-
-            return EditPOST(contentItemId, returnUrl, contentItem =>
+        {
+            var stayOnSamePage = submitSave == "submit.SaveAndContinue";
+            return EditPOST(contentItemId, returnUrl, stayOnSamePage, contentItem =>
             {
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -453,6 +457,7 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Publish")]
         public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix ="submit.Publish")] string submitPublish, string returnUrl)
         {
+            var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
 
             var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -465,14 +470,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Unauthorized();
             }
-
-            if (submitPublish == "submit.PublishAndContinue")
-            {
-                returnUrl = Request.Path.Add(Request.QueryString);
-            }
-
-
-            return await EditPOST(contentItemId, returnUrl, async contentItem =>
+            return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);
 
@@ -484,7 +482,7 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
@@ -516,26 +514,19 @@ namespace OrchardCore.Contents.Controllers
                 return View("Edit", model);
             }
 
-            await conditionallyPublish(contentItem);
-
-            // The content item needs to be marked as saved (again) in case the drivers or the handlers have
-            // executed some query which would flush the saved entities. In this case the changes happening in handlers 
-            // would not be taken into account.
-
+            // The content item needs to be marked as saved in case the drivers or the handlers have
+            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            
             _session.Save(contentItem);
 
-            //if (!string.IsNullOrWhiteSpace(returnUrl)
-            //    && previousRoute != null
-            //    && !String.Equals(contentItem.As<IAliasAspect>().Path, previousRoute, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    returnUrl = Url.ItemDisplayUrl(contentItem);
-            //}
-
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            await conditionallyPublish(contentItem);           
 
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
+            }
+            else if (stayOnSamePage)
+            {
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
             else
             {
