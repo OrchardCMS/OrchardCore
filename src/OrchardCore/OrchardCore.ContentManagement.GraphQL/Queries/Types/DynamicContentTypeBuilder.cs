@@ -55,8 +55,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
                 else
                 {
-                    var name = part.DisplayName();
-
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
                         name.ToFieldName(),
