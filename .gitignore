@@ -192,3 +192,6 @@ wwwroot
 !src/Templates/**/content/**
 .template.config/
 /OrchardCore.sln.GhostDoc.xml
+/sh.exe.stackdump
+/src/Templates/OrchardCore.ProjectTemplates/content
+/mdockal/OrchardCore.TestModule
