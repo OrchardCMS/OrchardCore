@@ -20,7 +20,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<AzureADOptions>
     {
-        private readonly IAzureADService _loginService;
+        private readonly IAzureADService _azureADService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<AzureADOptionsConfiguration> _logger;
 
@@ -29,15 +29,15 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             IDataProtectionProvider dataProtectionProvider,
             ILogger<AzureADOptionsConfiguration> logger)
         {
-            _loginService = loginService;
+            _azureADService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var loginSettings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
+            var settings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
+            if (settings == null)
             {
                 return;
             }
@@ -45,7 +45,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
             {
-                builder.DisplayName = "AzureADTest";
+                builder.DisplayName = "AzureAD";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }
@@ -65,6 +65,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
+            options.Instance = loginSettings.Instance?.AbsoluteUri;
 
             try
             {
@@ -86,8 +87,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         private async Task<AzureADSettings> GetAzureADSettingsAsync()
         {
-            var settings = await _loginService.GetSettingsAsync();
-            if (_loginService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
+            var settings = await _azureADService.GetSettingsAsync();
+            if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
             {
                 _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
                 return null;

@@ -58,9 +58,9 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 yield return new ValidationResult("AppId is required", new string[] { nameof(settings.AppId) });
             }
 
-            if (!Uri.IsWellFormedUriString(settings.Instance, UriKind.Absolute))
+            if (settings.Instance == null || !settings.Instance.IsAbsoluteUri)
             {
-                yield return new ValidationResult("A valid uri is required", new string[] { nameof(settings.Instance) });
+                yield return new ValidationResult("A valid absolute uri is required", new string[] { nameof(settings.Instance) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.TenantId))

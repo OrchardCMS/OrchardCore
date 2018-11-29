@@ -14,6 +14,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Facebook.ViewModels;
 using OrchardCore.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
+using System;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers
 {
@@ -65,7 +66,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 if (settings.CallbackPath.HasValue)
                     model.CallbackPath = settings.CallbackPath;
                 model.TenantId = settings.TenantId;
-                model.Instance = settings.Instance;
+                model.Instance = settings.Instance?.AbsoluteUri;
 
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
@@ -88,6 +89,8 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD);
                     settings.AppId = model.AppId;
+
+                    settings.Instance = new Uri(model.Instance);
                     settings.TenantId = model.TenantId;
                     settings.AppSecret = string.IsNullOrWhiteSpace(model.AppSecret) ? null : protector.Protect(model.AppSecret);
                     settings.CallbackPath = model.CallbackPath;
