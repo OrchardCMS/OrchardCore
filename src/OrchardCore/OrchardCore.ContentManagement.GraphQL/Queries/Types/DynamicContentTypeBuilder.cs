@@ -57,11 +57,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     var field = contentItemType.Field(
                         typeof(DynamicPartGraphType),
-                        name.ToFieldName(),
+                        partName.ToFieldName(),
                         description: T["Represents a {0}.", part.PartDefinition.Name],
                         resolve: context =>
                         {
-                            var nameToResolve = name;
+                            var nameToResolve = partName;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
