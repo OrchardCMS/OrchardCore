@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
@@ -117,6 +118,22 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     return session;
+                });               
+
+                services.AddScoped(sp =>
+                {
+                    var session = sp.GetService<YesSql.ISession>();
+
+                    if (session == null)
+                    {
+                        return null;
+                    }
+
+                    //HACK: async / await session.DemandAsync() doesn't work correctly in lambda.
+                    var task = session.DemandAsync();
+                    var transaction = task.GetAwaiter().GetResult();
+
+                    return transaction.Connection;
                 });
             });
 
