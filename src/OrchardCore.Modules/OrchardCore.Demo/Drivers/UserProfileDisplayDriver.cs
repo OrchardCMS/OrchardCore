@@ -15,7 +15,8 @@ namespace OrchardCore.Demo.Drivers
             return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
             {
                 model.Age = profile.Age;
-                model.Name = profile.Name;
+                model.FirstName = profile.FirstName;
+                model.LastName = profile.LastName;
             }).Location("Content:2");
         }
 
@@ -26,7 +27,8 @@ namespace OrchardCore.Demo.Drivers
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 profile.Age = model.Age;
-                profile.Name = model.Name;
+                profile.FirstName = model.FirstName;
+                profile.LastName = model.LastName;
             }
 
             return Edit(profile, context);

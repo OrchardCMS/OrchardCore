@@ -1,9 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
@@ -18,7 +20,9 @@ using OrchardCore.Environment.Commands;
 using OrchardCore.Navigation;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo
 {
@@ -62,6 +66,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.Replace(ServiceDescriptor.Scoped<IUserClaimsPrincipalFactory<IUser>, DemoUserClaimsPrincipalFactory>());
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 

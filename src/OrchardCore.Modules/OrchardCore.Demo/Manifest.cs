@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "Test",
-    Category = "Samples"
+    Category = "Samples",
+    Dependencies = new []{ "OrchardCore.Users" }
 )]
