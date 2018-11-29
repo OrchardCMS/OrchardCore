@@ -10,7 +10,6 @@ namespace OrchardCore.Alias.GraphQL
         public AliasInputObjectType(IStringLocalizer<AliasInputObjectType> T)
         {
             Name = "AliasPartInput";
-            DisplayName = nameof(AliasPart);
             Description = T["the alias part of the content item"];
 
             AddScalarFilterFields<StringGraphType>("alias", T["the alias of the content item"]);

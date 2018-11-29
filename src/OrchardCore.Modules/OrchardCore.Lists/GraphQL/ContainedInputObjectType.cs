@@ -10,7 +10,6 @@ namespace OrchardCore.Lists.GraphQL
         public ContainedInputObjectType(IStringLocalizer<ContainedPart> T)
         {
             Name = "ContainedPartInput";
-            DisplayName = nameof(ContainedPart);
             Description = T["the list part of the content item"];
 
             AddScalarFilterFields<IdGraphType>("listContentItemId", T["the content item id of the parent list of the content item to filter"]);
