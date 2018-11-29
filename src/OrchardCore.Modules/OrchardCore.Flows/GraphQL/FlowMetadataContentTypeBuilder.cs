@@ -17,7 +17,7 @@ namespace OrchardCore.Flows.GraphQL
             if (settings != null && settings.Stereotype != "Widget") return;
 
             contentItemType.Field<FlowMetadataQueryObjectType>(
-                "metadata".ToFieldName(),
+                "metadata",
                 resolve: context => context.Source.As<FlowMetadata>()
             );
         }
