@@ -31,7 +31,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName)) continue;
+                if (contentItemType.HasMetadata(partName))
+                {
+                    continue;
+                }
+
+                contentItemType.Metadata.Add(partName, part.PartDefinition.Name);
 
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
