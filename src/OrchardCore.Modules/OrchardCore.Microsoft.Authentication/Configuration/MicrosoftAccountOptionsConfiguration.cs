@@ -15,18 +15,18 @@ using OrchardCore.Microsoft.Authentication.Settings;
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class MicrosoftAccountConfiguration :
+    public class MicrosoftAccountOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<MicrosoftAccountOptions>
     {
         private readonly IMicrosoftAccountService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAccountConfiguration> _logger;
+        private readonly ILogger<MicrosoftAccountOptionsConfiguration> _logger;
 
-        public MicrosoftAccountConfiguration(
+        public MicrosoftAccountOptionsConfiguration(
             IMicrosoftAccountService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<MicrosoftAccountConfiguration> logger)
+            ILogger<MicrosoftAccountOptionsConfiguration> logger)
         {
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -40,6 +40,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
+
+            if (_loginService.ValidateSettings(loginSettings).Any())
+                return;
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>

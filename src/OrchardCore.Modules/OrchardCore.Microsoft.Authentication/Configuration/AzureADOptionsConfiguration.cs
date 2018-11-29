@@ -16,18 +16,18 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AzureADConfiguration :
+    public class AzureADOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<AzureADConfiguration> _logger;
+        private readonly ILogger<AzureADOptionsConfiguration> _logger;
 
-        public AzureADConfiguration(
+        public AzureADOptionsConfiguration(
             IAzureADService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<AzureADConfiguration> logger)
+            ILogger<AzureADOptionsConfiguration> logger)
         {
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -45,7 +45,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
             {
-                builder.DisplayName = "AzureAD";
+                builder.DisplayName = "AzureADTest";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }

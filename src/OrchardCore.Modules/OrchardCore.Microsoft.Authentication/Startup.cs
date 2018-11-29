@@ -41,8 +41,8 @@ namespace OrchardCore.Microsoft.Authentication
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureNamedOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
@@ -63,11 +63,11 @@ namespace OrchardCore.Microsoft.Authentication
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>()
 
-                // Built-in initializers:
-                //ServiceDescriptor.Transient<IPostConfigureOptions<AzureADOptions>, OpenIdConnectPostConfigureOptions>()
+
             });
         }
     }

@@ -65,6 +65,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 if (settings.CallbackPath.HasValue)
                     model.CallbackPath = settings.CallbackPath;
                 model.TenantId = settings.TenantId;
+                model.Instance = settings.Instance;
 
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
