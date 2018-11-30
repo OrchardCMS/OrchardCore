@@ -33,7 +33,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SignedOutCallbackPath = azureADOptions.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
             options.SignInScheme = azureADOptions.CookieSchemeName;
             options.UseTokenLifetime = true;
-            options.MetadataAddress = options.Authority;
+            options.ResponseType = "id_token";
+            options.MetadataAddress = "https://login.microsoftonline.com/v2.0";
         }
 
         public void Configure(OpenIdConnectOptions options)

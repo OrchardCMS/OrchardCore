@@ -20,5 +20,9 @@ namespace OrchardCore.Microsoft.Authentication.ViewModels
         [Required(AllowEmptyStrings = false, ErrorMessage = "Instance is required")]
         public string Instance { get; set; }
 
+        [Url]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Instance is required")]
+        public string Domain { get; set; }
+
     }
 }

@@ -48,6 +48,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 builder.DisplayName = "AzureAD";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
+
         }
 
         public void Configure(string name, AzureADOptions options)
@@ -66,6 +67,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
             options.Instance = loginSettings.Instance?.AbsoluteUri;
+            options.Domain = loginSettings.Domain;
 
             try
             {

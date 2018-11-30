@@ -70,7 +70,7 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
 
-            });
+        });
         }
     }
 

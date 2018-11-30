@@ -63,6 +63,11 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 yield return new ValidationResult("A valid absolute uri is required", new string[] { nameof(settings.Instance) });
             }
 
+            if (String.IsNullOrWhiteSpace(settings.Domain))
+            {
+                yield return new ValidationResult("Please setup the domain of your AzureAD tenant", new string[] { nameof(settings.Instance) });
+            }
+
             if (string.IsNullOrWhiteSpace(settings.TenantId))
             {
                 yield return new ValidationResult("TenantId is required", new string[] { nameof(settings.TenantId) });
