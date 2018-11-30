@@ -72,28 +72,14 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            
+            var user = await _userManager.FindByNameAsync(model.UserName) as User
+                        ?? await _userManager.FindByEmailAsync(model.UserName) as User;
 
-            if (model.UserName.IndexOf('@') > -1)
+            if (user == null)
             {
-                //Validate email format
-                string emailRegex = @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" +
-                                    @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" +
-                                    @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
-                Regex re = new Regex(emailRegex);
-                if (!re.IsMatch(model.UserName))
-                {
-                    ModelState.AddModelError("UserName", T["Email is not valid"]);
-                }
-            }
-            else
-            {
-                //validate Username format
-                string emailRegex = @"^[a-zA-Z0-9]*$";
-                Regex re = new Regex(emailRegex);
-                if (!re.IsMatch(model.UserName))
-                {
-                    ModelState.AddModelError("UserName", T["Username is not valid"]);
-                }
+                ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
+                return View(model);
             }
 
             if (ModelState.IsValid)
@@ -101,10 +87,7 @@ namespace OrchardCore.Users.Controllers
                 if ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail)
                 {
                     // Require that the users have a confirmed email before they can log on.
-                    User user = model.UserName.IndexOf('@') > -1
-                        ? await _userManager.FindByEmailAsync(model.UserName) as User
-                        : await _userManager.FindByNameAsync(model.UserName) as User;
-                    if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
                         ModelState.AddModelError(string.Empty, T["You must have a confirmed email to log on."]);
                     }
@@ -115,22 +98,9 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var userName = model.UserName;
-
-                if (userName.IndexOf('@') > -1)
-                {
-                    var user = await _userManager.FindByEmailAsync(model.UserName) as User;
-                    if (user == null)
-                    {
-                        ModelState.AddModelError(string.Empty, T["Invalid login attempt."]);
-                        return View(model);
-                    }
-
-                    userName = user.UserName;
-                }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
