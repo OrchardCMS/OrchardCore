@@ -2,9 +2,9 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data.Abstractions
 {
-    public interface IDbConnectionWrapper
+    public interface IDbConnectionAccessor
     {
         Task<IDbConnection> GetConnectionAsync();
     }

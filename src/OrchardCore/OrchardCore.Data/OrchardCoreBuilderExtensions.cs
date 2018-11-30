@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -120,7 +121,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return session;
                 });
 
-                services.AddScoped<IDbConnectionWrapper>(sp =>
+                services.AddScoped<IDbConnectionAccessor>(sp =>
                 {
                     var session = sp.GetService<YesSql.ISession>();
 
@@ -129,7 +130,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    return new DbConnectionWrapper(session);                   
+                    return new DbConnectionAccessor(session);                   
                 });
             });
 

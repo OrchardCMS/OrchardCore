@@ -1,14 +1,15 @@
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using OrchardCore.Data.Abstractions;
 
 namespace OrchardCore.Data
 {
-    public class DbConnectionWrapper : IDbConnectionWrapper
+    public class DbConnectionAccessor : IDbConnectionAccessor
     {
         private readonly YesSql.ISession _session;
 
-        public DbConnectionWrapper(YesSql.ISession session)
+        public DbConnectionAccessor(YesSql.ISession session)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
         }
