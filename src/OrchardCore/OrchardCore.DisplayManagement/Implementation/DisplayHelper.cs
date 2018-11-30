@@ -22,12 +22,10 @@ namespace OrchardCore.DisplayManagement.Implementation
         public DisplayHelper(
             IHtmlDisplay htmlDisplay,
             IShapeFactory shapeFactory,
-            ViewContext viewContext,
             IServiceProvider serviceProvider)
         {
             _htmlDisplay = htmlDisplay;
             _shapeFactory = shapeFactory;
-            ViewContext = viewContext;
             _serviceProvider = serviceProvider;
         }
 
@@ -85,7 +83,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 DisplayAsync = this,
                 Value = shape,
-                ViewContext = ViewContext,
                 ServiceProvider = _serviceProvider
             };
 

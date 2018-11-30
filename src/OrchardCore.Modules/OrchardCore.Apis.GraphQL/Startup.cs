@@ -31,6 +31,7 @@ namespace OrchardCore.Apis.GraphQL
             {
                 BuildUserContext = ctx => new GraphQLContext
                 {
+                    HttpContext = ctx,
                     User = ctx.User,
                     ServiceProvider = ctx.RequestServices
                 }

@@ -104,8 +104,11 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             return cache.GetOrCreate(path, entry =>
             {
-                entry.Priority = CacheItemPriority.NeverRemove;
+                // REMOVED: we need to slid-expire the cached entry (1 hour)
+                // entry.Priority = CacheItemPriority.NeverRemove;
                 var fileInfo = fileProvider.GetFileInfo(path);
+
+                // TODO: Only in dev
                 entry.ExpirationTokens.Add(fileProvider.Watch(path));
 
                 using (var stream = fileInfo.CreateReadStream())
@@ -177,13 +180,12 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
-            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
+            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper();
 
             return context.ContextualizeAsync(new DisplayContext()
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
-                ViewContext = page.ViewContext,
                 Value = model
             });
         }
@@ -197,10 +199,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.AmbientValues.Add("DisplayHelperFactory", displayHelperFactory);
 
             context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
-            context.AmbientValues.Add("ViewContext", displayContext.ViewContext);
+
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
+            var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
             context.AmbientValues.Add("UrlHelper", urlHelper);
 
             var shapeFactory = services.GetRequiredService<IShapeFactory>();
@@ -209,7 +213,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var localizer = services.GetRequiredService<IViewLocalizer>();
             if (localizer is IViewContextAware contextable)
             {
-                contextable.Contextualize(displayContext.ViewContext);
+                contextable.Contextualize(viewContext);
             }
 
             context.AmbientValues.Add("ViewLocalizer", localizer);
@@ -220,7 +224,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
 
-            var view = displayContext.ViewContext.View;
+            var view = viewContext.View;
             if (view is RazorView razorView)
             {
                 context.AmbientValues.Add("LiquidPage", razorView.RazorPage);

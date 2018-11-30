@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
+            var display = (DisplayHelper)_displayHelperFactory.CreateHelper();
 
             // Extract all attributes from the tag helper to
             var properties = output.Attributes

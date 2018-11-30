@@ -16,12 +16,11 @@ namespace OrchardCore.DisplayManagement.Implementation
             _serviceProvider = serviceProvider;
         }
 
-        public IDisplayHelper CreateHelper(ViewContext viewContext)
+        public IDisplayHelper CreateHelper()
         {
             return new DisplayHelper(
                 _displayManager,
                 _shapeFactory,
-                viewContext,
                 _serviceProvider);
         }
     }

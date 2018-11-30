@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -6,6 +7,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public override Task ExecuteAsync()
         {
+            var viewContextAccessor = Context.RequestServices.GetRequiredService<ViewContextAccessor>();
+            viewContextAccessor.ViewContext = ViewContext;
+
             return LiquidViewTemplate.RenderAsync(this);
         }
     }

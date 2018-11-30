@@ -55,10 +55,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var services = servicesValue as IServiceProvider;
 
-            if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
-            {
-                throw new ArgumentException("ViewContext missing while invoking 'helper'");
-            }
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();

@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
             if (_displayHelper == null)
             {
                 IDisplayHelperFactory _factory = HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = _factory.CreateHelper();
             }
         }
 

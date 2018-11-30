@@ -45,10 +45,12 @@ namespace OrchardCore.Users.Controllers
 
             var displayContext = new DisplayContext()
             {
-                ServiceProvider = ControllerContext.HttpContext.RequestServices,
-                Value = model,
-                ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
+                ServiceProvider = Request.HttpContext.RequestServices,
+                Value = model                
             };
+
+            var viewContextAccessor = Request.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
+            viewContextAccessor.ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions());
 
             var body = string.Empty;
 
