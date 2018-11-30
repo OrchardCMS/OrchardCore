@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -74,13 +75,13 @@ namespace OrchardCore.DisplayManagement.Implementation
                 var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
                 // Use the same prefix as the shape
-                //var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-                //context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+                var viewContext = context.ServiceProvider.GetService<ViewContextAccessor>().ViewContext;
+                var originalHtmlFieldPrefix = viewContext?.ViewData.TemplateInfo.HtmlFieldPrefix;
 
-                // Copy the current context such that the rendering can customize it if necessary
-                // For instance to change the HtmlFieldPrefix
-                var localContext = new DisplayContext(context);
-                localContext.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+                if (originalHtmlFieldPrefix != null)
+                {
+                    viewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+                }
 
                 // Evaluate global Shape Display Events
                 await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
@@ -175,6 +176,12 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 // invoking ShapeMetadata displayed events
                 shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
+
+                //restore original HtmlFieldPrefix
+                if (originalHtmlFieldPrefix != null)
+                {
+                    viewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
+                }
             }
             finally
             {

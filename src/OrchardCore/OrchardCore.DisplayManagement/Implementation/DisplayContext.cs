@@ -9,17 +9,8 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         }
 
-        public DisplayContext(DisplayContext context)
-        {
-            ServiceProvider = context.ServiceProvider;
-            DisplayAsync = context.DisplayAsync;
-            Value = context.Value;
-            HtmlFieldPrefix = context.HtmlFieldPrefix;
-        }
-
         public IServiceProvider ServiceProvider { get; set; }
         public IDisplayHelper DisplayAsync { get; set; }
         public object Value { get; set; }
-        public string HtmlFieldPrefix { get; set; }
     }
 }
