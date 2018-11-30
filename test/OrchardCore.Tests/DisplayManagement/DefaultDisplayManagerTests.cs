@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
@@ -31,6 +31,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddScoped<ViewContextAccessor>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
@@ -66,11 +67,12 @@ namespace OrchardCore.Tests.DisplayManagement
             }
         }
 
-        static DisplayContext CreateDisplayContext(Shape shape)
+        public DisplayContext CreateDisplayContext(Shape shape)
         {
             return new DisplayContext
             {
-                Value = shape,
+                ServiceProvider = _serviceProvider,
+                Value = shape
             };
         }
 
