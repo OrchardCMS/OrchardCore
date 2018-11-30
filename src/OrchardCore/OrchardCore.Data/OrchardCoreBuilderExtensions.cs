@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -119,7 +120,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return session;
                 });
 
-                services.AddScoped(sp =>
+                services.AddScoped<IDbConnectionWrapper>(sp =>
                 {
                     var session = sp.GetService<YesSql.ISession>();
 
@@ -128,11 +129,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    //HACK: async / await session.DemandAsync() doesn't work correctly in lambda.
-                    var task = session.DemandAsync();
-                    var transaction = task.GetAwaiter().GetResult();
-
-                    return transaction.Connection;
+                    return new DbConnectionWrapper(session);                   
                 });
             });
 
