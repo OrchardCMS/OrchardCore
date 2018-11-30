@@ -104,8 +104,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             return cache.GetOrCreate(path, entry =>
             {
-                // REMOVED: we need to slid-expire the cached entry (1 hour)
-                // entry.Priority = CacheItemPriority.NeverRemove;
+                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
                 var fileInfo = fileProvider.GetFileInfo(path);
 
                 // TODO: Only in dev

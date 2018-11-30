@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -59,11 +58,6 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var viewContext = _viewContextAccessor.ViewContext;
 
-            //IHtmlContent htmlContent;
-
-            //var originalPrefix = viewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-            //viewContext.ViewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
-
             if (viewContext?.View != null)
             {
                 viewContext = new ViewContext(viewContext, viewContext.View, viewContext.ViewData, viewContext.Writer);
@@ -79,8 +73,6 @@ namespace OrchardCore.DisplayManagement.Razor
                 // Horrible, but it will have to do for now.
                 return RenderRazorViewAsync(viewName, displayContext);
             }
-
-            //viewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalPrefix;
         }
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext displayContext)

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -20,7 +19,6 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public IServiceProvider ServiceProvider { get; set; }
         public IDisplayHelper DisplayAsync { get; set; }
-        // TODO: can it be an IShape
         public object Value { get; set; }
         public string HtmlFieldPrefix { get; set; }
     }

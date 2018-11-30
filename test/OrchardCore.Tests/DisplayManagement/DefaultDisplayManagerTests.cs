@@ -71,7 +71,6 @@ namespace OrchardCore.Tests.DisplayManagement
             return new DisplayContext
             {
                 Value = shape,
-                ViewContext = new ViewContext()
             };
         }
 
