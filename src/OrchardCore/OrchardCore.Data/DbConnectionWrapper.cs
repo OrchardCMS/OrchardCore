@@ -12,7 +12,7 @@ namespace OrchardCore.Data
 
         public DbConnectionWrapper(YesSql.ISession session)
         {
-            _session = session ?? throw new ArgumentException();
+            _session = session ?? throw new ArgumentNullException(nameof(session));
         }
 
         public async Task<IDbConnection> GetConnectionAsync()
