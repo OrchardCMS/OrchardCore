@@ -1,54 +1,24 @@
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Threading.Tasks;
 using OrchardCore.Data.Abstractions;
-using YesSql;
 
 namespace OrchardCore.Data
 {
-    public class DbConnectionAccessor : IDbConnectionAccessor, IDisposable
+    public class DbConnectionAccessor : IDbConnectionAccessor
     {
-        private readonly IStore _store;
-        private DbConnection _connection;
-        private bool _disposed = false;
+        private readonly YesSql.ISession _session;
 
-        public DbConnectionAccessor(IStore store)
+        public DbConnectionAccessor(YesSql.ISession session)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _session = session ?? throw new ArgumentNullException(nameof(session));
         }
-      
+
         public async Task<IDbConnection> GetConnectionAsync()
-        {          
-            if (_connection == null)
-            {
-                _connection = _store.Configuration.ConnectionFactory.CreateConnection() as DbConnection;
-            }
-
-            if (_connection.State == ConnectionState.Closed)
-            {
-                await _connection?.OpenAsync();
-            }        
-          
-            return _connection;
-        }
-
-        public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            var transaction = await _session.DemandAsync();
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {                    
-                    _connection.Dispose();
-                }
-            }
-            _disposed = true;
+            return transaction.Connection;
         }
     }
 }
