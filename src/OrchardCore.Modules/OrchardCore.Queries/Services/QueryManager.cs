@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
 using YesSql;
 
@@ -16,6 +17,8 @@ namespace OrchardCore.Queries.Services
         private IEnumerable<IQuerySource> _querySources;
 
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
+
+        public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
 
         public QueryManager(
             ISignal signal,

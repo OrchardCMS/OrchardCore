@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetFolders(string path)
+        public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
@@ -56,13 +56,19 @@ namespace OrchardCore.Media.Controllers
             {
                 path = "";
             }
+
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            {
+                return NotFound();
+            }
+            
 
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
-            return Json(content.ToArray());
+            return content.ToArray();
         }
 
-        public async Task<IActionResult> GetMediaItems(string path)
+        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
@@ -72,14 +78,20 @@ namespace OrchardCore.Media.Controllers
             if (string.IsNullOrEmpty(path))
             {
                 path = "";
+            }
+
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            {
+                return NotFound();
             }
 
             var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
 
-            return Json(files.Select(CreateFileResult).ToArray());
+
+            return files.Select(CreateFileResult).ToArray();
         }
 
-        public async Task<IActionResult> GetMediaItem(string path)
+        public async Task<ActionResult<object>> GetMediaItem(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
@@ -98,11 +110,11 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            return Json(CreateFileResult(f));
+            return CreateFileResult(f);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Upload(
+        public async Task<ActionResult<object>> Upload(
             string path,
             string contentType,
             ICollection<IFormFile> files)
@@ -153,7 +165,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return Json(new { files = result.ToArray() });
+            return new { files = result.ToArray() };
         }
 
         [HttpPost]
@@ -297,7 +309,7 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateFolder(
+        public async Task<ActionResult<IFileStoreEntry>> CreateFolder(
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)
         {
@@ -329,7 +341,7 @@ namespace OrchardCore.Media.Controllers
 
             mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
 
-            return Json(mediaFolder);
+            return new ObjectResult(mediaFolder);
         }
 
         public IActionResult MediaApplication()

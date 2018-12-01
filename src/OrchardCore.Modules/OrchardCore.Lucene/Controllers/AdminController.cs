@@ -239,7 +239,7 @@ namespace OrchardCore.Lucene.Controllers
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();

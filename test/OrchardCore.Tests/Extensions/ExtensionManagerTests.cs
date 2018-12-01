@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Stubs;
 using Xunit;
 
@@ -13,6 +15,12 @@ namespace OrchardCore.Tests.Extensions
     {
         private static IHostingEnvironment HostingEnvironment
             = new StubHostingEnvironment();
+
+        private static IApplicationContext ApplicationContext
+            = new ModularApplicationContext(HostingEnvironment, new List<IModuleNamesProvider>()
+            {
+                new ModuleNamesProvider()
+            });
 
         private static IFeaturesProvider ModuleFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
@@ -27,7 +35,7 @@ namespace OrchardCore.Tests.Extensions
         public ExtensionManagerTests()
         {
             ModuleScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
+                ApplicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
@@ -36,7 +44,7 @@ namespace OrchardCore.Tests.Extensions
                 );
 
             ThemeScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
+                ApplicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
@@ -45,13 +53,35 @@ namespace OrchardCore.Tests.Extensions
                 );
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
-                HostingEnvironment,
+                ApplicationContext,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 ThemeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
+        }
+
+        private class ModuleNamesProvider : IModuleNamesProvider
+        {
+            private readonly string[] _moduleNames;
+
+            public ModuleNamesProvider()
+            {
+                _moduleNames = new[]
+                {
+                    "BaseThemeSample",
+                    "BaseThemeSample2",
+                    "DerivedThemeSample",
+                    "DerivedThemeSample2",
+                    "ModuleSample"
+                };
+            }
+
+            public IEnumerable<string> GetModuleNames()
+            {
+                return _moduleNames;
+            }
         }
 
         [Fact]

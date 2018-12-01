@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayMediaFieldViewModel>("MediaField", model =>
+            return Initialize<DisplayMediaFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -35,7 +35,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMediaFieldViewModel>("MediaField_Edit", model =>
+            return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Paths = JsonConvert.SerializeObject(field.Paths);
 

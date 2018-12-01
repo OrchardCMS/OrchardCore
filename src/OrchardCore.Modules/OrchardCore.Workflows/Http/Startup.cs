@@ -10,6 +10,7 @@ using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
+using OrchardCore.Workflows.Http.Controllers;
 using OrchardCore.Workflows.Http.Drivers;
 using OrchardCore.Workflows.Http.Filters;
 using OrchardCore.Workflows.Http.Handlers;
@@ -45,7 +46,10 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplay>();
             services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplay>();
             services.AddActivity<HttpRequestTask, HttpRequestTaskDisplay>();
+            services.AddActivity<HttpResponseTask, HttpResponseTaskDisplay>();
             services.AddActivity<SignalEvent, SignalEventDisplay>();
+
+            services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
@@ -54,10 +58,17 @@ namespace OrchardCore.Workflows.Http
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
+                name: "HttpWorkflow",
+                areaName: "OrchardCore.Workflows",
+                template: "workflows/{action}",
+                defaults: new { controller = "HttpWorkflow" }
+            );
+
+            routes.MapAreaRoute(
                 name: "InvokeWorkflow",
                 areaName: "OrchardCore.Workflows",
-                template: "Workflows/{action}",
-                defaults: new { controller = "HttpWorkflow" }
+                template: "workflows/invoke/{token}",
+                defaults: new { controller = "HttpWorkflow", action = "Invoke" }
             );
 
             var workflowTypeStore = serviceProvider.GetRequiredService<IWorkflowTypeStore>();

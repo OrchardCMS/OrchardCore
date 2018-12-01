@@ -2,6 +2,7 @@
 @using OpenIddict.Abstractions;
 @using OrchardCore.OpenId.ViewModels;
 @using OrchardCore.OpenId.Settings;
+@using static OpenIddict.Abstractions.OpenIddictConstants
 @{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
@@ -12,12 +13,12 @@
     <input type="hidden" asp-for="Id" />
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
-        <span asp-validation-for="ClientId" class="text-danger">@T["The Client Id is required."]</span>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
         <input asp-for="ClientId" class="form-control" autofocus />
     </div>
     <div class="form-group" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
-        <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
         <input asp-for="DisplayName" class="form-control" autofocus />
     </div>
     <div class="form-group" asp-validation-class-for="Type">
@@ -29,89 +30,88 @@
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
     <fieldset class="form-group">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="UpdateClientSecret" type="checkbox" data-toggle="collapse" data-target="#clientSecretGroup" class="form-check-input" checked="@Model.UpdateClientSecret"/>
-                @T["Set a new Client Secret"]
-                <span asp-validation-for="UpdateClientSecret" class="text-danger">@T["Set a new Client Secret is required."]</span>
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="UpdateClientSecret" data-toggle="collapse" data-target="#clientSecretGroup" checked="@Model.UpdateClientSecret" >
+            <label class="custom-control-label" asp-for="UpdateClientSecret">@T["Set a new Client Secret"]</label>
         </div>
     </fieldset>
     <div class="form-group collapse" id="clientSecretGroup" name="clientSecretGroup">
         <div class="form-group" asp-validation-class-for="ClientSecret">
             <label asp-for="ClientSecret">@T["Client Secret"]</label>
             <span asp-validation-for="ClientSecret" class="text-danger"></span>
-            <input asp-for="ClientSecret" class="form-control" autofocus />
+            <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         </div>
     </div>
 
     <h3>Flows</h3>
     <fieldset id="AllowAuthorizationCodeFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowAuthorizationCodeFlow" type="checkbox" data-toggle="collapse" data-target="#AllowAuthorizationCodeFlowRecommendedHint" class="form-check-input" checked="@Model.AllowAuthorizationCodeFlow" />
-                @T["Allow Authorization Code Flow"]
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowAuthorizationCodeFlow" data-toggle="collapse" data-target="#AllowAuthorizationCodeFlowRecommendedHint" checked="@Model.AllowAuthorizationCodeFlow">
+            <label class="custom-control-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
+            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
         </div>
-        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></div>
         <div id="AllowAuthorizationCodeFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code', client_id, client_secret,  scope ('openid, profile, roles)')</div>
     </fieldset>
 
     <fieldset id="AllowImplicitFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowImplicitFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowImplicitFlow" type="checkbox" data-toggle="collapse" data-target="#AllowImplicitFlowRecommendedHint" class="form-check-input" checked="@Model.AllowImplicitFlow" />
-                @T["Allow Implicit Flow"]
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowImplicitFlow" data-toggle="collapse" data-target="#AllowImplicitFlowRecommendedHint" checked="@Model.AllowImplicitFlow">
+            <label class="custom-control-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
+            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
         </div>
-        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></div>
         <div id="AllowImplicitFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'id_token token', client_id, client_secret, redirect_uri ='', nonce,  scope ('openid, profile, roles')</div>
     </fieldset>
 
     <fieldset id="AllowPasswordFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowPasswordFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowPasswordFlow" type="checkbox" data-toggle="collapse" data-target="#AllowPasswordFlowRecommendedHint" class="form-check-input" checked="@Model.AllowPasswordFlow" />
-                @T["Allow Password Flow"]
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow" data-toggle="collapse" data-target="#AllowPasswordFlowRecommendedHint" checked="@Model.AllowPasswordFlow">
+            <label class="custom-control-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
+            <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
         </div>
-        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></div>
         <div id="AllowPasswordFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'password', client_id, client_secret, username, password,  scope ('openid, profile, roles)')</div>
     </fieldset>
 
     <fieldset id="AllowClientCredentialsFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowClientCredentialsFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowClientCredentialsFlow" type="checkbox" data-toggle="collapse" data-target="#AllowClientCredentialsFlowRecommendedHint" class="form-check-input" checked="@Model.AllowClientCredentialsFlow" />
-                @T["Allow Client Credentials Flow"]
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowClientCredentialsFlow" data-toggle="collapse" data-target="#AllowClientCredentialsFlowRecommendedHint" checked="@Model.AllowClientCredentialsFlow">
+            <label class="custom-control-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
+            <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
         </div>
-        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></div>
         <div id="AllowClientCredentialsFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'client_credentials', client_id, client_secret,  scope ('openid, profile, roles')</div>
     </fieldset>
 
     <fieldset id="AllowRefreshTokenFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowRefreshTokenFlow">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="AllowRefreshTokenFlow" type="checkbox" data-toggle="collapse" data-target="#AllowRefreshTokenFlowRecommendedHint" class="form-check-input" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow) ? null : "") />
-                @T["Allow Refresh Token Flow"]
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowRefreshTokenFlow" data-toggle="collapse" data-target="#AllowRefreshTokenFlowRecommendedHint" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow) ? null : "")>
+            <label class="custom-control-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
+            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
         </div>
-        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></div>
         <div id="AllowRefreshTokenFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'refresh_token', client_id, client_secret, refresh_token</div>
     </fieldset>
 
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris">@T["Redirect Uri"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger">@T["The Redirect Uri is required."]</span>
+            <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
+            <span asp-validation-for="RedirectUris" class="text-danger"></span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
         </div>
-        <div asp-validation-class-for="PostLogoutRedirectUris">
-            <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uri"]</label>
-            <span asp-validation-for="PostLogoutRedirectUris" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
-            <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
-        </div>
+
+
+        <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
+            <fieldset class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="AllowLogoutEndpoint" data-toggle="collapse" data-target="#postLogoutRedirectUris" checked="@Model.AllowLogoutEndpoint">
+                    <label class="custom-control-label" asp-for="AllowLogoutEndpoint">@T["Allow Logout Endpoint"]</label>
+                </div>
+            </fieldset>
+            <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
+                <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
+                    <label asp-for="PostLogoutRedirectUris">@T["Post Logout Redirect Uris"]</label>
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
+                    <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
+                </div>
+            </div>
+        </fieldset>
         <div class="form-group" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-control">
@@ -134,12 +134,10 @@
         <h6>@T["Client Credentials Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
-            <div class="form-check">
-                <label class="form-check-label" asp-for="RoleEntries[i].Selected">
-                    <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
-                    <input type="hidden" asp-for="RoleEntries[i].Name" />
-                    @Model.RoleEntries[i].Name
-                </label>
+            <input type="hidden" asp-for="RoleEntries[i].Name" />
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="RoleEntries[i].Selected">
+                <label class="custom-control-label" asp-for="RoleEntries[i].Selected">@Model.RoleEntries[i].Name</label>
             </div>
         }
     </div>
@@ -164,57 +162,87 @@
             {
                 <text>
                     $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowImplicitFlowFieldSet").collapse("show");
                     $("#AllowPasswordFlowFieldSet").collapse("show");
-                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                    $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
 
             }
             else
             {
-                <text>
-                    if (@(settings.AllowAuthorizationCodeFlow.ToString().ToLower()) == true) {
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
+                {
+                    <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
                         $("#AllowAuthorizationCodeFlow").prop("checked", false);
-                    }
+                    </text>
+                }
 
-                    if (@(settings.AllowImplicitFlow.ToString().ToLower()) == true) {
-                        $("#AllowImplicitFlowFieldSet").collapse("show");
-                    }
-                    else {
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                        $("#AllowImplicitFlow").prop("checked", false);
-                    }
-
-
-                    if (@(settings.AllowPasswordFlow.ToString().ToLower()) == true) {
-                        $("#AllowPasswordFlowFieldSet").collapse("show");
-                    }
-                    else {
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                        $("#AllowPasswordFlow").prop("checked", false);
-                    }
-
-                    if (@(settings.AllowClientCredentialsFlow.ToString().ToLower()) === true) {
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials))
+                {
+                    <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
                         $("#AllowClientCredentialsFlow").prop("checked", false);
-                    }
+                    </text>
+                }
 
-                    if (@(settings.AllowRefreshTokenFlow.ToString().ToLower()) == true) {
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    }
-                    else {
+                if (settings.GrantTypes.Contains(GrantTypes.Implicit))
+                {
+                    <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowImplicitFlowFieldSet").collapse("hide");
+                        $("#AllowImplicitFlow").prop("checked", false);
+                    </text>
+                }
+
+                if (settings.GrantTypes.Contains(GrantTypes.Password))
+                {
+                    <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowPasswordFlowFieldSet").collapse("hide");
+                        $("#AllowPasswordFlow").prop("checked", false);
+                    </text>
+                }
+
+                if (settings.GrantTypes.Contains(GrantTypes.RefreshToken))
+                {
+                    <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
                         $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
                         $("#AllowRefreshTokenFlow").prop("checked", false);
-                    }
-                </text>
+                    </text>
+                }
+
+                if (settings.LogoutEndpointPath.HasValue)
+                {
+                    <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+                    </text>
+                }
             }
         }
 
@@ -293,13 +321,22 @@
         function refreshRedirectSettings() {
             var redirectSection = $("#RedirectSection");
             var skipConsent = $("#SkipConsent");
+            var postLogoutRedirecUris = $("#postLogoutRedirectUris")
 
             if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
                 redirectSection.collapse("show");
+                if ($("#AllowLogoutEndpoint").prop('checked')) {
+                    postLogoutRedirecUris.collapse("show");
+                }
+                else {
+                    postLogoutRedirecUris.collapse("hide");
+                }
             }
             else {
                 skipConsent.prop("checked", false);
                 redirectSection.collapse("hide");
+                $("#AllowLogoutEndpoint").prop('checked', false);
+                postLogoutRedirecUris.collapse("hide");
             }
         }
     };

@@ -1,17 +1,14 @@
-﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Services;
-using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -22,6 +19,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class ExportRemoteInstanceController : Controller
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
@@ -73,7 +72,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = Path.Combine(Path.GetTempPath(), filename);
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
@@ -90,16 +89,17 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             try
             {
-                var archiveContainer = new ArchiveContainer();
-                archiveContainer.ClientName = remoteInstance.ClientName;
-                archiveContainer.ApiKey = remoteInstance.ApiKey;
-                archiveContainer.ArchiveBase64 = Convert.ToBase64String(System.IO.File.ReadAllBytes(archiveFileName));
-
-                using (var httpClient = new HttpClient())
+                using (var requestContent = new MultipartFormDataContent())
                 {
-                    var content = new StringContent(JsonConvert.SerializeObject(archiveContainer));
-                    content.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
-                    response = await httpClient.PostAsync(remoteInstance.Url, content);
+                    requestContent.Add(new StreamContent(
+                        new FileStream(archiveFileName, 
+                        FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
+                    ), 
+                        nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
+                    requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
+                    requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
+
+                    response = await _httpClient.PostAsync(remoteInstance.Url, requestContent);
                 }
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)

@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
@@ -17,17 +18,20 @@ using OrchardCore.Contents.Services;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.AdminTrees.Services;
+using OrchardCore.Contents.AdminNodes;
 
 namespace OrchardCore.Contents
 {
@@ -62,7 +66,7 @@ namespace OrchardCore.Contents
             // TODO: Move to feature
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
-            services.AddTagHelpers(typeof(ContentLinkTagHelper).Assembly);
+            services.AddTagHelpers<ContentLinkTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -113,7 +117,7 @@ namespace OrchardCore.Contents
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
-                template: "Admin/Contents/ContentItems",
+                template: "Admin/Contents/ContentItems/{typeId?}",
                 defaults: new { controller = "Admin", action = "List" }
             );
         }
@@ -127,6 +131,43 @@ namespace OrchardCore.Contents
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
+            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+        }
+    }
+
+
+    [RequireFeatures("OrchardCore.AdminTrees")]
+    public class AdminTreesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
+            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
+            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+        }
+     }
+
+    [Feature("OrchardCore.Contents.FileContentDefinition")]
+    public class FileContentDefinitionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddFileContentDefinitionStore();
         }
     }
 }

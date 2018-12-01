@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement.Metadata.Settings
+namespace OrchardCore.ContentManagement.Metadata.Settings
 {
     public class ContentTypePartSettings
     {
@@ -16,5 +16,10 @@
         /// Gets or sets the position of the type part in the editor.
         /// </summary>
         public string Position { get; set; }
+
+        /// <summary>
+        /// Gest or set the editor of the type part.
+        /// </summary>
+        public string Editor { get; set; }
     }
 }

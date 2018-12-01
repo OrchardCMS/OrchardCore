@@ -2,16 +2,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Https.Drivers {
+namespace OrchardCore.Https.Drivers
+{
     public class HttpsSettingsDisplayDriver : SectionDisplayDriver<ISite, HttpsSettings>
     {
         private const string RestartPendingCacheKey = "HttpsSiteSettings_RestartPending";
@@ -24,7 +24,7 @@ namespace OrchardCore.Https.Drivers {
 
         public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
-            IMemoryCache memoryCache, 
+            IMemoryCache memoryCache,
             IHtmlLocalizer<HttpsSettingsDisplayDriver> stringLocalizer)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -36,17 +36,16 @@ namespace OrchardCore.Https.Drivers {
 
         public override IDisplayResult Edit(HttpsSettings settings, BuildEditorContext context)
         {
-
-            if (context.GroupId == SettingsGroupId && _memoryCache.Get(RestartPendingCacheKey) != null)
-                _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
-
-            var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
-
-            if (!isHttpsRequest)
-                _notifier.Warning(T["For safety, Enabling require HTTPS over HTTP has been prevented."]);
-
             return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
             {
+                if (_memoryCache.Get(RestartPendingCacheKey) != null)
+                    _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
+
+                var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
+
+                if (!isHttpsRequest)
+                    _notifier.Warning(T["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+
                 model.IsHttpsRequest = isHttpsRequest;
                 model.RequireHttps = settings.RequireHttps;
                 model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
@@ -57,13 +56,13 @@ namespace OrchardCore.Https.Drivers {
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
         {
-            if (groupId == SettingsGroupId)
+            if (context.GroupId == SettingsGroupId)
             {
                 var model = new HttpsSettingsViewModel();
 
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.RequireHttps = model.RequireHttps;
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
@@ -76,7 +75,7 @@ namespace OrchardCore.Https.Drivers {
                 _memoryCache.Set(entry.Key, entry, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

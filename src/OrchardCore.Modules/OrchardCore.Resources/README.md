@@ -1,8 +1,8 @@
-# Resources (OrchardCore.Resources)
+# Resources (`OrchardCore.Resources`)
 
 ## Purpose
 
-The Resources module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
+The `Resources` module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
 resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
@@ -16,10 +16,11 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
 | jQuery | Script | 3.3.1 | - |
-| Bootstrap | Script | 3.3.7, 4.1.0 | jQuery |
-| Bootstrap | Style | 3.3.7, 4.1.0 | - |
+| Popper | Script | 1.14.3 | - |
+| Bootstrap | Script | 3.3.7, 4.1.3 | jQuery, Popper |
+| Bootstrap | Style | 3.3.7, 4.1.3 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
-| font-awesome | Style | 4.7.0, 5.0.13 | - |
+| font-awesome | Style | 4.7.0, 5.4.1 | - |
 
 ## Usage
 
@@ -174,6 +175,12 @@ You can also do the same for a stylesheet:
 #### Custom scripts
 
 The following example demonstrates how to inject a custom script in the footer section.
+
+```liquid
+{% scriptblock at: "Foot" %}
+    document.write('<!-- some script -->');
+{% endscriptblock %}
+```
 
 ```razor
 <script at="Foot">

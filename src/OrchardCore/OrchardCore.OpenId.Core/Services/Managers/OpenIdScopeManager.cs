@@ -13,10 +13,11 @@ namespace OrchardCore.OpenId.Services.Managers
     public class OpenIdScopeManager<TScope> : OpenIddictScopeManager<TScope>, IOpenIdScopeManager where TScope : class
     {
         public OpenIdScopeManager(
+            IOpenIddictScopeCache<TScope> cache,
             IOpenIddictScopeStoreResolver resolver,
             ILogger<OpenIddictScopeManager<TScope>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(resolver, logger, options)
+            : base(cache, resolver, logger, options)
         {
         }
 

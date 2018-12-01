@@ -1,6 +1,6 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace OrchardCore.ContentManagement
 {
@@ -8,14 +8,14 @@ namespace OrchardCore.ContentManagement
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            ContentItem contentItem = (ContentItem)value;
+            var contentItem = (ContentItem)value;
             var o = new JObject();
 
             // Write all well-known properties
-            o.Add(new JProperty(nameof(ContentItem.Id), contentItem.Id));
             o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
             o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
             o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
+            o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
             o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
             o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
             o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
@@ -53,9 +53,6 @@ namespace OrchardCore.ContentManagement
 
                 switch (propertyName)
                 {
-                    case nameof(ContentItem.Id) : 
-                        contentItem.Id = reader.ReadAsInt32() ?? 0;
-                        break;
                     case nameof(ContentItem.ContentItemId):
                         contentItem.ContentItemId = reader.ReadAsString();
                         break;
@@ -64,6 +61,9 @@ namespace OrchardCore.ContentManagement
                         break;
                     case nameof(ContentItem.ContentType):
                         contentItem.ContentType = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.DisplayText):
+                        contentItem.DisplayText = reader.ReadAsString();
                         break;
                     case nameof(ContentItem.Latest):
                         contentItem.Latest = reader.ReadAsBoolean() ?? false;

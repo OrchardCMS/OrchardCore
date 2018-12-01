@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Demo.Drivers
@@ -20,7 +19,7 @@ namespace OrchardCore.Demo.Drivers
             }).Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, BuildEditorContext context)
         {
             var model = new EditUserProfileViewModel();
 
@@ -30,7 +29,7 @@ namespace OrchardCore.Demo.Drivers
                 profile.Name = model.Name;
             }
 
-            return Edit(profile);
+            return Edit(profile, context);
         }
     }
 }

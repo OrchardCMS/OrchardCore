@@ -25,8 +25,9 @@ install:
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-  - ps: .\dotnet-install.ps1 --Version 2.1.301
+# Uncomment to download a specific version of dotnet
+#  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+#  - ps: .\dotnet-install.ps1 --Version 2.1.301
 
 build_script:
   - dotnet build -c Release
@@ -64,7 +65,7 @@ deploy_script:
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
       dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
-      docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta2 .
+      docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta3 .
       docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
       docker push orchardproject/orchardcore-cms-windows
     }

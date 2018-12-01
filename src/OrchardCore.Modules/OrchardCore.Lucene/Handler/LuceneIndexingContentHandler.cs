@@ -29,7 +29,7 @@ namespace OrchardCore.Lucene.Handlers
         {
             // TODO: ignore if this index is not configured for the content type
 
-            var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, context.ContentItem.ContentType);
+            var buildIndexContext = new BuildIndexContext(new DocumentIndex(context.ContentItem.ContentItemId), context.ContentItem, new string[] { context.ContentItem.ContentType });
             // Lazy resolution to prevent cyclic dependency 
             var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);

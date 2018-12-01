@@ -123,7 +123,10 @@ namespace OrchardCore.Workflows.Controllers
                 .ListAsync();
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
-            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync()).GroupBy(x => x.WorkflowTypeId).ToDictionary(x => x.Key);
+            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
+                .ListAsync())
+                .GroupBy(x => x.WorkflowTypeId)
+                .ToDictionary(x => x.Key);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -223,7 +226,6 @@ namespace OrchardCore.Workflows.Controllers
             }
         }
 
-
         [HttpPost]
         public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, int? id)
         {
@@ -269,6 +271,59 @@ namespace OrchardCore.Workflows.Controllers
                    : RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Duplicate(int id, string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            var workflowType = await _session.GetAsync<WorkflowType>(id);
+
+            if (workflowType == null)
+            {
+                return NotFound();
+            }
+
+            return View(new WorkflowTypePropertiesViewModel
+            {
+                Id = id,
+                IsSingleton = workflowType.IsSingleton,
+                Name = "Copy-" + workflowType.Name,
+                IsEnabled = workflowType.IsEnabled,
+                ReturnUrl = returnUrl
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Duplicate(WorkflowTypePropertiesViewModel viewModel, int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Unauthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var existingWorkflowType = await _session.GetAsync<WorkflowType>(id);
+            var workflowType = new WorkflowType();
+            workflowType.WorkflowTypeId = _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
+
+            workflowType.Name = viewModel.Name?.Trim();
+            workflowType.IsEnabled = viewModel.IsEnabled;
+            workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
+            workflowType.Activities = existingWorkflowType.Activities;
+            workflowType.Transitions = existingWorkflowType.Transitions;
+
+            await _workflowTypeStore.SaveAsync(workflowType);
+
+            return RedirectToAction("Edit", new { workflowType.Id });
+        }
+
         public async Task<IActionResult> Edit(int id, string localId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -294,8 +349,18 @@ namespace OrchardCore.Workflows.Controllers
 
             await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
 
-            var activityThumbnailShapes = activityThumbnailDisplayTasks.Select(x => x.Result).ToList();
-            var activityDesignShapes = activityDesignDisplayTasks.Select(x => x.Result).ToList();
+            var activityThumbnailShapes = new List<dynamic>();
+            foreach (var thumbnailTask in activityThumbnailDisplayTasks)
+            {
+                activityThumbnailShapes.Add(await thumbnailTask);
+            }
+
+            var activityDesignShapes = new List<dynamic>();
+            foreach (var designDisplayTask in activityDesignDisplayTasks)
+            {
+                activityDesignShapes.Add(await designDisplayTask);
+            }
+
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,

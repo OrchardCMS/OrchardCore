@@ -33,12 +33,11 @@ namespace OrchardCore.Autoroute.Routing
 
             var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
             
-            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
+                && string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
+                && string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                string path;
-                if (_entries.TryGetPath(contentItemId, out path))
+                if (_entries.TryGetPath(contentItemId, out string path))
                 {
                     if (context.Values.Count > 4)
                     {
@@ -54,7 +53,6 @@ namespace OrchardCore.Autoroute.Routing
                     return new VirtualPathData(_target, path);
                 }
             }
-            
 
             return null;
         }
@@ -79,21 +77,32 @@ namespace OrchardCore.Autoroute.Routing
 
             var contentManager = context.RequestServices.GetService<IContentManager>();
             var contentItem = await contentManager.GetAsync(contentItemId);
-            return contentItem == null ? null : (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
+
+            if (contentItem == null)
+            {
+                return null;
+            }
+
+            return (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
         }
 
         private async Task EnsureRouteData(RouteContext context, string contentItemId)
         {
             var displayRoutes = await GetContentItemDisplayRoutes(context.HttpContext, contentItemId);
+
             if (displayRoutes == null)
             {
                 return;
             }
+
             foreach (var key in _keys)
             {
                 if (displayRoutes.ContainsKey(key))
+                {
                     context.RouteData.Values[key] = displayRoutes[key];
+                }
             }
+
             context.RouteData.Routers.Add(_target);
         }
     }

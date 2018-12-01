@@ -1,7 +1,11 @@
+using System;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
@@ -18,7 +22,7 @@ namespace OrchardCore.ContentFields
         {
             // Registering both field types and shape types are necessary as they can 
             // be accessed from inner properties.
-            
+
             TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
@@ -50,6 +54,8 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
 
             // Html Field
             services.AddSingleton<ContentField, HtmlField>();
@@ -86,6 +92,29 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
+
+            // Video field
+            services.AddSingleton<ContentField, YoutubeField>();
+            services.AddScoped<IContentFieldDisplayDriver, YoutubeFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
+
+            // Content picker field
+            services.AddSingleton<ContentField, ContentPickerField>();
+            services.AddScoped<IContentFieldDisplayDriver, ContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
+            services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "ContentPicker",
+                areaName: "OrchardCore.ContentFields",
+                template: "ContentPicker",
+                defaults: new { controller = "ContentPicker", action = "List" }
+            );
         }
     }
 }

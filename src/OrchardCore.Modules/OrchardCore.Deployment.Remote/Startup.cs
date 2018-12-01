@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.Remote;
 using OrchardCore.Deployment.Remote.Services;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Deployment
 {
@@ -21,6 +21,12 @@ namespace OrchardCore.Deployment
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "DeploymentImport",
+                areaName: "OrchardCore.Deployment.Remote",
+                template: "Deployment/Import",
+                defaults: new { controller = "ImportRemoteInstance", action = "Import" }
+            );
         }
     }
 }

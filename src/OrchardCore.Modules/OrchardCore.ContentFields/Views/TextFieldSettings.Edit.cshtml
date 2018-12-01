@@ -1,13 +1,12 @@
 @model OrchardCore.ContentFields.Settings.TextFieldSettings
 
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
-
-@{
-    var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith("TextField_Option__", StringComparison.OrdinalIgnoreCase));
-}
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="Required" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint">@T["— Whether a value is required."]</span>
+    </div>
+</fieldset>
 
 <fieldset class="form-group">
     <div class="row col-sm-6">
@@ -16,17 +15,3 @@
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </fieldset>
-
-<div class="row">
-    <fieldset class="form-group col-sm-6">
-        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
-        <select asp-for="Editor" class="form-control">
-            @foreach (var editorShape in editorShapes)
-            {
-                dynamic shape = await Factory.CreateAsync(editorShape);
-                shape.Editor = Model.Editor;
-                @await DisplayAsync(shape)
-            }
-        </select>
-    </fieldset>
-</div>

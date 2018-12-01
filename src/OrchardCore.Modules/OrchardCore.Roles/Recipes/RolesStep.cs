@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using OrchardCore.Environment.Extensions;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
@@ -17,17 +16,10 @@ namespace OrchardCore.Roles.Recipes
     public class RolesStep : IRecipeStepHandler
     {
         private readonly RoleManager<IRole> _roleManager;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
-        public RolesStep(
-            RoleManager<IRole> roleManager,
-            ITypeFeatureProvider typeFeatureProvider,
-            IEnumerable<IPermissionProvider> permissionProviders)
+        public RolesStep(RoleManager<IRole> roleManager)
         {
             _roleManager = roleManager;
-            _typeFeatureProvider = typeFeatureProvider;
-            _permissionProviders = permissionProviders;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -39,20 +31,20 @@ namespace OrchardCore.Roles.Recipes
 
             var model = context.Step.ToObject<RolesStepModel>();
             
-            foreach (var roleModel in model.Roles)
+            foreach (var importedRole in model.Data)
             {
-                if (string.IsNullOrWhiteSpace(roleModel.Name)) 
+                if (string.IsNullOrWhiteSpace(importedRole.NormalizedRoleName)) 
                     continue;
 
-                var role = (Role) await _roleManager.FindByNameAsync(roleModel.Name);
-                bool isNewRole = role == null;
+                var role = (Role) await _roleManager.FindByNameAsync(importedRole.NormalizedRoleName);
+                var isNewRole = role == null;
                 
                 if (isNewRole)
                 {
-                    role = new Role { RoleName = roleModel.Name };                    
+                    role = new Role { RoleName = importedRole.RoleName };                    
                 }
-                role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                role.RoleClaims.AddRange(roleModel.Permissions.Select(p=>new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+                role.RoleClaims.Clear();
+                role.RoleClaims.AddRange(importedRole.RoleClaims.Select(c=>new RoleClaim { ClaimType = c.ClaimType, ClaimValue = c.ClaimValue }));
                 
                 if (isNewRole)
                 {
@@ -64,18 +56,9 @@ namespace OrchardCore.Roles.Recipes
                 }
             }
         }
-    }
-
-    public class RolesStepModel
-    {
-        public IEnumerable<RoleModel> Roles { get; set; }
-    }
-
-    public class RoleModel
-    {
-        public string Name { get; set; }
-        public IEnumerable<string> Permissions { get; set; }
-    }
-
-    
+        public class RolesStepModel
+        {
+            public Role[] Data { get; set; }
+        }
+    }    
 }

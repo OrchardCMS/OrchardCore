@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Lists.Drivers;
+using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.TagHelpers;
@@ -25,12 +25,13 @@ namespace OrchardCore.Menu
             services.AddScoped<IContentHandler, MenuContentHandler>();
             services.AddScoped<IContentPartDisplayDriver, MenuPartDisplayDriver>();
             services.AddSingleton<ContentPart, MenuPart>();
+            services.AddSingleton<ContentPart, MenuItemsListPart>();
 
             // LinkMenuItemPart
             services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
             services.AddSingleton<ContentPart, LinkMenuItemPart>();
 
-            services.AddTagHelpers(typeof(MenuTagHelper).Assembly);
+            services.AddTagHelpers<MenuTagHelper>();
         }
     }
 }

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
@@ -28,7 +28,7 @@ namespace OrchardCore.Workflows.Drivers
                 section.Title = viewModel.Title?.Trim();
             }
 
-            return Edit(section);
+            return await EditAsync(section, context);
         }
     }
 }

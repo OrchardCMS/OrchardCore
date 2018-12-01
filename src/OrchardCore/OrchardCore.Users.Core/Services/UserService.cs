@@ -14,15 +14,62 @@ namespace OrchardCore.Users.Services
     /// </summary>
     public class UserService : IUserService
     {
+        private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IStringLocalizer<UserService> T;
 
-        public UserService(UserManager<IUser> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer)
+        public UserService(
+            SignInManager<IUser> signInManager,
+            UserManager<IUser> userManager,
+            IOptions<IdentityOptions> identityOptions,
+            IStringLocalizer<UserService> stringLocalizer)
         {
+            _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions;
             T = stringLocalizer;
+        }
+
+        public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                reportError("UserName", T["A user name is required."]);
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                reportError("Password", T["A password is required."]);
+                return null;
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                reportError(string.Empty, T["The specified username/password couple is invalid."]);
+                return null;
+            }
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
+            if (result.IsNotAllowed)
+            {
+                reportError(string.Empty, T["The specified user is not allowed to sign in."]);
+                return null;
+            }
+            else if (result.RequiresTwoFactor)
+            {
+                reportError(string.Empty, T["The specified user is not allowed to sign in using password authentication."]);
+                return null;
+            }
+            else if (!result.Succeeded)
+            {
+                reportError(string.Empty, T["The specified username/password couple is invalid."]);
+                return null;
+            }
+
+            return user;
         }
 
         public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
@@ -75,7 +122,7 @@ namespace OrchardCore.Users.Services
             }
 
             var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
-            
+
             if (user == null)
             {
                 return await Task.FromResult<IUser>(null);
@@ -127,6 +174,16 @@ namespace OrchardCore.Users.Services
             }
 
             return identityResult.Succeeded;
+        }
+
+        public Task<ClaimsPrincipal> CreatePrincipalAsync(IUser user)
+        {
+            if (user == null)
+            {
+                return Task.FromResult<ClaimsPrincipal>(null);
+            }
+
+            return _signInManager.CreateUserPrincipalAsync(user);
         }
 
         /// <summary>

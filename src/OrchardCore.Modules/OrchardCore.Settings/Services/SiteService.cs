@@ -16,21 +16,21 @@ namespace OrchardCore.Settings.Services
     public class SiteService : ISiteService
     {
         private readonly IMemoryCache _memoryCache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISignal _signal;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IClock _clock;
         private const string SiteCacheKey = "SiteService";
 
         public SiteService(
             ISignal signal,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
+            IHttpContextAccessor httpContextAccessor,
             IClock clock)
         {
             _signal = signal;
-            _serviceProvider = serviceProvider;
             _clock = clock;
             _memoryCache = memoryCache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc/>
@@ -60,7 +60,8 @@ namespace OrchardCore.Settings.Services
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId
+                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                                Culture = ""
                             };
 
                             session.Save(site);
@@ -89,6 +90,7 @@ namespace OrchardCore.Settings.Services
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
             existing.Culture = site.Culture;
+            existing.SupportedCultures = site.SupportedCultures;
             existing.HomeRoute = site.HomeRoute;
             existing.MaxPagedCount = site.MaxPagedCount;
             existing.MaxPageSize = site.MaxPageSize;
@@ -111,8 +113,7 @@ namespace OrchardCore.Settings.Services
 
         private YesSql.ISession GetSession()
         {
-            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+            return _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
         }
     }
 }

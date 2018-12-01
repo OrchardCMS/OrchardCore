@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using Microsoft.AspNetCore.Mvc;
 

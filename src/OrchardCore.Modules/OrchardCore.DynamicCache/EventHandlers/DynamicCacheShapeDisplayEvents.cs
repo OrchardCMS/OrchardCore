@@ -29,7 +29,8 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
         {
-            var debugMode = Configuration.IsDebugModeEnabled;
+            // TODO: replace with configurable UI
+            var debugMode = false;
 
             // The shape has cache settings and no content yet
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
