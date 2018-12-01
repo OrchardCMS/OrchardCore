@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             if (_displayHelper == null)
             {
-                // We make the ViewContext available to other sub-systems that need it
+                // We make the ViewContext available to other sub-systems that need it.
                 var viewContextAccessor = Context.RequestServices.GetService<ViewContextAccessor>();
                 viewContextAccessor.ViewContext = ViewContext;
 

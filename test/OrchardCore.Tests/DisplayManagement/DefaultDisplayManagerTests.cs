@@ -31,7 +31,6 @@ namespace OrchardCore.Tests.DisplayManagement
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddScoped<ViewContextAccessor>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
@@ -67,11 +66,10 @@ namespace OrchardCore.Tests.DisplayManagement
             }
         }
 
-        public DisplayContext CreateDisplayContext(Shape shape)
+        static DisplayContext CreateDisplayContext(Shape shape)
         {
             return new DisplayContext
             {
-                ServiceProvider = _serviceProvider,
                 Value = shape
             };
         }
