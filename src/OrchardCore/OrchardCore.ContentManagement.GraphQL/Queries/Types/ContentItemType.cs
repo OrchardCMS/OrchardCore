@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
                     var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater);
 
-                    var displayHelper = serviceProvider.GetRequiredService<IDisplayHelperFactory>().CreateHelper();
+                    var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
 
                     using (var sw = new StringWriter())
                     {

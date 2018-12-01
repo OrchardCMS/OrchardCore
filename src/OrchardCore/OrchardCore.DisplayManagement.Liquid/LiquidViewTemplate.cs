@@ -184,7 +184,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
-            var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper();
+            var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
             return context.ContextualizeAsync(new DisplayContext()
             {
@@ -198,9 +198,6 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             var services = displayContext.ServiceProvider;
             context.AmbientValues.Add("Services", services);
-
-            var displayHelperFactory = services.GetRequiredService<IDisplayHelperFactory>();
-            context.AmbientValues.Add("DisplayHelperFactory", displayHelperFactory);
 
             context.AmbientValues.Add("DisplayHelper", displayContext.DisplayAsync);
 

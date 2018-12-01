@@ -4,15 +4,9 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
-    public interface IDisplayHelper
-    {
-        Task<IHtmlContent> ShapeExecuteAsync(object shape);
-    }
-
     public class DisplayHelper : DynamicObject, IDisplayHelper
     {
         private readonly IHtmlDisplay _htmlDisplay;
@@ -28,8 +22,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             _shapeFactory = shapeFactory;
             _serviceProvider = serviceProvider;
         }
-
-        public ViewContext ViewContext { get; set; }
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {

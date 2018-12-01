@@ -74,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
 
                     services.AddScoped<IShapeFactory, DefaultShapeFactory>();
-                    services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
+                    services.AddScoped<IDisplayHelper, DisplayHelper>();
 
                     services.AddScoped<INotifier, Notifier>();
 
