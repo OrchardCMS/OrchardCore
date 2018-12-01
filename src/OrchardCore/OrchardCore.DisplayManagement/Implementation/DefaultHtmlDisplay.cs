@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -137,7 +136,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                         ShapeBinding frameBinding;
                         if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
                         {
-                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
                         }
                     }
 

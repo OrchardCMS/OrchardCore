@@ -1,13 +1,8 @@
 using System.IO;
-using System.Linq;
 using System.Net.Mail;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
@@ -30,18 +25,6 @@ namespace OrchardCore.Users.Controllers
 
         protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
         {
-            var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines
-                    .Select(x => x.FindView(
-                        ControllerContext,
-                        ControllerContext.ActionDescriptor.ActionName,
-                        false)).FirstOrDefault()?.View;
-
-            var viewContextAccessor = Request.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
-            viewContextAccessor.ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions());
-
             var body = string.Empty;
 
             using (var sw = new StringWriter())
