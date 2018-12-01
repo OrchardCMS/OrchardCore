@@ -23,21 +23,21 @@ namespace OrchardCore.DisplayManagement.Razor
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         private readonly IOptions<MvcViewOptions> _options;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ITempDataProvider _tempDataProvider;
         private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
             IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
+            IHttpContextAccessor httpContextAccessor,
             ViewContextAccessor viewContextAccessor,
-            IServiceProvider serviceProvider,
             ITempDataProvider tempDataProvider)
         {
             _options = options;
+            _httpContextAccessor = httpContextAccessor;
             _viewContextAccessor = viewContextAccessor;
-            _serviceProvider = serviceProvider;
             _tempDataProvider = tempDataProvider;
             _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
         }
@@ -146,8 +146,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private ActionContext GetActionContext()
         {
-            var httpContext = new DefaultHttpContext();
-            httpContext.RequestServices = _serviceProvider;
+            var httpContext = _httpContextAccessor.HttpContext;
             return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
         }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Entities;
@@ -43,12 +41,11 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             INotifier notifier,
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
+            IDisplayHelper displayHelper,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer,
-            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, displayHelper)
         {
             _userService = userService;
             _userManager = userManager;

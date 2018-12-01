@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
@@ -47,8 +46,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 mockSmtpService, 
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),
@@ -82,8 +80,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 mockSiteService,
                 Mock.Of<INotifier>(),
                 mockSmtpService,
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IHtmlDisplay>(),
+                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>(),

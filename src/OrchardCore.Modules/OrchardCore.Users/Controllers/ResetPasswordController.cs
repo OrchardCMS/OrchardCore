@@ -9,7 +9,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -36,11 +35,10 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ISiteService siteService,
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager,
+            IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, shapeFactory, displayManager)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, displayHelper)
         {
             _userService = userService;
             _userManager = userManager;

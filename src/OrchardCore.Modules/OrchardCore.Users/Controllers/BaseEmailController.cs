@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
@@ -19,17 +18,14 @@ namespace OrchardCore.Users.Controllers
     public class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IHtmlDisplay _displayManager;
+        private readonly IDisplayHelper _displayHelper;
 
         public BaseEmailController(
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager)
+            IDisplayHelper displayHelper)
         {
             _smtpService = smtpService;
-            _shapeFactory = shapeFactory;
-            _displayManager = displayManager;
+            _displayHelper = displayHelper;
         }
 
         protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
@@ -40,14 +36,8 @@ namespace OrchardCore.Users.Controllers
             var view = options.Value.ViewEngines
                     .Select(x => x.FindView(
                         ControllerContext,
-                        ControllerContext.ActionDescriptor.ActionName, 
+                        ControllerContext.ActionDescriptor.ActionName,
                         false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
-            {
-                ServiceProvider = Request.HttpContext.RequestServices,
-                Value = model                
-            };
 
             var viewContextAccessor = Request.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
             viewContextAccessor.ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions());
@@ -56,7 +46,7 @@ namespace OrchardCore.Users.Controllers
 
             using (var sw = new StringWriter())
             {
-                var htmlContent = await _displayManager.ExecuteAsync(displayContext);
+                var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
                 htmlContent.WriteTo(sw, HtmlEncoder.Default);
                 body = sw.ToString();
             }
