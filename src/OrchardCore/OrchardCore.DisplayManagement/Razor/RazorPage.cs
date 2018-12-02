@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
@@ -318,6 +317,17 @@ namespace OrchardCore.DisplayManagement.Razor
                 if (_site == null)
                 {
                     _site = (ISite)Context.Items[typeof(ISite)];
+
+                    if (_site == null)
+                    {
+                        var siteService = Context.RequestServices.GetService<ISiteService>();
+
+                        if (siteService != null)
+                        {
+                            _site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+                            Context.Items.Add(typeof(ISite), _site);
+                        }
+                    }
                 }
 
                 return _site;

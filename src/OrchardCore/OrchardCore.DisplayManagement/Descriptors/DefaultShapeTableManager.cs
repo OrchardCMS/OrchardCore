@@ -157,7 +157,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
             if (string.IsNullOrEmpty(themeId))
             {
-                return true;
+                return false;
             }
 
             return feature.Id == themeId || IsBaseTheme(feature.Id, themeId);
