@@ -13,6 +13,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -65,10 +66,17 @@ namespace OrchardCore.Microsoft.Authentication
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
+
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<CookieAuthenticationOptions>, CookieOptionsConfiguration>(),
+
+
 
                 // Built-in initializers:
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+                
+                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
+                //ServiceDescriptor.Singleton<IPostConfigureOptions<CookieAuthenticationOptions>, PostConfigureCookieAuthenticationOptions>()
 
         });
         }

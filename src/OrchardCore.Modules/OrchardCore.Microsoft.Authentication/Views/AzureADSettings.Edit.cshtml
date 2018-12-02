@@ -11,10 +11,10 @@
     <span class="hint">@T["The Application ID found on the Azure AD App registration parameters."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="Instance">
-    <label>@T["Instance"] <span asp-validation-for="Instance"></span></label>
-    <input asp-for="Instance" class="form-control" />
-    <span class="hint">@T["The Instance Url of Azure AD."]</span>
+<fieldset class="form-group" asp-validation-class-for="Domain">
+    <label>@T["Domain"] <span asp-validation-for="Domain"></span></label>
+    <input asp-for="Domain" class="form-control" />
+    <span class="hint">@T["The Domain of Azure AD instance."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="TenantId">
@@ -22,7 +22,6 @@
     <input asp-for="TenantId" class="form-control" />
     <span class="hint">@T["The Tenant (Directory) ID found on the Azure AD App registration parameters."]</span>
 </fieldset>
-
 <fieldset class="form-group" asp-validation-class-for="AppSecret">
     <label>@T["Secret Key"] <span asp-validation-for="AppSecret"></span></label>
     <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" />

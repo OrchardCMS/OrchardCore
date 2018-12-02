@@ -30,7 +30,6 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
 
             var settings = await _loginService.GetSettingsAsync();
             settings.AppId = model.AppId;
-            settings.AppSecret= model.AppSecret;
 
             await _loginService.UpdateSettingsAsync(settings);
         }

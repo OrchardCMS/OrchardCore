@@ -8,7 +8,6 @@ namespace OrchardCore.Microsoft.Authentication.Settings
         public string AppId { get; set; }
         public string TenantId { get; set; }
         public string Domain { get; set; }
-        public Uri Instance { get; set; }
         public string AppSecret { get; set; }
         public PathString CallbackPath { get; set; }
     }

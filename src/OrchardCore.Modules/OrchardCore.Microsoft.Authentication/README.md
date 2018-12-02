@@ -1,4 +1,4 @@
-# OrchardCore.Facebook
+# OrchardCore.Microsoft.Authenticatio
 
 ## Facebook Module
 `OrchardCore.Facebook` provides the following features 

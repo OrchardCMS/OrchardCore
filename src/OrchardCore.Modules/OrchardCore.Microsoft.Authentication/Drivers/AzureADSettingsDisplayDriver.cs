@@ -57,16 +57,16 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             return Initialize<AzureADSettingsViewModel>("AzureADSettings_Edit", model =>
             {
                 var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD);
-
                 model.AppId = settings.AppId;
+                model.TenantId = settings.TenantId;
+                model.Domain = settings.Domain;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
                 if (settings.CallbackPath.HasValue)
                     model.CallbackPath = settings.CallbackPath;
-                model.TenantId = settings.TenantId;
-                model.Instance = settings.Instance?.AbsoluteUri;
+
 
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
@@ -89,11 +89,10 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD);
                     settings.AppId = model.AppId;
-
-                    settings.Instance = new Uri(model.Instance);
                     settings.TenantId = model.TenantId;
                     settings.AppSecret = string.IsNullOrWhiteSpace(model.AppSecret) ? null : protector.Protect(model.AppSecret);
                     settings.CallbackPath = model.CallbackPath;
+                    settings.Domain = model.Domain;
 
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }

@@ -12,12 +12,14 @@ using OrchardCore.Modules;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AzureADOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
+        IConfigureNamedOptions<PolicySchemeOptions>,
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _azureADService;
@@ -46,9 +48,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "AzureAD";
-                builder.HandlerType = typeof(OpenIdConnectHandler);
+                builder.HandlerType = typeof(PolicySchemeHandler);
             });
 
+            options.AddScheme(AzureADDefaults.OpenIdScheme, builder =>
+            {
+                builder.DisplayName = "";
+                builder.HandlerType = typeof(OpenIdConnectHandler);
+            });
         }
 
         public void Configure(string name, AzureADOptions options)
@@ -66,9 +73,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
-            options.Instance = loginSettings.Instance?.AbsoluteUri;
+            options.Instance = "https://login.microsoftonline.com/";
             options.Domain = loginSettings.Domain;
-
             try
             {
                 if (!string.IsNullOrWhiteSpace(loginSettings.AppSecret))
@@ -76,9 +82,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The AzureAD secret keycould not be decrypted. It may have been encrypted using a different key.");
             }
-
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
@@ -86,6 +91,17 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         }
 
         public void Configure(AzureADOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+
+        public void Configure(string name, PolicySchemeOptions options)
+        {
+            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            {
+                return;
+            }
+            options.ForwardDefault = "Identity.External";
+            options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
+        }
+        public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private async Task<AzureADSettings> GetAzureADSettingsAsync()
         {
