@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AzureADOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<PolicySchemeOptions>,
@@ -47,7 +46,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
             {
-                builder.DisplayName = "AzureAD";
+                builder.DisplayName = settings.DisplayName;
                 builder.HandlerType = typeof(PolicySchemeHandler);
             });
 
@@ -60,7 +59,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, AzureADOptions options)
         {
-            // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
             if (!string.Equals(name, AzureADDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
@@ -74,16 +72,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
             options.Instance = "https://login.microsoftonline.com/";
-            options.Domain = loginSettings.Domain;
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(loginSettings.AppSecret))
-                    options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD).Unprotect(loginSettings.AppSecret);
-            }
-            catch
-            {
-                _logger.LogError("The AzureAD secret keycould not be decrypted. It may have been encrypted using a different key.");
-            }
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;

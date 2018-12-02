@@ -21,7 +21,6 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
     public class AzureADSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureADSettings>
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAzureADService _clientService;
@@ -38,7 +37,6 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
-            _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
@@ -49,25 +47,18 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         public override async Task<IDisplayResult> EditAsync(AzureADSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageAuthentication))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
                 return null;
             }
 
             return Initialize<AzureADSettingsViewModel>("AzureADSettings_Edit", model =>
             {
-                var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD);
+                model.DisplayName = settings.DisplayName;
                 model.AppId = settings.AppId;
                 model.TenantId = settings.TenantId;
-                model.Domain = settings.Domain;
-                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-                {
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
-                }
                 if (settings.CallbackPath.HasValue)
                     model.CallbackPath = settings.CallbackPath;
-
-
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
 
@@ -77,7 +68,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             {
                 var user = _httpContextAccessor.HttpContext?.User;
 
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageAuthentication))
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
                 {
                     return null;
                 }
@@ -87,13 +78,10 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.AAD);
+                    settings.DisplayName = model.DisplayName;
                     settings.AppId = model.AppId;
                     settings.TenantId = model.TenantId;
-                    settings.AppSecret = string.IsNullOrWhiteSpace(model.AppSecret) ? null : protector.Protect(model.AppSecret);
                     settings.CallbackPath = model.CallbackPath;
-                    settings.Domain = model.Domain;
-
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }

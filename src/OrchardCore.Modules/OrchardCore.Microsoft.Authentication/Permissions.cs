@@ -5,12 +5,12 @@ namespace OrchardCore.Microsoft.Authentication
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAuthentication
-            = new Permission(nameof(ManageAuthentication), "View and edit Authentication Providers.");
+        public static readonly Permission ManageMicrosoftAuthentication
+            = new Permission(nameof(ManageMicrosoftAuthentication), "View and edit Authentication Providers.");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            yield return ManageAuthentication;
+            yield return ManageMicrosoftAuthentication;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +20,7 @@ namespace OrchardCore.Microsoft.Authentication
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageAuthentication
+                    ManageMicrosoftAuthentication
                 }
             };
         }

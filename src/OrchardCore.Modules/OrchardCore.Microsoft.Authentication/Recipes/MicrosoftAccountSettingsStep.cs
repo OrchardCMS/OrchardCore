@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 //using static OrchardCore.Microsoft.Authentication.Settings.AzureADAuthenticationSettings;
@@ -13,31 +14,34 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// </summary>
     public class MicrosoftAccountSettingsStep : IRecipeStepHandler
     {
-        private readonly IMicrosoftAccountService _loginService;
+        private readonly IMicrosoftAccountService _microsoftAccountService;
 
-        public MicrosoftAccountSettingsStep(IMicrosoftAccountService loginService)
+        public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
         {
-            _loginService = loginService;
+            _microsoftAccountService = microsoftAccountService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "MicrosoftAuthenticationSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(MicrosoftAccountSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var model = context.Step.ToObject<FacebookLoginSettingsStepModel>();
+            var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
 
-            var settings = await _loginService.GetSettingsAsync();
+            var settings = await _microsoftAccountService.GetSettingsAsync();
+            settings.AppId = model.AppId;
+            settings.AppSecret = model.AppSecret;
             settings.CallbackPath = model.CallbackPath;
-
-            await _loginService.UpdateSettingsAsync(settings);
+            await _microsoftAccountService.UpdateSettingsAsync(settings);
         }
     }
 
-    public class FacebookLoginSettingsStepModel
+    public class MicrosoftAccountSettingsStepModel
     {
+        public string AppId { get; set; }
+        public string AppSecret { get; set; }
         public string CallbackPath { get; set; }
     }
 }

@@ -22,10 +22,6 @@ namespace OrchardCore.Microsoft.Authentication
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-
-            //services.AddSingleton<IAzureADAuthenticationService, AzureADAuthenticationService>();
-            //services.AddScoped<IDisplayDriver<ISite>, AzureADAuthenticationSettingsDisplayDriver>();
         }
     }
 
@@ -43,7 +39,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureNamedOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
@@ -69,7 +65,7 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
 
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<CookieAuthenticationOptions>, CookieOptionsConfiguration>(),
+                //ServiceDescriptor.Transient<IConfigureOptions<CookieAuthenticationOptions>, CookieOptionsConfiguration>(),
 
 
 

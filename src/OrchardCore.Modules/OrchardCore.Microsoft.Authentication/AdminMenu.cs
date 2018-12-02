@@ -8,35 +8,6 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication
 {
-    public class AdminMenu : INavigationProvider
-    {
-        private readonly ShellDescriptor _shellDescriptor;
-
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
-        {
-            T = localizer;
-            _shellDescriptor = shellDescriptor;
-        }
-
-        public IStringLocalizer T { get; set; }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Authentication"], "1", settings =>
-                        settings.AddClass("microsoft").Id("microsoft")
-                                .Permission(Permissions.ManageAuthentication)
-                                .LocalNav())
-                        );
-            }
-            return Task.CompletedTask;
-        }
-    }
-
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
@@ -56,15 +27,14 @@ namespace OrchardCore.Microsoft.Authentication
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Authentication"], "1", settings =>
-                        settings.Add(T["Microsoft Account"], "10", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount})
-                                .Permission(Permissions.ManageAuthentication)
-                                .LocalNav())
-                    ));
+                builder.Add(T["Microsoft Authentication"], "15", settings => settings
+                        .AddClass("microsoft").Id("microsoft")
+                        .Add(T["Microsoft Account"], "10", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav())
+                    );
             }
-
             return Task.CompletedTask;
         }
     }
@@ -88,15 +58,14 @@ namespace OrchardCore.Microsoft.Authentication
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Authentication"], "1", settings =>
-                        settings.Add(T["Azure Active Directory"], "20", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
-                                .Permission(Permissions.ManageAuthentication)
-                                .LocalNav())
-                    ));
+                builder.Add(T["Microsoft Authentication"], "15", settings => settings
+                        .AddClass("microsoft").Id("microsoft")
+                        .Add(T["Azure Active Directory"], "20", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav())
+                    );
             }
-
             return Task.CompletedTask;
         }
     }

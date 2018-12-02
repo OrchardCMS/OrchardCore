@@ -53,14 +53,14 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
+            if (string.IsNullOrWhiteSpace(settings.DisplayName))
+            {
+                yield return new ValidationResult("DisplayName is required", new string[] { nameof(settings.DisplayName) });
+            }
+
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
                 yield return new ValidationResult("AppId is required", new string[] { nameof(settings.AppId) });
-            }
-
-            if (String.IsNullOrWhiteSpace(settings.Domain))
-            {
-                yield return new ValidationResult("Please setup the domain of your AzureAD tenant", new string[] { nameof(settings.Domain) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.TenantId))
