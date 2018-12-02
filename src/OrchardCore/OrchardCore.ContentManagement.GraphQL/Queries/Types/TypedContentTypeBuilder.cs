@@ -34,17 +34,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (serviceProvider.GetService(queryGraphType) is IObjectGraphType queryGraphTypeResolved)
                 {
-                    contentItemType.Field(
-                        queryGraphTypeResolved.GetType(),
-                        partName.ToFieldName(),
-                        description: queryGraphTypeResolved.Description,
-                        resolve: context =>
+                    if (part.ShouldCollapseFieldsToParent())
+                    {
+                        foreach (var field in queryGraphTypeResolved.Fields)
                         {
-                            var nameToResolve = partName;
-                            var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                            contentItemType.AddField(field);
+                        }
+                    }
+                    else
+                    {
+                        contentItemType.Field(
+                            queryGraphTypeResolved.GetType(),
+                            partName.ToFieldName(),
+                            description: queryGraphTypeResolved.Description,
+                            resolve: context =>
+                            {
+                                var nameToResolve = partName;
+                                var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
-                            return context.Source.Get(typeToResolve, nameToResolve);
-                        });
+                                return context.Source.Get(typeToResolve, nameToResolve);
+                            });
+                    }
                 }
 
                 var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);

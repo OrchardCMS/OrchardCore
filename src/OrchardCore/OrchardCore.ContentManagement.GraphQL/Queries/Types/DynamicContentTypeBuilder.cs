@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -38,8 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 // When the part has the same name as the content type, it is the main part for
                 // the content type's fields so we collapse them into the parent type.
-                if (part.ContentTypeDefinition.Name == part.PartDefinition.Name)
-                {
+                if (part.ShouldCollapseFieldsToParent()) {
                     foreach (var field in part.PartDefinition.Fields)
                     {
                         foreach (var fieldProvider in contentFieldProviders)
