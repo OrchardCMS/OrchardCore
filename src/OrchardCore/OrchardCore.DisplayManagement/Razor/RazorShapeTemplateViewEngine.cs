@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -147,7 +148,12 @@ namespace OrchardCore.DisplayManagement.Razor
         private ActionContext GetActionContext()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            var shellContext = httpContext.Features.Get<ShellContext>();
+
+            var routeData = new RouteData();
+            routeData.Routers.Add(shellContext.Router ?? new RouteCollection());
+
+            return new ActionContext(httpContext, routeData, new ActionDescriptor());
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

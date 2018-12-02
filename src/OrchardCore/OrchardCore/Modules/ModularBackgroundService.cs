@@ -313,6 +313,7 @@ namespace OrchardCore.Modules
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
             var context = new DefaultHttpContext();
+            context.Features.Set<ShellContext>(shell);
             context.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
             context.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             context.Items["IsBackground"] = true;

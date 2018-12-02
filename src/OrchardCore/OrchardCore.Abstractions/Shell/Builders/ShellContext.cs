@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders.Models;
@@ -36,6 +37,11 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// The HTTP Request delegate built for this shell.
         /// </summary>
         public RequestDelegate Pipeline { get; set; }
+
+        /// <summary>
+        /// The 'IRouter' used by the tenant pipeline.
+        /// </summary>
+        public IRouter Router { get; set; }
 
         public IServiceScope CreateScope()
         {
@@ -164,6 +170,7 @@ namespace OrchardCore.Hosting.ShellBuilders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
+            Router = null;
 
             _disposed = true;
         }
