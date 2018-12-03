@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Razor.TagHelpers
 @using OrchardCore.ContentManagement
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
@@ -18,6 +19,14 @@
             widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
             widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
             widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
+            if (!string.IsNullOrWhiteSpace(flowMetadata.Classes))
+            {
+                widgetContent.Classes.Add(flowMetadata.Classes);
+            }
+            if (!string.IsNullOrWhiteSpace(flowMetadata.Styles))
+            {
+                widgetContent.Attributes.Add("style", flowMetadata.Styles);
+            }
         }
 
         @await DisplayAsync(widgetContent)
