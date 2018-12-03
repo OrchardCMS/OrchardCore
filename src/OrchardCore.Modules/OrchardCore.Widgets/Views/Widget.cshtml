@@ -15,7 +15,7 @@
     }
 }
 
-<article class="@String.Join(" ", Model.Classes.ToArray())" style="@styles">
+<div class="@String.Join(" ", Model.Classes.ToArray())" style="@styles">
     @if (Model.Header != null || Model.Meta != null)
     {
     <header>
@@ -35,4 +35,4 @@
         @await DisplayAsync(Model.Footer)
     </footer>
     }
-</article>
+</div>
