@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <!-- Special case - this property is used by a DotNetCliToolManagement -->
-    <DotNetXunitVersion>2.4.1</DotNetXunitVersion>
+    <DotNetXunitVersion>2.3.1</DotNetXunitVersion>
   </PropertyGroup>
   
   <ItemGroup>
@@ -13,7 +13,7 @@
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9480" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-1348" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-1294" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
