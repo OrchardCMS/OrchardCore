@@ -75,7 +75,7 @@ gulp.task("watch", function () {
     });
 });
 
-gulp.task( 'default', [ 'build' ] )
+gulp.task( 'default',  gulp.series([ 'build' ]) )
 
 gulp.task('help', function() {
     util.log(`
