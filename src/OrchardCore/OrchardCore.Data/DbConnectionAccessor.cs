@@ -1,24 +1,26 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 using OrchardCore.Data.Abstractions;
+using YesSql;
 
 namespace OrchardCore.Data
 {
     public class DbConnectionAccessor : IDbConnectionAccessor
     {
-        private readonly YesSql.ISession _session;
+        private readonly IStore _store;
 
-        public DbConnectionAccessor(YesSql.ISession session)
+        public DbConnectionAccessor(IStore store)
         {
-            _session = session ?? throw new ArgumentNullException(nameof(session));
+            _store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
         public async Task<IDbConnection> GetConnectionAsync()
         {
-            var transaction = await _session.DemandAsync();
-
-            return transaction.Connection;
+            var connection = _store.Configuration.ConnectionFactory.CreateConnection() as DbConnection;
+            await connection?.OpenAsync();
+            return connection;
         }
     }
 }
