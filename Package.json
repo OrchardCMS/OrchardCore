@@ -27,6 +27,7 @@
     "typescript": "3.2.1"
   },
   "dependencies": {
-    "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL"
+    "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL",
+    "orchardcore.workflows": "file:src/OrchardCore.Modules/OrchardCore.Workflows"
   }
 }
