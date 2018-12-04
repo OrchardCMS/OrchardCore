@@ -19,7 +19,7 @@ namespace OrchardCore.Tests.Extensions
         private static IApplicationContext ApplicationContext
             = new ModularApplicationContext(HostingEnvironment, new List<IModuleNamesProvider>()
             {
-                new AssemblyAttributeModuleNamesProvider(HostingEnvironment)
+                new ModuleNamesProvider()
             });
 
         private static IFeaturesProvider ModuleFeatureProvider =
@@ -60,6 +60,28 @@ namespace OrchardCore.Tests.Extensions
                 ThemeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
+        }
+
+        private class ModuleNamesProvider : IModuleNamesProvider
+        {
+            private readonly string[] _moduleNames;
+
+            public ModuleNamesProvider()
+            {
+                _moduleNames = new[]
+                {
+                    "BaseThemeSample",
+                    "BaseThemeSample2",
+                    "DerivedThemeSample",
+                    "DerivedThemeSample2",
+                    "ModuleSample"
+                };
+            }
+
+            public IEnumerable<string> GetModuleNames()
+            {
+                return _moduleNames;
+            }
         }
 
         [Fact]

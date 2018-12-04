@@ -14,14 +14,16 @@
 <fieldset class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input">
-        <label class="custom-control-label" asp-for="Required">@T["Check if the field is required."]</label>
+        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint">@T["— Whether to ensure at least one element is selected."]</span>
     </div>
 </fieldset>
 
 <fieldset class="form-group">
     <div class="custom-control custom-checkbox">
         <input asp-for="Multiple" type="checkbox" class="custom-control-input">
-        <label class="custom-control-label" asp-for="Multiple">@T["Check to allow the user to select multiple content items."]</label>
+        <label class="custom-control-label" asp-for="Multiple">@T["Allow multiple"]</label>
+        <span class="hint">@T["— Whether to allow multiple elements to be selected."]</span>
     </div>
 </fieldset>
 

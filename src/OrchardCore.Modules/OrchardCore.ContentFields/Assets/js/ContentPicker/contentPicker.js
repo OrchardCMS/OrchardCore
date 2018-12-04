@@ -1,4 +1,4 @@
-function initializeContentPickerFieldEditor(elementId, selectedItems, contentItemIds, tenantPath, partName, fieldName) {
+function initializeContentPickerFieldEditor(elementId, selectedItems, tenantPath, partName, fieldName, multiple) {
 
     var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect.default);
 
@@ -6,9 +6,24 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
         el: '#' + elementId,
         components: { 'vue-multiselect': vueMultiselect },
         data: {
-            value: selectedItems,
+            value: null,
+            arrayOfItems: selectedItems,
             options: [],
-            selectedIds: contentItemIds
+        },
+        computed: {
+            selectedIds: function () {
+                return this.arrayOfItems.map(function (x) { return x.contentItemId }).join(',');
+            },
+            isDisabled: function () {
+                return this.arrayOfItems.length > 0 && !multiple;
+            }
+        },
+        watch: {
+            selectedIds: function () {
+                // We add a delay to allow for the <input> to get the actual value
+                // before the form is submitted
+                setTimeout(function () { $(document).trigger('contentpreview:render') }, 100);
+            }
         },
         created: function () {
             var self = this;
@@ -18,7 +33,7 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
             asyncFind: function (query) {
                 var self = this;
                 self.isLoading = true;
-                var searchUrl = tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName;                
+                var searchUrl = tenantPath + '/ContentPicker?part=' + partName + '&field=' + fieldName;
                 if (query) {
                     searchUrl += '&query=' + query;
                 }
@@ -29,15 +44,19 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, contentIte
                     })
                 });
             },
-            onInput: function (value) {
+            onSelect: function (selectedOption, id) {
                 var self = this;
-                if (Array.isArray(value)) {
-                    self.selectedIds = value.map(function (x) { return x.contentItemId }).join(',');
-                } else if (value) {
-                    self.selectedIds = value.contentItemId;
-                } else {
-                    self.selectedIds = '';
+
+                for (i = 0; i < self.arrayOfItems.length; i++) {
+                    if (self.arrayOfItems[i].contentItemId === selectedOption.contentItemId) {
+                        return;
+                    }
                 }
+
+                self.arrayOfItems.push(selectedOption);
+            },
+            remove: function (item) {
+                this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1)
             }
         }
     })

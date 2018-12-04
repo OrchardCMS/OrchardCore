@@ -122,18 +122,6 @@ namespace OrchardCore.ContentTypes.Services
 
             _contentDefinitionManager.DeleteTypeDefinition(name);
 
-            // TODO: Create a scheduled job to delete the content items
-            if (deleteContent)
-            {
-                var contentItems = _session
-                    .Query<ContentItem, ContentItemIndex>(x => x.ContentType == name)
-                    .ListAsync().GetAwaiter().GetResult();
-
-                foreach (var contentItem in contentItems)
-                {
-                    _session.Delete(contentItem);
-                }
-            }
             _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeRemoved(new ContentTypeRemovedContext { ContentTypeDefinition = typeDefinition }), Logger);
         }
 

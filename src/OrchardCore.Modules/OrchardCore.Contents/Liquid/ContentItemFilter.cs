@@ -15,7 +15,7 @@ namespace OrchardCore.Contents.Liquid
         {
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
-                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
+                throw new ArgumentException("Services missing while invoking 'content_item_id'");
             }
 
             var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();

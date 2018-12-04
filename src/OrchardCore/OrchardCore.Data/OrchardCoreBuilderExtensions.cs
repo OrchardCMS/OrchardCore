@@ -1,9 +1,14 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -18,6 +23,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
+        public static IApplicationBuilder UseDataAccess(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<CommitSessionMiddleware>();
+        }
+
         /// <summary>
         /// Adds tenant level data access services.
         /// </summary>
@@ -101,11 +111,60 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
+                    var httpContext = sp.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
+
+                    if (httpContext != null)
+                    {
+                        httpContext.Items[typeof(YesSql.ISession)] = session;
+                    }
+
                     return session;
+                });
+
+                services.AddScoped<IDbConnectionAccessor>(sp =>
+                {
+                    var session = sp.GetService<YesSql.ISession>();
+
+                    if (session == null)
+                    {
+                        return null;
+                    }
+
+                    return new DbConnectionAccessor(session);                   
                 });
             });
 
             return builder;
+        }
+    }
+
+    public class CommitSessionMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public CommitSessionMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext httpContext)
+        {
+            await _next.Invoke(httpContext);
+
+            // Don't resolve to prevent instantiating one in case of static sites
+            var session = httpContext.Items[typeof(YesSql.ISession)] as YesSql.ISession;
+
+            if (session != null)
+            {
+                try
+                {
+                    await session.CommitAsync();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // The session might already be disposed by the ServiceScope
+                }
+            }
         }
     }
 }
