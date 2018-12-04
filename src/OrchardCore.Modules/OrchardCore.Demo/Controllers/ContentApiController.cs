@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Demo.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ContentApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -28,7 +29,6 @@ namespace OrchardCore.Demo.Controllers
             return new ObjectResult(contentItem);
         }
 
-        [Authorize]
         public async Task<IActionResult> GetAuthorizedById(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
@@ -52,16 +52,15 @@ namespace OrchardCore.Demo.Controllers
         }
 
         [Authorize]
-        [IgnoreAntiforgeryToken]
         [HttpPost]
-        public async Task<IActionResult> AddContent([FromBody]ContentItem contentItem)
+        public async Task<IActionResult> AddContent(ContentItem contentItem)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {
                 return Unauthorized();
             }
 
-            _contentManager.Create(contentItem);
+            await _contentManager.CreateAsync(contentItem);
 
             return new ObjectResult(contentItem);
         }

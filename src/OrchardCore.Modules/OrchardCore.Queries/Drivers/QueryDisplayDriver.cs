@@ -23,16 +23,18 @@ namespace OrchardCore.Queries.Drivers
         public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
             return Combine(
-                Shape("Query_Fields_SummaryAdmin", model =>
+                Dynamic("Query_Fields_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
-                Shape("Query_Buttons_SummaryAdmin", model =>
+                Dynamic("Query_Buttons_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Actions:5")
             );
@@ -41,16 +43,18 @@ namespace OrchardCore.Queries.Drivers
         public override IDisplayResult Edit(Query query, IUpdateModel updater)
         {
             return Combine(
-                Shape<EditQueryViewModel>("Query_Fields_Edit", model =>
+                Initialize<EditQueryViewModel>("Query_Fields_Edit", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Content:1"),
-                Shape<EditQueryViewModel>("Query_Fields_Buttons", model =>
+                Initialize<EditQueryViewModel>("Query_Fields_Buttons", model =>
                 {
                     model.Name = query.Name;
                     model.Source = query.Source;
+                    model.Schema = query.Schema;
                     model.Query = query;
                 }).Location("Actions:5")
             );
@@ -58,7 +62,7 @@ namespace OrchardCore.Queries.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(Query model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source);
+            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
             if (String.IsNullOrEmpty(model.Name))
             {

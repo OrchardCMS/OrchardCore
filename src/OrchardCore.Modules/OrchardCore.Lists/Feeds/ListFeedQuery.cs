@@ -30,7 +30,7 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if(!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
+            if (!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
             {
                 return null;
             }
@@ -42,26 +42,26 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if (!context.Updater.TryUpdateModelAsync(model).GetAwaiter().GetResult() || model.ContentItemId == null)
+            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
             {
                 return;
             }
 
-            var contentItem = _contentManager.GetAsync(model.ContentItemId).GetAwaiter().GetResult();
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId);
 
             if (contentItem == null)
             {
                 return;
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
-            var bodyAspect = _contentManager.PopulateAspect<BodyAspect>(contentItem);
+            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+            var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
             var routes = contentItemMetadata.DisplayRouteValues;
 
             if (context.Format == "rss")
             {
                 var link = new XElement("link");
-                context.Response.Element.SetElementValue("title", contentItemMetadata.DisplayText);
+                context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
                 if (bodyAspect.Body != null)
@@ -79,7 +79,7 @@ namespace OrchardCore.Lists.Feeds
             }
             else
             {
-                context.Builder.AddProperty(context, null, "title", contentItemMetadata.DisplayText);
+                context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
 
                 if (bodyAspect.Body != null)
                 {

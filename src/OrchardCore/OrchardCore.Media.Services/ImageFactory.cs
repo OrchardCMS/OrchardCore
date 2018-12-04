@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Media.Models;
@@ -52,15 +53,15 @@ namespace OrchardCore.Media
             _contentManager = contentManager;
         }
 
-        public IContent CreateMedia(Stream stream, string path, string mimeType, long length, string contentType)
+        public async Task<IContent> CreateMediaAsync(Stream stream, string path, string mimeType, long length, string contentType)
         {
             if (String.IsNullOrEmpty(contentType))
             {
                 contentType = "Image";
             }
 
-            var media = _contentManager.New(contentType);
-            
+            var media = await _contentManager.NewAsync(contentType);
+
             media.Alter<ImageMediaPart>(imagePart =>
             {
                 imagePart.Length = length;

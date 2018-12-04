@@ -6,8 +6,7 @@ Any extension can contain an optional `placement.json` file providing custom pla
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of 
-placement rules.
+A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
@@ -21,13 +20,13 @@ In the following example, we describe the placement for the `TextField` and `Par
 A placement rule contains two sets of data:
 
 - Filters
-  - Defines what specific shapes are targetted.
+  - Defines what specific shapes are targeted.
 - Placement information
   - The placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like 'TextField'.
+- Their original type, which is the property name of the placement rule, like `TextField`.
 - `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 
@@ -38,13 +37,12 @@ Placement information consists of:
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
 
-
 ```json
 {
-  "TextField": [ 
+  "TextField": [
     {
 		"display-type": "Detail",
-		"differentiator": "Article.MyTextField",
+		"differentiator": "Article-MyTextField",
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
@@ -57,12 +55,16 @@ Placement information consists of:
 
 ### Placing Fields
 
-Fields have a custom differentiator as their shape is used in many places. It is built using the Part it's contained
+Fields have a custom differentiator as their shape is used in many places. It is built using the `Part` it's contained
 in, and the name of the field. For instance, if a field named `MyField` would be added to an `Article` content type,
 its differentiator would be `Article.MyField`. If a field named `City` was added to an `Address` part then its differentiator would
 be `Address.City`.
 
 ## Shapes
+
+### What is a shape?
+
+Everything you need to know about Shapes is in [this video](https://youtu.be/gKLjtCIs4GU).
 
 ### Tag Helpers
 
@@ -93,9 +95,9 @@ Metadata tag helper example:
 
 ### Date Time shapes
 
-#### DateTime
+#### `DateTime`
 
-Renders a Date and Time value using the timezone of the request.
+Renders a `Date` and `Time` value using the timezone of the request.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
@@ -108,9 +110,9 @@ Tag helper example:
 <datetime utc="@contentItem.CreatedUtc" />
 ```
 
-#### TimeSpan
+#### `TimeSpan`
 
-Renders a relative textual representation of a Date and Time interval.
+Renders a relative textual representation of a `Date` and `Time` interval.
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
@@ -123,6 +125,12 @@ Tag helper example:
 <timespan utc="@contentItem.CreatedUtc" />
 ```
 
-```
+Result:
+
+```text
 3 days ago
 ```
+
+## Shape differentiators
+
+You can find information about shape differenciators in the [Templates documentation](../../OrchardCore.Modules/OrchardCore.Templates/README/#content-field-differentiator)

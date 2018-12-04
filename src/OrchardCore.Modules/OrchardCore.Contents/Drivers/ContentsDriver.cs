@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -20,11 +21,11 @@ namespace OrchardCore.Contents.Drivers
         public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             return Combine(
-                Shape("ContentsMetadata", model).Location("Detail", "Content:before"),
-                Shape("Contents_SummaryAdmin__Tags", model).Location("SummaryAdmin", "Meta:10"),
-                Shape("Contents_SummaryAdmin__Meta", model).Location("SummaryAdmin", "Meta:20"),
-                Shape("Contents_SummaryAdmin__Button__Edit", model).Location("SummaryAdmin", "Actions:10"),
-                Shape("Contents_SummaryAdmin__Button__Actions", model).Location("SummaryAdmin", "Actions:20")
+                Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before"),
+                Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:10"),
+                Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
+                Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),
+                Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:20")
             );
         }
 
@@ -39,12 +40,12 @@ namespace OrchardCore.Contents.Drivers
 
             var results = new List<IDisplayResult>
             {
-                Shape("Content_PublishButton").Location("Actions:10"),
+                Dynamic("Content_PublishButton").Location("Actions:10"),
             };
 
             if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
-                results.Add(Shape("Content_SaveDraftButton").Location("Actions:20"));
+                results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20"));
             }
 
             return Combine(results.ToArray());

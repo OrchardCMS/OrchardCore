@@ -10,6 +10,8 @@ var root = {
 
 var bus = new Vue();
 
+
+
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
 
     if (initialized) {
@@ -35,23 +37,86 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 data: {
                     selectedFolder: root,
                     mediaItems: [],
-                    selectedMedia: null
+                    selectedMedias: [],
+                    errors: [],
+                    dragDropThumbnail: new Image(),
+                    smallThumbs: false,
+                    gridView: false,
+                    mediaFilter: '',
+                    sortBy: '',
+                    sortAsc: true
                 },
                 created: function () {
                     var self = this;
+
+                    self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
+
+                    bus.$on('folderSelected', function (folder) {
+                        self.selectedFolder = folder;
+                    });
 
                     bus.$on('folderDeleted', function () {
                         self.selectRoot();
                     });
 
                     bus.$on('folderAdded', function (folder) {
-                        self.selectFolder(folder);
+                        self.selectedFolder = folder;
                         folder.selected = true;
                     });
 
                     bus.$on('beforeFolderAdded', function (folder) {
                         self.loadFolder(folder);
                     });
+
+                    bus.$on('mediaListMoved', function (errorInfo) {                        
+                        self.loadFolder(self.selectedFolder);
+                        if (errorInfo) {
+                            self.errors.push(errorInfo);                          
+                        }
+                    });
+
+                    bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
+                        var media = self.mediaItems.filter(function (item) {                            
+                            return item.mediaPath === oldPath;
+                        })[0];
+                        
+                        media.mediaPath = newPath;
+                        media.name = newName;
+                    });
+
+                    bus.$on('createFolderRequested', function (media) {
+                        self.createFolder();                        
+                    });
+
+                    bus.$on('deleteFolderRequested', function (media) {
+                        self.deleteFolder();
+                    });
+
+                    // common handlers for actions in both grid and table view.
+                    bus.$on('sortChangeRequested', function (newSort) {
+                        self.changeSort(newSort);
+                    });
+
+                    bus.$on('mediaToggleRequested', function (media) {
+                        self.toggleSelectionOfMedia(media);
+                    });
+
+                    bus.$on('renameMediaRequested', function (media) {
+                        self.renameMedia(media);
+                    });
+
+                    bus.$on('deleteMediaRequested', function (media) {
+                        self.deleteMediaItem(media);
+                    });
+
+                    bus.$on('mediaDragStartRequested', function (media, e) {
+                        self.handleDragStart(media, e);
+                    });
+
+
+                    
+
+                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
                     isHome: function () {
@@ -59,34 +124,95 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     parents: function () {
                         var p = [];
-                        parent = this.selectedFolder;
-                        while (parent && parent != root) {
-                            p.unshift(parent);
-                            parent = parent.parent;
+                        parentFolder = this.selectedFolder;
+                        while (parentFolder && parentFolder.path != '') {
+                            p.unshift(parentFolder);
+                            parentFolder = parentFolder.parent;                            
                         }
                         return p;
                     },
                     root: function () {
                         return root;
+                    },
+                    filteredMediaItems: function () {
+                        var self = this;
+
+                        self.selectedMedias = [];
+                        
+                        var filtered = self.mediaItems.filter(function (item) {
+                            return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
+                        });
+
+                        switch (self.sortBy) {
+                            case 'size':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.size - b.size : b.size - a.size;
+                                });
+                                break;
+                            case 'mime':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
+                                });
+                                break;
+                            default:
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+                                });
+                        }                        
+
+                        return filtered;
+                    },
+                    hiddenCount: function () {
+                        var result = 0;
+                        result = this.mediaItems.length - this.filteredMediaItems.length;
+                        return result;
+                    },
+                    thumbSize: function () {
+                        return this.smallThumbs ? 120 : 240 ;
+                    },
+                    currentPrefs: {
+                        get: function () {
+                            return {
+                                smallThumbs: this.smallThumbs,
+                                selectedFolder: this.selectedFolder,
+                                gridView: this.gridView
+                            }
+                        },
+                        set: function (newPrefs) {
+                            if (!newPrefs) {
+                                return;
+                            }
+
+                            this.smallThumbs = newPrefs.smallThumbs;
+                            this.selectedFolder = newPrefs.selectedFolder;
+                            this.gridView = newPrefs.gridView;
+                        }
                     }
                 },
+                watch: {
+                    currentPrefs: function (newPrefs) {
+                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+                    },
+                    selectedFolder: function (newFolder) {
+                        this.mediaFilter = '';
+                        this.selectedFolder = newFolder;
+                        this.loadFolder(newFolder);
+                    }
+               
+                },
                 mounted: function () {
-                    this.selectRoot();
+                    this.$refs.rootFolder.toggle();
                 },
                 methods: {
-                    selectFolder: function (folder) {
-                        this.selectedFolder = folder;
-                        this.loadFolder(folder);
-                        bus.$emit('folderSelected', folder);
-                    },
                     uploadUrl: function () {
                         return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
                     },
                     selectRoot: function () {
-                        this.selectFolder(this.root);
+                        this.selectedFolder = this.root;
                     },
                     loadFolder: function (folder) {
-                        this.selectedMedia = null;
+                        this.errors = [];
+                        this.selectedMedias = [];
                         var self = this;
                         $.ajax({
                             url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
@@ -96,14 +222,46 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     item.open = false;
                                 });
                                 self.mediaItems = data;
+                                self.selectedMedias = [];
+                                self.sortBy = '';
+                                self.sortAsc = true;
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                console.log('error loading folder:' + folder.path);                                
+                                self.selectRoot();                
                             }
                         });
                     },
-                    selectMedia: function (media) {
-                        this.selectedMedia = media;
+                    selectAll: function () {
+                        this.selectedMedias = [];
+                        for (var i = 0; i < this.filteredMediaItems.length; i++) {
+                            this.selectedMedias.push(this.filteredMediaItems[i]);
+                        }
+                    },
+                    unSelectAll: function () {
+                        this.selectedMedias = [];
+                    },
+                    invertSelection: function () {
+                        var temp = [];
+                        for (var i = 0; i < this.filteredMediaItems.length; i++) {
+                            if (this.isMediaSelected(this.filteredMediaItems[i]) == false) {
+                                temp.push(this.filteredMediaItems[i]);
+                            }
+                        }
+                        this.selectedMedias = temp;
+                    },
+                    toggleSelectionOfMedia: function (media) {
+                        if (this.isMediaSelected(media) == true) {
+                            this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
+                        } else {
+                            this.selectedMedias.push(media);
+                        }
+                    },
+                    isMediaSelected: function (media) {
+                        var result = this.selectedMedias.some(function (element, index, array) {
+                            return element.url.toLowerCase() === media.url.toLowerCase();
+                        });
+                        return result;
                     },
                     deleteFolder: function () {
                         var folder = this.selectedFolder
@@ -134,12 +292,59 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     createFolder: function () {
                         $('#createFolderModal-errors').empty();
                         $('#createFolderModal').modal('show');
-                        $('.modal-body input').val('').focus();
+                        $('#createFolderModal .modal-body input').val('').focus();
                     },
-                    deleteMedia: function () {
-                        var media = this.selectedMedia;
+                    renameMedia: function (media) {
+                        $('#renameMediaModal-errors').empty();
+                        $('#renameMediaModal').modal('show');                       
+                        $('#old-item-name').val(media.name);
+                        $('#renameMediaModal .modal-body input').val(media.name).focus();
+                    },
+                    selectAndDeleteMedia: function (media) {
+                        this.deleteMedia();
+                    },
+                    deleteMediaList: function () {
+                        var mediaList = this.selectedMedias;
                         var self = this;
 
+                        if (mediaList.length < 1) {
+                            return;
+                        }
+
+                        if (!confirm($('#deleteMediaMessage').val())) {
+                            return;
+                        }
+
+                        var paths = [];
+                        for (var i = 0; i < mediaList.length; i++) {
+                            paths.push(mediaList[i].mediaPath);
+                        }
+
+                        $.ajax({
+                            url: $('#deleteMediaListUrl').val(),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                                paths: paths
+                            },
+                            success: function (data) {
+                                for (var i = 0; i < self.selectedMedias.length; i++) {
+                                    var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i])
+                                    if (index > -1) {
+                                        self.mediaItems.splice(index, 1);
+                                        bus.$emit('mediaDeleted', self.selectedMedias[i]);
+                                    }
+                                }
+                                self.selectedMedias = [];
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
+                            }
+                        });
+                    },
+                    deleteMediaItem: function (media) {
+
+                        var self = this;
                         if (!media) {
                             return;
                         }
@@ -149,7 +354,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
 
                         $.ajax({
-                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
+                            url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),
                             method: 'POST',
                             data: {
                                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
@@ -160,12 +365,49 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     self.mediaItems.splice(index, 1)
                                     bus.$emit('mediaDeleted', media);
                                 }
+                                //self.selectedMedia = null;
                             },
                             error: function (error) {
                                 console.error(error.responseText);
                             }
                         });
                     },
+                    handleDragStart: function (media, e) {
+                        // first part of move media to folder:
+                        // prepare the data that will be handled by the folder component on drop event
+                        var mediaNames = [];
+                        this.selectedMedias.forEach(function (item) {
+                            mediaNames.push(item.name);
+                        });
+
+                        // in case the user drags an unselected item, we select it first
+                        if (this.isMediaSelected(media) == false) {
+                            mediaNames.push(media.name);
+                            this.selectedMedias.push(media);
+                        }
+
+                        e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
+                        e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
+                        e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
+                        e.dataTransfer.effectAllowed = 'move';                        
+                    },
+                    handleScrollWhileDrag: function (e) {
+                        if (e.clientY < 150) {                            
+                            window.scrollBy(0, -10);
+                        }
+
+                        if (e.clientY > window.innerHeight - 100) {                            
+                            window.scrollBy(0, 10);
+                        }
+                    },
+                    changeSort: function (newSort) {
+                        if (this.sortBy == newSort) {
+                            this.sortAsc = !this.sortAsc;
+                        } else {
+                            this.sortAsc = true;
+                            this.sortBy = newSort;
+                        }                        
+                    }
                 }
             });
 
@@ -180,6 +422,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             $('#modalFooterOk').on('click', function (e) {
                 var name = $('#create-folder-name').val();
 
+                if (name === "") {
+                    return;
+                }
+
                 $.ajax({
                     url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
                     method: 'POST',
@@ -192,7 +438,47 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
+                    }
+                });
+            });
+
+            $('#renameMediaModalFooterOk').on('click', function (e) {
+                var newName = $('#new-item-name').val();
+                var oldName = $('#old-item-name').val();
+
+                if (newName === "") {
+                    return;
+                }
+
+                var currentFolder = mediaApp.selectedFolder.path + "/" ;
+                if (currentFolder === "/") {
+                    currentFolder = "";
+                }
+
+                var newPath = currentFolder + newName;
+                var oldPath = currentFolder + oldName;
+
+                if (newPath.toLowerCase() === oldPath.toLowerCase()) {
+                    $('#renameMediaModal').modal('hide');
+                    return;
+                }
+
+                $.ajax({
+                    url: $('#renameMediaUrl').val() + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
+                    method: 'POST',
+                    data: {
+                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                    },
+                    success: function (data) {
+                        $('#renameMediaModal').modal('hide');
+                        bus.$emit('mediaRenamed', newName, newPath, oldPath);
+                    },
+                    error: function (error) {
+                        $('#renameMediaModal-errors').empty();
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });
@@ -209,92 +495,3 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         }
     });
 }
-
-// <folder> component
-Vue.component('folder', {
-    template: '\
-        <li :class="{selected: selected}">\
-            <div>\
-                <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>\
-                <a href="javascript:;" v-on:click="select">\
-                    <i class="folder fa fa-folder"></i>\
-                    {{model.name}}\
-                </a>\
-            </div>\
-            <ol v-show="open">\
-                <folder v-for="folder in children"\
-                        :key="folder.path"\
-                        :model="folder">\
-                </folder>\
-            </ol>\
-        </li>\
-        ',
-    props: {
-        model: Object
-    },
-    data: function () {
-        return {
-            open: false,
-            children: null, // not initialized state (for lazy-loading)
-            parent: null,
-            selected: false
-        }
-    },
-    computed: {
-        empty: function () {
-            return this.children && this.children.length == 0;
-        }
-    },
-    created: function () {
-        var self = this;
-        bus.$on('deleteFolder', function (folder) {
-            if (self.children) {
-                var index = self.children && self.children.indexOf(folder)
-                if (index > -1) {
-                    self.children.splice(index, 1)
-                    bus.$emit('folderDeleted');
-                }
-            }
-        });
-
-        bus.$on('addFolder', function (target, folder) {
-            if (self.model == target) {
-
-                bus.$emit('beforeFolderAdded', self.model);
-
-                self.children.push(folder);
-                folder.parent = self.model;
-                bus.$emit('folderAdded', folder);
-            }
-        });
-
-        bus.$on('folderSelected', function (folder) {
-            self.selected = self.model == folder;
-        });
-    },
-    methods: {
-        toggle: function () {
-            this.open = !this.open
-            var self = this;
-            if (this.open && !this.children) {
-                $.ajax({
-                    url: $('#getFoldersUrl').val() + "?path=" + encodeURIComponent(self.model.path),
-                    method: 'GET',
-                    success: function (data) {
-                        self.children = data;
-                        self.children.forEach(function (c) {
-                            c.parent = self.model;
-                        });
-                    },
-                    error: function (error) {
-                        emtpy = false;
-                        console.error(error.responseText);
-                    }
-                });
-            }
-        },
-        select: function () {
-            mediaApp.selectFolder(this.model);
-        }
-    }
-});

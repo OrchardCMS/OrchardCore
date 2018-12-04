@@ -1,8 +1,0 @@
-﻿Name: Orchard Commons
-AntiForgery: enabled
-Author: The Orchard Team
-Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: Sets up the common services to run a SaaS application based on the Orchard Framework.
-Category: Infrastructure

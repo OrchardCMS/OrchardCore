@@ -1,0 +1,6 @@
+@model ActivityViewModel<ForLoopTask>
+
+<header>
+    <h4><i class="fa fa-circle-o-notch"></i>@Model.Activity.GetTitleOrDefault(() => T["For Loop"])</h4>
+</header>
+<span>@T["Iterate <em>{0}</em> from <em>{1}</em> to <em>{2}</em>", Model.Activity.LoopVariableName, Model.Activity.From, Model.Activity.To]</span>

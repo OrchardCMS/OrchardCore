@@ -1,0 +1,14 @@
+@model MarkdownBodyPartViewModel
+@using OrchardCore.Markdown.ViewModels;
+@using OrchardCore.Markdown.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
+}
+
+<fieldset class="form-group">
+    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+    <span class="hint">@T["The body of the content item, in Markdown format."]</span>
+</fieldset>

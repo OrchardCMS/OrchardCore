@@ -1,6 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Layers.Drivers;
 
 namespace OrchardCore.Layers
@@ -13,27 +14,29 @@ namespace OrchardCore.Layers
         }
 
         public IStringLocalizer T { get; set; }
-        
-        public void BuildNavigation(string name, NavigationBuilder builder)
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Design"], design => design
+                .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                         .Add(T["Layers"], T["Layers"], layers => layers
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
+                            .Permission(Permissions.ManageLayers)
                             .LocalNav()
-                        )))
-                .Add(T["Content"], design => design
-                    .Add(T["Layers"], "5", layers => layers
+                        ))
+                .Add(T["Layers"], T["Layers"], layers => layers
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));
+
+            return Task.CompletedTask;
         }
     }
 }

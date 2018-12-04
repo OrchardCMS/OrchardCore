@@ -1,9 +1,7 @@
-﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Feeds;
@@ -20,13 +18,13 @@ namespace OrchardCore.Contents.Feeds.Builders
             _contentManager = contentManager;
         }
 
-        public void Populate(FeedContext context)
+        public async Task PopulateAsync(FeedContext context)
         {
             foreach (var feedItem in context.Response.Items.OfType<FeedItem<ContentItem>>())
             {
                 var contentItem = feedItem.Item;
-                var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
-                var bodyAspect = _contentManager.PopulateAspect<BodyAspect>(contentItem);
+                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                var bodyAspect = await _contentManager.PopulateAspectAsync<BodyAspect>(contentItem);
                 var routes = contentItemMetadata.DisplayRouteValues;
 
                 // author is intentionally left empty as it could result in unwanted spam
@@ -46,7 +44,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                         guid.Add(url);
                     });
 
-                    feedItem.Element.SetElementValue("title", contentItemMetadata.DisplayText);
+                    feedItem.Element.SetElementValue("title", contentItem.DisplayText);
                     feedItem.Element.Add(link);
                     feedItem.Element.SetElementValue("description", bodyAspect.Body.ToString());
 
@@ -65,7 +63,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                 }
                 else
                 {
-                    context.Response.Contextualize(contextualize => 
+                    context.Response.Contextualize(contextualize =>
                     {
                         var request = contextualize.Url.ActionContext.HttpContext.Request;
                         var url = contextualize.Url.Action(routes["action"].ToString(), routes["controller"].ToString(), routes, request.Scheme);
@@ -73,7 +71,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                         context.Builder.AddProperty(context, feedItem, "link", url);
                     });
 
-                    context.Builder.AddProperty(context, feedItem, "title", contentItemMetadata.DisplayText);
+                    context.Builder.AddProperty(context, feedItem, "title", contentItem.DisplayText);
                     context.Builder.AddProperty(context, feedItem, "description", bodyAspect.Body.ToString());
 
                     if (contentItem.PublishedUtc != null)

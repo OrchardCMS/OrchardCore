@@ -10,7 +10,9 @@ namespace OrchardCore.Localization.PortableObject
         private readonly ILocalizationManager _localizationManager;
         private readonly ILogger _logger;
 
-        public PortableObjectStringLocalizerFactory(ILocalizationManager localizationManager, ILogger<PortableObjectStringLocalizerFactory> logger)
+        public PortableObjectStringLocalizerFactory(
+            ILocalizationManager localizationManager,
+            ILogger<PortableObjectStringLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
             _logger = logger;
@@ -34,9 +36,9 @@ namespace OrchardCore.Localization.PortableObject
                 index += 1;
             }
 
-            if (baseName.Length > index && baseName.IndexOf("Packages.", index) == index)
+            if (baseName.Length > index && baseName.IndexOf("Areas.", index) == index)
             {
-                index += "Packages.".Length;
+                index += "Areas.".Length;
             }
 
             var relativeName = baseName.Substring(index);

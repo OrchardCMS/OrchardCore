@@ -1,0 +1,75 @@
+@model WorkflowTypeIndexViewModel
+@using OrchardCore.Workflows.ViewModels;
+
+<h1>@RenderTitleSegments(T["Manage Workflow Types"])</h1>
+
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" asp- class="btn btn-primary" role="button"> @T["Create Workflow Type"]</a>
+            <div class="btn-group" role="group">
+                <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Bulk Actions"]
+                </button>
+                <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
+                    <button type="submit" name="BulkAction" value="@WorkflowTypeBulkAction.Delete" form="workflow-types-form" class="dropdown-item"> @T["Delete"]</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <form asp-action="Index" method="get" class="form-inline">
+        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
+    </form>
+</nav>
+
+@if (Model.WorkflowTypes.Any())
+{
+    using (Html.BeginForm(FormMethod.Post, new { id = "workflow-types-form" }))
+    {
+        <ul class="list-group">
+            @for (var i = 0; i < Model.WorkflowTypes.Count; i++)
+            {
+                var entry = Model.WorkflowTypes[i];
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Duplicate"]</a>
+                        </div>
+
+                        <div class="custom-control custom-checkbox float-left">
+                            <input type="checkbox" class="custom-control-input" asp-for="@Model.WorkflowTypes[i].IsChecked">
+                            <label class="custom-control-label" asp-for="@Model.WorkflowTypes[i].IsChecked">&nbsp;</label>
+                        </div>
+                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Id" />
+                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Name" />
+                        <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
+
+                        <div class="metadata">
+                            @if (!entry.WorkflowType.IsEnabled)
+                            {
+                                <span class="badge badge-secondary">@T["disabled"]</span>
+                            }
+                            @if (entry.WorkflowCount > 0)
+                            {
+                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+
+    @await DisplayAsync(Model.Pager)
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        @T["<strong>Nothing here!</strong> There are no workflow types at the moment."]
+    </div>
+}

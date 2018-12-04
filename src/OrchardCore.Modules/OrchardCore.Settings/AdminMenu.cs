@@ -1,6 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Settings
 {
@@ -13,21 +14,24 @@ namespace OrchardCore.Settings
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            builder.Add(T["Design"], design => design
+            builder.Add(T["Configuration"], configuration => configuration
                 .Add(T["Settings"], "1", settings => settings
                     .Add(T["General"], T["General"], entry => entry
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                        .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
                     )
                 )
             );
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
 
@@ -14,7 +15,7 @@ namespace OrchardCore.ContentManagement.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override void Creating(CreateContentContext context)
+        public override Task CreatingAsync(CreateContentContext context)
         {
             var utcNow = _clock.UtcNow;
             if (!context.ContentItem.CreatedUtc.HasValue)
@@ -28,9 +29,11 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 context.ContentItem.Owner = httpContext.User.Identity.Name;
             }
+
+            return Task.CompletedTask;
         }
 
-        public override void Updating(UpdateContentContext context)
+        public override Task UpdatingAsync(UpdateContentContext context)
         {
             var utcNow = _clock.UtcNow;
             context.ContentItem.ModifiedUtc = utcNow;
@@ -41,9 +44,11 @@ namespace OrchardCore.ContentManagement.Handlers
                 // publishing in a Workflow doesn't change it.
                 context.ContentItem.Author = httpContext.User.Identity.Name;
             }
+
+            return Task.CompletedTask;
         }
 
-        public override void Versioning(VersionContentContext context)
+        public override Task VersioningAsync(VersionContentContext context)
         {
             var utcNow = _clock.UtcNow;
 
@@ -51,9 +56,11 @@ namespace OrchardCore.ContentManagement.Handlers
             context.BuildingContentItem.CreatedUtc = context.ContentItem.CreatedUtc ?? utcNow;
             context.BuildingContentItem.PublishedUtc = context.ContentItem.PublishedUtc;
             context.BuildingContentItem.ModifiedUtc = utcNow;
+
+            return Task.CompletedTask;
         }
 
-        public override void Published(PublishContentContext context)
+        public override Task PublishingAsync(PublishContentContext context)
         {
             var utcNow = _clock.UtcNow;
 
@@ -64,12 +71,14 @@ namespace OrchardCore.ContentManagement.Handlers
             }
 
             context.ContentItem.PublishedUtc = utcNow;
+            return Task.CompletedTask;
         }
 
-        public override void Unpublished(PublishContentContext context)
+        public override Task UnpublishedAsync(PublishContentContext context)
         {
             var utcNow = _clock.UtcNow;
             context.ContentItem.PublishedUtc = null;
+            return Task.CompletedTask;
         }
     }
 }

@@ -11,8 +11,9 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "blogContentItemId": "[js:uuid()]"
-    // "now": "[js: Date().toISOString()]"
+    "blogContentItemId": "[js:uuid()]",
+    "menuContentItemId": "[js:uuid()]"
+    // "now": "[js: new Date().toISOString()]"
   },
 
   "steps": [
@@ -21,10 +22,8 @@
       "disable": [],
       "enable": [
         // SaaS
-        "OrchardCore.Mvc",
         "OrchardCore.HomeRoute",
         "OrchardCore.Admin",
-        "OrchardCore.Commons",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
         "OrchardCore.Features",
@@ -38,11 +37,13 @@
 
         // Content Management
         "OrchardCore.Alias",
+        "OrchardCore.AdminTrees",
         "OrchardCore.Autoroute",
-        "OrchardCore.Body",
+        "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -127,8 +128,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "ContentIndexSettings": {
                   "Included": false,
@@ -138,9 +139,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "BodyPartSettings": {
-                  "Editor": "Wysiwyg"
-                },
+                "Editor": "Wysiwyg",
                 "Position": "3"
               }
             },
@@ -254,8 +253,8 @@
               }
             },
             {
-              "PartName": "MarkdownPart",
-              "Name": "MarkdownPart",
+              "PartName": "MarkdownBodyPart",
+              "Name": "MarkdownBodyPart",
               "Settings": {
                 "Position": "3",
                 "ContentIndexSettings": {
@@ -266,9 +265,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "MarkdownPartSettings": {
-                  "Editor": "Wysiwyg"
-                }
+                "Editor": "Wysiwyg"
               }
             },
             {
@@ -345,8 +342,8 @@
               }
             },
             {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
               "Settings": {
                 "Position": "3"
               }
@@ -571,11 +568,29 @@
       "ContentParts": [
         {
           "Name": "BlogPost",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Article",
-          "Settings": {}
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "DisplayName": "Subtitle"
+              }
+            }
+          ]
         },
         {
           "Name": "Blockquote",
@@ -622,7 +637,7 @@
                 "Editor": null,
                 "Position": "0",
                 "Multiple": false,
-                "Required":  true
+                "Required": true
               }
             },
             {
@@ -703,7 +718,8 @@
       "Data": [
         {
           "ContentType": "Menu",
-          "ContentItemId": "[js: uuid()]",
+          "ContentItemId": "[js: variables('menuContentItemId')]",
+          "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
           "MenuPart": {},
@@ -733,6 +749,7 @@
         {
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
+          "DisplayText":  "Blog",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -740,8 +757,8 @@
           "TitlePart": {
             "Title": "Blog"
           },
-          "BodyPart": {
-            "Body": "<p>This is the description of your blog</p>"
+          "HtmlBodyPart": {
+            "Html": "This is the description of your blog"
           },
           "AutoroutePart": {
             "Path": "blog"
@@ -751,6 +768,7 @@
         {
           "ContentType": "BlogPost",
           "ContentItemId": "[js: uuid()]",
+          "DisplayText": "Man must explore, and this is exploration at its greatest",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -762,16 +780,22 @@
             "ListContentItemId": "[js: variables('blogContentItemId')]",
             "Order": 0
           },
-          "MarkdownPart": {
+          "MarkdownBodyPart": {
             "Markdown": "Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.\n\nScience cuts two ways, of course; its products can be used for both good and evil. But there's no turning back from science. The early warnings about technological dangers also come from science.\n\nWhat was most significant about the lunar voyage was not that man set foot on the Moon but that they set eye on the earth.\n\nA Chinese tale tells of some men sent to harm a young girl who, upon seeing her beauty, become her protectors rather than her violators. That's how I felt seeing the Earth for the first time. I could not help but love and cherish her.\n\nFor those who have seen the Earth from space, and for the hundreds and perhaps thousands more who will, the experience most certainly changes your perspective. The things that we share in our world are far more valuable than those which divide us."
           },
           "AutoroutePart": {
             "Path": "blog/post-1"
+          },
+          "BlogPost": {
+            "Subtitle": {
+              "Text": "Problems look mighty small from 150 miles up"
+            }
           }
         },
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "Article",
+          "DisplayText": "About",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -780,22 +804,27 @@
             "Path": "about",
             "SetHomepage": false
           },
-          "BodyPart": {
-            "Body": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum molestiae debitis nobis, quod sapiente qui voluptatum, placeat magni repudiandae accusantium fugit quas labore non rerum possimus, corrupti enim modi! Et.</p>"
+          "HtmlBodyPart": {
+            "Html": "<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe nostrum ullam eveniet pariatur voluptates odit, fuga atque ea nobis sit soluta odio, adipisci quas excepturi maxime quae totam ducimus consectetur?</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius praesentium recusandae illo eaque architecto error, repellendus iusto reprehenderit, doloribus, minus sunt. Numquam at quae voluptatum in officia voluptas voluptatibus, minus!</p><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum molestiae debitis nobis, quod sapiente qui voluptatum, placeat magni repudiandae accusantium fugit quas labore non rerum possimus, corrupti enim modi! Et.</p>"
           },
           "TitlePart": {
             "Title": "About"
+          },
+          "Article": {
+            "Subtitle": {
+              "Text": "This is what I do."
+            }
           }
         },
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
+          "Displaytext": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
-            "Title": "Copyright",
             "Layer": "Always",
             "Zone": "Footer",
             "RenderTitle": false,
@@ -803,7 +832,7 @@
           },
           "RawHtml": {
             "Content": {
-              "Html": "<!-- This widget is configured in the layers section -->\n<div class=\"col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1\">\n    <ul class=\"list-inline text-center\">\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-twitter fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-facebook fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n        <li>\n            <a href=\"#\">\n                <span class=\"fa-stack fa-lg\">\n                    <i class=\"fa fa-circle fa-stack-2x\"></i>\n                    <i class=\"fa fa-github fa-stack-1x fa-inverse\"></i>\n                </span>\n            </a>\n        </li>\n    </ul>\n    <p class=\"copyright text-muted\">Copyright ©</p></div>"
+              "Html": "[file:text('Snippets/footer.html')]"
             }
           }
         }
@@ -832,9 +861,127 @@
           "Name": "RecentBlogPosts",
           "Index": "Search",
           "Template": "[js:base64('ew0KICAicXVlcnkiOiB7DQogICAgInRlcm0iIDogeyAiQ29udGVudC5Db250ZW50SXRlbS5Db250ZW50VHlwZSIgOiAiQmxvZ1Bvc3QiIH0gDQogIH0sDQogICJzb3J0IjogeyAiQ29udGVudC5Db250ZW50SXRlbS5DcmVhdGVkVXRjIjogeyAib3JkZXIiOiAiZGVzYyIgfSB9LA0KICAic2l6ZSI6IDMNCn0=')]",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
       ]
+    },
+    {
+        "name": "AdminTrees",
+        "data": [
+          {
+            "Id": "baef6f85ad13481681cde70ada401333",
+            "Name": "Admin tree from blog recipe",
+            "Enabled": true,
+            "MenuItems": [
+              {
+                "$type": "OrchardCore.AdminTrees.AdminNodes.LinkAdminNode, OrchardCore.AdminTrees",
+                "LinkText": "Blog",
+                "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+                "IconClass": "fas fa-rss",
+                "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              },
+              {
+                "$type": "OrchardCore.AdminTrees.AdminNodes.LinkAdminNode, OrchardCore.AdminTrees",
+                "LinkText": "Main Menu",                
+                "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+                "IconClass": "fas fa-sitemap",
+                "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              },
+              {
+                "$type": "OrchardCore.AdminTrees.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminTrees",
+                "LinkText": "Content",
+                "IconClass": null,
+                "UniqueId": "3e590d44f8704e4588e272dd966ce291",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [
+                  {
+                    "$type": "OrchardCore.AdminTrees.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminTrees",
+                    "LinkText": "Content Items",
+                    "IconClass": null,
+                    "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
+                    "Enabled": true,
+                    "Text": null,
+                    "Id": null,
+                    "Href": null,
+                    "Url": null,
+                    "Position": null,
+                    "LinkToFirstChild": true,
+                    "LocalNav": false,
+                    "Culture": null,
+                    "Resource": null,
+                    "Items": [
+                      {
+                        "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                        "ShowAll": true,
+                        "IconClass": null,
+                        "ContentTypes": [],
+                        "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
+                        "Enabled": true,
+                        "Text": null,
+                        "Id": null,
+                        "Href": null,
+                        "Url": null,
+                        "Position": null,
+                        "LinkToFirstChild": true,
+                        "LocalNav": false,
+                        "Culture": null,
+                        "Resource": null,
+                        "Items": [],
+                        "RouteValues": null,
+                        "Permissions": [],
+                        "Classes": []
+                      }
+                    ],
+                    "RouteValues": null,
+                    "Permissions": [],
+                    "Classes": []
+                  }
+                ],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              }
+            ]
+          } 
+        ]
     }
   ]
 }

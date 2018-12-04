@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -18,6 +20,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
     {
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
@@ -27,6 +30,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private readonly IMemoryCache _memoryCache;
 
         public DefaultShapeTableManager(
+            IHostingEnvironment hostingEnvironment,
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
@@ -34,6 +38,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
         {
+            _hostingEnvironment = hostingEnvironment;
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
@@ -77,6 +82,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     .GetResult()
                     .Select(f => f.Id)
                     .ToList();
+
+                // let the application acting as a super theme for shapes rendering.
+                if (enabledAndOrderedFeatureIds.Remove(_hostingEnvironment.ApplicationName))
+                {
+                    enabledAndOrderedFeatureIds.Add(_hostingEnvironment.ApplicationName);
+                }
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
@@ -139,7 +150,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
         {
-            if (!feature.Extension.Manifest.IsTheme())
+            if (!feature.Extension.IsTheme())
             {
                 return true;
             }

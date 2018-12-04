@@ -1,7 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings
 {
@@ -10,7 +11,7 @@ namespace OrchardCore.CustomSettings
         private readonly CustomSettingsService _customSettingsService;
 
         public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer, 
+            IStringLocalizer<AdminMenu> localizer,
             CustomSettingsService customSettingsService)
         {
             T = localizer;
@@ -18,18 +19,18 @@ namespace OrchardCore.CustomSettings
         }
 
         public IStringLocalizer T { get; set; }
-        
-        public void BuildNavigation(string name, NavigationBuilder builder)
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            foreach(var type in _customSettingsService.GetSettingsTypes())
+            foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 builder
-                    .Add(T["Design"], design => design
+                    .Add(T["Configuration"], configuration => configuration
                         .Add(T["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
@@ -38,6 +39,8 @@ namespace OrchardCore.CustomSettings
                                 .LocalNav()
                             )));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

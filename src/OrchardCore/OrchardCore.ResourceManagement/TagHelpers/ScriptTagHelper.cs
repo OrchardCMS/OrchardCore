@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -24,10 +25,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
 
-        public bool UseCdn { get; set; }
+        public bool? UseCdn { get; set; }
         public string Condition { get; set; }
         public string Culture { get; set; }
-        public bool Debug { get; set; }
+        public bool? Debug { get; set; }
         public string DependsOn { get; set; }
         public string Version { get; set; }
 
@@ -41,7 +42,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.SuppressOutput();
 
@@ -102,8 +103,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
-
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
+                
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
@@ -125,14 +129,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(At);
                 }
 
-                setting.UseCdn(UseCdn);
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
@@ -175,7 +185,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     definition.SetVersion(Version);
                 }
-                
+
                 // If At is specified then we also render it
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -183,13 +193,21 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     setting.AtLocation(At);
 
+                    if (UseCdn != null)
+                    {
+                        setting.UseCdn(UseCdn.Value);
+                    }
+
                     if (!String.IsNullOrEmpty(Condition))
                     {
                         setting.UseCondition(Condition);
                     }
 
-                    setting.UseDebugMode(Debug);
-
+                    if (Debug != null)
+                    {
+                        setting.UseDebugMode(Debug.Value);
+                    }
+                    
                     if (!String.IsNullOrEmpty(Culture))
                     {
                         setting.UseCulture(Culture);
@@ -205,7 +223,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 // Custom script content
 
-                var childContent = output.GetChildContentAsync().GetAwaiter().GetResult();
+                var childContent = await output.GetChildContentAsync();
 
                 var builder = new TagBuilder("script");
                 builder.InnerHtml.AppendHtml(childContent);

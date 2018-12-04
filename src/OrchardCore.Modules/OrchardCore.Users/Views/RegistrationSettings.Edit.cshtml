@@ -1,6 +1,17 @@
 @model OrchardCore.Users.Models.RegistrationSettings
 
 <fieldset class="form-group" asp-validation-class-for="UsersCanRegister">
-    <input asp-for="UsersCanRegister" type="checkbox" />
-    <label asp-for="UsersCanRegister">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UsersCanRegister" />
+        <label class="custom-control-label" asp-for="UsersCanRegister">@T["Users can create new accounts on the site"] <span asp-validation-for="UsersCanRegister"></span></label>
+        <span class="hint">@T["— {0}", "Display a link to allow the users to register on the site."]</span>
+    </div>
 </fieldset>
+<fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UsersMustValidateEmail" data-toggle="collapse" data-target="#warnEmailValidation" />
+        <label class="custom-control-label" asp-for="UsersMustValidateEmail">@T["Users must verify their email address"] <span asp-validation-for="UsersMustValidateEmail"></span></label>
+        <span class="hint">@T["— {0}", "The users whose email address has not been confirmed will not be able to login."]</span>
+    </div>
+</fieldset>
+<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login."]</div>

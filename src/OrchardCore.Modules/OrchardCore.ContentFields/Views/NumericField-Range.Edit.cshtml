@@ -1,0 +1,35 @@
+@model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
+@using System.Globalization
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
+    decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
+    decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
+    string id = Html.IdFor(m => m.Value);
+}
+
+<fieldset class="form-group">
+    <div class="row col-sm-3">
+        <label asp-for="Value">@name</label>
+        <div class="input-group mb-2">
+            @if (settings.Minimum.HasValue)
+            {
+            <div class="input-group-prepend">
+                <div class="input-group-text">@min</div>
+            </div>
+            }
+            <input asp-for="Value" class="form-control content-preview-select" />
+            @if (settings.Maximum.HasValue)
+            {
+            <div class="input-group-append">
+                <div class="input-group-text">@max</div>
+            </div>
+            }
+            <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" onchange="$('#@(id)').val(value);" />
+        </div>
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>

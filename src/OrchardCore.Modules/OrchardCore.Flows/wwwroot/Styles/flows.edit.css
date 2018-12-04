@@ -1,0 +1,15 @@
+.widget-editor.collapsed .card-body, .widget-editor.collapsed .card-footer {
+    display: none;
+}
+
+.widget-editor .card-body, widget-editor .card-footer {
+    display: inherit;
+}
+
+.widget-editor-btn-collapse, .collapsed .widget-editor-btn-expand {
+    display: inline-block;
+}
+
+.widget-editor:not(.collapsed) > .widget-editor-header .widget-editor-btn-expand, .collapsed > .widget-editor-header .widget-editor-btn-collapse {
+    display: none;
+}

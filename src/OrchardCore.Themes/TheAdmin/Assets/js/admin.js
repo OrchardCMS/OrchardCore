@@ -1,10 +1,15 @@
-﻿function getConfirmRemoveMessage() {
+function getConfirmRemoveMessage() {
     return $('#confirmRemoveMessage').data('value');
 }
 
 $(function () {
+    $("body").removeClass("preload");
+});
+
+
+$(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
-        // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
+        // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
@@ -80,7 +85,7 @@ $(function () {
         $(this).on('change', function (e) {
             // During a double-click, ignore state changes while the element is collapsing
             if (target.hasClass('collapsing')) {
-                $(this).prop('checked', !$(this).prop('checked'));                
+                $(this).prop('checked', !$(this).prop('checked'));
             }
             target.collapse($(this).prop('checked') ? 'show' : 'hide');
         });
@@ -108,9 +113,10 @@ $(function () {
             target.collapse($(this).prop('checked') ? 'hide' : 'show');
         });
     });
+
 });
 
-function getTechnicalName(name){
+function getTechnicalName(name) {
     var result = "", c;
 
     if (!name || name.length == 0) {
@@ -136,3 +142,4 @@ function isLetter(str) {
 function isNumber(str) {
     return str.length === 1 && str.match(/[0-9]/i);
 }
+

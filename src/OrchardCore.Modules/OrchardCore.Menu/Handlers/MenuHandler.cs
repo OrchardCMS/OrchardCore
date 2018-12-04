@@ -1,18 +1,22 @@
-﻿using OrchardCore.ContentManagement.Handlers;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.Handlers
 {
     public class MenuContentHandler : ContentHandlerBase
     {
-        public override void Activating(ActivatingContentContext context)
+        public override Task ActivatedAsync(ActivatedContentContext context)
         {
             // When a Menu is created, we add a MenuPart to it
-            if (context.ContentType == "Menu")
+            if (context.ContentItem.ContentType == "Menu")
             {
-                context.Builder.Weld(nameof(MenuPart), new MenuPart());
-                context.Builder.Weld(nameof(MenuItemsListPart), new MenuItemsListPart());
+                context.ContentItem.Weld<MenuPart>(new { Position = "3" });
+                context.ContentItem.Weld<MenuItemsListPart>(new { Position = "4" });
             }
+
+            return Task.CompletedTask;
         }
     }
 }

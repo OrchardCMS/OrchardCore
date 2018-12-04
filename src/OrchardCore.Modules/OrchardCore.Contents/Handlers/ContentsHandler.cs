@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Routing;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Environment.Cache;
@@ -14,22 +15,22 @@ namespace OrchardCore.Contents.Handlers
             _tagCache = tagCache;
         }
 
-        public override void Published(PublishContentContext context)
+        public override Task PublishedAsync(PublishContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
-        public override void Removed(RemoveContentContext context)
+        public override Task RemovedAsync(RemoveContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
-        public override void Unpublished(PublishContentContext context)
+        public override Task UnpublishedAsync(PublishContentContext context)
         {
-            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
         }
 
-        public override void GetContentItemAspect(ContentItemAspectContext context)
+        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             context.For<ContentItemMetadata>(metadata =>
             {
@@ -83,6 +84,8 @@ namespace OrchardCore.Contents.Handlers
                     };
                 }
             });
+
+            return Task.CompletedTask;
         }
     }
 }

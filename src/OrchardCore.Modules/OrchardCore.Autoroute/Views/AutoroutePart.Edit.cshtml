@@ -1,10 +1,22 @@
-﻿@using OrchardCore.Autoroute.ViewModels;
+@using OrchardCore.Autoroute.ViewModels;
 @model AutoroutePartViewModel
-@inject IAuthorizationService AuthorizationService;
+@inject IAuthorizationService AuthorizationService
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 
 <fieldset class="form-group" asp-validation-class-for="Path">
     <label asp-for="Path">@T["Permalink"] <span asp-validation-for="Path"></span></label>
-    <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)"/>
+    <div class="input-group">
+        @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
+        {
+            <div class="input-group-prepend">
+                <div class="input-group-text">@site.BaseUrl</div>
+            </div>
+        }
+        <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
+    </div>
     @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
     {
         <span class="hint">@T["The url of the content item. Leave empty to auto-generate it."]</span>
@@ -14,25 +26,25 @@
         <span class="hint">@T["The url of the content item. It will be automatically generated."]</span>
     }
 </fieldset>
-
 @{
     var authorized = await AuthorizationService.AuthorizeAsync(User, Permissions.SetHomepage);
     var showHomepageOption = Model.Settings.ShowHomepageOption && authorized;
-}
 
-@if (Model.IsHomepage) 
-{
-    <div class="alert alert-info">@T["This content item is the current homepage"]</div>
-}
-else
-{
-    if (showHomepageOption)
+    if (Model.IsHomepage)
     {
-        <fieldset class="form-check">
-            <label class="form-check-label">
-                <input asp-for="SetHomepage" type="checkbox" class="form-check-input" checked="@Model.SetHomepage" /> @T["Set as homepage"]
-                <span class="hint">@T["Check to set this content item as the homepage once published."]</span>
-            </label>
-        </fieldset>
+        <div class="alert alert-info">@T["This content item is the current homepage"]</div>
+    }
+    else
+    {
+        if (showHomepageOption)
+        {
+            <fieldset class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
+                    <label class="custom-control-label" asp-for="SetHomepage">@T["Set as homepage"]</label>
+                    <span class="hint">@T["— {0}", "Check to set this content item as the homepage once published."]</span>
+                </div>
+            </fieldset>
+        }
     }
 }

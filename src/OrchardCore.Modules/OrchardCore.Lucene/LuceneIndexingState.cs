@@ -19,7 +19,7 @@ namespace OrchardCore.Lucene
             ShellSettings shellSettings
             )
         {
-            _indexSettingsFilename = Path.Combine(
+            _indexSettingsFilename = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath, 
                 shellOptions.Value.ShellsContainerName, 
                 shellSettings.Name, 
@@ -44,19 +44,29 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                _content.Add(new JProperty(indexName, 0));
+                lock (this)
+                {
+                    _content.Add(new JProperty(indexName, 0));
+                }
+
                 return 0;
             }
         }
 
         public void SetLastTaskId(string indexName, int taskId)
         {
-            _content[indexName] = taskId;
+            lock (this)
+            {
+                _content[indexName] = taskId;
+            }
         }
 
         public void Update()
         {
-            File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+            lock (this)
+            {
+                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+            }
         }
     }
 }

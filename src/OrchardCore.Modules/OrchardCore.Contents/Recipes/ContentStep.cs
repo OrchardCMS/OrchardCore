@@ -31,16 +31,16 @@ namespace OrchardCore.Contents.Recipes
 
             var model = context.Step.ToObject<ContentStepModel>();
 
-            foreach(JObject token in model.Data)
+            foreach (JObject token in model.Data)
             {
                 var contentItem = token.ToObject<ContentItem>();
-                
+
                 var existing = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
                 if (existing == null)
                 {
                     // Initializes the Id as it could be interpreted as an updated object when added back to YesSql
                     contentItem.Id = 0;
-                    _contentManager.Create(contentItem);
+                    await _contentManager.CreateAsync(contentItem);
                 }
                 else
                 {

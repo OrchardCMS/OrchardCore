@@ -1,10 +1,11 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Environment.Navigation;
-using System;
-using System.Linq;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
 {
@@ -25,11 +26,11 @@ namespace OrchardCore.Contents
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
@@ -43,24 +44,31 @@ namespace OrchardCore.Contents
                 );
 
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
-            if (contentTypes.Any()) {
-                builder.Add(T["New"], "-1", newMenu =>
+            if (contentTypes.Any())
+            {
+                builder.Add(T["New"], "-1", async newMenu =>
                 {
                     newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        var ci = _contentManager.New(contentTypeDefinition.Name);
-                        var cim = _contentManager.PopulateAspect<ContentItemMetadata>(ci);
+                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
+                                .Permission(Permissions.EditOwnContent)
                                 // Apply "PublishOwn" permission for the content type
                                 //.Permission(DynamicPermissions.CreateDynamicPermission(DynamicPermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition)
                                 );
                     }
                 });
+
+
+
             }
+
+            return Task.CompletedTask;
         }
     }
 }

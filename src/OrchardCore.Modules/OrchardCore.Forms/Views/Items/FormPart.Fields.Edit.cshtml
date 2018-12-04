@@ -1,0 +1,24 @@
+@using OrchardCore.Forms.ViewModels;
+@model FormPartEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Action">@T["Action"]</label>
+    <input type="text" asp-for="Action" class="form-control content-preview-text"></input>
+    <span class="hint">@T["The URL to submit the form to."]</span>
+</fieldset>
+
+<fieldset class="form-group">
+    <label asp-for="Method">@T["Method"]</label>
+    <select asp-for="Method" class="form-control content-preview-select">
+        <option value="POST">POST</option>
+        <option value="GET">GET</option>
+    </select>
+    <span class="hint">@T["The HTTP method to use when submitting the form."]</span>
+</fieldset>
+
+@*Disabled for beta 2, as this is WIP.*@
+@*<fieldset class="form-group">
+        <label asp-for="WorkflowTypeId">@T["Workflow Type"]</label>
+        @await Component.InvokeAsync("SelectWorkflowType", new { selectedWorkflowTypeId = Model.WorkflowTypeId, htmlName = Html.NameFor(m => m.WorkflowTypeId) })
+        <span class="hint">@T["Optionally select a workflow to invoke when the form is submitted."]</span>
+    </fieldset>*@

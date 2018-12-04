@@ -156,23 +156,23 @@ namespace OrchardCore.Lists.RemotePublishing
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
         }
-        
+
         private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
         {
             var user = await ValidateUserAsync(userName, password);
-            
+
             var name = file.Optional<string>("name");
             var bits = file.Optional<byte[]>("bits");
 
-            string directoryName = Path.GetDirectoryName(name);            
+            string directoryName = Path.GetDirectoryName(name);
             string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
             await _mediaFileStore.CreateFileFromStream(filePath, new MemoryStream(bits));
-             
+
             string publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
             return new XRpcStruct() // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
                 .Set("file", publicUrl)
-                .Set("url", publicUrl) 
+                .Set("url", publicUrl)
                 .Set("type", file.Optional<string>("type"));
         }
 
@@ -195,13 +195,13 @@ namespace OrchardCore.Lists.RemotePublishing
                     // User needs to at least have permission to edit its own blog posts to access the service
                     if (await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, list))
                     {
-                        var metadata = _contentManager.PopulateAspect<ContentItemMetadata>(list);
+                        var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list);
                         var displayRouteValues = metadata.DisplayRouteValues;
 
                         array.Add(new XRpcStruct()
                                       .Set("url", context.Url.Action(displayRouteValues["action"].ToString(), displayRouteValues["controller"].ToString(), displayRouteValues, context.HttpContext.Request.Scheme))
                                       .Set("blogid", list.ContentItemId)
-                                      .Set("blogName", metadata.DisplayText));
+                                      .Set("blogName", list.DisplayText));
                     }
                 }
             }
@@ -240,7 +240,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             foreach (var contentItem in contentItems)
             {
-                var postStruct = CreateBlogStruct(context, contentItem);
+                var postStruct = await CreateBlogStructAsync(context, contentItem);
 
                 foreach (var driver in drivers)
                 {
@@ -274,8 +274,7 @@ namespace OrchardCore.Lists.RemotePublishing
             }
 
             var postType = GetContainedContentTypes(list).FirstOrDefault();
-
-            var contentItem = _contentManager.New(postType.Name);
+            var contentItem = await _contentManager.NewAsync(postType.Name);
 
             contentItem.Owner = userName;
             contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
@@ -285,9 +284,9 @@ namespace OrchardCore.Lists.RemotePublishing
                 driver.EditPost(content, contentItem);
             }
 
-            _contentManager.Create(contentItem, VersionOptions.Draft);
+            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
-            // try to get the UTC timezone by default
+            // try to get the UTC time zone by default
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
@@ -336,7 +335,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             await CheckAccessAsync(Permissions.EditContent, user, contentItem);
 
-            var postStruct = CreateBlogStruct(context, contentItem);
+            var postStruct = await CreateBlogStructAsync(context, contentItem);
 
             foreach (var driver in _metaWeblogDrivers)
             {
@@ -376,7 +375,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 driver.EditPost(content, contentItem);
             }
 
-            // try to get the UTC timezone by default
+            // try to get the UTC time zone by default
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
@@ -452,9 +451,9 @@ namespace OrchardCore.Lists.RemotePublishing
             return await _membershipService.CreateClaimsPrincipal(storeUser);
         }
 
-        private XRpcStruct CreateBlogStruct(XmlRpcContext context, ContentItem contentItem)
+        private async Task<XRpcStruct> CreateBlogStructAsync(XmlRpcContext context, ContentItem contentItem)
         {
-            var metadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+            var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
 
             var url = context.Url.Action(
                 metadata.DisplayRouteValues["action"].ToString(),

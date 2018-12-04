@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
 
   <!-- Add the OrchardCore.Module.props file in the package -->
@@ -9,12 +10,15 @@
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.props</PackagePath>
     </None>
+    <None Include="OrchardCore.Module.Targets.targets" Pack="true">
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.targets</PackagePath>
+    </None>
     <None Include="Package.Build.props" Pack="true">
       <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

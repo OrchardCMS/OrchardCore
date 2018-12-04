@@ -11,7 +11,7 @@ using OrchardCore.Layers.ViewModels;
 
 namespace OrchardCore.Layers.Drivers
 {
-	public class LayerMetadataWelder : ContentDisplayDriver
+    public class LayerMetadataWelder : ContentDisplayDriver
     {
 		private readonly ILayerService _layerService;
         private readonly IStringLocalizer<LayerMetadataWelder> S;
@@ -47,8 +47,9 @@ namespace OrchardCore.Layers.Drivers
 				}
 			}
 
-			return Shape<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
+			return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
 			{
+                shape.Title = model.DisplayText;
 				shape.LayerMetadata = layerMetadata;
 				shape.Layers = (await _layerService.GetLayersAsync()).Layers;
 			})
@@ -75,6 +76,8 @@ namespace OrchardCore.Layers.Drivers
             {
                 model.Apply(viewModel.LayerMetadata);
             }
+
+            model.DisplayText = viewModel.Title;
 
 			return await EditAsync(model, context);
         }

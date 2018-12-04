@@ -1,0 +1,45 @@
+@model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
+@using System.Globalization
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
+    decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
+    decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
+    string id = Html.IdFor(m => m.Value);
+}
+
+<script asp-name="bootstrap-slider" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/bootstrap-slider.min.js" debug-src="/OrchardCore.Resources/Scripts/bootstrap-slider.js" at="Foot"></script>
+<style asp-name="bootstrap-slider" asp-src="/OrchardCore.Resources/Styles/bootstrap-slider.min.css" debug-src="/OrchardCore.Resources/Styles/bootstrap-slider.css"></style>
+
+<fieldset class="form-group">
+    <div class="row col-sm-2">
+        <label asp-for="Value">@name</label>
+        <div class="input-group mb-2">
+            @if (settings.Minimum.HasValue)
+            {
+            <div class="input-group-prepend">
+                <div class="input-group-text">@min</div>
+            </div>
+            }
+            <input asp-for="Value" class="form-control content-preview-select" />
+            @if (settings.Maximum.HasValue)
+            {
+            <div class="input-group-append">
+                <div class="input-group-text">@max</div>
+            </div>
+            }
+        </div>
+        <div class="input-group mb-2 ml-2">
+            <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
+        </div>
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>
+<script at="Foot">
+    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('slide', function (ev) {
+        $('#@(id)').val(ev.value);
+    });
+</script>

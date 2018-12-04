@@ -1,25 +1,26 @@
-# Resources (OrchardCore.Resources)
+# Resources (`OrchardCore.Resources`)
 
 ## Purpose
 
-The Resources module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
+The `Resources` module provides commonly used resources like JavaScript libraries and CSS files. It also enables the Resource Manager
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
 resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
 ## Named Resources
 
 Named resources are well-known scripts and stylesheets that are described in a module. They have a name, a type (script, stylesheet) 
-and optionally a version. The __OrchardCore.Resources__ modules provides some commonly used ones:
+and optionally a version. The `OrchardCore.Resources` modules provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
-| jQuery | Script | 3.2.1 | - |
-| Bootstrap | Script | 3.3.7, 4.0.0 (4.0.0-beta) | jQuery |
-| Bootstrap | Style | 3.3.7, 4.0.0 (4.0.0-beta) | - |
+| jQuery | Script | 3.3.1 | - |
+| Popper | Script | 1.14.3 | - |
+| Bootstrap | Script | 3.3.7, 4.1.3 | jQuery, Popper |
+| Bootstrap | Style | 3.3.7, 4.1.3 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
-| font-awesome | Style | 4.7.0 | - |
+| font-awesome | Style | 4.7.0, 5.4.1 | - |
 
 ## Usage
 
@@ -40,16 +41,19 @@ var settings = resourceManager.RegisterResource("script", "bootstrap")
 The result of this call is an object of type `RequireSettings` that is used to pass more parameters to the required resource.
 
 ##### Place the resource at the beginning of the HTML document
+
 ```csharp
 settings.AtHead();
 ```
 
 ##### Place the resource at the end of the HTML document
+
 ```csharp
 settings.AtFoot();
 ```
 
 ##### Set the version to use
+
 ```csharp
 settings.UseVersion("3.3");
 ```
@@ -59,14 +63,15 @@ This will use the latest available version between `3.3` and `3.4`. If the versi
 #### Register custom script
 
 At the beginning of the HTML document:
+
 ```csharp
-resourceManager.RegisterHeadScript("<script>alert('Hello')</script>');
+resourceManager.RegisterHeadScript(new HtmlString("<script>alert('Hello')</script>"));
 ```
 
 At the end of the HTML document:
 
 ```csharp
-resourceManager.RegisterFootScript("<script>alert('Hello')</script>');
+resourceManager.RegisterFootScript(new HtmlString("<script>alert('Hello')</script>"));
 ```
 
 ### Add custom meta tag
@@ -85,55 +90,100 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
 
-#### Register a named resource
+#### Register a named script
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
-```html
+
+```liquid
+{% script name:"bootstrap" %}
+```
+
+```razor
 <script asp-name="bootstrap"></script>
 ```
 
 And for a stylesheet:
 
-```html
+```razor
 <style asp-name="bootstrap"></style>
 ```
 
-
 ##### Force the CDN
+
 You can force a resource to be used from its CDN. By default the behavior is defined by configuration.
 
-```html
+```liquid
+{% script name:"bootstrap", use_cdn:"true" %}
+```
+
+```razor
 <script asp-name="bootstrap" use-cdn="true"></script>
 ```
 
 ##### Use specific version
+
 This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
 the latest one is always used.
 
-```html
+```liquid
+{% script name:"bootstrap", version:"4" %}
+```
+
+```razor
 <script asp-name="bootstrap" version="3"></script>
 ```
 
 ##### Specify location
+
 By default all scripts are rendered in the footer. You can override it like this:
-```html
-<script asp-name="bootstrap" at="Head"></script>
+
+```liquid
+{% script name:"bootstrap", at:"Foot" %}
 ```
 
-Styles on the opposite are always injected in the header section of the HTML document.
+```razor
+<script asp-name="bootstrap" at="Foot"></script>
+```
+
+Styles, however, are always injected in the header section of the HTML document.
 
 #### Inline definition
+
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
-```html
-<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
+```liquid
+{% script source:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
+```
+
+```razor
+<script asp-name="foo" asp-src="/TheTheme/js/foo.min.js?v=1.0" debug-src="/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
 ```
 
 In this example we also define a dependency on the script named `baz` with the version `1.0`. If the version was not set
-the one with the highest number would be used.
+the one with the highest number will be used.
 
 You can also do the same for a stylesheet:
 
-```html
-<style asp-src="bar.min.css" debug-src="bar.css"></style>
+```liquid
+{% style source:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
+```
+
+```razor
+<style asp-src="/TheTheme/css/bar.min.css" debug-src="/TheTheme/css/bar.css"></style>
+```
+
+#### Custom scripts
+
+The following example demonstrates how to inject a custom script in the footer section.
+
+```liquid
+{% scriptblock at: "Foot" %}
+    document.write('<!-- some script -->');
+{% endscriptblock %}
+```
+
+```razor
+<script at="Foot">
+    document.write('<!-- some script -->');
+</script>
 ```

@@ -1,0 +1,49 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentFields.Settings
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+    var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+
+    var options = new List<SelectListItem>();
+    var selectedValue = String.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
+
+    foreach (var option in listSettings.Options)
+    {
+        var isSelected = option.Value == selectedValue
+            || (String.IsNullOrEmpty(option.Value) && String.IsNullOrEmpty(selectedValue));
+
+        options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
+    }
+}
+
+<fieldset class="form-group">
+
+    @if (listSettings.Editor == EditorOption.Radio)
+    {
+        var i = 0;
+        <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+        @foreach (var option in options)
+        {
+            <div class="custom-control custom-radio" asp-for="Text">
+                @Html.RadioButton("Text", option.Value, option.Selected, new { @class = "custom-control-input", id = Html.IdFor(m => m.Text) + "_" + i })
+                <label class="custom-control-label" for="@(Html.IdFor(m => m.Text) + "_" + i)">@option.Text</label>
+            </div>
+            i++;
+        }
+    }
+
+    @if (listSettings.Editor == EditorOption.Dropdown)
+    {
+        <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+        <select class="form-control" asp-for="Text" asp-items="options"></select>
+    }
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@T["— {0}", settings.Hint]</span>
+    }
+
+</fieldset>
+

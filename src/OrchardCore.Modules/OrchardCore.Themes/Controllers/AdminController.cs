@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -70,18 +70,15 @@ namespace OrchardCore.Themes.Controllers
             var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            // TODO: Cast the IExtensionInfo objects to ThemeExtensionInfo objects once Nick fixes the issue where both Modules and Themes are constructed as ExtensionInfos.
-            // var themes = _extensionManager.GetExtensions().OfType<ThemeExtensionInfo>().Where(extensionDescriptor =>
-            var themes = _extensionManager.GetExtensions().Where(extensionDescriptor =>
+            var themes = _extensionManager.GetExtensions().OfType<IThemeExtensionInfo>().Where(extensionDescriptor =>
             {
-                var isTheme = extensionDescriptor.Manifest.IsTheme();
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
                 
                 /// is the theme allowed for this tenant ?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
-                return isTheme && !isHidden;
+                return !isHidden;
             })
             .Select(extensionDescriptor =>
             {
@@ -124,51 +121,94 @@ namespace OrchardCore.Themes.Controllers
         [HttpPost]
         public async Task<ActionResult> SetCurrentTheme(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , T["Couldn't set the current theme."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
-
-            if (feature == null)
+            if (String.IsNullOrEmpty(id))
             {
-                return NotFound();
+                // Don't use any theme on the front-end 
+
             }
             else
             {
-                var isAdmin = IsAdminTheme(feature.Extension.Manifest);
 
-                if (isAdmin)
-                    await _adminThemeService.SetAdminThemeAsync(id);
-                else
-                    await _siteThemeService.SetSiteThemeAsync(id);
+                var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
-                // Enable the feature lastly to avoid accessing a disposed IMemoryCache (due to the current shell being disposed after updating).
-                var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-                var isEnabled = enabledFeatures.Any(x => x.Extension.Id == feature.Id);
-
-                if (!isEnabled)
+                if (feature == null)
                 {
-                    await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-                    _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+                    return NotFound();
                 }
+                else
+                {
+                    var isAdmin = IsAdminTheme(feature.Extension.Manifest);
 
-                _notifier.Success(T["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+                    if (isAdmin)
+                    {
+                        await _adminThemeService.SetAdminThemeAsync(id);
+                    }
+                    else
+                    {
+                        await _siteThemeService.SetSiteThemeAsync(id);
+                    }
+
+                    // Enable the feature lastly to avoid accessing a disposed IMemoryCache (due to the current shell being disposed after updating).
+                    var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+                    var isEnabled = enabledFeatures.Any(x => x.Extension.Id == feature.Id);
+
+                    if (!isEnabled)
+                    {
+                        await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
+                        _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+                    }
+
+                    _notifier.Success(T["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+                }
             }
 
             return RedirectToAction("Index");
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> Disable(string id)
+        public async Task<ActionResult> ResetSiteTheme()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , T["Not allowed to apply theme."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
+            await _siteThemeService.SetSiteThemeAsync("");
+
+            _notifier.Success(T["The Site theme was reset."]);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ResetAdminTheme()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
+            {
+                return Unauthorized();
+            }
+
+            await _adminThemeService.SetAdminThemeAsync("");
+
+            _notifier.Success(T["The Admin theme was reset."]);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Disable(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
+            {
+                return Unauthorized();
+            }
+
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -190,7 +230,7 @@ namespace OrchardCore.Themes.Controllers
                 return Unauthorized();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.Manifest.IsTheme() && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {

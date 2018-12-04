@@ -8,8 +8,10 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
+using OrchardCore.Layers.Deployment;
 using OrchardCore.Layers.Drivers;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Indexes;
@@ -43,6 +45,10 @@ namespace OrchardCore.Layers
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
+
+            services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

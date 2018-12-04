@@ -184,6 +184,11 @@ nuget.exe
 !lib/*/*.*
 
 #exclude node modules
-node_modules/*
+node_modules/
 
 wwwroot
+!src/OrchardCore.Modules/**/wwwroot
+!src/OrchardCore.Themes/**/wwwroot
+!src/Templates/**/content/**
+.template.config/
+/OrchardCore.sln.GhostDoc.xml

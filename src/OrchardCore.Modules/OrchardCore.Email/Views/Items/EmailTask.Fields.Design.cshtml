@@ -1,0 +1,8 @@
+@model ActivityViewModel<EmailTask>
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Workflows.ViewModels
+@using OrchardCore.Email.Workflows.Activities
+<header>
+    <h4><i class="fa fa-envelope"></i>@Model.Activity.GetTitleOrDefault(() => T["Send Email"])</h4>
+</header>
+<em>&quot;@Model.Activity.Subject&quot;</em>

@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Environment.Navigation;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
@@ -24,9 +21,9 @@ namespace OrchardCore.Navigation
                     menu.Classes.Add("menu");
                     menu.Metadata.Alternates.Add("Navigation__" + EncodeAlternateElement(menuName));
                 })
-                .OnProcessing(context =>
+                .OnProcessing(async context =>
                 {
-                    dynamic menu = context.Shape;
+                    var menu = context.Shape;
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value
@@ -35,21 +32,19 @@ namespace OrchardCore.Navigation
 
                     if ((bool)menu.HasItems)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
-
+                    var menuItems = await navigationManager.BuildMenuAsync(menuName, context.DisplayContext.ViewContext);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
                     {
                         // adding query string parameters
-                        RouteData route = menu.RouteData;
+                        var route = menu.RouteData;
                         var routeData = new RouteValueDictionary(route.Values);
                         var query = httpContext.Request.Query;
 
@@ -66,7 +61,7 @@ namespace OrchardCore.Navigation
                     }
 
                     // TODO: Flag Selected menu item
-                    return NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
+                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
                 });
 
             builder.Describe("NavigationItem")
@@ -74,7 +69,7 @@ namespace OrchardCore.Navigation
                 {
                     var menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
-                    var menuName = menu.MenuName;
+                    string menuName = menu.MenuName;
                     int level = menuItem.Level;
 
                     menuItem.Metadata.Alternates.Add("NavigationItem__level__" + level);

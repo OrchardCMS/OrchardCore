@@ -17,7 +17,7 @@ namespace OrchardCore.Alias.Settings
                 return null;
             }
 
-            return Shape<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
+            return Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 

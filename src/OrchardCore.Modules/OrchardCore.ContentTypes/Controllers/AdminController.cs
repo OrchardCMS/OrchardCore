@@ -7,19 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Mvc.Utilities;
 using YesSql;
-using System.Reflection;
-using OrchardCore.Mvc.ActionConstraints;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
@@ -331,12 +330,15 @@ namespace OrchardCore.ContentTypes.Controllers
             var partToAdd = viewModel.SelectedPartName;
 
             _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
-            _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
 
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return await AddReusablePartTo(id);
+            }
+            else
+            {
+                _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
             }
 
             return RedirectToAction("Edit", new { id });
@@ -391,8 +393,14 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            if (string.IsNullOrEmpty(viewModel.Name))
+            {
+                ModelState.AddModelError("Name", S["Name is Required."]);
+            }
+            else if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
+            {
                 ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
+            }
 
             if (!ModelState.IsValid)
                 return View(viewModel);
@@ -587,9 +595,11 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new EditFieldViewModel
             {
                 Name = partFieldDefinition.Name,
+                Editor = partFieldDefinition.Editor(),
+                DisplayMode = partFieldDefinition.DisplayMode(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
-                Editor = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
             };
 
             return View(viewModel);
@@ -600,10 +610,14 @@ namespace OrchardCore.ContentTypes.Controllers
         public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            {
                 return Unauthorized();
+            }
 
             if (viewModel == null)
+            {
                 return NotFound();
+            }
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -640,12 +654,15 @@ namespace OrchardCore.ContentTypes.Controllers
                     return View(viewModel);
                 }
 
-                _contentDefinitionService.AlterField(partViewModel, viewModel);
-
                 _notifier.Information(T["Display name changed to {0}.", viewModel.DisplayName]);
             }
 
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+            _contentDefinitionService.AlterField(partViewModel, viewModel);
+
+            // Refresh the local field variable in case it has been altered
+            field = _contentDefinitionManager.GetPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (!ModelState.IsValid)
             {
@@ -724,10 +741,11 @@ namespace OrchardCore.ContentTypes.Controllers
             var typePartViewModel = new EditTypePartViewModel
             {
                 Name = typePartDefinition.Name,
+                Editor = typePartDefinition.Editor(),
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
-                Editor = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
             };
 
             return View(typePartViewModel);
@@ -785,11 +803,11 @@ namespace OrchardCore.ContentTypes.Controllers
                     }
 
                 }
-
-                _contentDefinitionService.AlterTypePart(viewModel);
             }
 
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+            _contentDefinitionService.AlterTypePart(viewModel);
+
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
 
             if (!ModelState.IsValid)
             {

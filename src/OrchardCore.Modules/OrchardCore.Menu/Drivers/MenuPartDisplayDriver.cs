@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Menu.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
@@ -32,7 +32,7 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Edit(MenuPart part)
         {
-            return Shape<MenuPartEditViewModel>("MenuPart_Edit", model =>
+            return Initialize<MenuPartEditViewModel>("MenuPart_Edit", model =>
             {
                 model.MenuPart = part;
             });

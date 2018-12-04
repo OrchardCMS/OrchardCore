@@ -1,8 +1,0 @@
-[
-    {
-        "inputs": [
-            "Assets/trumbowyg.media.js"
-        ],
-        "output": "Content/Scripts/trumbowyg.media.js"
-    }
-]

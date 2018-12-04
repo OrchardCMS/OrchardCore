@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,25 +59,25 @@ namespace OrchardCore.Feeds.Controllers
             {
                 return NotFound();
             }
-            
-            var document = await context.Builder.ProcessAsync (context, async () =>
-            {
-                await bestQueryMatch.FeedQuery.ExecuteAsync(context);
 
-                _feedItemBuilder.Populate(context);
+            var document = await context.Builder.ProcessAsync(context, async () =>
+           {
+               await bestQueryMatch.FeedQuery.ExecuteAsync(context);
 
-                foreach (var contextualizer in context.Response.Contextualizers)
-                {
-                    if (ControllerContext != null)
-                    {
-                        contextualizer(new ContextualizeContext
-                        {
-                            ServiceProvider = _serviceProvider,
-                            Url = Url 
-                        });
-                    }
-                }
-            });
+               await _feedItemBuilder.PopulateAsync(context);
+
+               foreach (var contextualizer in context.Response.Contextualizers)
+               {
+                   if (ControllerContext != null)
+                   {
+                       contextualizer(new ContextualizeContext
+                       {
+                           ServiceProvider = _serviceProvider,
+                           Url = Url
+                       });
+                   }
+               }
+           });
 
             return Content(document.ToString(), "text/xml");
         }

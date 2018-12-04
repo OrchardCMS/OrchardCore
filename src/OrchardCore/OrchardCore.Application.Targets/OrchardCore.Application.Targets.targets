@@ -5,13 +5,20 @@
     Application that references it will embedd in its assembly a list of the referenced modules.
   -->
 
-  <Target Name="EmbeddModuleNames" AfterTargets="AfterResolveReferences">
+  <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
+    <MSBuild
+      Targets="GetModuleProject"
+      BuildInParallel="$(BuildInParallel)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
+      SkipNonexistentTargets="true"
+      ContinueOnError="true">
+
+      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
+    </MSBuild>
 
     <ItemGroup>
-      <ModuleProjectReferences
-        Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
-                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
+      <ModuleProjectReferences Include="@(ModuleProjects)" />
     </ItemGroup>
 
     <ItemGroup>
@@ -19,82 +26,11 @@
       <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="obj\module.names.map"
-      Lines="@(ModuleNames)"
-      Condition="'@(ModuleNames)' != ''"
-      Overwrite="true"
-      Encoding="utf-8"
-      ContinueOnError="true" />
-
     <ItemGroup>
-      <EmbeddedResource Include="obj\module.names.map">
-        <Link>module.names.map</Link>
-      </EmbeddedResource>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute" Condition="'@(ModuleNames)' != ''">
+        <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
+      </AssemblyAttribute>
     </ItemGroup>
-
-  </Target>
-
-  <Target Name="CompileModuleRazorFiles" BeforeTargets="_ResolveInputArguments">
-
-    <ItemGroup>
-      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectRazorFiles>
-    </ItemGroup>
-
-    <MSBuild
-      Targets="GetModuleLinkedRazorFiles"
-      BuildInParallel="$(BuildInParallel)"
-      Projects="@(ModuleProjectReferences)"
-      Condition="'@(ModuleProjectReferences)' != ''"
-      ContinueOnError="true">
-
-      <Output ItemName="ModuleLinkedRazorFiles" TaskParameter="TargetOutputs" />
-    </MSBuild>
-
-    <Copy
-      SourceFiles="@(ModulePackageRazorFiles)"
-      DestinationFolder=".Modules\%(RecursiveDir)"
-      Condition="'@(ModulePackageRazorFiles)' != ''"
-      ContinueOnError="true" />
-
-    <Copy
-      SourceFiles="@(ModuleProjectRazorFiles)"
-      DestinationFolder=".Modules\%(ProjectName)\%(RecursiveDir)"
-      Condition="'@(ModuleProjectRazorFiles)' != ''"
-      ContinueOnError="true" />
-
-    <Copy
-      SourceFiles="%(ModuleLinkedRazorFiles.FromFullPath)"
-      DestinationFiles=".Modules\%(ModuleLinkedRazorFiles.ToRelativePath)"
-      Condition="'@(ModuleLinkedRazorFiles)' != ''"
-      ContinueOnError="true" />
-
-    <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
-      <MvcModulesRazorFiles Include=".Modules\**\*.cshtml" />
-      <MvcContentRazorFiles Include="@(Content)" Condition="'%(Extension)'=='.cshtml'" />
-      <MvcRazorFilesToCompile Include="@(MvcContentRazorFiles);@(MvcModulesRazorFiles)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="CleanModuleAssetsAfterCompile" AfterTargets="_MvcRazorPrecompile" Condition="Exists('.Modules')">
-    <ItemGroup>
-      <MvcRazorFilesToCompile Remove="@(MvcModulesRazorFiles)" />
-      <ModuleAssetsAfterCompile Include=".Modules\**" />
-    </ItemGroup>
-
-    <Delete Files="@(ModuleAssetsAfterCompile)" ContinueOnError="true" />
-    <RemoveDir Directories=".Modules\%(ModuleAssetsAfterCompile.RecursiveDir);.Modules" ContinueOnError="true" />
-  </Target>
-
-  <Target Name="CleanModuleAssetsBeforeBuild" BeforeTargets="BeforeBuild;BeforeClean" Condition="Exists('.Modules')">
-    <ItemGroup>
-      <ModuleAssetsBeforeBuild Include=".Modules\**" />
-    </ItemGroup>
-
-    <Delete Files="@(ModuleAssetsBeforeBuild)" ContinueOnError="true" />
-    <RemoveDir Directories=".Modules\%(ModuleAssetsBeforeBuild.RecursiveDir);.Modules" ContinueOnError="true" />
   </Target>
 
 </Project>

@@ -79,7 +79,7 @@ namespace OrchardCore.Indexing.Services
                 return;
             }
 
-            var transaction = _session.Demand();
+            var transaction = await _session.DemandAsync();
             var dialect = SqlDialectFactory.For(transaction.Connection);
 
             try
@@ -125,7 +125,7 @@ namespace OrchardCore.Indexing.Services
         {
             await FlushAsync();
 
-            var transaction = _session.Demand();
+            var transaction = await _session.DemandAsync();
 
             try
             {
@@ -135,16 +135,21 @@ namespace OrchardCore.Indexing.Services
                 sqlBuilder.Select();
                 sqlBuilder.Table(nameof(IndexingTask));
                 sqlBuilder.Selector("*");
-                sqlBuilder.Take(count);
+
+                if (count > 0)
+                {
+                    sqlBuilder.Take(count.ToString());
+                }
+
                 sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
 
-                return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(dialect), new { Id = afterTaskId }, transaction);
+                return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId }, transaction);
             }
             catch (Exception e)
             {
                 _session.Cancel();
 
-                Logger.LogError("An error occured while reading indexing tasks: " + e.Message);
+                Logger.LogError(e, "An error occured while reading indexing tasks");
                 throw;
             }
         }

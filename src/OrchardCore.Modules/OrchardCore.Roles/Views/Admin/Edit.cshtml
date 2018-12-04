@@ -1,4 +1,4 @@
-﻿@model EditRoleViewModel
+@model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels;
 
 <h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
@@ -30,10 +30,16 @@
                             <tr data-text="@permission.Description">
                                 <td class="col-10">@permission.Description</td>
                                 <td class="col-1">
-                                    <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" value="true">
+                                        <label class="custom-control-label" for="Checkbox.@permission.Name">&nbsp;</label>
+                                    </div>
                                 </td>
                                 <td class="col-1">
-                                    <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))">
+                                        <label class="custom-control-label" for="Effective.@permission.Name">&nbsp;</label>
+                                    </div>
                                 </td>
                             </tr>
                         }

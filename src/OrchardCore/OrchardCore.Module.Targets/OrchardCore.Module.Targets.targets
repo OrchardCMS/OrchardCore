@@ -1,0 +1,81 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
+    Module that references it will embedd in its assembly all assets files and mapping infos.
+    Here we use some msbuild properties that would not be evaluated in the `.props` file.
+    It also prevents VS from adding / keeping some unnecessary lines in the project file.
+  -->
+
+  <PropertyGroup>
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\*$(DefaultLanguageSourceExtension);**\*.resx</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(BaseIntermediateOutputPath)**\*.props;$(BaseIntermediateOutputPath)**\*.targets</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleAssetExcludes)</ModuleNoneIncludes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AppDesignerFolder)' != ''">
+    <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);$(AppDesignerFolder)\**</ModuleDefaultAssetExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*$(DefaultLanguageSourceExtension)</ModuleNoneExcludes>
+    <ModuleNoneExcludes>$(ModuleNoneExcludes);$(AppDesignerFolder)\**\*.resx</ModuleNoneExcludes>
+    <ModuleNoneIncludes>$(ModuleNoneIncludes);$(AppDesignerFolder)\**</ModuleNoneIncludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="**\*.cshtml" />
+    <None Update="@(None)" CopyToPublishDirectory="Never" />
+    <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
+    <RemoveDuplicates Inputs="@(EmbeddedResource)">
+      <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
+    </RemoveDuplicates>
+
+    <ItemGroup>
+      <ModuleAssets
+        Include="Areas\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
+        Condition="'%(ModuleAssetFiles.Link)' == '' and '%(ModuleAssetFiles.Filename)' != ''"/>
+
+      <ModuleAssets
+        Include="Areas\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
+        Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="@(EmbeddedResource)" />
+      <EmbeddedResource Include="@(ModuleAssetFiles)" />
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == '' and '%(Extension)' != '.resx'">
+        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
+        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
+        <_Parameter1>$(MSBuildProjectName)</_Parameter1>
+        <_Parameter2>$(ModuleType)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
+        <_Parameter1>%(ModuleAssets.Identity)</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="UpdateModuleAssets" AfterTargets="CreateManifestResourceNames">
+    <ItemGroup>
+      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
+        <WithCulture>false</WithCulture>
+        <Culture></Culture>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetModuleProject" Returns="@(ModuleProject)">
+    <ItemGroup>
+      <ModuleProject Include="$(MSBuildProjectFullPath)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,27 @@
+@model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<HtmlFieldSettings>();
+}
+
+<script name="trumbowyg" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
+<style name="trumbowyg" asp-src="/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+
+<fieldset class="form-group">
+    <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Html" class="form-control"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>

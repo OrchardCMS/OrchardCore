@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Templates
 {
@@ -13,21 +14,23 @@ namespace OrchardCore.Templates
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Design"], content => content
+                .Add(T["Configuration"], content => content
                     .Add(T["Templates"], "10", import => import
                         .Action("Index", "Template", new { area = "OrchardCore.Templates" })
                         .Permission(Permissions.ManageTemplates)
                         .LocalNav()
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

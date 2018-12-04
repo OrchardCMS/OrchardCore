@@ -20,6 +20,7 @@ using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -41,7 +42,23 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
             Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
-            Factory.RegisterTag<DisplayTag>("display");
+            Factory.RegisterTag<AntiForgeryTokenTag>("antiforgerytoken");
+            Factory.RegisterTag<LayoutTag>("layout");
+
+            Factory.RegisterTag<ClearAlternatesTag>("shape_clear_alternates");
+            Factory.RegisterTag<AddAlternatesTag>("shape_add_alternates");
+            Factory.RegisterTag<ClearWrappers>("shape_clear_wrappers");
+            Factory.RegisterTag<AddWrappersTag>("shape_add_wrappers");
+            Factory.RegisterTag<ClearClassesTag>("shape_clear_classes");
+            Factory.RegisterTag<AddClassesTag>("shape_add_classes");
+            Factory.RegisterTag<ClearAttributesTag>("shape_clear_attributes");
+            Factory.RegisterTag<AddAttributesTag>("shape_add_attributes");
+            Factory.RegisterTag<ShapeTypeTag>("shape_type");
+            Factory.RegisterTag<ShapeDisplayTypeTag>("shape_display_type");
+            Factory.RegisterTag<ShapePositionTag>("shape_position");
+            Factory.RegisterTag<ShapeTabTag>("shape_tab");
+            Factory.RegisterTag<ShapeRemoveItemTag>("shape_remove_item");
+            Factory.RegisterTag<ShapePagerTag>("shape_pager");
 
             Factory.RegisterTag<HelperTag>("helper");
             Factory.RegisterTag<NamedHelperTag>("shape");
@@ -54,6 +71,14 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
+
+            // Dynamic caching
+            Factory.RegisterBlock<CacheBlock>("cache");
+            Factory.RegisterTag<CacheDependencyTag>("cache_dependency");
+            Factory.RegisterTag<CacheExpiresOnTag>("cache_expires_on");
+            Factory.RegisterTag<CacheExpiresAfterTag>("cache_expires_after");
+            Factory.RegisterTag<CacheExpiresSlidingTag>("cache_expires_sliding");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
             NamedHelperBlock.RegisterDefaultArgument("zone", "name");
@@ -69,7 +94,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var template = Parse(path, fileProviderAccessor.FileProvider, Cache);
 
             var context = new TemplateContext();
-            context.Contextualize(page, (object)page.Model);
+            await context.ContextualizeAsync(page, (object)page.Model);
 
             var options = services.GetRequiredService<IOptions<LiquidOptions>>().Value;
             await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
@@ -93,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                         }
                         else
                         {
-                            throw new Exception(String.Join(System.Environment.NewLine, errors));
+                            throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
                         }
                     }
                 }
@@ -149,12 +174,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
-        public static void Contextualize(this TemplateContext context, RazorPage page, object model)
+        public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
             var displayHelper = services.GetRequiredService<IDisplayHelperFactory>().CreateHelper(page.ViewContext);
 
-            context.Contextualize(new DisplayContext()
+            return context.ContextualizeAsync(new DisplayContext()
             {
                 ServiceProvider = page.Context.RequestServices,
                 DisplayAsync = displayHelper,
@@ -163,7 +188,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             });
         }
 
-        public static async void Contextualize(this TemplateContext context, DisplayContext displayContext)
+        public static async Task ContextualizeAsync(this TemplateContext context, DisplayContext displayContext)
         {
             var services = displayContext.ServiceProvider;
             context.AmbientValues.Add("Services", services);
@@ -195,6 +220,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             var layout = await layoutAccessor.GetLayoutAsync();
             context.AmbientValues.Add("ThemeLayout", layout);
 
+            var view = displayContext.ViewContext.View;
+            if (view is RazorView razorView)
+            {
+                context.AmbientValues.Add("LiquidPage", razorView.RazorPage);
+            }
+
             // TODO: Extract the request culture
 
             foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
@@ -202,8 +233,12 @@ namespace OrchardCore.DisplayManagement.Liquid
                 await handler.RenderingAsync(context);
             }
 
-            context.MemberAccessStrategy.Register(displayContext.Value.GetType());
-            context.LocalScope.SetValue("Model", displayContext.Value);
+            var model = displayContext.Value;
+            if (model != null)
+            {
+                context.MemberAccessStrategy.Register(model.GetType());
+                context.LocalScope.SetValue("Model", model);
+            }
         }
     }
 }

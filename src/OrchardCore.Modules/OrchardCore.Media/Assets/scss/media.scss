@@ -1,173 +1,22 @@
-@import '../../../OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss';
+// media variables
+@import "variables.scss";
 
-$gray-base: #000 !default;
-$gray-nr: lighten($gray-base, 13.5%) !default; // #222
-$gray-dark: lighten($gray-base, 20%) !default; // #333
-$gray: lighten($gray-base, 33.5%) !default; // #555
 
-.media-container {
+// main basic layout 
+@import "main-layout.scss";
 
-    .media-container-navigation {
-        @extend .col-md-3
-    }
 
-    .media-container-main {
-        @extend .col-md-9
-    }
+// vuejs components
+@import "upload-component.scss";
+@import "upload-list-component.scss";
+@import "media-items-grid-component.scss";
+@import "media-items-table-component.scss";  
 
-    @extend .row
-}
 
-/* navbar */
-
-.upload-button {
-    label {
-        margin-bottom: 0; // there is a margin below the label that makes the navbar fattier
-    }
-}
-
-/* Navigation */
-#media-container-navigation-menu {
-    list-style: none;
-    padding-left: 0;
-
-    li.selected > div {
-        font-weight: bold;
-    }
-
-    li.selected > div > a > i.folder:before {
-        content: "\f07c";
-        color: $gray;
-    }
-
-    div {
-        padding: 0.2rem 0.2rem;
-
-        a {
-            color: $gray-dark;
-            text-decoration: none;
-        }
-    }
-
-    ol {
-        padding-left: 1rem;
-        margin-left: 0px;
-    }
-
-    .folder {
-        color: lightgray;
-    }
-
-    li {
-        list-style: none;
-    }
-
-    .expand {
-        /* make both icons be in the center as their widths are different */
-        text-align: center;
-        width: 10px;
-        cursor: pointer;
-    }
-
-    .open {
-        &:before {
-            content: '\f0d7';
-        }
-    }
-
-    .empty {
-        transform: none;
-        visibility: hidden;
-    }
-
-    .closed {
-    }
-}
-
-[v-cloak] {
-    display: none
-}
-
-/* Upload button */
-.fileinput-button {
-    cursor: pointer;
-}
-
-.fileinput-button input {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-}
-
-/* File view */
-.media-container-main {
-
-    ol {
-        display: flex;
-        flex-direction: row;
-
-        li {
-            /* Fixed size or the preview side bar would make these shrink to nothing as
-             bootstrap cols are based on the browser size and not the container element. */
-            flex-grow: 4;
-            flex-shrink: 1;
-            max-width: 6cm;
-            margin-left: 0.75em;
-            margin-right: 0.75em;
-            width: 3cm;
-
-            .media-container-main-item {
-                @extend .card;
-                margin-bottom: 16px;
-            }
-
-            .selected {
-                @extend .border-primary;
-            }
-        }
-
-        img {
-            @extend .card-img-top;
-            max-height: 240px;
-            width: 100%;
-        }
-
-        list-style: none;
-        padding-left: 0;
-    }
-}
-
-.media-container-main-item-title {
-    @extend .card;
-    
-    .media-filename {
-        @extend .card-text;
-        @extend .small;
-    }
-}
-
-// Specific styles when the media application is in a modal dialog
-.modal-lg {
-    .media-container-main-list-item {
-        @extend .col-md-4;
-    }
-    /*.media-container-main-item-title {
-        // Hide the filename in modals
-        @extend .d-none; 
-        @extend .d-xl-block;
-    }*/
-}
-
-/* Toolbar */
-            .breadcrumb {
-                button {
-                    cursor: pointer;
-                }
-            }
-
-            .breadcrumb-item.active {
-                margin-right: 1rem;
-            }
+// others
+@import "_navbar.scss";
+@import "treeview.scss";
+@import "drop-zone.scss";
+@import "media-field.scss";
+@import "modal-view.scss";
+@import "utils.scss";

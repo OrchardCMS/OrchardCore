@@ -77,7 +77,7 @@ namespace OrchardCore.Data.Migration
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
                 }
 
-                return (GetCreateMethod(dataMigration) != null);
+                return ((GetCreateMethod(dataMigration) ?? GetCreateAsyncMethod(dataMigration)) != null);
             });
 
             return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
@@ -87,7 +87,7 @@ namespace OrchardCore.Data.Migration
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Uninstalling feature: {0}.", feature);
+                _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
             }
             var migrations = GetDataMigrations(feature);
 
@@ -104,6 +104,12 @@ namespace OrchardCore.Data.Migration
                 if (uninstallMethod != null)
                 {
                     uninstallMethod.Invoke(migration, new object[0]);
+                }
+
+                var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
+                if (uninstallAsyncMethod != null)
+                {
+                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -137,7 +143,7 @@ namespace OrchardCore.Data.Migration
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Updating feature: {0}", featureId);
+                _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
             }
 
             // proceed with dependent features first, whatever the module it's in
@@ -161,7 +167,7 @@ namespace OrchardCore.Data.Migration
                 var tempMigration = migration;
 
                 // get current version for this migration
-                var dataMigrationRecord = GetDataMigrationRecordAsync(tempMigration).Result;
+                var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var current = 0;
                 if (dataMigrationRecord != null)
@@ -186,28 +192,33 @@ namespace OrchardCore.Data.Migration
                         {
                             current = (int)createMethod.Invoke(migration, new object[0]);
                         }
+
+                        // try to resolve a CreateAsync method
+
+                        var createAsyncMethod = GetCreateAsyncMethod(migration);
+                        if (createAsyncMethod != null)
+                        {
+                            current = await (Task<int>)createAsyncMethod.Invoke(migration, new object[0]);
+                        }
                     }
 
                     var lookupTable = CreateUpgradeLookupTable(migration);
 
-                    while (lookupTable.ContainsKey(current))
+                    while (lookupTable.TryGetValue(current, out var methodInfo))
                     {
-                        try
+                        if (_logger.IsEnabled(LogLevel.Information))
                         {
-                            if (_logger.IsEnabled(LogLevel.Information))
-                            {
-                                _logger.LogInformation("Applying migration for {0} from version {1}.", featureId, current);
-                            }
-                            current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                            _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
                         }
-                        catch (Exception ex)
+
+                        var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
+                        if (isAwaitable)
                         {
-                            if (ex.IsFatal())
-                            {
-                                throw;
-                            }
-                            _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", featureId, current);
-                            throw;
+                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
+                        }
+                        else
+                        {
+                            current = (int) methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 
@@ -221,13 +232,9 @@ namespace OrchardCore.Data.Migration
                 }
                 catch (Exception ex)
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-                    _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
+                    _logger.LogError(ex, "Error while running migration version {Version} for '{FeatureName}'.", current, featureId);
+
                     _session.Cancel();
-                    throw new Exception(T["Error while running migration version {0} for {1}.", current, featureId], ex);
                 }
                 finally
                 {
@@ -254,11 +261,6 @@ namespace OrchardCore.Data.Migration
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
                     .ToList();
 
-            //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {
-            //    migration.SchemaBuilder = new SchemaBuilder(_interpreter, migration.Feature.Descriptor.Extension.Id, s => s.Replace(".", "_") + "_");
-            //    migration.ContentDefinitionManager = _contentDefinitionManager;
-            //}
-
             return migrations;
         }
 
@@ -275,17 +277,20 @@ namespace OrchardCore.Data.Migration
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
-        private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo mi)
+        private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo methodInfo)
         {
-            const string updatefromPrefix = "UpdateFrom";
+            const string updateFromPrefix = "UpdateFrom";
+            const string asyncSuffix = "Async";
 
-            if (mi.Name.StartsWith(updatefromPrefix))
+            if (methodInfo.Name.StartsWith(updateFromPrefix) && (methodInfo.ReturnType == typeof (int) || methodInfo.ReturnType == typeof (Task<int>)))
             {
-                var version = mi.Name.Substring(updatefromPrefix.Length);
-                int versionValue;
-                if (int.TryParse(version, out versionValue))
+                var version = methodInfo.Name.EndsWith(asyncSuffix)
+                    ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
+                    : methodInfo.Name.Substring(updateFromPrefix.Length);
+
+                if (Int32.TryParse(version, out var versionValue))
                 {
-                    return new Tuple<int, MethodInfo>(versionValue, mi);
+                    return new Tuple<int, MethodInfo>(versionValue, methodInfo);
                 }
             }
 
@@ -307,12 +312,40 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
+        /// Returns the CreateAsync method from a data migration class if it's found
+        /// </summary>
+        private static MethodInfo GetCreateAsyncMethod(IDataMigration dataMigration)
+        {
+            var methodInfo = dataMigration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
+            if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+            {
+                return methodInfo;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Returns the Uninstall method from a data migration class if it's found
         /// </summary>
         private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
         {
             var methodInfo = dataMigration.GetType().GetMethod("Uninstall", BindingFlags.Public | BindingFlags.Instance);
             if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            {
+                return methodInfo;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the UninstallAsync method from a data migration class if it's found
+        /// </summary>
+        private static MethodInfo GetUninstallAsyncMethod(IDataMigration dataMigration)
+        {
+            var methodInfo = dataMigration.GetType().GetMethod("UninstallAsync", BindingFlags.Public | BindingFlags.Instance);
+            if (methodInfo != null && methodInfo.ReturnType == typeof(Task))
             {
                 return methodInfo;
             }
@@ -337,7 +370,7 @@ namespace OrchardCore.Data.Migration
                         throw;
                     }
 
-                    _logger.LogError("Could not run migrations automatically on " + featureId, ex);
+                    _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }
         }

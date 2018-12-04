@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -20,6 +20,16 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public static string Description(this ContentPartFieldDefinition partField)
         {
             return partField.Settings.ToObject<ContentPartFieldSettings>().Description;
+        }
+
+        public static string Editor(this ContentPartFieldDefinition partField)
+        {
+            return partField.Settings.ToObject<ContentPartFieldSettings>().Editor;
+        }
+
+        public static string DisplayMode(this ContentPartFieldDefinition partField)
+        {
+            return partField.Settings.ToObject<ContentPartFieldSettings>().DisplayMode;
         }
     }
 }

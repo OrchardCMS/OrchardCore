@@ -1,39 +1,39 @@
-﻿using OrchardCore.OpenId.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using OrchardCore.OpenId.Validators;
 
 namespace OrchardCore.OpenId.ViewModels
 {
-    public class CreateOpenIdApplicationViewModel
+    public class CreateOpenIdApplicationViewModel : IValidatableObject
     {
         [Required]
         public string ClientId { get; set; }
         [Required]
         public string DisplayName { get; set; }
-        [Url]
-        public string RedirectUri { get; set; }
-        [Url]
-        public string LogoutRedirectUri { get; set; }
-        public ClientType Type { get; set; }
-        public bool SkipConsent { get; set; }
-        [DataType(DataType.Password)]
+        public string RedirectUris { get; set; }
+        public string PostLogoutRedirectUris { get; set; }
+        public string Type { get; set; }
+        public string ConsentType { get; set; }
         public string ClientSecret { get; set; }
-        [DataType(DataType.Password)]
-        [Compare("ClientSecret")]
-        public string ConfirmClientSecret { get; set; }
-        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+        public List<RoleEntry> RoleEntries { get; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
-        public bool AllowHybridFlow { get; set; }
-    }
+        public bool AllowLogoutEndpoint { get; set; }
 
-    public class RoleEntry
-    {
-        public string Name { get; set; }
-        public bool Selected { get; set; }
-    }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
+                .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
+        }
 
+        public class RoleEntry
+        {
+            public string Name { get; set; }
+            public bool Selected { get; set; }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Queries.Sql
 {
@@ -13,21 +14,24 @@ namespace OrchardCore.Queries.Sql
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Design"], "10", design => design
-                    .AddClass("menu-design").Id("design")
+                .Add(T["Configuration"], "10", configuration => configuration
+                    .AddClass("menu-configuration").Id("configuration")
                     .Add(T["Site"], "10", site => site
                         .Add(T["SQL Queries"], "5", queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Queries" })
                             .Permission(Permissions.ManageSqlQueries)
                             .LocalNav())));
+
+
+            return Task.CompletedTask;
 
         }
     }

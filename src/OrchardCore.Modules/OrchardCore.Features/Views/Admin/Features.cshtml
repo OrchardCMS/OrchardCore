@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Modules;
 @model FeaturesViewModel
 
 @{
@@ -49,7 +51,7 @@
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
         foreach (var featureGroup in featureGroups)
         {
-            if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor.Extension)))
+            if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
             {
                 continue;
             }
@@ -69,12 +71,12 @@
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
                 }
-                <h2 data-filter-value="@categoryFeatureNames">@categoryName</h2>
-                <ul class="list-group" data-filter-value="@categoryFeatureNames">
+                <h2 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
+                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
                         foreach (var feature in features)
                         {
-                            if (!Model.IsAllowed(feature.Descriptor.Extension))
+                            if (!Model.IsAllowed(feature.Descriptor))
                             {
                                 continue;
                             }
@@ -84,26 +86,22 @@
                             var featureName = feature.Descriptor.Name;
                             var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
-                            var dependencies = (from d in feature.Descriptor.Dependencies
-                                                select (from f in Model.Features where f.Descriptor.Id == d select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
-                            var missingDependencies = feature.Descriptor.Dependencies
-                                .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d));
-                            var showDisable = true; // categoryName.ToString() != "Core";
-                            var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
+                            var dependencies = (from d in feature.FeatureDependencies
+                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
+                            var missingDependencies = feature.FeatureDependencies
+                                .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
+                            var showDisable = categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
-                            <li class="list-group-item" data-filter-value="@featureName">
+                            <li class="list-group-item" data-filter-value="@categoryName @featureName">
                                 <div class="row">
                                     <div class="col-md-10">
                                         @* Display the checkbox ?*@
                                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                         {
-                                            <div class="form-check">
-                                                <h5>
-                                                    <label for="@feature.Descriptor.Id" class="form-check-label">
-                                                        <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" class="form-check-input" />
-                                                        @featureName
-                                                    </label>
-                                                </h5>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
+                                                <label class="custom-control-label h5" for="@feature.Descriptor.Id">@featureName</label>
                                             </div>
                                         }
                                         else
@@ -113,7 +111,7 @@
 
                                         <p class="text-muted">@feature.Descriptor.Description</p>
                                         <div>
-                                            @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
+                                            @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
                                             {
                                                 @foreach (var d in dependencies)
                                                 {
@@ -135,10 +133,15 @@
                                         {
                                             <a asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                                         }
-
                                         @if (showDisable && feature.IsEnabled)
                                         {
-                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                                            var confirmationMessage = T["Are you sure you want to disable this feature? Continue?"];
+                                            if (feature.DependentFeatures.Any())
+                                            {
+                                                var dependentFeatures = new HtmlString(String.Join(" ", feature.DependentFeatures.Select(f => f.Name)));
+                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features: {0}. Continue?", dependentFeatures];
+                                            }
+                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-message="@confirmationMessage" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>
@@ -240,14 +243,11 @@
 </form>
 <script at="Foot" type="text/javascript">
     //<![CDATA[
-    var confirmDisableMessage = '@T["Disabling this feature will also disable the following dependent features. Are you sure you want to continue?"]'; //HttpUtility.JavaScriptStringEncode()
-
-
-    $(function() {
+    $(function () {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
-        searchBox.keyup(function(e) {
+        searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();
             var elementsToFilter = $("[data-filter-value]");
 
@@ -256,7 +256,7 @@
                 searchBox.val('');
                 elementsToFilter.toggle(true);
             } else {
-                elementsToFilter.each(function() {
+                elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
                     $(this).toggle(found);

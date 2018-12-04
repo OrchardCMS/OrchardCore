@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Setup;
 
 namespace OrchardCore.Tenants
 {
@@ -17,6 +17,7 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddSetup();
         }
     }
 

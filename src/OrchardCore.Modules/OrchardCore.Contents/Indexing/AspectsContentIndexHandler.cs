@@ -14,40 +14,30 @@ namespace OrchardCore.Contents.Indexing
             _contentManager = contentManager;
         }
 
-        public Task BuildIndexAsync(BuildIndexContext context)
+        public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var body = _contentManager.PopulateAspect(context.ContentItem, new BodyAspect());
+            var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
             if (body != null)
             {
-                context.DocumentIndex.Entries.Add(
-                "Content.BodyAspect.Body",
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(context.ContentItem);
-
-            if (contentItemMetadata?.DisplayText != null)
+            if (context.ContentItem.DisplayText != null)
             {
-                context.DocumentIndex.Entries.Add(
-                "Content.ContentItemMetadata.DisplayText.Analyzed",
-                new DocumentIndex.DocumentIndexEntry(
-                    contentItemMetadata.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextAnalyzedKey,
+                    context.ContentItem.DisplayText,
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Entries.Add(
-                "Content.ContentItemMetadata.DisplayText",
-                new DocumentIndex.DocumentIndexEntry(
-                    contentItemMetadata.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.DocumentIndex.Set(
+                    IndexingConstants.DisplayTextKey,
+                    context.ContentItem.DisplayText,
+                    DocumentIndexOptions.Store);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

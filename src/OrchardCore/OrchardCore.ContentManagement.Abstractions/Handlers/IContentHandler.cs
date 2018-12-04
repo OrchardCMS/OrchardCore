@@ -1,25 +1,27 @@
-﻿namespace OrchardCore.ContentManagement.Handlers
+using System.Threading.Tasks;
+
+namespace OrchardCore.ContentManagement.Handlers
 {
     public interface IContentHandler
     {
-        void Activating(ActivatingContentContext context);
-        void Activated(ActivatedContentContext context);
-        void Initializing(InitializingContentContext context);
-        void Initialized(InitializingContentContext context);
-        void Creating(CreateContentContext context);
-        void Created(CreateContentContext context);
-        void Loading(LoadContentContext context);
-        void Loaded(LoadContentContext context);
-        void Updating(UpdateContentContext context);
-        void Updated(UpdateContentContext context);
-        void Versioning(VersionContentContext context);
-        void Versioned(VersionContentContext context);
-        void Publishing(PublishContentContext context);
-        void Published(PublishContentContext context);
-        void Unpublishing(PublishContentContext context);
-        void Unpublished(PublishContentContext context);
-        void Removing(RemoveContentContext context);
-        void Removed(RemoveContentContext context);
-        void GetContentItemAspect(ContentItemAspectContext context);
+        Task ActivatingAsync(ActivatingContentContext context);
+        Task ActivatedAsync(ActivatedContentContext context);
+        Task InitializingAsync(InitializingContentContext context);
+        Task InitializedAsync(InitializingContentContext context);
+        Task CreatingAsync(CreateContentContext context);
+        Task CreatedAsync(CreateContentContext context);
+        Task LoadingAsync(LoadContentContext context);
+        Task LoadedAsync(LoadContentContext context);
+        Task UpdatingAsync(UpdateContentContext context);
+        Task UpdatedAsync(UpdateContentContext context);
+        Task VersioningAsync(VersionContentContext context);
+        Task VersionedAsync(VersionContentContext context);
+        Task PublishingAsync(PublishContentContext context);
+        Task PublishedAsync(PublishContentContext context);
+        Task UnpublishingAsync(PublishContentContext context);
+        Task UnpublishedAsync(PublishContentContext context);
+        Task RemovingAsync(RemoveContentContext context);
+        Task RemovedAsync(RemoveContentContext context);
+        Task GetContentItemAspectAsync(ContentItemAspectContext context);
     }
 }

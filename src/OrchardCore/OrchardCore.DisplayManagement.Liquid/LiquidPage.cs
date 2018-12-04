@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public class LiquidPage : RazorPage<dynamic>
+    public class LiquidPage : Razor.RazorPage<dynamic>
     {
-        public override async Task ExecuteAsync()
+        public override Task ExecuteAsync()
         {
-            await LiquidViewTemplate.RenderAsync(this);
+            return LiquidViewTemplate.RenderAsync(this);
         }
     }
 }

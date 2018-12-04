@@ -1,11 +1,7 @@
-@inject OrchardCore.Settings.ISiteService SiteService
-@{
-        var site = await SiteService.GetSiteSettingsAsync();
-}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@Orchard.CultureName()">
 <head>
-    <title>@RenderTitleSegments(site.SiteName, "before")</title>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -13,21 +9,24 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
-    <style asp-name="font-awesome" use-cdn="true"></style>
 
-    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script asp-name="font-awesome" at="Foot" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.min.js" debug-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
 
     <resources type="Header" />
 
+    <!-- This script can't wait to the footer -->
+    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body>
+<body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="navbar-brand" href="@Url.Content("~/")">@site.SiteName</a>
-            <button id="navbar-toggler" type="button" data-toggle="collapse" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
@@ -43,10 +42,9 @@
             </div>
         </div>
 
-        <div id="ta-left-sidebar" class="ta-left-sidebar-nano">
-            <div class="nano-content">
-                @await RenderSectionAsync("Navigation", required: false)
-            </div>
+        <div id="ta-left-sidebar">
+            <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
+            @await RenderSectionAsync("Navigation", required: false)            
         </div>
 
         <div class="ta-content">
@@ -54,13 +52,12 @@
 
             @await RenderBodyAsync()
         </div>
-
     </div><!-- /.ta-wrapper -->
 
     @await RenderSectionAsync("Footer", required: false)
 
     <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
 
-    <resources type="Footer" />
+    <resources type="Footer" />    
 </body>
 </html>

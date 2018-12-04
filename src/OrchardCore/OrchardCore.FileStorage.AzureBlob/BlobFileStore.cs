@@ -87,12 +87,17 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             await _verifyContainerTask;
 
-            var blobDirectory = GetBlobDirectoryReference(path);
+            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
 
-            return new BlobDirectory(path, _clock.UtcNow);
+            if (await placeholderBlob.ExistsAsync())
+            {
+                var blobDirectory = GetBlobDirectoryReference(path);
+                return new BlobDirectory(path, _clock.UtcNow);
+            }
+            return null;
         }
 
-        public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "")
+        public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "", bool includeSubDirectories = false)
         {
             await _verifyContainerTask;
 
@@ -125,7 +130,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                             break;
                         case CloudBlockBlob blobItem:
                             // Ignore directory marker files.
-                            if (itemName != _directoryMarkerFileName)
+                            if (includeSubDirectories || itemName != _directoryMarkerFileName)
                                 results.Add(new BlobFile(itemPath, blobItem.Properties));
                             break;
                     }
