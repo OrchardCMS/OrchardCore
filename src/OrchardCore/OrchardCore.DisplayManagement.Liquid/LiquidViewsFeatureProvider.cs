@@ -13,7 +13,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
-        public static string DefaultLiquidViewTemplateName = "/DefaultLiquidViewTemplateName";
+        public const string DefaultLiquidViewName = "DefaultLiquidViewName";
+        public static string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
+        public static string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
         private static List<string> _sharedPaths;
         private static object _synLock = new object();
@@ -54,8 +56,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             feature.ViewDescriptors.Add(new CompiledViewDescriptor
             {
-                RelativePath = DefaultLiquidViewTemplateName + RazorViewEngine.ViewExtension,
-                ViewAttribute = new RazorViewAttribute(DefaultLiquidViewTemplateName + LiquidViewTemplate.ViewExtension, typeof(LiquidPage))
+                RelativePath = DefaultRazorViewPath,
+                ViewAttribute = new RazorViewAttribute(DefaultLiquidViewPath, typeof(LiquidPage))
             });
 
             foreach (var path in _sharedPaths)

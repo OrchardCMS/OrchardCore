@@ -290,8 +290,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var viewEngine = options.Value.ViewEngines[0];
 
             var viewResult = viewEngine.GetView(executingFilePath: null,
-                LiquidViewsFeatureProvider.DefaultLiquidViewTemplateName + RazorViewEngine.ViewExtension,
-                isMainPage: true);
+                LiquidViewsFeatureProvider.DefaultRazorViewPath, isMainPage: true);
 
             var tempDataProvider = services.GetService<ITempDataProvider>();
 
