@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -16,7 +17,7 @@ namespace OrchardCore.Menu.GraphQL
             if (settings != null && settings.Stereotype != "MenuItem") return;
 
             contentItemType.Field<MenuItemsListQueryObjectType>(
-                "menuItemsListPart",
+                nameof(MenuItemsListPart).ToFieldName(),
                 resolve: context => context.Source.As<MenuItemsListPart>()
             );
 
