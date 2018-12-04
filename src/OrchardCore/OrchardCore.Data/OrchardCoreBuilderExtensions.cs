@@ -123,14 +123,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<IDbConnectionAccessor>(sp =>
                 {
-                    var session = sp.GetService<YesSql.ISession>();
+                    var store = sp.GetService<IStore>();
 
-                    if (session == null)
+                    if (store == null)
                     {
                         return null;
                     }
 
-                    return new DbConnectionAccessor(session);                   
+                    return new DbConnectionAccessor(store);                   
                 });
             });
 
