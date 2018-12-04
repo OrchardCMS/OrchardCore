@@ -14,7 +14,8 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public IUpdateModel ModelUpdater
         {
-            get {
+            get 
+            {
                 var updateModel = _httpContext.Items[Key] as IUpdateModel;
                 return updateModel ?? new NullModelUpdater();
             }
