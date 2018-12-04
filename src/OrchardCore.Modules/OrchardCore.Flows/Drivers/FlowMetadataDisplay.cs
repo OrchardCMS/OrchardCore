@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,6 +22,8 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.Alignment = flowMetadata.Alignment;
                 m.Size = flowMetadata.Size;
+                m.Classes = flowMetadata.Classes;
+                m.Styles = flowMetadata.Styles;
             }).Location("Footer");
         }
 

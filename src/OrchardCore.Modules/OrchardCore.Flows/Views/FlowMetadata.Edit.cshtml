@@ -1,4 +1,4 @@
-﻿@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.Models
 @model FlowMetadata
 
 <div class="btn-group btn-group-sm" data-toggle="buttons" role="group">
@@ -37,4 +37,18 @@
     </label>
 </div>
 
-
+<div class="btn-group">
+    <button type="button" title="@T["Settings"]" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom:8px;">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-right" style="padding:8px 10px;">
+        <div class="form-group">
+            <label for="Classes">Classes</label>
+            <input class="form-control form-control-sm" asp-for="Classes" type="text" value="@Model.Classes">
+        </div>
+        <div class="form-group">
+            <label for="Styles">Styles</label>
+            <textarea class="form-control form-control-sm" asp-for="Styles" type="text" value="@Model.Styles"></textarea>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,15 @@
-<div class="@String.Join(" ", Model.Classes.ToArray())">
+@{ 
+    var styles = "";
+    foreach (var attr in Model.Attributes)
+    {
+        if (attr.Key == "style")
+        {
+            styles = attr.Value.Replace(Environment.NewLine, "");
+        }
+    }
+}
+
+<div class="@String.Join(" ", Model.Classes.ToArray())" style="@styles">
     @if (Model.Header != null || Model.Meta != null)
     {
     <div class="widget-header">
