@@ -90,10 +90,15 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 Name = field.Name,
                 Description = fieldDescriptor.Description,
                 Type = fieldDescriptor.FieldType,
-                Resolver = new FuncFieldResolver<ContentItem, object>(context =>
+                Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                 {
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
                     var contentField = contentPart?.Get(typeof(ContentField), context.FieldName.ToPascalCase());
+
+                    if (contentField == null)
+                    {
+                        contentField = context.Source.Get(typeof(ContentField), context.FieldName.ToPascalCase());
+                    }
 
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
                 })
