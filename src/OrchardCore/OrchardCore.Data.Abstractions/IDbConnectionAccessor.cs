@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Data.Abstractions
 {
-    public interface IDbConnectionAccessor : IDisposable
+    public interface IDbConnectionAccessor
     {
         Task<IDbConnection> GetConnectionAsync();
     }
