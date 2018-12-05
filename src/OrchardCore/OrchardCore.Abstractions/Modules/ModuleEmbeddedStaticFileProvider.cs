@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
@@ -44,7 +45,7 @@ namespace OrchardCore.Modules
                 var module = path.Substring(0, index);
 
                 // Check if it is an existing module.
-                if (application.Modules.Any(m=> m.Name == module))
+                if (application.Modules.Any(m=> string.Equals(m.Name, module,StringComparison.InvariantCultureIgnoreCase)))
                 {
                     // Resolve the embedded file subpath: "wwwroot/**/*.*"
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);
