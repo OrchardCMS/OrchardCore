@@ -3,7 +3,8 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-///<reference path="../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
+///<reference path="../../../../../node_modules/@types/jquery/index.d.ts" />
+
 var applyFilter = function (category, q) {
     var type = $('.modal-activities').data('activity-type');
     category = category || $('.activity-picker-categories .nav-link.active').attr('href').substr(1);
