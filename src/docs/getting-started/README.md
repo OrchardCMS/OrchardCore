@@ -58,7 +58,7 @@ Then, you can access to the admin using the `/admin` url. Enjoy.
 
 Sometimes you want to do custom things in the database like creating your own tables and performing CRUD operations on them. You can acccess the underling IDbConnection by injecting the IDbConnectionAccessor interface.  Just use your favorite ORM and your are good to go!
 
-```
+```csharp
 using OrchardCore.Data.Abstractions;
 
 namespace SomeNamespace
