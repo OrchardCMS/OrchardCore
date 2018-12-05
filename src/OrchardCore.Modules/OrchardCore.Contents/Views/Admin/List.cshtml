@@ -24,12 +24,15 @@ new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Publi
 new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
 };
+    contentStatuses.Where( s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
+
     List<SelectListItem> contentSorts = new List<SelectListItem>() {
 new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
 new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
 new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
 new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
 };
+    contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
 

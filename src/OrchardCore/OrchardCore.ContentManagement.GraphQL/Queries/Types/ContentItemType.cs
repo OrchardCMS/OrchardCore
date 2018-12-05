@@ -8,17 +8,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             Name = "ContentItemType";
 
-            Field(ci => ci.ContentItemId);
-            Field(ci => ci.ContentItemVersionId);
-            Field(ci => ci.ContentType);
-            Field(ci => ci.DisplayText);
-            Field(ci => ci.Published);
-            Field(ci => ci.Latest);
-            Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc);
-            Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc);
-            Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc);
-            Field(ci => ci.Owner);
-            Field(ci => ci.Author);
+            Field(ci => ci.ContentItemId).Description("Content item id");
+            Field(ci => ci.ContentItemVersionId).Description("The content item version id");
+            Field(ci => ci.ContentType).Description("Type of content");
+            Field(ci => ci.DisplayText).Description("The display text of the content item");
+            Field(ci => ci.Published).Description("Is the published version");
+            Field(ci => ci.Latest).Description("Is the latest version");
+            Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc, description: "The date and time of modification");
+            Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc, description: "The date and time of publication");
+            Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc, description: "The date and time of creation");
+            Field(ci => ci.Owner).Description("The owner of the content item");
+            Field(ci => ci.Author).Description("The author of the content item");
 
             Interface<ContentItemInterface>();
 
