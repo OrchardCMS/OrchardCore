@@ -7,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Data
 {
-    public class DbConnectionAccessor : IDbConnectionAccessor
+    public class DbConnectionAccessor : IDbConnectionAccessor, IDisposable
     {
         private readonly IStore _store;
         private DbConnection _connection;
