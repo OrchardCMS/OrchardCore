@@ -42,7 +42,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
             var container = await _siteService.GetSiteSettingsAsync();
-            container.Properties[nameof(MicrosoftAccountSettings)] = JObject.FromObject(settings);
+            container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
+            {
+                aspect.AppId = settings.AppId;
+                aspect.AppSecret = settings.AppSecret;
+                aspect.CallbackPath = settings.CallbackPath;
+            });
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -55,12 +60,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult("AppId is required", new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(T["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppSecret))
             {
-                yield return new ValidationResult("AppSecret is required", new string[] { nameof(settings.AppSecret) });
+                yield return new ValidationResult(T["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
             }
         }
 

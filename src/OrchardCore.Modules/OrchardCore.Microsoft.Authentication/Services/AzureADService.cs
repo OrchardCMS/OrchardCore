@@ -42,7 +42,13 @@ namespace OrchardCore.Microsoft.Authentication.Services
             }
 
             var container = await _siteService.GetSiteSettingsAsync();
-            container.Properties[nameof(AzureADSettings)] = JObject.FromObject(settings);
+            container.Alter<AzureADSettings>(nameof(AzureADSettings), aspect =>
+            {
+                aspect.AppId = settings.AppId;
+                aspect.CallbackPath = settings.CallbackPath;
+                aspect.DisplayName = settings.DisplayName;
+                aspect.TenantId = settings.TenantId;
+            });
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -55,17 +61,17 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.DisplayName))
             {
-                yield return new ValidationResult("DisplayName is required", new string[] { nameof(settings.DisplayName) });
+                yield return new ValidationResult(T["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult("AppId is required", new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(T["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
             if (string.IsNullOrWhiteSpace(settings.TenantId))
             {
-                yield return new ValidationResult("TenantId is required", new string[] { nameof(settings.TenantId) });
+                yield return new ValidationResult(T["TenantId is required"], new string[] { nameof(settings.TenantId) });
             }
         }
     }

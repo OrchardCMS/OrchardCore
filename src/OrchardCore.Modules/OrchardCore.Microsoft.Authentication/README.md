@@ -36,7 +36,7 @@ Available settings are:
 + CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup AzureAD app to use the default path /signin-oidc.
 
-*Users Registration*_
+*Users Registration*
 + If you want to enable new users to register to the site through their Facebook login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 + An existing user can link his account to his Facebook login through the External Logins link from User menu
 

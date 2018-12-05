@@ -51,14 +51,15 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             {
                 return null;
             }
-
             return Initialize<AzureADSettingsViewModel>("AzureADSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
                 model.AppId = settings.AppId;
                 model.TenantId = settings.TenantId;
                 if (settings.CallbackPath.HasValue)
+                {
                     model.CallbackPath = settings.CallbackPath;
+                }
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
 
@@ -67,15 +68,12 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-
                 if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
                 {
                     return null;
                 }
-
                 var model = new AzureADSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-
                 if (context.Updater.ModelState.IsValid)
                 {
                     settings.DisplayName = model.DisplayName;
