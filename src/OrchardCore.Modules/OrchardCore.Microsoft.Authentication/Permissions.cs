@@ -6,7 +6,7 @@ namespace OrchardCore.Microsoft.Authentication
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageMicrosoftAuthentication
-            = new Permission(nameof(ManageMicrosoftAuthentication), "View and edit Authentication Providers.");
+            = new Permission(nameof(ManageMicrosoftAuthentication), "Manage Microsoft Authentication settings");
 
         public IEnumerable<Permission> GetPermissions()
         {
