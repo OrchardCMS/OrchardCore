@@ -2,23 +2,15 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "wwwroot/node_modules/graphiql/graphiql.css"
+      "../../../node_modules/graphiql/graphiql.css"
     ],
     "output": "wwwroot/Styles/graphiql.css"
   },
   {
-    "copy": true,
     "inputs": [
-      "wwwroot/node_modules/graphiql/graphiql.js"
+      "../../../node_modules/graphiql/graphiql.js"
     ],
     "output": "wwwroot/Scripts/graphiql.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "wwwroot/node_modules/graphiql/graphiql.min.js"
-    ],
-    "output": "wwwroot/Scripts/graphiql.min.js"
   },
   {
     "generateSourceMaps": false,
@@ -28,31 +20,15 @@
     "output": "wwwroot/Styles/graphiql-orchard.css"
   },
   {
-    "copy": true,
     "inputs": [
-      "wwwroot/node_modules/react/dist/react.js"
+      "../../../node_modules/react/dist/react.js"
     ],
     "output": "wwwroot/Scripts/react.js"
   },
   {
-    "copy": true,
     "inputs": [
-      "wwwroot/node_modules/react/dist/react.min.js"
-    ],
-    "output": "wwwroot/Scripts/react.min.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "wwwroot/node_modules/react-dom/dist/react-dom.js"
+      "../../../node_modules/react-dom/dist/react-dom.js"
     ],
     "output": "wwwroot/Scripts/react-dom.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "wwwroot/node_modules/react-dom/dist/react-dom.min.js"
-    ],
-    "output": "wwwroot/Scripts/react-dom.min.js"
   }
 ]
