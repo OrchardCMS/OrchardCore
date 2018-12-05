@@ -2,7 +2,7 @@ using OrchardCore.Modules.Manifest;
 using OrchardCore.Microsoft.Authentication;
 
 [assembly: Module(
-    Name = "Microsoft.Authentication",
+    Name = "Microsoft Authentication",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "2.0.0",
