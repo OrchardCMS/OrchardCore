@@ -53,3 +53,32 @@ Enter the required information about the site:
 Submit the form and your site is generated after a few seconds.
 
 Then, you can access to the admin using the `/admin` url. Enjoy.
+
+## Custom operations in the database
+
+Sometimes you want to do custom things in the database like creating your own tables and performing CRUD operations on them. You can acccess the underling IDbConnection by injecting the IDbConnectionAccessor interface.  Just use your favorite ORM and your are good to go!
+
+```
+using OrchardCore.Data.Abstractions;
+
+namespace SomeNamespace
+{
+    public class SomeController : Controller
+    {
+        public SomeController(IDbConnectionAccessor accessor)
+        {
+            _accessor = accessor;
+        }
+        
+        public async Task<ActionResult> Index()
+        {
+            using (var connection = await _accessor.GetConnectionAsync())
+            {
+                //Do your database read/write operations here.
+            }
+        }
+    
+    }
+}
+```
+
