@@ -16,10 +16,10 @@ namespace OrchardCore.Cors.Services
         public void Configure(CorsOptions options)
         {
             var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
-            if(corsSettings?.Polices == null)
+            if(corsSettings?.Policies == null)
                 return;
 
-            foreach (var corsPolicy in corsSettings.Polices)
+            foreach (var corsPolicy in corsSettings.Policies)
             {
                 options.AddPolicy(corsPolicy.Name, configurePolicy =>
                 {
@@ -61,7 +61,7 @@ namespace OrchardCore.Cors.Services
                 });
             }
 
-            options.DefaultPolicyName = corsSettings.Polices.First().Name;
+            options.DefaultPolicyName = corsSettings.Policies.First().Name;
         }
     }
 }

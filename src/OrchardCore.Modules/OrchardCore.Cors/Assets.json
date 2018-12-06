@@ -1,0 +1,8 @@
+[
+  {
+    "inputs": [
+      "Assets/Admin/cors.js"
+    ],
+    "output": "wwwroot/Scripts/cors-admin.js"
+  }
+]

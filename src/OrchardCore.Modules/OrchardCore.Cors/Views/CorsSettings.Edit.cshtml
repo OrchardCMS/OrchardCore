@@ -6,10 +6,13 @@
 }
 
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot" depends-on="jQuery"></script>
+<script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
+<script depends-on="cors-admin" at="Foot">
+    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies, settings));
+</script>
 
 <div id="corsAdmin">
     <input type="hidden" name="ISite.Policies" id="ISite_Policies" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
-    <h1>@T["CORS Settings"]</h1>
     <span class="subscript">@T["CORS stands for Cross-Origin Request more information can be found here"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
     <nav class="admin-toolbar">
         <ul class="navbar-nav mr-auto">
@@ -146,75 +149,4 @@
             </li>
         </ul>
     </div>
-
-</script>
-
-<script at="Foot">
-    var optionsList = Vue.component('options-list',
-        {
-            props: ['options', 'optionType', 'title', 'subTitle'],
-            template: '#options-list',
-            data: function() {
-                return {
-                    'newOption' : ''
-                };
-            },
-            methods: {
-                addOption: function(value) {
-                    this.options.push(value);
-                },
-                deleteOption: function(value) {
-                    this.options.splice($.inArray(value[0], this.options), 1);
-                }
-            }
-        });
-
-    var policyDetails = Vue.component('policy-details',
-        {
-            components: { optionsList },
-            props: ['policy'],
-            template: '#policy-details'
-        });
-
-    var corsApp = new Vue({
-        el: '#corsAdmin',
-        components: { policyDetails, optionsList },
-        data: {
-            policies: @Html.Raw(Json.Serialize(Model.Policies, settings)),
-            selectedPolicy: null
-        },
-        methods: {
-            newPolicy: function() {
-                this.selectedPolicy = {
-                    Name: 'New policy',
-                    AllowedOrigins: [],
-                    AllowAnyOrigin: true,
-                    AllowedMethods: [],
-                    AllowAnyMethod: true,
-                    AllowedHeaders: [],
-                    AllowAnyHeader: true,
-                    AllowCredentials : true
-                };
-            },
-            editPolicy: function (policy) {
-                this.selectedPolicy = Object.assign({}, policy);
-            },
-            deletePolicy: function(policy, event) {
-                this.selectedPolicy = null;
-                var policyToRemove = this.policies.filter(function (item) { return item.Name === policy.Name; });
-                if (policyToRemove.length > 0)
-                    this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
-                document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
-                event.stopPropagation();
-            },
-            updatePolicy: function(policy, event) {
-                this.deletePolicy(policy, event);
-                this.policies.push(policy);
-                document.getElementById('ISite_Policies').value = JSON.stringify(this.policies);
-            },
-            cancelUpdate: function() {
-                this.selectedPolicy = null;
-            }
-        }
-    });
 </script>

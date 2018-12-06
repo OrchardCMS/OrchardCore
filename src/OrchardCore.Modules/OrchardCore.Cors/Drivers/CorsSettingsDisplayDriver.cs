@@ -46,9 +46,9 @@ namespace OrchardCore.Cors.Drivers
 
                 var list = new List<CorsPolicyViewModel>();
 
-                if (settings?.Polices != null)
+                if (settings?.Policies != null)
                 {
-                    foreach (var policySetting in settings.Polices)
+                    foreach (var policySetting in settings.Policies)
                     {
                         var policyViewModel = new CorsPolicyViewModel()
                         {
@@ -79,7 +79,7 @@ namespace OrchardCore.Cors.Drivers
                 var configJson = request.Form["ISite.Policies"].First();
                 model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
 
-                settings.Polices = model.Policies.Select(p =>
+                settings.Policies = model.Policies.Select(p =>
                 new CorsPolicySetting()
                 {
                     Name = p.Name,
