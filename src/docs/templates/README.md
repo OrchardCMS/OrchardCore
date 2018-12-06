@@ -110,11 +110,11 @@ namespace MyNewWebsite
 #### Module commands
 
 ```CMD
-dotnet new occmsmodule -n ModuleName.OrchardCore
+dotnet new ocmodulecms -n ModuleName.OrchardCore
 
-dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart
+dotnet new ocmodulecms -n ModuleName.OrchardCore --PartName TestPart
 
-dotnet new occmsmodule -n ModuleName.OrchardCore --PartName TestPart --AddPart true
+dotnet new ocmodulecms -n ModuleName.OrchardCore --PartName TestPart --AddPart true
 ```
 
 ### New module from Visual Studio (manual way)
