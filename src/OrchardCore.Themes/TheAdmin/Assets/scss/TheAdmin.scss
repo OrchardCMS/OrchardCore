@@ -15,7 +15,7 @@ $left-navigation-width-when-compact: 60px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
 
-html, body, .ta-wrapper, .ta-content,  {
+html, body, .ta-wrapper, .ta-content, {
     /*border: solid 1px blue !important;*/
     height: 100%;
 }
@@ -64,11 +64,12 @@ body {
 // -----------------------------
 
 .ta-navbar-top {
-    @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
+    @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
     min-height: $top-nav-height;
     border-bottom: $border-content;
     z-index: 8;
     padding-left: 0px;
+    background-color: white;
 }
 
 
@@ -142,6 +143,8 @@ body {
     color: $gray-800;
     border-right: $border-content;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    font-size: 14px;
+    font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 
     #left-nav {
         position: relative;
@@ -226,6 +229,8 @@ body {
 
         > span.icon {
             padding-left: 20px;
+            width: 48px;
+            display: inline-block;
         }
     }
 
@@ -244,39 +249,103 @@ body {
     li.has-items a:visited {
         padding-left: $link-padding-left - 4px;
     }
-    // Hovering the navigation items
+
     li .item-label:hover {
-        background-color: $gray-700;
-        color: $gray-100;
+        background-color: rgba(0, 0, 0, 0.2);
     }
-    // Current page
+
     li > ul > li.active > .item-label {
-        background-color: $gray-600;
-        border-left: 4px solid $gray-800;
-        color: $gray-100 !important;
-        padding-left: (2 * $link-padding-left + 2) !important;
+        background: rgba(0,0,0,.1);
+        color: rgba(0,0,0,.9) !important;
+        font-weight: 600;
+        padding-left: (2 * $link-padding-left + 16) !important;
+    }
+
+    li.active > ul > li.active > .item-label::before {
+        border-left: 3px solid;
+        border-left-color: #0078D4;
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
+    }
+
+    li.active > ul > li > .item-label::before {
+        border-left: 3px solid;
+        border-left-color: rgba(0,0,0,.2);
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
     }
 
     li.has-items.active > .item-label {
-        padding-left: (2 * $link-padding-left) + 2 !important;
+        padding-left: (2 * $link-padding-left + 16) !important;
+    }
+
+    li.has-items.active > .item-label::before {
+        border-left: 3px solid;
+        border-left-color: rgba(0,0,0,.2);
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
     }
 
     li.active > .item-label {
-        background-color: #b4bdc4;
-        color: $gray-100 !important;
-    }
-    // Second level colors and indent
-    li ul > li > .item-label {
-        background-color: $gray-200;
-        color: $gray-700 !important;
-        padding-left: (2 * $link-padding-left) + 6 !important;
+        background-color: rgba(0, 0, 0, 0.1);
+        font-weight: 600;
     }
 
-    li ul > li > .item-label:hover {
-        color: $gray-100 !important;
+    li.active > .item-label:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    li .active::before {
+        border-left: 3px solid;
+        border-left-color: rgba(0,0,0,.2);
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
+    }
+
+    li .active .item-label::before {
+        border-left: 3px solid;
+        border-left-color: rgba(0,0,0,.2);
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
+    }
+
+    li ul > li > .item-label {
+        background: rgba(0,0,0,.08);
+        color: $gray-700 !important;
+        padding-left: (2 * $link-padding-left) + 16 !important;
+    }
+
+    li.active ul > li > .item-label::before {
+        border-left: 3px solid;
+        border-left-color: rgba(0,0,0,.2);
+        bottom: 0;
+        content: "";
+        left: 0;
+        position: absolute;
+        top: 0;
+    }
+
+    li ul > li ul > li {
+        background: rgba(0,0,0,.1);
     }
     // third level indent
     li ul > li ul > li > a {
+        color: black;
         padding-left: 3 * $link-padding-left !important;
     }
 
@@ -284,11 +353,8 @@ body {
         padding-left: (3 * $link-padding-left - 4) !important;
     }
 }
-
-
 // Layout 4 : ta-left-sidebar when compacted
 // -----------------------------------------
-
 .left-sidebar-compact #ta-left-sidebar {
     width: $left-navigation-width-when-compact;
 
@@ -422,7 +488,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     color: $pre-color;
     @include border-radius($border-radius);
 }
-
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
@@ -439,7 +504,6 @@ label .field-validation-error::before {
 select[multiple] {
     min-height: 300px;
 }
-
 // Toolbar
 // ------------------------------
 .admin-toolbar {
