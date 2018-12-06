@@ -1,4 +1,4 @@
-using OrchardCore.Modules.Cms.Manifest;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "OrchardCore.Templates.Module",
