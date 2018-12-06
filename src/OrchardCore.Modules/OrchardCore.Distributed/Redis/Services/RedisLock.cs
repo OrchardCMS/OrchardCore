@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using StackExchange.Redis;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Distributed.Redis.Services
 {
@@ -24,6 +25,13 @@ namespace OrchardCore.Distributed.Redis.Services
             _prefix = shellSettings.Name + ':';
             _redis = redis;
             Logger = logger;
+
+            var test = new System.Collections.Generic.List<double>();
+            for (int i = 1; i <= 20; i++)
+            {
+                var delay = GetDelay(i);
+                test.Add(delay.TotalMilliseconds);
+            }
         }
 
         public ILogger Logger { get; set; }
@@ -43,25 +51,24 @@ namespace OrchardCore.Distributed.Redis.Services
         /// </summary>
         public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
-            long maxCount = (long)(timeout.TotalMilliseconds / 1000);
-
-            long count = 0;
-            while (true)
+            using (var cts = new CancellationTokenSource(timeout))
             {
-                var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue);
+                var retries = 0;
 
-                if (locked)
+                while (_redis.IsConnected && !cts.IsCancellationRequested)
                 {
-                    return (new Locker(this, key), locked);
-                }
+                    var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue);
 
-                if (count++ > maxCount)
-                {
-                    return (null, locked);
-                }
+                    if (locked)
+                    {
+                        return (new Locker(this, key), locked);
+                    }
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(GetDelay(retries++), cts.Token);
+                }
             }
+
+            return (null, false);
         }
 
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
@@ -115,6 +122,30 @@ namespace OrchardCore.Distributed.Redis.Services
             {
                 _lock.Release(_key);
             }
+        }
+
+        private static readonly double _baseMilliseconds = 1000;
+        private static readonly double _maxMilliseconds = 30000;
+
+        protected internal virtual TimeSpan GetDelay(int retries)
+        {
+            var milliseconds = _baseMilliseconds * (1 + ((Math.Pow(1.5, retries - 1) - 1)
+                * (.7 + new Random().NextDouble() * .3)));
+
+            return TimeSpan.FromMilliseconds(Math.Min(milliseconds, _maxMilliseconds));
+
+            // test 1    test 2
+            // ------    ------
+            // 1000      1000
+            // 1612      1585
+            // 2529      2259
+            // 3815      3451
+            // 5503      5616
+            // 8882      8942
+            // 14390     14507
+            // 18553     18125
+            // 30000     27540
+            // 30000     30000
         }
     }
 }

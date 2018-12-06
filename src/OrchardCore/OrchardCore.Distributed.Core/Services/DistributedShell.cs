@@ -30,6 +30,7 @@ namespace OrchardCore.Distributed.Core.Services
         private bool _initialized;
 
         public DistributedShell(
+            ILock test,
             IShellHost shellHost,
             ShellSettings shellSettings,
             IShellSettingsManager shellSettingsManager,
