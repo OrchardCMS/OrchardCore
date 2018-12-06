@@ -26,10 +26,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName))
-                {
-                    continue;
-                }
+                if (contentItemType.HasField(partName)) continue;
 
                 var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
 
@@ -39,7 +36,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
-                        partName,
+                        partName.ToFieldName(),
+                        description: queryGraphTypeResolved.Description,
                         resolve: context =>
                         {
                             var nameToResolve = partName;
@@ -59,7 +57,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         return;
                     }
 
-                    var whereInput = (ContentItemWhereInput) whereArgument.ResolvedType;
+                    var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
 
                     whereInput.AddField(new FieldType
                     {

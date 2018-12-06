@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -117,6 +119,18 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     return session;
+                });
+
+                services.AddScoped<IDbConnectionAccessor>(sp =>
+                {
+                    var store = sp.GetService<IStore>();
+
+                    if (store == null)
+                    {
+                        return null;
+                    }
+
+                    return new DbConnectionAccessor(store);                   
                 });
             });
 

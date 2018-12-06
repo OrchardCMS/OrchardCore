@@ -1,4 +1,4 @@
-///<reference path="../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
+///<reference path="../../../../../node_modules/@types/jquery/index.d.ts" />
 
 var applyFilter = function (category: string, q: string) {
     const type = $('.modal-activities').data('activity-type');

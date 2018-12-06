@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
+using OpenIddict.Mvc.Internal;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -52,7 +53,7 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Authorize(OpenIdConnectRequest request)
+        public async Task<IActionResult> Authorize([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
@@ -124,7 +125,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> AuthorizeAccept(OpenIdConnectRequest request)
+        public async Task<IActionResult> AuthorizeAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Authorize method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject authorization requests
@@ -173,7 +174,7 @@ namespace OrchardCore.OpenId.Controllers
         public IActionResult AuthorizeDeny() => Forbid(OpenIddictServerDefaults.AuthenticationScheme);
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Logout(OpenIdConnectRequest request)
+        public async Task<IActionResult> Logout([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
             {
@@ -194,7 +195,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Logout)), AllowAnonymous]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> LogoutAccept(OpenIdConnectRequest request)
+        public async Task<IActionResult> LogoutAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Logout method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject end session requests
@@ -220,7 +221,7 @@ namespace OrchardCore.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token(OpenIdConnectRequest request)
+        public async Task<IActionResult> Token([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by the MVC modules stack,
