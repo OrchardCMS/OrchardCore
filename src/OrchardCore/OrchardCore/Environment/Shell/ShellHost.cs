@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Shell
         private readonly IRunningShellTable _runningShellTable;
         private readonly ILogger _logger;
 
-        private readonly static object _syncLock = new object();
+        private bool _initialized;
         private ConcurrentDictionary<string, ShellContext> _shellContexts;
         private readonly IExtensionManager _extensionManager;
         private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
@@ -49,14 +49,14 @@ namespace OrchardCore.Environment.Shell
 
         public async Task InitializeAsync()
         {
-            if (_shellContexts == null)
+            if (!_initialized)
             {
                 try
                 {
                     // Prevent concurrent requests from creating all shells multiple times
                     await _initializingSemaphore.WaitAsync();
 
-                    if (_shellContexts == null)
+                    if (!_initialized)
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         await CreateAndRegisterShellsAsync();
@@ -64,6 +64,7 @@ namespace OrchardCore.Environment.Shell
                 }
                 finally
                 {
+                    _initialized = true;
                     _initializingSemaphore.Release();
                 }
             }
@@ -110,6 +111,7 @@ namespace OrchardCore.Environment.Shell
 
             return shell;
         }
+
         public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
         {
             return (await GetScopeAndContextAsync(settings)).Scope;

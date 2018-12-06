@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -20,28 +21,35 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor)
+        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<ContentTypeQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
-            var contentTypeBuilders = serviceProvider.GetService<IEnumerable<IContentTypeBuilder>>().ToList();
+            var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
                 var typeType = new ContentItemType
                 {
-                    Name = typeDefinition.Name
+                    Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName]
                 };
 
                 var query = new ContentItemsFieldType(typeDefinition.Name, schema)
                 {
                     Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName],
                     ResolvedType = new ListGraphType(typeType)
                 };
 

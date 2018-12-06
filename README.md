@@ -1,6 +1,9 @@
 # Orchard Core 
 
-[Orchard Core](https://github.com/OrchardCMS/OrchardCore) is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET Core](http://www.asp.net/vnext). You can check out the [Orchard Core presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
+Orchard Core consists of two distinct projects:
+
+- __Orchard Core Framework__: An application framework for building modular, multi-tenant applications on ASP.NET Core.
+- __Orchard Core CMS__: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
@@ -21,10 +24,6 @@ Nightly (dev):
 [![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/dev.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/dev)
 [![MyGet](https://img.shields.io/myget/orchardcore-preview/vpre/OrchardCore.Application.Cms.Targets.svg)](https://myget.org/feed/orchardcore-preview/package/nuget/OrchardCore.Application.Cms.Targets)
 
-## Orchard CMS
-
-Orchard is a free, [open source](https://github.com/OrchardCMS/OrchardCore/blob/dev/LICENSE), community-focused Content Management System built on the ASP.NET MVC platform.
-
 ## Status
 
 ### Beta
@@ -35,7 +34,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ## Getting Started
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `master` branch. 
+- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `dev` branch. 
 
 ### Command line
 
@@ -62,4 +61,4 @@ We currently follow these [engineering guidelines](https://github.com/OrchardCMS
 
 ### Documentation
 
-The documentation can be accessed here: [https://orchardcore.readthedocs.io/en/latest/](https://orchardcore.readthedocs.io/en/latest/)
+The documentation can be accessed here: [https://orchardcore.readthedocs.io/en/dev/](https://orchardcore.readthedocs.io/en/dev/)

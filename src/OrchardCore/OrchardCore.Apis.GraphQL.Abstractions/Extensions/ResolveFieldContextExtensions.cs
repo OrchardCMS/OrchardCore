@@ -26,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0);
         }
 
-        public static IEnumerable<string> Page<T>(this ResolveFieldContext<T> context, IEnumerable<string> source)
+        public static IEnumerable<TSource> Page<T, TSource>(this ResolveFieldContext<T> context, IEnumerable<TSource> source)
         {
             var skip = context.GetArgument<int>("skip");
             var first = context.GetArgument<int>("first");

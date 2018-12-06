@@ -81,6 +81,22 @@ namespace OrchardCore.Roles.Services
             return roles.Roles.Select(x => x.RoleName).OrderBy(x => x).ToList();
         }
 
+        public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(role))
+            {
+                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
+            }
+
+            var entity = await FindByNameAsync(role, cancellationToken);
+            if (entity == null)
+            {
+                return Array.Empty<Claim>();
+            }
+
+            return await GetClaimsAsync(entity, cancellationToken);
+        }
+
         #region IRoleStore<IRole>
         public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {

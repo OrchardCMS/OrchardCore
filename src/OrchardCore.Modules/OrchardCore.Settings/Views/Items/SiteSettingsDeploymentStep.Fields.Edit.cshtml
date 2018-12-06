@@ -15,8 +15,8 @@
 
             <li class="list-group-item">
                 <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="@Html.IdFor(m => m.Settings)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@checkd">
-                    <label class="custom-control-label" for="@Html.IdFor(m => m.Settings)">@name</label>
+                    <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.Settings) + "-" + @name)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@checkd">
+                    <label class="custom-control-label" for="@(Html.IdFor(m => m.Settings) + "-" + @name)">@name</label>
                 </div>
             </li>
         }

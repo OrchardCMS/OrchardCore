@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Localization;
 
 namespace Microsoft.Extensions.Localization
@@ -33,7 +32,7 @@ namespace Microsoft.Extensions.Localization
     }
 }
 namespace Microsoft.AspNetCore.Mvc.Localization
-{ 
+{
     public static class ViewLocalizerExtensions
     {
         public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string singular, string plural, params object[] arguments)

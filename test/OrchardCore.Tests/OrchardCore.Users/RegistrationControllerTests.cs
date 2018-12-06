@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +17,7 @@ using OrchardCore.Email;
 using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -49,7 +51,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IHtmlDisplay>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                Mock.Of<IStringLocalizer<RegistrationController>>());
+                Mock.Of<IStringLocalizer<RegistrationController>>(),
+                Mock.Of<IEnumerable<IRegistrationFormEvents>>());
 
             var result = await controller.Register();
             Assert.IsType<NotFoundResult>(result);
@@ -83,7 +86,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IHtmlDisplay>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                Mock.Of<IStringLocalizer<RegistrationController>>());
+                Mock.Of<IStringLocalizer<RegistrationController>>(),
+                Enumerable.Empty<IRegistrationFormEvents>());
 
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);

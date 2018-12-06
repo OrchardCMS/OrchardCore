@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.ResourceManagement
@@ -99,16 +99,16 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Renders the registered stylesheets.
         /// </summary>
-        void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderStylesheet(IHtmlContentBuilder builder);
 
         /// <summary>
         /// Renders the registered header script tags.
         /// </summary>
-        void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderHeadScript(IHtmlContentBuilder builder);
 
         /// <summary>
         /// Renders the registered footer script tags.
         /// </summary>
-        void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderFootScript(IHtmlContentBuilder builder);
     }
 }

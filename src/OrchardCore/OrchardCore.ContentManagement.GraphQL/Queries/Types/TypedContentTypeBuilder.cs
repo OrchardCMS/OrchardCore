@@ -23,15 +23,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             foreach (var part in contentTypeDefinition.Parts)
             {
-                var partName = part.PartDefinition.Name;
+                var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName))
-                {
-                    continue;
-                }
+                if (contentItemType.HasField(partName)) continue;
 
-                var activator = typeActivator.GetTypeActivator(partName);
+                var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
 
                 var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
@@ -39,10 +36,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     contentItemType.Field(
                         queryGraphTypeResolved.GetType(),
-                        partName,
+                        partName.ToFieldName(),
+                        description: queryGraphTypeResolved.Description,
                         resolve: context =>
                         {
-                            var nameToResolve = context.ReturnType.Name;
+                            var nameToResolve = partName;
                             var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
 
                             return context.Source.Get(typeToResolve, nameToResolve);
@@ -59,7 +57,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         return;
                     }
 
-                    var whereInput = (ContentItemWhereInput) whereArgument.ResolvedType;
+                    var whereInput = (ContentItemWhereInput)whereArgument.ResolvedType;
 
                     whereInput.AddField(new FieldType
                     {

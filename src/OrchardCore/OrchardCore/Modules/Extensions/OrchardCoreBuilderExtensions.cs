@@ -1,8 +1,10 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -78,6 +80,16 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.ApplicationServices.AddSetFeaturesDescriptor();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Registers and configures a background hosted service to manage tenant background tasks.
+        /// </summary>
+        public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
+        {
+            builder.ApplicationServices.AddSingleton<IHostedService, ModularBackgroundService>();
 
             return builder;
         }
