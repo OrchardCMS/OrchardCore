@@ -27,11 +27,11 @@
     <PackageManagement Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Cryptography.Internal" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Redis" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
@@ -54,6 +54,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.MiddlewareAnalysis" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
@@ -62,7 +63,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Localization" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.0" />
@@ -119,7 +119,7 @@
     <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.SqlConfig.Tools" Version="2.0.2" />
     <PackageManagement Include="Microsoft.Extensions.Caching.SqlServer" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
