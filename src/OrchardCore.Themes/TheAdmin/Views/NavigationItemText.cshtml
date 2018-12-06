@@ -1,7 +1,6 @@
 @using System.Linq
 
-@if (Model.Level == 1)
-{
+@{
 
     var prefix = "icon-class-";
 
@@ -11,6 +10,15 @@
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 
-    <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
+    if (iconClasses.Any())
+    {
+        <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
+    }
+    else
+    {
+        <span class="icon"><i class="fas fa-folder" aria-hidden="true"></i></span>
+    }
+
 }
-<span class="title">@Model.Text</span>
+
+@Model.Text

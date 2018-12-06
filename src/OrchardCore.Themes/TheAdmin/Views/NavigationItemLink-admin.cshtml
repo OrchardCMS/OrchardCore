@@ -33,7 +33,7 @@
     else
     {
         tag = Tag(Model, "a");
-        tag.AddCssClass("item-label");
+        tag.AddCssClass("item-label d-flex");
         tag.Attributes["href"] = Model.Href ?? "#";
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }

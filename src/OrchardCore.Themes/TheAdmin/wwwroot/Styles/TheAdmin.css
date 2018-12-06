@@ -7228,12 +7228,14 @@ body {
     padding-right: 10px; }
     #ta-left-sidebar .icon .fa {
       min-width: 16px; }
-  #ta-left-sidebar #left-nav ul.menu-admin > li > .item-label {
+  #ta-left-sidebar #left-nav ul.menu-admin .item-label {
     padding-left: 0px !important; }
-    #ta-left-sidebar #left-nav ul.menu-admin > li > .item-label > span.icon {
+    #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.icon {
       padding-left: 20px;
       width: 48px;
-      display: inline-block; }
+      flex-shrink: 0; }
+    #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.title {
+      flex-grow: 1; }
   #ta-left-sidebar li .item-label,
   #ta-left-sidebar li a:hover,
   #ta-left-sidebar li a:active,
@@ -7302,8 +7304,7 @@ body {
     top: 0; }
   #ta-left-sidebar li ul > li > .item-label {
     background: rgba(0, 0, 0, 0.08);
-    color: #495057 !important;
-    padding-left: 48px !important; }
+    color: #495057 !important; }
   #ta-left-sidebar li.active ul > li > .item-label::before {
     border-left: 3px solid;
     border-left-color: rgba(0, 0, 0, 0.2);

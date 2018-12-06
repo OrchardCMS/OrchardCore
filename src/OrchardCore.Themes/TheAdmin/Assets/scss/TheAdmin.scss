@@ -224,13 +224,17 @@ body {
     // changing the padding of the icons on the first level to match
     // the padding when leftbar is collapsed. Avoid small movement
     // when switching between the two states
-    #left-nav ul.menu-admin > li > .item-label {
+    #left-nav ul.menu-admin .item-label {
         padding-left: 0px !important;
 
         > span.icon {
             padding-left: 20px;
             width: 48px;
-            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        > span.title{
+            flex-grow: 1;
         }
     }
 
@@ -327,7 +331,6 @@ body {
     li ul > li > .item-label {
         background: rgba(0,0,0,.08);
         color: $gray-700 !important;
-        padding-left: (2 * $link-padding-left) + 16 !important;
     }
 
     li.active ul > li > .item-label::before {
