@@ -88,7 +88,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
 
-            var entity = await FindByNameAsync(role, cancellationToken);
+            var entity = await FindByIdAsync(role, cancellationToken);
             if (entity == null)
             {
                 return Array.Empty<Claim>();
