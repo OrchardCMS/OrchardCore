@@ -25,13 +25,6 @@ namespace OrchardCore.Distributed.Redis.Services
             _prefix = shellSettings.Name + ':';
             _redis = redis;
             Logger = logger;
-
-            var test = new System.Collections.Generic.List<double>();
-            for (int i = 1; i <= 20; i++)
-            {
-                var delay = GetDelay(i);
-                test.Add(delay.TotalMilliseconds);
-            }
         }
 
         public ILogger Logger { get; set; }
@@ -53,9 +46,9 @@ namespace OrchardCore.Distributed.Redis.Services
         {
             using (var cts = new CancellationTokenSource(timeout))
             {
-                var retries = 0;
+                var retries = 0.0;
 
-                while (_redis.IsConnected && !cts.IsCancellationRequested)
+                while (!cts.IsCancellationRequested)
                 {
                     var locked = await LockAsync(key, expiration ?? TimeSpan.MaxValue);
 
@@ -64,7 +57,12 @@ namespace OrchardCore.Distributed.Redis.Services
                         return (new Locker(this, key), locked);
                     }
 
-                    await Task.Delay(GetDelay(retries++), cts.Token);
+                    try
+                    {
+                        await Task.Delay(GetDelay(++retries), cts.Token);
+                    }
+
+                    catch (TaskCanceledException) { }
                 }
             }
 
@@ -124,28 +122,29 @@ namespace OrchardCore.Distributed.Redis.Services
             }
         }
 
-        private static readonly double _baseMilliseconds = 1000;
-        private static readonly double _maxMilliseconds = 30000;
+        private static readonly double _baseDelay = 1000;
+        private static readonly double _maxDelay = 30000;
 
-        protected internal virtual TimeSpan GetDelay(int retries)
+        protected internal virtual TimeSpan GetDelay(double retries)
         {
-            var milliseconds = _baseMilliseconds * (1 + ((Math.Pow(1.5, retries - 1) - 1)
-                * (.7 + new Random().NextDouble() * .3)));
+            var delay = _baseDelay
+                * (1.0 + ( (Math.Pow(1.5, retries - 1.0) - 1.0)
+                    * (0.7 + new Random().NextDouble() * 0.3) ));
 
-            return TimeSpan.FromMilliseconds(Math.Min(milliseconds, _maxMilliseconds));
+            return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
 
-            // test 1    test 2
-            // ------    ------
-            // 1000      1000
-            // 1612      1585
-            // 2529      2259
-            // 3815      3451
-            // 5503      5616
-            // 8882      8942
-            // 14390     14507
-            // 18553     18125
-            // 30000     27540
-            // 30000     30000
+            // 2 examples with 10 retries
+            // --------------------------
+            // 1000      1000 (start from base)
+            // 1382      1474
+            // 2217      2195
+            // 3051      2746
+            // 3933      4248
+            // 6066      6000
+            // 11340     9342
+            // 15656     13059
+            // 21885     19207
+            // 30000     30000 (max reached)
         }
     }
 }
