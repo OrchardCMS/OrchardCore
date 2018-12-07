@@ -359,6 +359,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminTrees.Abst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminTrees", "src\OrchardCore.Modules\OrchardCore.AdminTrees\OrchardCore.AdminTrees.csproj", "{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Microsoft.Authentication", "src\OrchardCore.Modules\OrchardCore.Microsoft.Authentication\OrchardCore.Microsoft.Authentication.csproj", "{6B15CC95-04C7-42A4-96A5-F98664242069}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Twitter", "src\OrchardCore.Modules\OrchardCore.Twitter\OrchardCore.Twitter.csproj", "{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}"
 EndProject
 Global
@@ -947,6 +949,10 @@ Global
 		{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B15CC95-04C7-42A4-96A5-F98664242069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B15CC95-04C7-42A4-96A5-F98664242069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B15CC95-04C7-42A4-96A5-F98664242069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B15CC95-04C7-42A4-96A5-F98664242069}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1118,6 +1124,7 @@ Global
 		{76871CE0-43F9-49D3-AAAB-4A8510F76447} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{3850142E-FA8B-4C26-A4BA-542928D4DF35} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{6B15CC95-04C7-42A4-96A5-F98664242069} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
