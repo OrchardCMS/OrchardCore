@@ -1,14 +1,3 @@
-/**
- * Trumbowyg v2.11.0 - A lightweight WYSIWYG editor
- * Default stylesheet for Trumbowyg editor
- * ------------------------
- * @link http://alex-d.github.io/Trumbowyg
- * @license MIT
- * @author Alexandre Demode (Alex-D)
- *         Twitter : @AlexandreDemode
- *         Website : alex-d.fr
- */
-
 $light-color: #ecf0f1 !default;
 $dark-color: #222 !default;
 
@@ -30,7 +19,8 @@ $slow-transition-duration: 300ms !default;
     }
 }
 
-.trumbowyg-box {
+.trumbowyg-box,
+.trumbowyg-modal {
     *,
     *::before,
     *::after {

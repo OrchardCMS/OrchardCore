@@ -8,7 +8,7 @@
  *          Website : https://www.maxmade.nl/
  */
 
-(function($) {
+(function ($) {
     'use strict';
 
     var defaultOptions = {
@@ -22,14 +22,14 @@
     $.extend(true, $.trumbowyg, {
         plugins: {
             pasteEmbed: {
-                init: function(trumbowyg) {
+                init: function (trumbowyg) {
                     trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
 
                     if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
                         return;
                     }
 
-                    trumbowyg.pasteHandlers.push(function(pasteEvent) {
+                    trumbowyg.pasteHandlers.push(function (pasteEvent) {
                         try {
                             var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
                                 pastedData = clipboardData.getData('Text'),
@@ -57,7 +57,7 @@
                                     data: query,
                                     cache: false,
                                     dataType: 'jsonp',
-                                    success: function(res) {
+                                    success: function (res) {
                                         if (res.html) {
                                             index = 0;
                                             content = res.html;
@@ -65,10 +65,10 @@
                                             index += 1;
                                         }
                                     },
-                                    error: function() {
+                                    error: function () {
                                         index += 1;
                                     },
-                                    complete: function() {
+                                    complete: function () {
                                         if (content.length === 0 && index < endpoints.length - 1) {
                                             this.url = endpoints[index];
                                             this.data = query;
@@ -87,7 +87,7 @@
                                     }
                                 });
                             }
-                        } catch (c) {}
+                        } catch (c) { }
                     });
                 }
             }

@@ -1,0 +1,31 @@
+.trumbowyg-editor table {
+  width: 100%;
+
+  td {
+    border: 1px dotted #e7eaec;
+    padding: 8px;
+  }
+}
+
+.trumbowyg-dropdown-table {
+  table {
+    margin: 10px;
+    display: inline-block;
+  }
+
+  table td {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin: 1px;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px #cecece inset;
+
+    &.active {
+      background-color: #00b393;
+      box-shadow: none;
+      cursor: pointer;
+    }
+  }
+}

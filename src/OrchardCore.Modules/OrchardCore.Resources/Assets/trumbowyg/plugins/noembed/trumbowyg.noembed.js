@@ -23,6 +23,9 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
+            da: {
+                noembedError: 'Fejl'
+            },
             sk: {
                 noembedError: 'Chyba'
             },
@@ -40,7 +43,11 @@
             },
             tr: {
                 noembedError: 'Hata'
-            }
+            },
+            zh_tw: {
+                noembed: '插入影片',
+                noembedError: '錯誤'
+            },
         },
 
         plugins: {
