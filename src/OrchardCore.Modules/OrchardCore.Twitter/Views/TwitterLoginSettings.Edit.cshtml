@@ -12,7 +12,7 @@
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="ConsumerSecret">
-    <label>@T["Secret Key"] <span asp-validation-for="ConsumerSecret"></span></label>
+    <label asp-for="ConsumerSecret">@T["Secret Key"] <span asp-validation-for="ConsumerSecret"></span></label>
     <input asp-for="ConsumerSecret" class="form-control" type="password" value="@Model.ConsumerSecret" />
     <span class="hint">@T["The Consumer Secret defined in the Keys and tokens tab of twitter app dashboard."]</span>
 </fieldset>
