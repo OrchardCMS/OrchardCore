@@ -1,44 +1,25 @@
-# Microsoft Authentication (OrchardCore.Microsoft.Authentication)
+# Twitter (OrchardCore.Twiter)
 
 This module configures Orchard to support Microsoft Account and/or Microsoft Azure AD accounts.
 
-## Microsoft Account
-Authenticates users with their Microsoft Account. 
-If the site allows to register new users, a local user is created and the Microsoft Account is linked.
-If a local user with the same email is found, then the external login is linked to that account, after authenticating.
+## Sign in with Twitter
+Authenticates users with their Twitter Account. 
 
-You should create an app in the [Application Registration Portal](https://apps.dev.microsoft.com) and add the web platform.
+Create an app in the [Twitter Developer Platform](https://developer.twitter.com) and enable Sign in with Twitter.
+In the app details, you must configure the Callback URL. The default url in OrchardCore is [tenant]/signin-twitter.
 
-Give a name for your App, create a secret that you will use it as AppSecret in Orchard, and allow the implicit flow. The default callback at Orchard is [tenant]/signin-microsoft or can be set as needed.
-
-Configuration can be set through the _Microsoft Authentication -> Microsoft Account_ settings menu in the admin dashboard.
+Configuration can be set through the _Twitter -> Sign in with Twitter_ settings menu in the admin dashboard.
 
 Available settings are:
 
-+ AppId: Application id in the Application Registration Portal.
-+ AppSecret: The application secret that will be used by Orchard.
++ ConsumerKey: API key found in the keys and tokens tab of your twitter app.
++ ConsumerSecret: The API secret key of your twitter app.
 + CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
-If no value is provided, setup Microsoft Account app to use the default path /signin-microsoft.
-
-## AzureAD
-Authenticates users with their Microsoft Account.
-If the site allows to register new users, a local user is created and the AzureAD account is linked.
-If a local user with the same email is found, then the external login is linked to that account, after authenticating.
-
-You can configure The AzureAD through the [Azure Portal](https://portal.azure.com) for your tenant. 
-
-Create a Web app/API App registration. The default call back in Orchard is /signin-oidc
-
-Available settings are:
-+ DisplayName: The display name of the provider.
-+ AppId: Provide the Application ID from the properties of the above app
-+ TenantId: Provide the Directory ID value from the Azure Active Directory properties
-+ CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
-If no value is provided, setup AzureAD app to use the default path /signin-oidc.
+If no value is provided, setup Callback URL in Twitter app to use the default path /signin-twitter.
 
 *Users Registration*
-+ If you want to enable new users to register to the site through their Facebook login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-+ An existing user can link his account to his Facebook login through the External Logins link from User menu
++ If you want to enable new users to register to the site through their Twitter account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
++ An existing user can link his account to his Twitter account through the External Logins link from User menu.
 
 
 
