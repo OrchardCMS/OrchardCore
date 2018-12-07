@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -217,6 +217,10 @@ namespace OrchardCore.ResourceManagement
             }
 
             var tagBuilder = new TagBuilder(TagName);
+            if (settings.SelfClosing)
+            {
+                tagBuilder.TagRenderMode = TagRenderMode.SelfClosing;
+            }
 
             if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {

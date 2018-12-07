@@ -39,13 +39,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
-
                 var setting = _resourceManager.Include("stylesheet", Src, DebugSrc);
-
+                setting.IsSelfClosing();
+                
                 if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
@@ -75,6 +74,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Resource required
 
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
+                setting.IsSelfClosing();
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -140,6 +140,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Also include the style
 
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
+                setting.IsSelfClosing();
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -170,7 +171,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
             }
-
+            
             output.TagName = null;
         }
     }
