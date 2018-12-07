@@ -23,7 +23,7 @@ namespace OrchardCore.Twitter
     }
 
     [Feature(TwitterConstants.Features.TwitterLogin)]
-    public class MicrosoftAccountStartup : StartupBase
+    public class TwitterLoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
