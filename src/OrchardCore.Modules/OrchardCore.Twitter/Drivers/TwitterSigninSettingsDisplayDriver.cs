@@ -44,15 +44,15 @@ namespace OrchardCore.Twitter.Drivers
 
             return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
             {
-                model.ConsumerKey = settings.ConsumerKey;
+                model.APIKey = settings.ConsumerKey;
                 if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
-                    model.ConsumerSecret = protector.Unprotect(settings.ConsumerSecret);
+                    model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
                 }
                 else
                 {
-                    model.ConsumerSecret = string.Empty;
+                    model.APISecretKey = string.Empty;
                 }
                 if (settings.CallbackPath.HasValue)
                 {
@@ -78,8 +78,8 @@ namespace OrchardCore.Twitter.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
 
-                    settings.ConsumerKey = model.ConsumerKey;
-                    settings.ConsumerSecret = protector.Protect(model.ConsumerSecret);
+                    settings.ConsumerKey = model.APIKey;
+                    settings.ConsumerSecret = protector.Protect(model.APISecretKey);
                     settings.CallbackPath = model.CallbackPath;
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
