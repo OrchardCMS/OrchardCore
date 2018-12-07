@@ -6,7 +6,7 @@
 <h3>@T["Twitter Login Settings"]</h3>
 
 <fieldset class="form-group" asp-validation-class-for="ConsumerKey">
-    <label>@T["ConsumerKey"] <span asp-validation-for="ConsumerKey"></span></label>
+    <label asp-for="ConsumerKey">@T["ConsumerKey"] <span asp-validation-for="ConsumerKey"></span></label>
     <input asp-for="ConsumerKey" class="form-control" />
     <span class="hint">@T["The Consumer Key defined in the Keys and tokens tab of twitter app dashboard."]</span>
 </fieldset>
