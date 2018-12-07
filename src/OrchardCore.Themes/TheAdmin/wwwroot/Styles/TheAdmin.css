@@ -167,7 +167,7 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 @-ms-viewport {
   width: device-width; }
@@ -7332,6 +7332,17 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   transition-duration: 0.2s;
   transform: scale(-1, 1); }
 
+.auth-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: auto; }
+
+.ta-content-login {
+  margin-left: 0; }
+
+.auth-form label {
+  display: block; }
+
 .hint {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -7355,6 +7366,10 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   padding: 0.2rem 0.4rem;
   color: #212529;
   border-radius: 0.25rem; }
+
+.label-link {
+  float: right;
+  font-size: 12px; }
 
 label .field-validation-error::before {
   content: "- "; }

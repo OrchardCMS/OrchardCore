@@ -385,6 +385,24 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     transition-duration: 0.2s;
     transform: scale(-1, 1);
 }
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+// Layout 6 : login layout
+// -----------------------------------
+.ta-content-login {
+    margin-left: 0;
+
+}
+
+.auth-form {
+    label {
+        display: block;
+    }
+}
 // END OF LAYOUT
 // -----------------------------
 // Forms
@@ -423,6 +441,10 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     @include border-radius($border-radius);
 }
 
+.label-link {
+    float: right;
+    font-size: 12px;
+}
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
