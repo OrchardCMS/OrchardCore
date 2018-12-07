@@ -12,7 +12,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Twitter.Drivers
 {
-    public class TwitterLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterLoginSettings>
+    public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -20,7 +20,7 @@ namespace OrchardCore.Twitter.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public TwitterLoginSettingsDisplayDriver(
+        public TwitterSigninSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
@@ -34,20 +34,20 @@ namespace OrchardCore.Twitter.Drivers
             _shellSettings = shellSettings;
         }
 
-        public override async Task<IDisplayResult> EditAsync(TwitterLoginSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(TwitterSigninSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterLogin))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
             {
                 return null;
             }
 
-            return Initialize<TwitterLoginSettingsViewModel>("TwitterLoginSettings_Edit", model =>
+            return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
             {
                 model.ConsumerKey = settings.ConsumerKey;
                 if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterLogin);
+                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
                     model.ConsumerSecret = protector.Unprotect(settings.ConsumerSecret);
                 }
                 else
@@ -58,25 +58,25 @@ namespace OrchardCore.Twitter.Drivers
                 {
                     model.CallbackPath = settings.CallbackPath;
                 }
-            }).Location("Content:5").OnGroup(TwitterConstants.Features.TwitterLogin);
+            }).Location("Content:5").OnGroup(TwitterConstants.Features.TwitterSignin);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterLoginSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == TwitterConstants.Features.TwitterLogin)
+            if (context.GroupId == TwitterConstants.Features.TwitterSignin)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterLogin))
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
                 {
                     return null;
                 }
 
-                var model = new TwitterLoginSettingsViewModel();
+                var model = new TwitterSigninSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterLogin);
+                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
 
                     settings.ConsumerKey = model.ConsumerKey;
                     settings.ConsumerSecret = protector.Protect(model.ConsumerSecret);

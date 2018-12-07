@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Twitter.ViewModels
 {
-    public class TwitterLoginSettingsViewModel
+    public class TwitterSigninSettingsViewModel
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "Consumer Key is required")]
         public string ConsumerKey { get; set; }

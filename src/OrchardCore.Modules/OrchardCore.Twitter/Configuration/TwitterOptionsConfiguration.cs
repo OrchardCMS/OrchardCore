@@ -17,12 +17,12 @@ namespace OrchardCore.Twitter.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<TwitterOptions>
     {
-        private readonly ITwitterLoginService _twitterLoginService;
+        private readonly ITwitterSigninService _twitterLoginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<TwitterOptionsConfiguration> _logger;
 
         public TwitterOptionsConfiguration(
-            ITwitterLoginService twitterLoginService,
+            ITwitterSigninService twitterLoginService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<TwitterOptionsConfiguration> logger)
         {
@@ -59,11 +59,11 @@ namespace OrchardCore.Twitter.Configuration
             options.ConsumerKey = settings?.ConsumerKey ?? string.Empty;
             try
             {
-                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterLogin).Unprotect(settings.ConsumerSecret);
+                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin).Unprotect(settings.ConsumerSecret);
             }
             catch
             {
-                _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (settings.CallbackPath.HasValue)
@@ -74,12 +74,12 @@ namespace OrchardCore.Twitter.Configuration
 
         public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<TwitterLoginSettings> GetTwitterLoginSettingsAsync()
+        private async Task<TwitterSigninSettings> GetTwitterLoginSettingsAsync()
         {
             var settings = await _twitterLoginService.GetSettingsAsync();
             if ((_twitterLoginService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The Twitter Login is not correctly configured.");
+                _logger.LogWarning("Sign in with Twitter is not correctly configured.");
                 return null;
             }
             return settings;

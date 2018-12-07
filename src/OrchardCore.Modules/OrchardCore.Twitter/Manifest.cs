@@ -10,8 +10,8 @@ using OrchardCore.Twitter;
 )]
 
 [assembly: Feature(
-    Id = TwitterConstants.Features.TwitterLogin,
-    Name = "Twitter Login",
+    Id = TwitterConstants.Features.TwitterSignin,
+    Name = "Sign in with Twitter",
     Category = "Twitter",
     Description = "Authenticates users with their Twitter Account."
 )]

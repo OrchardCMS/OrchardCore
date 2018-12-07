@@ -5,12 +5,12 @@ namespace OrchardCore.Twitter
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTwitterLogin
-            = new Permission(nameof(ManageTwitterLogin), "Manage Twitter Login settings");
+        public static readonly Permission ManageTwitterSignin
+            = new Permission(nameof(ManageTwitterSignin), "Manage Sign in with Twitter settings");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            yield return ManageTwitterLogin;
+            yield return ManageTwitterSignin;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +20,7 @@ namespace OrchardCore.Twitter
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageTwitterLogin
+                    ManageTwitterSignin
                 }
             };
         }

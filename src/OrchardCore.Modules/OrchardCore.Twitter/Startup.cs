@@ -22,15 +22,15 @@ namespace OrchardCore.Twitter
         }
     }
 
-    [Feature(TwitterConstants.Features.TwitterLogin)]
+    [Feature(TwitterConstants.Features.TwitterSignin)]
     public class TwitterLoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ITwitterLoginService, TwitterLoginService>();
-            services.AddScoped<IDisplayDriver<ISite>, TwitterLoginSettingsDisplayDriver>();
+            services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
+            services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuTwitterLogin>();
-            // Register the options initializers required by the Microsoft Account Handler.
+            // Register the options initializers required by the Twitter Handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:

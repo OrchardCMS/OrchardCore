@@ -13,36 +13,36 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
-    public class TwitterLoginService : ITwitterLoginService
+    public class TwitterSigninService : ITwitterSigninService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<TwitterLoginService> T;
+        private readonly IStringLocalizer<TwitterSigninService> T;
         private readonly ShellSettings _shellSettings;
 
-        public TwitterLoginService(
+        public TwitterSigninService(
             ISiteService siteService,
             ShellSettings shellSettings,
-            IStringLocalizer<TwitterLoginService> stringLocalizer)
+            IStringLocalizer<TwitterSigninService> stringLocalizer)
         {
             _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
 
-        public async Task<TwitterLoginSettings> GetSettingsAsync()
+        public async Task<TwitterSigninSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterLoginSettings>();
+            return container.As<TwitterSigninSettings>();
         }
 
-        public async Task UpdateSettingsAsync(TwitterLoginSettings settings)
+        public async Task UpdateSettingsAsync(TwitterSigninSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
             var container = await _siteService.GetSiteSettingsAsync();
-            container.Alter<TwitterLoginSettings>(nameof(TwitterLoginSettings), aspect =>
+            container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
             {
                 aspect.ConsumerKey = settings.ConsumerKey;
                 aspect.ConsumerSecret = settings.ConsumerSecret;
@@ -51,7 +51,7 @@ namespace OrchardCore.Twitter.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public IEnumerable<ValidationResult> ValidateSettings(TwitterLoginSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(TwitterSigninSettings settings)
         {
             if (settings == null)
             {

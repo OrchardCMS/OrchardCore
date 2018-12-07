@@ -1,6 +1,6 @@
 # Twitter (OrchardCore.Twiter)
 
-This module configures Orchard to support Microsoft Account and/or Microsoft Azure AD accounts.
+This module adds Twitter for Websites features to OrchardCore.
 
 ## Sign in with Twitter
 Authenticates users with their Twitter Account. 

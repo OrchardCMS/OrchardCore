@@ -1,9 +1,9 @@
 @using OrchardCore.Twitter.ViewModels;
-@model TwitterLoginSettingsViewModel;
+@model TwitterSigninSettingsViewModel;
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-<h3>@T["Twitter Login Settings"]</h3>
+<h3>@T["Sign in with Twitter Settings"]</h3>
 
 <fieldset class="form-group" asp-validation-class-for="ConsumerKey">
     <label asp-for="ConsumerKey">@T["ConsumerKey"] <span asp-validation-for="ConsumerKey"></span></label>
