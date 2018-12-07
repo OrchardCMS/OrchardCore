@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Distributed.Core.Services;
 using OrchardCore.Distributed.Redis;
-using OrchardCore.Distributed.Redis.DataProtection;
 using OrchardCore.Distributed.Redis.Drivers;
 using OrchardCore.Distributed.Redis.Options;
 using OrchardCore.Distributed.Redis.Services;
@@ -77,7 +77,7 @@ namespace OrchardCore.Distributed
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>());
 
-            services.AddDistributedRedisCache(o => { });
+            services.AddStackExchangeRedisCache(o => { });
 
             services.AddTransient<ITagCache, RedisTagCache>();
         }
@@ -120,6 +120,8 @@ namespace OrchardCore.Distributed
             services.Configure<KeyManagementOptions>(options =>
             {
                 var redis = _httpContextAccessor.HttpContext.RequestServices.GetService<IRedisClient>();
+
+                redis.ConnectAsync().GetAwaiter().GetResult();
 
                 if (redis.IsConnected)
                 {

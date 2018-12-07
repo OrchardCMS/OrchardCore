@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
