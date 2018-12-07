@@ -23,7 +23,8 @@ namespace OrchardCore.ResourceManagement
         };
         private static readonly Dictionary<string, TagRenderMode> _fileTagRenderModes = new Dictionary<string, TagRenderMode> {
             { "script", TagRenderMode.Normal },
-            { "link", TagRenderMode.SelfClosing }
+            { "link", TagRenderMode.SelfClosing },
+            { "stylesheet", TagRenderMode.SelfClosing }
         };
         
         private string _basePath;
@@ -216,11 +217,10 @@ namespace OrchardCore.ResourceManagement
                 url = url.Substring(1);
             }
 
-            var tagBuilder = new TagBuilder(TagName);
-            if (settings.SelfClosing)
+            var tagBuilder = new TagBuilder(TagName)
             {
-                tagBuilder.TagRenderMode = TagRenderMode.SelfClosing;
-            }
+                TagRenderMode = TagRenderMode
+            };
 
             if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {

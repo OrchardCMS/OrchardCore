@@ -7,7 +7,5 @@ namespace OrchardCore.ResourceManagement
         public bool DebugMode { get; set; } = false;
 
         public string Culture { get; set; }
-
-        public bool SelfClosing { get; set; }
     }
 }

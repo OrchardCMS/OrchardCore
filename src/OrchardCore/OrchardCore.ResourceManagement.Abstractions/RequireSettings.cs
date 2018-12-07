@@ -34,16 +34,13 @@ namespace OrchardCore.ResourceManagement
             CdnMode = options.UseCdn;
             DebugMode = options.DebugMode;
             Culture = options.Culture;
-            SelfClosing = options.SelfClosing;
         }
 
         public bool HasAttributes
         {
             get { return _attributes != null && _attributes.Any(a => a.Value != null); }
         }
-
-        public bool SelfClosing { get; set; }
-
+        
         /// <summary>
         /// The resource will be displayed in the head of the page
         /// </summary>
@@ -81,16 +78,6 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings IsSelfClosing()
-        {
-            return IsSelfClosing(true);
-        }
-
-        public RequireSettings IsSelfClosing(bool selfClosing)
-        {
-            SelfClosing |= selfClosing;
-            return this;
-        }
         public RequireSettings UseDebugMode()
         {
             return UseDebugMode(true);
@@ -195,7 +182,6 @@ namespace OrchardCore.ResourceManagement
                 .WithBasePath(BasePath).WithBasePath(other.BasePath)
                 .UseCdn(CdnMode).UseCdn(other.CdnMode)
                 .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
-                .IsSelfClosing(SelfClosing).IsSelfClosing(other.SelfClosing)
                 .UseCulture(Culture).UseCulture(other.Culture)
                 .UseCondition(Condition).UseCondition(other.Condition)
                 .UseVersion(Version).UseVersion(other.Version)
