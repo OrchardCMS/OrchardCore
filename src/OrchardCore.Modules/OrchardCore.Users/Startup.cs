@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Navigation;
@@ -27,6 +25,7 @@ using OrchardCore.Users.Services;
 using YesSql.Indexes;
 using OrchardCore.Users.ViewModels;
 using Fluid;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Users
 {
@@ -63,6 +62,8 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSecurity();
+
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurator>());
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
