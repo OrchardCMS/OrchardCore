@@ -5,8 +5,7 @@ namespace OrchardCore.Environment.Shell
 {
     public interface IShellSettingsConfigurationProvider
     {
-        void AddSource(IConfigurationBuilder builder);
-        void SaveToSource(string name, IDictionary<string, string> configuration);
+        void Configure(string tenantName, IConfigurationBuilder configurationBuilder);
 
         int Order { get; }
     }

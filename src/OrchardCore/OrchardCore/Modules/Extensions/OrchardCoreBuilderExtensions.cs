@@ -60,11 +60,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var services = builder.ApplicationServices;
 
-            services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
-            services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
+            // services.AddSingleton<IShellSettingsConfigurationProvider, FileShellSettingsConfigurationProvider>();
+            // services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
-            services.AddScoped<ShellSettingsWithTenants>();
+            // services.AddScoped<ShellSettingsWithTenants>();
 
             return builder;
         }

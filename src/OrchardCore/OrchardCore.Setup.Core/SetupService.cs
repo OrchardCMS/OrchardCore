@@ -104,7 +104,7 @@ namespace OrchardCore.Setup.Services
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             context.ShellSettings.State = TenantState.Initializing;
 
-            var shellSettings = new ShellSettings(context.ShellSettings.Configuration);
+            var shellSettings = new ShellSettings(context.ShellSettings);
 
             if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
             {
