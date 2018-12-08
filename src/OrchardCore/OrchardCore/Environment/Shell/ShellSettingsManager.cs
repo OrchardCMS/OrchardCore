@@ -1,11 +1,10 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Environment.Shell
@@ -43,7 +42,7 @@ namespace OrchardCore.Environment.Shell
 
             foreach(var tenantFolder in tenantFolders)
             {
-                var tenantName = Path.GetDirectoryName(tenantFolder);
+                var tenantName =  Path.GetFileName(tenantFolder);
 
                 var configurationRoot = BuildConfiguration(tenantName, ignoreAppSettings: false);
 
@@ -118,6 +117,8 @@ namespace OrchardCore.Environment.Shell
                 localSettings.TablePrefix = settings.TablePrefix;
             }
 
+            Directory.CreateDirectory(Path.GetDirectoryName(tenantSettingsFilename));
+
             File.WriteAllText(tenantSettingsFilename, JsonConvert.SerializeObject(localSettings));
         }
 
@@ -138,7 +139,7 @@ namespace OrchardCore.Environment.Shell
 
             configurationBuilder.AddJsonFile(Path.Combine(tenantName, $"appsettings.{_hostingEnvironment.EnvironmentName}.json"), optional: true);
 
-            foreach(var configurationProvider in _configurationProviders)
+            foreach(var configurationProvider in _configurationProviders.OrderBy(p => p.Order))
             {
                 configurationProvider.Configure(tenantName, configurationBuilder);
             }
