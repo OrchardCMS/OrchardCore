@@ -312,8 +312,11 @@ namespace OrchardCore.Modules
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
+            var tenantUrlHost = shell.Settings.RequestUrlHost?.Split(new[] { "," },
+                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
             var context = new DefaultHttpContext();
-            context.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
+            context.Request.Host = new HostString(tenantUrlHost ?? "localhost");
             context.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             context.Items["IsBackground"] = true;
             return context;

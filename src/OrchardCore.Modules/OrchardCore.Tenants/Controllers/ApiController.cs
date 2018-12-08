@@ -292,7 +292,7 @@ namespace OrchardCore.Tenants.Controllers
         {
             var requestHostInfo = Request.Host;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
+            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
             if (requestHostInfo.Port.HasValue)
             {
                 tenantUrlHost += ":" + requestHostInfo.Port;

@@ -27,16 +27,16 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var tenantContainerPath = Path.Combine(
+            var tenantsContainerPath = Path.Combine(
                 _options.Value.ShellsApplicationDataPath,
                 _options.Value.ShellsContainerName);
 
-            if (!Directory.Exists(tenantContainerPath))
+            if (!Directory.Exists(tenantsContainerPath))
             {
                 return Enumerable.Empty<ShellSettings>();
             }
 
-            var tenantFolders = Directory.GetDirectories(tenantContainerPath);
+            var tenantFolders = Directory.GetDirectories(tenantsContainerPath);
 
             var shellSettings = new List<ShellSettings>();
 
