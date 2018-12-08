@@ -42,13 +42,13 @@ namespace OrchardCore.Environment.Shell
 
             foreach(var tenantFolder in tenantFolders)
             {
-                var tenantName =  Path.GetFileName(tenantFolder);
-
-                var configurationRoot = BuildConfiguration(tenantName, ignoreAppSettings: false);
+                var configurationRoot = BuildConfiguration(tenantFolder, ignoreAppSettings: false);
 
                 var shellSetting = new ShellSettings();
 
                 configurationRoot.Bind(shellSetting);
+
+                shellSettings.Add(shellSetting);
             }
 
             return shellSettings;
@@ -61,14 +61,13 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var tenantSettingsFilename = Path.Combine(
+            var tenantFolder = Path.Combine(
                         _options.Value.ShellsApplicationDataPath,
                         _options.Value.ShellsContainerName,
-                        settings.Name,
-                        "appsettings.json");
+                        settings.Name);
 
-            var globalConfiguration = BuildConfiguration(settings.Name, true);
-            var localConfiguration = BuildConfiguration(settings.Name, false);
+            var globalConfiguration = BuildConfiguration(tenantFolder, true);
+            var localConfiguration = BuildConfiguration(tenantFolder, false);
 
             var localSettings = new ShellSettings();
 
@@ -77,53 +76,55 @@ namespace OrchardCore.Environment.Shell
             // We set app settings if the local settings have the settings or it's
             // not defined in the global ones.
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.ConnectionString)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.ConnectionString)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.ConnectionString)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.ConnectionString)]) )
             {
                 localSettings.ConnectionString = settings.ConnectionString;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.DatabaseProvider)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.DatabaseProvider)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.DatabaseProvider)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.DatabaseProvider)]) )
             {
                 localSettings.DatabaseProvider = settings.DatabaseProvider;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RecipeName)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RecipeName)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RecipeName)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RecipeName)]) )
             {
                 localSettings.RecipeName = settings.RecipeName;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlHost)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlHost)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlHost)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlHost)]) )
             {
                 localSettings.RequestUrlHost = settings.RequestUrlHost;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) )
             {
                 localSettings.RequestUrlPrefix = settings.RequestUrlPrefix;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.Secret)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.Secret)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.Secret)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.Secret)]) )
             {
                 localSettings.Secret = settings.Secret;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.State)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.State)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.State)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.State)]) )
             {
                 localSettings.State = settings.State;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.TablePrefix)]) || !String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.TablePrefix)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.TablePrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.TablePrefix)]) )
             {
                 localSettings.TablePrefix = settings.TablePrefix;
             }
 
-            Directory.CreateDirectory(Path.GetDirectoryName(tenantSettingsFilename));
+            Directory.CreateDirectory(tenantFolder);
 
-            File.WriteAllText(tenantSettingsFilename, JsonConvert.SerializeObject(localSettings));
+            File.WriteAllText(Path.Combine(tenantFolder, "appsettings.json"), JsonConvert.SerializeObject(localSettings));
         }
 
-        private IConfigurationRoot BuildConfiguration(string tenantName, bool ignoreAppSettings)
+        private IConfigurationRoot BuildConfiguration(string tenantFolder, bool ignoreAppSettings)
         {
+            var tenantName = Path.GetFileName(tenantFolder);
+
             var configurationBuilder = new ConfigurationBuilder();
 
             configurationBuilder.AddEnvironmentVariables();
@@ -134,10 +135,10 @@ namespace OrchardCore.Environment.Shell
 
             if (!ignoreAppSettings)
             {
-                configurationBuilder.AddJsonFile(Path.Combine(tenantName, "appsettings.json"), optional: true);
+                configurationBuilder.AddJsonFile(Path.Combine(tenantFolder, "appsettings.json"), optional: true);
             }
 
-            configurationBuilder.AddJsonFile(Path.Combine(tenantName, $"appsettings.{_hostingEnvironment.EnvironmentName}.json"), optional: true);
+            configurationBuilder.AddJsonFile(Path.Combine(tenantFolder, $"appsettings.{_hostingEnvironment.EnvironmentName}.json"), optional: true);
 
             foreach(var configurationProvider in _configurationProviders.OrderBy(p => p.Order))
             {
