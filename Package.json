@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL",
+    "orchardcore.resources": "file:src/OrchardCore.Modules/OrchardCore.Resources",
     "orchardcore.workflows": "file:src/OrchardCore.Modules/OrchardCore.Workflows"
   }
 }
