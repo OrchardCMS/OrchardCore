@@ -18,6 +18,7 @@
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
     <PackageManagement Include="Markdig" Version="0.15.4" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.1.1" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.0.138" />
     <PackageManagement Include="Moq" Version="4.10.1" />
