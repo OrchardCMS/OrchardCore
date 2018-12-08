@@ -31,7 +31,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.Redis" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
