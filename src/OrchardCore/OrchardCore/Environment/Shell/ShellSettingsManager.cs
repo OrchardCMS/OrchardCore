@@ -27,20 +27,20 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var tenantSettingsPath = Path.Combine(
-                        _options.Value.ShellsApplicationDataPath,
-                        _options.Value.ShellsContainerName);
+            var tenantContainerPath = Path.Combine(
+                _options.Value.ShellsApplicationDataPath,
+                _options.Value.ShellsContainerName);
 
-            if (!Directory.Exists(tenantSettingsPath))
+            if (!Directory.Exists(tenantContainerPath))
             {
                 return Enumerable.Empty<ShellSettings>();
             }
 
-            var tenantFolders = Directory.GetDirectories(tenantSettingsPath);
+            var tenantFolders = Directory.GetDirectories(tenantContainerPath);
 
             var shellSettings = new List<ShellSettings>();
 
-            foreach(var tenantFolder in tenantFolders)
+            foreach (var tenantFolder in tenantFolders)
             {
                 var configurationRoot = BuildConfiguration(tenantFolder, ignoreAppSettings: false);
 
@@ -62,12 +62,12 @@ namespace OrchardCore.Environment.Shell
             }
 
             var tenantFolder = Path.Combine(
-                        _options.Value.ShellsApplicationDataPath,
-                        _options.Value.ShellsContainerName,
-                        settings.Name);
+                _options.Value.ShellsApplicationDataPath,
+                _options.Value.ShellsContainerName,
+                settings.Name);
 
-            var globalConfiguration = BuildConfiguration(tenantFolder, true);
-            var localConfiguration = BuildConfiguration(tenantFolder, false);
+            var globalConfiguration = BuildConfiguration(tenantFolder, ignoreAppSettings: true);
+            var localConfiguration = BuildConfiguration(tenantFolder, ignoreAppSettings: false);
 
             var localSettings = new ShellSettings();
 
@@ -76,42 +76,42 @@ namespace OrchardCore.Environment.Shell
             // We set app settings if the local settings have the settings or it's
             // not defined in the global ones.
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.ConnectionString)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.ConnectionString)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.ConnectionString)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.ConnectionString)]))
             {
                 localSettings.ConnectionString = settings.ConnectionString;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.DatabaseProvider)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.DatabaseProvider)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.DatabaseProvider)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.DatabaseProvider)]))
             {
                 localSettings.DatabaseProvider = settings.DatabaseProvider;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RecipeName)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RecipeName)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RecipeName)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RecipeName)]))
             {
                 localSettings.RecipeName = settings.RecipeName;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlHost)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlHost)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlHost)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlHost)]))
             {
                 localSettings.RequestUrlHost = settings.RequestUrlHost;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlPrefix)]))
             {
                 localSettings.RequestUrlPrefix = settings.RequestUrlPrefix;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.Secret)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.Secret)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.Secret)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.Secret)]))
             {
                 localSettings.Secret = settings.Secret;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.State)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.State)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.State)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.State)]))
             {
                 localSettings.State = settings.State;
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.TablePrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.TablePrefix)]) )
+            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.TablePrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.TablePrefix)]))
             {
                 localSettings.TablePrefix = settings.TablePrefix;
             }
@@ -140,7 +140,7 @@ namespace OrchardCore.Environment.Shell
 
             configurationBuilder.AddJsonFile(Path.Combine(tenantFolder, $"appsettings.{_hostingEnvironment.EnvironmentName}.json"), optional: true);
 
-            foreach(var configurationProvider in _configurationProviders.OrderBy(p => p.Order))
+            foreach (var configurationProvider in _configurationProviders)
             {
                 configurationProvider.Configure(tenantName, configurationBuilder);
             }
