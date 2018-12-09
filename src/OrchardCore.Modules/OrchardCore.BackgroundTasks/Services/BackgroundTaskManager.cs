@@ -40,11 +40,10 @@ namespace OrchardCore.BackgroundTasks.Services
                     {
                         if (!_memoryCache.TryGetValue(CacheKey, out document))
                         {
-                            document = new BackgroundTaskDocument();
-
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document, ChangeToken);
+                            document = new BackgroundTaskDocument();                            
                         }
+                        _session.Save(document);
+                        _memoryCache.Set(CacheKey, document, ChangeToken);
                     }
                 }
                 else

@@ -185,9 +185,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
                 return Unauthorized();
-            }
-
-            var document = await _backgroundTaskManager.GetDocumentAsync();
+            }            
 
             if (ModelState.IsValid)
             {
