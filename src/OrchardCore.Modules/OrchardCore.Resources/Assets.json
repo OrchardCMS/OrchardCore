@@ -17,6 +17,14 @@
     "output": "wwwroot/Scripts/bootstrap.bundle.js"
   },
   {
+    "inputs": [ "../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
+    "output": "wwwroot/Styles/bootstrap-slider.css"
+  },
+  {
+    "inputs": [ "../../../node_modules/bootstrap-slider/dist/bootstrap-slider.js" ],
+    "output": "wwwroot/Scripts/bootstrap-slider.js"
+  },
+  {
     "inputs": [ "../../../node_modules/codemirror/lib/codemirror.css" ],
     "output": "wwwroot/Scripts/codemirror/codemirror.css"
   },
