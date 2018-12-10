@@ -32,11 +32,9 @@ namespace OrchardCore.Users.Services
             if (email != null)
             {
                 claims.AddClaim(new Claim("email", email));
-            }
 
-            if (await _userManager.IsEmailConfirmedAsync(user))
-            {
-                claims.AddClaim(new Claim("email_verified", "true"));
+                var confirmed = await _userManager.IsEmailConfirmedAsync(user);
+                claims.AddClaim(new Claim("email_verified", confirmed ? bool.TrueString : bool.FalseString));
             }
 
             return claims;

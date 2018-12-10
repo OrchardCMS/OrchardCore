@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,17 @@ namespace OrchardCore.Demo.Services
             if (!string.IsNullOrEmpty(name))
                 claims.AddClaim(new Claim("name", name));
 
+            if (profile.UpdatedAt != default)
+                claims.AddClaim(new Claim("updated_at", ConvertToUnixTimestamp(profile.UpdatedAt).ToString(CultureInfo.InvariantCulture)));
+
             return claims;
+        }
+
+        public static double ConvertToUnixTimestamp(DateTime date)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            TimeSpan diff = date.ToUniversalTime() - origin;
+            return Math.Floor(diff.TotalSeconds);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
@@ -29,6 +30,7 @@ namespace OrchardCore.Demo.Drivers
                 profile.Age = model.Age;
                 profile.FirstName = model.FirstName;
                 profile.LastName = model.LastName;
+                profile.UpdatedAt = DateTime.UtcNow;
             }
 
             return Edit(profile, context);

@@ -6,6 +6,7 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.Modules;
@@ -17,10 +18,14 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
+        private readonly ILogger<UserInfoController> _logger;
         private readonly IStringLocalizer<UserInfoController> T;
 
-        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
-            => T = localizer;
+        public UserInfoController(IStringLocalizer<UserInfoController> localizer, ILogger<UserInfoController> logger)
+        {
+            T = localizer;
+            _logger = logger;
+        }
 
         // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
@@ -105,12 +110,20 @@ namespace OrchardCore.OpenId.Controllers
                     claims[OpenIdConnectConstants.Claims.Picture] = picture;
                 }
 
-                var updatedAt = principal.FindFirst(OpenIdConnectConstants.Claims.UpdatedAt)
+                var updatedAtClaimValue = principal.FindFirst(OpenIdConnectConstants.Claims.UpdatedAt)
                                        ?.Value;
 
-                if (!string.IsNullOrEmpty(updatedAt))
+                if (!string.IsNullOrEmpty(updatedAtClaimValue))
                 {
-                    claims[OpenIdConnectConstants.Claims.UpdatedAt] = updatedAt;
+                    if (long.TryParse(updatedAtClaimValue, out var epoch))
+                    {
+                        claims[OpenIdConnectConstants.Claims.UpdatedAt] = epoch;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"{OpenIdConnectConstants.Claims.UpdatedAt} claim value '{updatedAtClaimValue}' is invalid. Should be the time the end-user's" +
+                                           " information was last updated, as number of seconds since the Unix epoch (1970-01-01T0:0:0Z) as measured in UTC until the date/time. ");
+                    }
                 }
             }
 
