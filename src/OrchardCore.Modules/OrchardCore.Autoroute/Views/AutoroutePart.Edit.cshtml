@@ -7,7 +7,7 @@
 }
 
 <fieldset class="form-group" asp-validation-class-for="Path">
-    <label asp-for="Path">@T["Permalink"] <span asp-validation-for="Path"></span></label>
+    <label asp-for="Path">@T["Permalink"]</label>
     <div class="input-group">
         @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
         {
@@ -16,6 +16,7 @@
             </div>
         }
         <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
+        <span asp-validation-for="Path"></span>
     </div>
     @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
     {
