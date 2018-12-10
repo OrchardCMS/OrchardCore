@@ -31,8 +31,8 @@
     </div>
     <div class="form-group" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret">@T["Client Secret"] (@T["enter a new value to replace the existing secret"])</label>
-        <span asp-validation-for="ClientSecret" class="text-danger"></span>
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
+        <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
 
     <h3>Flows</h3>
