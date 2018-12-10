@@ -6,7 +6,7 @@
     var site = await SiteService.GetSiteSettingsAsync();
 }
 
-<fieldset class="form-group" asp-validation-class-for="Path">
+<div class="form-group" asp-validation-class-for="Path">
     <label asp-for="Path">@T["Permalink"] <span asp-validation-for="Path"></span></label>
     <div class="input-group">
         @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
@@ -25,7 +25,7 @@
     {
         <span class="hint">@T["The url of the content item. It will be automatically generated."]</span>
     }
-</fieldset>
+</div>
 @{
     var authorized = await AuthorizationService.AuthorizeAsync(User, Permissions.SetHomepage);
     var showHomepageOption = Model.Settings.ShowHomepageOption && authorized;
@@ -38,13 +38,13 @@
     {
         if (showHomepageOption)
         {
-            <fieldset class="form-group">
+            <div class="form-group">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
                     <label class="custom-control-label" asp-for="SetHomepage">@T["Set as homepage"]</label>
                     <span class="hint">@T["— {0}", "Check to set this content item as the homepage once published."]</span>
                 </div>
-            </fieldset>
+            </div>
         }
     }
 }
