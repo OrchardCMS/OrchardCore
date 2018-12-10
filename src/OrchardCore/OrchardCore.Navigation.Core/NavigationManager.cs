@@ -101,7 +101,7 @@ namespace OrchardCore.Navigation
                         items.RemoveAt(j);
 
                         // If the item to merge is more authoritative then use its values
-                        if (cursor.Position != null && source.Position == null)
+                        if (cursor.SelectionPriority > source.SelectionPriority)
                         {
                             source.Culture = cursor.Culture;
                             source.Href = cursor.Href;
@@ -120,6 +120,30 @@ namespace OrchardCore.Navigation
                             source.Classes.Clear();
                             source.Classes.AddRange(cursor.Classes);
                         }
+
+                        if (cursor.SelectionPriority == source.SelectionPriority)
+                        {
+                            if (cursor.Position != null && source.Position == null)
+                            {
+                                source.Culture = cursor.Culture;
+                                source.Href = cursor.Href;
+                                source.Id = cursor.Id;
+                                source.LinkToFirstChild = cursor.LinkToFirstChild;
+                                source.LocalNav = cursor.LocalNav;
+                                source.Position = cursor.Position;
+                                source.Resource = cursor.Resource;
+                                source.RouteValues = cursor.RouteValues;
+                                source.Text = cursor.Text;
+                                source.Url = cursor.Url;
+
+                                source.Permissions.Clear();
+                                source.Permissions.AddRange(cursor.Permissions);
+
+                                source.Classes.Clear();
+                                source.Classes.AddRange(cursor.Classes);
+                            }
+                        }
+
                     }
                 }
 
