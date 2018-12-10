@@ -55,21 +55,23 @@ gulp.task("watch", function () {
         var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
         var inputWatcher;
         function createWatcher() {
-            inputWatcher = gulp.watch(watchPaths, function (event) {
+            inputWatcher = gulp.watch(watchPaths);
+            inputWatcher.on('change', function (watchedPath) {                
                 var isConcat = path.basename(assetGroup.outputFileName, path.extname(assetGroup.outputFileName)) !== "@";
                 if (isConcat)
-                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group with output '" + assetGroup.outputPath + "'.");
+                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group with output '" + assetGroup.outputPath + "'.");
                 else
-                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group.");
+                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group.");
                 var doRebuild = true;
                 var task = createAssetGroupTask(assetGroup, doRebuild);
             });
         }
+        
         createWatcher();
-        gulp.watch(assetGroup.manifestPath, function (event) {
-            console.log("Asset manifest file '" + event.path + "' was " + event.type + ", restarting watcher.");
-            inputWatcher.remove();
-            inputWatcher.end();
+        
+        gulp.watch(assetGroup.manifestPath).on('change', function (watchedPath) {
+            console.log("Asset manifest file '" + watchedPath + "' was changed, restarting watcher.");            
+            inputWatcher.close();
             createWatcher();
         });
     });

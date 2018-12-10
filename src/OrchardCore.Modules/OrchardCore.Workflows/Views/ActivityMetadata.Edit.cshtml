@@ -2,7 +2,8 @@
 @model ActivityMetadataEditViewModel
 
 <fieldset class="form-group" asp-validation-class-for="Title">
-    <label asp-for="Title">@T["Title"] <span asp-validation-for="Title"></span></label>
+    <label asp-for="Title">@T["Title"]</label>
     <input type="text" asp-for="Title" class="form-control" />
+    <span asp-validation-for="Title"></span>
     <span class="hint">@T["Optionally provide a custom title for this activity."]</span>
 </fieldset>

@@ -1,4 +1,4 @@
-﻿@model CreateRoleViewModel
+@model CreateRoleViewModel
 @using OrchardCore.Roles.ViewModels;
 
 <h1>@RenderTitleSegments(T["Create Role"])</h1>
@@ -7,8 +7,8 @@
 <form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="RoleName">
         <label asp-for="RoleName">@T["Role name"]</label>
-        <span asp-validation-for="RoleName" class="text-danger">@T["The role name is required."]</span>
         <input asp-for="RoleName" class="form-control" autofocus/>
+        <span asp-validation-for="RoleName" class="text-danger">@T["The role name is required."]</span>
     </div>
 
     <fieldset>
