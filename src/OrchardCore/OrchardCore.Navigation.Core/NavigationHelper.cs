@@ -64,7 +64,7 @@ namespace OrchardCore.Navigation
                 .Menu(menu)
                 .Parent(parentShape)
                 .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
-                .SelectionPriority(menuItem.SelectionPriority)
+                .SelectionPriority(menuItem.Priority)
                 .Local(menuItem.LocalNav);
 
 			menuItemShape.Id = menuItem.Id;
@@ -164,7 +164,7 @@ namespace OrchardCore.Navigation
                     }
                     else // found more selected: tie break required.
                     {
-                        if (item.SelectionPriority > result.SelectionPriority)
+                        if (item.Priority > result.Priority)
                         {
                             result.Selected = false;
                             result = item;

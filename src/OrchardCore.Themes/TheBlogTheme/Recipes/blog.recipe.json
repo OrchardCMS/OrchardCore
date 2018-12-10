@@ -943,7 +943,7 @@
                     "Href": null,
                     "Url": null,
                     "Position": null,
-                    "SelectionPriority": -50,
+                    "Priority": -50,
                     "LinkToFirstChild": true,
                     "LocalNav": false,
                     "Culture": null,

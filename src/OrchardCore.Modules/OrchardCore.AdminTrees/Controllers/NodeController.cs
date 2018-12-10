@@ -192,7 +192,7 @@ namespace OrchardCore.AdminTrees.Controllers
                 AdminNode = treeNode,
                 AdminNodeId = treeNode.UniqueId,
                 AdminNodeType = treeNode.GetType().Name,
-                SelectionPriority = treeNode.SelectionPriority,
+                Priority = treeNode.Priority,
                 Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false)
             };
 
@@ -227,7 +227,7 @@ namespace OrchardCore.AdminTrees.Controllers
 
             if (ModelState.IsValid)
             {
-                treeNode.SelectionPriority = model.SelectionPriority;
+                treeNode.Priority = model.Priority;
 
                 await _adminTreeService.SaveAsync(tree);
 

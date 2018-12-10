@@ -101,7 +101,7 @@ namespace OrchardCore.Navigation
                         items.RemoveAt(j);
 
                         // If the item to merge is more authoritative then use its values
-                        if (cursor.SelectionPriority > source.SelectionPriority)
+                        if (cursor.Priority > source.Priority)
                         {
                             source.Culture = cursor.Culture;
                             source.Href = cursor.Href;
@@ -121,7 +121,8 @@ namespace OrchardCore.Navigation
                             source.Classes.AddRange(cursor.Classes);
                         }
 
-                        if (cursor.SelectionPriority == source.SelectionPriority)
+                        //Fallback to get the same behavior than before having the Priority var
+                        if (cursor.Priority == source.Priority)
                         {
                             if (cursor.Position != null && source.Position == null)
                             {
