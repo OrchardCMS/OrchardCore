@@ -21,9 +21,10 @@
     var index = 0;
 }
 <fieldset class="form-group" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" >@T["Term Content Type"] <span asp-validation-for="TermContentType"></span></label>
+    <label asp-for="TermContentType" >@T["Term Content Type"]</label>
     <select asp-for="TermContentType" class="form-control col-sm" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
+    <span asp-validation-for="TermContentType"></span>
 </fieldset>
 
 @if (canAddTerm && Model.TermContentType != null)

@@ -3,14 +3,16 @@
 @using System.Globalization
 
 <fieldset class="form-group" asp-validation-class-for="SiteName">
-    <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
+    <label asp-for="SiteName">@T["Site name"]</label>
     <input asp-for="SiteName" class="form-control" />
+    <span asp-validation-for="SiteName"></span>
     <span class="hint">@T["The site name."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="BaseUrl">
-    <label asp-for="BaseUrl">@T["Base url"] <span asp-validation-for="BaseUrl"></span></label>
+    <label asp-for="BaseUrl">@T["Base url"]</label>
     <input asp-for="BaseUrl" class="form-control" />
+<span asp-validation-for="BaseUrl"></span>
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
@@ -36,7 +38,7 @@
 
 <div class="row">
     <fieldset class="form-group col-xl-6" asp-validation-class-for="TimeZone">
-        <label asp-for="TimeZone">@T["Default Time Zone"] <span asp-validation-for="TimeZone"></span></label>
+        <label asp-for="TimeZone">@T["Default Time Zone"]</label>
         <select asp-for="TimeZone" class="form-control">
             <option value="">@T["Local to server"]</option>
             @foreach (var timezone in Clock.GetTimeZones())
@@ -46,11 +48,12 @@
                 </option>
             }
         </select>
+        <span asp-validation-for="TimeZone"></span>
         <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
     </fieldset>
 
     <fieldset class="form-group col-xl-6" asp-validation-class-for="Culture">
-        <label asp-for="Culture">@T["Default Culture"] <span asp-validation-for="Culture"></span></label>
+        <label asp-for="Culture">@T["Default Culture"]</label>
         <select asp-for="Culture" class="form-control">
             <option value="">@T["System ({0} | {1})", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</option>
             @foreach (var culture in Model.SiteCultures)
@@ -60,6 +63,7 @@
                 </option>
             }
         </select>
+        <span asp-validation-for="Culture"></span>
         <span class="hint">@T["Determines the default culture used"]</span>
         <p>@Html.ActionLink(T["Add or remove supported cultures for the site"].Value, "Culture")</p>
     </fieldset>
