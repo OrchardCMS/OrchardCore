@@ -1,9 +1,5 @@
 [
   {
-    "inputs": [ "../../../node_modules/jquery/dist/jquery.js" ],
-    "output": "wwwroot/Scripts/jquery.js"
-  },
-  {
     "generateSourceMaps": false,
     "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
@@ -51,6 +47,14 @@
   {
     "inputs": [ "../../../node_modules/codemirror/mode/xml/xml.js" ],
     "output": "wwwroot/Scripts/codemirror/mode/xml/xml.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/jquery/dist/jquery.js" ],
+    "output": "wwwroot/Scripts/jquery.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/jquery/dist/jquery.slim.js" ],
+    "output": "wwwroot/Scripts/jquery.slim.js"
   },
   {
     "inputs": [ "../../../node_modules/popper.js/dist/popper.js" ],

@@ -2,8 +2,9 @@
 @model CreateContentTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"] <span asp-validation-for="ContentType"></span></label>
+    <label asp-for="ContentType">@T["Content Type"]</label>
     <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-control" asp-validation-class-for="ContentType"></select>
+    <span asp-validation-for="ContentType"></span>
     <span class="hint">@T["Select the type of content to create."]</span>
 </fieldset>
 
@@ -16,8 +17,9 @@
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="ContentProperties">
-    <label asp-for="ContentProperties">@T["Content Properties"] <span asp-validation-for="ContentProperties"></span></label>
+    <label asp-for="ContentProperties">@T["Content Properties"]</label>
     <textarea asp-for="ContentProperties" class="form-control"></textarea>
+    <span asp-validation-for="ContentProperties"></span>
     <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>
 </fieldset>
 
