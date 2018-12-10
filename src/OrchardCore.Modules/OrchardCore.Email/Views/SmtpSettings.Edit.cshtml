@@ -4,13 +4,14 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <fieldset class="form-group" asp-validation-class-for="DefaultSender">
-    <label asp-for="DefaultSender">@T["Sender email address"] <span asp-validation-for="DefaultSender"></span></label>
+    <label asp-for="DefaultSender">@T["Sender email address"]</label>
     <input asp-for="DefaultSender" class="form-control" type="email" />
+    <span asp-validation-for="DefaultSender"></span>
     <span class="hint">@T["The default email address to use as a sender."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="DeliveryMethod">
-    <label asp-for="DeliveryMethod">@T["Delivery method"] <span asp-validation-for="DeliveryMethod"></span></label>
+    <label asp-for="DeliveryMethod">@T["Delivery method"]</label>
     <select asp-for="DeliveryMethod" class="form-control">
         <option value="@SmtpDeliveryMethod.Network" selected="@(SmtpDeliveryMethod.Network == Model.DeliveryMethod)" data-target="#@Html.Id("NetworkOptions")">
             @T["Network"]
@@ -22,6 +23,7 @@
             @T["Specified pickup directory"]
         </option>
     </select>
+    <span asp-validation-for="DeliveryMethod"></span>
     <span class="hint">@T["The delivery method used when sending email. Use Network in production. The other options can be useful when developing and testing."]</span>
 </fieldset>
 
@@ -33,21 +35,24 @@
                 <h2 class="card-title">@T["Network delivery options"]</h2>
 
                 <fieldset class="form-group" asp-validation-class-for="Host">
-                    <label asp-for="Host">@T["Host name"] <span asp-validation-for="Host"></span></label>
+                    <label asp-for="Host">@T["Host name"]</label>
                     <input asp-for="Host" class="form-control" type="text" />
+                    <span asp-validation-for="Host"></span>
                     <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
                 </fieldset>
 
                 <fieldset class="form-group" asp-validation-class-for="Port">
-                    <label asp-for="Port">@T["Port number"] <span asp-validation-for="Port"></span></label>
+                    <label asp-for="Port">@T["Port number"]</label>
                     <input asp-for="Port" class="form-control" type="number" step="any" min="0" max="65535" />
+                    <span asp-validation-for="Port"></span>
                     <span class="hint">@T["The SMTP server port, usually 25."]</span>
                 </fieldset>
 
                 <fieldset class="form-group" asp-validation-class-for="EnableSsl">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="EnableSsl">
-                        <label class="custom-control-label" asp-for="EnableSsl">@T["Enable SSL communications"] <span asp-validation-for="EnableSsl"></span></label>
+                        <span asp-validation-for="EnableSsl"></span>
+                        <label class="custom-control-label" asp-for="EnableSsl">@T["Enable SSL communications"]</label>
                         <span class="hint">@T["— {0}", "Check if the SMTP server requires SSL communications."]</span>
                     </div>
                 </fieldset>
@@ -55,7 +60,8 @@
                 <fieldset class="form-group clearfix" asp-validation-class-for="RequireCredentials">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="RequireCredentials" data-toggle="collapse" data-target=".requireCredential">
-                        <label class="custom-control-label" asp-for="RequireCredentials">@T["Require credentials"] <span asp-validation-for="RequireCredentials"></span></label>
+                        <span asp-validation-for="RequireCredentials"></span>
+                        <label class="custom-control-label" asp-for="RequireCredentials">@T["Require credentials"] </label>
                     </div>
                 </fieldset>
 
@@ -63,21 +69,24 @@
                     <fieldset class="form-group" asp-validation-class-for="UseDefaultCredentials">
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" asp-for="UseDefaultCredentials" data-toggle="collapse-toggle" data-target=".useCustomCredential">
-                            <label class="custom-control-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"] <span asp-validation-for="UseDefaultCredentials"></span></label>
+                            <span asp-validation-for="UseDefaultCredentials"></span>
+                            <label class="custom-control-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
                             <span class="hint d-block">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
                         </div>
                     </fieldset>
 
                     <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">
                         <fieldset class="form-group" asp-validation-class-for="UserName">
-                            <label asp-for="UserName">@T["User name"] <span asp-validation-for="UserName"></span></label>
+                            <label asp-for="UserName">@T["User name"]</label>
                             <input asp-for="UserName" class="form-control" type="text" />
+                            <span asp-validation-for="UserName"></span>
                             <span class="hint">@T["The username for authentication."]</span>
                         </fieldset>
 
                         <fieldset class="form-group" asp-validation-class-for="Password">
-                            <label asp-for="Password">@T["Password"] <span asp-validation-for="Password"></span></label>
+                            <label asp-for="Password">@T["Password"]</label>
                             <input asp-for="Password" class="form-control" type="password" />
+                            <span asp-validation-for="Password"></span>
                             <span class="hint">@T["The password for authentication."]</span>
                         </fieldset>
                     </div>
@@ -106,8 +115,9 @@
                 <h2 class="card-title">@T["Specified pickup directory delivery options"]</h2>
 
                 <fieldset class="form-group" asp-validation-class-for="PickupDirectoryLocation">
-                    <label asp-for="PickupDirectoryLocation">@T["Pickup directory location"] <span asp-validation-for="PickupDirectoryLocation"></span></label>
+                    <label asp-for="PickupDirectoryLocation">@T["Pickup directory location"]</label>
                     <input asp-for="PickupDirectoryLocation" class="form-control" type="text" />
+                    <span asp-validation-for="PickupDirectoryLocation"></span>
                     <span class="hint">@T[@"E.g. <i>C:\Path\To\This\Site\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."]</span>
                 </fieldset>
             </div>
