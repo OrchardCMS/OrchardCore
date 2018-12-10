@@ -53,6 +53,7 @@ namespace OrchardCore.Contents.AdminNodes
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
                     cTypeMenu.Priority(node.Priority);
+                    cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(Permissions.EditOwnContent);
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));

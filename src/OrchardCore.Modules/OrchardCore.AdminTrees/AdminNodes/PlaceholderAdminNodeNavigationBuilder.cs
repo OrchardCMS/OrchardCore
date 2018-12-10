@@ -36,6 +36,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
             builder.Add(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
 
                 itemBuilder.Priority(node.Priority);
+                itemBuilder.Position(node.Position);
 
                 // Add adminNode's IconClass property values to menuItem.Classes. 
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.              

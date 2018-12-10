@@ -96,6 +96,7 @@ namespace OrchardCore.Lists.AdminNodes
                         m.Permission(Contents.Permissions.EditOwnContent);
                         m.Resource(ci);
                         m.Priority(_node.Priority);
+                        m.Position(_node.Position);
                         m.LocalNav();
                         AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));                     
                     });
