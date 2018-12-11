@@ -7105,10 +7105,6 @@ div.CodeMirror-dragcursors {
 span.CodeMirror-selectedtext {
   background: none; }
 
-html, body, .ta-wrapper, .ta-content {
-  /*border: solid 1px blue !important;*/
-  height: 100%; }
-
 body {
   margin-bottom: 40px; }
 

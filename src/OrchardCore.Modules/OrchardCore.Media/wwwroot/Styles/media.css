@@ -4,9 +4,11 @@
 */
 
 #mediaApp {
-  margin: 0px -15px 0px -15px;
-  margin-top: 0;
-  height: 100%; }
+  position: absolute;
+  top: 128px;
+  bottom: 0;
+  right: 0;
+  left: 260px; }
   #mediaApp #mediaContainer {
     display: flex;
     flex-direction: column;
@@ -28,6 +30,12 @@
     margin-bottom: 8px; }
   #mediaApp a.disabled {
     cursor: default; }
+
+.modal-content #mediaApp {
+  position: static;
+  margin: 0px -15px 0px -15px;
+  margin-top: 0;
+  height: 50vh; }
 
 .upload {
   background-color: rgba(0, 0, 0, 0.05);
