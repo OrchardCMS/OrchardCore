@@ -150,11 +150,6 @@ body {
         height: calc(100% - #{$top-nav-height * 2});
         //border-top: 1px solid $gray-300;
     }
-    // Remove padding/margin from all uls
-    ul {
-        margin: 0;
-        padding: 0;
-    }
     // Rotate the chevron's icon when the menu is active
     label[aria-expanded="true"] {
         .chevron {
@@ -176,35 +171,6 @@ body {
     .collapse.show {
         display: block;
     }
-    // Make each line a block
-    label, a {
-        position: relative;
-        display: block;
-        margin: 0;
-    }
-
-    #left-nav ul {
-        margin: 0;
-        padding: 0;
-        white-space: nowrap;
-
-        li {
-            position: relative;
-            margin: 0;
-            padding: 0;
-            display: list-item;
-            list-style: none;
-            line-height: 3em;
-
-            .item-label {
-                cursor: pointer;
-            }
-        }
-    }
-
-    #left-nav ul.menu-admin {
-        margin-bottom: 100px;
-    }
 
     .chevron {
         position: absolute;
@@ -213,32 +179,77 @@ body {
         margin-left: -25px;
     }
 
-    // changing the padding of the icons on the first level to match
-    // the padding when leftbar is collapsed. Avoid small movement
-    // when switching between the two states
-    #left-nav ul.menu-admin .item-label {
-        padding-left: 0px !important;
-        display: flex;
+    label, a {
+        position: relative;
+        display: block;
+        margin: 0;
+    }
 
-        > span.icon {
-            padding: 0 10px;
-            flex-shrink: 0;
+    #left-nav {
 
-            svg {
-                width: 30px;
-            }
+        ul {
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
         }
 
-        > span.title {
-            flex-grow: 1;
-            font-size: 14px;
+        > ul {
+
+            li {
+                position: relative;
+                margin: 0;
+                padding: 0;
+                display: list-item;
+                list-style: none;
+                line-height: 3em;
+
+                .item-label {
+                    cursor: pointer;
+                }
+            }
+
+            // first level menu items that have no items and are active
+            > li.active:not(.has-items)::before {
+                border-left: 3px solid;
+                border-left-color: #0078D4;
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+            // changing the padding of the icons on the first level to match
+            // the padding when leftbar is collapsed. Avoid small movement
+            // when switching between the two states
+            &.menu-admin {
+                margin-bottom: 100px;
+
+                .item-label {
+                    padding-left: 0px !important;
+                    display: flex;
+
+                    > span.icon {
+                        padding: 0 10px;
+                        flex-shrink: 0;
+                        font-size: 20px;
+
+                        svg {
+                            width: 30px;
+                        }
+                    }
+
+                    > span.title {
+                        flex-grow: 1;
+                        font-size: 14px;
+                    }
+                }
+            }
         }
     }
 
-    li .item-label,
-    li a:hover,
-    li a:active,
-    li a:visited {
+
+
+    #left-nav ul li .item-label, li a:hover, li a:active, li a:visited {
         color: $gray-700;
         text-decoration: none;
         padding-left: $link-padding-left;
@@ -392,7 +403,6 @@ body {
             margin: 0px 20px 0px 0px;
             padding-bottom: 0px;
             padding-top: 0px;
-            font-size: 16px !important;
             color: $gray-700;
             background-color: $gray-100;
             width: $left-navigation-width-when-compact;
@@ -422,14 +432,14 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 .leftbar-compactor {
     display: block;
     width: $left-navigation-width-when-compact;
-    height: 40px;
+    height: 50px;
     padding: 8px 0px 10px 12px;
     border: none;
     background-color: transparent;
-    font-size: 1.4rem;
+    font-size: 20px;
     color: $gray-700;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
 
     &:focus {
         outline: none;
