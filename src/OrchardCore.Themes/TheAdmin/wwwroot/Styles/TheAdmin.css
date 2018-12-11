@@ -7244,6 +7244,15 @@ body {
       color: #495057;
       text-decoration: none;
       padding-left: 16px; }
+    #ta-left-sidebar #left-nav .btn-nostyle {
+      background: none;
+      color: inherit;
+      border: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      outline: inherit;
+      width: 45px; }
   #ta-left-sidebar li.has-items .item-label,
   #ta-left-sidebar li.has-items a:hover,
   #ta-left-sidebar li.has-items a:active,
