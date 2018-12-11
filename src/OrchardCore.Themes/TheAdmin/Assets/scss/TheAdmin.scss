@@ -254,8 +254,15 @@ body {
             padding: 0;
             font: inherit;
             cursor: pointer;
-            outline: inherit;
             width: 45px;
+            outline: none;
+            position: relative;
+            left: -1px;
+        }
+
+        .btn-nostyle:focus {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
         }
     }
 

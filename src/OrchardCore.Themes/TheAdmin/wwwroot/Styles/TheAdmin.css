@@ -7251,8 +7251,13 @@ body {
       padding: 0;
       font: inherit;
       cursor: pointer;
-      outline: inherit;
-      width: 45px; }
+      width: 45px;
+      outline: none;
+      position: relative;
+      left: -1px; }
+    #ta-left-sidebar #left-nav .btn-nostyle:focus {
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white; }
   #ta-left-sidebar li.has-items .item-label,
   #ta-left-sidebar li.has-items a:hover,
   #ta-left-sidebar li.has-items a:active,
