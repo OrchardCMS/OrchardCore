@@ -7232,7 +7232,8 @@ body {
       #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.icon svg {
         width: 30px; }
     #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.title {
-      flex-grow: 1; }
+      flex-grow: 1;
+      font-size: 14px; }
   #ta-left-sidebar li .item-label,
   #ta-left-sidebar li a:hover,
   #ta-left-sidebar li a:active,
