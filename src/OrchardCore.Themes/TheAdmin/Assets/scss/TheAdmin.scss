@@ -124,100 +124,349 @@ body {
 @include media-breakpoint-down(sm) {
     .ta-content {
         margin-left: $left-navigation-width-when-compact;
-        transition: margin-left 0.5s ease-in-out;
-    }
+        transition: margin-left 0.5s ease-in-out;    }
 }
 
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
 
-#ta-left-sidebar {
-    @extend .bg-light;
-    height: 100%;
-    z-index: 7;
-    position: fixed;
-    top: $top-nav-height;
-    bottom: 0;
-    left: 0px;
-    width: $left-navigation-width;
-    color: $gray-800;
-    border-right: $border-content;
-    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-    font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    // Rotate the chevron's icon when the menu is active
-    label[aria-expanded="true"] {
-        .chevron {
-            transform: rotate(90deg);
-            transition-duration: 0.2s;
+body:not(.left-sidebar-compact) {
+    #ta-left-sidebar {
+        @extend .bg-light;
+        height: 100%;
+        z-index: 7;
+        position: fixed;
+        top: $top-nav-height;
+        bottom: 0;
+        left: 0px;
+        width: $left-navigation-width;
+        color: $gray-800;
+        border-right: $border-content;
+        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+        font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        // Rotate the chevron's icon when the menu is active
+        label[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
         }
-    }
 
-    label[aria-expanded="false"] {
-        .chevron {
-            transition-duration: 0.2s;
+        label[aria-expanded="false"] {
+            .chevron {
+                transition-duration: 0.2s;
+            }
         }
-    }
 
-    .collapse {
-        display: none;
-    }
+        .collapse {
+            display: none;
+        }
 
-    .collapse.show {
-        display: block;
-    }
+        .collapse.show {
+            display: block;
+        }
 
-    .chevron {
-        position: absolute;
-        top: 33%;
-        left: 100%;
-        margin-left: -25px;
-    }
+        .chevron {
+            position: absolute;
+            top: 33%;
+            left: 100%;
+            margin-left: -25px;
+        }
 
-    label, a {
-        position: relative;
-        display: block;
-        margin: 0;
-    }
-
-    #left-nav {
-        position: relative;
-        height: calc(100% - #{$top-nav-height * 2});
-
-        ul {
+        label, a {
+            position: relative;
+            display: block;
             margin: 0;
-            padding: 0;
-            white-space: nowrap;
         }
 
-        > ul {
+        #left-nav {
+            position: relative;
+            height: calc(100% - #{$top-nav-height * 2});
 
-            li {
-                position: relative;
+            ul {
                 margin: 0;
                 padding: 0;
-                display: list-item;
-                list-style: none;
-                line-height: 3em;
+                white-space: nowrap;
+            }
 
-                .item-label {
-                    cursor: pointer;
+            > ul {
+
+                li {
+                    position: relative;
+                    margin: 0;
+                    padding: 0;
+                    display: list-item;
+                    list-style: none;
+                    line-height: 3em;
+
+                    .item-label {
+                        cursor: pointer;
+                    }
+                }
+                // first level menu items that have no items and are active
+                > li.active:not(.has-items)::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078D4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+                // changing the padding of the icons on the first level to match
+                // the padding when leftbar is collapsed. Avoid small movement
+                // when switching between the two states
+                &.menu-admin {
+                    margin-bottom: 100px;
+
+                    .item-label {
+                        padding-left: 0px !important;
+                        display: flex;
+
+                        > span.icon {
+                            padding: 0 10px;
+                            flex-shrink: 0;
+                            font-size: 20px;
+
+                            svg {
+                                width: 35px;
+                            }
+                        }
+
+                        > span.title {
+                            flex-grow: 1;
+                            font-size: 14px;
+                        }
+                    }
+
+                    > li > .item-label > .collapse-icon {
+                        color: rgba(255, 0, 0, 0);
+                        display: flex;
+                        justify-content: center;
+                    }
                 }
             }
-            // first level menu items that have no items and are active
-            > li.active:not(.has-items)::before {
-                border-left: 3px solid;
-                border-left-color: #0078D4;
-                bottom: 0;
-                content: "";
-                left: 0;
-                position: absolute;
-                top: 0;
+
+            ul li .item-label, li a:hover, li a:active, li a:visited {
+                color: $gray-700;
+                text-decoration: none;
+                padding-left: $link-padding-left;
             }
-            // changing the padding of the icons on the first level to match
-            // the padding when leftbar is collapsed. Avoid small movement
-            // when switching between the two states
-            &.menu-admin {
-                margin-bottom: 100px;
+
+            .btn-nostyle {
+                background: none;
+                color: inherit;
+                border: none;
+                padding: 0;
+                font: inherit;
+                cursor: pointer;
+                width: 45px;
+                outline: none;
+            }
+
+            .btn-nostyle:focus {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }
+        }
+
+
+        li.has-items .item-label,
+        li.has-items a:hover,
+        li.has-items a:active,
+        li.has-items a:visited {
+            padding-left: $link-padding-left - 4px;
+        }
+
+        li .item-label:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        li > ul > li.active > .item-label {
+            background: rgba(0,0,0,.15);
+            color: rgba(0,0,0,.9) !important;
+            font-weight: 600;
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.active > ul > li.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078D4;
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > ul > li > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.has-items.active > .item-label {
+            padding-left: (2 * $link-padding-left + 16) !important;
+        }
+
+        li.has-items.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li.active > .item-label {
+            background-color: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        li.active > .item-label:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        li .active::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.1);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li .active .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li > .item-label {
+            background: rgba(0,0,0,.08);
+            color: $gray-700 !important;
+        }
+
+        li.active ul > li > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li ul > li {
+            background: rgba(0,0,0,.1);
+        }
+        // third level indent
+        li ul > li ul > li > a {
+            color: black;
+            padding-left: 3 * $link-padding-left !important;
+        }
+
+        li ul > li ul > .active > a {
+            padding-left: (3 * $link-padding-left - 4) !important;
+        }
+    }
+}
+// Layout 4 : ta-left-sidebar when compacted
+// -----------------------------------------
+.left-sidebar-compact {
+
+    #ta-left-sidebar {
+        @extend .bg-light;
+        height: 100%;
+        z-index: 7;
+        position: fixed;
+        top: $top-nav-height;
+        bottom: 0;
+        left: 0px;
+        width: $left-navigation-width-when-compact;
+        color: $gray-800;
+        border-right: $border-content;
+        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+        font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        // Rotate the chevron's icon when the menu is active
+        label[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
+        }
+
+        label[aria-expanded="false"] {
+            .chevron {
+                transition-duration: 0.2s;
+            }
+        }
+
+        .collapse {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block;
+        }
+
+        .chevron {
+            position: absolute;
+            top: 33%;
+            left: 100%;
+            margin-left: -25px;
+        }
+
+        label, a {
+            position: relative;
+            display: block;
+            margin: 0;
+        }
+
+        #left-nav {
+            position: relative;
+            height: calc(100% - #{$top-nav-height * 2});
+
+            ul {
+                margin: 0;
+                padding: 0;
+                white-space: nowrap;
+                background-color: $gray-100;
+            }
+
+            > ul {
+
+                li {
+                    position: relative;
+                    margin: 0;
+                    padding: 0;
+                    display: list-item;
+                    list-style: none;
+                    line-height: 3em;
+
+                    .item-label {
+                        cursor: pointer;
+                    }
+                }
+                
+                // changing the padding of the icons on the first level to match
+                // the padding when leftbar is collapsed. Avoid small movement
+                // when switching between the two states
+                &.menu-admin {
+                    margin-bottom: 100px;
+
+
+                }
 
                 .item-label {
                     padding-left: 0px !important;
@@ -229,7 +478,7 @@ body {
                         font-size: 20px;
 
                         svg {
-                            width: 30px;
+                            width: 35px;
                         }
                     }
 
@@ -238,207 +487,234 @@ body {
                         font-size: 14px;
                     }
                 }
+
+                > li > .item-label > .collapse-icon {
+                    color: rgba(255, 0, 0, 0);
+                    display: flex;
+                    justify-content: center;
+                }
+
+                
+                > li:hover span.icon {
+                    color: $gray-100;
+                    background-color: $gray-700;
+                }
+
+                // formatting of icons
+                > li .item-label span.icon {
+                    display: inline-block !important;
+                    color: $gray-700;
+                    background-color: $gray-100;
+                    width: $left-navigation-width-when-compact;
+                }
+
+                > li.has-items.active > .item-label::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078D4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                li .active > .item-label:hover {
+                    background-color: $gray-100;
+                }
+
+                > li {
+                    overflow: hidden;
+                }
+
+                > li.visible {
+                    overflow: visible;
+                    width: $left-navigation-width-when-compact + $left-navigation-width;
+                }
+
+                > li > ul {
+                    position: absolute;
+                    left: $left-navigation-width-when-compact;
+                    width: $left-navigation-width;
+                }
+
+                > li > .item-label {
+                    background-color: $gray-700;
+                    color: $gray-100;
+                    padding-left: 0px !important;
+                    display: flex;
+
+                    .title {
+                        padding-left: 20px;
+                    }
+
+                    > span.icon {
+                        padding: 0 10px;
+                        flex-shrink: 0;
+                        font-size: 20px;
+        
+                        svg {
+                            width: 35px;
+                        }
+                    }
+        
+                    > span.title {
+                        flex-grow: 1;
+                        font-size: 14px;
+                    }
+                }
+
+                // first level menu items that have no items and are active
+                >li.active:not(.has-items)::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078D4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                > li > label {
+                    .btn-nostyle{
+                        display: none;
+                    }
+                }
+            }
+
+            ul li .item-label, li a:hover, li a:active, li a:visited {
+                text-decoration: none;
+                padding-left: $link-padding-left;
+            }
+
+            .btn-nostyle {
+                background: none;
+                color: inherit;
+                border: none;
+                padding: 0;
+                font: inherit;
+                cursor: pointer;
+                width: 45px;
+                outline: none;
+            }
+
+            .btn-nostyle:focus {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
             }
         }
 
-        ul li .item-label, li a:hover, li a:active, li a:visited {
-            color: $gray-700;
-            text-decoration: none;
-            padding-left: $link-padding-left;
+        li.has-items .item-label,
+        li.has-items a:hover,
+        li.has-items a:active,
+        li.has-items a:visited {
+            padding-left: $link-padding-left - 4px;
         }
 
-        .btn-nostyle {
-            background: none;
-            color: inherit;
-            border: none;
-            padding: 0;
-            font: inherit;
-            cursor: pointer;
-            width: 45px;
-            outline: none;
+
+
+        li > ul > li.active > .item-label {
+            background: rgba(0,0,0,.15);
+            color: rgba(0,0,0,.9) !important;
+            font-weight: 600;
+            padding-left: (2 * $link-padding-left + 16) !important;
         }
 
-        .btn-nostyle:focus {
-            background-color: rgba(0, 0, 0, 0.3);
-            color: white;
-        }
-    }
-
-
-    li.has-items .item-label,
-    li.has-items a:hover,
-    li.has-items a:active,
-    li.has-items a:visited {
-        padding-left: $link-padding-left - 4px;
-    }
-
-    li .item-label:hover {
-        background-color: rgba(0, 0, 0, 0.2);
-    }
-
-    li > ul > li.active > .item-label {
-        background: rgba(0,0,0,.15);
-        color: rgba(0,0,0,.9) !important;
-        font-weight: 600;
-        padding-left: (2 * $link-padding-left + 16) !important;
-    }
-
-    li.active > ul > li.active > .item-label::before {
-        border-left: 3px solid;
-        border-left-color: #0078D4;
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li.active > ul > li > .item-label::before {
-        border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.2);
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li.has-items.active > .item-label {
-        padding-left: (2 * $link-padding-left + 16) !important;
-    }
-
-    li.has-items.active > .item-label::before {
-        border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.2);
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li.active > .item-label {
-        background-color: rgba(0, 0, 0, 0.1);
-        font-weight: 600;
-    }
-
-    li.active > .item-label:hover {
-        background-color: rgba(0, 0, 0, 0.2);
-    }
-
-    li .active::before {
-        border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.1);
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li .active .item-label::before {
-        border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.2);
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li ul > li > .item-label {
-        background: rgba(0,0,0,.08);
-        color: $gray-700 !important;
-    }
-
-    li.active ul > li > .item-label::before {
-        border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.2);
-        bottom: 0;
-        content: "";
-        left: 0;
-        position: absolute;
-        top: 0;
-    }
-
-    li ul > li ul > li {
-        background: rgba(0,0,0,.1);
-    }
-    // third level indent
-    li ul > li ul > li > a {
-        color: black;
-        padding-left: 3 * $link-padding-left !important;
-    }
-
-    li ul > li ul > .active > a {
-        padding-left: (3 * $link-padding-left - 4) !important;
-    }
-}
-// Layout 4 : ta-left-sidebar when compacted
-// -----------------------------------------
-.left-sidebar-compact #ta-left-sidebar {
-    width: $left-navigation-width-when-compact;
-
-    #left-nav ul.menu-admin {
-
-        > li {
-            overflow: hidden;
-        }
-
-        > li.visible {
-            overflow: visible;
-            width: $left-navigation-width-when-compact + $left-navigation-width;
-        }
-
-        li, label, a {
-            min-height: 40px;
-        }
-
-        > li > ul {
+        li.active > ul > li.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: #0078D4;
+            bottom: 0;
+            content: "";
+            left: 0;
             position: absolute;
-            left: $left-navigation-width-when-compact;
-            width: $left-navigation-width;
-            top: 40px;
+            top: 0;
         }
 
-        > li > .item-label {
-            background-color: $gray-700;
-            color: $gray-100;
-            padding: 0px;
-            margin: 0px;
-        }
-        // formatting of icons
-        > li .item-label span.icon {
-            display: inline-block !important;
-            margin: 0px 20px 0px 0px;
-            padding-bottom: 0px;
-            padding-top: 0px;
-            color: $gray-700;
-            background-color: $gray-100;
-            width: $left-navigation-width-when-compact;
+        li.active > ul > li > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
         }
 
-        > li.active .item-label span.icon {
-            background-color: #b4bdc4;
-            color: $gray-100 !important;
+        li.has-items.active > .item-label {
+            padding-left: (2 * $link-padding-left + 16) !important;
         }
 
-        > li:hover span.icon {
-            color: $gray-100;
-            background-color: $gray-700;
+        li.has-items.active > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
         }
-        // hide chevrons on first level
-        > li > .item-label > .collapse-icon {
-            color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity. Because of IE/Edge
-            display: flex;
-            justify-content: center;
+
+        li.active > .item-label {
+            background-color: rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+
+
+        li .active::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.1);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li .active .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li > .item-label {
+            background: $gray-100;
+            color: $gray-700 !important;
+        }
+
+        li.active ul > li > .item-label::before {
+            border-left: 3px solid;
+            border-left-color: rgba(0,0,0,.2);
+            bottom: 0;
+            content: "";
+            left: 0;
+            position: absolute;
+            top: 0;
+        }
+
+        li ul > li ul > li {
+            background: rgba(0,0,0,.1);
+        }
+        // third level indent
+        li ul > li ul > li > a {
+            color: black;
+            padding-left: 3 * $link-padding-left !important;
+        }
+
+        li ul > li ul > .active > a {
+            padding-left: (3 * $link-padding-left - 4) !important;
         }
     }
 }
+
 // fixing a flickering that occurs on compact leftbar while icons load.
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
     background-color: $gray-100 !important;
 }
+
 // Layout 5 : leftbar compactor button
 // -----------------------------------
 .leftbar-compactor {
