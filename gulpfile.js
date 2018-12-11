@@ -13,7 +13,7 @@ var fs = require("file-system"),
     scss = require("gulp-sass"),
     cssnano = require("gulp-cssnano"),
     typescript = require("gulp-typescript"),
-    uglify = require("gulp-uglify"),
+    terser = require("gulp-terser"),
     rename = require("gulp-rename"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
@@ -269,7 +269,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir))
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot))
-        .pipe(uglify())
+        .pipe(terser())
         .pipe(rename({
             suffix: ".min"
         }))

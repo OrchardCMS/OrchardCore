@@ -3,7 +3,7 @@
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
-@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+@import "../../../../../node_modules/bootstrap/scss/bootstrap";
 @import "modules/_sizes.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
