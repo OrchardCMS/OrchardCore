@@ -7252,9 +7252,7 @@ body {
       font: inherit;
       cursor: pointer;
       width: 45px;
-      outline: none;
-      position: relative;
-      left: -1px; }
+      outline: none; }
     #ta-left-sidebar #left-nav .btn-nostyle:focus {
       background-color: rgba(0, 0, 0, 0.3);
       color: white; }
@@ -7370,7 +7368,9 @@ body {
     color: #f8f9fa;
     background-color: #495057; }
   .left-sidebar-compact #ta-left-sidebar #left-nav ul.menu-admin > li > .item-label > .collapse-icon {
-    color: rgba(255, 0, 0, 0); }
+    color: rgba(255, 0, 0, 0);
+    display: flex;
+    justify-content: center; }
 
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
   background-color: #f8f9fa !important; }
@@ -7387,6 +7387,8 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   cursor: pointer;
   font-size: 20px; }
   .leftbar-compactor:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
     outline: none; }
   .leftbar-compactor:hover {
     color: #f8f9fa;

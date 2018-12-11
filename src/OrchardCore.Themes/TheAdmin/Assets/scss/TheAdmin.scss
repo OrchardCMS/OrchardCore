@@ -256,8 +256,6 @@ body {
             cursor: pointer;
             width: 45px;
             outline: none;
-            position: relative;
-            left: -1px;
         }
 
         .btn-nostyle:focus {
@@ -432,6 +430,8 @@ body {
         // hide chevrons on first level
         > li > .item-label > .collapse-icon {
             color: rgba(255, 0, 0, 0); // don't use display:none. don't use opacity. Because of IE/Edge
+            display: flex;
+            justify-content: center;
         }
     }
 }
@@ -454,6 +454,8 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     font-size: 20px;
 
     &:focus {
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
         outline: none;
     }
 
