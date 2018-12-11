@@ -115,6 +115,13 @@ body {
     margin-top: $top-nav-height;
     margin-bottom: $footer-height;
     transition: margin-left 0.2s ease-in-out;
+
+    h1 {
+        line-height: 40px;
+        font-size: 28px;
+        letter-spacing: -.04em;
+        font-weight: bold;
+    }
 }
 
 .left-sidebar-compact .ta-content {
@@ -124,7 +131,8 @@ body {
 @include media-breakpoint-down(sm) {
     .ta-content {
         margin-left: $left-navigation-width-when-compact;
-        transition: margin-left 0.5s ease-in-out;    }
+        transition: margin-left 0.5s ease-in-out;
+    }
 }
 
 // Layout 3 : ta-left-sidebar when expanded
@@ -443,7 +451,7 @@ body:not(.left-sidebar-compact) {
                 white-space: nowrap;
                 background-color: $gray-100;
 
-                li{
+                li {
                     background-color: $gray-100;
                 }
             }
@@ -462,7 +470,6 @@ body:not(.left-sidebar-compact) {
                         cursor: pointer;
                     }
                 }
-
                 // changing the padding of the icons on the first level to match
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
@@ -496,23 +503,33 @@ body:not(.left-sidebar-compact) {
                     justify-content: center;
                 }
 
-                
-                > li > .item-label{
+
+                > li > .item-label {
                     .icon:hover {
                         color: $gray-100;
-                        background-color:red;
+                        background-color: red;
                     }
+
                     .title:hover {
                         color: $gray-100;
                         background-color: rgba(0, 0, 0, 0.1);
                     }
                 }
 
-                > li .item-label:hover:not(:first-child){
+                > li.active:not(.has-items) > .item-label::before {
+                    border-left: 3px solid;
+                    border-left-color: #0078D4;
+                    bottom: 0;
+                    content: "";
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+
+                > li .item-label:hover:not(:first-child) {
                     color: $gray-100;
                     background-color: rgba(0, 0, 0, 0.1);
                 }
-
                 // formatting of icons
                 > li > .item-label > span.icon {
                     display: inline-block !important;
@@ -555,7 +572,7 @@ body:not(.left-sidebar-compact) {
                     max-height: 250px;
                 }
 
-                > li > ul li .item-label:hover{
+                > li > ul li .item-label:hover {
                     background-color: rgba(0, 0, 0, 0.05);
                 }
 
@@ -575,20 +592,19 @@ body:not(.left-sidebar-compact) {
                         font-size: 20px;
                         width: 60px;
                         border-right: 1px solid #F2F2F2;
-        
+
                         svg {
                             width: 35px;
                         }
                     }
-        
+
                     > span.title {
                         flex-grow: 1;
                         font-size: 14px;
                     }
                 }
-
                 // first level menu items that have no items and are active
-                >li.active:not(.has-items)::before {
+                > li.active:not(.has-items)::before {
                     border-left: 3px solid;
                     border-left-color: #0078D4;
                     bottom: 0;
@@ -599,7 +615,7 @@ body:not(.left-sidebar-compact) {
                 }
 
                 > li > label {
-                    .btn-nostyle{
+                    .btn-nostyle {
                         display: none;
                     }
                 }
@@ -733,12 +749,10 @@ body:not(.left-sidebar-compact) {
         }
     }
 }
-
 // fixing a flickering that occurs on compact leftbar while icons load.
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
     background-color: $gray-100 !important;
 }
-
 // Layout 5 : leftbar compactor button
 // -----------------------------------
 .leftbar-compactor {

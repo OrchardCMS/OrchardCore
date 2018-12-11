@@ -7165,6 +7165,11 @@ body {
   margin-top: 59px;
   margin-bottom: 40px;
   transition: margin-left 0.2s ease-in-out; }
+  .ta-content h1 {
+    line-height: 40px;
+    font-size: 28px;
+    letter-spacing: -.04em;
+    font-weight: bold; }
 
 .left-sidebar-compact .ta-content {
   margin-left: 60px; }
@@ -7413,6 +7418,14 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label .title:hover {
       color: #f8f9fa;
       background-color: rgba(0, 0, 0, 0.1); }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.active:not(.has-items) > .item-label::before {
+      border-left: 3px solid;
+      border-left-color: #0078D4;
+      bottom: 0;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: 0; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
       color: #f8f9fa;
       background-color: rgba(0, 0, 0, 0.1); }
