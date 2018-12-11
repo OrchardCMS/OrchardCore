@@ -279,11 +279,11 @@ body:not(.left-sidebar-compact) {
         }
 
         li .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         li > ul > li.active > .item-label {
-            background: rgba(0,0,0,.15);
+            background: rgba(0, 0, 0, 0.1);
             color: rgba(0,0,0,.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
@@ -315,7 +315,7 @@ body:not(.left-sidebar-compact) {
 
         li.has-items.active > .item-label::before {
             border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
+            border-left-color: rgba(0,0,0,0.1);
             bottom: 0;
             content: "";
             left: 0;
@@ -324,17 +324,17 @@ body:not(.left-sidebar-compact) {
         }
 
         li.active > .item-label {
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.05);
             font-weight: 600;
         }
 
         li.active > .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         li .active::before {
             border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.1);
+            border-left-color: rgba(0,0,0,0.05);
             bottom: 0;
             content: "";
             left: 0;
@@ -344,7 +344,7 @@ body:not(.left-sidebar-compact) {
 
         li .active .item-label::before {
             border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
+            border-left-color: rgba(0,0,0,0.1);
             bottom: 0;
             content: "";
             left: 0;
@@ -353,7 +353,7 @@ body:not(.left-sidebar-compact) {
         }
 
         li ul > li > .item-label {
-            background: rgba(0,0,0,.08);
+            background: rgba(0,0,0,0.05);
             color: $gray-700 !important;
         }
 
@@ -442,6 +442,10 @@ body:not(.left-sidebar-compact) {
                 padding: 0;
                 white-space: nowrap;
                 background-color: $gray-100;
+
+                li{
+                    background-color: $gray-100;
+                }
             }
 
             > ul {
@@ -458,14 +462,12 @@ body:not(.left-sidebar-compact) {
                         cursor: pointer;
                     }
                 }
-                
+
                 // changing the padding of the icons on the first level to match
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
                     margin-bottom: 100px;
-
-
                 }
 
                 .item-label {
@@ -495,13 +497,24 @@ body:not(.left-sidebar-compact) {
                 }
 
                 
-                > li:hover span.icon {
+                > li > .item-label{
+                    .icon:hover {
+                        color: $gray-100;
+                        background-color:red;
+                    }
+                    .title:hover {
+                        color: $gray-100;
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+                }
+
+                > li .item-label:hover:not(:first-child){
                     color: $gray-100;
-                    background-color: $gray-700;
+                    background-color: rgba(0, 0, 0, 0.1);
                 }
 
                 // formatting of icons
-                > li .item-label span.icon {
+                > li > .item-label > span.icon {
                     display: inline-block !important;
                     color: $gray-700;
                     background-color: $gray-100;
@@ -519,7 +532,7 @@ body:not(.left-sidebar-compact) {
                 }
 
                 li .active > .item-label:hover {
-                    background-color: $gray-100;
+                    background-color: rgba(0, 0, 0, 0.1);
                 }
 
                 > li {
@@ -535,6 +548,15 @@ body:not(.left-sidebar-compact) {
                     position: absolute;
                     left: $left-navigation-width-when-compact;
                     width: $left-navigation-width;
+                    -webkit-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    -moz-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    overflow-y: auto;
+                    max-height: 250px;
+                }
+
+                > li > ul li .item-label:hover{
+                    background-color: rgba(0, 0, 0, 0.05);
                 }
 
                 > li > .item-label {
@@ -551,6 +573,8 @@ body:not(.left-sidebar-compact) {
                         padding: 0 10px;
                         flex-shrink: 0;
                         font-size: 20px;
+                        width: 60px;
+                        border-right: 1px solid #F2F2F2;
         
                         svg {
                             width: 35px;
@@ -613,7 +637,7 @@ body:not(.left-sidebar-compact) {
 
 
         li > ul > li.active > .item-label {
-            background: rgba(0,0,0,.15);
+            background: rgba(0, 0, 0, 0.05);
             color: rgba(0,0,0,.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
