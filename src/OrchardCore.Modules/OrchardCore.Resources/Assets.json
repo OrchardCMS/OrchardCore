@@ -1,16 +1,8 @@
 [
   {
     "generateSourceMaps": false,
-    "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
+    "inputs": [ "../../../node_modules/bootstrap-scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
-  },
-  {
-    "inputs": [ "../../../node_modules/bootstrap/dist/js/bootstrap.js" ],
-    "output": "wwwroot/Scripts/bootstrap.js"
-  },
-  {
-    "inputs": [ "../../../node_modules/bootstrap/dist/js/bootstrap.bundle.js" ],
-    "output": "wwwroot/Scripts/bootstrap.bundle.js"
   },
   {
     "inputs": [ "../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
