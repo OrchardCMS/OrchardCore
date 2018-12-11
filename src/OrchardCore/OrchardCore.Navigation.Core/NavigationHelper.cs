@@ -18,10 +18,10 @@ namespace OrchardCore.Navigation
         /// <param name="menuItems">The current level to populate.</param>
         public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            await PopulateMenuLevelAsync(shapeFactory,parentShape,menu,menuItems,viewContext);
+            await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
             ApplySelection(parentShape);
         }
-        
+
         /// <summary>
         /// Populates the menu shapes for the level recursively.
         /// </summary>
@@ -67,9 +67,9 @@ namespace OrchardCore.Navigation
                 .SelectionPriority(menuItem.Priority)
                 .Local(menuItem.LocalNav);
 
-			menuItemShape.Id = menuItem.Id;
+            menuItemShape.Id = menuItem.Id;
 
-			MarkAsSelectedIfMatchesRouteOrUrl(menuItem, menuItemShape, viewContext);
+            MarkAsSelectedIfMatchesRouteOrUrl(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);
@@ -85,7 +85,16 @@ namespace OrchardCore.Navigation
             // if route match failed, try comparing URL strings, if
             if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href != "#")
             {
-                string url = menuItem.Href.Replace("~/", viewContext.HttpContext.Request.PathBase);
+                string url = menuItem.Href;
+                if (menuItem.Href.Contains("~/"))
+                {
+                    url = url.Replace("~/", viewContext.HttpContext.Request.PathBase);
+                }
+                else
+                {
+                    url = menuItem.Href.Replace(viewContext.HttpContext.Request.PathBase, "");
+                }
+
                 match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);
             }
 
@@ -129,7 +138,7 @@ namespace OrchardCore.Navigation
 
             // Apply the selection to the hierarchy
             if (selectedItem != null)
-            {   
+            {
                 while (selectedItem.Parent != null)
                 {
                     selectedItem = selectedItem.Parent;
@@ -155,7 +164,7 @@ namespace OrchardCore.Navigation
                 // evaluate first
                 dynamic item = tempStack.Pop();
 
-                
+
                 if (item.Selected == true)
                 {
                     if (result == null) // found the first one

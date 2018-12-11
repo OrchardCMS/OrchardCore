@@ -7183,7 +7183,6 @@ body {
   color: #343a40;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-  font-size: 14px;
   font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; }
   #ta-left-sidebar #left-nav {
     position: relative;
@@ -7214,7 +7213,7 @@ body {
       padding: 0;
       display: list-item;
       list-style: none;
-      line-height: 2.5em; }
+      line-height: 3em; }
       #ta-left-sidebar #left-nav ul li .item-label {
         cursor: pointer; }
   #ta-left-sidebar #left-nav ul.menu-admin {
@@ -7224,16 +7223,14 @@ body {
     top: 33%;
     left: 100%;
     margin-left: -25px; }
-  #ta-left-sidebar .icon {
-    padding-right: 10px; }
-    #ta-left-sidebar .icon .fa {
-      min-width: 16px; }
   #ta-left-sidebar #left-nav ul.menu-admin .item-label {
-    padding-left: 0px !important; }
+    padding-left: 0px !important;
+    display: flex; }
     #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.icon {
-      padding-left: 20px;
-      width: 48px;
+      padding: 0 10px;
       flex-shrink: 0; }
+      #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.icon svg {
+        width: 30px; }
     #ta-left-sidebar #left-nav ul.menu-admin .item-label > span.title {
       flex-grow: 1; }
   #ta-left-sidebar li .item-label,

@@ -143,7 +143,6 @@ body {
     color: $gray-800;
     border-right: $border-content;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-    font-size: 14px;
     font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 
     #left-nav {
@@ -195,7 +194,7 @@ body {
             padding: 0;
             display: list-item;
             list-style: none;
-            line-height: 2.5em;
+            line-height: 3em;
 
             .item-label {
                 cursor: pointer;
@@ -214,26 +213,23 @@ body {
         margin-left: -25px;
     }
 
-    .icon {
-        padding-right: 10px;
-
-        .fa {
-            min-width: 16px;
-        }
-    }
     // changing the padding of the icons on the first level to match
     // the padding when leftbar is collapsed. Avoid small movement
     // when switching between the two states
     #left-nav ul.menu-admin .item-label {
         padding-left: 0px !important;
+        display: flex;
 
         > span.icon {
-            padding-left: 20px;
-            width: 48px;
+            padding: 0 10px;
             flex-shrink: 0;
+
+            svg {
+                width: 30px;
+            }
         }
 
-        > span.title{
+        > span.title {
             flex-grow: 1;
         }
     }
