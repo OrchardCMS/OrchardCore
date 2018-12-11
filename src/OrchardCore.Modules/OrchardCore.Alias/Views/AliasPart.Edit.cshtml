@@ -1,6 +1,6 @@
 @model AliasPartViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Alias">
+<div class="form-group" asp-validation-class-for="Alias">
     <label asp-for="Alias">@T["Alias"] </label>
     <input asp-for="Alias" class="form-control text-muted" />
     <span asp-validation-for="Alias"></span>
@@ -9,6 +9,6 @@
         @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern))
         {
             @T["Leave empty to re-generate it."]
-        }
-    </span>
-</fieldset>
+        } 
+    </span>       
+</div>
