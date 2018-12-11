@@ -92,7 +92,11 @@ namespace OrchardCore.Navigation
                 }
                 else
                 {
-                    url = menuItem.Href.Replace(viewContext.HttpContext.Request.PathBase, "");
+                    if(viewContext.HttpContext.Request.PathBase != null)
+                    {
+                        url = menuItem.Href.Replace(viewContext.HttpContext.Request.PathBase, "");
+                    }
+                    
                 }
 
                 match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);

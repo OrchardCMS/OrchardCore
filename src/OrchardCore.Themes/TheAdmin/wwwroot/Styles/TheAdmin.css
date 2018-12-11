@@ -7184,9 +7184,6 @@ body {
   border-right: 1px solid rgba(0, 0, 0, 0.05);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
   font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; }
-  #ta-left-sidebar #left-nav {
-    position: relative;
-    height: calc(100% - 118px); }
   #ta-left-sidebar label[aria-expanded="true"] .chevron {
     transform: rotate(90deg);
     transition-duration: 0.2s; }
@@ -7205,45 +7202,48 @@ body {
     position: relative;
     display: block;
     margin: 0; }
-  #ta-left-sidebar #left-nav ul {
-    margin: 0;
-    padding: 0;
-    white-space: nowrap; }
-  #ta-left-sidebar #left-nav > ul li {
+  #ta-left-sidebar #left-nav {
     position: relative;
-    margin: 0;
-    padding: 0;
-    display: list-item;
-    list-style: none;
-    line-height: 3em; }
-    #ta-left-sidebar #left-nav > ul li .item-label {
-      cursor: pointer; }
-  #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
-    border-left: 3px solid;
-    border-left-color: #0078D4;
-    bottom: 0;
-    content: "";
-    left: 0;
-    position: absolute;
-    top: 0; }
-  #ta-left-sidebar #left-nav > ul.menu-admin {
-    margin-bottom: 100px; }
-    #ta-left-sidebar #left-nav > ul.menu-admin .item-label {
-      padding-left: 0px !important;
-      display: flex; }
-      #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon {
-        padding: 0 10px;
-        flex-shrink: 0;
-        font-size: 20px; }
-        #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
-          width: 30px; }
-      #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
-        flex-grow: 1;
-        font-size: 14px; }
-  #ta-left-sidebar #left-nav ul li .item-label, #ta-left-sidebar li a:hover, #ta-left-sidebar li a:active, #ta-left-sidebar li a:visited {
-    color: #495057;
-    text-decoration: none;
-    padding-left: 16px; }
+    height: calc(100% - 118px); }
+    #ta-left-sidebar #left-nav ul {
+      margin: 0;
+      padding: 0;
+      white-space: nowrap; }
+    #ta-left-sidebar #left-nav > ul li {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      display: list-item;
+      list-style: none;
+      line-height: 3em; }
+      #ta-left-sidebar #left-nav > ul li .item-label {
+        cursor: pointer; }
+    #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
+      border-left: 3px solid;
+      border-left-color: #0078D4;
+      bottom: 0;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: 0; }
+    #ta-left-sidebar #left-nav > ul.menu-admin {
+      margin-bottom: 100px; }
+      #ta-left-sidebar #left-nav > ul.menu-admin .item-label {
+        padding-left: 0px !important;
+        display: flex; }
+        #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon {
+          padding: 0 10px;
+          flex-shrink: 0;
+          font-size: 20px; }
+          #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
+            width: 30px; }
+        #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
+          flex-grow: 1;
+          font-size: 14px; }
+    #ta-left-sidebar #left-nav ul li .item-label, #ta-left-sidebar #left-nav li a:hover, #ta-left-sidebar #left-nav li a:active, #ta-left-sidebar #left-nav li a:visited {
+      color: #495057;
+      text-decoration: none;
+      padding-left: 16px; }
   #ta-left-sidebar li.has-items .item-label,
   #ta-left-sidebar li.has-items a:hover,
   #ta-left-sidebar li.has-items a:active,
@@ -7252,7 +7252,7 @@ body {
   #ta-left-sidebar li .item-label:hover {
     background-color: rgba(0, 0, 0, 0.2); }
   #ta-left-sidebar li > ul > li.active > .item-label {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.15);
     color: rgba(0, 0, 0, 0.9) !important;
     font-weight: 600;
     padding-left: 48px !important; }
@@ -7289,7 +7289,7 @@ body {
     background-color: rgba(0, 0, 0, 0.2); }
   #ta-left-sidebar li .active::before {
     border-left: 3px solid;
-    border-left-color: rgba(0, 0, 0, 0.2);
+    border-left-color: rgba(0, 0, 0, 0.1);
     bottom: 0;
     content: "";
     left: 0;

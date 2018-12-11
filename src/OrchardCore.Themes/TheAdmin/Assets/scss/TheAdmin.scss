@@ -144,12 +144,6 @@ body {
     border-right: $border-content;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
     font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-
-    #left-nav {
-        position: relative;
-        height: calc(100% - #{$top-nav-height * 2});
-        //border-top: 1px solid $gray-300;
-    }
     // Rotate the chevron's icon when the menu is active
     label[aria-expanded="true"] {
         .chevron {
@@ -186,6 +180,8 @@ body {
     }
 
     #left-nav {
+        position: relative;
+        height: calc(100% - #{$top-nav-height * 2});
 
         ul {
             margin: 0;
@@ -207,7 +203,6 @@ body {
                     cursor: pointer;
                 }
             }
-
             // first level menu items that have no items and are active
             > li.active:not(.has-items)::before {
                 border-left: 3px solid;
@@ -245,15 +240,15 @@ body {
                 }
             }
         }
+
+        ul li .item-label, li a:hover, li a:active, li a:visited {
+            color: $gray-700;
+            text-decoration: none;
+            padding-left: $link-padding-left;
+        }
+
     }
 
-
-
-    #left-nav ul li .item-label, li a:hover, li a:active, li a:visited {
-        color: $gray-700;
-        text-decoration: none;
-        padding-left: $link-padding-left;
-    }
 
     li.has-items .item-label,
     li.has-items a:hover,
@@ -267,7 +262,7 @@ body {
     }
 
     li > ul > li.active > .item-label {
-        background: rgba(0,0,0,.1);
+        background: rgba(0,0,0,.15);
         color: rgba(0,0,0,.9) !important;
         font-weight: 600;
         padding-left: (2 * $link-padding-left + 16) !important;
@@ -318,7 +313,7 @@ body {
 
     li .active::before {
         border-left: 3px solid;
-        border-left-color: rgba(0,0,0,.2);
+        border-left-color: rgba(0,0,0,.1);
         bottom: 0;
         content: "";
         left: 0;
