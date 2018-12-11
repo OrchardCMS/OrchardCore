@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.ContentTypes.GraphQL.Editors;
+using OrchardCore.ContentTypes.GraphQL.Settings;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.GraphQL
@@ -10,7 +10,7 @@ namespace OrchardCore.ContentTypes.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, GraphQLContentTypePartSettingsDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, GraphQLContentTypePartSettingsDriver>();
         }
     }
 }

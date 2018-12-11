@@ -1,4 +1,4 @@
-using OrchardCore.ContentManagement.GraphQL.Queries.Types;
+using OrchardCore.ContentManagement.GraphQL.Queries.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL

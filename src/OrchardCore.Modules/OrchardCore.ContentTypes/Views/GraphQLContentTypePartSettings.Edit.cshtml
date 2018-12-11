@@ -1,0 +1,9 @@
+@model OrchardCore.ContentTypes.GraphQL.ViewModels.GraphQLContentTypePartSettingsViewModel
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Settings.CollapseFieldsToParent" checked="@Model.Settings.CollapseFieldsToParent" />
+        <label class="custom-control-label" asp-for="Settings.CollapseFieldsToParent">@T["Collapse fields to parent"]</label>
+        <span class="hint">@T["— {0}", "Check to collapse fields in the GraphQL output."]</span>
+    </div>
+</div>
