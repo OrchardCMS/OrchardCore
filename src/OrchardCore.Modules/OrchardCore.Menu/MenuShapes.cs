@@ -108,7 +108,7 @@ namespace OrchardCore.Menu
                             var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                             {
                                 ContentItem = contentItem,
-                                Level = 0,
+                                Level = level + 1,
                                 Menu = menu,
                                 Differentiator = differentiator
                             }));

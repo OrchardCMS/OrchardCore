@@ -7215,6 +7215,17 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   transition-duration: 0.2s;
   transform: scale(-1, 1); }
 
+.auth-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: auto; }
+
+.ta-content-login {
+  margin-left: 0; }
+
+.auth-form label {
+  display: block; }
+
 .hint {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -7239,6 +7250,10 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   color: #212529;
   border-radius: 0.25rem; }
 
+.label-link {
+  float: right;
+  font-size: 12px; }
+
 label .field-validation-error::before {
   content: "- "; }
 
@@ -7250,6 +7265,9 @@ select[multiple] {
 
 .admin-toolbar {
   margin-bottom: 1em; }
+
+ul.pager {
+  margin-top: 1rem; }
 
 .ui-sortable-handle {
   cursor: move; }

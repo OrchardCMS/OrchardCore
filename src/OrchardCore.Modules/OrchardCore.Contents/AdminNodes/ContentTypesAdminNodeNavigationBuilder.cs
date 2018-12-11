@@ -52,6 +52,7 @@ namespace OrchardCore.Contents.AdminNodes
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
+                    cTypeMenu.SelectionPriority(node.SelectionPriority);
                     cTypeMenu.Permission(Permissions.EditOwnContent);
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
@@ -92,7 +93,7 @@ namespace OrchardCore.Contents.AdminNodes
 
             }
 
-            return typesToShow;
+            return typesToShow.OrderBy(t => t.DisplayName);
         }
 
         private List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)

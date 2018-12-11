@@ -1,12 +1,18 @@
 @model EditTypeViewModel
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
 
     var orderedParts = Model.TypeDefinition.Parts
-        .Select(part => new { Part = part, Order = int.Parse(part.Settings["Position"]?.ToString() ?? "0") })
+        .Select(part =>
+        {
+            var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
+            return new { Part = part, Order = int.Parse(part.Settings["Position"]?.ToString() ?? defaultPosition) };
+        })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
 

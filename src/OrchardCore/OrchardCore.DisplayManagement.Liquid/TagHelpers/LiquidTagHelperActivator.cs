@@ -45,6 +45,10 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     {
                         value = Convert.ToBoolean(v.ToStringValue());
                     }
+                    else if (property.PropertyType == typeof(Nullable<Boolean>))
+                    {
+                        value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                    }
                     else
                     {
                         value = v.ToObjectValue();

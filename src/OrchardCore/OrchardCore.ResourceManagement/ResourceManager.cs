@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -21,12 +22,15 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _footScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
+        private readonly IOptions<ResourceManagementOptions> _options;
 
         public ResourceManager(
             IEnumerable<IResourceManifestProvider> resourceProviders,
-            IResourceManifestState resourceManifestState)
+            IResourceManifestState resourceManifestState,
+            IOptions<ResourceManagementOptions> options)
         {
             _resourceManifestState = resourceManifestState;
+            _options = options;
             _providers = resourceProviders;
 
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
@@ -78,7 +82,7 @@ namespace OrchardCore.ResourceManagement
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out settings))
             {
-                settings = new RequireSettings { Type = resourceType, Name = resourceName };
+                settings = new RequireSettings(_options.Value) { Type = resourceType, Name = resourceName };
                 _required[key] = settings;
             }
             _builtResources[resourceType] = null;
@@ -372,7 +376,7 @@ namespace OrchardCore.ResourceManagement
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
                 ? ((RequireSettings)allResources[resource]).Combine(settings)
-                : new RequireSettings { Type = resource.Type, Name = resource.Name }.Combine(settings);
+                : new RequireSettings(_options.Value) { Type = resource.Type, Name = resource.Name }.Combine(settings);
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
@@ -481,7 +485,7 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderStylesheet(IHtmlContentBuilder builder)
         {
             var first = true;
 
@@ -496,11 +500,11 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
         }
 
-        public void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderHeadScript(IHtmlContentBuilder builder)
         {
             var headScripts = this.GetRequiredResources("script");
 
@@ -515,7 +519,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
@@ -531,7 +535,7 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderFootScript(IHtmlContentBuilder builder)
         {
             var footScripts = this.GetRequiredResources("script");
 
@@ -546,7 +550,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
 
             foreach (var context in GetRegisteredFootScripts())
