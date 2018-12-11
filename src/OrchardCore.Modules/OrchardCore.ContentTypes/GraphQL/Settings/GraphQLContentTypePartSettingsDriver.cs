@@ -11,6 +11,11 @@ namespace OrchardCore.ContentTypes.GraphQL.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
         {
+            if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
+            {
+                return null;
+            }
+
             return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
             {
                 model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
@@ -19,6 +24,11 @@ namespace OrchardCore.ContentTypes.GraphQL.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
+            if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
+            {
+                return null;
+            }
+
             var model = new GraphQLContentTypePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);

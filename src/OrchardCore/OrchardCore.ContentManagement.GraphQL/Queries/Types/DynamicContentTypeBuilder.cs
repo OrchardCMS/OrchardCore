@@ -37,8 +37,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
 
-                // When the part has the same name as the content type, it is the main part for
-                // the content type's fields so we collapse them into the parent type.
                 if (part.ShouldCollapseFieldsToParent()) {
                     foreach (var field in part.PartDefinition.Fields)
                     {
