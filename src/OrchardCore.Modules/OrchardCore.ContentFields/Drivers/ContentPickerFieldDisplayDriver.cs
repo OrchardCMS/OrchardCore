@@ -62,6 +62,11 @@ namespace OrchardCore.ContentFields.Fields
                 {
                     var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
+                    if (contentItem == null)
+                    {
+                        continue;
+                    }
+
                     model.SelectedItems.Add(new ContentPickerItemViewModel
                     {
                         ContentItemId = contentItemId,
