@@ -57,9 +57,6 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, tenantPath
             },
             remove: function (item) {
                 this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1)
-            },
-            nameWithPublishedInfo: function(item) {
-                return item.displayText + ' - ' + item.isPublished;
             }
         }
     })

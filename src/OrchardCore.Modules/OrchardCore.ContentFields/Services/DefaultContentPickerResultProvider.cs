@@ -40,7 +40,7 @@ namespace OrchardCore.ContentFields.Services
                 {
                     ContentItemId = contentItem.ContentItemId,
                     DisplayText = contentItem.ToString(),
-                    IsPublished = contentItem.IsPublished()
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                 });
             }
 

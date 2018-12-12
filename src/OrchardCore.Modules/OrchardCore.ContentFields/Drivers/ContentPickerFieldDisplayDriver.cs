@@ -66,7 +66,7 @@ namespace OrchardCore.ContentFields.Fields
                     {
                         ContentItemId = contentItemId,
                         DisplayText = contentItem.ToString(),
-                        IsPublished = contentItem.IsPublished()
+                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
                 }
             });
