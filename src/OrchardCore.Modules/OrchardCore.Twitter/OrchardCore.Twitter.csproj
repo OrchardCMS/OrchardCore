@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
