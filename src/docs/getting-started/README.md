@@ -6,6 +6,7 @@ You can find the original blog post written by Chris Payne here:
 <http://ideliverable.com/blog/getting-started-with-orchard-core-as-a-nuget-package>
 
 ## Create an Orchard Core CMS application
+
 In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`.
 
 If you want to use the `dev` packages, add this OrchardCore-preview MyGet url to your NuGet sources:  
