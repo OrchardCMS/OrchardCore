@@ -52,4 +52,5 @@ Enter the required information about the site:
 
 Submit the form and your site is generated after a few seconds.
 
+
 Then, you can access to the admin using the `/admin` url. Enjoy.
