@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,6 +38,7 @@ namespace OrchardCore.Lucene
 
             string sortField = null;
             string sortOrder = null;
+            var sortFieldType = SortFieldType.STRING;
 
             if (sortProperty != null)
             {
@@ -49,13 +50,14 @@ namespace OrchardCore.Lucene
                 {
                     sortField = ((JProperty)sortProperty.First).Name;
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                    Enum.TryParse(((JProperty)sortProperty.First).Value["fieldType"]?.ToString().ToUpper(), out sortFieldType);
                 }
             }
 
             TopDocs docs = context.IndexSearcher.Search(
                 query,
                 size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
+                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, sortFieldType, sortOrder == "desc"))
             );
 
             if (from > 0)
