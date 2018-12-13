@@ -20,7 +20,7 @@
     "gulp-sass": "4.0.2",
     "gulp-sourcemaps": "2.6.4",
     "gulp-typescript": "4.0.1",
-    "gulp-uglify": "3.0.1",
+    "gulp-terser": "1.1.6",
     "gulp-util": "3.0.8",
     "merge-stream": "1.0.1",
     "path-posix": "1.0.0",
@@ -28,6 +28,9 @@
   },
   "dependencies": {
     "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL",
+    "orchardcore.resources": "file:src/OrchardCore.Modules/OrchardCore.Resources",
+    "orchardcore.setup": "file:src/OrchardCore.Modules/OrchardCore.Setup",
+    "orchardcore.theadmin": "file:src/OrchardCore.Themes/TheAdmin",
     "orchardcore.workflows": "file:src/OrchardCore.Modules/OrchardCore.Workflows"
   }
 }
