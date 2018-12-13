@@ -115,7 +115,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("codemirror-addon-mode-multiplex")
-                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.min.js", "/OrchardCore.Resources/Scripts/addon/mode/codemirror/multiplex.js")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.min.js", "/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/multiplex.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/multiplex.js")
                 .SetVersion("4.1.3")
                 ;
