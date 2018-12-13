@@ -104,16 +104,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     builder.Describe(shapeType)
                         .From(featureDescriptor)
-                        .Placement(ctx => {
-                            var hit = predicate(ctx);
-                            // generate 'debugging' information to trace which file originated the actual location
-                            if (hit)
-                            {
-                                var virtualPath = featureDescriptor.Extension.SubPath + "/" + featureDescriptor.Extension.Id + "/Placement.info";
-                                ctx.Source = virtualPath;
-                            }
-                            return hit;
-                        }, placement);
+                        .Placement(ctx => predicate(ctx), placement);
                 }
             }
         }
