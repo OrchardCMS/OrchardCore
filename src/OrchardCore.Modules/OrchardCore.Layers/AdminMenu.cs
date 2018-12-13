@@ -25,7 +25,7 @@ namespace OrchardCore.Layers
             builder
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
-                        .Add(T["Zones"], T["Zones"], zones => zones
+                        .Add(T["Layers"], T["Layers"], layers => layers
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
