@@ -1,3 +1,5 @@
+using System;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
@@ -7,8 +9,10 @@ namespace OrchardCore.Environment.Shell
     /// model is obtained from the IShellSettingsManager, which by default reads this
     /// from the App_Data appsettings.json files.
     /// </summary>
-    public class ShellSettings
+    public class ShellSettings : IEquatable<ShellSettings>
     {
+        private TenantState _tenantState;
+
         public ShellSettings()
         {
         }
@@ -34,6 +38,42 @@ namespace OrchardCore.Environment.Shell
         public string ConnectionString { get; set; } = null;
         public string RecipeName { get; set; } = null;
         public string Secret { get; set; } = null;
-        public TenantState State { get; set; } = TenantState.Invalid;
+
+        public string State
+        {
+            get => _tenantState.ToString();
+
+            set
+            {
+                if (!Enum.TryParse(value, true, out _tenantState))
+                {
+                    _tenantState = TenantState.Invalid;
+                }
+            }
+        }
+
+        public TenantState GetState() => _tenantState;
+
+        public void SetState(TenantState state)
+        {
+            _tenantState = state;
+            State = state.ToString();
+        }
+
+        private StringValues StringValues => new StringValues(new []
+        {
+            Name, RequestUrlHost, RequestUrlPrefix, DatabaseProvider,
+            TablePrefix, ConnectionString, RecipeName, Secret, State
+        });
+
+        public bool Equals(ShellSettings other)
+        {
+            return StringValues.Equals(other?.StringValues ?? String.Empty);
+        }
+
+        public override int GetHashCode()
+        {
+            return StringValues.GetHashCode();
+        }
     }
 }

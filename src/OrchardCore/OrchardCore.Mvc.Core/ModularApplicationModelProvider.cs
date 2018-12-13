@@ -59,7 +59,7 @@ namespace OrchardCore.Mvc
                 if (blueprint != null && _enabledFeatureIds.Contains(blueprint.Id))
                 {
                     if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName &&
-                        _shellSettings.State != TenantState.Running)
+                        _shellSettings.GetState() != TenantState.Running)
                     {
                         // Don't serve any action of the application'module which is enabled during a setup.
                         foreach (var action in controller.Actions)

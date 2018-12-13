@@ -100,7 +100,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.GetState() == TenantState.Running))
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
@@ -187,7 +187,7 @@ namespace OrchardCore.OpenId.Controllers
                 where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant)
                 select resource);
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.GetState() == TenantState.Running))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {

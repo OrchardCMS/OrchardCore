@@ -41,7 +41,7 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
-                if (shellSettings.State == TenantState.Initializing)
+                if (shellSettings.GetState() == TenantState.Initializing)
                 {
                     httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
                     httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;

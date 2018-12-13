@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -133,7 +133,7 @@ namespace OrchardCore.Environment.Commands
             else
             {
                 // In case of an uninitialized site (no default settings yet), we create a default settings instance.
-                var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, State = TenantState.Uninitialized };
+                var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, State = TenantState.Uninitialized.ToString() };
                 return _orchardHost.CreateShellContextAsync(settings);
             }
         }

@@ -77,7 +77,7 @@ namespace OrchardCore.Tenants.Controllers
                         IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                     };
 
-                    if (x.Settings.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings.Secret))
+                    if (x.Settings.GetState() == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings.Secret))
                     {
                         entry.Token = dataProtector.Protect(x.Settings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                     }
@@ -139,7 +139,7 @@ namespace OrchardCore.Tenants.Controllers
                     ConnectionString = model.ConnectionString,
                     TablePrefix = model.TablePrefix,
                     DatabaseProvider = model.DatabaseProvider,
-                    State = TenantState.Uninitialized,
+                    State = TenantState.Uninitialized.ToString(),
                     Secret = Guid.NewGuid().ToString(),
                     RecipeName = model.RecipeName
                 };
@@ -190,7 +190,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the 
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.GetState() == TenantState.Uninitialized)
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
@@ -242,7 +242,7 @@ namespace OrchardCore.Tenants.Controllers
 
                 // The user can change the 'preset' database information only if the 
                 // tenant has not been initialized yet
-                if (shellSettings.State == TenantState.Uninitialized)
+                if (shellSettings.GetState() == TenantState.Uninitialized)
                 {
                     shellSettings.DatabaseProvider = model.DatabaseProvider;
                     shellSettings.TablePrefix = model.TablePrefix;
@@ -258,7 +258,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the 
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.GetState() == TenantState.Uninitialized)
             {
                 model.DatabaseProvider = shellSettings.DatabaseProvider;
                 model.TablePrefix = shellSettings.TablePrefix;
@@ -305,13 +305,13 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (shellSettings.GetState() != TenantState.Running)
             {
                 _notifier.Error(H["You can only disable an Enabled tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.State = TenantState.Disabled;
+            shellSettings.SetState(TenantState.Disabled);
             await _orchardHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));
@@ -342,12 +342,12 @@ namespace OrchardCore.Tenants.Controllers
 
             var shellSettings = shellContext.Settings;
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (shellSettings.GetState() != TenantState.Disabled)
             {
                 _notifier.Error(H["You can only enable a Disabled tenant."]);
             }
 
-            shellSettings.State = TenantState.Running;
+            shellSettings.SetState(TenantState.Running);
             await _orchardHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));

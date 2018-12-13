@@ -126,7 +126,7 @@ namespace OrchardCore.Tenants.Controllers
                         ConnectionString = model.ConnectionString,
                         TablePrefix = model.TablePrefix,
                         DatabaseProvider = model.DatabaseProvider,
-                        State = TenantState.Uninitialized,
+                        State = TenantState.Uninitialized.ToString(),
                         Secret = Guid.NewGuid().ToString(),
                         RecipeName = model.RecipeName
                     };
@@ -167,12 +167,12 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
             }
 
-            if (shellSettings.State == TenantState.Running)
+            if (shellSettings.GetState() == TenantState.Running)
             {
                 return StatusCode(201);
             }
 
-            if (shellSettings.State != TenantState.Uninitialized)
+            if (shellSettings.GetState() != TenantState.Uninitialized)
             {
                 return BadRequest(S["The tenant can't be setup."]);
             }

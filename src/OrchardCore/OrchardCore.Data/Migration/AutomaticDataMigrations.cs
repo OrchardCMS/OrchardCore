@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +28,7 @@ namespace OrchardCore.Data.Migration
 
         public Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.GetState() != Environment.Shell.Models.TenantState.Uninitialized)
             {
                 var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
                 return dataMigrationManager.UpdateAllFeaturesAsync();

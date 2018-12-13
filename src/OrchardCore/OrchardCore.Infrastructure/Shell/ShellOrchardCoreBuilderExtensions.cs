@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Data;
 using OrchardCore.Environment.Shell.Data.Descriptors;
 using OrchardCore.Environment.Shell.Descriptor;
 

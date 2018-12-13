@@ -243,7 +243,7 @@ namespace OrchardCore.Modules
 
         private async Task<IEnumerable<ShellContext>> GetRunningShells()
         {
-            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.GetState() == TenantState.Running && s.Pipeline != null).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
@@ -312,11 +312,11 @@ namespace OrchardCore.Modules
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
-            var tenantUrlHost = shell.Settings.RequestUrlHost?.Split(new[] { "," },
+            var urlHost = shell.Settings.RequestUrlHost?.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             var context = new DefaultHttpContext();
-            context.Request.Host = new HostString(tenantUrlHost ?? "localhost");
+            context.Request.Host = new HostString(urlHost ?? "localhost");
             context.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
             context.Items["IsBackground"] = true;
             return context;

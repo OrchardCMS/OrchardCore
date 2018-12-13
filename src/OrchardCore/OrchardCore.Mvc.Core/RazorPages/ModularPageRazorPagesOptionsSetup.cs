@@ -23,7 +23,7 @@ namespace OrchardCore.Mvc.RazorPages
             // Only serve pages under the "Areas" folder and whose routes have an area name.
             options.Conventions.AddFolderRouteModelConvention("/", model => model.Selectors.Clear());
 
-            if (_shellSettings.State != TenantState.Running)
+            if (_shellSettings.GetState() != TenantState.Running)
             {
                 // Don't serve any page of the application'module which is enabled during a setup.
                 options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/",

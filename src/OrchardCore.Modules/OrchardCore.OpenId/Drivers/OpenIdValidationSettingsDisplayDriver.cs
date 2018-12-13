@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.Drivers
                 var availableTenants = new List<string>();
 
                 foreach (var shellContext in (await _shellHost.ListShellContextsAsync())
-                    .Where(s => s.Settings.State == TenantState.Running))
+                    .Where(s => s.Settings.GetState() == TenantState.Running))
                 {
                     using (var scope = shellContext.CreateScope())
                     {

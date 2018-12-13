@@ -24,7 +24,6 @@ namespace OrchardCore.Features.Controllers
     {
         private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
@@ -42,7 +41,6 @@ namespace OrchardCore.Features.Controllers
         {
             _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
