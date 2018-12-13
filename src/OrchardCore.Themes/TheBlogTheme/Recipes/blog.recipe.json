@@ -860,7 +860,7 @@
           "Source": "Lucene",
           "Name": "RecentBlogPosts",
           "Index": "Search",
-          "Template": "[js:base64('ewogICJxdWVyeSI6IHsKICAgICJ0ZXJtIiA6IHsgIkNvbnRlbnQuQ29udGVudEl0ZW0uQ29udGVudFR5cGUiIDogIkJsb2dQb3N0IiB9IAogIH0sCiAgInNvcnQiOiB7ICJDb250ZW50LkNvbnRlbnRJdGVtLkNyZWF0ZWRVdGMiOiB7ICJvcmRlciI6ICJkZXNjIiwgImZpZWxkVHlwZSI6ICJkb3VibGUiIH0gfSwKICAic2l6ZSI6IDMKfQ==')]",
+          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
