@@ -17,10 +17,10 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 | jQuery | Script | 2.2.4 | - |
 | jQuery | Script | 3.3.1 | - |
 | Popper | Script | 1.14.3 | - |
-| Bootstrap | Script | 3.3.7, 4.1.3 | jQuery, Popper |
-| Bootstrap | Style | 3.3.7, 4.1.3 | - |
+| Bootstrap | Script | 3.4.0, 4.1.3 | jQuery, Popper |
+| Bootstrap | Style | 3.4.0, 4.1.3 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
-| font-awesome | Style | 4.7.0, 5.4.1 | - |
+| font-awesome | Style | 4.7.0, 5.5.0 | - |
 
 ## Usage
 
@@ -122,7 +122,7 @@ You can force a resource to be used from its CDN. By default the behavior is def
 
 ##### Use specific version
 
-This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
+This example will use the latest available version with a Major version of `3`, like `3.4.0`. If the version is not specified
 the latest one is always used.
 
 ```liquid
