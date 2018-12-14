@@ -176,6 +176,13 @@ namespace OrchardCore.Environment.Shell
             }
             else
             {
+                // Pre-configured tenants but not the 'Default' one, run the Setup.
+                if (!allSettings.Where(s => s.Name == ShellHelper.DefaultShellName).Any())
+                {
+                    var setupContext = await CreateSetupContextAsync();
+                    AddAndRegisterShell(setupContext);
+                }
+
                 // Load all tenants, and activate their shell.
                 await Task.WhenAll(allSettings.Select(async settings =>
                 {

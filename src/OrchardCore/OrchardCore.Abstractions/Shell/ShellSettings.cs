@@ -30,14 +30,14 @@ namespace OrchardCore.Environment.Shell
             State = shellSettings.State;
         }
 
-        public string Name { get; set; } = null;
-        public string RequestUrlHost { get; set; } = null;
-        public string RequestUrlPrefix { get; set; } = null;
-        public string DatabaseProvider { get; set; } = null;
-        public string TablePrefix { get; set; } = null;
-        public string ConnectionString { get; set; } = null;
-        public string RecipeName { get; set; } = null;
-        public string Secret { get; set; } = null;
+        public string Name { get; set; }
+        public string RequestUrlHost { get; set; }
+        public string RequestUrlPrefix { get; set; }
+        public string DatabaseProvider { get; set; }
+        public string TablePrefix { get; set; }
+        public string ConnectionString { get; set; }
+        public string RecipeName { get; set; }
+        public string Secret { get; set; }
 
         public string State
         {
