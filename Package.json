@@ -27,7 +27,6 @@
     "typescript": "3.2.1"
   },
   "dependencies": {
-    "bootstrap-slider": "^10.4.0",
     "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL",
     "orchardcore.resources": "file:src/OrchardCore.Modules/OrchardCore.Resources",
     "orchardcore.setup": "file:src/OrchardCore.Modules/OrchardCore.Setup",
