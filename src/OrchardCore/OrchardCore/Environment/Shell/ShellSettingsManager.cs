@@ -56,7 +56,6 @@ namespace OrchardCore.Environment.Shell
                 .Where(section => section.GetValue<string>("State") != null)
                 .Select(section => Path.Combine(_tenantsContainerPath, section.Key));
 
-
             // Add the folders of pre-configured tenants to the existing ones.
             var tenantFolders = Directory.GetDirectories(_tenantsContainerPath)
                 .Concat(configuredTenantFolders).Distinct();
