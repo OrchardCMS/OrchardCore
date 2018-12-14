@@ -1,10 +1,10 @@
 {
   // Root values are applied to all tenants
-  "DatabaseProvider": "Sqlite",
-  "Contoso": {
-    "State": "Uninitialized",
-    "RequestUrlHost": "",
-    "RequestUrlPrefix": "contoso",
-    "ConnectionString": "connectionstring1"
-  }
+  //"DatabaseProvider": "Sqlite",
+  //"Contoso": {
+  //  "State": "Uninitialized",
+  //  "RequestUrlHost": "",
+  //  "RequestUrlPrefix": "contoso",
+  //  "ConnectionString": "connectionstring1"
+  //}
 }
