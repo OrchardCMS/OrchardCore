@@ -39,6 +39,7 @@ namespace OrchardCore.Environment.Shell
         public string RecipeName { get; set; }
         public string Secret { get; set; }
 
+        // Persisted as a string.
         public string State
         {
             get => _tenantState.ToString();
