@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 
@@ -20,15 +21,19 @@ namespace OrchardCore.Twitter.Configuration
         private readonly ITwitterSigninService _twitterLoginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<TwitterOptionsConfiguration> _logger;
+        private readonly string _tenantPrefix;
+
 
         public TwitterOptionsConfiguration(
             ITwitterSigninService twitterLoginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<TwitterOptionsConfiguration> logger)
+            ILogger<TwitterOptionsConfiguration> logger,
+            ShellSettings shellSettings)
         {
             _twitterLoginService = twitterLoginService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
+            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -70,6 +75,9 @@ namespace OrchardCore.Twitter.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
+            options.RetrieveUserDetails = true;
+            options.SignInScheme = "Identity.External";
+            options.StateCookie.Path = _tenantPrefix;
         }
 
         public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

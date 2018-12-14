@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -20,8 +21,28 @@ namespace OrchardCore.Contents.Drivers
 
         public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
+            // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
+            // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
+
+            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before");
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentType);
+
+            if (contentTypeDefinition != null)
+            {
+                contentsMetadataShape.Displaying(ctx =>
+                {
+                    var stereotype = contentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+
+                    if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                    {
+                        ctx.ShapeMetadata.Alternates.Add($"{stereotype}__ContentsMetadata");
+                    }
+                });
+            }
+
             return Combine(
-                Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before"),
+                contentsMetadataShape,
                 Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:10"),
                 Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
                 Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),

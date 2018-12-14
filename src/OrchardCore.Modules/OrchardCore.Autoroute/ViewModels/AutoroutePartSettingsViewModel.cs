@@ -1,4 +1,4 @@
-﻿using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.Models;
 
 namespace OrchardCore.Autoroute.ViewModels
 {
@@ -7,6 +7,7 @@ namespace OrchardCore.Autoroute.ViewModels
         public bool AllowCustomPath { get; set; }
         public string Pattern { get; set; }
         public bool ShowHomepageOption {get; set; }
+        public bool AllowUpdatePath { get; set; }
         public AutoroutePartSettings AutoroutePartSettings { get; set; }
     }
 }

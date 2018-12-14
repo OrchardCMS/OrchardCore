@@ -3,9 +3,11 @@
     "child_process": "^1.0.2",
     "jest": "^23.6.0",
     "jest-cli": "^23.6.0",
+    "merge": ">=1.2.1",
     "puppeteer": "^1.8.0",
     "rimraf": "^2.6.2",
-    "fs": "^0.0.2"
+    "fs": "^0.0.2",
+    "fsevents": ">=2.0.1"
   },
   "dependencies": {},
   "scripts": {

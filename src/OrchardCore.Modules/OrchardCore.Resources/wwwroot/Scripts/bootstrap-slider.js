@@ -4,7 +4,7 @@
 */
 
 /*! =======================================================
-                      VERSION  10.3.4              
+                      VERSION  10.4.0              
 ========================================================= */
 "use strict";
 
@@ -370,6 +370,9 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			options = options ? options : {};
 			var optionTypes = Object.keys(this.defaultOptions);
 
+			var isMinSet = options.hasOwnProperty('min');
+			var isMaxSet = options.hasOwnProperty('max');
+
 			for (var i = 0; i < optionTypes.length; i++) {
 				var optName = optionTypes[i];
 
@@ -683,8 +686,12 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 			this._setTooltipPosition();
 			/* In case ticks are specified, overwrite the min and max bounds */
 			if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
-				this.options.max = Math.max.apply(Math, this.options.ticks);
-				this.options.min = Math.min.apply(Math, this.options.ticks);
+				if (!isMaxSet) {
+					this.options.max = Math.max.apply(Math, this.options.ticks);
+				}
+				if (!isMinSet) {
+					this.options.min = Math.min.apply(Math, this.options.ticks);
+				}
 			}
 
 			if (Array.isArray(this.options.value)) {
@@ -1471,7 +1478,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				}
 
 				this._state.percentage[this._state.dragged] = percentage;
-				this._layout();
 
 				if (this.touchCapable) {
 					document.removeEventListener("touchmove", this.mousemove, false);
@@ -1502,7 +1508,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 
 				this._trigger('slideStart', newValue);
 
-				this._setDataVal(newValue);
 				this.setValue(newValue, false, true);
 
 				ev.returnValue = false;
@@ -1564,7 +1569,7 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				}
 
 				var val = this._state.value[handleIdx] + dir * this.options.step;
-				var percentage = val / this.options.max * 100;
+				var percentage = this._toPercentage(val);
 				this._state.keyCtrl = handleIdx;
 				if (this.options.range) {
 					this._adjustPercentageForRangeSliders(percentage);
@@ -1577,12 +1582,10 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				}
 
 				this._trigger('slideStart', val);
-				this._setDataVal(val);
+
 				this.setValue(val, true, true);
 
-				this._setDataVal(val);
 				this._trigger('slideStop', val);
-				this._layout();
 
 				this._pauseEvent(ev);
 				delete this._state.keyCtrl;
@@ -1607,7 +1610,6 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 				var percentage = this._getPercentage(ev);
 				this._adjustPercentageForRangeSliders(percentage);
 				this._state.percentage[this._state.dragged] = percentage;
-				this._layout();
 
 				var val = this._calculateValue(true);
 				this.setValue(val, true, true);
@@ -1646,21 +1648,26 @@ var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(win
 					} else if (this._state.dragged === 1 && this._applyToFixedAndParseFloat(this._state.percentage[0], precision) > percentageWithAdjustedPrecision) {
 						this._state.percentage[1] = this._state.percentage[0];
 						this._state.dragged = 0;
-					} else if (this._state.keyCtrl === 0 && this._state.value[1] / this.options.max * 100 < percentage) {
+					} else if (this._state.keyCtrl === 0 && this._toPercentage(this._state.value[1]) < percentage) {
 						this._state.percentage[0] = this._state.percentage[1];
 						this._state.keyCtrl = 1;
 						this.handle2.focus();
-					} else if (this._state.keyCtrl === 1 && this._state.value[0] / this.options.max * 100 > percentage) {
+					} else if (this._state.keyCtrl === 1 && this._toPercentage(this._state.value[0]) > percentage) {
 						this._state.percentage[1] = this._state.percentage[0];
 						this._state.keyCtrl = 0;
 						this.handle1.focus();
 					}
 				}
 			},
-			_mouseup: function _mouseup() {
+			_mouseup: function _mouseup(ev) {
 				if (!this._state.enabled) {
 					return false;
 				}
+
+				var percentage = this._getPercentage(ev);
+				this._adjustPercentageForRangeSliders(percentage);
+				this._state.percentage[this._state.dragged] = percentage;
+
 				if (this.touchCapable) {
 					// Touch: Unbind touch event handlers:
 					document.removeEventListener("touchmove", this.mousemove, false);
