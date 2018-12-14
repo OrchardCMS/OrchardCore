@@ -87,8 +87,8 @@ namespace OrchardCore.Environment.Shell
             Configuration.Bind(globalSettings);
             Configuration.Bind(settings.Name, globalSettings);
 
-            var globalObject = JObject.FromObject(globalSettings);
             var localObject = JObject.FromObject(settings);
+            var globalObject = JObject.FromObject(globalSettings);
 
             foreach (var property in globalObject)
             {
