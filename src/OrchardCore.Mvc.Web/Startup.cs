@@ -13,7 +13,6 @@ namespace OrchardCore.Mvc.Web
             // Add ASP.NET MVC and support for modules
             services
                 .AddOrchardCore()
-                .WithTenants()
                 .AddMvc()
                 ;
         }
