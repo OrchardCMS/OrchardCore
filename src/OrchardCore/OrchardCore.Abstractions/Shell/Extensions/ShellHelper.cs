@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell
 
         public static ShellSettings BuildDefaultUninitializedShell = new ShellSettings {
             Name = DefaultShellName,
-            State = TenantState.Uninitialized.ToString()
+            State = TenantState.Uninitialized
         };
     }
 }

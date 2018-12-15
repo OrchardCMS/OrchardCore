@@ -51,15 +51,15 @@
                 <div class="properties">
                     <div class="related">
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        @if (!entry.IsDefaultTenant && entry.ShellSettings.GetState() == TenantState.Running)
+                        @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                         {
                             <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
-                        @if (entry.ShellSettings.GetState() == TenantState.Disabled)
+                        @if (entry.ShellSettings.State == TenantState.Disabled)
                         {
                             <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                         }
-                        @if (entry.ShellSettings.GetState() == TenantState.Uninitialized)
+                        @if (entry.ShellSettings.State == TenantState.Uninitialized)
                         {
                             <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry)">@T["Setup"]</a>
                         }
@@ -68,7 +68,7 @@
                     <h5>
                         <a href="@GetTenantUrl(entry)">@entry.Name</a>
                         <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
-                        @switch (entry.ShellSettings.GetState())
+                        @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
                                 <span class="badge badge-dark">@T["Disabled"]</span>

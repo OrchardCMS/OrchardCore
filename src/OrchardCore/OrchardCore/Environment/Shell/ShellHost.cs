@@ -268,7 +268,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
-            if (settings.GetState() == TenantState.Uninitialized)
+            if (settings.State == TenantState.Uninitialized)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -277,7 +277,7 @@ namespace OrchardCore.Environment.Shell
 
                 return _shellContextFactory.CreateSetupContextAsync(settings);
             }
-            else if (settings.GetState() == TenantState.Disabled)
+            else if (settings.State == TenantState.Disabled)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -286,7 +286,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if (settings.GetState() == TenantState.Running || settings.GetState() == TenantState.Initializing)
+            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -344,7 +344,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="settings"></param>
         public Task ReloadShellContextAsync(ShellSettings settings)
         {
-            if (settings.GetState() == TenantState.Disabled)
+            if (settings.State == TenantState.Disabled)
             {
                 // If a disabled shell is still in use it will be released and then disposed by its last scope.
                 // Knowing that it is still removed from the running shell table, so that it is no more served.
@@ -428,10 +428,10 @@ namespace OrchardCore.Environment.Shell
         private bool CanCreateShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.GetState() == TenantState.Running ||
-                shellSettings.GetState() == TenantState.Uninitialized ||
-                shellSettings.GetState() == TenantState.Initializing ||
-                shellSettings.GetState() == TenantState.Disabled;
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing ||
+                shellSettings.State == TenantState.Disabled;
         }
 
         /// <summary>
@@ -440,9 +440,9 @@ namespace OrchardCore.Environment.Shell
         private bool CanRegisterShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.GetState() == TenantState.Running ||
-                shellSettings.GetState() == TenantState.Uninitialized ||
-                shellSettings.GetState() == TenantState.Initializing;
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing;
         }
 
         public void Dispose()

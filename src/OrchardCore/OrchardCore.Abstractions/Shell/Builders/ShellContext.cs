@@ -212,7 +212,7 @@ namespace OrchardCore.Hosting.ShellBuilders
             private bool ScopeReleased()
             {
                 // A disabled shell still in use is released by its last scope.
-                if (_shellContext.Settings.GetState() == TenantState.Disabled)
+                if (_shellContext.Settings.State == TenantState.Disabled)
                 {
                     if (Interlocked.CompareExchange(ref _shellContext._refCount, 1, 1) == 1)
                     {

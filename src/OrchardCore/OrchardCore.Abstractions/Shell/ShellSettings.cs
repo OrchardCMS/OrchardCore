@@ -1,5 +1,7 @@
 using System;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
@@ -11,8 +13,6 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings : IEquatable<ShellSettings>
     {
-        private TenantState _tenantState;
-
         public ShellSettings()
         {
         }
@@ -39,31 +39,13 @@ namespace OrchardCore.Environment.Shell
         public string RecipeName { get; set; }
         public string Secret { get; set; }
 
-        public string State
-        {
-            get => _tenantState.ToString();
-
-            set
-            {
-                if (!Enum.TryParse(value, true, out _tenantState))
-                {
-                    _tenantState = TenantState.Invalid;
-                }
-            }
-        }
-
-        public TenantState GetState() => _tenantState;
-
-        public void SetState(TenantState state)
-        {
-            _tenantState = state;
-            State = state.ToString();
-        }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public TenantState State { get; set; }
 
         private StringValues StringValues => new StringValues(new []
         {
             Name, RequestUrlHost, RequestUrlPrefix, DatabaseProvider,
-            TablePrefix, ConnectionString, RecipeName, Secret, State
+            TablePrefix, ConnectionString, RecipeName, Secret, State.ToString()
         });
 
         public bool Equals(ShellSettings other)

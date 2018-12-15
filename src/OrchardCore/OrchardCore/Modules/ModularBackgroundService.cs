@@ -243,7 +243,7 @@ namespace OrchardCore.Modules
 
         private async Task<IEnumerable<ShellContext>> GetRunningShells()
         {
-            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.GetState() == TenantState.Running && s.Pipeline != null).ToArray();
+            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)

@@ -104,7 +104,7 @@ namespace OrchardCore.Recipes.Controllers
 
             // Set shell state to "Initializing" so that subsequent HTTP requests
             // are responded to with "Service Unavailable" while running the recipe.
-            _shellSettings.SetState(TenantState.Initializing);
+            _shellSettings.State = TenantState.Initializing;
 
             try
             {
@@ -118,7 +118,7 @@ namespace OrchardCore.Recipes.Controllers
             finally
             {
                 // Don't lock the tenant if the recipe fails.
-                _shellSettings.SetState(TenantState.Running);
+                _shellSettings.State = TenantState.Running;
             }
 
             _notifier.Success(T["The recipe '{0}' has been run successfully", recipe.Name]);
