@@ -38,18 +38,21 @@ After installation, run `npm install` and then run `gulp dev` which will open up
 
 - `gulp` the default task that builds everything
 - `gulp dev` browserSync opens the project in your default browser and live reloads when changes are made
-- `gulp sass` compiles SCSS files into CSS
-- `gulp minify-css` minifies the compiled CSS file
-- `gulp minify-js` minifies the themes JS file
-- `gulp copy` copies dependencies from node_modules to the vendor directory
+- `gulp css` compiles SCSS files into CSS and minifies the compiled CSS
+- `gulp js` minifies the themes JS file
+- `gulp vendor` copies dependencies from node_modules to the vendor directory
+
+You must have npm and Gulp installed globally on your machine in order to use these features.
+
+## Troubleshooting and Help
+
+Start Bootstrap has a public Slack channel which is a great place to ask questions about this template and all things related to Start Bootstrap.
+
+**[Click here to join the Slack channel!](https://startbootstrap-slack.herokuapp.com/)**
 
 ## Bugs and Issues
 
 Have a bug or an issue with this template? [Open a new issue](https://github.com/BlackrockDigital/startbootstrap-agency/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/agency/).
-
-## Custom Builds
-
-You can hire Start Bootstrap to create a custom build of any template, or create something from scratch using Bootstrap. For more information, visit the **[custom design services page](https://startbootstrap.com/bootstrap-design-services/)**.
 
 ## About
 
