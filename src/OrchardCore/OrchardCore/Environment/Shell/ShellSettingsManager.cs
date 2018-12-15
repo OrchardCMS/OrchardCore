@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
@@ -14,7 +15,8 @@ namespace OrchardCore.Environment.Shell
         private readonly string _tenantsContainerPath;
 
         public ShellSettingsManager(
-            IEnumerable<ITenantsConfigurationProvider> configurationProviders,
+            IConfiguration applicationConfiguration,
+            IEnumerable<ITenantsConfigurationSource> configurationSources,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
@@ -24,25 +26,36 @@ namespace OrchardCore.Environment.Shell
 
             Directory.CreateDirectory(_tenantsContainerPath);
 
-            // We use root data (not in a section) as settings for all tenants. So, to have less data and prevent
-            // name conflicts, we separate them from other app settings and always use a prefix for env variables.
-
-            // To not interleave env variables bindings, a prefix should not start with another existing prefix.
-            // When defining a child, to be compatible on all platforms, use a double underscore '__' seperator.
-
+            var environmentName = hostingEnvironment.EnvironmentName.ToUpperInvariant();
+            var applicationName = hostingEnvironment.ApplicationName.Replace('.', '_').ToUpperInvariant();
             var appsettingsPath = Path.Combine(options.Value.ShellsApplicationDataPath, "appsettings");
 
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddEnvironmentVariables("ORCHARDCORE_SETTINGS_")
-                .AddEnvironmentVariables($"ORCHARDCORE_{hostingEnvironment.EnvironmentName.ToUpperInvariant()}_SETTINGS_")
+
+                .AddEnvironmentVariables($"{applicationName}_SETTINGS_")
+                .AddEnvironmentVariables($"{applicationName}_{environmentName}_SETTINGS_")
+
                 .AddJsonFile($"{appsettingsPath}.json", optional: true)
                 .AddJsonFile($"{appsettingsPath}.{hostingEnvironment.EnvironmentName}.json", optional: true);
 
-            foreach (var configurationProvider in configurationProviders.OrderBy(p => p.Order))
+            var configurationProviders = new List<IConfigurationProvider>();
+
+            foreach (var source in configurationSources)
             {
-                configurationBuilder.AddConfiguration(configurationProvider.Configuration);
+                var provider = source.Build(configurationBuilder);
+                configurationProviders.Add(provider);
             }
+
+            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
+                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
+
+            if (commandLineProvider != null)
+            {
+                configurationProviders.Add(commandLineProvider);
+            }
+
+            configurationBuilder.AddConfiguration(new ConfigurationRoot(configurationProviders));
 
             Configuration = configurationBuilder.Build();
         }
@@ -130,14 +143,7 @@ namespace OrchardCore.Environment.Shell
 
             catch (IOException)
             {
-                // The settings file may be own by another process or already exists when trying to create
-                // a new one. So, nothing more that we can do. Note: Other exceptions are normally thrown.
-
-                // Tenant settings are not intended to be updated concurrently, but it is highly possible
-                // when synchronizing tenants settings of multiple instances sharing the same file system.
-
-                // Another potential issue is when one instance is reading a settings file, which can only
-                // occur on startup, while another one is re-creating the settings file of the same tenant.
+                // The file may be own by another process or already exists when trying to create a new one.
             }
         }
     }

@@ -2,9 +2,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell
 {
-    public interface ITenantsConfigurationProvider
+    public interface ITenantsConfigurationSource : IConfigurationSource
     {
-        IConfiguration Configuration { get; }
         int Order { get; }
     }
 }
