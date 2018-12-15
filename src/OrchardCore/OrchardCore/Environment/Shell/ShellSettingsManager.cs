@@ -30,12 +30,14 @@ namespace OrchardCore.Environment.Shell
             // To not interleave env variables bindings, a prefix should not start with another existing prefix.
             // When defining a child, to be compatible on all platforms, use a double underscore '__' seperator.
 
+            var appsettingsPath = Path.Combine(options.Value.ShellsApplicationDataPath, "appsettings");
+
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(hostingEnvironment.ContentRootPath)
-                .AddEnvironmentVariables("TENANTS_SETTINGS_")
-                .AddEnvironmentVariables($"TENANTS_{hostingEnvironment.EnvironmentName.ToUpperInvariant()}_SETTINGS_")
-                .AddJsonFile("tenants.settings.json", optional: true)
-                .AddJsonFile($"tenants.{hostingEnvironment.EnvironmentName}.settings.json", optional: true);
+                .AddEnvironmentVariables("ORCHARDCORE_SETTINGS_")
+                .AddEnvironmentVariables($"ORCHARDCORE_{hostingEnvironment.EnvironmentName.ToUpperInvariant()}_SETTINGS_")
+                .AddJsonFile($"{appsettingsPath}.json", optional: true)
+                .AddJsonFile($"{appsettingsPath}.{hostingEnvironment.EnvironmentName}.json", optional: true);
 
             foreach (var configurationProvider in configurationProviders.OrderBy(p => p.Order))
             {
@@ -67,7 +69,7 @@ namespace OrchardCore.Environment.Shell
                 var tenantName = Path.GetFileName(tenantFolder);
 
                 var localConfiguration = new ConfigurationBuilder()
-                    .AddJsonFile(Path.Combine(tenantFolder, "settings.json"), optional: true)
+                    .AddJsonFile(Path.Combine(tenantFolder, "appsettings.json"), optional: true)
                     .Build();
 
                 var shellSetting = new ShellSettings() { Name = tenantName };
@@ -123,7 +125,7 @@ namespace OrchardCore.Environment.Shell
 
             try
             {
-                File.WriteAllText(Path.Combine(tenantFolder, "settings.json"), localObject.ToString());
+                File.WriteAllText(Path.Combine(tenantFolder, "appsettings.json"), localObject.ToString());
             }
 
             catch (IOException)
