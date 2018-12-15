@@ -165,7 +165,7 @@ the one with the highest number will be used.
 You can also do the same for a stylesheet:
 
 ```liquid
-{% style source:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
+{% style src:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
 ```
 
 ```razor
