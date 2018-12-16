@@ -17,7 +17,8 @@
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="SslPort">
-    <label asp-for="SslPort">@T["SSL Port"] <span asp-validation-for="SslPort"></span></label>
+    <label asp-for="SslPort">@T["SSL Port"]</label>
     <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)"/>
+    <span asp-validation-for="SslPort"></span>
     <span class="hint">@T["The SSL Port Number"]</span>
 </fieldset>

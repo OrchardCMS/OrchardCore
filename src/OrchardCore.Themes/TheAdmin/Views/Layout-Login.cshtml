@@ -19,8 +19,10 @@
 <body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
-
+        
+        <div class="auth-wrapper">
         @await RenderBodyAsync()
+        </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)

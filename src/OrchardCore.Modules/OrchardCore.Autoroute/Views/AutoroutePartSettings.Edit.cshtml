@@ -1,25 +1,33 @@
 @model OrchardCore.Autoroute.ViewModels.AutoroutePartSettingsViewModel
 
-<fieldset class="form-group">
-    <div class="row col-lg">
+<div class="form-group row">
+    <div class="col-lg">
         <label asp-for="Pattern">@T["Pattern"]</label>
         <input asp-for="Pattern" class="form-control" />
         <span class="hint">@T["The pattern used to render the custom url of this content type."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowCustomPath" checked="@Model.AllowCustomPath">
         <label class="custom-control-label" asp-for="AllowCustomPath">@T["Allow custom path"]</label>
         <span class="hint">@T["Check to allow users to set a custom path, otherwise it will be automatically generated."]</span>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowUpdatePath" checked="@Model.AllowUpdatePath">
+        <label class="custom-control-label" asp-for="AllowUpdatePath">@T["Allow path updates"]</label>
+        <span class="hint">@T["Check to allow users to refresh the path once a content item is already published."]</span>
+    </div>
+</div>
+
+<div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ShowHomepageOption" checked="@Model.ShowHomepageOption">
         <label class="custom-control-label" asp-for="ShowHomepageOption">@T["Show homepage options"]</label>
         <span class="hint">@T["Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."]</span>
     </div>
-</fieldset>
+</div>
