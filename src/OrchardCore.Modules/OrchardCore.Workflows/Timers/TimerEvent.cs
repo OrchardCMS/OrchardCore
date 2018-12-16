@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Timers
 
         public string CronExpression
         {
-            get => GetProperty(() => "5 * * * *");
+            get => GetProperty(() => "*/5 * * * *");
             set => SetProperty(value);
         }
 

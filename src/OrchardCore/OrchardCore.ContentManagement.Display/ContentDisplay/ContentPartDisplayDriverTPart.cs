@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -26,6 +27,20 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             if (_typePartDefinition != null)
             {
+                // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
+                // the same time in an alternate because a content type is always of one stereotype.
+
+                var stereotype = _typePartDefinition.ContentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+
+                if (String.IsNullOrEmpty(stereotype) || String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                {
+                    stereotype = "";
+                }
+                else
+                {
+                    stereotype = stereotype + "__";
+                }
+                
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
@@ -53,9 +68,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     else
                     {
                         displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
-
-                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)
@@ -64,6 +76,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         {
                             // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
+                                ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partType}");
+                            }
                         }
 
                         if (partType != partName)
@@ -72,6 +90,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             {
                                 // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
                                 ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+
+                                if (!String.IsNullOrEmpty(stereotype))
+                                {
+                                    // [Stereotype]_[DisplayType]__[PartName], e.g. LandingPage-Services
+                                    ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
+                                }
                             }
                         }
                     }
@@ -81,6 +105,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         {
                             // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
                             ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+
+                            if (!String.IsNullOrEmpty(stereotype))
+                            {
+                                // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
+                                ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
+                            }
                         }
 
                         if (partType != partName)
@@ -89,6 +119,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             {
                                 // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
                                 ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+
+                                if (!String.IsNullOrEmpty(stereotype))
+                                {
+                                    // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
+                                    ctx.ShapeMetadata.Alternates.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
+                                }
                             }
                         }
                     }

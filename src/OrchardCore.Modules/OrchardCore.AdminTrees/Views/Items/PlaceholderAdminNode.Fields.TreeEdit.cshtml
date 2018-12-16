@@ -10,8 +10,9 @@
 <h5>@T["Placeholder"]</h5>
 
 <fieldset class="form-group" asp-validation-class-for="LinkText">
-    <label asp-for="LinkText">@T["Link Text"] <span asp-validation-for="LinkText"></span></label>
+    <label asp-for="LinkText">@T["Link Text"]</label>
     <input asp-for="LinkText" class="form-control" />
+    <span asp-validation-for="LinkText"></span>
     <span class="hint">@T["The text of the menu item as it will be shown in the tree."]</span>
 </fieldset>
 
