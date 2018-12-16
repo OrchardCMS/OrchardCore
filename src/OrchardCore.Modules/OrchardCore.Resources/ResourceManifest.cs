@@ -10,20 +10,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery")
-                .SetCdn("https://code.jquery.com/jquery-1.12.4.min.js", "https://code.jquery.com/jquery-1.12.4.js")
-                .SetCdnIntegrity("sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=", "sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=")
-                .SetVersion("1.12.4")
-                ;
-
-            manifest
-                .DefineScript("jQuery")
-                .SetCdn("https://code.jquery.com/jquery-2.2.4.min.js", "https://code.jquery.com/jquery-2.2.4.js")
-                .SetCdnIntegrity("sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=", "sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=")
-                .SetVersion("2.2.4")
-                ;
-
-            manifest
-                .DefineScript("jQuery")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery.min.js", "/OrchardCore.Resources/Scripts/jquery.js")
                 .SetCdn("https://code.jquery.com/jquery-3.3.1.min.js", "https://code.jquery.com/jquery-3.3.1.js")
                 .SetCdnIntegrity("sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=", "sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=")
                 .SetVersion("3.3.1")
@@ -31,6 +18,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("jQuery.slim")
+                .SetUrl("/OrchardCore.Resources/Scripts/jquery.slim.min.js", "/OrchardCore.Resources/Scripts/jquery.slim.js")
                 .SetCdn("https://code.jquery.com/jquery-3.3.1.slim.min.js", "https://code.jquery.com/jquery-3.3.1.slim.js")
                 .SetCdnIntegrity("sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo", "sha384-sh6iinGECmk2oNezd0GDVuXqoHrZzF3PTML2nyt/lC61v2p1W7hGll/JkRFCOcMf")
                 .SetVersion("3.3.1")
@@ -56,31 +44,31 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js")
-                .SetCdnIntegrity("sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", "sha384-OkuKCCwNNAv3fnqHH7lwPY3m5kkvCIUnsHbjdU7sN022wAYaQUfXkqyIZLlL0xQ/")
-                .SetVersion("3.3.7")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-vhJnz1OVIdLktyixHY4Uk3OHEwdQqPppqYR8+5mjsauETgLOcEynD9oPHhhz18Nw", "sha384-it0Suwx+VjMafDIVf5t+ozEbrflmNjEddSX5LstI/Xdw3nv4qP/a4e8K4k5hH6l4")
+                .SetVersion("3.4.0")
                 ;
 
             manifest
                 .DefineStyle("bootstrap")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css")
-                .SetCdnIntegrity("sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", "sha384-yzOI+AGOH+8sPS29CtL/lEWNFZ+HKVVyYxU0vjId0pMG6xn7UMDo9waPX5ImV0r6")
-                .SetVersion("3.3.7")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-PmY9l28YgO4JwMKbTvgaS7XNZJ30MK9FAZjjzXtlqyZCqBY6X6bXIkM++IkyinN+", "sha384-/5bQ8UYbZnrNY3Mfy6zo9QLgIQD/0CximLKk733r8/pQnXn2mgvhvKhcy43gZtJV")
+                .SetVersion("3.4.0")
                 ;
 
             manifest
                 .DefineStyle("bootstrap-theme")
-                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.css")
-                .SetCdnIntegrity("sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", "sha384-87IgyAZ7ZPkMKNvliJR8lR09U+LMadREF430SkYRoNaFd+l2lhZnI1cXRdWnAZ+3")
-                .SetVersion("3.3.7")
+                .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap-theme.min.css", "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap-theme.css")
+                .SetCdnIntegrity("sha384-jzngWsPS6op3fgRCDTESqrEJwRKck+CILhJVO5VvaAZCq8JYf8HsR/HPpBOOPZfR", "sha384-RtiWe5OsslAYZ9AVyorBziI2VQL7E27rzWygBJh7wrZuVPyK5jeQLLytnJIpJqfD")
+                .SetVersion("3.4.0")
                 ;
 
             manifest
                 .DefineScript("popper")
                 .SetUrl("/OrchardCore.Resources/Scripts/popper.min.js", "/OrchardCore.Resources/Scripts/popper.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.js")
-                .SetCdnIntegrity("sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49", "sha384-AsJUT69WgSCIrLgOnMRkNjLvBl0aoHtB3vBDnAEOKRfxKMm7gvmSTJUZCefoYWdA")
-                .SetVersion("1.14.3")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.js")
+                .SetCdnIntegrity("sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut", "sha384-HzqOR2vfXkFlYAX/3YipGekTG6pn/9zeXoTLZZpSdO3w94laYDd5KXyKA22nTfuQ")
+                .SetVersion("1.14.6")
                 ;
 
             manifest
@@ -107,6 +95,65 @@ namespace OrchardCore.Resources
                 .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.css")
                 .SetCdnIntegrity("sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", "sha384-2QMA5oZ3MEXJddkHyZE/e/C1bd30ZUPdzqHrsaHMP3aGDbPA9yh77XDHXC9Imxw+")
                 .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.js")
+                .SetCdnIntegrity("sha384-1WlqTuBkhlft5hld74c3aAcO43Mp2uFKAl/z/6tYuEF0kDEnQRWnSIExi+EApxkW", "sha384-x1QKAzaJ+REY7xvp6SmcWnnyQdLJJaudAcV2KGSzDytetEOxiaYyaZ5PFLzBuvwR")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/mode.min.js", "/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.js")
+                .SetCdnIntegrity("sha384-1WlqTuBkhlft5hld74c3aAcO43Mp2uFKAl/z/6tYuEF0kDEnQRWnSIExi+EApxkW", "sha384-x1QKAzaJ+REY7xvp6SmcWnnyQdLJJaudAcV2KGSzDytetEOxiaYyaZ5PFLzBuvwR")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror-addon-mode-multiplex")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.min.js", "/OrchardCore.Resources/Scripts/codemirror/addon/mode/multiplex.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/multiplex.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/multiplex.js")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror-addon-mode-simple")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.min.js", "/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/simple.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/mode/simple.js")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror-mode-javascript")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.min.js", "/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/javascript/javascript.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/javascript/javascript.js")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror-mode-sql")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.min.js", "/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/sql/sql.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/sql/sql.js")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineScript("codemirror-mode-xml")
+                .SetUrl("/OrchardCore.Resources/Scripts/codemirror/mode/xml/xml.min.js", "/OrchardCore.Resources/Scripts/codemirror/mode/xml/xml.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/xml/xml.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/xml/xml.js")
+                .SetVersion("4.1.3")
+                ;
+
+            manifest
+                .DefineStyle("codemirror")
+                .SetUrl("/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "/OrchardCore.Resources/Styles/codemirror/codemirror.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.css")
+                .SetCdnIntegrity("sha384-T6md2jYuokZmxpt4u/OxutZZs2NFnA/5oVdjrDkapBl/HHH3NfxhUMbFxEv5NTlh", "sha384-rTt9i9SnVCkukyC4WSJmDVMachnmXt3NchukWtR1miRFWpcgnyeOFxq2FBzsKltl")
+                .SetVersion("5.42.0")
                 ;
 
             manifest
