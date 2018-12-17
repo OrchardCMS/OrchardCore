@@ -17,6 +17,8 @@ namespace OrchardCore.Data
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
         }
+
+        public string TablePrefix => _store.Configuration.TablePrefix;
       
         public async Task<IDbConnection> GetConnectionAsync()
         {          

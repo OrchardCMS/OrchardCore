@@ -7,5 +7,7 @@ namespace OrchardCore.Data.Abstractions
     public interface IDbConnectionAccessor
     {
         Task<IDbConnection> GetConnectionAsync();
+
+        string TablePrefix { get; }
     }
 }

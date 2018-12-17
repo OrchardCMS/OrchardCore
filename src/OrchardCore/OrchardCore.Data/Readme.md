@@ -20,9 +20,19 @@ public class AdminController : Controller
 
        using (var connection = await _dbAccessor.GetConnectionAsyc())
        {
-           //TODO:  You can use Dapper or any other ORM to to custom data access here.
-       }
-       return View();
+
+           // You can use Dapper or any other ORM to to custom data access here.
+             
+            var dialect = SqlDialectFactory.For(connection);
+            var tablePrefix = connectionAccessor.TablePrefix;
+            var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
+
+            var selectCommand = $"SELECT * FROM {customTable}";
+
+            var model = connection.QueryAsync<CustomTable>(selectCommand);
+
+            return View(model);
+       }      
     }    
 }
 ```
@@ -42,8 +52,7 @@ public class UpdateManager
         ISession session,
         ILogger<ShellDescriptorManager> logger)
     {
-        _serviceProvider = serviceProvider;
-        _shellSettings = shellSettings;          
+        _serviceProvider = serviceProvider;              
         _session = session;
         _logger = logger;
     }       
@@ -55,13 +64,26 @@ public class UpdateManager
         using (var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>() as DbConnectionAccessor)
         {
             var connection = await connectionAccessor.GetConnectionAsync();
+            
             var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = _shellSettings.TablePrefix;
+            var tablePrefix = connectionAccessor.TablePrefix;
             var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
 
             var updateCommand = $"UPDATE {customTable} SET Name = 'Foo Bar' WHERE Id = 1";
-               
-            await connection.ExecuteAsync(updateCommand);               
+
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                await connection.ExecuteAsync(updateCommand, null, transaction); 
+                transaction.Commit();
+            }  
+            
+            catch (Exception ex)
+            {
+                transaction.RollBack();
+            }
+                          
         }
     }
 }

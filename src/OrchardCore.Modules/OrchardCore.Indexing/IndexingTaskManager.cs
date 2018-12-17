@@ -7,26 +7,27 @@ using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using YesSql;
+using OrchardCore.Data.Abstractions;
 
 namespace OrchardCore.Indexing.Services
 {
     public class IndexingTaskManager : IIndexingTaskManager, IDisposable
     {
         private readonly IClock _clock;
-        private readonly ISession _session;
+        private readonly IDbConnectionAccessor _connectionAccessor;
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
         public IndexingTaskManager(
-            ISession session,
+            IDbConnectionAccessor connectionAccessor,
             IClock clock,
             ILogger<IndexingTaskManager> logger)
         {
-            _session = session;
+            _connectionAccessor = connectionAccessor;
             _clock = clock;
             Logger = logger;
 
-            _tablePrefix = session.Store.Configuration.TablePrefix;
+            _tablePrefix = connectionAccessor.TablePrefix;
         }
 
         public ILogger Logger { get; set; }
@@ -79,8 +80,11 @@ namespace OrchardCore.Indexing.Services
                 return;
             }
 
-            var transaction = await _session.DemandAsync();
-            var dialect = SqlDialectFactory.For(transaction.Connection);
+            var connection = await _connectionAccessor.GetConnectionAsync();
+           
+            var dialect = SqlDialectFactory.For(connection);
+
+            var transaction = connection.BeginTransaction();
 
             try
             {
@@ -106,16 +110,22 @@ namespace OrchardCore.Indexing.Services
                 var table = $"{_tablePrefix}{nameof(IndexingTask)}";
 
                 var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
-                await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
+                await connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
 
                 var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                await transaction.Connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
+                await connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
+
+                transaction.Commit();              
             }
             catch(Exception e)
             {
-                _session.Cancel();
+                transaction.Rollback();
                 Logger.LogError("An error occured while updating indexing tasks", e);
                 throw;
+            }
+            finally
+            {
+                connection.Close();
             }
 
             _tasksQueue.Clear();
@@ -125,30 +135,29 @@ namespace OrchardCore.Indexing.Services
         {
             await FlushAsync();
 
-            var transaction = await _session.DemandAsync();
-
             try
             {
-                var dialect = SqlDialectFactory.For(transaction.Connection);
-                var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
-
-                sqlBuilder.Select();
-                sqlBuilder.Table(nameof(IndexingTask));
-                sqlBuilder.Selector("*");
-
-                if (count > 0)
+                using (var connection = await _connectionAccessor.GetConnectionAsync())
                 {
-                    sqlBuilder.Take(count.ToString());
+                    var dialect = SqlDialectFactory.For(connection);
+                    var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
+
+                    sqlBuilder.Select();
+                    sqlBuilder.Table(nameof(IndexingTask));
+                    sqlBuilder.Selector("*");
+
+                    if (count > 0)
+                    {
+                        sqlBuilder.Take(count.ToString());
+                    }
+
+                    sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
+
+                    return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
                 }
-
-                sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
-
-                return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId }, transaction);
             }
             catch (Exception e)
             {
-                _session.Cancel();
-
                 Logger.LogError(e, "An error occured while reading indexing tasks");
                 throw;
             }
