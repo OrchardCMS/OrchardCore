@@ -61,6 +61,7 @@ namespace OrchardCore.ContentFields
             services.AddSingleton<ContentField, HtmlField>();
             services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field

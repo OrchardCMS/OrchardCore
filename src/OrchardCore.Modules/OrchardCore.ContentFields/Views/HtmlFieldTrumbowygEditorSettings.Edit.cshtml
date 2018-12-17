@@ -1,0 +1,10 @@
+@model OrchardCore.ContentFields.ViewModels.TrumbowygSettingsViewModel
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-trumbowyg">
+    <div class="row">
+        <fieldset class="form-group col-sm-6">
+            <label asp-for="Options">@T["Specifiy the trumbowyg editor options"]</label>
+            <textarea asp-for="Options" class="form-control" rows="25"></textarea>
+        </fieldset>
+    </div>
+</div>
