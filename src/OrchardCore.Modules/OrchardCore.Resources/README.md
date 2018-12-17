@@ -152,7 +152,7 @@ Styles, however, are always injected in the header section of the HTML document.
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
 ```liquid
-{% script source:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
+{% script src:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
 ```
 
 ```razor
@@ -165,7 +165,7 @@ the one with the highest number will be used.
 You can also do the same for a stylesheet:
 
 ```liquid
-{% style source:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
+{% style src:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
 ```
 
 ```razor
