@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -54,9 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var storeConfiguration = new YesSql.Configuration();
-
-                    // Disabling query gating as it's failing to improve performance right now
-                    //storeConfiguration.DisableQueryGating();
 
                     switch (shellSettings.DatabaseProvider)
                     {
@@ -117,6 +115,18 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     return session;
+                });
+
+                services.AddScoped<IDbConnectionAccessor>(sp =>
+                {
+                    var store = sp.GetService<IStore>();
+
+                    if (store == null)
+                    {
+                        return null;
+                    }
+
+                    return new DbConnectionAccessor(store);                   
                 });
             });
 
