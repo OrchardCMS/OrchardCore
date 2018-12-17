@@ -30,13 +30,16 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
 
-                var stereotype = _typePartDefinition.ContentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+                var stereotype = "";
 
-                if (String.IsNullOrEmpty(stereotype) || String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                var settings = _typePartDefinition.ContentTypeDefinition?.Settings;
+
+                if (settings != null)
                 {
-                    stereotype = "";
+                    stereotype = Convert.ToString(settings[nameof(ContentTypeSettings.Stereotype)]);
                 }
-                else
+
+                if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                 {
                     stereotype = stereotype + "__";
                 }
