@@ -7,6 +7,7 @@ using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using YesSql;
+using OrchardCore.Data;
 using OrchardCore.Data.Abstractions;
 
 namespace OrchardCore.Indexing.Services
@@ -26,7 +27,6 @@ namespace OrchardCore.Indexing.Services
             _connectionAccessor = connectionAccessor;
             _clock = clock;
             Logger = logger;
-
             _tablePrefix = connectionAccessor.TablePrefix;
         }
 
@@ -64,6 +64,7 @@ namespace OrchardCore.Indexing.Services
         public void Dispose()
         {
             FlushAsync().Wait();
+            (_connectionAccessor as DbConnectionAccessor).Dispose();
         }
 
         private async Task FlushAsync()
