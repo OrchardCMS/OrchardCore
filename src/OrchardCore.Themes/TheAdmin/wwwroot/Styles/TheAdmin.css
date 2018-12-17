@@ -7219,10 +7219,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       margin: 0;
       padding: 0;
       display: list-item;
-      list-style: none;
-      line-height: 3em; }
+      list-style: none; }
       body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul li .item-label {
         cursor: pointer; }
+    body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
+      line-height: 3em; }
+    body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > ul > li {
+      line-height: 2.5em; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
       border-left: 3px solid;
       border-left-color: #0078D4;
@@ -7239,7 +7242,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon {
           padding: 0 10px;
           flex-shrink: 0;
-          font-size: 20px; }
+          font-size: 22px; }
           body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
             width: 35px; }
         body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
@@ -7327,6 +7330,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label {
     background: rgba(0, 0, 0, 0.05);
     color: #495057 !important; }
+    body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label > span.icon {
+      font-size: 16px !important; }
   body:not(.left-sidebar-compact) #ta-left-sidebar li.active ul > li > .item-label::before {
     border-left: 3px solid;
     border-left-color: rgba(0, 0, 0, 0.2);
@@ -7388,10 +7393,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       margin: 0;
       padding: 0;
       display: list-item;
-      list-style: none;
-      line-height: 3em; }
+      list-style: none; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul li .item-label {
         cursor: pointer; }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
+      line-height: 3em; }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul > li {
+      line-height: 2.5em; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
       margin-bottom: 100px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
@@ -7400,7 +7408,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon {
         padding: 0 10px;
         flex-shrink: 0;
-        font-size: 20px; }
+        font-size: 22px; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon svg {
           width: 35px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.title {
@@ -7468,7 +7476,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.icon {
         padding: 0 10px;
         flex-shrink: 0;
-        font-size: 20px;
+        font-size: 22px;
         width: 60px;
         border-right: 1px solid #F2F2F2; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.icon svg {
@@ -7498,7 +7506,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       cursor: pointer;
       width: 45px;
       outline: none; }
-    .left-sidebar-compact #ta-left-sidebar #left-nav .btn-nostyle:focus {
+    .left-sidebar-compact #ta-left-sidebar #left-nav .btn-nostyle:focus, .left-sidebar-compact #ta-left-sidebar #left-nav .btn-nostyle:active {
       background-color: rgba(0, 0, 0, 0.3);
       color: white; }
   .left-sidebar-compact #ta-left-sidebar li.has-items .item-label,

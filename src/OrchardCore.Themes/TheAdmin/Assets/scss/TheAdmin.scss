@@ -16,7 +16,6 @@ $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
 
 html, body {
-
 }
 
 
@@ -204,11 +203,18 @@ body:not(.left-sidebar-compact) {
                     padding: 0;
                     display: list-item;
                     list-style: none;
-                    line-height: 3em;
 
                     .item-label {
                         cursor: pointer;
                     }
+                }
+
+                > li {
+                    line-height: 3em;
+                }
+
+                > li > ul > li {
+                    line-height: 2.5em;
                 }
                 // first level menu items that have no items and are active
                 > li.active:not(.has-items)::before {
@@ -233,7 +239,7 @@ body:not(.left-sidebar-compact) {
                         > span.icon {
                             padding: 0 10px;
                             flex-shrink: 0;
-                            font-size: 20px;
+                            font-size: 22px;
 
                             svg {
                                 width: 35px;
@@ -359,9 +365,15 @@ body:not(.left-sidebar-compact) {
             top: 0;
         }
 
-        li ul > li > .item-label {
-            background: rgba(0,0,0,0.05);
-            color: $gray-700 !important;
+        li ul > li {
+            > .item-label {
+                background: rgba(0,0,0,0.05);
+                color: $gray-700 !important;
+
+                > span.icon {
+                    font-size: 16px !important;
+                }
+            }
         }
 
         li.active ul > li > .item-label::before {
@@ -463,12 +475,20 @@ body:not(.left-sidebar-compact) {
                     padding: 0;
                     display: list-item;
                     list-style: none;
-                    line-height: 3em;
 
                     .item-label {
                         cursor: pointer;
                     }
                 }
+
+                > li {
+                    line-height: 3em;
+                }
+
+                > li > ul > li {
+                    line-height: 2.5em;
+                }
+
                 // changing the padding of the icons on the first level to match
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
@@ -483,7 +503,7 @@ body:not(.left-sidebar-compact) {
                     > span.icon {
                         padding: 0 10px;
                         flex-shrink: 0;
-                        font-size: 20px;
+                        font-size: 22px;
 
                         svg {
                             width: 35px;
@@ -588,7 +608,7 @@ body:not(.left-sidebar-compact) {
                     > span.icon {
                         padding: 0 10px;
                         flex-shrink: 0;
-                        font-size: 20px;
+                        font-size: 22px;
                         width: 60px;
                         border-right: 1px solid #F2F2F2;
 
@@ -636,7 +656,7 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            .btn-nostyle:focus {
+            .btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
             }
@@ -798,7 +818,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 // -----------------------------------
 .ta-content-login {
     margin-left: 0;
-
 }
 
 .auth-form {
@@ -843,6 +862,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     color: $pre-color;
     @include border-radius($border-radius);
 }
+
 .label-link {
     float: right;
     font-size: 12px;
