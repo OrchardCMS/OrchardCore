@@ -7,19 +7,19 @@
     var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
 }
 
-<script name="trumbowyg" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style name="trumbowyg" asp-src="/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg.css"></style>
-<script name="trumbowyg-plugins" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg-plugins.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg-plugins.js" at="Foot"></script>
-<style name="trumbowyg-plugins" asp-src="/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg-plugins.css"></style>
+<script depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
+<style asp-src="/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+<script depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg-plugins.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg-plugins.js" at="Foot"></script>
+<style asp-src="/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg-plugins.css"></style>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
     <textarea asp-for="Html" class="form-control"></textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {
