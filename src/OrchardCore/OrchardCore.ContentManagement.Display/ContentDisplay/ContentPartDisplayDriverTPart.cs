@@ -71,6 +71,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     else
                     {
                         displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+
+                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)
