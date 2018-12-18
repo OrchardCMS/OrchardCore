@@ -131,41 +131,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
 
             return true;
-
-            //switch (term.Key)
-            //{
-            //case "ContentPart":
-            //    return ctx => ctx.Content != null
-            //        && ctx.Content.ContentItem.Has(expression)
-            //        && predicate(ctx);
-            //case "ContentType":
-            //    if (expression.EndsWith("*"))
-            //    {
-            //        var prefix = expression.Substring(0, expression.Length - 1);
-            //        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
-            //    }
-            //    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
-            //case "DisplayType":
-            //    if (expression.EndsWith("*"))
-            //    {
-            //        var prefix = expression.Substring(0, expression.Length - 1);
-            //        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
-            //    }
-            //    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
-            //case "Path":
-            //    throw new Exception("Path Not currently Supported");
-            //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
-            //                         ? VirtualPathUtility.ToAppRelative(expression)
-            //                         : VirtualPathUtility.Combine("~/", expression);
-
-            //if (normalizedPath.EndsWith("*")) {
-            //    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
-            //    return ctx => VirtualPathUtility.ToAppRelative(String.IsNullOrEmpty(ctx.Path) ? "/" : ctx.Path).StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && predicate(ctx);
-            //}
-
-            //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
-            //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
-            //}
         }
 
         private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
