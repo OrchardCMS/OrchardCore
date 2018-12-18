@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
@@ -43,8 +43,8 @@
         </div>
 
         <div id="ta-left-sidebar">
+            @await RenderSectionAsync("Navigation", required: false)
             <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
-            @await RenderSectionAsync("Navigation", required: false)            
         </div>
 
         <div class="ta-content">

@@ -7224,6 +7224,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         cursor: pointer; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
       line-height: 3em; }
+      body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
+        content: "";
+        width: 92%;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.1);
+        display: block;
+        margin: 0px auto 4px auto; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
@@ -7242,7 +7249,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon {
           padding: 0 10px;
           flex-shrink: 0;
-          font-size: 22px; }
+          font-size: 22px;
+          width: 55px; }
           body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
             width: 35px; }
         body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
@@ -7398,6 +7406,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         cursor: pointer; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
       line-height: 3em; }
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:first-child:after {
+        content: "";
+        width: 60%;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.1);
+        display: block;
+        margin: 0px auto 4px auto; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {

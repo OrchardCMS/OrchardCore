@@ -211,6 +211,15 @@ body:not(.left-sidebar-compact) {
 
                 > li {
                     line-height: 3em;
+
+                    &:first-child:after {
+                        content: "";
+                        width: 92%;
+                        height: 1px;
+                        background: rgba(0,0,0,.1);
+                        display: block;
+                        margin: 0px auto 4px auto;
+                    }
                 }
 
                 > li > ul > li {
@@ -240,6 +249,7 @@ body:not(.left-sidebar-compact) {
                             padding: 0 10px;
                             flex-shrink: 0;
                             font-size: 22px;
+                            width: 55px;
 
                             svg {
                                 width: 35px;
@@ -483,12 +493,20 @@ body:not(.left-sidebar-compact) {
 
                 > li {
                     line-height: 3em;
+
+                    &:first-child:after {
+                        content: "";
+                        width: 60%;
+                        height: 1px;
+                        background: rgba(0,0,0,.1);
+                        display: block;
+                        margin: 0px auto 4px auto;
+                    }
                 }
 
                 > li > ul > li {
                     line-height: 2.5em;
                 }
-
                 // changing the padding of the icons on the first level to match
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
