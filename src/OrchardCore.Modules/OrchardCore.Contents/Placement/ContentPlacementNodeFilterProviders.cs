@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Contents.Placement
 {
-    public class ContentPartPlacementParseFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
+    public class ContentPartPlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
         public string Key { get { return "contentPart"; } }
 
@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.Placement
         }
     }
 
-    public class ContentTypePlacementParseFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
+    public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
         public string Key { get { return "contentType"; } }
 
