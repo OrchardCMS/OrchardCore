@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -19,18 +18,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private ContentTypePartDefinition _typePartDefinition;
 
-        public virtual IDisplayResult Display(TPart part, BuildPartDisplayContext context) => Display(part);
-
-        public virtual IDisplayResult Display(TPart part) => null;
-
-        public virtual Task<IDisplayResult> DisplayAsync(TPart part, BuildPartDisplayContext context) => Task.FromResult(Display(part, context));
-
-        public virtual IDisplayResult Edit(TPart part, BuildPartEditorContext context) => Edit(part);
-
-        public virtual IDisplayResult Edit(TPart part) => null;
-
-        public virtual Task<IDisplayResult> EditAsync(TPart part, BuildPartEditorContext context) => Task.FromResult(Edit(part, context));
-
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
@@ -42,25 +29,18 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
-                string stereotype;
-                var stereotypeSetting = _typePartDefinition.ContentTypeDefinition?.Settings[nameof(ContentTypeSettings.Stereotype)];
-                if (stereotypeSetting != null)
-                {
-                    stereotype = stereotypeSetting.ToString();
-                    if (String.IsNullOrEmpty(stereotype) || String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                    {
-                        stereotype = "";
-                    }
-                    else
-                    {
-                        stereotype = stereotype + "__";
-                    }
-                }
-                else
+
+                var stereotype = _typePartDefinition.ContentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+
+                if (String.IsNullOrEmpty(stereotype) || String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                 {
                     stereotype = "";
                 }
-
+                else
+                {
+                    stereotype = stereotype + "__";
+                }
+                
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
@@ -154,12 +134,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater, UpdatePartEditorContext context) => UpdateAsync(part, context);
-
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, BuildPartEditorContext context) => UpdateAsync(part, context.Updater);
-
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater) => Task.FromResult<IDisplayResult>(null);
-
         async Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
             var part = contentPart as TPart;
@@ -224,6 +198,51 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
+        public virtual Task<IDisplayResult> DisplayAsync(TPart part, BuildPartDisplayContext context)
+        {
+            return Task.FromResult(Display(part, context));
+        }
+
+        public virtual IDisplayResult Display(TPart part, BuildPartDisplayContext context)
+        {
+            return Display(part);
+        }
+
+        public virtual IDisplayResult Display(TPart part)
+        {
+            return null;
+        }
+
+        public virtual Task<IDisplayResult> EditAsync(TPart part, BuildPartEditorContext context)
+        {
+            return Task.FromResult(Edit(part, context));
+        }
+
+        public virtual IDisplayResult Edit(TPart part, BuildPartEditorContext context)
+        {
+            return Edit(part);
+        }
+
+        public virtual IDisplayResult Edit(TPart part)
+        {
+            return null;
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        {
+            return UpdateAsync(part, context);
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(TPart part, BuildPartEditorContext context)
+        {
+            return UpdateAsync(part, context.Updater);
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater)
+        {
+            return Task.FromResult<IDisplayResult>(null);
+        }
+
         protected string GetEditorShapeType(string shapeType, ContentTypePartDefinition typePartDefinition)
         {
             var editor = typePartDefinition.Editor();
@@ -232,11 +251,20 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 : shapeType;
         }
 
-        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context) => GetEditorShapeType(shapeType, context.TypePartDefinition);
+        protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(shapeType, context.TypePartDefinition);
+        }
 
-        protected string GetEditorShapeType(ContentTypePartDefinition typePartDefinition) => GetEditorShapeType(typeof(TPart).Name + "_Edit", typePartDefinition);
+        protected string GetEditorShapeType(ContentTypePartDefinition typePartDefinition)
+        {
+            return GetEditorShapeType(typeof(TPart).Name + "_Edit", typePartDefinition);
+        }
 
-        protected string GetEditorShapeType(BuildPartEditorContext context) => GetEditorShapeType(context.TypePartDefinition);
+        protected string GetEditorShapeType(BuildPartEditorContext context)
+        {
+            return GetEditorShapeType(context.TypePartDefinition);
+        }
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
         {
