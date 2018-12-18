@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -18,6 +19,20 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             DefaultTenantClient = Site.CreateDefaultClient();
+
+            var setupModel = new Tenants.ViewModels.SetupApiViewModel
+            {
+                SiteName = "Test Site",
+                DatabaseProvider = "Sqlite",
+                RecipeName = "SaaS",
+                UserName = "admin",
+                Password = "Password01_",
+                Name = ShellHelper.DefaultShellName,
+                Email = "Nick@Orchard"
+            };
+
+            DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel)
+                .GetAwaiter().GetResult();
         }
 
         public virtual async Task InitializeAsync()

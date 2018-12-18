@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -18,8 +19,8 @@ namespace OrchardCore.Environment.Shell
         void SaveSettings(ShellSettings settings);
 
         /// <summary>
-        /// The tenants configuration.
+        /// The tenants global configuration.
         /// </summary>
-        IConfiguration Configuration { get;  }
+        IConfiguration GlobalConfiguration { get;  }
     }
 }

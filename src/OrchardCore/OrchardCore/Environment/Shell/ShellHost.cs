@@ -161,16 +161,14 @@ namespace OrchardCore.Environment.Shell
             // Load all extensions and features so that the controllers are
             // registered in ITypeFeatureProvider and their areas defined in the application
             // conventions.
-            var features = _extensionManager.LoadFeaturesAsync();
+            await _extensionManager.LoadFeaturesAsync();
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
             var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
 
-            features.Wait();
-
-            // No 'Default' settings, run the Setup.
-            if (defaultSettings == null)
+            // The 'Default' tenant is not running, run the Setup.
+            if (defaultSettings?.State != TenantState.Running)
             {
                 var setupContext = await CreateSetupContextAsync();
                 AddAndRegisterShell(setupContext);

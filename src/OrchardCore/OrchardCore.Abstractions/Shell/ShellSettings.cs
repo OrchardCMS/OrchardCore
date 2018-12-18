@@ -40,7 +40,7 @@ namespace OrchardCore.Environment.Shell
         public string Secret { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public TenantState State { get; set; }
+        public TenantState State { get; set; } = TenantState.Invalid;
 
         private StringValues StringValues => new StringValues(new []
         {
