@@ -35,7 +35,8 @@ Additional custom filter providers can be added by implementing `IPlacementNodeF
 For shapes that are built from a content item, you can filter by the following built in filter providers:
 
 - `contentType` (Optional): A single ContentType or an array of ContentTypes that content item from which the shape was built should match.
-- `contentPart` (Optional): A single ContentPart or an of array of ContentParts that content item from which the shape was built should contain (With the option for matching one or all).
+- `contentPart` (Optional): A single ContentPart or an of array of ContentParts that content item from which the shape was built should contain.
+- `path` (Optional): A single path or an of array of paths that should match the request path.
 
 Placement information consists of:
 
@@ -52,6 +53,7 @@ Placement information consists of:
 		"differentiator": "Article-MyTextField",
         "contentType": ["Page", "BlogPost"],
         "contentPart": ["HtmlBodyPart"],
+        "path": ["/mypage"],
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
