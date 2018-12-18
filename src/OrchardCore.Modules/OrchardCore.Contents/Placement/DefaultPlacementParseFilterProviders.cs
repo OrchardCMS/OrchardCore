@@ -63,7 +63,7 @@ namespace OrchardCore.Contents.Placement
                 {
                     var prefix = ct.Substring(0, ct.Length - 1);
 
-                    return (contentItem?.ContentType ?? "").StartsWith(prefix)  || (GetStereotype(context) ?? "").StartsWith(prefix);
+                    return (contentItem.ContentType ?? "").StartsWith(prefix)  || (GetStereotype(context) ?? "").StartsWith(prefix);
                 }
 
                 return contentItem.ContentType == ct || GetStereotype(context) == ct;
