@@ -21,13 +21,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
-        private readonly IEnumerable<IPlacementParseMatchProvider> _placementParseMatchProviders;
+        private readonly IEnumerable<IPlacementParseFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger,
-            IEnumerable<IPlacementParseMatchProvider> placementParseMatchProviders)
+            IEnumerable<IPlacementParseFilterProvider> placementParseMatchProviders)
         {
             _logger = logger;
             _hostingEnviroment = hostingEnviroment;
@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                 foreach (var filter in entry.Value)
                 {
-                    var matches = filter.Match.ToList();
+                    var matches = filter.Filters.ToList();
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
                     
@@ -175,7 +175,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         }
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementParseMatchProvider> placementMatchProviders)
+                KeyValuePair<string, JToken> term, IEnumerable<IPlacementParseFilterProvider> placementMatchProviders)
         {
 
             if (placementMatchProviders != null)
@@ -184,7 +184,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                 if (providersForTerm.Any())
                 {
                     var expression = term.Value;
-                    return ctx => providersForTerm.Any(x => x.Match(ctx, expression)) && predicate(ctx);
+                    return ctx => providersForTerm.Any(x => x.IsMatch(ctx, expression)) && predicate(ctx);
                 }
             }
             return predicate;
