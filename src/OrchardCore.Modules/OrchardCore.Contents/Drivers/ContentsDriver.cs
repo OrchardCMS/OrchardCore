@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -32,7 +33,12 @@ namespace OrchardCore.Contents.Drivers
             {
                 contentsMetadataShape.Displaying(ctx =>
                 {
-                    var stereotype = contentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+                    var stereotype = "";
+                    var settings = contentTypeDefinition?.Settings;
+                    if (settings != null)
+                    {
+                        stereotype = Convert.ToString(settings[nameof(ContentTypeSettings.Stereotype)]);
+                    }
 
                     if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
