@@ -50,8 +50,8 @@ Placement information consists of:
     {
 		"display-type": "Detail",
 		"differentiator": "Article-MyTextField",
-        "contentType": [ "Page" ],
-        "contentPart":  ["BodyPart","TitlePart"],
+        "contentType": ["Page", "BlogPost"],
+        "contentPart": ["HtmlBodyPart"],
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],
