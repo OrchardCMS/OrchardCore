@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Data;
 using OrchardCore.Data.Abstractions;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -109,28 +108,27 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private async Task UpgradeFromBeta2()
         {
             // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
-            // c.f. https://github.com/OrchardCMS/OrchardCore/issues/2439           
+            // c.f. https://github.com/OrchardCMS/OrchardCore/issues/2439
 
-            using (var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>() as DbConnectionAccessor)
-            {
-                var connection = await connectionAccessor.GetConnectionAsync();
-                var dialect = SqlDialectFactory.For(connection);
-                var tablePrefix = _shellSettings.TablePrefix;
-                var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
+            var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>();
 
-                var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";
-                var newShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Abstractions";
+            var connection = await connectionAccessor.GetConnectionAsync();
+            var dialect = SqlDialectFactory.For(connection);
+            var tablePrefix = _shellSettings.TablePrefix;
+            var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
 
-                var updateShellDescriptorCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellDescriptorType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellDescriptorType)}";
+            var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";
+            var newShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Abstractions";
 
-                var oldShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions";
-                var newShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Abstractions";
+            var updateShellDescriptorCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellDescriptorType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellDescriptorType)}";
 
-                var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
+            var oldShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions";
+            var newShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Abstractions";
 
-                await connection.ExecuteAsync(updateShellDescriptorCmd);
-                await connection.ExecuteAsync(updateShellStateCmd);
-            }
+            var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
+
+            await connection.ExecuteAsync(updateShellDescriptorCmd);
+            await connection.ExecuteAsync(updateShellStateCmd);
         }
     }
 }
