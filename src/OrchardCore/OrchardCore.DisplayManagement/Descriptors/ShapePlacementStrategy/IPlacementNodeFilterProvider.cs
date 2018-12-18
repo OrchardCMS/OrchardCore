@@ -5,9 +5,9 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
-    public interface IPlacementParseMatchProvider
+    public interface IPlacementNodeFilterProvider
     {
         string Key { get; }
-        bool Match(ShapePlacementContext context, JToken expression);
+        bool IsMatch(ShapePlacementContext context, JToken expression);
     }
 }

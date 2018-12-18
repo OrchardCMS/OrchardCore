@@ -28,8 +28,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         [JsonProperty(PropertyName = "shape")]
         public string ShapeType { get; set; }
 
-        [JsonProperty(PropertyName = "match")]
-        public IDictionary<string, JToken> Match { get; set; } = new Dictionary<string, JToken>();
+        [JsonExtensionData]
+        public IDictionary<string, JToken> Filters { get; set; } = new Dictionary<string, JToken>();
 
     }
 }

@@ -11,26 +11,11 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Contents.Placement
 {
-    public enum MatchType
-    {
-        Any,
-        All
-    }
-
-    public class ContentPartPlacementParseMatchOptions
-    {
-        [JsonProperty(PropertyName = "parts")]
-        public IEnumerable<string> Parts { get; set; }
-
-        [JsonProperty(PropertyName = "matchType")]
-        public MatchType MatchType { get; set; }
-    }
-
-    public class ContentPartPlacementParseMatchProvider : ContentPlacementParseMatchProviderBase, IPlacementParseMatchProvider
+    public class ContentPartPlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
         public string Key { get { return "contentPart"; } }
 
-        public bool Match(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, JToken expression)
         {
             var contentItem = GetContent(context);
             if (contentItem == null)
@@ -38,17 +23,22 @@ namespace OrchardCore.Contents.Placement
                 return false;
             }
 
-            var options = expression.ToObject<ContentPartPlacementParseMatchOptions>();
-
-            return options.MatchType == MatchType.All ? options.Parts.All(p => contentItem.Has(p)) : options.Parts.Any(p => contentItem.Has(p));
+            if (expression is JArray)
+            {
+                return expression.Any(p => contentItem.Has(p.Value<string>()));
+            }
+            else
+            {
+                return contentItem.Has(expression.Value<string>());
+            }
         }
     }
 
-    public class ContentTypePlacementParseMatchProvider : ContentPlacementParseMatchProviderBase, IPlacementParseMatchProvider
+    public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
         public string Key { get { return "contentType"; } }
 
-        public bool Match(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, JToken expression)
         {
             var contentItem = GetContent(context);
             if (contentItem == null)
@@ -56,7 +46,16 @@ namespace OrchardCore.Contents.Placement
                 return false;
             }
 
-            var contentTypes = expression.ToObject<IEnumerable<string>>();
+            IEnumerable<string> contentTypes;
+
+            if (expression is JArray)
+            {
+                contentTypes = expression.Values<string>();
+            }
+            else
+            {
+                contentTypes = new string[] { expression.Value<string>() };
+            }
 
             return contentTypes.Any(ct =>
             {
@@ -64,15 +63,21 @@ namespace OrchardCore.Contents.Placement
                 {
                     var prefix = ct.Substring(0, ct.Length - 1);
 
-                    return (contentItem?.ContentType ?? "").StartsWith(prefix);// || (context.Stereotype ?? "").StartsWith(prefix);
+                    return (contentItem.ContentType ?? "").StartsWith(prefix)  || (GetStereotype(context) ?? "").StartsWith(prefix);
                 }
 
-                return contentItem.ContentType == ct;// || context.Stereotype == expression;
+                return contentItem.ContentType == ct || GetStereotype(context) == ct;
             });
+        }
+
+        private string GetStereotype(ShapePlacementContext context)
+        {
+            var shape = context.ZoneShape as Shape;
+            return shape?.Properties["Stereotype"]?.ToString();
         }
     }
 
-    public class ContentPlacementParseMatchProviderBase
+    public class ContentPlacementParseFilterProviderBase
     {
         protected bool HasContent(ShapePlacementContext context)
         {
