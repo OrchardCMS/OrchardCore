@@ -184,6 +184,20 @@ namespace OrchardCore.Resources
                 .SetCdnIntegrity("sha384-vBDTb50BKnwbvJZ5ZC5dsGJNQydTI7ZoAjCeJkdta6nSewwGXCnppKI5lrIQX4Qu")
                 .SetVersion("5.5.0")
                 ;
+                       
+            manifest
+                .DefineStyle("highlight.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css")
+                .SetCdnIntegrity("sha384-zhIsEafzyQWHSoMCQ4BfT8ZlRXQyIFwAHAJn32PNdsb8n6tVysGZSLpEEIvCskw4")
+                .SetVersion("9.13.1")
+                ;
+
+            manifest
+                .DefineScript("highlight.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js")
+                .SetCdnIntegrity("sha384-BlPof9RtjBqeJFskKv3sK3dh4Wk70iKlpIe92FeVN+6qxaGUOUu+mZNpALZ+K7ya")
+                .SetVersion("9.13.1")
+                ;
         }
     }
 }
