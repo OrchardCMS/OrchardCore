@@ -49,13 +49,13 @@ namespace OrchardCore.Environment.Shell
                 .AddJsonFile($"{appsettingsPath}.json", optional: true)
                 .AddJsonFile($"{appsettingsPath}.{hostingEnvironment.EnvironmentName}.json", optional: true);
 
-            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
-                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
-
             foreach (var source in globalConfigurationSources.OrderBy(s => s.Order))
             {
                 configurationBuilder.Add(source);
             }
+
+            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
+                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
 
             if (commandLineProvider != null)
             {
