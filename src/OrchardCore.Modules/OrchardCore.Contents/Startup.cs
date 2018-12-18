@@ -71,8 +71,8 @@ namespace OrchardCore.Contents
 
             services.AddTagHelpers<ContentLinkTagHelper>();
 
-            services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementParseFilterProvider>();
-            services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementParseFilterProvider>();
+            services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementNodeFilterProvider>();
+            services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
