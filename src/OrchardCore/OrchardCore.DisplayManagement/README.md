@@ -30,9 +30,9 @@ Currently you can filter shapes by:
 - `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
 
-Additional custom filter providers can be added by implementing `IPlacementParseFilterProvider`. 
+Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`. 
 
-For shapes that are built from a content item, you can filter by the following built in match providers:
+For shapes that are built from a content item, you can filter by the following built in filter providers:
 
 - `contentType` (Optional): A single ContentType or an array of ContentTypes that content item from which the shape was built should match.
 - `contentPart` (Optional): A single ContentPart or an of array of ContentParts that content item from which the shape was built should contain (With the option for matching one or all).
