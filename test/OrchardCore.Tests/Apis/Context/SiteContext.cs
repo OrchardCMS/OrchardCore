@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
@@ -15,28 +16,45 @@ namespace OrchardCore.Tests.Apis.Context
         public HttpClient Client { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
 
+        private static bool _isDefaultTenantSetup;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
             DefaultTenantClient = Site.CreateDefaultClient();
-
-            var setupModel = new Tenants.ViewModels.SetupApiViewModel
-            {
-                SiteName = "Test Site",
-                DatabaseProvider = "Sqlite",
-                RecipeName = "SaaS",
-                UserName = "admin",
-                Password = "Password01_",
-                Name = ShellHelper.DefaultShellName,
-                Email = "Nick@Orchard"
-            };
-
-            DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel)
-                .GetAwaiter().GetResult();
         }
 
         public virtual async Task InitializeAsync()
         {
+            if (!_isDefaultTenantSetup)
+            {
+                await _semaphore.WaitAsync();
+                try
+                {
+                    if (!_isDefaultTenantSetup)
+                    {
+                        var model = new Tenants.ViewModels.SetupApiViewModel
+                        {
+                            SiteName = "Test Site",
+                            DatabaseProvider = "Sqlite",
+                            RecipeName = "SaaS",
+                            UserName = "admin",
+                            Password = "Password01_",
+                            Name = ShellHelper.DefaultShellName,
+                            Email = "Nick@Orchard"
+                        };
+
+                        await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", model);
+                    }
+                }
+                finally
+                {
+                    _isDefaultTenantSetup = true;
+                    _semaphore.Release();
+                }
+            }
+
             var tenantName = Guid.NewGuid().ToString().Replace("-", "");
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel
