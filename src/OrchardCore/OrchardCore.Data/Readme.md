@@ -16,13 +16,21 @@ public class AdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-       //TODO: Make sure you put the call to `DbConnectionAccessor.GetConnectionAsyc()` in a using block or explicitly close the connection when you are done with it.
-
        using (var connection = await _dbAccessor.GetConnectionAsyc())
        {
-           //TODO:  You can use Dapper or any other ORM to to custom data access here.
-       }
-       return View();
+
+           // You can use Dapper or any other ORM to to custom data access here.
+             
+            var dialect = SqlDialectFactory.For(connection);
+            var tablePrefix = connectionAccessor.TablePrefix;
+            var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
+
+            var selectCommand = $"SELECT * FROM {customTable}";
+
+            var model = connection.QueryAsync<CustomTable>(selectCommand);
+
+            return View(model);
+       }      
     }    
 }
 ```
@@ -50,19 +58,29 @@ public class UpdateManager
 
     private async Task UpdateSomeTable()
     {
-        // TODO: Make sure that you use the DbConnectionAccessor in a using block or explicly call DbConnectionAccessor.Dispose() when you are done using it.    
+        var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>()
+        
+        var connection = await connectionAccessor.GetConnectionAsync();
+            
+        var dialect = SqlDialectFactory.For(connection);
+        var tablePrefix = connectionAccessor.TablePrefix;
+        var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
 
-        using (var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>() as DbConnectionAccessor)
+        var updateCommand = $"UPDATE {customTable} SET Name = 'Foo Bar' WHERE Id = 1";
+
+        var transaction = connection.BeginTransaction();
+
+        try
         {
-            var connection = await connectionAccessor.GetConnectionAsync();
-            var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = _shellSettings.TablePrefix;
-            var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
-
-            var updateCommand = $"UPDATE {customTable} SET Name = 'Foo Bar' WHERE Id = 1";
-               
-            await connection.ExecuteAsync(updateCommand);               
-        }
+            await connection.ExecuteAsync(updateCommand, null, transaction); 
+            transaction.Commit();
+        }  
+            
+        catch (Exception ex)
+        {
+            transaction.RollBack();
+        }                        
+        
     }
 }
 
