@@ -21,13 +21,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
-        private readonly IEnumerable<IPlacementParseFilterProvider> _placementParseMatchProviders;
+        private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger,
-            IEnumerable<IPlacementParseFilterProvider> placementParseMatchProviders)
+            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
             _logger = logger;
             _hostingEnviroment = hostingEnviroment;
@@ -175,7 +175,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         }
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementParseFilterProvider> placementMatchProviders)
+                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
 
             if (placementMatchProviders != null)
