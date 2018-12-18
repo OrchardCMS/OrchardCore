@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
@@ -21,18 +20,15 @@ namespace OrchardCore.OpenId.Services
 {
     public class OpenIdServerService : IOpenIdServerService
     {
-        private readonly IMemoryCache _cache;
         private readonly IDataProtector _dataProtector;
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdServerService> T;
 
         public OpenIdServerService(
-            IMemoryCache cache,
             IDataProtectionProvider dataProtectionProvider,
             ISiteService siteService,
             IStringLocalizer<OpenIdServerService> stringLocalizer)
         {
-            _cache = cache;
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
             _siteService = siteService;
             T = stringLocalizer;
