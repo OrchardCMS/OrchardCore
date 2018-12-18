@@ -7,6 +7,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.ApplicationInsights.HostingStartup" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Core" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
@@ -174,10 +175,7 @@
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="2.2.0" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.2.0" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.2.0" />
+    <PackageManagement Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageManagement Include="System.Security.Cryptography.Cng" Version="4.5.0" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <SystemComponentModelAnnotations>4.5.0</SystemComponentModelAnnotations>
-    <SystemSecurityCryptographyCng>4.5.0</SystemSecurityCryptographyCng>
-  </PropertyGroup>
 </Project>
