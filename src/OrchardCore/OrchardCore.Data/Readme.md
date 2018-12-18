@@ -20,19 +20,9 @@ public class AdminController : Controller
 
        using (var connection = await _dbAccessor.GetConnectionAsyc())
        {
-
-           // You can use Dapper or any other ORM to to custom data access here.
-             
-            var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = connectionAccessor.TablePrefix;
-            var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
-
-            var selectCommand = $"SELECT * FROM {customTable}";
-
-            var model = connection.QueryAsync<CustomTable>(selectCommand);
-
-            return View(model);
-       }      
+           //TODO:  You can use Dapper or any other ORM to to custom data access here.
+       }
+       return View();
     }    
 }
 ```
@@ -52,7 +42,8 @@ public class UpdateManager
         ISession session,
         ILogger<ShellDescriptorManager> logger)
     {
-        _serviceProvider = serviceProvider;              
+        _serviceProvider = serviceProvider;
+        _shellSettings = shellSettings;          
         _session = session;
         _logger = logger;
     }       
@@ -64,26 +55,13 @@ public class UpdateManager
         using (var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>() as DbConnectionAccessor)
         {
             var connection = await connectionAccessor.GetConnectionAsync();
-            
             var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = connectionAccessor.TablePrefix;
+            var tablePrefix = _shellSettings.TablePrefix;
             var customTable = dialect.QuoteForTableName($"{tablePrefix}CustomTable");             
 
             var updateCommand = $"UPDATE {customTable} SET Name = 'Foo Bar' WHERE Id = 1";
-
-            var transaction = connection.BeginTransaction();
-
-            try
-            {
-                await connection.ExecuteAsync(updateCommand, null, transaction); 
-                transaction.Commit();
-            }  
-            
-            catch (Exception ex)
-            {
-                transaction.RollBack();
-            }
-                          
+               
+            await connection.ExecuteAsync(updateCommand);               
         }
     }
 }
