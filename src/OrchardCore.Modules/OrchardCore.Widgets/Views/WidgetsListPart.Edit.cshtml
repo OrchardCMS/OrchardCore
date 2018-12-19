@@ -88,8 +88,8 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
 
-        <script asp-src="/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
 
     <script at="Foot">

@@ -156,7 +156,7 @@ You can declare a new resource directly from a view, and it will be injected onl
 ```
 
 ```razor
-<script asp-name="foo" asp-src="/TheTheme/js/foo.min.js?v=1.0" debug-src="/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
+<script asp-name="foo" asp-src="~/TheTheme/js/foo.min.js?v=1.0" debug-src="~/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
 ```
 
 In this example we also define a dependency on the script named `baz` with the version `1.0`. If the version was not set
@@ -169,7 +169,7 @@ You can also do the same for a stylesheet:
 ```
 
 ```razor
-<style asp-src="/TheTheme/css/bar.min.css" debug-src="/TheTheme/css/bar.css"></style>
+<style asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css"></style>
 ```
 
 #### Custom scripts
