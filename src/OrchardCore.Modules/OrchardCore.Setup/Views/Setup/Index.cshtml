@@ -121,9 +121,8 @@
             </fieldset>
         }
         <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
-            <label asp-for="SiteTimeZone">@T["Default Time Zone"] <span asp-validation-for="SiteTimeZone"></span></label>
+            <label asp-for="SiteTimeZone">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-control">
-
                 <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
                 @foreach (var timezone in Clock.GetTimeZones())
                 {
@@ -132,6 +131,7 @@
                     </option>
                 }
             </select>
+            <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </fieldset>
 
@@ -227,7 +227,7 @@
         </div>
     </fieldset>
 </form>
-<script src="/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
+<script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     //<![CDATA[
     $(function(){
