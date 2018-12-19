@@ -34,10 +34,10 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Content("~/")" target="_blank" title="@T["View website"]"><i class="far fa-eye"></i> @T["website"]</a>
+                        <a class="nav-link" href="@Url.Content("~/")" target="_blank" title="@T["View website"]"><span><i class="far fa-eye"></i></span><span> @T["website"]</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
+                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
                     </li>
                 </ul>
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">

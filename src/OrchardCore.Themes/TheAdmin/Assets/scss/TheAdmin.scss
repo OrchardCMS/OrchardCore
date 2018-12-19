@@ -12,10 +12,11 @@ $top-nav-height: 49px;
 $footer-height: 40px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
-$border-content: 1px solid rgba(0, 0, 0, 0.05);
+$border-content: 1px solid #DEDEDE;
 $link-padding-left: 16px !default;
 
 html, body {
+    background-color: #F8F8F8;
 }
 
 
@@ -149,7 +150,7 @@ body {
 
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
-        @extend .bg-light;
+        background-color: #EAEAEA;
         z-index: 7;
         position: fixed;
         top: $top-nav-height;
@@ -228,7 +229,7 @@ body:not(.left-sidebar-compact) {
                         height: 1px;
                         background: rgba(0,0,0,.1);
                         display: block;
-                        margin: 0px auto 4px auto;
+                        margin: 0px auto;
                     }
                 }
 
@@ -420,7 +421,7 @@ body:not(.left-sidebar-compact) {
         }
 
         .footer {
-            background-color: #f8f9fa !important;
+            background-color: #EAEAEA !important;
             position: relative;
             z-index: 1;
         }
@@ -431,7 +432,7 @@ body:not(.left-sidebar-compact) {
             height: 1px;
             background: rgba(0, 0, 0, 0.1);
             display: block;
-            margin: 4px auto 0px auto;
+            margin: 0px auto;
         }
     }
 }
@@ -440,7 +441,7 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
 
     #ta-left-sidebar {
-        @extend .bg-light;
+        background-color: #EAEAEA;
         z-index: 7;
         position: fixed;
         top: $top-nav-height;
@@ -497,7 +498,7 @@ body:not(.left-sidebar-compact) {
                 background-color: $gray-100;
 
                 li {
-                    background-color: $gray-100;
+                    background-color: #EAEAEA;
                 }
             }
 
@@ -517,15 +518,6 @@ body:not(.left-sidebar-compact) {
 
                 > li {
                     line-height: 3em;
-
-                    &:first-child:after {
-                        content: "";
-                        width: 60%;
-                        height: 1px;
-                        background: rgba(0,0,0,.1);
-                        display: block;
-                        margin: 0px auto 4px auto;
-                    }
                 }
 
                 > li > ul > li {
@@ -595,7 +587,7 @@ body:not(.left-sidebar-compact) {
                 > li > .item-label > span.icon {
                     display: inline-block !important;
                     color: $gray-700;
-                    background-color: $gray-100;
+                    background-color: #EAEAEA;
                     width: $left-navigation-width-when-compact;
                 }
 
@@ -609,17 +601,32 @@ body:not(.left-sidebar-compact) {
                     top: 0;
                 }
 
+                > li.has-items.visible {
+                    -webkit-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    -moz-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    z-index: 1;
+                }
+
                 li .active > .item-label:hover {
                     background-color: rgba(0, 0, 0, 0.1);
                 }
 
                 > li {
                     overflow: hidden;
+
+                    span.title, span.icon {
+                        display: none;
+                    }
                 }
 
                 > li.visible {
                     overflow: visible;
                     width: $left-navigation-width-when-compact + $left-navigation-width;
+
+                    span.title, span.icon {
+                        display: block;
+                    }
                 }
 
                 > li > ul {
@@ -629,8 +636,8 @@ body:not(.left-sidebar-compact) {
                     -webkit-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
                     -moz-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
                     box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
-                    overflow-y: auto;
                     max-height: 250px;
+                    z-index: -1;
                 }
 
                 > li > ul li .item-label:hover {
@@ -638,13 +645,18 @@ body:not(.left-sidebar-compact) {
                 }
 
                 > li > .item-label {
-                    background-color: $gray-700;
-                    color: $gray-100;
+                    background-color: $gray-100;
+                    color: $gray-700;
                     padding-left: 0px !important;
                     display: flex;
 
                     .title {
                         padding-left: 20px;
+
+                        &:hover {
+                            background-color: $gray-100 !important;
+                            color: $gray-700;
+                        }
                     }
 
                     > span.icon {
@@ -662,6 +674,18 @@ body:not(.left-sidebar-compact) {
                     > span.title {
                         flex-grow: 1;
                         font-size: 14px;
+                        font-weight: bold;
+                    }
+
+                    > span.title:after {
+                        content: "";
+                        height: 1px;
+                        background: rgba(0, 0, 0, 0.1);
+                        display: block;
+                        margin: 0px auto;
+                        position: relative;
+                        left: -10px;
+                        width: 100%;
                     }
                 }
                 // first level menu items that have no items and are active
@@ -810,7 +834,7 @@ body:not(.left-sidebar-compact) {
         }
 
         .footer {
-            background-color: #f8f9fa !important;
+            background-color: #EAEAEA !important;
             position: relative;
             z-index: 1;
         }
@@ -821,7 +845,7 @@ body:not(.left-sidebar-compact) {
             height: 1px;
             background: rgba(0,0,0,.1);
             display: block;
-            margin: 4px auto 0px auto;
+            margin: 0px auto;
         }
     }
 }
