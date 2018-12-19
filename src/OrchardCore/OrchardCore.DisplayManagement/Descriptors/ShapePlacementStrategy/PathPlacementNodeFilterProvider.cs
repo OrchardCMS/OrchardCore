@@ -35,13 +35,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             var requestPath = _httpContextAccessor.HttpContext.Request.Path;
 
-            return paths.Any(p => {
-
-                var normalizedPath = p.StartsWith("~/")
-                ? p.Substring(1)
-                : p.StartsWith("/")
-                ? p
-                : "/" + p;
+            return paths.Any(p =>
+            {
+                var normalizedPath = NormalizePath(p);
 
                 if (normalizedPath.EndsWith("*"))
                 {
@@ -53,6 +49,22 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                 requestPath = AppendTrailingSlash(requestPath);
                 return requestPath.ToString().Equals(normalizedPath, StringComparison.OrdinalIgnoreCase);
             });
+        }
+
+        private string NormalizePath(string path)
+        {
+            if (path.StartsWith("~/"))
+            {
+                return path.Substring(1);
+            }
+            else if (!path.StartsWith("/"))
+            {
+                return "/" + path;
+            }
+            else
+            {
+                return path;
+            }
         }
 
         private string AppendTrailingSlash(string path)
