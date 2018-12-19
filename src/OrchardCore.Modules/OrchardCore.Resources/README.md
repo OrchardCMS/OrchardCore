@@ -17,10 +17,10 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 | jQuery | Script | 2.2.4 | - |
 | jQuery | Script | 3.3.1 | - |
 | Popper | Script | 1.14.3 | - |
-| Bootstrap | Script | 3.3.7, 4.1.3 | jQuery, Popper |
-| Bootstrap | Style | 3.3.7, 4.1.3 | - |
+| Bootstrap | Script | 3.4.0, 4.1.3 | jQuery, Popper |
+| Bootstrap | Style | 3.4.0, 4.1.3 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
-| font-awesome | Style | 4.7.0, 5.4.1 | - |
+| font-awesome | Style | 4.7.0, 5.5.0 | - |
 
 ## Usage
 
@@ -122,7 +122,7 @@ You can force a resource to be used from its CDN. By default the behavior is def
 
 ##### Use specific version
 
-This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
+This example will use the latest available version with a Major version of `3`, like `3.4.0`. If the version is not specified
 the latest one is always used.
 
 ```liquid
@@ -152,11 +152,11 @@ Styles, however, are always injected in the header section of the HTML document.
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
 ```liquid
-{% script source:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
+{% script src:"/TheTheme/js/foo.min.js", debug_src:"/TheTheme/js/foo.js" %}
 ```
 
 ```razor
-<script asp-name="foo" asp-src="/TheTheme/js/foo.min.js?v=1.0" debug-src="/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
+<script asp-name="foo" asp-src="~/TheTheme/js/foo.min.js?v=1.0" debug-src="~/TheTheme/js/foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
 ```
 
 In this example we also define a dependency on the script named `baz` with the version `1.0`. If the version was not set
@@ -165,11 +165,11 @@ the one with the highest number will be used.
 You can also do the same for a stylesheet:
 
 ```liquid
-{% style source:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
+{% style src:"/TheTheme/css/bar.min.css", debug_src:"/TheTheme/css/bar.css" %}
 ```
 
 ```razor
-<style asp-src="/TheTheme/css/bar.min.css" debug-src="/TheTheme/css/bar.css"></style>
+<style asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css"></style>
 ```
 
 #### Custom scripts

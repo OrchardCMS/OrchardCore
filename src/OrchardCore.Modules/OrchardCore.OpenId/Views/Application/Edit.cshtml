@@ -13,13 +13,13 @@
     <input type="hidden" asp-for="Id" />
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
-        <span asp-validation-for="ClientId" class="text-danger"></span>
         <input asp-for="ClientId" class="form-control" autofocus />
+        <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="form-group" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
-        <span asp-validation-for="DisplayName" class="text-danger"></span>
         <input asp-for="DisplayName" class="form-control" autofocus />
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
     <div class="form-group" asp-validation-class-for="Type">
         <label asp-for="Type">@T["Type"]</label>
@@ -29,18 +29,10 @@
         </select>
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
-    <fieldset class="form-group">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="UpdateClientSecret" data-toggle="collapse" data-target="#clientSecretGroup" checked="@Model.UpdateClientSecret" >
-            <label class="custom-control-label" asp-for="UpdateClientSecret">@T["Set a new Client Secret"]</label>
-        </div>
-    </fieldset>
-    <div class="form-group collapse" id="clientSecretGroup" name="clientSecretGroup">
-        <div class="form-group" asp-validation-class-for="ClientSecret">
-            <label asp-for="ClientSecret">@T["Client Secret"]</label>
-            <span asp-validation-for="ClientSecret" class="text-danger"></span>
-            <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
-        </div>
+    <div class="form-group" asp-validation-class-for="ClientSecret">
+        <label asp-for="ClientSecret">@T["Client Secret"] (@T["enter a new value to replace the existing secret"])</label>
+        <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
+        <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
 
     <h3>Flows</h3>
@@ -92,8 +84,8 @@
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
             <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger"></span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
+            <span asp-validation-for="RedirectUris" class="text-danger"></span>
         </div>
 
 
@@ -107,8 +99,8 @@
             <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
                     <label asp-for="PostLogoutRedirectUris">@T["Post Logout Redirect Uris"]</label>
-                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                 </div>
             </div>
         </fieldset>
@@ -250,13 +242,16 @@
             refreshClientSecret();
         });
         function refreshClientSecret(defaultType) {
-            var type = $("#Type");
+            var type = $("#Type"), secret = $("#ClientSecret");
 
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
-            if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
+            if (type.val() === '@OpenIddictConstants.ClientTypes.Confidential') {
+                secret.parent().show();
                 allowClientCredentialsFlow.removeAttr("disabled");
             }
             else {
+                secret.val("");
+                secret.parent().hide();
                 allowClientCredentialsFlow.attr('disabled', true);
                 allowClientCredentialsFlow.prop("checked", false);
             }

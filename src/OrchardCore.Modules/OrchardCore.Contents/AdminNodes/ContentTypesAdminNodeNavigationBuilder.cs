@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.AdminNodes
 
             }
 
-            return typesToShow;
+            return typesToShow.OrderBy(t => t.DisplayName);
         }
 
         private List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)

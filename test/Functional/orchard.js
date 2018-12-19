@@ -5,7 +5,7 @@ const rimraf = require('rimraf');
 module.exports = {
     run: function (dir, assembly, clean) {
 
-        if (fs.existsSync(dir + 'bin/release/netcoreapp2.1/' + assembly)) {
+        if (fs.existsSync(dir + 'bin/release/netcoreapp2.2/' + assembly)) {
             console.log('Application already built, skipping build');
         }
         else {
@@ -18,7 +18,7 @@ module.exports = {
         }
 
         console.log('Starting application ...');
-        let server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.1/' + assembly], { cwd: dir });
+        let server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.2/' + assembly], { cwd: dir });
 
         server.stdout.on('data', (data) => {
             let now = new Date().toLocaleTimeString();

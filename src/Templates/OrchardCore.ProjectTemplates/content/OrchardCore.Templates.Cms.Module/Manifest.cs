@@ -1,11 +1,11 @@
-using OrchardCore.Modules.Cms.Manifest;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "OrchardCore.Templates.Module",
+    Name = "OrchardCore.Templates.Cms.Module",
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "0.0.1",
-    Description = "OrchardCore.Templates.Module",
+    Description = "OrchardCore.Templates.Cms.Module",
 #if (AddPart)
     Dependencies = new[] { "OrchardCore.Contents" },
 #endif

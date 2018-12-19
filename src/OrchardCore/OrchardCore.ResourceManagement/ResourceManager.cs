@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -12,6 +14,7 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
+        private readonly string _pathBase;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
         private ResourceManifest _dynamicManifest;
 
@@ -21,12 +24,17 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _footScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
+        private readonly IOptions<ResourceManagementOptions> _options;
 
         public ResourceManager(
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IResourceManifestProvider> resourceProviders,
-            IResourceManifestState resourceManifestState)
+            IResourceManifestState resourceManifestState,
+            IOptions<ResourceManagementOptions> options)
         {
             _resourceManifestState = resourceManifestState;
+            _options = options;
+            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
             _providers = resourceProviders;
 
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
@@ -78,7 +86,7 @@ namespace OrchardCore.ResourceManagement
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out settings))
             {
-                settings = new RequireSettings { Type = resourceType, Name = resourceName };
+                settings = new RequireSettings(_options.Value) { Type = resourceType, Name = resourceName };
                 _required[key] = settings;
             }
             _builtResources[resourceType] = null;
@@ -96,21 +104,22 @@ namespace OrchardCore.ResourceManagement
             {
                 throw new ArgumentNullException(nameof(resourceType));
             }
+
             if (resourcePath == null)
             {
                 throw new ArgumentNullException(nameof(resourcePath));
             }
 
             // ~/ ==> convert to absolute path (e.g. /orchard/..)
+
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                resourcePath = resourcePath.Substring(1);
+                resourcePath = _pathBase + resourcePath.Substring(1);
             }
+
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                resourceDebugPath = resourceDebugPath.Substring(1);
+                resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
             }
 
             return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
@@ -372,7 +381,7 @@ namespace OrchardCore.ResourceManagement
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
                 ? ((RequireSettings)allResources[resource]).Combine(settings)
-                : new RequireSettings { Type = resource.Type, Name = resource.Name }.Combine(settings);
+                : new RequireSettings(_options.Value) { Type = resource.Type, Name = resource.Name }.Combine(settings);
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
@@ -481,7 +490,7 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderStylesheet(IHtmlContentBuilder builder)
         {
             var first = true;
 
@@ -496,11 +505,11 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(_pathBase));
             }
         }
 
-        public void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderHeadScript(IHtmlContentBuilder builder)
         {
             var headScripts = this.GetRequiredResources("script");
 
@@ -515,7 +524,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(_pathBase));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
@@ -531,7 +540,7 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderFootScript(IHtmlContentBuilder builder)
         {
             var footScripts = this.GetRequiredResources("script");
 
@@ -546,7 +555,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml( context.GetHtmlContent(_pathBase));
             }
 
             foreach (var context in GetRegisteredFootScripts())
@@ -564,16 +573,13 @@ namespace OrchardCore.ResourceManagement
 
         private class ResourceTypeName : IEquatable<ResourceTypeName>
         {
-            private readonly string _type;
-            private readonly string _name;
-
-            public string Type { get { return _type; } }
-            public string Name { get { return _name; } }
+            public string Type { get; }
+            public string Name { get; }
 
             public ResourceTypeName(string resourceType, string resourceName)
             {
-                _type = resourceType;
-                _name = resourceName;
+                Type = resourceType;
+                Name = resourceName;
             }
 
             public bool Equals(ResourceTypeName other)
@@ -583,21 +589,21 @@ namespace OrchardCore.ResourceManagement
                     return false;
                 }
 
-                return _type.Equals(other._type) && _name.Equals(other._name);
+                return Type.Equals(other.Type) && Name.Equals(other.Name);
             }
 
             public override int GetHashCode()
             {
-                return _type.GetHashCode() << 17 + _name.GetHashCode();
+                return Type.GetHashCode() << 17 + Name.GetHashCode();
             }
 
             public override string ToString()
             {
                 var sb = new StringBuilder();
                 sb.Append("(");
-                sb.Append(_type);
+                sb.Append(Type);
                 sb.Append(", ");
-                sb.Append(_name);
+                sb.Append(Name);
                 sb.Append(")");
                 return sb.ToString();
             }

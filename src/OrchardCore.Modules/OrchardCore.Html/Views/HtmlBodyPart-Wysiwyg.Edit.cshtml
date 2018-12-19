@@ -7,8 +7,8 @@
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
 }
 
-<script asp-name="trumbowyg" depends-on="admin" asp-src="/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style asp-name="trumbowyg" asp-src="/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+<script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
+<style asp-name="trumbowyg" asp-src="~/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="~/OrchardCore.Resources/Styles/trumbowyg.css"></style>
 
 <fieldset class="form-group">
     <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
@@ -18,21 +18,8 @@
 
 <script at="Foot">
     $(function () {
-        var editor = $('#@Html.IdFor(m => m.Source)').trumbowyg();
-        editor.on('tbwchange', function () {
+        $('#@Html.IdFor(m => m.Source)').trumbowyg().on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
-
-        // hide toolbar when editor is not in focus (to avoid z-index clashes with dropdown components that may be on the page)
-        (function toolbarToggler() {
-            function getButtonPane(textarea) {
-                return $(textarea).siblings('.trumbowyg-button-pane');
-            }
-            editor.on('tbwfocus', function () { getButtonPane(this).fadeIn(); });
-            editor.on('tbwblur', function () { getButtonPane(this).fadeOut(); });
-
-            // hide initially
-            editor.siblings('.trumbowyg-button-pane').css("display", "none");
-        }());
     });
 </script>

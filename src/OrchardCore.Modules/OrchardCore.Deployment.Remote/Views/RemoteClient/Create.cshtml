@@ -5,14 +5,14 @@
 
     <div class="form-group" asp-validation-class-for="ClientName">
         <label asp-for="ClientName">@T["Client Name"]</label>
-        <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
         <input asp-for="ClientName" class="form-control" />
+        <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
     </div>
         
     <div class="form-group" asp-validation-class-for="ApiKey">
         <label asp-for="ApiKey">@T["Api Key"]</label>
-        <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
         <input asp-for="ApiKey" type="password" class="form-control" />
+        <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
     </div>
 
     <fieldset>

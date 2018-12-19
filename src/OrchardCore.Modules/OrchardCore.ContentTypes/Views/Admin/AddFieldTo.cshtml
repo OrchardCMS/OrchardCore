@@ -40,6 +40,7 @@
 
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-route-action="Edit" asp-route-id="@Model.Part.Name" class="btn btn-secondary">@T["Cancel"]</a>
     </fieldset>
 </form>
 

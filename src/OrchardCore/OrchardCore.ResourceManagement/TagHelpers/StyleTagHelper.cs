@@ -15,16 +15,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Src { get; set; }
+        public string Source { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
 
-        public bool UseCdn { get; set; }
+        public bool? UseCdn { get; set; }
         public string Condition { get; set; }
         public string Culture { get; set; }
-        public bool Debug { get; set; }
+        public bool? Debug { get; set; }
         public string Dependencies { get; set; }
         public string Version { get; set; }
 
@@ -39,12 +39,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 // Include custom script
-
-                var setting = _resourceManager.Include("stylesheet", Src, DebugSrc);
+                var setting = _resourceManager.Include("stylesheet", Source, DebugSrc);
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -60,14 +58,17 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
             {
                 // Resource required
 
@@ -82,14 +83,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                setting.UseCdn(UseCdn);
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
@@ -101,12 +108,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
-                definition.SetUrl(Src, DebugSrc);
+                definition.SetUrl(Source, DebugSrc);
 
                 if (!String.IsNullOrEmpty(Version))
                 {
@@ -141,21 +148,27 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                setting.UseCdn(UseCdn);
+                if (UseCdn != null)
+                {
+                    setting.UseCdn(UseCdn.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
 
-                setting.UseDebugMode(Debug);
+                if (Debug != null)
+                {
+                    setting.UseDebugMode(Debug.Value);
+                }
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
             }
-
+            
             output.TagName = null;
         }
     }

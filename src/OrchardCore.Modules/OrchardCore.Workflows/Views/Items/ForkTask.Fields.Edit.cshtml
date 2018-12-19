@@ -2,7 +2,8 @@
 @model ForkTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="Forks">
-    <label asp-for="Forks">@T["Forks"] <span asp-validation-for="Forks"></span></label>
+    <label asp-for="Forks">@T["Forks"]</label>
     <input asp-for="Forks" class="form-control" />
+    <span asp-validation-for="Forks"></span>
     <span class="hint">@T["Enter one or more comma-separated fork names."]</span>
 </fieldset>
