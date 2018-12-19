@@ -11,6 +11,7 @@ using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Indexing;
 using OrchardCore.Spatial.Settings;
 using OrchardCore.Spatial.ViewModels;
+using GeoPointField = OrchardCore.Spatial.Fields.GeoPointField;
 
 namespace OrchardCore.Spatial
 {
@@ -21,8 +22,8 @@ namespace OrchardCore.Spatial
             // Registering both field types and shape types are necessary as they can
             // be accessed from inner properties.
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<CoordinateField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayCoordinateFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<GeoPointField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayGeoPointFieldViewModel>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -30,10 +31,10 @@ namespace OrchardCore.Spatial
             services.AddScoped<IResourceManifestProvider, ResourceManifest>();
 
             // Coordinate Field
-            services.AddSingleton<ContentField, CoordinateField>();
-            services.AddScoped<IContentFieldDisplayDriver, CoordinateFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, CoordinateFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, CoordinateFieldIndexHandler>();
+            services.AddSingleton<ContentField, GeoPointField>();
+            services.AddScoped<IContentFieldDisplayDriver, GeoPointFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, GeoPointFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, GeoPointFieldIndexHandler>();
         }
     }
 }

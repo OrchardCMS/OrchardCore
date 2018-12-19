@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Spatial.Fields
 {
-    public class CoordinateField : ContentField
+    public class GeoPointField : ContentField
     {
         public double Latitude { get; set; }
 

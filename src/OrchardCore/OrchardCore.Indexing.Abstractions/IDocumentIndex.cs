@@ -49,7 +49,7 @@ namespace OrchardCore.Indexing
             Entries.Add(new DocumentIndexEntry(name, value, Types.Number, options));
         }
 
-        public void Set(string name, Point value, DocumentIndexOptions options)
+        public void Set(string name, GeoPoint value, DocumentIndexOptions options)
         {
             Entries.Add(new DocumentIndexEntry(name, value, Types.GeoPoint, options));
         }
@@ -66,10 +66,10 @@ namespace OrchardCore.Indexing
             GeoPoint
         }
 
-        public class Point
+        public class GeoPoint
         {
-            public double X;
-            public double Y;
+            public double Longitude;
+            public double Latitude;
         }
 
         public class DocumentIndexEntry

@@ -246,16 +246,16 @@ namespace OrchardCore.Lucene
                         break;
                     case DocumentIndex.Types.GeoPoint:
                         var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
-                        if (entry.Value is DocumentIndex.Point point)
+                        if (entry.Value is DocumentIndex.GeoPoint point)
                         {
-                            var geoPoint = _ctx.MakePoint(point.X, point.Y);
+                            var geoPoint = _ctx.MakePoint(point.Longitude, point.Latitude);
                             foreach (var field in strategy.CreateIndexableFields(geoPoint))
                             {
                                 doc.Add(field);
                             }
 
                             //store it too
-                            doc.Add(new StoredField(strategy.FieldName, $"{point.Y},{point.X}"));
+                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
                         }
                         break;
                 }

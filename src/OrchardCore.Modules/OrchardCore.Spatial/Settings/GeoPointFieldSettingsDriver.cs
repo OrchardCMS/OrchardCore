@@ -7,17 +7,17 @@ using OrchardCore.Spatial.Fields;
 namespace OrchardCore.Spatial.Settings
 {
 
-    public class CoordinateFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<CoordinateField>
+    public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<Fields.GeoPointField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<CoordinateFieldSettings>("CoordinateFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
                 .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            var model = new CoordinateFieldSettings();
+            var model = new GeoPointFieldSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 

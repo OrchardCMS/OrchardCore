@@ -1,10 +1,10 @@
 @using OrchardCore.Spatial.Settings
-@model OrchardCore.Spatial.ViewModels.EditCoordinateFieldViewModel
+@model OrchardCore.Spatial.ViewModels.EditGeoPointFieldViewModel
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<CoordinateFieldSettings>();
+    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
 }
 
-<div class="form-row" id="CoordinateFields">
+<div class="form-row" id="GeoPointFields">
     <div class="form-group col-md-4 col-lg-3">
         <label asp-for="Latitude">Latitude</label>
         <input asp-for="Latitude" class="form-control content-preview-text" required="@settings.Required" data-latitude/>
