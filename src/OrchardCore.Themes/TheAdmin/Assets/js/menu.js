@@ -12,10 +12,6 @@ $(function () {
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
-
-    $('.dropdown-toggle').dropdown();
-
-    //$('#persona .persona-content').css('background-color', stringToColour($('#persona').data("name")))
     
 });
 

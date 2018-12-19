@@ -6673,19 +6673,6 @@ function isLetter(str) {
 function isNumber(str) {
     return str.length === 1 && str.match(/[0-9]/i);
 }
-
-var stringToColour = function (str) {
-    var hash = 0;
-    for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var colour = '#';
-    for (var i = 0; i < 3; i++) {
-        var value = (hash >> (i * 8)) & 0xFF;
-        colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
-}
 var leftMenuPS;
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -6700,10 +6687,6 @@ $(function () {
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
-
-    $('.dropdown-toggle').dropdown();
-
-    //$('#persona .persona-content').css('background-color', stringToColour($('#persona').data("name")))
     
 });
 
