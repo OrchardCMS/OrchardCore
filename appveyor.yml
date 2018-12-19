@@ -58,7 +58,7 @@ deploy:
   - provider: NuGet
     on:
       branch: dev
-    server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+    server: https://www.myget.org/F/orchardcore-preview/api/v3/index.json
     api_key:
       secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     skip_symbols: true
@@ -66,7 +66,7 @@ deploy:
   - provider: NuGet
     on:
       branch: master
-    server: https://www.nuget.org/api/v2/package
+    server: https://api.nuget.org/v3/index.json
     api_key:
       secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
     skip_symbols: true
