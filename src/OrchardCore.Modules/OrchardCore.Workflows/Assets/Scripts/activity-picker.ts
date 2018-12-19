@@ -46,7 +46,7 @@ $(() => {
     });
 
     $('#activity-picker').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal.
+        var button = $(event.target) // Button that triggered the modal.
         var title = button.data('picker-title');
         var type = button.data('activity-type');
         var modal = $(this);

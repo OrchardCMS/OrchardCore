@@ -671,25 +671,6 @@ body.trumbowyg-body-fullscreen {
     .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
       height: 200px; }
 
-.mathMlContainer {
-  position: relative; }
-  .mathMlContainer[inline="false"] {
-    display: block;
-    width: 100%; }
-  .mathMlContainer:hover {
-    pointer-events: none; }
-    .mathMlContainer:hover:after {
-      content: '\270E';
-      pointer-events: auto;
-      position: absolute;
-      left: 0px;
-      top: 0px;
-      background-color: #ffffffd4;
-      cursor: pointer;
-      bottom: 0px;
-      right: 0px;
-      box-shadow: 0 0 5px 5px #ffffffd4; }
-
 .trumbowyg-dropdown-mention {
   height: calc(75%);
   width: 300px;
@@ -711,6 +692,25 @@ body.trumbowyg-body-fullscreen {
       background-size: 100%;
       background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
       pointer-events: none; }
+
+.mathMlContainer {
+  position: relative; }
+  .mathMlContainer[inline="false"] {
+    display: block;
+    width: 100%; }
+  .mathMlContainer:hover {
+    pointer-events: none; }
+    .mathMlContainer:hover:after {
+      content: '\270E';
+      pointer-events: auto;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      background-color: #ffffffd4;
+      cursor: pointer;
+      bottom: 0px;
+      right: 0px;
+      box-shadow: 0 0 5px 5px #ffffffd4; }
 
 .trumbowyg-editor table {
   width: 100%; }
