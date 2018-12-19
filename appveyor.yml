@@ -49,7 +49,7 @@ clone_depth: 1
 test: on
 
 artifacts:
-  - path: 'src\**\*.nupkg'
+- path: 'src\**\*.nupkg'
 
 deploy:
   - provider: NuGet
@@ -69,7 +69,7 @@ deploy:
 
 # DockerHub
 deploy_script:
-  - ps: |
+- ps: |
     if ($IsMasterBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
