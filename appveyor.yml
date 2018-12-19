@@ -66,9 +66,8 @@ deploy_script:
     api_key:
       secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
     skip_symbols: true
-
 # DockerHub
-- ps: |
+  - ps: |
     if ($IsMasterBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
