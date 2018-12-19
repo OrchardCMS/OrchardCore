@@ -30,13 +30,16 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
 
-                var stereotype = _typePartDefinition.ContentTypeDefinition.Settings[nameof(ContentTypeSettings.Stereotype)].ToString();
+                var stereotype = "";
 
-                if (String.IsNullOrEmpty(stereotype) || String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                var settings = _typePartDefinition.ContentTypeDefinition?.Settings;
+
+                if (settings != null)
                 {
-                    stereotype = "";
+                    stereotype = Convert.ToString(settings[nameof(ContentTypeSettings.Stereotype)]);
                 }
-                else
+
+                if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                 {
                     stereotype = stereotype + "__";
                 }
@@ -68,6 +71,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     else
                     {
                         displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+
+                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                        ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)
@@ -143,17 +149,18 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
+                _typePartDefinition = typePartDefinition;
 
-            _typePartDefinition = typePartDefinition;
+                var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
-            var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
+                var result = await DisplayAsync(part, buildDisplayContext);
 
-            var result = await DisplayAsync(part, buildDisplayContext);
+                _typePartDefinition = null;
 
-            _typePartDefinition = null;
-
-            return result;
+                return result;
+            }
         }
 
         async Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
@@ -165,17 +172,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
 
-            _typePartDefinition = typePartDefinition;
+                _typePartDefinition = typePartDefinition;
 
-            var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
+                var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
-            var result = await EditAsync(part, buildEditorContext);
+                var result = await EditAsync(part, buildEditorContext);
 
-            _typePartDefinition = null;
+                _typePartDefinition = null;
 
-            return result;
+                return result;
+            }
         }
 
         async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
@@ -187,15 +196,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
+            using (BuildPrefix(typePartDefinition, context.HtmlFieldPrefix))
+            {
 
-            var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
+                var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
-            var result = await UpdateAsync(part, context.Updater, updateEditorContext);
+                var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
-            part.ContentItem.Apply(typePartDefinition.Name, part);
+                part.ContentItem.Apply(typePartDefinition.Name, part);
 
-            return result;
+                return result;
+            }
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TPart part, BuildPartDisplayContext context)
@@ -266,13 +277,37 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetEditorShapeType(context.TypePartDefinition);
         }
 
-        private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
+        private TempPrefix BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
         {
+            var tempPrefix = new TempPrefix(this, Prefix);
+
             Prefix = typePartDefinition.Name;
 
             if (!String.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+
+            return tempPrefix;
+        }
+
+        /// <summary>
+        /// Restores the previous prefix automatically
+        /// </summary>
+        private class TempPrefix : IDisposable
+        {
+            private readonly ContentPartDisplayDriver<TPart> _driver;
+            private readonly string _originalPrefix;
+
+            public TempPrefix(ContentPartDisplayDriver<TPart> driver, string originalPrefix)
+            {
+                _driver = driver;
+                _originalPrefix = originalPrefix;
+            }
+
+            public void Dispose()
+            {
+                _driver.Prefix = _originalPrefix;
             }
         }
     }

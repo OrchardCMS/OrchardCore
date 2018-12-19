@@ -125,6 +125,7 @@
         {
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="RoleEntries[i].Selected">
+                <input type="hidden" asp-for="RoleEntries[i].Name">
                 <label class="custom-control-label" asp-for="RoleEntries[i].Selected">@Model.RoleEntries[i].Name</label>
             </div>
         }
