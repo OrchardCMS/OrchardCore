@@ -690,28 +690,6 @@ body.trumbowyg-body-fullscreen {
       right: 0px;
       box-shadow: 0 0 5px 5px #ffffffd4; }
 
-.trumbowyg-dropdown-mention {
-  height: calc(75%);
-  width: 300px;
-  max-width: 300px;
-  overflow-y: scroll;
-  overflow-x: hidden; }
-  .trumbowyg-dropdown-mention svg {
-    display: none !important; }
-  .trumbowyg-dropdown-mention button {
-    position: relative;
-    white-space: nowrap; }
-    .trumbowyg-dropdown-mention button:after {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 15%;
-      height: 100%;
-      background-size: 100%;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
-      pointer-events: none; }
-
 .trumbowyg-editor table {
   width: 100%; }
   .trumbowyg-editor table td {
@@ -734,3 +712,25 @@ body.trumbowyg-body-fullscreen {
     background-color: #00b393;
     box-shadow: none;
     cursor: pointer; }
+
+.trumbowyg-dropdown-mention {
+  height: calc(75%);
+  width: 300px;
+  max-width: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden; }
+  .trumbowyg-dropdown-mention svg {
+    display: none !important; }
+  .trumbowyg-dropdown-mention button {
+    position: relative;
+    white-space: nowrap; }
+    .trumbowyg-dropdown-mention button:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 15%;
+      height: 100%;
+      background-size: 100%;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
+      pointer-events: none; }

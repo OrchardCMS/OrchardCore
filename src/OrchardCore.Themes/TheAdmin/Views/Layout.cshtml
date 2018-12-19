@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+
+    <script asp-name="bootstrap" at="Foot" version="4.1.3"></script>
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
     <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.min.js" debug-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
@@ -26,12 +27,15 @@
 <body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
+            <a class="ta-navbar-brand" href="@Url.Content("~/admin")"><span>Orchard</span><span> Core</span> (@Site.SiteName) </a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
                 </div>
                 <ul class="nav navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Content("~/")" target="_blank" title="@T["View website"]"><i class="far fa-eye"></i> @T["website"]</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
                     </li>
@@ -42,9 +46,11 @@
             </div>
         </div>
 
-        <div id="ta-left-sidebar">
+        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
-            <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
+            <div class="footer">
+                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+            </div>
         </div>
 
         <div class="ta-content">
@@ -58,6 +64,6 @@
 
     <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>

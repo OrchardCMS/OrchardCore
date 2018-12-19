@@ -6700,7 +6700,10 @@ $(function () {
         setCompactStatus();
     }
 
-    $('#ta-left-sidebar .persona-content').css('background-color', stringToColour($('#ta-left-sidebar .persona-content').data("title")));
+    $('.dropdown-toggle').dropdown();
+
+    $('#persona .persona-content').css('background-color', stringToColour($('#persona').data("name")))
+    
 });
 
 

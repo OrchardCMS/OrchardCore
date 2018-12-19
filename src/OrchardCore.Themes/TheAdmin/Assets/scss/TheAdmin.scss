@@ -8,7 +8,7 @@
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
 
-$top-nav-height: 59px;
+$top-nav-height: 49px;
 $footer-height: 40px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 60px;
@@ -62,12 +62,16 @@ body {
 // -----------------------------
 
 .ta-navbar-top {
-    @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light, .fixed-top;
-    min-height: $top-nav-height;
+    @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
+    height: $top-nav-height;
     border-bottom: $border-content;
     z-index: 8;
     padding-left: 0px;
     background-color: white;
+
+    .nav-link {
+        font-size: 14px;
+    }
 }
 
 
@@ -75,7 +79,6 @@ body {
     @extend .navbar-brand;
     overflow: hidden;
     width: 230px;
-    height: 42px;
     margin-left: 14px;
     margin-right: 24px;
     padding-left: 36px;
@@ -84,11 +87,18 @@ body {
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 28px auto;
-    text-transform: uppercase;
     white-space: nowrap;
-    font-weight: 600;
-    font-size: 1rem;
+    font-size: 14px;
     transition: width 0.2s ease-in-out;
+
+    span:first-child {
+        margin-left: 5px;
+    }
+
+    span:last-child {
+        font-weight: bold;
+        color: rgba(0,120,212,1);
+    }
 }
 
 
@@ -96,6 +106,7 @@ body {
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
     width: 30px;
+    height: 42px;
 
     span {
         display: none;
@@ -139,7 +150,6 @@ body {
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
         @extend .bg-light;
-        height: 100%;
         z-index: 7;
         position: fixed;
         top: $top-nav-height;
@@ -187,7 +197,7 @@ body:not(.left-sidebar-compact) {
 
         #left-nav {
             position: relative;
-            height: calc(100% - #{$top-nav-height * 2});
+            height: calc(100% - 50px);
 
             ul {
                 margin: 0;
@@ -239,7 +249,7 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
-                    margin-bottom: 100px;
+                    margin-bottom: 40px;
 
                     .item-label {
                         padding-left: 0px !important;
@@ -408,6 +418,21 @@ body:not(.left-sidebar-compact) {
         li ul > li ul > .active > a {
             padding-left: (3 * $link-padding-left - 4) !important;
         }
+
+        .footer {
+            background-color: #f8f9fa !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer:before {
+            content: "";
+            width: 92%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 4px auto 0px auto;
+        }
     }
 }
 // Layout 4 : ta-left-sidebar when compacted
@@ -416,7 +441,6 @@ body:not(.left-sidebar-compact) {
 
     #ta-left-sidebar {
         @extend .bg-light;
-        height: 100%;
         z-index: 7;
         position: fixed;
         top: $top-nav-height;
@@ -464,7 +488,7 @@ body:not(.left-sidebar-compact) {
 
         #left-nav {
             position: relative;
-            height: calc(100% - #{$top-nav-height * 2});
+            height: calc(100% - 50px);
 
             ul {
                 margin: 0;
@@ -511,7 +535,7 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
-                    margin-bottom: 100px;
+                    margin-bottom: 40px;
                 }
 
                 .item-label {
@@ -784,6 +808,21 @@ body:not(.left-sidebar-compact) {
         li ul > li ul > .active > a {
             padding-left: (3 * $link-padding-left - 4) !important;
         }
+
+        .footer {
+            background-color: #f8f9fa !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer:before {
+            content: "";
+            width: 60%;
+            height: 1px;
+            background: rgba(0,0,0,.1);
+            display: block;
+            margin: 4px auto 0px auto;
+        }
     }
 }
 // fixing a flickering that occurs on compact leftbar while icons load.
@@ -796,35 +835,35 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
     display: block;
     width: $left-navigation-width-when-compact;
     height: 50px;
-    padding: 8px 0px 10px 12px;
+    padding: 10px;
     border: none;
     background-color: transparent;
-    font-size: 20px;
     color: $gray-700;
     cursor: pointer;
     font-size: 20px;
+    float: right;
+    transition-duration: 0.2s;
+    display: block;
+    transform: scale(2,1);
 
     &:focus {
-        background-color: rgba(0, 0, 0, 0.3);
-        color: white;
         outline: none;
     }
 
     &:hover {
-        color: $gray-100;
-        background-color: $gray-700;
+        color: rgba(0,120,212,1);
+        color: var(rgba(0, 120, 212, 1));
+        text-shadow: 0 0 4px rgba(0,120,212,.5);
     }
 
-    span {
-        width: 30px;
-        transition-duration: 0.2s;
-        display: block;
+    &:before {
+        content: "\0027EA";
     }
 }
 
-.left-sidebar-compact .leftbar-compactor span {
+.left-sidebar-compact .leftbar-compactor {
     transition-duration: 0.2s;
-    transform: scale(-1, 1);
+    transform: scale(-2, 1);
 }
 
 .auth-wrapper {
@@ -996,4 +1035,31 @@ ul.pager li a {
     -moz-transition: none !important;
     -ms-transition: none !important;
     -o-transition: none !important;
+}
+
+.persona {
+    position: relative;
+    text-align: center;
+    height: 48px;
+    width: 48px;
+    flex: 0 0 auto;
+
+    &.small {
+        width: 24px;
+        height: 24px;
+    }
+
+    .persona-content {
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        color: white;
+
+        &.small {
+            font-size: 11px;
+            line-height: 24px;
+        }
+    }
 }
