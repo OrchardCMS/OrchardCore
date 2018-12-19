@@ -27,7 +27,7 @@
 <body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/admin")"><span>Orchard</span><span> Core</span> (@Site.SiteName) </a>
+            <a class="ta-navbar-brand" href="@Url.Content("~/admin")">@Site.SiteName</a>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
