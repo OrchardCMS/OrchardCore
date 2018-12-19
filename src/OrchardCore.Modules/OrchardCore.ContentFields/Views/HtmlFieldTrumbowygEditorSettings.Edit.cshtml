@@ -4,57 +4,12 @@
         height: 100%;
     }
 </style>
-<style asp-name="highlight.js"></style>
-<script asp-name="highlight.js" at="Head"></script>
-<script at="Foot">
-$(document).ready(function () {
-  $('pre code').each(function(i, block) {
-    hljs.highlightBlock(block);
-  });
-});
-</script>
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-trumbowyg">
-    <div class="row">
-        <div class="form-group col-sm-6">
+    <div class="form-group row">
+        <div class="col-lg">
             <label asp-for="Options">@T["Enter the trumbowyg editor options"]</label>
+            <span class="hint">@T["Example"] <a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">Documentation for Trumbowyg buttons</a></span>
             <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
-        </div>
-        <div class="form-group col-sm-6">
-            <label>@T["Example"]
-               <a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">Documentation for Trumbowyg buttons</a></label>
-            <pre><code class="json">
-{
-    autogrow: true,
-    btns: [
-        ["viewHTML"],
-        ["undo", "redo"],
-        ["formatting"],
-        ["fontsize", "fontfamily"],
-        ["strong", "em", "del"],
-        ["foreColor", "backColor"],
-        ["superscript", "subscript"],
-        ["link"],
-        ["image"],
-        ["align"],
-        ["unorderedList", "orderedList"],
-        ["horizontalRule"],
-        ["removeformat"],
-        ["preformatted"],
-        ["table"],
-        ["fullscreen"]
-    ], 
-    btnsDef: {
-        align: {
-            dropdown: ["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"],
-            ico: "justifyLeft"
-        },
-        image: {
-            dropdown: ["insertImage", "base64", "noembed"],
-            ico: "insertImage"
-        }
-    }
-}
-            </code></pre>
         </div>
     </div>
 </div>
@@ -62,12 +17,51 @@ $(document).ready(function () {
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">
-$(function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Options)'), {
-        lineNumbers: false,
-        matchBrackets: true,
-        mode: { name: "javascript" }
+    $(function () {
+        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+            lineNumbers: false,
+            matchBrackets: true,
+            mode: { name: "javascript" }
     });
+@{ 
+    if (string.IsNullOrEmpty(Model.Options))
+    {
+        string fullOptions = @"{
+    autogrow: true,
+    btns: [
+        [""viewHTML""],
+        [""undo"", ""redo""],
+        [""formatting""],
+        [""fontsize"", ""fontfamily""],
+        [""strong"", ""em"", ""del""],
+        [""foreColor"", ""backColor""],
+        [""superscript"", ""subscript""],
+        [""link""],
+        [""image""],
+        [""align""],
+        [""unorderedList"", ""orderedList""],
+        [""horizontalRule""],
+        [""removeformat""],
+        [""preformatted""],
+        [""table""],
+        [""fullscreen""]
+    ], 
+    btnsDef: {
+        align: {
+            dropdown: [""justifyLeft"", ""justifyCenter"", ""justifyRight"", ""justifyFull""],
+            ico: ""justifyLeft""
+        },
+        image: {
+            dropdown: [""insertImage"", ""base64"", ""noembed""],
+            ico: ""insertImage""
+        }
+    }
+}";
+<text>editor.setValue(`@Html.Raw(fullOptions)`);
+        </text>
+    }
+}
     setTimeout(function() { editor.refresh(); },1);
 });
 </script>
