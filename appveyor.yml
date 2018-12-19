@@ -73,7 +73,7 @@ deploy:
     artifact: /.*\.nupkg/
 
 # DockerHub
-deploy_script:
+after_deploy:
 - ps: |
     if ($IsMasterBranch)
     {
