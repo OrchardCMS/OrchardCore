@@ -723,10 +723,11 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            .btn-nostyle:focus, .btn-nostyle:active {
+            //for accessibility testing
+            /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
-            }
+            }*/
         }
 
         li.has-items .item-label,
