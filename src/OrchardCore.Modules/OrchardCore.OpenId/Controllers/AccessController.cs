@@ -284,12 +284,12 @@ namespace OrchardCore.OpenId.Controllers
                     OpenIddictConstants.Destinations.AccessToken,
                     OpenIddictConstants.Destinations.IdentityToken);
 
-                // If the role provider is available, add all the role claims
+                // If the role service is available, add all the role claims
                 // associated with the application roles in the database.
-                var provider = HttpContext.RequestServices.GetService<IRoleProvider>();
-                if (provider != null)
+                var roleService = HttpContext.RequestServices.GetService<IRoleService>();
+                if (roleService != null)
                 {
-                    foreach (var claim in await provider.GetRoleClaimsAsync(role))
+                    foreach (var claim in await roleService.GetRoleClaimsAsync(role))
                     {
                         identity.AddClaim(claim.SetDestinations(
                             OpenIdConnectConstants.Destinations.AccessToken,

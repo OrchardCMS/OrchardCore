@@ -32,7 +32,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IHtmlLocalizer<ApplicationController> H;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
@@ -42,7 +42,7 @@ namespace OrchardCore.OpenId.Controllers
             ISiteService siteService,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IRoleProvider roleProvider,
+            IRoleService roleService,
             IOpenIdApplicationManager applicationManager,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
             INotifier notifier,
@@ -54,7 +54,7 @@ namespace OrchardCore.OpenId.Controllers
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
@@ -99,7 +99,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdApplicationViewModel();
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            foreach (var role in await _roleService.GetRoleNamesAsync())
             {
                 model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
                 {
@@ -245,7 +245,7 @@ namespace OrchardCore.OpenId.Controllers
                 Type = await _applicationManager.GetClientTypeAsync(application)
             };
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            foreach (var role in await _roleService.GetRoleNamesAsync())
             {
                 model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
                 {
