@@ -2689,7 +2689,7 @@ Vue.component('mediaItemsTable', {
                             </td> \
                             <td> \
                                 <div class="media-name-cell"> \
-                                    {{ media.name }} \
+                                   <span class="break-word"> {{ media.name }} </span>\
                                     <div class="buttons-container"> \
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
@@ -2697,10 +2697,10 @@ Vue.component('mediaItemsTable', {
                                 </div> \
                             </td> \
                             <td> \
-                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
+                                <div class="text-col optional-col"><span class="break-word"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</span></div> \
                             </td> \
                             <td> \
-                                <div class="text-col optional-col">{{ media.mime }}</div> \
+                                <div class="text-col optional-col break-word">{{ media.mime }}</div> \
                             </td> \
                    </tr>\
             </tbody>\
