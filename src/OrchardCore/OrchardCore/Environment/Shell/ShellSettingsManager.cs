@@ -2,39 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Shell.Models;
+using System.Collections.Concurrent;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        private readonly string _defaultTenantFolder;
+        private readonly string _tenantsContainerPath;
         private readonly IEnumerable<string> _configuredTenants;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         public ShellSettingsManager(
-            IHttpContextAccessor httpContextAccessor,
             IConfiguration applicationConfiguration,
-            IEnumerable<ITenantsGlobalConfigurationSource> globalConfigurationSources,
+            IEnumerable<ITenantsConfigurationSource> configurationSources,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
-            _httpContextAccessor = httpContextAccessor;
-
-            _defaultTenantFolder = Path.Combine(
+            _tenantsContainerPath = Path.Combine(
                 options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                ShellHelper.DefaultShellName);
+                options.Value.ShellsContainerName);
 
-            Directory.CreateDirectory(_defaultTenantFolder);
+            Directory.CreateDirectory(_tenantsContainerPath);
 
             var environmentName = hostingEnvironment.EnvironmentName.ToUpperInvariant();
             var applicationName = hostingEnvironment.ApplicationName.Replace('.', '_').ToUpperInvariant();
@@ -49,7 +42,7 @@ namespace OrchardCore.Environment.Shell
                 .AddJsonFile($"{appsettingsPath}.json", optional: true)
                 .AddJsonFile($"{appsettingsPath}.{hostingEnvironment.EnvironmentName}.json", optional: true);
 
-            foreach (var source in globalConfigurationSources.OrderBy(s => s.Order))
+            foreach (var source in configurationSources.OrderBy(s => s.Order))
             {
                 configurationBuilder.Add(source);
             }
@@ -62,81 +55,51 @@ namespace OrchardCore.Environment.Shell
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
             }
 
-            GlobalConfiguration = configurationBuilder.Build();
+            Configuration = configurationBuilder.Build();
 
-            _configuredTenants = GlobalConfiguration.GetChildren()
+            _configuredTenants = Configuration.GetChildren()
                 .Where(section => section.GetValue<string>("State") != null)
                 .Select(section => section.Key)
                 .Distinct()
                 .ToArray();
         }
 
-        public IConfiguration GlobalConfiguration { get; }
+        public IConfiguration Configuration { get; }
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var defaultSettings = LoadDefaultSettings();
+            // Retrieve the pre-configured tenants whose 'State' value is provided by the
+            // 'Configuration' and resolve their related folders even if they don't exist.
 
-            var shellHost = _httpContextAccessor.HttpContext.RequestServices.GetService<IShellHost>();
+            var configuredTenantFolders = Configuration.GetChildren()
+                .Where(section => section.GetValue<string>("State") != null)
+                .Select(section => Path.Combine(_tenantsContainerPath, section.Key));
 
-            var scope = defaultSettings.State == TenantState.Running ? shellHost
-                .GetScopeAsync(defaultSettings).GetAwaiter().GetResult() : null;
+            // Add the folders of pre-configured tenants to the existing ones.
+            var tenantFolders = Directory.GetDirectories(_tenantsContainerPath)
+                .Concat(configuredTenantFolders).Distinct();
 
-            using (scope)
+            var shellSettings = new ConcurrentBag<ShellSettings>();
+
+            // Load all extensions in parallel
+            Parallel.ForEach(tenantFolders, new ParallelOptions { MaxDegreeOfParallelism = 8 },
+                (tenantFolder) =>
             {
-                var configurationBuilder = new ConfigurationBuilder();
+                var tenantName = Path.GetFileName(tenantFolder);
 
-                if (scope != null)
-                {
-                    var sources = scope.ServiceProvider.GetServices<ITenantsLocalConfigurationSource>();
+                var localConfiguration = new ConfigurationBuilder()
+                    .AddJsonFile(Path.Combine(tenantFolder, "appsettings.json"), optional: true)
+                    .Build();
 
-                    foreach (var source in sources.OrderBy(s => s.Order))
-                    {
-                        configurationBuilder.Add(source);
-                    }
-                }
+                var shellSetting = new ShellSettings() { Name = tenantName };
 
-                var localConfiguration = configurationBuilder.Build();
+                // Bind root and section settings.
+                Configuration.Bind(shellSetting);
+                Configuration.Bind(tenantName, shellSetting);
+                localConfiguration.Bind(shellSetting);
 
-                var tenants = _configuredTenants
-                    .Concat(localConfiguration.GetChildren().Select(section => section.Key))
-                    .Distinct();
-
-                var shellSettings = new List<ShellSettings>(new[] { defaultSettings });
-
-                foreach (var tenant in tenants)
-                {
-                    if (tenant == ShellHelper.DefaultShellName)
-                    {
-                        continue;
-                    }
-
-                    var shellSetting = new ShellSettings() { Name = tenant };
-
-                    // Bind root and section settings.
-                    GlobalConfiguration.Bind(shellSetting);
-                    GlobalConfiguration.Bind(tenant, shellSetting);
-                    localConfiguration.Bind(tenant, shellSetting);
-
-                    shellSettings.Add(shellSetting);
-                }
-
-                return shellSettings;
-            }
-        }
-
-        private ShellSettings LoadDefaultSettings()
-        {
-            var localConfiguration = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine(_defaultTenantFolder, "appsettings.json"), optional: true)
-                .Build();
-
-            var shellSettings = new ShellSettings() { Name = ShellHelper.DefaultShellName };
-
-            // Bind root and section settings.
-            GlobalConfiguration.Bind(shellSettings);
-            GlobalConfiguration.Bind(ShellHelper.DefaultShellName, shellSettings);
-            localConfiguration.Bind(shellSettings);
+                shellSettings.Add(shellSetting);
+            });
 
             return shellSettings;
         }
@@ -148,11 +111,14 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
+            var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
+            Directory.CreateDirectory(tenantFolder);
+
             var globalSettings = new ShellSettings() { Name = settings.Name };
 
             // Bind root and section settings.
-            GlobalConfiguration.Bind(globalSettings);
-            GlobalConfiguration.Bind(settings.Name, globalSettings);
+            Configuration.Bind(globalSettings);
+            Configuration.Bind(settings.Name, globalSettings);
 
             var localObject = JObject.FromObject(settings);
             var globalObject = JObject.FromObject(globalSettings);
@@ -174,36 +140,9 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            if (settings.Name != ShellHelper.DefaultShellName)
-            {
-                var shellHost = _httpContextAccessor.HttpContext.RequestServices.GetService<IShellHost>();
-
-                if (!shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings) ||
-                    defaultSettings.State != TenantState.Running)
-                {
-                    return;
-                }
-
-                // Locking for unit tests using 'Sqlite' that doesn't support concurrent writes.
-                lock (this)
-                {
-                    using (var scope = shellHost.GetScopeAsync(ShellHelper.DefaultShellName).GetAwaiter().GetResult())
-                    {
-                        var sources = scope.ServiceProvider.GetServices<ITenantsLocalConfigurationSource>();
-
-                        foreach (var source in sources)
-                        {
-                            source.SaveSettings(settings.Name, localObject);
-                        }
-                    }
-                }
-
-                return;
-            }
-
             try
             {
-                File.WriteAllText(Path.Combine(_defaultTenantFolder, "appsettings.json"), localObject.ToString());
+                File.WriteAllText(Path.Combine(tenantFolder, "appsettings.json"), localObject.ToString());
             }
 
             catch (IOException)

@@ -19,8 +19,8 @@ namespace OrchardCore.Environment.Shell
         void SaveSettings(ShellSettings settings);
 
         /// <summary>
-        /// The tenants global configuration.
+        /// The tenants configuration.
         /// </summary>
-        IConfiguration GlobalConfiguration { get;  }
+        IConfiguration Configuration { get;  }
     }
 }

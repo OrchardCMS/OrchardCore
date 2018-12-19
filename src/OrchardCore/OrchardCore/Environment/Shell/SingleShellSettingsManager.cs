@@ -20,6 +20,6 @@ namespace OrchardCore.Environment.Shell
 
         public JObject UpdateSettings(ShellSettings settings) => JObject.FromObject(settings);
 
-        public IConfiguration GlobalConfiguration => new ConfigurationBuilder().Build();
+        public IConfiguration Configuration => new ConfigurationBuilder().Build();
     }
 }
