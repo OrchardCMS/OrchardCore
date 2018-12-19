@@ -45,10 +45,10 @@ Vue.component('mediaItemsTable', {
                                 </div> \
                             </td> \
                             <td> \
-                                <div class="text-col optional-col"><span class="break-word"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</span></div> \
+                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
                             </td> \
                             <td> \
-                                <div class="text-col optional-col break-word">{{ media.mime }}</div> \
+                                <div class="text-col optional-col">{{ media.mime }}</div> \
                             </td> \
                    </tr>\
             </tbody>\
@@ -68,7 +68,6 @@ Vue.component('mediaItemsTable', {
     },
     created: function () {
         var self = this;
-        // retrieving localized strings from view
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
         self.T.sizeHeader = $('#t-size-header').val();
