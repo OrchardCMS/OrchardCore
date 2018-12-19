@@ -52,11 +52,21 @@ artifacts:
 - path: 'src\**\*.nupkg'
 
 deploy_script:
-# Nuget
-- ps:  if ($IsMasterBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
-
-# Myget
-- ps:  if ($IsDevBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
+  - provider: NuGet
+    on:
+      branch: dev
+    server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+    api_key:
+      secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+  - provider: NuGet
+    on:
+      branch: master
+    server: https://www.nuget.org/api/v2/package
+    api_key:
+      secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+    skip_symbols: true
 
 # DockerHub
 - ps: |
