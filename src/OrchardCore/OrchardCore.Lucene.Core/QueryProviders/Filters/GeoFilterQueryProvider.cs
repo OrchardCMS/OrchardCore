@@ -10,7 +10,8 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public class GeoBoundingBoxFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject queryObj, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type,
+            JObject queryObj, Query toFilter)
         {
             if (type != "geo_bounding_box")
                 return null;
@@ -29,7 +30,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var boundingBox = (JObject) first.Value;
 
             var topLeftProperty = boundingBox["top_left"] as JObject;
-            var bottomRightProperty =boundingBox["bottom_right"] as JObject;
+            var bottomRightProperty = boundingBox["bottom_right"] as JObject;
 
             if (topLeftProperty == null || bottomRightProperty == null)
                 return null;
@@ -39,7 +40,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var bottom = bottomRightProperty["lat"];
             var right = bottomRightProperty["lon"];
 
-            var rectangle = ctx.MakeRectangle((double)left, (double)right, (double)bottom, (double)top);
+            var rectangle = ctx.MakeRectangle((double) left, (double) right, (double) bottom, (double) top);
 
             var args = new SpatialArgs(SpatialOperation.Intersects, rectangle);
 
@@ -48,5 +49,4 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             return new FilteredQuery(toFilter, filter);
         }
     }
-
 }

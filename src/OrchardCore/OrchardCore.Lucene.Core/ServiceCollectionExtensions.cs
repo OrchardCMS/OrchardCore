@@ -28,6 +28,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<ILuceneQueryProvider, WildcardQueryProvider>();
 
             services.AddSingleton<ILuceneBooleanFilterProvider, GeoBoundingBoxFilterProvider>();
+            services.AddSingleton<ILuceneBooleanFilterProvider, GeoDistanceFilterProvider>();
 
             return services;
         }
