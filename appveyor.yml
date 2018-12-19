@@ -20,8 +20,8 @@ stack: node 9, docker
 
 # build cache to preserve files/folders between builds
 cache:
-  - node_modules -> package.json # local npm modules
-  - '%LocalAppData%\NuGet\v3-cache' -> src\OrchardCore.Build\Dependencies.props # NuGet v3
+  - node_modules -> **\package.json # local npm modules
+  - '%LocalAppData%\NuGet\v3-cache -> **\*.props' # NuGet v3
 
 # Install scripts. (runs after repo cloning)
 install:
