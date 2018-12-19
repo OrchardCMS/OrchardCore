@@ -229,7 +229,7 @@ body:not(.left-sidebar-compact) {
                         height: 1px;
                         background: rgba(0,0,0,.1);
                         display: block;
-                        margin: 0px auto;
+                        margin: 0px auto 4px auto;
                     }
                 }
 
@@ -298,10 +298,11 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            .btn-nostyle:focus, .btn-nostyle:active {
+            //for accessibility testing
+            /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
-            }
+            }*/
         }
 
 

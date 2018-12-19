@@ -7211,7 +7211,11 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     margin: 0; }
   body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
     position: relative;
-    height: calc(100% - 50px); }
+    height: calc(100% - 50px);
+    /*.btn-nostyle:focus, .btn-nostyle:active {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }*/ }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul {
       margin: 0;
       padding: 0;
@@ -7232,7 +7236,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         height: 1px;
         background: rgba(0, 0, 0, 0.1);
         display: block;
-        margin: 0px auto; }
+        margin: 0px auto 4px auto; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
@@ -7275,9 +7279,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       cursor: pointer;
       width: 45px;
       outline: none; }
-    body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle:focus, body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle:active {
-      background-color: rgba(0, 0, 0, 0.3);
-      color: white; }
   body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items .item-label,
   body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:hover,
   body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:active,
