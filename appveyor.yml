@@ -62,6 +62,7 @@ deploy:
     api_key:
       secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     skip_symbols: true
+    artifact: /.*\.nupkg/
   - provider: NuGet
     on:
       branch: master
@@ -69,6 +70,7 @@ deploy:
     api_key:
       secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
     skip_symbols: true
+    artifact: /.*\.nupkg/
 
 # DockerHub
 deploy_script:
