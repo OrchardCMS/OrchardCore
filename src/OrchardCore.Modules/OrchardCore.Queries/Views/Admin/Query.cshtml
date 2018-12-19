@@ -6,9 +6,9 @@
     var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
 }
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/sql/sql.js" at="Foot"></script>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
 <h1>@RenderTitleSegments(T["SQL Query"])</h1>
 

@@ -74,7 +74,7 @@ namespace OrchardCore.Contents.Controllers
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 

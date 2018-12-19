@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -9,9 +10,10 @@ namespace OrchardCore.Flows.GraphQL
 {
     public class BagPartQueryObjectType : ObjectGraphType<BagPart>
     {
-        public BagPartQueryObjectType()
+        public BagPartQueryObjectType(IStringLocalizer<BagPartQueryObjectType> T)
         {
             Name = "BagPart";
+            Description = T["A BagPart allows content items directly within another content item"];
 
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")

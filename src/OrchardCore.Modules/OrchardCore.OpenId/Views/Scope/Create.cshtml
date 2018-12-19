@@ -7,20 +7,20 @@
 <form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <span asp-validation-for="Name" class="text-danger"></span>
         <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="form-group" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
-        <span asp-validation-for="DisplayName" class="text-danger"></span>
         <input asp-for="DisplayName" class="form-control" />
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
 
     <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
-        <span asp-validation-for="Description" class="text-danger"></span>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="form-group" id="TenantGroup" name="TenantGroup">
@@ -37,8 +37,8 @@
 
     <div class="form-group" asp-validation-class-for="Resources">
         <label asp-for="Resources">@T["Additional resources (API audiences)"]</label>
-        <span asp-validation-for="Resources" class="text-danger"></span>
         <input asp-for="Resources" class="form-control" />
+        <span asp-validation-for="Resources" class="text-danger"></span>
     </div>
 
     <fieldset>

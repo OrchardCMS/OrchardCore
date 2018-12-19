@@ -23,13 +23,11 @@
         <input asp-for="Description" class="form-control" type="hidden" />
     </div>
 
-    <fieldset>
-        <div class="form-group">
-            <button id="use-default-schedule" class="btn btn-success">@T["Use Default"]</button>
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <button id="use-default-schedule" class="btn btn-success">@T["Use Default"]</button>
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
 </form>
 
 <script at="Foot">

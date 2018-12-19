@@ -17,5 +17,9 @@ namespace OrchardCore.Autoroute.Models
         /// </summary>
         public bool ShowHomepageOption { get; set; }
 
+        /// <summary>
+        /// Whether a user can request a new path if some data has changed.
+        /// </summary>
+        public bool AllowUpdatePath { get; set; }
     }
 }

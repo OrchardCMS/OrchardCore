@@ -102,7 +102,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (model.RequestUrlPrefix.Contains('/'))
                 {
-                    ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contains more than one segment."]);
+                    ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
                 }
             }
 
