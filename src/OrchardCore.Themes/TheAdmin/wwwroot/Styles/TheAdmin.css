@@ -4521,14 +4521,12 @@ button.bg-danger:hover,
 button.bg-danger:focus {
   background-color: #bd2130 !important; }
 
-.bg-light, .admin-toolbar {
+.bg-light {
   background-color: #f8f9fa !important; }
 
-a.bg-light:hover, a.admin-toolbar:hover, a.bg-light:focus, a.admin-toolbar:focus,
+a.bg-light:hover, a.bg-light:focus,
 button.bg-light:hover,
-button.admin-toolbar:hover,
-button.bg-light:focus,
-button.admin-toolbar:focus {
+button.bg-light:focus {
   background-color: #dae0e5 !important; }
 
 .bg-dark {
@@ -7718,7 +7716,8 @@ select[multiple] {
   min-height: 300px; }
 
 .admin-toolbar {
-  margin-bottom: 1em; }
+  margin-bottom: 1em;
+  background-color: #dee2e6; }
 
 ul.pager {
   margin-top: 1rem; }

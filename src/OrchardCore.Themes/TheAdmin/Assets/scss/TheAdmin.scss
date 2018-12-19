@@ -969,8 +969,9 @@ select[multiple] {
 // Toolbar
 // ------------------------------
 .admin-toolbar {
-    @extend .navbar, .navbar-expand-md, .navbar-light, .bg-light;
+    @extend .navbar, .navbar-expand-md, .navbar-light;
     margin-bottom: 1em;
+    background-color: $gray-300;
 }
 // Messages
 // ------------------------------
