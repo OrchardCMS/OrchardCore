@@ -49,7 +49,7 @@ clone_depth: 1
 test: on
 
 artifacts:
-- path: 'src\**\*.nupkg'
+  - path: 'src\**\*.nupkg'
 
 deploy_script:
   - provider: NuGet
@@ -59,7 +59,6 @@ deploy_script:
     api_key:
       secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     skip_symbols: true
-    artifact: /.*\.nupkg/
   - provider: NuGet
     on:
       branch: master
