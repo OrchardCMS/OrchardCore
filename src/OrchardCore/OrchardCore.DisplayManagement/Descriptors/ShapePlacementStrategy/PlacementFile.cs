@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         [JsonProperty(PropertyName = "place")]
         public string Location { get; set; }
 
-        [JsonProperty(PropertyName = "display-type")]
+        [JsonProperty(PropertyName = "displayType")]
         public string DisplayType { get; set; }
 
         [JsonProperty(PropertyName = "differentiator")]
