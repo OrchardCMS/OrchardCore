@@ -13,8 +13,6 @@ $(function () {
         setCompactStatus();
     }
 
-    //activate Bootstrap dropdown buttons.
-    $('.dropdown-toggle').dropdown()
 });
 
 
