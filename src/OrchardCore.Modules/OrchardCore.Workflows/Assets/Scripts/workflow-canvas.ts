@@ -1,4 +1,4 @@
-///<reference path="../Lib/jquery/typings.d.ts" />
+///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 ///<reference path='./workflow-models.ts' />
 

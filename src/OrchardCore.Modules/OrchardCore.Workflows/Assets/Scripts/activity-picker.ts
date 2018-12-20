@@ -1,4 +1,4 @@
-///<reference path="../Lib/jquery/typings.d.ts" />
+///<reference path='../Lib/jquery/typings.d.ts' />
 
 var applyFilter = function (category: string, q: string) {
     const type = $('.modal-activities').data('activity-type');
