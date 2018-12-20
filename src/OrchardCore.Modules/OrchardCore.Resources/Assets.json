@@ -62,28 +62,28 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/trumbowyg/dist/plugins/*/ui/sass/*.scss"
+      "../../../node_modules/trumbowyg/dist/plugins/*/ui/sass/*.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg-plugins.css"
   },
   {
     "inputs": [
-      "node_modules/trumbowyg/dist/trumbowyg.js"
+      "../../../node_modules/trumbowyg/dist/trumbowyg.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
   },
   {
     "inputs": [
-      "node_modules/trumbowyg/dist/plugins/base64/*.js",
-      "node_modules/trumbowyg/dist/plugins/colors/*.js",
-      "node_modules/trumbowyg/dist/plugins/fontfamily/*.js",
-      "node_modules/trumbowyg/dist/plugins/fontsize/*.js",
-      "node_modules/trumbowyg/dist/plugins/history/*.js",
-      "node_modules/trumbowyg/dist/plugins/noembed/*.js",
-      "node_modules/trumbowyg/dist/plugins/pasteembed/*.js",
-      "node_modules/trumbowyg/dist/plugins/preformatted/*.js",
-      "node_modules/trumbowyg/dist/plugins/specialchars/*.js",
-      "node_modules/trumbowyg/dist/plugins/table/*.js"
+      "../../../node_modules/trumbowyg/dist/plugins/base64/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/colors/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/fontfamily/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/fontsize/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/history/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/noembed/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/pasteembed/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/preformatted/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/specialchars/*.js",
+      "../../../node_modules/trumbowyg/dist/plugins/table/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   }
