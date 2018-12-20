@@ -1,4 +1,12 @@
 image: Visual Studio 2017
+
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
+branches:
+  only:
+    - master
+    - dev
+
 environment:
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -16,9 +24,8 @@ stack: node 9, docker
 
 # build cache to preserve files/folders between builds
 cache:
-  - node_modules # local npm modules
-  - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
- 
+  - node_modules -> **\package.json # local npm modules
+  - '%LocalAppData%\NuGet\v3-cache -> **\*.props' # NuGet v3
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -27,7 +34,7 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-#  - ps: .\dotnet-install.ps1 --Version 2.1.301
+#  - ps: .\dotnet-install.ps1 --Version 2.2.100-preview3-009430
 
 build_script:
   - dotnet build -c Release
@@ -51,19 +58,31 @@ test: on
 artifacts:
 - path: 'src\**\*.nupkg'
 
-deploy_script:
-# Nuget
-- ps:  if ($IsMasterBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package } }
-
-# Myget
-- ps:  if ($IsDevBranch) { foreach ($artifactName in $artifacts.keys) { nuget push $artifacts[$artifactName].path $env:MYGET_API_KEY -Source https://www.myget.org/F/orchardcore-preview/api/v2/package } }
+deploy:
+  - provider: NuGet
+    on:
+      branch: dev
+    server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+    api_key:
+      secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
+    skip_symbols: true
+    artifact: /.*\.nupkg/
+  - provider: NuGet
+    on:
+      branch: master
+    server: https://www.nuget.org/api/v2/package
+    api_key:
+      secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+    skip_symbols: true
+    artifact: /.*\.nupkg/
 
 # DockerHub
+after_deploy:
 - ps: |
     if ($IsMasterBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-      dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+      dotnet publish -c Release --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta3 .
       docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
@@ -73,7 +92,7 @@ deploy_script:
     if ($IsDevBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
-      dotnet publish -c Release -o $env:APPVEYOR_BUILD_FOLDER\.build\release
+      dotnet publish -c Release  --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:dev .
       docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"

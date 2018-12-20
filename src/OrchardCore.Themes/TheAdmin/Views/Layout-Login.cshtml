@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
+    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
@@ -19,8 +19,10 @@
 <body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
-
+        
+        <div class="auth-wrapper">
         @await RenderBodyAsync()
+        </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)

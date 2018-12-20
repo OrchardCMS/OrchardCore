@@ -18,7 +18,6 @@ namespace OrchardCore.OpenId.ViewModels
         public string PostLogoutRedirectUris { get; set; }
         public string Type { get; set; }
         public string ConsentType { get; set; }
-        public bool UpdateClientSecret { get; set; }
         public string ClientSecret { get; set; }
         public List<RoleEntry> RoleEntries { get; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }

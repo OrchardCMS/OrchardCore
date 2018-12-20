@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,9 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var storeConfiguration = new YesSql.Configuration();
-
-                    // Disabling query gating as it's failing to improve performance right now
-                    //storeConfiguration.DisableQueryGating();
 
                     switch (shellSettings.DatabaseProvider)
                     {
@@ -123,14 +119,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<IDbConnectionAccessor>(sp =>
                 {
-                    var session = sp.GetService<YesSql.ISession>();
+                    var store = sp.GetService<IStore>();
 
-                    if (session == null)
+                    if (store == null)
                     {
                         return null;
                     }
 
-                    return new DbConnectionAccessor(session);                   
+                    return new DbConnectionAccessor(store);                   
                 });
             });
 

@@ -11,8 +11,8 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin"></script>
-<style asp-src="/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="/OrchardCore.Taxonomies/Styles/menu.css"></style>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css"></style>
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
@@ -21,9 +21,10 @@
     var index = 0;
 }
 <fieldset class="form-group" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" >@T["Term Content Type"] <span asp-validation-for="TermContentType"></span></label>
+    <label asp-for="TermContentType" >@T["Term Content Type"]</label>
     <select asp-for="TermContentType" class="form-control col-sm" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
     </select>
+    <span asp-validation-for="TermContentType"></span>
 </fieldset>
 
 @if (canAddTerm && Model.TermContentType != null)

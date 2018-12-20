@@ -2,20 +2,23 @@
 @model EmailTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="SenderExpression">
-    <label asp-for="SenderExpression">@T["Sender"] <span asp-validation-for="SenderExpression"></span></label>
+    <label asp-for="SenderExpression">@T["Sender"]</label>
     <input type="text" asp-for="SenderExpression" class="form-control code" />
+    <span asp-validation-for="SenderExpression"></span>
     <span class="hint">@T["The sender's email address. Leave blank to use the configured email address. With Liquid support."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="RecipientsExpression">
-    <label asp-for="RecipientsExpression">@T["Recipients"] <span asp-validation-for="RecipientsExpression"></span></label>
+    <label asp-for="RecipientsExpression">@T["Recipients"]</label>
     <input type="text" asp-for="RecipientsExpression" class="form-control code" />
+    <span asp-validation-for="RecipientsExpression"></span>
     <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="SubjectExpression">
-    <label asp-for="SubjectExpression">@T["Subject"] <span asp-validation-for="SubjectExpression"></span></label>
+    <label asp-for="SubjectExpression">@T["Subject"]</label>
     <input type="text" asp-for="SubjectExpression" class="form-control code" />
+    <span asp-validation-for="SubjectExpression"></span>
     <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
 </fieldset>
 
@@ -33,12 +36,12 @@
     </div>
 </div>
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
-<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
 $(function () {

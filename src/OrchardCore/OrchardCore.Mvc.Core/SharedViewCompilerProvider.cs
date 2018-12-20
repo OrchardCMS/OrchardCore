@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,8 @@ namespace OrchardCore.Mvc
 {
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
+        private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
         private readonly IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _viewsFeatureProviders;
@@ -141,13 +144,19 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            return new SharedRazorViewCompiler(
+            return new RazorViewCompiler(
                 _fileProviderAccessor.FileProvider,
                 _razorProjectEngine,
                 _csharpCompiler,
+#pragma warning disable CS0618 // Type or member is obsolete
                 _viewEngineOptions.CompilationCallback,
+#pragma warning restore CS0618 // Type or member is obsolete
                 feature.ViewDescriptors,
-                _logger);
+                _cache,
+                _logger)
+            {
+                AllowRecompilingViewsOnFileChange = _viewEngineOptions.AllowRecompilingViewsOnFileChange,
+            };
         }
     }
 }

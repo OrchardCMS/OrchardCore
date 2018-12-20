@@ -25,8 +25,8 @@
             {% for service in Model.ContentItem.Content.Services.ContentItems %}
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
-                    <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                    <i class="fa {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse"></i>
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse"></i>
                 </span>
                 <h4 class="service-heading">{{ service.DisplayText }}</h4>
                 <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
@@ -53,7 +53,7 @@
                 <div class="portfolio-link" data-toggle="modal" href="#portfolioModal{{ forloop.index }}">
                     <div class="portfolio-hover">
                         <div class="portfolio-hover-content">
-                            <i class="fa fa-plus fa-3x"></i>
+                            <i class="fas fa-plus fa-3x"></i>
                         </div>
                     </div>
                     <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:400, height: 300, mode: 'stretch' }}" alt="{{ project.DisplayText }}">
@@ -135,21 +135,21 @@
                         {% if member.TeamMember.Twitter.Text.size > 0 %}
                         <li class="list-inline-item">
                             <a href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}">
-                                <i class="fa fa-twitter"></i>
+                                <i class="fab fa-twitter"></i>
                             </a>
                         </li>
                         {% endif %}
                         {% if member.TeamMember.Facebook.Text.size > 0 %}
                         <li class="list-inline-item">
                             <a href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}">
-                                <i class="fa fa-facebook"></i>
+                                <i class="fab fa-facebook"></i>
                             </a>
                         </li>
                         {% endif %}
                         {% if member.TeamMember.LinkedIn.Text.size > 0 %}
                         <li class="list-inline-item">
                             <a href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}">
-                                <i class="fa fa-linkedin"></i>
+                                <i class="fab fa-linkedin"></i>
                             </a>
                         </li>
                         {% endif %}

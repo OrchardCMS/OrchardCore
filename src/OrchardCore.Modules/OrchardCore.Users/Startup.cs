@@ -71,6 +71,9 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());

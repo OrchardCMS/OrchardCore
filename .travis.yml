@@ -5,6 +5,10 @@ services:
 dist: trusty
 mono: none
 # dotnet: 2.1.300
+branches:
+  only:
+  - master
+  - dev
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -14,7 +18,7 @@ os:
   - osx
 osx_image: xcode8.3
 script:
-  - curl https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version 2.1.301
+  - curl https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version 2.2.101
   - if test "$TRAVIS_OS_NAME" == "linux"; then export PATH="/home/travis/.dotnet":"$PATH"; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then export PATH="/Users/travis/.dotnet":"$PATH"; fi
   - dotnet --info
