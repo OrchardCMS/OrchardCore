@@ -80,10 +80,11 @@ body {
     @extend .navbar-brand;
     overflow: hidden;
     width: 230px;
+    height: 42px;
     margin-left: 14px;
     margin-right: 24px;
     padding-left: 36px;
-    padding-top: 8px;
+    padding-top: 10px;
     background-image: url(../logo.png);
     background-repeat: no-repeat;
     background-position: left center;
@@ -497,10 +498,6 @@ body:not(.left-sidebar-compact) {
                 padding: 0;
                 white-space: nowrap;
                 background-color: $gray-100;
-
-                li {
-                    background-color: #EAEAEA;
-                }
             }
 
             > ul {
@@ -519,6 +516,15 @@ body:not(.left-sidebar-compact) {
 
                 > li {
                     line-height: 3em;
+
+                    &:first-child > span.title:after {
+                        content: "";
+                        width: 75%;
+                        height: 1px;
+                        background: rgba(0,0,0,.1);
+                        display: block;
+                        margin: 0px auto 4px auto;
+                    }
                 }
 
                 > li > ul > li {
@@ -603,9 +609,9 @@ body:not(.left-sidebar-compact) {
                 }
 
                 > li.has-items.visible {
-                    -webkit-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
-                    -moz-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
-                    box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
                     z-index: 1;
                 }
 
@@ -634,9 +640,9 @@ body:not(.left-sidebar-compact) {
                     position: absolute;
                     left: $left-navigation-width-when-compact;
                     width: $left-navigation-width;
-                    -webkit-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
-                    -moz-box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
-                    box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.2);
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
                     max-height: 250px;
                     z-index: -1;
                 }
@@ -665,7 +671,7 @@ body:not(.left-sidebar-compact) {
                         flex-shrink: 0;
                         font-size: 22px;
                         width: 60px;
-                        border-right: 1px solid #F2F2F2;
+                        border-right: $border-content;
 
                         svg {
                             width: 35px;
@@ -684,9 +690,9 @@ body:not(.left-sidebar-compact) {
                         background: rgba(0, 0, 0, 0.1);
                         display: block;
                         margin: 0px auto;
-                        position: relative;
-                        left: -10px;
-                        width: 100%;
+                        position: absolute;
+                        width: 75%;
+                        left: 70px;
                     }
                 }
                 // first level menu items that have no items and are active
@@ -722,7 +728,6 @@ body:not(.left-sidebar-compact) {
                 width: 45px;
                 outline: none;
             }
-
             //for accessibility testing
             /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
@@ -736,8 +741,6 @@ body:not(.left-sidebar-compact) {
         li.has-items a:visited {
             padding-left: $link-padding-left - 4px;
         }
-
-
 
         li > ul > li.active > .item-label {
             background: rgba(0, 0, 0, 0.05);
@@ -785,8 +788,6 @@ body:not(.left-sidebar-compact) {
             font-weight: 600;
         }
 
-
-
         li .active::before {
             border-left: 3px solid;
             border-left-color: rgba(0,0,0,.1);
@@ -808,7 +809,6 @@ body:not(.left-sidebar-compact) {
         }
 
         li ul > li > .item-label {
-            background: $gray-100;
             color: $gray-700 !important;
         }
 

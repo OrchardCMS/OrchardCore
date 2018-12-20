@@ -3,6 +3,123 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
  * Bootstrap v4.1.3 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -7017,10 +7134,11 @@ body {
 .ta-navbar-brand {
   overflow: hidden;
   width: 230px;
+  height: 42px;
   margin-left: 14px;
   margin-right: 24px;
   padding-left: 36px;
-  padding-top: 8px;
+  padding-top: 10px;
   background-image: url(../logo.png);
   background-repeat: no-repeat;
   background-position: left center;
@@ -7293,8 +7411,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       padding: 0;
       white-space: nowrap;
       background-color: #f8f9fa; }
-      .left-sidebar-compact #ta-left-sidebar #left-nav ul li {
-        background-color: #EAEAEA; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul li {
       position: relative;
       margin: 0;
@@ -7305,6 +7421,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         cursor: pointer; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
       line-height: 3em; }
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:first-child > span.title:after {
+        content: "";
+        width: 75%;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.1);
+        display: block;
+        margin: 0px auto 4px auto; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
@@ -7356,9 +7479,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       position: absolute;
       top: 0; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible {
-      -webkit-box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
-      -moz-box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
-      box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
+      -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
       z-index: 1; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul li .active > .item-label:hover {
       background-color: rgba(0, 0, 0, 0.1); }
@@ -7375,9 +7498,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       position: absolute;
       left: 60px;
       width: 260px;
-      -webkit-box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
-      -moz-box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
-      box-shadow: 5px 5px 20px 0px rgba(0, 0, 0, 0.2);
+      -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
       max-height: 250px;
       z-index: -1; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul li .item-label:hover {
@@ -7397,7 +7520,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         flex-shrink: 0;
         font-size: 22px;
         width: 60px;
-        border-right: 1px solid #F2F2F2; }
+        border-right: 1px solid #DEDEDE; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.icon svg {
           width: 35px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.title {
@@ -7410,9 +7533,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         background: rgba(0, 0, 0, 0.1);
         display: block;
         margin: 0px auto;
-        position: relative;
-        left: -10px;
-        width: 100%; }
+        position: absolute;
+        width: 75%;
+        left: 70px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
       border-left: 3px solid;
       border-left-color: #0078D4;
@@ -7491,7 +7614,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     position: absolute;
     top: 0; }
   .left-sidebar-compact #ta-left-sidebar li ul > li > .item-label {
-    background: #f8f9fa;
     color: #495057 !important; }
   .left-sidebar-compact #ta-left-sidebar li.active ul > li > .item-label::before {
     border-left: 3px solid;
@@ -7639,120 +7761,3 @@ ul.pager {
     .persona .persona-content.small, .persona .persona-content.hint {
       font-size: 11px;
       line-height: 24px; }
-
-/*
- * Container style
- */
-.ps {
-  overflow: hidden !important;
-  overflow-anchor: none;
-  -ms-overflow-style: none;
-  touch-action: auto;
-  -ms-touch-action: auto;
-}
-
-/*
- * Scrollbar rail styles
- */
-.ps__rail-x {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-  height: 15px;
-  /* there must be 'bottom' or 'top' for ps__rail-x */
-  bottom: 0px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__rail-y {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-  width: 15px;
-  /* there must be 'right' or 'left' for ps__rail-y */
-  right: 0;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps--active-x > .ps__rail-x,
-.ps--active-y > .ps__rail-y {
-  display: block;
-  background-color: transparent;
-}
-
-.ps:hover > .ps__rail-x,
-.ps:hover > .ps__rail-y,
-.ps--focus > .ps__rail-x,
-.ps--focus > .ps__rail-y,
-.ps--scrolling-x > .ps__rail-x,
-.ps--scrolling-y > .ps__rail-y {
-  opacity: 0.6;
-}
-
-.ps .ps__rail-x:hover,
-.ps .ps__rail-y:hover,
-.ps .ps__rail-x:focus,
-.ps .ps__rail-y:focus,
-.ps .ps__rail-x.ps--clicking,
-.ps .ps__rail-y.ps--clicking {
-  background-color: #eee;
-  opacity: 0.9;
-}
-
-/*
- * Scrollbar thumb styles
- */
-.ps__thumb-x {
-  background-color: #aaa;
-  border-radius: 6px;
-  transition: background-color .2s linear, height .2s ease-in-out;
-  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
-  height: 6px;
-  /* there must be 'bottom' for ps__thumb-x */
-  bottom: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__thumb-y {
-  background-color: #aaa;
-  border-radius: 6px;
-  transition: background-color .2s linear, width .2s ease-in-out;
-  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
-  width: 6px;
-  /* there must be 'right' for ps__thumb-y */
-  right: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__rail-x:hover > .ps__thumb-x,
-.ps__rail-x:focus > .ps__thumb-x,
-.ps__rail-x.ps--clicking .ps__thumb-x {
-  background-color: #999;
-  height: 11px;
-}
-
-.ps__rail-y:hover > .ps__thumb-y,
-.ps__rail-y:focus > .ps__thumb-y,
-.ps__rail-y.ps--clicking .ps__thumb-y {
-  background-color: #999;
-  width: 11px;
-}
-
-/* MS supports */
-@supports (-ms-overflow-style: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
-
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
