@@ -17,7 +17,7 @@ namespace OrchardCore.ResponseCompression
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression();
+            services.AddResponseCompression(options => options.EnableForHttps = true);
         }
     }
 }

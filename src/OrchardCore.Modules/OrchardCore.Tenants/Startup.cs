@@ -52,10 +52,11 @@ namespace OrchardCore.Tenants
                 FileProvider = new PhysicalFileProvider(contentRoot),
                 DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true,
-                // Cache the media files for a year as they are coming from embedded resources and should not vary
+
+                // Cache the tenant static files for 7 days
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + (int)TimeSpan.FromDays(365).TotalSeconds;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
                 }
             });
         }

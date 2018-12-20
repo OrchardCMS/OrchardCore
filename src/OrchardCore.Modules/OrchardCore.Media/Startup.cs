@@ -197,7 +197,7 @@ namespace OrchardCore.Media
                 // Cache the media files for 7 days
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
                 }
             });
         }
