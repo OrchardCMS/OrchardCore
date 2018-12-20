@@ -1,25 +1,23 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using System.Collections.Concurrent;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
         private readonly string _tenantsContainerPath;
-        private readonly IEnumerable<string> _configuredTenants;
+        private readonly IEnumerable<string> _configuredTenantFolders;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            IEnumerable<ITenantsConfigurationSource> configurationSources,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
@@ -29,37 +27,23 @@ namespace OrchardCore.Environment.Shell
 
             Directory.CreateDirectory(_tenantsContainerPath);
 
-            var environmentName = hostingEnvironment.EnvironmentName.ToUpperInvariant();
-            var applicationName = hostingEnvironment.ApplicationName.Replace('.', '_').ToUpperInvariant();
-            var appsettingsPath = Path.Combine(options.Value.ShellsApplicationDataPath, "appsettings");
+            var environment = hostingEnvironment.EnvironmentName.ToUpperInvariant();
+            var ENVIRONMENT = hostingEnvironment.EnvironmentName.ToUpperInvariant();
+            var appsettings = Path.Combine(options.Value.ShellsApplicationDataPath, "appsettings");
 
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(hostingEnvironment.ContentRootPath)
+            var Configuration = new ConfigurationBuilder()
+                .AddConfiguration(applicationConfiguration)
 
-                .AddEnvironmentVariables($"{applicationName}_SETTINGS_")
-                .AddEnvironmentVariables($"{applicationName}_{environmentName}_SETTINGS_")
+                .AddJsonFile($"{appsettings}.json", optional: true)
+                .AddJsonFile($"{appsettings}.{environment}.json", optional: true)
 
-                .AddJsonFile($"{appsettingsPath}.json", optional: true)
-                .AddJsonFile($"{appsettingsPath}.{hostingEnvironment.EnvironmentName}.json", optional: true);
+                .AddEnvironmentVariables("ORCHARDCORE_SETTINGS_")
+                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_SETTINGS_")
+                .Build();
 
-            foreach (var source in configurationSources.OrderBy(s => s.Order))
-            {
-                configurationBuilder.Add(source);
-            }
-
-            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
-                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
-
-            if (commandLineProvider != null)
-            {
-                configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
-            }
-
-            Configuration = configurationBuilder.Build();
-
-            _configuredTenants = Configuration.GetChildren()
+            _configuredTenantFolders = Configuration.GetSection("Tenants").GetChildren()
                 .Where(section => section.GetValue<string>("State") != null)
-                .Select(section => section.Key)
+                .Select(section => Path.Combine(_tenantsContainerPath, section.Key))
                 .Distinct()
                 .ToArray();
         }
@@ -68,20 +52,13 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            // Retrieve the pre-configured tenants whose 'State' value is provided by the
-            // 'Configuration' and resolve their related folders even if they don't exist.
-
-            var configuredTenantFolders = Configuration.GetChildren()
-                .Where(section => section.GetValue<string>("State") != null)
-                .Select(section => Path.Combine(_tenantsContainerPath, section.Key));
-
             // Add the folders of pre-configured tenants to the existing ones.
             var tenantFolders = Directory.GetDirectories(_tenantsContainerPath)
-                .Concat(configuredTenantFolders).Distinct();
+                .Concat(_configuredTenantFolders).Distinct();
 
             var shellSettings = new ConcurrentBag<ShellSettings>();
 
-            // Load all extensions in parallel
+            // Load all configuration in parallel
             Parallel.ForEach(tenantFolders, new ParallelOptions { MaxDegreeOfParallelism = 8 },
                 (tenantFolder) =>
             {
@@ -93,9 +70,8 @@ namespace OrchardCore.Environment.Shell
 
                 var shellSetting = new ShellSettings() { Name = tenantName };
 
-                // Bind root and section settings.
-                Configuration.Bind(shellSetting);
-                Configuration.Bind(tenantName, shellSetting);
+                Configuration.Bind("Tenants", shellSetting);
+                Configuration.GetSection("Tenants").Bind(tenantName, shellSetting);
                 localConfiguration.Bind(shellSetting);
 
                 shellSettings.Add(shellSetting);
@@ -116,9 +92,8 @@ namespace OrchardCore.Environment.Shell
 
             var globalSettings = new ShellSettings() { Name = settings.Name };
 
-            // Bind root and section settings.
-            Configuration.Bind(globalSettings);
-            Configuration.Bind(settings.Name, globalSettings);
+            Configuration.Bind("Tenants", globalSettings);
+            Configuration.GetSection("Tenants").Bind(settings.Name, globalSettings);
 
             var localObject = JObject.FromObject(settings);
             var globalObject = JObject.FromObject(globalSettings);
@@ -129,9 +104,6 @@ namespace OrchardCore.Environment.Shell
                 {
                     var localValue = localObject.Value<string>(property.Key);
                     var globalValue = globalObject.Value<string>(property.Key);
-
-                    // Only keep non null values and that override the global configuration.
-                    // Allow e.g to setup a tenant in a pre-configured 'Uninitialized' state.
 
                     if (localValue == null || globalValue == localValue)
                     {
