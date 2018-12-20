@@ -551,6 +551,11 @@ body:not(.left-sidebar-compact) {
                         }
                     }
 
+                    > span.icon-none {
+                        font-size: 16px;
+                        width: 55px;
+                    }
+
                     > span.title {
                         flex-grow: 1;
                         font-size: 14px;
