@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -50,7 +51,13 @@ namespace OrchardCore.Tenants
             {
                 FileProvider = new PhysicalFileProvider(contentRoot),
                 DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true
+                ServeUnknownFileTypes = true,
+
+                // Cache the tenant static files for 7 days
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
+                }
             });
         }
 

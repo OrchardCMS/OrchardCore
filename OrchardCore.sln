@@ -275,7 +275,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		gulpfile.js = gulpfile.js
 		mkdocs.yml = mkdocs.yml
-		Package.json = Package.json
+		package.json = package.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.BackgroundTasks", "src\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj", "{541A4936-4D31-4A7E-B8DA-D01D76E4E652}"
@@ -362,6 +362,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Microsoft.Authentication", "src\OrchardCore.Modules\OrchardCore.Microsoft.Authentication\OrchardCore.Microsoft.Authentication.csproj", "{6B15CC95-04C7-42A4-96A5-F98664242069}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Twitter", "src\OrchardCore.Modules\OrchardCore.Twitter\OrchardCore.Twitter.csproj", "{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ResponseCompression", "src\OrchardCore.Modules\OrchardCore.ResponseCompression\OrchardCore.ResponseCompression.csproj", "{C6EEBB52-183F-418F-A5C0-458D146C10A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -957,6 +959,10 @@ Global
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1126,6 +1132,7 @@ Global
 		{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{6B15CC95-04C7-42A4-96A5-F98664242069} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{C6EEBB52-183F-418F-A5C0-458D146C10A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
