@@ -571,8 +571,7 @@ body:not(.left-sidebar-compact) {
 
                 > li > .item-label {
                     .icon:hover {
-                        color: $gray-100;
-                        background-color: red;
+                        background-color: rgba(0, 0, 0, 0.1);
                     }
 
                     .title:hover {
