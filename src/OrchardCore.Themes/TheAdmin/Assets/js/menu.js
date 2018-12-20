@@ -57,15 +57,12 @@ function setCompactStatus(explicit) {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
-    //set PerfectScrollBar on sub-menu items.
-    //$('#left-nav').scrollTop = 0;
-    //leftMenuPS.update();
-
     if (leftMenuPS) {
-        leftMenuPS.destroy();
-        leftMenuPS = null; // to make sure garbages are collected
+        $('#left-nav').scrollTop = 0;
+        leftMenuPS.update();
     }
 
+    //set PerfectScrollBar on sub-menu items.
     var submenus = $('#left-nav > ul > li > [id^="m"]');
     submenus.each(function (index) {
         subMenuArray[index] = new PerfectScrollbar(this, { suppressScrollX: true });
@@ -86,8 +83,6 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
-
-    leftMenuPS = new PerfectScrollbar('#left-nav', { suppressScrollX: true });
 
     //remove PerfectScrollBar on sub-menu items
     subMenuArray.forEach(function (ps) {
