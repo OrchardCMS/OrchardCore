@@ -517,6 +517,10 @@ ul.pager li a {
     min-height: $font-size-base;
 }
 
+.properties {
+    @extend .w-100;
+}
+
 .related {
     @extend .float-right;
 }
