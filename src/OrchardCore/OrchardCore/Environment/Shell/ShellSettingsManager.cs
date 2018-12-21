@@ -38,8 +38,8 @@ namespace OrchardCore.Environment.Shell
                 .AddJsonFile($"{appsettings}.json", optional: true)
                 .AddJsonFile($"{appsettings}.{environment}.json", optional: true)
 
-                .AddEnvironmentVariables("ORCHARDCORE_TENANTS_")
-                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_TENANTS_");
+                .AddEnvironmentVariables("ORCHARDCORE_SETTINGS_")
+                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_SETTINGS_");
 
             var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
                 .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
