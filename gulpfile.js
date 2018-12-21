@@ -19,7 +19,6 @@ var fs = require("file-system"),
     header = require("gulp-header"),
     eol = require("gulp-eol");
     util = require('gulp-util');
-    order = require('gulp-order');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -169,7 +168,6 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         generateSourceMaps = false;
 
     var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
-        .pipe(order(assetGroup.inputPaths))
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -200,7 +198,6 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
-        .pipe(order(assetGroup.inputPaths))
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -240,9 +237,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         generateSourceMaps = false;
 
     console.log(assetGroup.inputPaths);
-    return gulp
-        .src(assetGroup.inputPaths)
-        .pipe(order(assetGroup.inputPaths))
+    return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -285,8 +280,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
 }
 
 function buildCopyPipeline(assetGroup, doRebuild) {
-    var stream = gulp.src(assetGroup.inputPaths)
-        .pipe(order(assetGroup.inputPaths));
+    var stream = gulp.src(assetGroup.inputPaths);
 
     if(!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))
