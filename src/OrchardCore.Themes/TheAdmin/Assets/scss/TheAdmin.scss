@@ -445,7 +445,7 @@ body:not(.left-sidebar-compact) {
 
     #ta-left-sidebar {
         background-color: #EAEAEA;
-        z-index: 7;
+        z-index: $zindex-sticky;
         position: fixed;
         top: $top-nav-height;
         bottom: 0;

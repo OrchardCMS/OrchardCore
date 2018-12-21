@@ -7256,7 +7256,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
 
 .left-sidebar-compact #ta-left-sidebar {
   background-color: #EAEAEA;
-  z-index: 7;
+  z-index: 1020;
   position: fixed;
   top: 49px;
   bottom: 0;
