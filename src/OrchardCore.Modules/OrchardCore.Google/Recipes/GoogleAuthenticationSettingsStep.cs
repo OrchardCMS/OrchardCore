@@ -12,11 +12,11 @@ namespace OrchardCore.Google.Recipes
     /// </summary>
     public class GoogleAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly IGoogleAuthenticationService _twitterLoginService;
+        private readonly IGoogleAuthenticationService _googleAuthenticationService;
 
-        public GoogleAuthenticationSettingsStep(IGoogleAuthenticationService twitterLoginService)
+        public GoogleAuthenticationSettingsStep(IGoogleAuthenticationService googleAuthenticationService)
         {
-            _twitterLoginService = twitterLoginService;
+            _googleAuthenticationService = googleAuthenticationService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -25,19 +25,19 @@ namespace OrchardCore.Google.Recipes
             {
                 return;
             }
-            var model = context.Step.ToObject<TwitterLoginSettingsStepModel>();
-            var settings = await _twitterLoginService.GetSettingsAsync();
-            settings.ClientID = model.ConsumerKey;
-            settings.ClientSecret = model.ConsumerSecret;
+            var model = context.Step.ToObject<GoogleAuthenticationSettingsStepModel>();
+            var settings = await _googleAuthenticationService.GetSettingsAsync();
+            settings.ClientID = model.ClientID;
+            settings.ClientSecret = model.ClientSecret;
             settings.CallbackPath = model.CallbackPath;
-            await _twitterLoginService.UpdateSettingsAsync(settings);
+            await _googleAuthenticationService.UpdateSettingsAsync(settings);
         }
     }
 
-    public class TwitterLoginSettingsStepModel
+    public class GoogleAuthenticationSettingsStepModel
     {
-        public string ConsumerKey { get; set; }
-        public string ConsumerSecret { get; set; }
+        public string ClientID { get; set; }
+        public string ClientSecret { get; set; }
         public string CallbackPath { get; set; }
     }
 }
