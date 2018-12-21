@@ -11,7 +11,7 @@
 $top-nav-height: 49px;
 $footer-height: 40px;
 $left-navigation-width: 260px;
-$left-navigation-width-when-compact: 60px;
+$left-navigation-width-when-compact: 48px;
 $border-content: 1px solid #DEDEDE;
 $link-padding-left: 16px !default;
 
@@ -81,7 +81,7 @@ body {
     overflow: hidden;
     width: 230px;
     height: 42px;
-    margin-left: 14px;
+    margin-left: 11px;
     margin-right: 24px;
     padding-left: 36px;
     padding-top: 10px;
@@ -228,9 +228,11 @@ body:not(.left-sidebar-compact) {
                         content: "";
                         width: 92%;
                         height: 1px;
-                        background: rgba(0,0,0,.1);
+                        background: rgba(0, 0, 0, 0.1);
                         display: block;
                         margin: 0px auto 4px auto;
+                        position: absolute;
+                        left: 10px;
                     }
                 }
 
@@ -258,10 +260,10 @@ body:not(.left-sidebar-compact) {
                         display: flex;
 
                         > span.icon {
-                            padding: 0 10px;
+                            padding: 0 5px;
                             flex-shrink: 0;
                             font-size: 22px;
-                            width: 55px;
+                            width: $left-navigation-width-when-compact;
 
                             svg {
                                 width: 35px;
@@ -298,7 +300,6 @@ body:not(.left-sidebar-compact) {
                 width: 45px;
                 outline: none;
             }
-
             //for accessibility testing
             /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
@@ -542,18 +543,19 @@ body:not(.left-sidebar-compact) {
                     display: flex;
 
                     > span.icon {
-                        padding: 0 10px;
+                        padding: 0 5px;
                         flex-shrink: 0;
-                        font-size: 22px;
+                        font-size: 16px;
 
                         svg {
-                            width: 35px;
+                            width: 27px;
                         }
                     }
 
                     > span.icon-none {
+                        flex-shrink: 0;
                         font-size: 16px;
-                        width: 55px;
+                        width: 37px;
                     }
 
                     > span.title {
@@ -671,10 +673,10 @@ body:not(.left-sidebar-compact) {
                     }
 
                     > span.icon {
-                        padding: 0 10px;
+                        padding: 0 5px;
                         flex-shrink: 0;
                         font-size: 22px;
-                        width: 60px;
+                        width: $left-navigation-width-when-compact;
                         border-right: $border-content;
 
                         svg {
@@ -696,7 +698,7 @@ body:not(.left-sidebar-compact) {
                         margin: 0px auto;
                         position: absolute;
                         width: 75%;
-                        left: 70px;
+                        left: 63px;
                     }
                 }
                 // first level menu items that have no items and are active
