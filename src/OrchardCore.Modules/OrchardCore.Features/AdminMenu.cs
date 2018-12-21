@@ -28,7 +28,7 @@ namespace OrchardCore.Features
                         .Action("Features", "Admin", new { area = "OrchardCore.Features" })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
-                    )
+                    ), priority: 1
                 );
 
             return Task.CompletedTask;
