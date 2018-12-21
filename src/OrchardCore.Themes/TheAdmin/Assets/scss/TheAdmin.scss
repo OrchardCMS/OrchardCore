@@ -66,7 +66,7 @@ body {
     @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
     height: $top-nav-height;
     border-bottom: $border-content;
-    z-index: 8;
+    z-index: $zindex-sticky;
     padding-left: 0px;
     background-color: white;
 
@@ -445,7 +445,7 @@ body:not(.left-sidebar-compact) {
 
     #ta-left-sidebar {
         background-color: #EAEAEA;
-        z-index: 7;
+        z-index: $zindex-sticky;
         position: fixed;
         top: $top-nav-height;
         bottom: 0;
