@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
@@ -14,36 +15,45 @@ namespace OrchardCore.Environment.Shell
     public class ShellSettingsManager : IShellSettingsManager
     {
         private readonly string _tenantsContainerPath;
-        private readonly IEnumerable<string> _configuredTenantFolders;
+        private readonly IEnumerable<string> _configuredTenants;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
-            _tenantsContainerPath = Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName);
+            var applicationDataPath = options.Value.ShellsApplicationDataPath;
+
+            _tenantsContainerPath = Path.Combine(applicationDataPath, options.Value.ShellsContainerName);
 
             Directory.CreateDirectory(_tenantsContainerPath);
 
             var environment = hostingEnvironment.EnvironmentName.ToUpperInvariant();
             var ENVIRONMENT = hostingEnvironment.EnvironmentName.ToUpperInvariant();
-            var appsettings = Path.Combine(options.Value.ShellsApplicationDataPath, "appsettings");
+            var appsettings = Path.Combine(applicationDataPath, "appsettings");
 
-            var Configuration = new ConfigurationBuilder()
+            var configurationBuilder = new ConfigurationBuilder()
                 .AddConfiguration(applicationConfiguration)
 
                 .AddJsonFile($"{appsettings}.json", optional: true)
                 .AddJsonFile($"{appsettings}.{environment}.json", optional: true)
 
-                .AddEnvironmentVariables("ORCHARDCORE_SETTINGS_")
-                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_SETTINGS_")
-                .Build();
+                .AddEnvironmentVariables("ORCHARDCORE_TENANTS_")
+                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_TENANTS_");
 
-            _configuredTenantFolders = Configuration.GetSection("Tenants").GetChildren()
+            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
+                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
+
+            if (commandLineProvider != null)
+            {
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
+            }
+
+            Configuration = configurationBuilder.Build();
+
+            _configuredTenants = Configuration.GetSection("Tenants").GetChildren()
                 .Where(section => section.GetValue<string>("State") != null)
-                .Select(section => Path.Combine(_tenantsContainerPath, section.Key))
+                .Select(section => section.Key)
                 .Distinct()
                 .ToArray();
         }
@@ -52,27 +62,22 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            // Add the folders of pre-configured tenants to the existing ones.
-            var tenantFolders = Directory.GetDirectories(_tenantsContainerPath)
-                .Concat(_configuredTenantFolders).Distinct();
+            var localConfiguration = new ConfigurationBuilder()
+                .AddJsonFile(Path.Combine(_tenantsContainerPath, "tenants.json"), optional: true)
+                .Build();
+
+            var localTenants = localConfiguration.GetChildren().Select(section => section.Key);
+            var tenants = _configuredTenants.Concat(localTenants).Distinct().ToArray();
 
             var shellSettings = new ConcurrentBag<ShellSettings>();
 
-            // Load all configuration in parallel
-            Parallel.ForEach(tenantFolders, new ParallelOptions { MaxDegreeOfParallelism = 8 },
-                (tenantFolder) =>
+            Parallel.ForEach(tenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
             {
-                var tenantName = Path.GetFileName(tenantFolder);
-
-                var localConfiguration = new ConfigurationBuilder()
-                    .AddJsonFile(Path.Combine(tenantFolder, "appsettings.json"), optional: true)
-                    .Build();
-
-                var shellSetting = new ShellSettings() { Name = tenantName };
+                var shellSetting = new ShellSettings() { Name = tenant };
 
                 Configuration.Bind("Tenants", shellSetting);
-                Configuration.GetSection("Tenants").Bind(tenantName, shellSetting);
-                localConfiguration.Bind(shellSetting);
+                Configuration.GetSection("Tenants").Bind(tenant, shellSetting);
+                localConfiguration.Bind(tenant, shellSetting);
 
                 shellSettings.Add(shellSetting);
             });
@@ -86,9 +91,6 @@ namespace OrchardCore.Environment.Shell
             {
                 throw new ArgumentNullException(nameof(settings));
             }
-
-            var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-            Directory.CreateDirectory(tenantFolder);
 
             var globalSettings = new ShellSettings() { Name = settings.Name };
 
@@ -112,14 +114,20 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            try
+            lock (this)
             {
-                File.WriteAllText(Path.Combine(tenantFolder, "appsettings.json"), localObject.ToString());
-            }
+                try
+                {
+                    var localConfiguration = JObject.Parse(File.ReadAllText(Path.Combine(_tenantsContainerPath, "tenants.json")));
 
-            catch (IOException)
-            {
-                // The file may be own by another process or already exists when trying to create a new one.
+                    localConfiguration[settings.Name] = localObject;
+
+                    File.WriteAllText(Path.Combine(_tenantsContainerPath, "tenants.json"), localConfiguration.ToString());
+                }
+
+                catch (IOException)
+                {
+                }
             }
         }
     }
