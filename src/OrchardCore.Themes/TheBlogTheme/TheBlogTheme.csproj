@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,14 +6,8 @@
 
   <ItemGroup>
     <Compile Remove="wwwroot\node_modules\**" />
-    <Compile Remove="wwwroot\scss\**" />
-    <Compile Remove="wwwroot\vendor\bootstrap\css\**" />
     <EmbeddedResource Remove="wwwroot\node_modules\**" />
-    <EmbeddedResource Remove="wwwroot\scss\**" />
-    <EmbeddedResource Remove="wwwroot\vendor\bootstrap\css\**" />
     <None Remove="wwwroot\node_modules\**" />
-    <None Remove="wwwroot\scss\**" />
-    <None Remove="wwwroot\vendor\bootstrap\css\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +30,6 @@
     <EmbeddedResource Remove="wwwroot\package-lock.json" />
     <EmbeddedResource Remove="wwwroot\package.json" />
     <EmbeddedResource Remove="wwwroot\post.html" />
-    <EmbeddedResource Remove="wwwroot\README.md" />
   </ItemGroup>
 
 </Project>

@@ -37,7 +37,7 @@ Vue.component('mediaItemsTable', {
                             </td> \
                             <td> \
                                 <div class="media-name-cell"> \
-                                    {{ media.name }} \
+                                   <span class="break-word"> {{ media.name }} </span>\
                                     <div class="buttons-container"> \
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
@@ -68,7 +68,6 @@ Vue.component('mediaItemsTable', {
     },
     created: function () {
         var self = this;
-        // retrieving localized strings from view
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
         self.T.sizeHeader = $('#t-size-header').val();

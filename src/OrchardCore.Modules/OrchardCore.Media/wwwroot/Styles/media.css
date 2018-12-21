@@ -402,5 +402,9 @@ ol.media-items-grid {
     text-overflow: ellipsis;
     display: block; }
 
+.break-word {
+  word-break: break-all;
+  word-wrap: break-word; }
+
 [v-cloak] {
   display: none !important; }
