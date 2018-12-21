@@ -66,7 +66,7 @@ body {
     @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
     height: $top-nav-height;
     border-bottom: $border-content;
-    z-index: 8;
+    z-index: $zindex-sticky;
     padding-left: 0px;
     background-color: white;
 
