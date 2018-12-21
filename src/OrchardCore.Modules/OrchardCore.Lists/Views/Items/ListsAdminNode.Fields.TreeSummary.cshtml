@@ -6,7 +6,7 @@
     var displayName = ContentDefinitionManager.GetTypeDefinition(Model.Value.ContentType);
 }
 
-<div class="@(Model.Value.Enabled ? "" : "disabled") concrete-link">
+<div class="@(Model.Value.Enabled ? "" : "disabled")">
     <span>@displayName</span>
     <span class="text-muted">- @T["Lists"]</span>
 </div>

@@ -22,7 +22,7 @@
 
 
 <li class="menu-item display-summary" id="menu-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.MenuItem.UniqueId">
-    <div class="menu-item menu-item-title list-group-item @disabledClass" title="@Model.MenuItem.UniqueId">
+    <div class="menu-item menu-item-title border rounded p-2 pl-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.MenuItem.UniqueId">
         @if (Model.Content.Items.Count < 1)
         {
             <div class="properties">
@@ -39,6 +39,7 @@
         }
         else
         {
+            @await DisplayAsync(Model.Content)
             <div class="properties">
                 <div class="related">
                     <a asp-action="Edit"
@@ -68,7 +69,7 @@
 
 
             </div>
-            @await DisplayAsync(Model.Content)
+            
         }
 
     </div>

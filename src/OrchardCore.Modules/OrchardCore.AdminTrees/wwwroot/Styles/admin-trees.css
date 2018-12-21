@@ -38,9 +38,6 @@ html, body, .ta-wrapper {
   list-style: none;
   cursor: move; }
 
-.concrete-link {
-  min-height: 30px; }
-
 .card-columns {
   column-count: 1; }
   .card-columns .card.admin-node-thumbnail .card-body {
