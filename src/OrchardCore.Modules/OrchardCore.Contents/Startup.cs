@@ -30,7 +30,7 @@ using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.AdminTrees.Services;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Contents.AdminNodes;
 
 namespace OrchardCore.Contents
@@ -152,8 +152,8 @@ namespace OrchardCore.Contents
     }
 
 
-    [RequireFeatures("OrchardCore.AdminTrees")]
-    public class AdminTreesStartup : StartupBase
+    [RequireFeatures("OrchardCore.AdminMenu")]
+    public class AdminMenuStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

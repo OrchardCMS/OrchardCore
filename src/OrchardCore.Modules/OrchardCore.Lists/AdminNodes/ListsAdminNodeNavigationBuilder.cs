@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.AdminTrees.Services;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 using YesSql;
 using System.Threading.Tasks;
