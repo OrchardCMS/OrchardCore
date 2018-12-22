@@ -23,11 +23,11 @@ namespace OrchardCore.Google
     }
 
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
-    public class TwitterLoginStartup : StartupBase
+    public class GoogleAuthenticationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IGoogleAuthenticationService, GoogleAuthenticationService>();
+            services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGoogleAuthentication>();
             // Register the options initializers required by the Twitter Handler.

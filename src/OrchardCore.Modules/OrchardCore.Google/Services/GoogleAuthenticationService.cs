@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -9,11 +10,12 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Settings;
+using OrchardCore.Google.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Services
 {
-    public class GoogleAuthenticationService : IGoogleAuthenticationService
+    public class GoogleAuthenticationService
     {
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<GoogleAuthenticationService> T;
@@ -51,23 +53,16 @@ namespace OrchardCore.Google.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public IEnumerable<ValidationResult> ValidateSettings(GoogleAuthenticationSettings settings)
+        public bool CheckSettings(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
+            var obj = new GoogleAuthenticationSettingsViewModel()
             {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ClientID))
-            {
-                yield return new ValidationResult(T["ConsumerKey is required"], new string[] { nameof(settings.ClientID) });
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ClientSecret))
-            {
-                yield return new ValidationResult(T["ConsumerSecret is required"], new string[] { nameof(settings.ClientSecret) });
-            }
+                ClientID = settings.ClientID,
+                CallbackPath = settings.CallbackPath,
+                ClientSecret = settings.ClientSecret
+            };
+            var vc = new ValidationContext(obj);
+            return Validator.TryValidateObject(obj, vc, ImmutableArray.CreateBuilder<ValidationResult>());
         }
-
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.Google.Services;
 using OrchardCore.Google.Settings;
+using OrchardCore.Google.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,9 +13,9 @@ namespace OrchardCore.Google.Recipes
     /// </summary>
     public class GoogleAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly IGoogleAuthenticationService _googleAuthenticationService;
+        private readonly GoogleAuthenticationService _googleAuthenticationService;
 
-        public GoogleAuthenticationSettingsStep(IGoogleAuthenticationService googleAuthenticationService)
+        public GoogleAuthenticationSettingsStep(GoogleAuthenticationService googleAuthenticationService)
         {
             _googleAuthenticationService = googleAuthenticationService;
         }
@@ -25,19 +26,12 @@ namespace OrchardCore.Google.Recipes
             {
                 return;
             }
-            var model = context.Step.ToObject<GoogleAuthenticationSettingsStepModel>();
+            var model = context.Step.ToObject<GoogleAuthenticationSettingsViewModel>();
             var settings = await _googleAuthenticationService.GetSettingsAsync();
             settings.ClientID = model.ClientID;
             settings.ClientSecret = model.ClientSecret;
             settings.CallbackPath = model.CallbackPath;
             await _googleAuthenticationService.UpdateSettingsAsync(settings);
         }
-    }
-
-    public class GoogleAuthenticationSettingsStepModel
-    {
-        public string ClientID { get; set; }
-        public string ClientSecret { get; set; }
-        public string CallbackPath { get; set; }
     }
 }

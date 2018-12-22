@@ -29,7 +29,7 @@ namespace OrchardCore.Google
             {
                 builder.Add(T["Google"], "15", settings => settings
                         .AddClass("google").Id("google")
-                        .Add(T["Sign in with Google"], "10", client => client
+                        .Add(T["Google Authentication"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
                             .Permission(Permissions.ManageGoogleAuthentication)
                             .LocalNav())

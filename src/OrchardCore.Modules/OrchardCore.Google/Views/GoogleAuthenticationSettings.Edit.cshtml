@@ -9,7 +9,7 @@
 <div class="form-group row" asp-validation-class-for="ClientID">
     <div class="col-lg">
         <label asp-for="ClientID">@T["Client ID"]</label>
-        <input asp-for="ClientID" class="form-control" />
+        <input asp-for="ClientID" class="form-control" autocomplete="off" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The client id defined in Google API console for the application."]</span>
     </div>
@@ -18,7 +18,7 @@
 <div class="form-group row" asp-validation-class-for="ClientSecret">
     <div class="col-lg">
         <label asp-for="ClientSecret">@T["API secret key"]</label>
-        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" />
+        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
     </div>

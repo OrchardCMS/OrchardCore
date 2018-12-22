@@ -18,14 +18,14 @@ namespace OrchardCore.Google.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<GoogleOptions>
     {
-        private readonly IGoogleAuthenticationService _googleAuthenticationService;
+        private readonly GoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<GoogleOptionsConfiguration> _logger;
         private readonly string _tenantPrefix;
 
 
         public GoogleOptionsConfiguration(
-            IGoogleAuthenticationService googleAuthenticationService,
+            GoogleAuthenticationService googleAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<GoogleOptionsConfiguration> logger,
             ShellSettings shellSettings)
@@ -44,7 +44,7 @@ namespace OrchardCore.Google.Configuration
                 return;
             }
 
-            if (_googleAuthenticationService.ValidateSettings(settings).Any())
+            if (!_googleAuthenticationService.CheckSettings(settings))
                 return;
 
             options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
@@ -75,7 +75,6 @@ namespace OrchardCore.Google.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
-            //options.SignInScheme = "Identity.External";
         }
 
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -83,7 +82,7 @@ namespace OrchardCore.Google.Configuration
         private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
         {
             var settings = await _googleAuthenticationService.GetSettingsAsync();
-            if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+            if (!_googleAuthenticationService.CheckSettings(settings))
             {
                 _logger.LogWarning("Google Authentication is not correctly configured.");
                 return null;
