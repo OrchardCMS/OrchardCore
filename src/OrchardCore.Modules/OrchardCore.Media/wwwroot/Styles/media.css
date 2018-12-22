@@ -32,11 +32,11 @@
   #mediaApp a.disabled {
     cursor: default; }
 
-.modal-content #mediaApp {
+.modal-content .modal-body #mediaApp {
   position: static;
   margin: 0px -15px 0px -15px;
   margin-top: 0;
-  height: 50vh; }
+  height: 100%; }
 
 .left-sidebar-compact #mediaApp {
   position: absolute;
