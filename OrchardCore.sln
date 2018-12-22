@@ -365,6 +365,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Twitter", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ResponseCompression", "src\OrchardCore.Modules\OrchardCore.ResponseCompression\OrchardCore.ResponseCompression.csproj", "{C6EEBB52-183F-418F-A5C0-458D146C10A2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Google", "src\OrchardCore.Modules\OrchardCore.Google\OrchardCore.Google.csproj", "{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -963,6 +965,10 @@ Global
 		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6EEBB52-183F-418F-A5C0-458D146C10A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1133,6 +1139,7 @@ Global
 		{6B15CC95-04C7-42A4-96A5-F98664242069} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C9C1BEE9-8FD1-4186-96BD-A8A64BF5BAE4} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C6EEBB52-183F-418F-A5C0-458D146C10A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{E7CB5F02-2E90-4ADD-A851-1C49CDA184D6} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
