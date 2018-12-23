@@ -11,6 +11,9 @@ using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Google.Analytics;
+using OrchardCore.Google.Analytics.Drivers;
 
 namespace OrchardCore.Google
 {
@@ -30,7 +33,7 @@ namespace OrchardCore.Google
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGoogleAuthentication>();
-            // Register the options initializers required by the Twitter Handler.
+            // Register the options initializers required by the Google Handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
@@ -41,4 +44,21 @@ namespace OrchardCore.Google
             });
         }
     }
+
+    [Feature(GoogleConstants.Features.GoogleAnalytics)]
+    public class GoogleAnalyticsStartup : StartupBase
+    {
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenuGoogleAnalytics>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(GoogleAnalyticsFilter));
+            });
+        }
+
+    }
+
 }
