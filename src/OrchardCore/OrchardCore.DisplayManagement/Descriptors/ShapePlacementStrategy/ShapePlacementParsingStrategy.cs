@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -19,15 +21,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
+        private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger)
+            ILogger<ShapePlacementParsingStrategy> logger,
+            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
             _logger = logger;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
+            _placementParseMatchProviders = placementParseMatchProviders;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -70,12 +75,20 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
-                var matches = entry.Value;
-
 
                 foreach (var filter in entry.Value)
                 {
+                    var matches = filter.Filters.ToList();
+
+                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
+                    
+                    if (matches.Any())
+                    {
+                        predicate = matches.Aggregate(predicate, BuildPredicate);
+                    }
+
                     var placement = new PlacementInfo();
+
                     placement.Location = filter.Location;
                     if (filter.Alternates?.Length > 0)
                     {
@@ -91,7 +104,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     builder.Describe(shapeType)
                         .From(featureDescriptor)
-                        .Placement(ctx => CheckFilter(ctx, filter), placement);
+                        .Placement(ctx => predicate(ctx), placement);
                 }
             }
         }
@@ -109,41 +122,28 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
 
             return true;
+        }
 
-            //switch (term.Key)
-            //{
-            //case "ContentPart":
-            //    return ctx => ctx.Content != null
-            //        && ctx.Content.ContentItem.Has(expression)
-            //        && predicate(ctx);
-            //case "ContentType":
-            //    if (expression.EndsWith("*"))
-            //    {
-            //        var prefix = expression.Substring(0, expression.Length - 1);
-            //        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
-            //    }
-            //    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
-            //case "DisplayType":
-            //    if (expression.EndsWith("*"))
-            //    {
-            //        var prefix = expression.Substring(0, expression.Length - 1);
-            //        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
-            //    }
-            //    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
-            //case "Path":
-            //    throw new Exception("Path Not currently Supported");
-            //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
-            //                         ? VirtualPathUtility.ToAppRelative(expression)
-            //                         : VirtualPathUtility.Combine("~/", expression);
+        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
+              KeyValuePair<string, JToken> term)
+        {
+            return BuildPredicate(predicate, term, _placementParseMatchProviders);
+        }
 
-            //if (normalizedPath.EndsWith("*")) {
-            //    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
-            //    return ctx => VirtualPathUtility.ToAppRelative(String.IsNullOrEmpty(ctx.Path) ? "/" : ctx.Path).StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && predicate(ctx);
-            //}
+        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
+                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
+        {
 
-            //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
-            //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
-            //}
+            if (placementMatchProviders != null)
+            {
+                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
+                if (providersForTerm.Any())
+                {
+                    var expression = term.Value;
+                    return ctx => providersForTerm.Any(x => x.IsMatch(ctx, expression)) && predicate(ctx);
+                }
+            }
+            return predicate;
         }
     }
 }

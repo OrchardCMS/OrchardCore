@@ -5,21 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.css">
+    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.min.js" debug-src="/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
 
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" src="/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script type="text/javascript" src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
 
     @await RenderSectionAsync("Header", required: false)
 </head>
@@ -33,7 +33,7 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
+                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
                     </li>
                 </ul>
                 <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
@@ -42,9 +42,11 @@
             </div>
         </div>
 
-        <div id="ta-left-sidebar">
-            <button class="leftbar-compactor" type="button"><span> <i class="fa fa-bars" aria-hidden="false"></i> </span></button>
-            @await RenderSectionAsync("Navigation", required: false)            
+        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+            @await RenderSectionAsync("Navigation", required: false)
+            <div class="footer">
+                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+            </div>
         </div>
 
         <div class="ta-content">
@@ -58,6 +60,6 @@
 
     <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>
