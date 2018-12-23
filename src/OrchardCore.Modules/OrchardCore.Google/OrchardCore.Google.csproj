@@ -25,4 +25,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="Views\gtag.cshtml">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

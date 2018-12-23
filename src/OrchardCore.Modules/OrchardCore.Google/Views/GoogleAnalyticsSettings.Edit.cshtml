@@ -1,0 +1,27 @@
+@using OrchardCore.Google.Analytics.ViewModels;
+@model GoogleAnalyticsSettingsViewModel;
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<h3>@T["Google Analytics Settings"]</h3>
+
+
+<div class="form-group row" asp-validation-class-for="TrackingID">
+    <div class="col-lg">
+        <label asp-for="TrackingID">@T["Tracking ID"]</label>
+        <input asp-for="TrackingID" class="form-control" autocomplete="off" />
+        <span asp-validation-for="TrackingID"></span>
+        <span class="hint">@T["The tracking ID defined in your Google Analytics account."]</span>
+    </div>
+</div>
+
+<div class="form-group row" asp-validation-class-for="ScriptsAtHead">
+    <div class="col-lg">
+        <div class="form-check">
+            <input asp-for="ScriptsAtHead" class="form-check-input" type="checkbox" checked="@Model.ScriptsAtHead" />
+            <label asp-for="ScriptsAtHead" class="form-check-label">@T["Put scripts at head"]</label>
+        </div>
+        <span asp-validation-for="ScriptsAtHead"></span>
+        <span class="hint">@T["Put javascript at head instead of foot."]</span>
+    </div>
+</div>

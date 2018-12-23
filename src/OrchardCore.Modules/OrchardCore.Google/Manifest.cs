@@ -15,3 +15,10 @@ using OrchardCore.Google;
     Category = "Google",
     Description = "Authenticates users with their Google Account."
 )]
+
+[assembly: Feature(
+    Id = GoogleConstants.Features.GoogleAnalytics,
+    Name = "Google Analytics",
+    Category = "Google",
+    Description = "Integrate Google Analytics gtagjs"
+)]
