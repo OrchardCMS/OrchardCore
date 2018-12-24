@@ -2,8 +2,17 @@
 
 This module adds Google features to OrchardCore.
 
+## Google Analytics
+Enable Google Analytics Feature to integrate tracking on the front end site.
+
+Navigate to [Google Analytics](https://analytics.google.com/analytics/web) portal and select the Analytics account you want to use.
+
+Copy the Tracking ID from the Admin->Tracking Info->Tracking Code link.
+
+Το ψonfigure Orchard Core, go to _Google -> Google Analytics_ settings menu in the admin dashboard and enter the Tracking ID.
+
 ## Google Authentication
-Authenticates users with their Google Account. 
+Enable Google Authentication to allow users to use their Google Account to login.
 
 Create a project in the [Google API Console](https://console.developers.google.com/projectselector/apis/library).
 
