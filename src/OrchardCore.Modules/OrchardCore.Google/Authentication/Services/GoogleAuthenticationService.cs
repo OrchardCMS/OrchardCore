@@ -9,11 +9,11 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Google.Settings;
-using OrchardCore.Google.ViewModels;
+using OrchardCore.Google.Authentication.Settings;
+using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Services
+namespace OrchardCore.Google.Authentication.Services
 {
     public class GoogleAuthenticationService
     {

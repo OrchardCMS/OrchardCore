@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Google.Services;
-using OrchardCore.Google.Settings;
-using OrchardCore.Google.ViewModels;
+using OrchardCore.Google.Authentication.Services;
+using OrchardCore.Google.Authentication.Settings;
+using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Google.Recipes
+namespace OrchardCore.Google.Authentication.Recipes
 {
     /// <summary>
     /// This recipe step sets Microsoft Account settings.

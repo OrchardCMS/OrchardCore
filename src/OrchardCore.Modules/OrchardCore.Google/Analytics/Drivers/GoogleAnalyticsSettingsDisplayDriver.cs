@@ -62,7 +62,6 @@ namespace OrchardCore.Google.Analytics.Drivers
                 {
                     settings.TrackingID = model.TrackingID;
                     settings.ScriptsAtHead = model.ScriptsAtHead;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

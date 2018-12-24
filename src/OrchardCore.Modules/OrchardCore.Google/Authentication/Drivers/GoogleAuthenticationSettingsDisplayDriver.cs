@@ -6,11 +6,11 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Google.Settings;
-using OrchardCore.Google.ViewModels;
+using OrchardCore.Google.Authentication.Settings;
+using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Drivers
+namespace OrchardCore.Google.Authentication.Drivers
 {
     public class GoogleAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAuthenticationSettings>
     {

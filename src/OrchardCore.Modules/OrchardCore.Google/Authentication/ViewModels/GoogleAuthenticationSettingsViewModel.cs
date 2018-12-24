@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Google.ViewModels
+namespace OrchardCore.Google.Authentication.ViewModels
 {
     public class GoogleAuthenticationSettingsViewModel
     {
