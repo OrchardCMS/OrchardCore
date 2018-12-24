@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
+using OrchardCore.Google.Analytics.Recipes;
+using OrchardCore.Recipes;
+using OrchardCore.Google.Authentication.Recipes;
 
 namespace OrchardCore.Google
 {
@@ -30,6 +33,7 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddRecipeExecutionStep<GoogleAuthenticationSettingsStep>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGoogleAuthentication>();
@@ -51,6 +55,7 @@ namespace OrchardCore.Google
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGoogleAnalytics>();
             services.Configure<MvcOptions>((options) =>

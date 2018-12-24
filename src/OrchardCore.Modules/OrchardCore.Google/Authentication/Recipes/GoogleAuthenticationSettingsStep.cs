@@ -9,7 +9,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Google.Authentication.Recipes
 {
     /// <summary>
-    /// This recipe step sets Microsoft Account settings.
+    /// This recipe step sets Google Authentication settings.
     /// </summary>
     public class GoogleAuthenticationSettingsStep : IRecipeStepHandler
     {
