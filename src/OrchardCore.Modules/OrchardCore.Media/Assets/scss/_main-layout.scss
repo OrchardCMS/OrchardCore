@@ -1,10 +1,7 @@
 #mediaApp {
-    position: absolute;
-    top: 128px;
-    bottom: 0;
-    right: 0;
-    left: 260px;
-    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    margin: 0px -15px 0px -15px;
+    margin-top: 0;
+    height: 100%;
 
     #mediaContainer {
         display: flex;
@@ -12,6 +9,7 @@
         height: 100%;
         align-items: stretch;
     }
+
     // on large screen they are side by side
     @media only screen and ( min-width: 768px ) {
         #mediaContainer {
@@ -44,18 +42,5 @@
     }
 }
 
-.modal-content .modal-body #mediaApp {
-    position: static;
-    margin: 0px -15px 0px -15px;
-    margin-top: 0;
-    height: 100%;
-}
 
-.left-sidebar-compact #mediaApp {
-    position: absolute;
-    top: 128px;
-    bottom: 0;
-    right: 0;
-    left: 60px;
-    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-}
+

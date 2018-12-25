@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,6 +56,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var storeConfiguration = new YesSql.Configuration();
+
+                    // Disabling query gating as it's failing to improve performance right now
+                    //storeConfiguration.DisableQueryGating();
 
                     switch (shellSettings.DatabaseProvider)
                     {

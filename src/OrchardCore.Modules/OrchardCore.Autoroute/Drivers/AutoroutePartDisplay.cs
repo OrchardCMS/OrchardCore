@@ -66,38 +66,17 @@ namespace OrchardCore.Autoroute.Drivers
                     model.IsHomepage = true;
                 }
 
-                model.Settings = GetSettings(autoroutePart);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
+                model.Settings = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
             });
-        }
-
-        private AutoroutePartSettings GetSettings(AutoroutePart autoroutePart)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater)
         {
-            var viewModel = new AutoroutePartViewModel();
-
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath);
-
-            var settings = GetSettings(model);
-
-            if (settings.AllowCustomPath)
-            {
-                model.Path = viewModel.Path;
-            }
-
-            if (settings.AllowUpdatePath && viewModel.UpdatePath)
-            {
-                // Make it empty to force a regeneration
-                model.Path = "";
-            }
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Path);
 
             var httpContext = _httpContextAccessor.HttpContext;
-
             if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
             {
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);

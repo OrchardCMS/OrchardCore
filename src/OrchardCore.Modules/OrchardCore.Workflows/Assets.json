@@ -1,13 +1,13 @@
 [
   {
     "inputs": [
-      "../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
+      "Assets/Lib/jsplumb/jsplumbtoolkit-defaults.css"
     ],
     "output": "wwwroot/Styles/jsplumbtoolkit-defaults.css"
   },
   {
     "inputs": [
-      "../../../node_modules/jsplumb/dist/js/jsplumb.js"
+      "Assets/Lib/jsplumb/jsplumb.js"
     ],
     "output": "wwwroot/Scripts/jsplumb.js"
   },

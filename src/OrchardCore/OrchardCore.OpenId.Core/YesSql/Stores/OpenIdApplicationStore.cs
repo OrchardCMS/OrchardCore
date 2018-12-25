@@ -729,6 +729,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             application.Roles = roles;
+            _session.Save(application);
 
             return Task.CompletedTask;
         }

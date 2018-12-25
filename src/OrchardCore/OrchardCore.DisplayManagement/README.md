@@ -27,16 +27,8 @@ A placement rule contains two sets of data:
 Currently you can filter shapes by:
 
 - Their original type, which is the property name of the placement rule, like `TextField`.
-- `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
+- `display-type` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
-
-Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`. 
-
-For shapes that are built from a content item, you can filter by the following built in filter providers:
-
-- `contentType` (Optional): A single ContentType or an array of ContentTypes that content item from which the shape was built should match.
-- `contentPart` (Optional): A single ContentPart or an of array of ContentParts that content item from which the shape was built should contain.
-- `path` (Optional): A single path or an of array of paths that should match the request path.
 
 Placement information consists of:
 
@@ -49,11 +41,8 @@ Placement information consists of:
 {
   "TextField": [
     {
-		"displayType": "Detail",
+		"display-type": "Detail",
 		"differentiator": "Article-MyTextField",
-        "contentType": ["Page", "BlogPost"],
-        "contentPart": ["HtmlBodyPart"],
-        "path": ["/mypage"],
 
 		"place": "Content",
 		"alternates": [ "TextField_Title" ],

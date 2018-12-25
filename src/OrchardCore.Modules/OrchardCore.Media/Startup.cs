@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -191,14 +190,7 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsUrlPrefix,
-                FileProvider = new PhysicalFileProvider(mediaPath),
-                ServeUnknownFileTypes = true,
-
-                // Cache the media files for 7 days
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
-                }
+                FileProvider = new PhysicalFileProvider(mediaPath)
             });
         }
 

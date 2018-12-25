@@ -129,7 +129,7 @@ namespace OrchardCore.OpenId.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData["ReturnUrl"] = returnUrl;
-                return View(model);
+                return View("Create", model);
             }
 
             var descriptor = new OpenIdScopeDescriptor
@@ -209,14 +209,16 @@ namespace OrchardCore.OpenId.Controllers
                 return Unauthorized();
             }
 
-            var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
-            if (scope == null)
-            {
-                return NotFound();
-            }
+            object scope = null;
 
             if (ModelState.IsValid)
             {
+                scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
+                if (scope == null)
+                {
+                    return NotFound();
+                }
+
                 var other = await _scopeManager.FindByNameAsync(model.Name);
                 if (other != null && !string.Equals(
                     await _scopeManager.GetIdAsync(other),

@@ -1,18 +1,17 @@
 @model LinkAdminNodeViewModel
 
-<style asp-src="~/OrchardCore.AdminTrees/Styles/admin-trees.css" at="Head" depends-on="admin"></style>
-<style asp-src="~/OrchardCore.AdminTrees/Styles/admin-trees-icon-picker.css" at="Head" depends-on="admin"></style>
+<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees.css" at="Head" depends-on="admin"></style>
+<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees-icon-picker.css" at="Head" depends-on="admin"></style>
 
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminTrees/Scripts/admin-trees.js" at="Foot" depends-on="admin"></script>
-<script asp-src="~/OrchardCore.AdminTrees/Scripts/admin-trees-icon-picker.js" at="Foot" depends-on="admin"></script>
+<script asp-src="/OrchardCore.AdminTrees/Scripts/admin-trees.js" at="Foot" depends-on="admin"></script>
+<script asp-src="/OrchardCore.AdminTrees/Scripts/admin-trees-icon-picker.js" at="Foot" depends-on="admin"></script>
 
 <h5>@T["Link"]</h5>
 
 <fieldset class="form-group" asp-validation-class-for="LinkText">
-    <label asp-for="LinkText">@T["Link Text"]</label>
+    <label asp-for="LinkText">@T["Link Text"] <span asp-validation-for="LinkText"></span></label>
     <input asp-for="LinkText" class="form-control" />
-    <span asp-validation-for="LinkText"></span>
     <span class="hint">@T["The Link Text as it will be shown in the tree."]</span>
 </fieldset>
 

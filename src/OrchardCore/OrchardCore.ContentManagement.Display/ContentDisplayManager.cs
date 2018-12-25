@@ -79,7 +79,6 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
 
             ShapeMetadata metadata = itemShape.Metadata;
             metadata.DisplayType = actualDisplayType;

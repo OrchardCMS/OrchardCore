@@ -458,7 +458,8 @@ namespace OrchardCore.OpenId.Controllers
                 if (authorization != null)
                 {
                     // Attach the authorization identifier to the authentication ticket.
-                    ticket.SetInternalAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+                    ticket.SetProperty(OpenIddictConstants.Properties.InternalAuthorizationId,
+                        await _authorizationManager.GetIdAsync(authorization));
                 }
             }
 

@@ -19,9 +19,9 @@ namespace OrchardCore.DataProtection.Azure
         private readonly ILogger<Startup> _logger;
 
         public Startup(
-            IConfiguration configuration,
+            IConfiguration configuration, 
             IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings,
+            ShellSettings shellSettings, 
             ILogger<Startup> logger)
         {
             _configuration = configuration;
@@ -32,22 +32,20 @@ namespace OrchardCore.DataProtection.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ConnectionString");
-            if (!string.IsNullOrWhiteSpace(connectionString))
-            {
-                var blobName = $"{_shellOptions.Value.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
+            var blobName = $"{_shellOptions.Value.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
 
-                services.AddDataProtection().PersistKeysToAzureBlobStorage(GetBlobContainer(connectionString), blobName);
-            }
-            else
+            services.AddDataProtection().PersistKeysToAzureBlobStorage(GetBlobContainer(), blobName);
+        }
+
+        private CloudBlobContainer GetBlobContainer()
+        {
+            var connectionString = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ConnectionString");
+            var containerName = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
+
+            if (String.IsNullOrWhiteSpace(connectionString))
             {
                 _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
             }
-        }
-
-        private CloudBlobContainer GetBlobContainer(string connectionString)
-        {
-            var containerName = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
 
             try
             {

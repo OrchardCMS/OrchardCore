@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     {
         public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
         private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>();
 
         public LiquidTagHelperActivator() { }
 
@@ -29,49 +29,33 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
                 var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
 
-                var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
-                var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
-
-                if (htmlAttribute != null)
+                _setters.Add(property.Name, (h, v) =>
                 {
-                    allNames.Add(htmlAttribute.Name.Replace('-', '_'));
+                    object value = null;
 
-                    if (htmlAttribute.Name.StartsWith("asp-"))
+                    if (property.PropertyType.IsEnum)
                     {
-                        allNames.Add(htmlAttribute.Name.Substring(4).Replace('-', '_'));
+                        value = Enum.Parse(property.PropertyType, v.ToStringValue());
                     }
-                }
-
-                foreach (var propertyName in allNames)
-                {
-                    _setters.Add(propertyName, (h, v) =>
+                    else if (property.PropertyType == typeof(String))
                     {
-                        object value = null;
+                        value = v.ToStringValue();
+                    }
+                    else if (property.PropertyType == typeof(Boolean))
+                    {
+                        value = Convert.ToBoolean(v.ToStringValue());
+                    }
+                    else if (property.PropertyType == typeof(Nullable<Boolean>))
+                    {
+                        value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                    }
+                    else
+                    {
+                        value = v.ToObjectValue();
+                    }
 
-                        if (property.PropertyType.IsEnum)
-                        {
-                            value = Enum.Parse(property.PropertyType, v.ToStringValue());
-                        }
-                        else if (property.PropertyType == typeof(String))
-                        {
-                            value = v.ToStringValue();
-                        }
-                        else if (property.PropertyType == typeof(Boolean))
-                        {
-                            value = Convert.ToBoolean(v.ToStringValue());
-                        }
-                        else if (property.PropertyType == typeof(Nullable<Boolean>))
-                        {
-                            value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
-                        }
-                        else
-                        {
-                            value = v.ToObjectValue();
-                        }
-
-                        setterDelegate.DynamicInvoke(new[] { h, value });
-                    });
-                }
+                    setterDelegate.DynamicInvoke(new[] { h, value });
+                });
             }
 
             var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);

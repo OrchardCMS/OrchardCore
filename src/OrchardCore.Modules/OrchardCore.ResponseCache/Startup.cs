@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using OrchardCore.Modules;
 
 namespace OrchardCore.ResponseCache
 {

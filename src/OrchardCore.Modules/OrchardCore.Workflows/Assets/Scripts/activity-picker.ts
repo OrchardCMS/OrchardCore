@@ -1,4 +1,4 @@
-///<reference path='../Lib/jquery/typings.d.ts' />
+///<reference path="../../../../../node_modules/@types/jquery/index.d.ts" />
 
 var applyFilter = function (category: string, q: string) {
     const type = $('.modal-activities').data('activity-type');
@@ -46,8 +46,7 @@ $(() => {
     });
 
     $('#activity-picker').on('show.bs.modal', function (event) {
-        var modalEvent = event as any;
-        var button = $(modalEvent.relatedTarget); // Button that triggered the modal.
+        var button = $(event.relatedTarget) // Button that triggered the modal.
         var title = button.data('picker-title');
         var type = button.data('activity-type');
         var modal = $(this);

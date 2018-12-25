@@ -1,30 +1,38 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Navigation;
 using OrchardCore.Https.Drivers;
 using OrchardCore.Https.Services;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https
 {
     public class Startup : StartupBase
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public Startup(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var service = serviceProvider.GetRequiredService<IHttpsService>();
-            var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings.RequireHttps)
-            {
-                app.UseHttpsRedirection();
-            }
+            var rewriteOptions = new RewriteOptions();
 
-            if (settings.EnableStrictTransportSecurity)
+            // Configure the rewrite options.
+            serviceProvider.GetService<IConfigureOptions<RewriteOptions>>().Configure(rewriteOptions);
+
+            app.UseRewriter(rewriteOptions);
+
+            if (!_hostingEnvironment.IsDevelopment())
             {
                 app.UseHsts();
             }
@@ -35,21 +43,9 @@ namespace OrchardCore.Https
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
             services.AddSingleton<IHttpsService, HttpsService>();
-
-            services.AddOptions<HttpsRedirectionOptions>()
-                .Configure<IHttpsService>((options, service) =>
-                {
-                    var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
-                    if (settings.RequireHttpsPermanent)
-                    {
-                        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    }
-
-                    if (settings.SslPort != null)
-                    {
-                        options.HttpsPort = settings.SslPort;
-                    }
-                });
+            services.AddSingleton(new RewriteOptions());
+            
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RewriteOptions>, RewriteOptionsHttpsConfiguration>());
 
             services.AddHsts(options =>
             {
@@ -57,6 +53,7 @@ namespace OrchardCore.Https
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(365);
             });
+
         }
     }
 }

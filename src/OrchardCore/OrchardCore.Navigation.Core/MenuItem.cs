@@ -48,7 +48,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// The priority of the menu item in case there are other menu items that could be marked as selected for the request.
         /// </summary>
-        public int Priority { get; set; }
+        public int SelectionPriority { get; set; }
 
         /// <summary>
         /// Whether the menu item should link to the same url as its first child.

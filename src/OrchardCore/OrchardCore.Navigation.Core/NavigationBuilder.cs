@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +14,12 @@ namespace OrchardCore.Navigation
             Contained = new List<MenuItem>();
         }
 
-        public NavigationBuilder Add(LocalizedString caption, string position, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
+        public NavigationBuilder Add(LocalizedString caption, string position, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null)
         {
             var childBuilder = new NavigationItemBuilder();
 
             childBuilder.Caption(caption);
             childBuilder.Position(position);
-            childBuilder.Priority(priority);
             itemBuilder(childBuilder);
             Contained.AddRange(childBuilder.Build());
 

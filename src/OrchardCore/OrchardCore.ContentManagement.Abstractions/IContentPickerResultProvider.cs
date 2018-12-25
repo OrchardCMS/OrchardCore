@@ -21,6 +21,5 @@ namespace OrchardCore.ContentManagement
     {
         public string DisplayText { get; set; }
         public string ContentItemId { get; set; }
-        public bool HasPublished { get; set; }
     }
 }

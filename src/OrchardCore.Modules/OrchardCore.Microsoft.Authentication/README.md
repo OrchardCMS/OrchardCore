@@ -1,6 +1,6 @@
 # Microsoft Authentication (OrchardCore.Microsoft.Authentication)
 
-This module configures Orchard to support Microsoft Account and/or Microsoft Azure Active Directory accounts.
+This module configures Orchard to support Microsoft Account and/or Microsoft Azure AD accounts.
 
 ## Microsoft Account
 Authenticates users with their Microsoft Account. 
@@ -20,12 +20,12 @@ Available settings are:
 + CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup Microsoft Account app to use the default path /signin-microsoft.
 
-## Azure Active Directory
-Authenticates users with their Azure AD Account.
-If the site allows to register new users, a local user is created and the Azure AD account is linked.
+## AzureAD
+Authenticates users with their Microsoft Account.
+If the site allows to register new users, a local user is created and the AzureAD account is linked.
 If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
-You can configure The Azure AD through the [Azure Portal](https://portal.azure.com) for your tenant. 
+You can configure The AzureAD through the [Azure Portal](https://portal.azure.com) for your tenant. 
 
 Create a Web app/API App registration. The default call back in Orchard is /signin-oidc
 
@@ -34,11 +34,11 @@ Available settings are:
 + AppId: Provide the Application ID from the properties of the above app
 + TenantId: Provide the Directory ID value from the Azure Active Directory properties
 + CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
-If no value is provided, setup Azure AD app to use the default path /signin-oidc.
+If no value is provided, setup AzureAD app to use the default path /signin-oidc.
 
-## Users Registration
-+ If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Azure AD login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-+ An existing user can link his account to his Microsoft Account and/or Microsoft Azure AD login through the External Logins link from User menu
+*Users Registration*
++ If you want to enable new users to register to the site through their Facebook login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
++ An existing user can link his account to his Facebook login through the External Logins link from User menu
 
 
 

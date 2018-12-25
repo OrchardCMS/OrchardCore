@@ -1,4 +1,4 @@
-@model AdminEditViewModel
+﻿@model AdminEditViewModel
 
 <h1>@RenderTitleSegments(T["Create Index"])</h1>
 
@@ -7,8 +7,8 @@
 
     <div class="form-group" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index Name"]</label>
-        <input asp-for="IndexName" class="form-control" autofocus/>
         <span asp-validation-for="IndexName" class="text-danger"></span>
+        <input asp-for="IndexName" class="form-control" autofocus/>
     </div>
 
     <fieldset>

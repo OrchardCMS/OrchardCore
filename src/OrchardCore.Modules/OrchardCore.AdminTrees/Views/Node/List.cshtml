@@ -6,8 +6,8 @@
     var index = 0;
 }
 
-<script asp-src="~/OrchardCore.AdminTrees/Scripts/admin-trees.js" at="Foot" depends-on="admin"></script>
-<style asp-src="~/OrchardCore.AdminTrees/Styles/admin-trees.css" debug-src="~/OrchardCore.AdminTrees/Styles/admin-trees.css"></style>
+<script asp-src="/OrchardCore.AdminTrees/Scripts/admin-trees.js" at="Foot" depends-on="admin"></script>
+<style asp-src="/OrchardCore.AdminTrees/Styles/admin-trees.css" debug-src="/OrchardCore.AdminTrees/Styles/admin-trees.css"></style>
 
 <div asp-validation-summary="All"></div>
 
@@ -30,7 +30,7 @@
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="menu" data-treenode-id="content-preset">
+            <ol id="menu" class="list-group" data-treenode-id="content-preset">
                 @foreach (var menuItem in Model.AdminTree.MenuItems)
                 {
                     if (menuItem != null)

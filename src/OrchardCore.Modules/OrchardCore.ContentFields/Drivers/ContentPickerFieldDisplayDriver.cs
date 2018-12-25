@@ -60,18 +60,11 @@ namespace OrchardCore.ContentFields.Fields
 
                 foreach (var contentItemId in field.ContentItemIds ?? new string[0])
                 {
-                    var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-                    if (contentItem == null)
-                    {
-                        continue;
-                    }
-
+                    var contentItem = await _contentManager.GetAsync(contentItemId);
                     model.SelectedItems.Add(new ContentPickerItemViewModel
                     {
                         ContentItemId = contentItemId,
-                        DisplayText = contentItem.ToString(),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                        DisplayText = contentItem.ToString()
                     });
                 }
             });

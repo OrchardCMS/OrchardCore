@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
                     break;
             }
 
-            return clock.ConvertToTimeZone(new DateTimeOffset(dateTimeUtc), timeZone);
+            return clock.ConvertToTimeZone(new DateTimeOffset(dateTime), timeZone);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
                     break;
             }
 
-            return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTimeUtc));
+            return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTime));
         }
     }
 }

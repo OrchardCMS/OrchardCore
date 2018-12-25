@@ -37,8 +37,7 @@ namespace OrchardCore.AdminTrees.AdminNodes
 
                 // Add the actual link
                 itemBuilder.Url(node.LinkUrl);
-                itemBuilder.Priority(node.Priority);
-                itemBuilder.Position(node.Position);
+                itemBuilder.SelectionPriority(node.SelectionPriority);
 
                 // Add adminNode's IconClass property values to menuItem.Classes. 
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.

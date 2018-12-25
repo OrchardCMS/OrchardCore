@@ -8,11 +8,10 @@
   },
   {
     "inputs": [
-      "../../../node_modules/jquery/dist/jquery.js",
-      "../../../node_modules/popper.js/dist/umd/popper.js",
-      "../../../node_modules/bootstrap/dist/js/bootstrap.js",
-      "Assets/js/setup.js",
-      "Assets/js/strength.js"
+      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/jQuery/jquery-3.*.js",
+      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
+      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
+      "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/setup.js"
   }

@@ -39,8 +39,7 @@ namespace OrchardCore.ContentFields.Services
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItem.ToString(),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                    DisplayText = contentItem.ToString()
                 });
             }
 

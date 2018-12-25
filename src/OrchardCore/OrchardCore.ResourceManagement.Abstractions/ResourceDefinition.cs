@@ -213,15 +213,8 @@ namespace OrchardCore.ResourceManagement
 
             if (url.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!String.IsNullOrEmpty(_basePath))
-                {
-                    url = _basePath + url.Substring(1);
-                }
-                else
-                {
-                    url = applicationPath + url.Substring(1);
-                }
-                
+                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
+                url = url.Substring(1);
             }
 
             var tagBuilder = new TagBuilder(TagName)

@@ -6,8 +6,7 @@
 // - Fully accessible
 //
 
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/variables.scss";
 $font-size-base: 1rem;
 $font-size-lg: ($font-size-base * 1.25);
 $font-size-sm: ($font-size-base * .875);

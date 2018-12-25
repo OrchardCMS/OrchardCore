@@ -16,26 +16,24 @@
 
 <div id="certArea" class="collapse">
     <fieldset class="form-group" asp-validation-class-for="CertificateStoreLocation">
-        <label asp-for="CertificateStoreLocation">@T["Certificate Store Location"]</label>
+        <label asp-for="CertificateStoreLocation">@T["Certificate Store Location"] <span asp-validation-for="CertificateStoreLocation"></span></label>
         <select asp-for="CertificateStoreLocation" class="form-control">
             @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
             {
                 <option value="@location" selected="@(Model.CertificateStoreLocation == location)">@location.ToString()</option>
             }
         </select>
-        <span asp-validation-for="CertificateStoreLocation"></span>
         <span class="hint">@T["Select the certificate location."]</span>
     </fieldset>
 
     <fieldset class="form-group" asp-validation-class-for="CertificateStoreName">
-        <label asp-for="CertificateStoreName">@T["Certificate Store Name"]</label>
+        <label asp-for="CertificateStoreName">@T["Certificate Store Name"] <span asp-validation-for="CertificateStoreName"></span></label>
         <select asp-for="CertificateStoreName" class="form-control">
             @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
             {
                 <option value="@store" selected="@(Model.CertificateStoreName == store)">@store.ToString()</option>
             }
         </select>
-        <span asp-validation-for="CertificateStoreName"></span>
         <span class="hint">@T["Select the certificate store."]</span>
     </fieldset>
 
@@ -43,7 +41,7 @@
         @if (Model.AvailableCertificates.Count != 0)
         {
 
-            <label asp-for="CertificateThumbprint">@T["Certificate"]</label>
+            <label asp-for="CertificateThumbprint">@T["Certificate"] <span asp-validation-for="CertificateThumbprint"></span></label>
             <select asp-for="CertificateThumbprint" class="form-control">
                 @foreach (var certificate in Model.AvailableCertificates)
                 {
@@ -65,7 +63,6 @@
                     </option>
                 }
             </select>
-            <span asp-validation-for="CertificateThumbprint"></span>
             <span class="hint">@T["Select the certificate for signing tokens."]</span>
         }
         else
@@ -152,9 +149,8 @@
 
 <h3>Advanced options</h3>
 <fieldset class="form-group" asp-validation-class-for="Authority">
-    <label asp-for="Authority">@T["Authority"]</label>
+    <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
     <input asp-for="Authority" class="form-control" />
-    <span asp-validation-for="Authority"></span>
     <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
 </fieldset>
 
@@ -167,14 +163,13 @@
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="AccessTokenFormat">
-    <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
+    <label asp-for="AccessTokenFormat">@T["Token Format"] <span asp-validation-for="AccessTokenFormat"></span></label>
     <select asp-for="AccessTokenFormat" class="form-control">
         @foreach (OpenIdServerSettings.TokenFormat format in Enum.GetValues(typeof(OpenIdServerSettings.TokenFormat)))
         {
             <option value="@format" selected="@(Model.AccessTokenFormat == format)">@format.ToString()</option>
         }
     </select>
-    <span asp-validation-for="AccessTokenFormat"></span>
 </fieldset>
 
 <script at="Foot" type="text/javascript">

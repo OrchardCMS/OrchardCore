@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
@@ -14,7 +13,6 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
-        private readonly string _pathBase;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
         private ResourceManifest _dynamicManifest;
 
@@ -27,14 +25,12 @@ namespace OrchardCore.ResourceManagement
         private readonly IOptions<ResourceManagementOptions> _options;
 
         public ResourceManager(
-            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IResourceManifestProvider> resourceProviders,
             IResourceManifestState resourceManifestState,
             IOptions<ResourceManagementOptions> options)
         {
             _resourceManifestState = resourceManifestState;
             _options = options;
-            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
             _providers = resourceProviders;
 
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
@@ -104,22 +100,21 @@ namespace OrchardCore.ResourceManagement
             {
                 throw new ArgumentNullException(nameof(resourceType));
             }
-
             if (resourcePath == null)
             {
                 throw new ArgumentNullException(nameof(resourcePath));
             }
 
             // ~/ ==> convert to absolute path (e.g. /orchard/..)
-
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _pathBase + resourcePath.Substring(1);
+                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
+                resourcePath = resourcePath.Substring(1);
             }
-
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
+                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
+                resourceDebugPath = resourceDebugPath.Substring(1);
             }
 
             return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
@@ -505,7 +500,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
         }
 
@@ -524,7 +519,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
@@ -555,7 +550,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml( context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent("/"));
             }
 
             foreach (var context in GetRegisteredFootScripts())
@@ -573,13 +568,16 @@ namespace OrchardCore.ResourceManagement
 
         private class ResourceTypeName : IEquatable<ResourceTypeName>
         {
-            public string Type { get; }
-            public string Name { get; }
+            private readonly string _type;
+            private readonly string _name;
+
+            public string Type { get { return _type; } }
+            public string Name { get { return _name; } }
 
             public ResourceTypeName(string resourceType, string resourceName)
             {
-                Type = resourceType;
-                Name = resourceName;
+                _type = resourceType;
+                _name = resourceName;
             }
 
             public bool Equals(ResourceTypeName other)
@@ -589,21 +587,21 @@ namespace OrchardCore.ResourceManagement
                     return false;
                 }
 
-                return Type.Equals(other.Type) && Name.Equals(other.Name);
+                return _type.Equals(other._type) && _name.Equals(other._name);
             }
 
             public override int GetHashCode()
             {
-                return Type.GetHashCode() << 17 + Name.GetHashCode();
+                return _type.GetHashCode() << 17 + _name.GetHashCode();
             }
 
             public override string ToString()
             {
                 var sb = new StringBuilder();
                 sb.Append("(");
-                sb.Append(Type);
+                sb.Append(_type);
                 sb.Append(", ");
-                sb.Append(Name);
+                sb.Append(_name);
                 sb.Append(")");
                 return sb.ToString();
             }

@@ -13,7 +13,7 @@ var fs = require("file-system"),
     scss = require("gulp-sass"),
     cssnano = require("gulp-cssnano"),
     typescript = require("gulp-typescript"),
-    terser = require("gulp-terser"),
+    uglify = require("gulp-uglify"),
     rename = require("gulp-rename"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
@@ -55,23 +55,21 @@ gulp.task("watch", function () {
         var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
         var inputWatcher;
         function createWatcher() {
-            inputWatcher = gulp.watch(watchPaths);
-            inputWatcher.on('change', function (watchedPath) {                
+            inputWatcher = gulp.watch(watchPaths, function (event) {
                 var isConcat = path.basename(assetGroup.outputFileName, path.extname(assetGroup.outputFileName)) !== "@";
                 if (isConcat)
-                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group with output '" + assetGroup.outputPath + "'.");
+                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group with output '" + assetGroup.outputPath + "'.");
                 else
-                    console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group.");
+                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group.");
                 var doRebuild = true;
                 var task = createAssetGroupTask(assetGroup, doRebuild);
             });
         }
-        
         createWatcher();
-        
-        gulp.watch(assetGroup.manifestPath).on('change', function (watchedPath) {
-            console.log("Asset manifest file '" + watchedPath + "' was changed, restarting watcher.");            
-            inputWatcher.close();
+        gulp.watch(assetGroup.manifestPath, function (event) {
+            console.log("Asset manifest file '" + event.path + "' was " + event.type + ", restarting watcher.");
+            inputWatcher.remove();
+            inputWatcher.end();
             createWatcher();
         });
     });
@@ -110,15 +108,15 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.manifestPath = assetManifestPath;
     assetGroup.basePath = path.dirname(assetManifestPath);
     assetGroup.inputPaths = assetGroup.inputs.map(function (inputPath) {
-        return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
+        return path.resolve(path.join(assetGroup.basePath, inputPath));
     });
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
-            return path.resolve(path.join(assetGroup.basePath, watchPath)).replace(/\\/g, '/');
+            return path.resolve(path.join(assetGroup.basePath, watchPath));
         });
     }
-    assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output)).replace(/\\/g, '/');
+    assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output));
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
     // Uncomment to copy assets to wwwroot
@@ -269,7 +267,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir))
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot))
-        .pipe(terser())
+        .pipe(uglify())
         .pipe(rename({
             suffix: ".min"
         }))

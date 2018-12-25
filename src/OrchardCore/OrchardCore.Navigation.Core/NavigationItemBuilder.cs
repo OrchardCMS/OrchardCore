@@ -37,9 +37,9 @@ namespace OrchardCore.Navigation
             return this;
         }
 
-        public NavigationItemBuilder Priority(int priority)
+        public NavigationItemBuilder SelectionPriority(int selectionPriority)
         {
-            _item.Priority = priority;
+            _item.SelectionPriority = selectionPriority;
             return this;
         }
 
