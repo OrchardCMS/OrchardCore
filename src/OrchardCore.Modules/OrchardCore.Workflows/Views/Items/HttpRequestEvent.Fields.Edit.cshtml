@@ -5,8 +5,9 @@
 @inject IAntiforgery antiforgery
 
 <fieldset class="form-group" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod">@T["HTTP Method"] <span asp-validation-for="HttpMethod"></span></label>
+    <label asp-for="HttpMethod">@T["HTTP Method"]</label>
     <select asp-for="HttpMethod" class="form-control" asp-items="Model.GetAvailableHttpMethods()"></select>
+    <span asp-validation-for="HttpMethod"></span>
     <span class="hint">@T["The HTTP method to match."]</span>
 </fieldset>
 

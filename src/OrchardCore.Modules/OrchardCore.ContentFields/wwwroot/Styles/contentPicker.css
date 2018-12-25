@@ -3,3 +3,8 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+.content-picker-default .multiselect--active {
+  z-index: 1000; }
+
+[v-cloak] {
+  display: none; }

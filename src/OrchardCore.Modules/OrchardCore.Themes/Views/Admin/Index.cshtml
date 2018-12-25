@@ -1,5 +1,5 @@
 @model OrchardCore.Themes.Models.SelectThemesViewModel
-<style asp-src="/OrchardCore.Themes/Styles/themes.admin.css"></style>
+<style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
 <div class="alert alert-warning">
     <h4>@T["Changing default themes"]</h4>
     <p>@T["This page lets you change the site's default themes for both the front-end and the back-end."]</p>
@@ -14,8 +14,8 @@ else
     <div class="row">
         @foreach (var themeEntry in Model.Themes)
         {
-            <div class="col-sm-12 col-md-6 col-lg-4">
-                <div class="card theme-card">
+            <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
+                <div class="card theme-card w-100">
                     <h4 class="card-title">@themeEntry.Name</h4>
                     <div class="card-theme-thumbnail" style="background-image:url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
                     <div class="card-body">

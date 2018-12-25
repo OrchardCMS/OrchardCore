@@ -144,7 +144,7 @@ class WorkflowEditor extends WorkflowCanvas {
                 html: true,
                 content: function () {
                     const activityElement = $(this);
-                    const $content: JQuery = activityElement.find('.activity-commands').clone().show();
+                    const $content: JQuery<Element> = activityElement.find('.activity-commands').clone().show();
                     const startButton = $content.find('.activity-start-action');
                     const isStart = activityElement.data('activity-start') === true;
                     const activityId: number = activityElement.data('activity-id');

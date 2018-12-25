@@ -224,7 +224,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             ShapeType = shapeType;
             DisplayType = displayType;
             Differentiator = differentiator;
-            ZoneShape = ZoneShape;
+            ZoneShape = zoneShape;
         }
 
         public IShape ZoneShape { get; set; }

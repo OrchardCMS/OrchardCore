@@ -6,8 +6,8 @@
     var site = await SiteService.GetSiteSettingsAsync();
 }
 
-<fieldset class="form-group" asp-validation-class-for="Path">
-    <label asp-for="Path">@T["Permalink"] <span asp-validation-for="Path"></span></label>
+<div class="form-group" asp-validation-class-for="Path">
+    <label asp-for="Path">@T["Permalink"]</label>
     <div class="input-group">
         @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
         {
@@ -16,6 +16,7 @@
             </div>
         }
         <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
+        <span asp-validation-for="Path"></span>
     </div>
     @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
     {
@@ -25,7 +26,7 @@
     {
         <span class="hint">@T["The url of the content item. It will be automatically generated."]</span>
     }
-</fieldset>
+</div>
 @{
     var authorized = await AuthorizationService.AuthorizeAsync(User, Permissions.SetHomepage);
     var showHomepageOption = Model.Settings.ShowHomepageOption && authorized;
@@ -47,4 +48,15 @@
             </fieldset>
         }
     }
+}
+
+@if (Model.Settings.AllowUpdatePath)
+{
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="UpdatePath" checked="@Model.UpdatePath" />
+            <label class="custom-control-label" asp-for="UpdatePath">@T["Refresh the path"]</label>
+            <span class="hint">@T["— {0}", "Check to refresh the path. Warning: the previous URL won't be accessible anymore."]</span>
+        </div>
+    </div>
 }
