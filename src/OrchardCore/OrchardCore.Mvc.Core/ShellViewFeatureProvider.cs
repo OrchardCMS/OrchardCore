@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Mvc
 {
@@ -17,7 +16,6 @@ namespace OrchardCore.Mvc
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
-        private readonly IShellHost _shellHost;
 
         private ApplicationPartManager _applicationPartManager;
         private IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _featureProviders;
@@ -28,7 +26,6 @@ namespace OrchardCore.Mvc
             var services = _httpContextAccessor.HttpContext.RequestServices;
             _hostingEnvironment = services.GetRequiredService<IHostingEnvironment>();
             _applicationContext = services.GetRequiredService<IApplicationContext>();
-            _shellHost = services.GetRequiredService<IShellHost>();
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
