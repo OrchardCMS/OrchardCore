@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -17,8 +15,6 @@ namespace OrchardCore.Environment.Shell
         }
 
         public void SaveSettings(ShellSettings shellSettings) { }
-
-        public JObject UpdateSettings(ShellSettings settings) => JObject.FromObject(settings);
 
         public IConfiguration Configuration => new ConfigurationBuilder().Build();
     }
