@@ -106,16 +106,16 @@ namespace OrchardCore.Setup.Services
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
-            if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
+            if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings.DatabaseProvider = context.DatabaseProvider;
-                shellSettings.ConnectionString = context.DatabaseConnectionString;
-                shellSettings.TablePrefix = context.DatabaseTablePrefix;
+                shellSettings["DatabaseProvider"] = context.DatabaseProvider;
+                shellSettings["ConnectionString"] = context.DatabaseConnectionString;
+                shellSettings["TablePrefix"] = context.DatabaseTablePrefix;
             }
 
-            if (String.IsNullOrWhiteSpace(shellSettings.DatabaseProvider))
+            if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                throw new ArgumentException($"{nameof(shellSettings.DatabaseProvider)} is required");
+                throw new ArgumentException($"{nameof(context.DatabaseProvider)} is required");
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".

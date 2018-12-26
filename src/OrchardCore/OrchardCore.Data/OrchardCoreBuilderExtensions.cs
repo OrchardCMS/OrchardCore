@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    if (shellSettings.DatabaseProvider == null)
+                    if (shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }
@@ -60,10 +60,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     // Disabling query gating as it's failing to improve performance right now
                     //storeConfiguration.DisableQueryGating();
 
-                    switch (shellSettings.DatabaseProvider)
+                    switch (shellSettings["DatabaseProvider"])
                     {
                         case "SqlConnection":
-                            storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration.UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
@@ -74,18 +74,18 @@ namespace Microsoft.Extensions.DependencyInjection
                             storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
                             break;
                         case "MySql":
-                            storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration.UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
                             break;
                         case "Postgres":
-                            storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration.UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
                             break;
                         default:
-                            throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                            throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
+                        storeConfiguration.TablePrefix = shellSettings["TablePrefix"] + "_";
                     }
 
                     var store = new Store(storeConfiguration);

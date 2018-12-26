@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -13,6 +16,10 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings : IEquatable<ShellSettings>
     {
+        private IConfiguration _configuration { get; set; }
+        private MemoryConfigurationProvider _memoryConfigurationProvider =
+            new MemoryConfigurationProvider(new MemoryConfigurationSource());
+
         public ShellSettings()
         {
         }
@@ -22,31 +29,72 @@ namespace OrchardCore.Environment.Shell
             Name = shellSettings.Name;
             RequestUrlHost = shellSettings.RequestUrlHost;
             RequestUrlPrefix = shellSettings.RequestUrlPrefix;
-            DatabaseProvider = shellSettings.DatabaseProvider;
-            TablePrefix = shellSettings.TablePrefix;
-            ConnectionString = shellSettings.ConnectionString;
-            RecipeName = shellSettings.RecipeName;
-            Secret = shellSettings.Secret;
             State = shellSettings.State;
+
+            Configuration = shellSettings.Configuration;
         }
 
         public string Name { get; set; }
         public string RequestUrlHost { get; set; }
         public string RequestUrlPrefix { get; set; }
-        public string DatabaseProvider { get; set; }
-        public string TablePrefix { get; set; }
-        public string ConnectionString { get; set; }
-        public string RecipeName { get; set; }
-        public string Secret { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State { get; set; } = TenantState.Invalid;
 
+        [JsonIgnore]
+        public IConfigurationBuilder ConfigurationBuilder { get; set; } = new ConfigurationBuilder();
+
+        [JsonIgnore]
+        public IConfiguration Configuration
+        {
+            get
+            {
+                if (_configuration == null)
+                {
+                    lock (this)
+                    {
+                        if (_configuration == null)
+                        {
+                            _configuration = ConfigurationBuilder
+                                .AddConfiguration(new ConfigurationRoot(
+                                    new[] { _memoryConfigurationProvider }))
+                                .Build();
+                        }
+                    }
+                }
+
+                return _configuration;
+            }
+            set
+            {
+                lock (this)
+                {
+                    _configuration = value;
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public string this[string key]
+        {
+            get => Configuration[key];
+
+            set
+            {
+                lock (this)
+                {
+                    _memoryConfigurationProvider.Set(key, value);
+                }
+            }
+        }
+
         private StringValues StringValues => new StringValues(new []
         {
-            Name, RequestUrlHost, RequestUrlPrefix, DatabaseProvider,
-            TablePrefix, ConnectionString, RecipeName, Secret, State.ToString()
-        });
+            Name, RequestUrlHost, RequestUrlPrefix, /*DatabaseProvider,
+            TablePrefix, ConnectionString, RecipeName, Secret,*/ State.ToString()
+        }.Concat(_memoryConfigurationProvider
+            .OrderBy(p => p.Key)
+            .Select(p => p.Value)).ToArray());
 
         public bool Equals(ShellSettings other)
         {

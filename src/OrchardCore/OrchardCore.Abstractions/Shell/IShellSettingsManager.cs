@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -17,10 +15,5 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The shell settings to store.</param>
         void SaveSettings(ShellSettings settings);
-
-        /// <summary>
-        /// The tenants configuration.
-        /// </summary>
-        IConfiguration Configuration { get;  }
     }
 }
