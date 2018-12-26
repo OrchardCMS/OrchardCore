@@ -30,12 +30,6 @@ namespace OrchardCore.Mvc
                 // While in development, razor files are 1st served from their module project locations.
                 options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_applicationContext));
             }
-            else
-            {
-                // In production, the system find application compiled pages under the "Pages" folder.
-                // This provider tells to find them under the "Areas/{ApplicationName}/Pages" folder.
-                options.FileProviders.Add(new ApplicationCompiledPageFileProvider(_applicationContext));
-            }
         }
     }
 }

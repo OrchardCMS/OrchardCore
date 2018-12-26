@@ -48,7 +48,7 @@ namespace OrchardCore.Modules
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!string.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
+            if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
                 httpContext.Request.PathBase += ("/" + shellContext.Settings.RequestUrlPrefix);
                 httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
