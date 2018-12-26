@@ -17,8 +17,8 @@ namespace OrchardCore.Environment.Shell
     public class ShellSettings : IEquatable<ShellSettings>
     {
         private IConfiguration _configuration { get; set; }
-        private MemoryConfigurationProvider _memoryConfigurationProvider =
-            new MemoryConfigurationProvider(new MemoryConfigurationSource());
+        private IConfiguration _memoryConfiguration = new ConfigurationRoot( new[]
+            { new MemoryConfigurationProvider(new MemoryConfigurationSource()) });
 
         public ShellSettings()
         {
@@ -32,6 +32,7 @@ namespace OrchardCore.Environment.Shell
             State = shellSettings.State;
 
             Configuration = shellSettings.Configuration;
+            _memoryConfiguration = shellSettings._memoryConfiguration;
         }
 
         public string Name { get; set; }
@@ -56,8 +57,7 @@ namespace OrchardCore.Environment.Shell
                         if (_configuration == null)
                         {
                             _configuration = ConfigurationBuilder
-                                .AddConfiguration(new ConfigurationRoot(
-                                    new[] { _memoryConfigurationProvider }))
+                                .AddConfiguration(_memoryConfiguration)
                                 .Build();
                         }
                     }
@@ -83,18 +83,14 @@ namespace OrchardCore.Environment.Shell
             {
                 lock (this)
                 {
-                    _memoryConfigurationProvider.Set(key, value);
+                    _memoryConfiguration[key] = value;
                 }
             }
         }
 
-        private StringValues StringValues => new StringValues(new []
-        {
-            Name, RequestUrlHost, RequestUrlPrefix, /*DatabaseProvider,
-            TablePrefix, ConnectionString, RecipeName, Secret,*/ State.ToString()
-        }.Concat(_memoryConfigurationProvider
-            .OrderBy(p => p.Key)
-            .Select(p => p.Value)).ToArray());
+        private StringValues StringValues => new StringValues(
+            Configuration.GetChildren().Where(s => s.Value != null)
+            .OrderBy(s => s.Key).Select(s => s.Value).ToArray());
 
         public bool Equals(ShellSettings other)
         {
