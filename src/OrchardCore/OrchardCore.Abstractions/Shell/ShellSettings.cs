@@ -11,14 +11,13 @@ namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Represents the minimalistic set of fields stored for each tenant. This
-    /// model is obtained from the IShellSettingsManager, which by default reads this
-    /// from the App_Data appsettings.json files.
+    /// model is obtained from the 'IShellSettingsManager', which by default reads this
+    /// from the 'App_Data/Sites/tenants.json' file. And holds the tenant 'IConfiguration'.
     /// </summary>
     public class ShellSettings : IEquatable<ShellSettings>
     {
-        private IConfiguration _configuration { get; set; }
-        private IConfiguration _memoryConfiguration = new ConfigurationRoot( new[]
-            { new MemoryConfigurationProvider(new MemoryConfigurationSource()) });
+        private IConfiguration _configuration;
+        private IConfiguration _updatableData;
 
         public ShellSettings()
         {
@@ -32,7 +31,7 @@ namespace OrchardCore.Environment.Shell
             State = shellSettings.State;
 
             Configuration = shellSettings.Configuration;
-            _memoryConfiguration = shellSettings._memoryConfiguration;
+            _updatableData = shellSettings._updatableData;
         }
 
         public string Name { get; set; }
@@ -45,6 +44,10 @@ namespace OrchardCore.Environment.Shell
         [JsonIgnore]
         public IConfigurationBuilder ConfigurationBuilder { get; set; } = new ConfigurationBuilder();
 
+        /// <summary>
+        /// The tenant 'IConfiguration' lazyly built from the application configuration,
+        /// 'App_Data/appsettings.json' and 'App_Data/Sites/{tenant}/appsettings.json'.
+        /// </summary>
         [JsonIgnore]
         public IConfiguration Configuration
         {
@@ -56,8 +59,15 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (_configuration == null)
                         {
+                            if (_updatableData == null)
+                            {
+                                _updatableData = new ConfigurationBuilder()
+                                    .Add(new MemoryConfigurationSource())
+                                    .Build();
+                            }
+
                             _configuration = ConfigurationBuilder
-                                .AddConfiguration(_memoryConfiguration)
+                                .AddConfiguration(_updatableData)
                                 .Build();
                         }
                     }
@@ -81,16 +91,20 @@ namespace OrchardCore.Environment.Shell
 
             set
             {
-                lock (this)
+                if (Configuration[key] != value)
                 {
-                    _memoryConfiguration[key] = value;
+                    lock (this)
+                    {
+                        _updatableData[key] = value;
+                    }
                 }
             }
         }
 
         private StringValues StringValues => new StringValues(
-            Configuration.GetChildren().Where(s => s.Value != null)
-            .OrderBy(s => s.Key).Select(s => s.Value).ToArray());
+            new [] { Name, RequestUrlHost, RequestUrlPrefix, State.ToString() }
+            .Concat(Configuration.GetChildren().Where(s => s.Value != null)
+            .OrderBy(s => s.Key).Select(s => s.Value)).ToArray());
 
         public bool Equals(ShellSettings other)
         {
