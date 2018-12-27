@@ -12,7 +12,8 @@ namespace OrchardCore.Environment.Shell
     /// <summary>
     /// Represents the minimalistic set of fields stored for each tenant. This
     /// model is obtained from the 'IShellSettingsManager', which by default reads this
-    /// from the 'App_Data/Sites/tenants.json' file. And holds the tenant 'IConfiguration'.
+    /// from the 'App_Data/Sites/tenants.json' file.
+    /// Also holds the lazyly built <see cref="IConfiguration"/> of the tenant.
     /// </summary>
     public class ShellSettings : IEquatable<ShellSettings>
     {
@@ -42,11 +43,10 @@ namespace OrchardCore.Environment.Shell
         public TenantState State { get; set; } = TenantState.Invalid;
 
         [JsonIgnore]
-        public IConfigurationBuilder ConfigurationBuilder { get; set; } = new ConfigurationBuilder();
+        public IConfigurationBuilder ConfigurationBuilder { get; set; }
 
         /// <summary>
-        /// The tenant 'IConfiguration' lazyly built from the application configuration,
-        /// 'App_Data/appsettings.json' and 'App_Data/Sites/{tenant}/appsettings.json'.
+        /// The lazyly built <see cref="IConfiguration"/> of the tenant.
         /// </summary>
         [JsonIgnore]
         public IConfiguration Configuration
@@ -59,12 +59,13 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (_configuration == null)
                         {
-                            if (_updatableData == null)
-                            {
-                                _updatableData = new ConfigurationBuilder()
-                                    .Add(new MemoryConfigurationSource())
-                                    .Build();
-                            }
+                            _updatableData = _updatableData ??
+                                new ConfigurationBuilder()
+                                .Add(new MemoryConfigurationSource())
+                                .Build();
+
+                            ConfigurationBuilder = ConfigurationBuilder ??
+                                new ConfigurationBuilder();
 
                             _configuration = ConfigurationBuilder
                                 .AddConfiguration(_updatableData)
