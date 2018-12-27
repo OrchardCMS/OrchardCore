@@ -36,7 +36,8 @@ html, body, .ta-wrapper {
 
 #menu li {
   list-style: none;
-  cursor: move; }
+  cursor: move;
+  background-color: white; }
 
 .card-columns {
   column-count: 1; }

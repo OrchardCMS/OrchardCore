@@ -26,12 +26,12 @@ namespace OrchardCore.AdminMenu
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddSingleton<IAdminMenuervice, AdminMenuervice>();
-            services.AddScoped<AdminTreeNavigationProvidersCoordinator, AdminTreeNavigationProvidersCoordinator>();
+            services.AddSingleton<IAdminMenuService, AdminMenuService>();
+            services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
 
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
 
-            services.AddRecipeExecutionStep<AdminMenutep>();
+            services.AddRecipeExecutionStep<AdminMenuStep>();
 
             services.AddTransient<IDeploymentSource, AdminMenuDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AdminMenuDeploymentStep>());

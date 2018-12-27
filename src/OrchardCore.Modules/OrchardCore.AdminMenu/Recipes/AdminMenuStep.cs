@@ -2,23 +2,21 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.AdminMenu.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using YesSql;
 
 namespace OrchardCore.AdminMenu.Recipes
 {
     /// <summary>
     /// This recipe step creates a set of admin trees.
     /// </summary>
-    public class AdminMenutep : IRecipeStepHandler
+    public class AdminMenuStep : IRecipeStepHandler
     {
-        private readonly IAdminMenuervice _AdminMenuervice;
+        private readonly IAdminMenuService _AdminMenuService;
 
-        public AdminMenutep(IAdminMenuervice AdminMenuervice)
+        public AdminMenuStep(IAdminMenuService AdminMenuervice)
         {
-            _AdminMenuervice = AdminMenuervice;
+            _AdminMenuService = AdminMenuervice;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -28,22 +26,22 @@ namespace OrchardCore.AdminMenu.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<AdminMenutepModel>();
+            var model = context.Step.ToObject<AdminMenuStepModel>();
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
             foreach (JObject token in model.Data)
             {
-                var adminTree = token.ToObject<AdminTree>(serializer);
-                adminTree.Id = Guid.NewGuid().ToString("n");// we always add it as a new tree.
-                await _AdminMenuervice.SaveAsync(adminTree);
+                var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
+                adminMenu.Id = Guid.NewGuid().ToString("n");// we always add it as a new tree.
+                await _AdminMenuService.SaveAsync(adminMenu);
             }
 
             return;
         }
     }
 
-    public class AdminMenutepModel
+    public class AdminMenuStepModel
     {
         public JArray Data { get; set; }
     }

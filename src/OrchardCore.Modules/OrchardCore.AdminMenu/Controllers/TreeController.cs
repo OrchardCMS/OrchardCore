@@ -9,14 +9,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
-using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -24,13 +22,13 @@ namespace OrchardCore.AdminMenu.Controllers
     public class TreeController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IAdminMenuervice _AdminMenuervice;
+        private readonly IAdminMenuService _AdminMenuService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
 
         public TreeController(
             IAuthorizationService authorizationService,
-            IAdminMenuervice AdminMenuervice,
+            IAdminMenuService AdminMenuService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
@@ -39,7 +37,7 @@ namespace OrchardCore.AdminMenu.Controllers
             ILogger<TreeController> logger)
         {
             _authorizationService = authorizationService;
-            _AdminMenuervice = AdminMenuervice;
+            _AdminMenuService = AdminMenuService;
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
@@ -54,9 +52,9 @@ namespace OrchardCore.AdminMenu.Controllers
         public ILogger Logger { get; set; }
         public dynamic New { get; set; }
 
-        public async Task<IActionResult> List(AdminTreeListOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(AdminMenuListOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
@@ -67,10 +65,10 @@ namespace OrchardCore.AdminMenu.Controllers
             // default options
             if (options == null)
             {
-                options = new AdminTreeListOptions();
+                options = new AdminMenuListOptions();
             }
 
-            var trees = await _AdminMenuervice.GetAsync();
+            var trees = await _AdminMenuService.GetAsync();
             
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -81,7 +79,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
-            IEnumerable<AdminTree> results = new List<AdminTree>();
+            IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
 
             //todo: handle the case where there is a deserialization exception on some of the presets.
             // load at least the ones without error. Provide a way to delete the ones on error.
@@ -105,9 +103,9 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
-            var model = new AdminTreeListViewModel
+            var model = new AdminMenuListViewModel
             {
-                AdminMenu = results.Select(x => new AdminTreeEntry { AdminTree = x }).ToList(),
+                AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
                 Options = options,
                 Pager = pagerShape
             };
@@ -118,29 +116,29 @@ namespace OrchardCore.AdminMenu.Controllers
 
         public async Task<IActionResult> Create()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
-            var model = new AdminTreeCreateViewModel();
+            var model = new AdminMenuCreateViewModel();
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AdminTreeCreateViewModel model)
+        public async Task<IActionResult> Create(AdminMenuCreateViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
             if (ModelState.IsValid)
             {
-                var tree = new AdminTree {Name = model.Name};
+                var tree = new Models.AdminMenu {Name = model.Name};
 
-                await _AdminMenuervice.SaveAsync(tree);
+                await _AdminMenuService.SaveAsync(tree);
                 
                 return RedirectToAction(nameof(List));
             }
@@ -151,19 +149,19 @@ namespace OrchardCore.AdminMenu.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuervice.GetByIdAsync(id);
+            var tree = await _AdminMenuService.GetByIdAsync(id);
 
             if (tree == null)
             {
                 return NotFound();
             }
 
-            var model = new AdminTreeEditViewModel
+            var model = new AdminMenuEditViewModel
             {
                 Id = tree.Id,
                 Name = tree.Name
@@ -173,14 +171,14 @@ namespace OrchardCore.AdminMenu.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AdminTreeEditViewModel model)
+        public async Task<IActionResult> Edit(AdminMenuEditViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuervice.GetByIdAsync(model.Id);
+            var tree = await _AdminMenuService.GetByIdAsync(model.Id);
 
             if (tree == null)
             {
@@ -191,7 +189,7 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 tree.Name = model.Name;
 
-                await _AdminMenuervice.SaveAsync(tree);                
+                await _AdminMenuService.SaveAsync(tree);                
 
                 _notifier.Success(H["Admin tree updated successfully"]);
 
@@ -204,12 +202,12 @@ namespace OrchardCore.AdminMenu.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuervice.GetByIdAsync(id);
+            var tree = await _AdminMenuService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -217,7 +215,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            var removed = await _AdminMenuervice.DeleteAsync(tree);
+            var removed = await _AdminMenuService.DeleteAsync(tree);
 
 
             if (removed == 1)
@@ -236,12 +234,12 @@ namespace OrchardCore.AdminMenu.Controllers
         [HttpPost]
         public async Task<IActionResult> Toggle(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminTree))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Unauthorized();
             }
 
-            var tree = await _AdminMenuervice.GetByIdAsync(id);
+            var tree = await _AdminMenuService.GetByIdAsync(id);
 
             if (tree == null)
             {
@@ -250,7 +248,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             tree.Enabled = !tree.Enabled;
 
-            await _AdminMenuervice.SaveAsync(tree);
+            await _AdminMenuService.SaveAsync(tree);
 
             _notifier.Success(H["Admin tree toggled successfully"]);
 

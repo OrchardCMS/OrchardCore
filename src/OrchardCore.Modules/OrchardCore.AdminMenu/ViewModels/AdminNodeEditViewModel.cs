@@ -6,7 +6,7 @@ namespace OrchardCore.AdminMenu.ViewModels
 {
     public class AdminNodeEditViewModel
     {
-        public string AdminTreeId { get; set; }
+        public string AdminMenuId { get; set; }
         public string AdminNodeId { get; set; }
         public string AdminNodeType { get; set; }
 

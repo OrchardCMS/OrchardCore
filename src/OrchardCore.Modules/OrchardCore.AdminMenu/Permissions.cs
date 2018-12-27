@@ -6,11 +6,11 @@ namespace OrchardCore.AdminMenu
     // todo
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAdminTree = new Permission("ManageAdminTree", "Manage the admin tree");
+        public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] { ManageAdminTree };
+            return new[] { ManageAdminMenu };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +20,7 @@ namespace OrchardCore.AdminMenu
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAdminTree }
+                    Permissions = new[] { ManageAdminMenu }
                 }
             };
         }

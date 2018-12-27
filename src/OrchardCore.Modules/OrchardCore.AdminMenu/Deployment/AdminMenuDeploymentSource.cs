@@ -7,11 +7,11 @@ namespace OrchardCore.AdminMenu.Deployment
 {
     public class AdminMenuDeploymentSource : IDeploymentSource
     {
-        private readonly IAdminMenuervice _AdminMenuervice;
+        private readonly IAdminMenuService _AdminMenuService;
 
-        public AdminMenuDeploymentSource(IAdminMenuervice AdminMenuervice)
+        public AdminMenuDeploymentSource(IAdminMenuService AdminMenuervice)
         {
-            _AdminMenuervice = AdminMenuervice;
+            _AdminMenuService = AdminMenuervice;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -32,9 +32,9 @@ namespace OrchardCore.AdminMenu.Deployment
             // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
             var serializer = new JsonSerializer() {  TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (var adminTree in await _AdminMenuervice.GetAsync())
+            foreach (var adminMenu in await _AdminMenuService.GetAsync())
             {
-                var objectData = JObject.FromObject(adminTree, serializer);                
+                var objectData = JObject.FromObject(adminMenu, serializer);                
                 data.Add(objectData);
             }
 

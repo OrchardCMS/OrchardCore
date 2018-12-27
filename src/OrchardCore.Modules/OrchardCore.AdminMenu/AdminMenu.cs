@@ -8,12 +8,12 @@ namespace OrchardCore.AdminMenu
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly AdminTreeNavigationProvidersCoordinator _adminTreeNavigationProvider;
+        private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
 
-        public AdminMenu(AdminTreeNavigationProvidersCoordinator adminTreeNavigationProvider,
+        public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
             IStringLocalizer<AdminMenu> localizer)
         {
-            _adminTreeNavigationProvider = adminTreeNavigationProvider;
+            _adminMenuNavigationProvider = adminMenuNavigationProvider;
             S = localizer;
         }
 
@@ -26,16 +26,16 @@ namespace OrchardCore.AdminMenu
                 return;
             }
 
-            // Configuration and settings menus for the AdminTree module
+            // Configuration and settings menus for the AdminMenu module
             builder.Add(S["Configuration"], cfg => cfg
                     .Add(S["Admin Menus"], "1.5", admt => admt
-                        .Permission(Permissions.ManageAdminTree)
+                        .Permission(Permissions.ManageAdminMenu)
                         .Action("List", "Tree", new { area = "OrchardCore.AdminMenu" })
                         .LocalNav()
                     ));
 
-            // This is the entry point for the adminTree: dynamically generated custom admin menus
-           await  _adminTreeNavigationProvider.BuildNavigationAsync("admintree", builder);            
+            // This is the entry point for the adminMenu: dynamically generated custom admin menus
+           await  _adminMenuNavigationProvider.BuildNavigationAsync("adminMenu", builder);            
         }
     }
 }

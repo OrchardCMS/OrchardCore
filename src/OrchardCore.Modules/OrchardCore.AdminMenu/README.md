@@ -1,29 +1,29 @@
-# Admin Trees (OrchardCore.AdminMenu)
+# Admin Menu (OrchardCore.AdminMenu)
 
-The Admin Trees module provides a way for users to create custom admin menus through the Admin UI.
+The Admin Menu module provides a way for users to create custom admin menus through the Admin UI.
 
 ## General Concepts
 
 There are two basic concepts:
 
-1. **Admin Tree**: A tree of Admin Nodes whose root is at the first level of the Admin Menu. There can be one or several of them.  
+1. **Admin Menu**: A tree of Admin Nodes whose root is at the first level of the Admin Menu. There can be one or several of them.  
 
-2. **Admin Node**: Each one of the nodes that form an Admin Tree. An AdminNode can contain other Admin Nodes. Each admin node results in one or more menu items rendered on TheAdmin menu.
+2. **Admin Node**: Each one of the nodes that form an Admin Menu. An AdminNode can contain other Admin Nodes. Each admin node results in one or more menu items rendered on TheAdmin menu.
 
 These trees of menu items are merged with the standard admin menu that Orchard Core provides out of the box. In this document when we refer to that menu that is provided by Orchard Core out of the box we use the term **TheAdmin Menu**.
 
-You can disable an Admin Tree and it won't be shown.
+You can disable an Admin Menu and it won't be shown.
 
 You can disable an Admin Node and neither it nor their descendents will be shown.
 
 
-## How to create Admin Trees
+## How to create Admin Menu
 
-1. Ensure the Admin Trees module is enabled.
+1. Ensure the Admin Menu module is enabled.
 
-2. Go to Configuration: Admin Trees.
+2. Go to Configuration: Admin Menu.
 
-3. Create a new Admin Tree, and start adding Admin Nodes to it. The Link Admin Node is the simplest type and it's perfect to test the feature.
+3. Create a new Admin Menu, and start adding Admin Nodes to it. The Link Admin Node is the simplest type and it's perfect to test the feature.
 
 4. As you keep adding Admin Nodes you will see them rendered automatically on TheAdmin Menu.
 
@@ -33,7 +33,7 @@ You can disable an Admin Node and neither it nor their descendents will be shown
 At the time of writing this document there are 3 Admin Node Types provided out of the box by Orchard Core:
 
 1. **Link Admin Node**: It provides a simple menu item. The user can add a text, a url and a Font Awesome icon class so that the current admin theme can use them when rendering the menu item. At the moment TheAdmin theme is using that icon class only for first level menu items.
-This link is the only one provided by the OrchardCore.AdminTree module itself.
+This link is the only one provided by the OrchardCore.AdminMenu module itself.
 
 2. **Content Types Admin Node**: It provides a list of menu items containing a menu item for each content type. The links point to the Index action in the Contents Controller.
 This node type is provided by the OrchardCore.Contents module.
@@ -45,9 +45,9 @@ This node type is provided by the OrchardCore.Lists module.
 Note that each one of these nodes can have other nodes nested on it. The nesting is done through drag and drop on the UI.
 
 
-## How are the Admin Trees rendered as admin menu items.
+## How are the Admin Menu rendered as admin menu items.
 
-### How it works without the Admin Tree Module.
+### How it works without the Admin Menu Module.
 The Admin Menu that OrchardCore provides out of the box it's built broadly speaking like this:
 1. NavigationManager retrieves all classes that implement INavigationProvider. There are many of them through many modules with the file name of "AdminMenu.cs".
 
@@ -55,15 +55,15 @@ The Admin Menu that OrchardCore provides out of the box it's built broadly speak
 
 3. Once all the AdminMenu classes finished adding their own menu items to the builder, the NavigationManager uses the info on the builder to "render" the full menu.
 
-### What changes when the Admin Tree is Enabled.
+### What changes when the Admin Menu is Enabled.
 
-1. The AdminTree module declares it's own INavigationProvider and so it will be called too by NavigationManager. The name of that INavigationProvider is AdminTreeNavigationProvidersCoordinator.
+1. The AdminMenu module declares it's own INavigationProvider and so it will be called too by NavigationManager. The name of that INavigationProvider is AdminMenuNavigationProvidersCoordinator.
 
 2. The coordinator retrieves all AdminMenu stored on the database and for each one of them call a BuildTreeAsync method, where each node add recursively its own menu items to the builder.
 
 
 ## Deployment Plan Step and Recipe Step 
-The module provides an Admin Tree Deployment Step. So an admin user can expend some time configuring a custom admin tree, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
+The module provides an Admin Menu Deployment Step. So an admin user can expend some time configuring a custom admin menu, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
 
 
 ## Developing Custom Admin Node Types
@@ -78,7 +78,7 @@ Commonly the steps that you follow in order to do that are:
 
 3. Optionally, you could implement a ViewModel to move info between the edit views and the driver.
 
-4. Add a class that implements IAdminNodeNavigationBuilder. Its BuildNavigationAsync() method will be called by the AdminTreeNavigationProvidersCoordinator class when it is time to render the menu.
+4. Add a class that implements IAdminNodeNavigationBuilder. Its BuildNavigationAsync() method will be called by the AdminMenuNavigationProvidersCoordinator class when it is time to render the menu.
 
 5. Create the views required to create and edit the admin nodes based on your node type.
 

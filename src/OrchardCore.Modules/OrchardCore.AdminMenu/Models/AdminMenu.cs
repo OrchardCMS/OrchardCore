@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Models
 {
-    public class AdminTree
+    public class AdminMenu
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
         public string Name { get; set; }

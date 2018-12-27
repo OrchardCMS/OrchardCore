@@ -7,9 +7,9 @@ namespace OrchardCore.AdminMenu.Models
     /// <summary>
     /// The list of all the AdminMenu stored on the system.
     /// </summary>
-    public class AdminTreeList
+    public class AdminMenuList
     {
         public int Id { get; set; }
-        public List<AdminTree> AdminMenu { get; set; } = new List<AdminTree>();
+        public List<AdminMenu> AdminMenu { get; set; } = new List<AdminMenu>();
     }
 }

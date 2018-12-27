@@ -6,7 +6,7 @@
 <form asp-action="Create" method="post">
     @await DisplayAsync(Model.Editor.Content)
 
-    <input type="hidden" asp-for="AdminTreeId" />
+    <input type="hidden" asp-for="AdminMenuId" />
     <input type="hidden" asp-for="AdminNodeId" />
     <input type="hidden" asp-for="AdminNodeType" />
 
@@ -16,7 +16,7 @@
             <a class="btn btn-secondary"
                asp-route-controller="Node"
                asp-route-action="List"
-               asp-route-id="@Model.AdminTreeId">@T["Cancel"]</a>
+               asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
         </div>
     </fieldset>
 </form>

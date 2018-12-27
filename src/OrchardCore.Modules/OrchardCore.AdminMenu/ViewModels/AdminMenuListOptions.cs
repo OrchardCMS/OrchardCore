@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OrchardCore.AdminMenu.ViewModels
 {
-    public class AdminTreeListOptions
+    public class AdminMenuListOptions
     {
         public string Search { get; set; }
     }
