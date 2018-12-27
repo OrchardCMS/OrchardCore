@@ -55,8 +55,9 @@ namespace OrchardCore.Environment.Shell
             _configuration = configurationBuilder.Build().GetSection("Tenants");
 
             _configuredTenants = _configuration.GetChildren()
-                .Where(section => section.GetValue<string>("State") != null)
-                .Select(section => section.Key).Distinct().ToArray();
+                .Where(section => section["State"] != null)
+                .Select(section => section.Key).Distinct()
+                .ToArray();
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -65,12 +66,12 @@ namespace OrchardCore.Environment.Shell
                 .AddJsonFile(_tenantsFilePath, optional: true)
                 .Build();
 
-            var localTenants = tenantsSettings.GetChildren().Select(section => section.Key);
-            var tenants = _configuredTenants.Concat(localTenants).Distinct().ToArray();
+            var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+            var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
-            var shellsSettings = new ConcurrentBag<ShellSettings>();
+            var allSettings = new ConcurrentBag<ShellSettings>();
 
-            Parallel.ForEach(tenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
+            Parallel.ForEach(allTenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
             {
                 var localConfigurationPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
 
@@ -89,10 +90,10 @@ namespace OrchardCore.Environment.Shell
                 _configuration.Bind(tenant, shellSettings);
                 tenantsSettings.Bind(tenant, shellSettings);
 
-                shellsSettings.Add(shellSettings);
+                allSettings.Add(shellSettings);
             });
 
-            return shellsSettings;
+            return allSettings;
         }
 
         public void SaveSettings(ShellSettings settings)
@@ -155,14 +156,14 @@ namespace OrchardCore.Environment.Shell
 
             var localConfiguration = new JObject();
 
-            foreach (var data in settings.Configuration.GetChildren())
+            foreach (var section in settings.Configuration.GetChildren())
             {
-                var local = data.Value;
-                var global = globalConfiguration[data.Key];
+                var local = section.Value;
+                var global = globalConfiguration[section.Key];
 
                 if (local != null && global != local)
                 {
-                    localConfiguration[data.Key] = data.Value;
+                    localConfiguration[section.Key] = section.Value;
                 }
             }
 

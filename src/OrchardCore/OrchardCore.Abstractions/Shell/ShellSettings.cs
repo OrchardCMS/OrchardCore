@@ -103,8 +103,11 @@ namespace OrchardCore.Environment.Shell
 
         private StringValues StringValues => new StringValues(
             new [] { Name, RequestUrlHost, RequestUrlPrefix, State.ToString() }
-            .Concat(Configuration.GetChildren().Where(s => s.Value != null)
-            .OrderBy(s => s.Key).Select(s => s.Value)).ToArray());
+            .Concat(Configuration.GetChildren()
+                .Where(s => s.Value != null)
+                .OrderBy(s => s.Key)
+                .Select(s => s.Value))
+            .ToArray());
 
         public bool Equals(ShellSettings other)
         {
