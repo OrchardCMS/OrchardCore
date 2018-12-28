@@ -70,6 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+                    services.AddScoped<IShapeDisplay, ShapeDisplay>();                    
                     services.AddScoped<ILayoutAccessor, LayoutAccessor>();
                     services.AddScoped<IThemeManager, ThemeManager>();
                     services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
