@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -10,29 +8,27 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This
-    /// model is obtained from the 'IShellSettingsManager', which by default reads this
+    /// Represents the minimalistic set of fields stored for each tenant. This model
+    /// is obtained from the 'IShellSettingsManager', which by default reads this
     /// from the 'App_Data/Sites/tenants.json' file.
-    /// Also holds the lazyly built <see cref="IConfiguration"/> of the tenant.
     /// </summary>
     public class ShellSettings : IEquatable<ShellSettings>
     {
-        private IConfiguration _configuration;
-        private IConfiguration _updatableData;
+        private ShellConfiguration _configuration;
 
-        public ShellSettings()
+        public ShellSettings(IConfigurationBuilder builder = null)
         {
+            _configuration = new ShellConfiguration(builder);
         }
 
-        public ShellSettings(ShellSettings shellSettings)
-        {
-            Name = shellSettings.Name;
-            RequestUrlHost = shellSettings.RequestUrlHost;
-            RequestUrlPrefix = shellSettings.RequestUrlPrefix;
-            State = shellSettings.State;
+        public ShellSettings(ShellSettings settings)
+       {
+            _configuration = settings._configuration;
 
-            Configuration = shellSettings.Configuration;
-            _updatableData = shellSettings._updatableData;
+            Name = settings.Name;
+            RequestUrlHost = settings.RequestUrlHost;
+            RequestUrlPrefix = settings.RequestUrlPrefix;
+            State = settings.State;
         }
 
         public string Name { get; set; }
@@ -42,77 +38,26 @@ namespace OrchardCore.Environment.Shell
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State { get; set; } = TenantState.Invalid;
 
-        [JsonIgnore]
-        public IConfigurationBuilder ConfigurationBuilder { get; set; }
-
         /// <summary>
-        /// The lazyly built <see cref="IConfiguration"/> of the tenant.
+        /// The tenant lazyly built <see cref="IConfiguration"/>.
         /// </summary>
         [JsonIgnore]
-        public IConfiguration Configuration
-        {
-            get
-            {
-                if (_configuration == null)
-                {
-                    lock (this)
-                    {
-                        if (_configuration == null)
-                        {
-                            _updatableData = _updatableData ??
-                                new ConfigurationBuilder()
-                                .Add(new MemoryConfigurationSource())
-                                .Build();
-
-                            ConfigurationBuilder = ConfigurationBuilder ??
-                                new ConfigurationBuilder();
-
-                            _configuration = ConfigurationBuilder
-                                .AddConfiguration(_updatableData)
-                                .Build();
-                        }
-                    }
-                }
-
-                return _configuration;
-            }
-            set
-            {
-                lock (this)
-                {
-                    _configuration = value;
-                }
-            }
-        }
+        public IConfiguration Configuration => _configuration.Configuration;
 
         [JsonIgnore]
         public string this[string key]
         {
             get => Configuration[key];
-
-            set
-            {
-                if (Configuration[key] != value)
-                {
-                    lock (this)
-                    {
-                        _updatableData[key] = value;
-                    }
-                }
-            }
+            set => Configuration[key] = value;
         }
 
-        private StringValues StringValues => new StringValues(
-            new [] { Name, RequestUrlHost, RequestUrlPrefix, State.ToString() }
-            .Concat(Configuration.GetChildren()
-                .Where(s => s.Value != null)
-                .OrderBy(s => s.Key)
-                .Select(s => s.Value))
-            .ToArray());
+        internal StringValues StringValues => new StringValues(new[]
+            { Name, RequestUrlHost, RequestUrlPrefix, State.ToString() });
 
         public bool Equals(ShellSettings other)
         {
-            return StringValues.Equals(other?.StringValues ?? String.Empty);
+            return StringValues.Equals(other?.StringValues ?? String.Empty) &&
+                (_configuration.Equals(other?._configuration));
         }
 
         public override int GetHashCode()

@@ -73,17 +73,16 @@ namespace OrchardCore.Environment.Shell
 
             Parallel.ForEach(allTenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
             {
-                var localConfigurationPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
+                var localConfigPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
 
                 var configurationBuilder = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddJsonFile(localConfigurationPath, optional: true);
+                    .AddJsonFile(localConfigPath, optional: true);
 
-                var shellSettings = new ShellSettings()
+                var shellSettings = new ShellSettings(configurationBuilder)
                 {
-                    Name = tenant,
-                    ConfigurationBuilder = configurationBuilder
+                    Name = tenant
                 };
 
                 _configuration.Bind(shellSettings);
@@ -103,24 +102,27 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var shellSettings = new ShellSettings() { Name = settings.Name };
+            var shellSettings = new ShellSettings()
+            {
+                Name = settings.Name
+            };
 
             _configuration.Bind(shellSettings);
             _configuration.Bind(settings.Name, shellSettings);
 
-            var localSettings = JObject.FromObject(settings);
-            var globalSettings = JObject.FromObject(shellSettings);
+            var configObject = JObject.FromObject(shellSettings);
+            var settingsObject = JObject.FromObject(settings);
 
-            localSettings.Remove("Name");
+            settingsObject.Remove("Name");
 
-            foreach (var property in globalSettings)
+            foreach (var property in configObject)
             {
-                var local = localSettings.Value<string>(property.Key);
-                var global = globalSettings.Value<string>(property.Key);
+                var setting = settingsObject.Value<string>(property.Key);
+                var configValue = configObject.Value<string>(property.Key);
 
-                if (local == null || global == local)
+                if (setting == null || setting == configValue)
                 {
-                    localSettings.Remove(property.Key);
+                    settingsObject.Remove(property.Key);
                 }
             }
 
@@ -128,20 +130,20 @@ namespace OrchardCore.Environment.Shell
             {
                 try
                 {
-                    JObject tenantsSettings;
+                    JObject tenantsObject;
 
                     if (File.Exists(_tenantsFilePath))
                     {
-                        tenantsSettings = JObject.Parse(File.ReadAllText(_tenantsFilePath));
+                        tenantsObject = JObject.Parse(File.ReadAllText(_tenantsFilePath));
                     }
                     else
                     {
-                        tenantsSettings = new JObject();
+                        tenantsObject = new JObject();
                     }
 
-                    tenantsSettings[settings.Name] = localSettings;
+                    tenantsObject[settings.Name] = settingsObject;
 
-                    File.WriteAllText(_tenantsFilePath, tenantsSettings.ToString());
+                    File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
                 }
 
                 catch (IOException)
@@ -149,33 +151,30 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            var globalConfiguration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddConfiguration(_configuration)
                 .AddConfiguration(_configuration.GetSection(settings.Name))
                 .Build();
 
-            var localConfiguration = new JObject();
+            var localConfigObject = new JObject();
 
-            foreach (var section in settings.Configuration.GetChildren())
+            foreach (var section in settings.Configuration.GetChildren().Where(s => s != null))
             {
-                var local = section.Value;
-                var global = globalConfiguration[section.Key];
-
-                if (local != null && global != local)
+                if (section.Value != configuration[section.Key])
                 {
-                    localConfiguration[section.Key] = section.Value;
+                    localConfigObject[section.Key] = section.Value;
                 }
             }
 
-            localSettings.Remove("Name");
+            localConfigObject.Remove("Name");
 
             var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-            var localConfigurationPath = Path.Combine(tenantFolder, "appsettings.json");
+            var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
 
             try
             {
                 Directory.CreateDirectory(tenantFolder);
-                File.WriteAllText(localConfigurationPath, localConfiguration.ToString());
+                File.WriteAllText(localConfigPath, localConfigObject.ToString());
             }
 
             catch (IOException)
