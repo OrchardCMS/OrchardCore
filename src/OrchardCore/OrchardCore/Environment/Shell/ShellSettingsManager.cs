@@ -130,16 +130,8 @@ namespace OrchardCore.Environment.Shell
             {
                 try
                 {
-                    JObject tenantsObject;
-
-                    if (File.Exists(_tenantsFilePath))
-                    {
-                        tenantsObject = JObject.Parse(File.ReadAllText(_tenantsFilePath));
-                    }
-                    else
-                    {
-                        tenantsObject = new JObject();
-                    }
+                    var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
+                        : JObject.Parse(File.ReadAllText(_tenantsFilePath));
 
                     tenantsObject[settings.Name] = settingsObject;
 

@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings(ShellSettings settings)
        {
-            _configuration = settings._configuration;
+            _configuration = new ShellConfiguration(settings._configuration);
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;
@@ -47,8 +47,8 @@ namespace OrchardCore.Environment.Shell
         [JsonIgnore]
         public string this[string key]
         {
-            get => Configuration[key];
-            set => Configuration[key] = value;
+            get => _configuration[key];
+            set => _configuration[key] = value;
         }
 
         internal StringValues StringValues => new StringValues(new[]

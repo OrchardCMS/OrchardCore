@@ -18,9 +18,27 @@ namespace OrchardCore.Environment.Shell
 
         private IConfigurationBuilder _configurationBuilder;
 
-        public ShellConfiguration(IConfigurationBuilder configurationBuilder)
+        public ShellConfiguration(IConfigurationBuilder builder)
         {
-            _configurationBuilder = configurationBuilder;
+            _configurationBuilder = builder;
+        }
+
+        public ShellConfiguration(ShellConfiguration configuration)
+        {
+            if (configuration._configuration == null)
+            {
+                _configurationBuilder = configuration._configurationBuilder;
+                return;
+            }
+
+            _updatableData = new ConfigurationBuilder()
+                .Add(new MemoryConfigurationSource())
+                .Build();
+
+            foreach (var section in configuration._configuration.GetChildren())
+            {
+                _updatableData[section.Key] = configuration._configuration[section.Key];
+            }
         }
 
         /// <summary>
@@ -36,13 +54,13 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (_configuration == null)
                         {
+                            _configurationBuilder = _configurationBuilder ??
+                                new ConfigurationBuilder();
+
                             _updatableData = _updatableData ??
                                 new ConfigurationBuilder()
                                 .Add(new MemoryConfigurationSource())
                                 .Build();
-
-                            _configurationBuilder = _configurationBuilder ??
-                                new ConfigurationBuilder();
 
                             _configuration = _configurationBuilder
                                 .AddConfiguration(_updatableData)
