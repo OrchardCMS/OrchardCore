@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -14,8 +13,8 @@ namespace OrchardCore.Environment.Shell
             };
         }
 
-        public void SaveSettings(ShellSettings shellSettings) { }
-
-        public IConfiguration Configuration => new ConfigurationBuilder().Build();
+        public void SaveSettings(ShellSettings shellSettings)
+        {
+        }
     }
 }
