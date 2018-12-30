@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -11,7 +8,7 @@ namespace OrchardCore.Environment.Shell
     /// from the application configuration, the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    internal class ShellConfiguration : IEquatable<ShellConfiguration>
+    internal class ShellConfiguration
     {
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
@@ -31,14 +28,16 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
+            _configurationBuilder = new ConfigurationBuilder()
+                .AddConfiguration(configuration._configuration);
+
             _updatableData = new ConfigurationBuilder()
                 .Add(new MemoryConfigurationSource())
                 .Build();
 
-            foreach (var section in configuration._configuration.GetChildren())
-            {
-                _updatableData[section.Key] = configuration._configuration[section.Key];
-            }
+            _configuration = _configurationBuilder
+                .AddConfiguration(_updatableData)
+                .Build();
         }
 
         /// <summary>
@@ -94,23 +93,6 @@ namespace OrchardCore.Environment.Shell
                     }
                 }
             }
-        }
-
-        internal StringValues StringValues => new StringValues(
-            Configuration.GetChildren()
-            .Where(s => s.Value != null)
-            .OrderBy(s => s.Key)
-            .Select(s => s.Value)
-            .ToArray());
-
-        public bool Equals(ShellConfiguration other)
-        {
-            return StringValues.Equals(other?.StringValues ?? String.Empty);
-        }
-
-        public override int GetHashCode()
-        {
-            return StringValues.GetHashCode();
         }
     }
 }

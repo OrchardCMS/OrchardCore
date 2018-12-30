@@ -1,6 +1,4 @@
-using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using OrchardCore.Environment.Shell.Models;
@@ -12,7 +10,7 @@ namespace OrchardCore.Environment.Shell
     /// is obtained from the 'IShellSettingsManager', which by default reads this
     /// from the 'App_Data/Sites/tenants.json' file.
     /// </summary>
-    public class ShellSettings : IEquatable<ShellSettings>
+    public class ShellSettings
     {
         private ShellConfiguration _configuration;
 
@@ -49,20 +47,6 @@ namespace OrchardCore.Environment.Shell
         {
             get => _configuration[key];
             set => _configuration[key] = value;
-        }
-
-        internal StringValues StringValues => new StringValues(new[]
-            { Name, RequestUrlHost, RequestUrlPrefix, State.ToString() });
-
-        public bool Equals(ShellSettings other)
-        {
-            return StringValues.Equals(other?.StringValues ?? String.Empty) &&
-                (_configuration.Equals(other?._configuration));
-        }
-
-        public override int GetHashCode()
-        {
-            return StringValues.GetHashCode();
         }
     }
 }

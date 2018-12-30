@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -56,7 +57,8 @@ namespace OrchardCore.Environment.Shell
 
             _configuredTenants = _configuration.GetChildren()
                 .Where(section => section["State"] != null)
-                .Select(section => section.Key).Distinct()
+                .Select(section => section.Key)
+                .Distinct()
                 .ToArray();
         }
 
@@ -75,19 +77,24 @@ namespace OrchardCore.Environment.Shell
             {
                 var localConfigPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
 
-                var configurationBuilder = new ConfigurationBuilder()
+                var builder = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
                     .AddJsonFile(localConfigPath, optional: true);
 
-                var shellSettings = new ShellSettings(configurationBuilder)
-                {
-                    Name = tenant
-                };
+                var settings = new ConfigurationBuilder()
+                    .AddConfiguration(_configuration)
+                    .AddConfiguration(_configuration.GetSection(tenant))
+                    .AddConfiguration(tenantsSettings.GetSection(tenant))
+                    .Build();
 
-                _configuration.Bind(shellSettings);
-                _configuration.Bind(tenant, shellSettings);
-                tenantsSettings.Bind(tenant, shellSettings);
+                var shellSettings = new ShellSettings(builder)
+                {
+                    Name = tenant,
+                    RequestUrlHost = settings["RequestUrlHost"],
+                    RequestUrlPrefix = settings["RequestUrlPrefix"],
+                    State = settings.GetValue<TenantState>("State")
+                };
 
                 allSettings.Add(shellSettings);
             });
@@ -102,13 +109,17 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
+            var configuration = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(settings.Name))
+                .Build();
+
             var shellSettings = new ShellSettings()
             {
-                Name = settings.Name
+                Name = settings.Name,
             };
 
-            _configuration.Bind(shellSettings);
-            _configuration.Bind(settings.Name, shellSettings);
+            configuration.Bind(shellSettings);
 
             var configObject = JObject.FromObject(shellSettings);
             var settingsObject = JObject.FromObject(settings);
@@ -143,16 +154,11 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            var configuration = new ConfigurationBuilder()
-                .AddConfiguration(_configuration)
-                .AddConfiguration(_configuration.GetSection(settings.Name))
-                .Build();
-
             var localConfigObject = new JObject();
 
-            foreach (var section in settings.Configuration.GetChildren().Where(s => s != null))
+            foreach (var section in settings.Configuration.GetChildren().ToArray())
             {
-                if (section.Value != configuration[section.Key])
+                if (section.Value != null && section.Value != configuration[section.Key])
                 {
                     localConfigObject[section.Key] = section.Value;
                 }
