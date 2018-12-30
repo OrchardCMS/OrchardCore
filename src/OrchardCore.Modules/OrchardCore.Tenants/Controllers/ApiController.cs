@@ -73,7 +73,7 @@ namespace OrchardCore.Tenants.Controllers
         public IHtmlLocalizer H { get; set; }
 
         [HttpPost]
-        [Route("create")]        
+        [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
             if (!IsDefaultShell())
@@ -123,13 +123,14 @@ namespace OrchardCore.Tenants.Controllers
                         Name = model.Name,
                         RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
                         RequestUrlHost = model.RequestUrlHost,
-                        ConnectionString = model.ConnectionString,
-                        TablePrefix = model.TablePrefix,
-                        DatabaseProvider = model.DatabaseProvider,
                         State = TenantState.Uninitialized,
-                        Secret = Guid.NewGuid().ToString(),
-                        RecipeName = model.RecipeName
                     };
+
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = model.RecipeName;
 
                     _shellSettingsManager.SaveSettings(shellSettings);
                     var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
@@ -184,14 +185,14 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var tablePrefix = shellSettings.TablePrefix;
+            var tablePrefix = shellSettings["TablePrefix"];
 
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
             }
 
-            var connectionString = shellSettings.ConnectionString;
+            var connectionString = shellSettings["connectionString"];
 
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -203,7 +204,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The connection string is required for this database provider."]);
             }
 
-            var recipeName = shellSettings.RecipeName;
+            var recipeName = shellSettings["RecipeName"];
 
             if (String.IsNullOrEmpty(recipeName))
             {
@@ -317,7 +318,7 @@ namespace OrchardCore.Tenants.Controllers
         {
             // Create a public url to setup the new tenant
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-            var token = dataProtector.Protect(shellSettings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
             return token;
         }
     }

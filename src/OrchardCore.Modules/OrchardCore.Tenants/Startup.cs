@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Setup;
 
 namespace OrchardCore.Tenants

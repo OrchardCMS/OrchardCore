@@ -1,57 +1,105 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        private readonly IEnumerable<IShellSettingsConfigurationProvider> _configurationProviders;
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IOptions<ShellOptions> _options;
+        private readonly string _tenantsFilePath;
+        private readonly string _tenantsContainerPath;
+        private readonly IEnumerable<string> _configuredTenants;
+        private readonly IConfiguration _configuration;
 
         public ShellSettingsManager(
-            IEnumerable<IShellSettingsConfigurationProvider> configurationProviders,
+            IConfiguration applicationConfiguration,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
-            _configurationProviders = configurationProviders.OrderBy(x => x.Order);
-            _hostingEnvironment = hostingEnvironment;
-            _options = options;
+            var appDataPath = options.Value.ShellsApplicationDataPath;
+
+            _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
+            Directory.CreateDirectory(_tenantsContainerPath);
+
+            _tenantsFilePath = Path.Combine(_tenantsContainerPath, "tenants.json");
+
+            var environment = hostingEnvironment.EnvironmentName;
+            var ENVIRONMENT = environment.ToUpperInvariant();
+            var appsettings = Path.Combine(appDataPath, "appsettings");
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddConfiguration(applicationConfiguration)
+
+                .AddJsonFile($"{appsettings}.json", optional: true)
+                .AddJsonFile($"{appsettings}.{environment}.json", optional: true)
+
+                .AddEnvironmentVariables("ORCHARDCORE_")
+                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_");
+
+            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
+                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
+
+            if (commandLineProvider != null)
+            {
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
+            }
+
+            _configuration = configurationBuilder.Build().GetSection("Tenants");
+
+            _configuredTenants = _configuration.GetChildren()
+                .Where(section => section["State"] != null)
+                .Select(section => section.Key)
+                .Distinct()
+                .ToArray();
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var tenantsContainerPath = Path.Combine(
-                _options.Value.ShellsApplicationDataPath,
-                _options.Value.ShellsContainerName);
+            var tenantsSettings = new ConfigurationBuilder()
+                .AddJsonFile(_tenantsFilePath, optional: true)
+                .Build();
 
-            if (!Directory.Exists(tenantsContainerPath))
+            var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+            var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
+
+            var allSettings = new ConcurrentBag<ShellSettings>();
+
+            Parallel.ForEach(allTenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
             {
-                return Enumerable.Empty<ShellSettings>();
-            }
+                var localConfigPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
 
-            var tenantFolders = Directory.GetDirectories(tenantsContainerPath);
+                var builder = new ConfigurationBuilder()
+                    .AddConfiguration(_configuration)
+                    .AddConfiguration(_configuration.GetSection(tenant))
+                    .AddJsonFile(localConfigPath, optional: true);
 
-            var shellSettings = new List<ShellSettings>();
+                var settings = new ConfigurationBuilder()
+                    .AddConfiguration(_configuration)
+                    .AddConfiguration(_configuration.GetSection(tenant))
+                    .AddConfiguration(tenantsSettings.GetSection(tenant))
+                    .Build();
 
-            foreach (var tenantFolder in tenantFolders)
-            {
-                var configurationRoot = BuildConfiguration(tenantFolder, ignoreAppSettings: false);
+                var shellSettings = new ShellSettings(builder)
+                {
+                    Name = tenant,
+                    RequestUrlHost = settings["RequestUrlHost"],
+                    RequestUrlPrefix = settings["RequestUrlPrefix"],
+                    State = settings.GetValue<TenantState>("State")
+                };
 
-                var shellSetting = new ShellSettings();
+                allSettings.Add(shellSettings);
+            });
 
-                configurationRoot.Bind(shellSetting);
-
-                shellSettings.Add(shellSetting);
-            }
-
-            return shellSettings;
+            return allSettings;
         }
 
         public void SaveSettings(ShellSettings settings)
@@ -61,91 +109,75 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var tenantFolder = Path.Combine(
-                _options.Value.ShellsApplicationDataPath,
-                _options.Value.ShellsContainerName,
-                settings.Name);
+            var configuration = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(settings.Name))
+                .Build();
 
-            var globalConfiguration = BuildConfiguration(tenantFolder, ignoreAppSettings: true);
-            var localConfiguration = BuildConfiguration(tenantFolder, ignoreAppSettings: false);
-
-            var localSettings = new ShellSettings();
-
-            localSettings.Name = settings.Name;
-
-            // We set app settings if the local settings have the settings or it's
-            // not defined in the global ones.
-
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.ConnectionString)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.ConnectionString)]))
+            var shellSettings = new ShellSettings()
             {
-                localSettings.ConnectionString = settings.ConnectionString;
+                Name = settings.Name,
+            };
+
+            configuration.Bind(shellSettings);
+
+            var configObject = JObject.FromObject(shellSettings);
+            var settingsObject = JObject.FromObject(settings);
+
+            settingsObject.Remove("Name");
+
+            foreach (var property in configObject)
+            {
+                var setting = settingsObject.Value<string>(property.Key);
+                var configValue = configObject.Value<string>(property.Key);
+
+                if (setting == null || setting == configValue)
+                {
+                    settingsObject.Remove(property.Key);
+                }
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.DatabaseProvider)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.DatabaseProvider)]))
+            lock (this)
             {
-                localSettings.DatabaseProvider = settings.DatabaseProvider;
+                try
+                {
+                    var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
+                        : JObject.Parse(File.ReadAllText(_tenantsFilePath));
+
+                    tenantsObject[settings.Name] = settingsObject;
+
+                    File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
+                }
+
+                catch (IOException)
+                {
+                }
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RecipeName)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RecipeName)]))
+            var localConfigObject = new JObject();
+
+            foreach (var section in settings.Configuration.GetChildren().ToArray())
             {
-                localSettings.RecipeName = settings.RecipeName;
+                if (section.Value != null && section.Value != configuration[section.Key])
+                {
+                    localConfigObject[section.Key] = section.Value;
+                }
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlHost)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlHost)]))
+            localConfigObject.Remove("Name");
+
+            var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
+            var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
+
+            try
             {
-                localSettings.RequestUrlHost = settings.RequestUrlHost;
+                Directory.CreateDirectory(tenantFolder);
+                File.WriteAllText(localConfigPath, localConfigObject.ToString());
             }
 
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.RequestUrlPrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.RequestUrlPrefix)]))
+            catch (IOException)
             {
-                localSettings.RequestUrlPrefix = settings.RequestUrlPrefix;
             }
-
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.Secret)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.Secret)]))
-            {
-                localSettings.Secret = settings.Secret;
-            }
-
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.State)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.State)]))
-            {
-                localSettings.State = settings.State;
-            }
-
-            if (!String.IsNullOrEmpty(localConfiguration[nameof(ShellSettings.TablePrefix)]) || String.IsNullOrEmpty(globalConfiguration[nameof(ShellSettings.TablePrefix)]))
-            {
-                localSettings.TablePrefix = settings.TablePrefix;
-            }
-
-            Directory.CreateDirectory(tenantFolder);
-
-            File.WriteAllText(Path.Combine(tenantFolder, "appsettings.json"), JsonConvert.SerializeObject(localSettings));
-        }
-
-        private IConfigurationRoot BuildConfiguration(string tenantFolder, bool ignoreAppSettings)
-        {
-            var tenantName = Path.GetFileName(tenantFolder);
-
-            var configurationBuilder = new ConfigurationBuilder();
-
-            configurationBuilder.AddEnvironmentVariables();
-            configurationBuilder.AddEnvironmentVariables(tenantName.ToUpperInvariant() + "_");
-            configurationBuilder.AddEnvironmentVariables(tenantName.ToUpperInvariant() + "_" + _hostingEnvironment.EnvironmentName);
-            configurationBuilder.AddJsonFile("appsettings.tenants.json", optional: true);
-            configurationBuilder.AddJsonFile($"appsettings.tenants.{_hostingEnvironment.EnvironmentName}.json", optional: true);
-
-            if (!ignoreAppSettings)
-            {
-                configurationBuilder.AddJsonFile(Path.Combine(tenantFolder, "appsettings.json"), optional: true);
-            }
-
-            configurationBuilder.AddJsonFile(Path.Combine(tenantFolder, $"appsettings.{_hostingEnvironment.EnvironmentName}.json"), optional: true);
-
-            foreach (var configurationProvider in _configurationProviders)
-            {
-                configurationProvider.Configure(tenantName, configurationBuilder);
-            }
-
-            return configurationBuilder.Build();
         }
     }
 }
