@@ -34,26 +34,24 @@ namespace OrchardCore.Users.Controllers
 
         protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
         {
-            var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines
-                    .Select(x => x.FindView(
-                        ControllerContext,
-                        ControllerContext.ActionDescriptor.ActionName, 
-                        false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
-            {
-                ServiceProvider = ControllerContext.HttpContext.RequestServices,
-                Value = model,
-                ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
-            };
-
             var body = string.Empty;
 
             using (var sw = new StringWriter())
             {
+                var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
+                // Just use the current context to get a view and then create a view context.
+                var view = options.Value.ViewEngines
+                        .Select(x => x.FindView(
+                            ControllerContext,
+                            ControllerContext.ActionDescriptor.ActionName,
+                            false)).FirstOrDefault()?.View;
+
+                var displayContext = new DisplayContext()
+                {
+                    ServiceProvider = ControllerContext.HttpContext.RequestServices,
+                    Value = model,
+                    ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, sw, new HtmlHelperOptions())
+                };
                 var htmlContent = await _displayManager.ExecuteAsync(displayContext);
                 htmlContent.WriteTo(sw, HtmlEncoder.Default);
                 body = sw.ToString();
