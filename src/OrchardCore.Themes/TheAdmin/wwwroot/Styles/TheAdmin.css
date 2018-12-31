@@ -7084,7 +7084,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     display: block; }
   body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
     position: absolute;
-    top: 33%;
+    top: 38%;
     left: 100%;
     margin-left: -25px; }
   body:not(.left-sidebar-compact) #ta-left-sidebar label, body:not(.left-sidebar-compact) #ta-left-sidebar a {
@@ -7145,7 +7145,11 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
             width: 35px; }
         body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
           flex-grow: 1;
-          font-size: 14px; }
+          font-size: 14px;
+          width: calc(100% - 48px - 45px);
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis; }
       body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin > li > .item-label > .collapse-icon {
         color: rgba(255, 0, 0, 0);
         display: flex;
@@ -7277,7 +7281,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     display: block; }
   .left-sidebar-compact #ta-left-sidebar .chevron {
     position: absolute;
-    top: 33%;
+    top: 38%;
     left: 100%;
     margin-left: -25px; }
   .left-sidebar-compact #ta-left-sidebar label, .left-sidebar-compact #ta-left-sidebar a {
@@ -7332,7 +7336,11 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         width: 37px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.title {
         flex-grow: 1;
-        font-size: 14px; }
+        font-size: 14px;
+        width: calc(100% - 48px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > .collapse-icon {
       color: rgba(255, 0, 0, 0);
       display: flex;
@@ -7399,7 +7407,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       padding-left: 0px !important;
       display: flex; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label .title {
-        padding-left: 20px; }
+        padding: 0 20px; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label .title:hover {
           background-color: #f8f9fa !important;
           color: #495057; }
@@ -7414,7 +7422,11 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.title {
         flex-grow: 1;
         font-size: 14px;
-        font-weight: bold; }
+        font-weight: bold;
+        width: calc(100% - 48px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.title:after {
         content: "";
         height: 1px;
