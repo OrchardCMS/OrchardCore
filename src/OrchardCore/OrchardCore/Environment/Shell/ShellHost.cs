@@ -166,6 +166,7 @@ namespace OrchardCore.Environment.Shell
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
             var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
+            var otherSettings = allSettings.Except(new[] { defaultSettings }).ToArray();
 
             features.Wait();
 
@@ -174,6 +175,7 @@ namespace OrchardCore.Environment.Shell
             {
                 var setupContext = await CreateSetupContextAsync();
                 AddAndRegisterShell(setupContext);
+                allSettings = otherSettings;
             }
 
             if (allSettings.Length > 0)
