@@ -32,7 +32,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(configuration._configuration);
 
             _updatableData = new ConfigurationBuilder()
-                .Add(new MemoryConfigurationSource())
+                .AddInMemoryCollection()
                 .Build();
 
             _configuration = _configurationBuilder
@@ -58,7 +58,7 @@ namespace OrchardCore.Environment.Shell
 
                             _updatableData = _updatableData ??
                                 new ConfigurationBuilder()
-                                .Add(new MemoryConfigurationSource())
+                                .AddInMemoryCollection()
                                 .Build();
 
                             _configuration = _configurationBuilder

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
@@ -71,9 +69,9 @@ namespace OrchardCore.Environment.Shell
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
-            var allSettings = new ConcurrentBag<ShellSettings>();
+            var allSettings = new List<ShellSettings>();
 
-            Parallel.ForEach(allTenants, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (tenant) =>
+            foreach (var tenant in allTenants)
             {
                 var localConfigPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
 
@@ -97,7 +95,7 @@ namespace OrchardCore.Environment.Shell
                 };
 
                 allSettings.Add(shellSettings);
-            });
+            };
 
             return allSettings;
         }
