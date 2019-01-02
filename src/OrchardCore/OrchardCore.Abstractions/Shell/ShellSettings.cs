@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -14,9 +15,15 @@ namespace OrchardCore.Environment.Shell
     {
         private ShellConfiguration _configuration;
 
-        public ShellSettings(IConfigurationBuilder builder = null)
+        public ShellSettings() : this(null, null) { }
+
+        public ShellSettings(string name) : this(name, null) { }
+
+        public ShellSettings(string name, Func<string, IConfigurationBuilder> factory)
         {
-            _configuration = new ShellConfiguration(builder);
+            _configuration = new ShellConfiguration(name, factory);
+
+            Name = name;
         }
 
         public ShellSettings(ShellSettings settings)

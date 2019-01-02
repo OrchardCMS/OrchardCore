@@ -87,7 +87,7 @@ namespace OrchardCore.Environment.Shell.Builders
             startups = startups.OrderBy(s => s.Order);
 
             // To not trigger features loading before it is normally done by 'ShellHost',
-            // Init here the application feature in place of doing it in the constructor.
+            // init here the application feature in place of doing it in the constructor.
             EnsureApplicationFeature();
 
             // Let any module add custom service descriptors to the tenant

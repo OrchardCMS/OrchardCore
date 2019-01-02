@@ -13,10 +13,11 @@ namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        private readonly string _tenantsFilePath;
         private readonly string _tenantsContainerPath;
-        private readonly IEnumerable<string> _configuredTenants;
+        private readonly string _tenantsFilePath;
         private readonly IConfiguration _configuration;
+        private readonly IEnumerable<string> _configuredTenants;
+        private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
@@ -58,6 +59,11 @@ namespace OrchardCore.Environment.Shell
                 .Select(section => section.Key)
                 .Distinct()
                 .ToArray();
+
+            _configBuilderFactory = (tenant) => new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(tenant))
+                .AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -73,22 +79,14 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var tenant in allTenants)
             {
-                var localConfigPath = Path.Combine(_tenantsContainerPath, tenant, "appsettings.json");
-
-                var builder = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
-                    .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddJsonFile(localConfigPath, optional: true);
-
                 var settings = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
                     .AddConfiguration(tenantsSettings.GetSection(tenant))
                     .Build();
 
-                var shellSettings = new ShellSettings(builder)
+                var shellSettings = new ShellSettings(tenant, _configBuilderFactory)
                 {
-                    Name = tenant,
                     RequestUrlHost = settings["RequestUrlHost"],
                     RequestUrlPrefix = settings["RequestUrlPrefix"],
                     State = settings.GetValue<TenantState>("State")
@@ -112,10 +110,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_configuration.GetSection(settings.Name))
                 .Build();
 
-            var shellSettings = new ShellSettings()
-            {
-                Name = settings.Name,
-            };
+            var shellSettings = new ShellSettings(settings.Name);
 
             configuration.Bind(shellSettings);
 

@@ -1,5 +1,5 @@
+using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -13,31 +13,27 @@ namespace OrchardCore.Environment.Shell
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
 
+        private readonly string _name;
+        private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private IConfigurationBuilder _configurationBuilder;
 
-        public ShellConfiguration(IConfigurationBuilder builder)
+        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
         {
-            _configurationBuilder = builder;
+            _name = name;
+            _configBuilderFactory = factory;
         }
 
         public ShellConfiguration(ShellConfiguration configuration)
         {
             if (configuration._configuration == null)
             {
-                _configurationBuilder = configuration._configurationBuilder;
+                _name = configuration._name;
+                _configBuilderFactory = configuration._configBuilderFactory;
                 return;
             }
 
             _configurationBuilder = new ConfigurationBuilder()
                 .AddConfiguration(configuration._configuration);
-
-            _updatableData = new ConfigurationBuilder()
-                .AddInMemoryCollection()
-                .Build();
-
-            _configuration = _configurationBuilder
-                .AddConfiguration(_updatableData)
-                .Build();
         }
 
         /// <summary>
@@ -53,15 +49,15 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (_configuration == null)
                         {
-                            _configurationBuilder = _configurationBuilder ??
+                            var configurationBuilder = _configurationBuilder ??
+                                _configBuilderFactory?.Invoke(_name) ??
                                 new ConfigurationBuilder();
 
-                            _updatableData = _updatableData ??
-                                new ConfigurationBuilder()
+                            _updatableData = new ConfigurationBuilder()
                                 .AddInMemoryCollection()
                                 .Build();
 
-                            _configuration = _configurationBuilder
+                            _configuration = configurationBuilder
                                 .AddConfiguration(_updatableData)
                                 .Build();
                         }
@@ -69,13 +65,6 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 return _configuration;
-            }
-            set
-            {
-                lock (this)
-                {
-                    _configuration = value;
-                }
             }
         }
 
