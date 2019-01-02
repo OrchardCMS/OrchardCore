@@ -15,20 +15,16 @@ namespace OrchardCore.Environment.Shell
     {
         private ShellConfiguration _configuration;
 
-        public ShellSettings() : this(null, null) { }
+        public ShellSettings(): this(factory: null) { }
 
-        public ShellSettings(string name) : this(name, null) { }
-
-        public ShellSettings(string name, Func<string, IConfigurationBuilder> factory)
+        public ShellSettings(Func<string, IConfigurationBuilder> factory)
         {
-            _configuration = new ShellConfiguration(name, factory);
-
-            Name = name;
+            _configuration = new ShellConfiguration(this, factory);
         }
 
         public ShellSettings(ShellSettings settings)
         {
-            _configuration = new ShellConfiguration(settings._configuration);
+            _configuration = new ShellConfiguration(this, settings._configuration);
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;

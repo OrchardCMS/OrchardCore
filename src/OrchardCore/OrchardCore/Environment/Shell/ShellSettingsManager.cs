@@ -85,8 +85,9 @@ namespace OrchardCore.Environment.Shell
                     .AddConfiguration(tenantsSettings.GetSection(tenant))
                     .Build();
 
-                var shellSettings = new ShellSettings(tenant, _configBuilderFactory)
+                var shellSettings = new ShellSettings(_configBuilderFactory)
                 {
+                    Name = tenant,
                     RequestUrlHost = settings["RequestUrlHost"],
                     RequestUrlPrefix = settings["RequestUrlPrefix"],
                     State = settings.GetValue<TenantState>("State")
@@ -110,7 +111,10 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_configuration.GetSection(settings.Name))
                 .Build();
 
-            var shellSettings = new ShellSettings(settings.Name);
+            var shellSettings = new ShellSettings()
+            {
+                Name = settings.Name
+            };
 
             configuration.Bind(shellSettings);
 
