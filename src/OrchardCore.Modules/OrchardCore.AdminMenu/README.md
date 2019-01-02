@@ -74,7 +74,7 @@ Commonly the steps that you follow in order to do that are:
 
 1. Add a class that inherits from `AdminNode`. On this class add the specific properties that you want for your node type. This is the info that will go into the database.
 
-2. Add a Driver to handle the display and edit of your admin node on the Admin. This won't handle the actual rendering of the admin menu. Drivers are only about the views required to create and edit the admin tree.
+2. Add a Driver to handle the display and edit of your admin node on the Admin. This won't handle the actual rendering of the admin menu. Drivers are only about the views required to create and edit the admin menu.
 
 3. Optionally, you could implement a ViewModel to move info between the edit views and the driver.
 

@@ -92,8 +92,8 @@ namespace OrchardCore.AdminMenu.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error when retrieving the list of admin trees");
-                _notifier.Error(H["Error when retrieving the list of admin trees"]);
+                Logger.LogError(ex, "Error when retrieving the list of admin menus");
+                _notifier.Error(H["Error when retrieving the list of admin menus"]);
             }
 
 
@@ -191,7 +191,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _AdminMenuService.SaveAsync(tree);                
 
-                _notifier.Success(H["Admin tree updated successfully"]);
+                _notifier.Success(H["Admin menu updated successfully"]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -211,7 +211,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (tree == null)
             {
-                _notifier.Error(H["Can't find the admin tree."]);
+                _notifier.Error(H["Can't find the admin menu."]);
                 return RedirectToAction(nameof(List));
             }
 
@@ -220,11 +220,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (removed == 1)
             {
-                _notifier.Success(H["Admin tree deleted successfully"]);
+                _notifier.Success(H["Admin menu deleted successfully"]);
             }
             else
             {
-                _notifier.Error(H["Can't delete the admin tree."]);
+                _notifier.Error(H["Can't delete the admin menu."]);
             }
 
             return RedirectToAction(nameof(List));
@@ -250,7 +250,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _AdminMenuService.SaveAsync(tree);
 
-            _notifier.Success(H["Admin tree toggled successfully"]);
+            _notifier.Success(H["Admin menu toggled successfully"]);
 
             return RedirectToAction(nameof(List));
         }

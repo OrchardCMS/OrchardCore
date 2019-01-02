@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.AdminMenu.Recipes
 {
     /// <summary>
-    /// This recipe step creates a set of admin trees.
+    /// This recipe step creates a set of admin menus.
     /// </summary>
     public class AdminMenuStep : IRecipeStepHandler
     {
