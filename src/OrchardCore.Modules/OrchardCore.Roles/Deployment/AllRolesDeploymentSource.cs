@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Roles.Recipes;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment
@@ -30,17 +33,22 @@ namespace OrchardCore.Roles.Deployment
 
             // Get all roles
             var allRoleNames = await _roleProvider.GetRoleNamesAsync();
-            var data = new JArray();
+            var permissions = new JArray();
             var tasks = new List<Task>();
 
-            foreach(var roleName in allRoleNames)
+            foreach (var roleName in allRoleNames)
             {
                 var task = _roleManager.FindByNameAsync(_roleManager.NormalizeKey(roleName)).ContinueWith(async roleTask =>
                 {
-                    var role = (Role) await roleTask;
+                    var role = (Role)await roleTask;
                     if (role != null)
                     {
-                        data.Add(JObject.FromObject(role));
+                        permissions.Add(JObject.FromObject(
+                            new RolesStepRoleModel
+                            {
+                                Name = role.NormalizedRoleName,
+                                Permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                            }));
                     }
                 });
 
@@ -51,7 +59,7 @@ namespace OrchardCore.Roles.Deployment
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "Roles"),
-                new JProperty("Data", data)
+                new JProperty("Roles", permissions)
             ));
         }
     }
