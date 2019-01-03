@@ -13,19 +13,19 @@ namespace OrchardCore.Environment.Shell
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
 
-        private readonly ShellSettings _settings;
+        private readonly ShellSettings _shellSettings;
         private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private IConfigurationBuilder _configurationBuilder;
 
         public ShellConfiguration(ShellSettings settings, Func<string, IConfigurationBuilder> factory)
         {
-            _settings = settings;
+            _shellSettings = settings;
             _configBuilderFactory = factory;
         }
 
         public ShellConfiguration(ShellSettings settings, ShellConfiguration configuration)
         {
-            _settings = settings;
+            _shellSettings = settings;
 
             if (configuration._configuration == null)
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.Environment.Shell
                         if (_configuration == null)
                         {
                             var configurationBuilder = _configurationBuilder ??
-                                _configBuilderFactory?.Invoke(_settings.Name) ??
+                                _configBuilderFactory?.Invoke(_shellSettings.Name) ??
                                 new ConfigurationBuilder();
 
                             _updatableData = new ConfigurationBuilder()

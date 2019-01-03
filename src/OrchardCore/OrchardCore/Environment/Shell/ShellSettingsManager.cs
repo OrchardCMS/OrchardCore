@@ -153,9 +153,11 @@ namespace OrchardCore.Environment.Shell
 
             var localConfigObject = new JObject();
 
-            foreach (var section in settings.Configuration.GetChildren().ToArray())
+            var sections = settings.Configuration.GetChildren().Where(s => s.Value != null).ToArray();
+
+            foreach (var section in sections)
             {
-                if (section.Value != null && section.Value != configuration[section.Key])
+                if (section.Value != configuration[section.Key])
                 {
                     localConfigObject[section.Key] = section.Value;
                 }

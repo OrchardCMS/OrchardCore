@@ -13,10 +13,7 @@ namespace OrchardCore.Environment.Shell.Builders
 {
     public class ShellContainerFactory : IShellContainerFactory
     {
-        private IFeatureInfo _applicationFeature;
-
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IExtensionManager _extensionManager;
+        private readonly IFeatureInfo _applicationFeature;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
@@ -30,8 +27,9 @@ namespace OrchardCore.Environment.Shell.Builders
             ILogger<ShellContainerFactory> logger,
             IServiceCollection applicationServices)
         {
-            _hostingEnvironment = hostingEnvironment;
-            _extensionManager = extensionManager;
+            _applicationFeature = extensionManager.GetFeatures().FirstOrDefault(
+                f => f.Id == hostingEnvironment.ApplicationName);
+
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
@@ -86,10 +84,6 @@ namespace OrchardCore.Environment.Shell.Builders
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            // To not trigger features loading before it is normally done by 'ShellHost',
-            // init here the application feature in place of doing it in the constructor.
-            EnsureApplicationFeature();
-
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
@@ -129,21 +123,6 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             return shellServiceProvider;
-        }
-
-        private void EnsureApplicationFeature()
-        {
-            if (_applicationFeature == null)
-            {
-                lock (this)
-                {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
-                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
-                }
-            }
         }
     }
 }
