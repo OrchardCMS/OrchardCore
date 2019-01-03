@@ -19,22 +19,22 @@ using OrchardCore.Settings;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin]
-    public class TreeController : Controller, IUpdateModel
+    public class MenuController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _AdminMenuService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
 
-        public TreeController(
+        public MenuController(
             IAuthorizationService authorizationService,
             IAdminMenuService AdminMenuService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            IStringLocalizer<TreeController> stringLocalizer,
-            IHtmlLocalizer<TreeController> htmlLocalizer,
-            ILogger<TreeController> logger)
+            IStringLocalizer<MenuController> stringLocalizer,
+            IHtmlLocalizer<MenuController> htmlLocalizer,
+            ILogger<MenuController> logger)
         {
             _authorizationService = authorizationService;
             _AdminMenuService = AdminMenuService;
