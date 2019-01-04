@@ -50,6 +50,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 try
                 {
                     await _blobContainer.CreateIfNotExistsAsync();
+                    await CreateBasePathIfNotExistsAsync();
                     await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = BlobContainerPublicAccessType.Blob });
                 }
                 catch (Exception ex)
@@ -159,13 +160,12 @@ namespace OrchardCore.FileStorage.AzureBlob
             if (await blob.ExistsAsync())
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
 
-            // Create a directory marker file to make this directory appear when
-            // listing directories.
-            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
-            await placeholderBlob.UploadTextAsync("This is a directory marker file created by Orchard Core. It is safe to delete it.");
+            await CreateDirectoryAsync(path);
 
             return true;
         }
+
+     
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
@@ -286,6 +286,30 @@ namespace OrchardCore.FileStorage.AzureBlob
             var blobDirectory = _blobContainer.GetDirectoryReference(blobDirectoryPath);
 
             return blobDirectory;
+        }
+
+        private async Task CreateDirectoryAsync(string path)
+        {
+            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+
+
+            // Create a directory marker file to make this directory appear when
+            // listing directories.
+            await placeholderBlob.UploadTextAsync(
+                "This is a directory marker file created by Orchard Core. It is safe to delete it.");
+        }
+
+        private async Task CreateBasePathIfNotExistsAsync()
+        {
+            if (string.IsNullOrEmpty(_options.BasePath))
+                return;
+
+            var path = string.Empty;
+            var blob = GetBlobReference(path);
+            if (await blob.ExistsAsync())
+                return;
+
+            await CreateDirectoryAsync(path);
         }
     }
 }

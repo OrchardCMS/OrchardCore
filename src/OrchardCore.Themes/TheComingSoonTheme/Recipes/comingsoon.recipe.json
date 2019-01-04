@@ -49,6 +49,7 @@
         "OrchardCore.Liquid",
         "OrchardCore.Localization",
 
+        "OrchardCore.Media",
         "OrchardCore.Navigation",
 
         "OrchardCore.Recipes",

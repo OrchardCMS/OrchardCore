@@ -115,6 +115,12 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             var connection = await connectionAccessor.GetConnectionAsync();
             var dialect = SqlDialectFactory.For(connection);
             var tablePrefix = _shellSettings.TablePrefix;
+
+            if (!String.IsNullOrEmpty(tablePrefix))
+            {
+                tablePrefix += '_';
+            }
+
             var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
 
             var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";

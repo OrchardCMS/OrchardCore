@@ -28,12 +28,12 @@
         tag.TagRenderMode = TagRenderMode.Normal;
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-        tag.InnerHtml.AppendHtml(Html.Raw("<span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span>"));
+        tag.InnerHtml.AppendHtml(Html.Raw("<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></button>"));
     }
     else
     {
         tag = Tag(Model, "a");
-        tag.AddCssClass("item-label");
+        tag.AddCssClass("item-label d-flex");
         tag.Attributes["href"] = Model.Href ?? "#";
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }

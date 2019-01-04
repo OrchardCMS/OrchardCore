@@ -28,26 +28,24 @@
         @foreach (var entry in Model.AdminTrees)
         {
             <li class="list-group-item @(entry.AdminTree.Enabled ? "" : "disabled-tree")">
-                <div class="properties">
-                    <div class="related">
-                        <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminTree.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
-                        <a asp-action="Edit" asp-route-id="@entry.AdminTree.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <div class="btn-group btn-group-sm">
-                            <a asp-action="Delete"
+                <div class="related">
+                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminTree.Id" class="btn btn-secondary btn-sm">@T["Edit Nodes"]</a>
+                    <a asp-action="Edit" asp-route-id="@entry.AdminTree.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                    <div class="btn-group btn-group-sm">
+                        <a asp-action="Delete"
+                            asp-route-id="@entry.AdminTree.Id"
+                            class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">@T["Toggle Dropdown"]</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a asp-action="Toggle"
                                 asp-route-id="@entry.AdminTree.Id"
-                                class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="sr-only">@T["Toggle Dropdown"]</span>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a asp-action="Toggle"
-                                    asp-route-id="@entry.AdminTree.Id"
-                                    class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminTree.Enabled ? T["Disable"] : T["Enable"])</a>
-                            </div>
+                                class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminTree.Enabled ? T["Disable"] : T["Enable"])</a>
                         </div>
                     </div>
-                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminTree.Id" class="tree-name-link">@entry.AdminTree.Name</a>
                 </div>
+                <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminTree.Id" class="tree-name-link">@entry.AdminTree.Name</a>
             </li>
         }
     </ul>

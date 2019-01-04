@@ -67,6 +67,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
             services.AddTagHelpers<ContentLinkTagHelper>();
+
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

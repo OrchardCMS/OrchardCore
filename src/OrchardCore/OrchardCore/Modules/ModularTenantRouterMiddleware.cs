@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Hosting.ShellBuilders;
@@ -20,14 +21,17 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
+        private readonly IFeatureCollection _features;
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantRouterMiddleware(
+            IFeatureCollection features,
             RequestDelegate next,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
+            _features = features;
             _next = next;
             _logger = logger;
         }
@@ -44,7 +48,7 @@ namespace OrchardCore.Modules
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!string.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
+            if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
                 httpContext.Request.PathBase += ("/" + shellContext.Settings.RequestUrlPrefix);
                 httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
@@ -77,9 +81,9 @@ namespace OrchardCore.Modules
         }
 
         // Build the middleware pipeline for the current tenant
-        public RequestDelegate BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
+        private RequestDelegate BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
         {
-            var appBuilder = new ApplicationBuilder(rootServiceProvider);
+            var appBuilder = new ApplicationBuilder(rootServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
