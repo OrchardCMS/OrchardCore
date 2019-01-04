@@ -5,10 +5,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 {
 
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
+    [HtmlTargetElement("style", Attributes = SourceAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
     public class StyleTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
+        private const string SourceAttributeName = "asp-source";
         private const string SrcAttributeName = "asp-src";
 
         [HtmlAttributeName(NameAttributeName)]

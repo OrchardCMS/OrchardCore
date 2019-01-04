@@ -7,11 +7,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 {
 
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
+    [HtmlTargetElement("script", Attributes = SourceAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
     public class ScriptTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
+        private const string SourceAttributeName = "asp-source";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
 
