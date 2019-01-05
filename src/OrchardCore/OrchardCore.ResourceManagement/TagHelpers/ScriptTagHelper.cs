@@ -117,6 +117,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
+
+                if (At == ResourceLocation.Unspecified)
+                {
+                    _resourceManager.RenderLocalScript(setting, output.Content);
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
@@ -152,6 +157,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
+                }
+
+                if (At == ResourceLocation.Unspecified)
+                {
+                    _resourceManager.RenderLocalScript(setting, output.Content);
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
