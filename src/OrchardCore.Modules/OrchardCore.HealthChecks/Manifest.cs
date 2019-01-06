@@ -6,5 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "2.0.0",
     Description = "This module provides health check for the website.",
-    Category = "Deployment"
+    Category = "Infrastructure"
 )]
