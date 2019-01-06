@@ -11,7 +11,6 @@ namespace OrchardCore.HealthChecks
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseHealthChecks("/health/live");
-
         }
 
         public override void ConfigureServices(IServiceCollection services)
