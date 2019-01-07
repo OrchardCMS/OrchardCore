@@ -28,7 +28,7 @@ namespace OrchardCore.OpenId.Tasks
         {
             try
             {
-                await _serverService.PruneSigningKeysAsync();
+                await _serverService.PruneManagedCertificatesAsync();
             }
             catch (OperationCanceledException exception) when (exception.CancellationToken == cancellationToken)
             {

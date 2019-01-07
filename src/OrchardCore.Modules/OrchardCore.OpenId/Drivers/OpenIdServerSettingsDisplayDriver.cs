@@ -24,9 +24,13 @@ namespace OrchardCore.OpenId.Drivers
                 model.AccessTokenFormat = settings.AccessTokenFormat;
                 model.Authority = settings.Authority?.AbsoluteUri;
 
-                model.CertificateStoreLocation = settings.CertificateStoreLocation;
-                model.CertificateStoreName = settings.CertificateStoreName;
-                model.CertificateThumbprint = settings.CertificateThumbprint;
+                model.EncryptionCertificateStoreLocation = settings.EncryptionCertificateStoreLocation;
+                model.EncryptionCertificateStoreName = settings.EncryptionCertificateStoreName;
+                model.EncryptionCertificateThumbprint = settings.EncryptionCertificateThumbprint;
+
+                model.SigningCertificateStoreLocation = settings.SigningCertificateStoreLocation;
+                model.SigningCertificateStoreName = settings.SigningCertificateStoreName;
+                model.SigningCertificateThumbprint = settings.SigningCertificateThumbprint;
 
                 model.EnableAuthorizationEndpoint = settings.AuthorizationEndpointPath.HasValue;
                 model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
@@ -68,9 +72,13 @@ namespace OrchardCore.OpenId.Drivers
             settings.AccessTokenFormat = model.AccessTokenFormat;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
-            settings.CertificateStoreLocation = model.CertificateStoreLocation;
-            settings.CertificateStoreName = model.CertificateStoreName;
-            settings.CertificateThumbprint = model.CertificateThumbprint;
+            settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
+            settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;
+            settings.EncryptionCertificateThumbprint = model.EncryptionCertificateThumbprint;
+
+            settings.SigningCertificateStoreLocation = model.SigningCertificateStoreLocation;
+            settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
+            settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;
 
             settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
                 new PathString("/connect/authorize") : PathString.Empty;

@@ -32,9 +32,13 @@ namespace OrchardCore.OpenId.Recipes
             settings.AccessTokenFormat = model.AccessTokenFormat;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
-            settings.CertificateStoreLocation = model.CertificateStoreLocation;
-            settings.CertificateStoreName = model.CertificateStoreName;
-            settings.CertificateThumbprint = model.CertificateThumbprint;
+            settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
+            settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;
+            settings.EncryptionCertificateThumbprint = model.EncryptionCertificateThumbprint;
+
+            settings.SigningCertificateStoreLocation = model.SigningCertificateStoreLocation;
+            settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
+            settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;
 
             settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
                 new PathString("/connect/authorize") : PathString.Empty;

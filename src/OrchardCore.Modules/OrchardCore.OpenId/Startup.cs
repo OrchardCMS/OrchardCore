@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -13,11 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenIddict.Mvc;
 using OpenIddict.Server;
-using OpenIddict.Server.Internal;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Server.DataProtection;
 using OpenIddict.Validation;
-using OpenIddict.Validation.Internal;
+using OpenIddict.Validation.AspNetCore;
+using OpenIddict.Validation.DataProtection;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Deployment;
@@ -30,9 +30,9 @@ using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
-using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes.Services;
@@ -186,14 +186,14 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Note: both the OpenIddict server and validation services are registered for the
-            // server feature as token validation may be required for the userinfo endpoint.
             services.AddOpenIddict()
-                .AddServer(options => options.UseMvc())
-                .AddValidation();
+                .AddServer(options =>
+                {
+                    options.UseAspNetCore();
+                    options.UseDataProtection();
+                });
 
             services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
-            services.TryAddTransient<JwtBearerHandler>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
             services.TryAddEnumerable(new[]
@@ -213,26 +213,19 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
             });
 
-            // Note: the OpenIddict extensions add two authentication options initializers that take care of
-            // registering the server and validation handlers. Yet, they MUST NOT be registered at this stage
-            // as they are lazily registered by OpenIdServerConfiguration only after checking the OpenID server
-            // and validation settings are valid and can be safely used in this tenant without causing exceptions.
-            // To prevent that, the initializers are manually removed from the services collection of the tenant.
-            services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictServerConfiguration>()
-                    .RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictValidationConfiguration>();
+            // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
+            // registering the server ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
+            // as it is lazily registered by OpenIdServerConfiguration only after checking the OpenID server
+            // settings are valid and can be safely used in this tenant without causing runtime exceptions.
+            // To prevent that, the initializer is manually removed from the services collection of the tenant.
+            services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictServerAspNetCoreConfiguration>();
 
-            // Register the options initializers required by OpenIddict and the JWT handler.
             services.TryAddEnumerable(new[]
             {
-                // Orchard-specific initializers:
                 ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<JwtBearerOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictMvcOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdServerConfiguration>(),
-
-                // Built-in initializers (note: the OpenIddict initializers are registered by AddServer()/AddValidation()).
-                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>()
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
             });
         }
 
@@ -263,7 +256,7 @@ namespace OrchardCore.OpenId
             {
                 routes.MapAreaControllerRoute(
                     name: "Access.Authorize",
-                    areaName: OpenIdConstants.Features.Core,
+                    areaName: typeof(Startup).Namespace,
                     pattern: settings.AuthorizationEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Authorize" }
                 );
@@ -273,7 +266,7 @@ namespace OrchardCore.OpenId
             {
                 routes.MapAreaControllerRoute(
                     name: "Access.Logout",
-                    areaName: OpenIdConstants.Features.Core,
+                    areaName: typeof(Startup).Namespace,
                     pattern: settings.LogoutEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Logout" }
                 );
@@ -283,7 +276,7 @@ namespace OrchardCore.OpenId
             {
                 routes.MapAreaControllerRoute(
                     name: "Access.Token",
-                    areaName: OpenIdConstants.Features.Core,
+                    areaName: typeof(Startup).Namespace,
                     pattern: settings.TokenEndpointPath.Value,
                     defaults: new { controller = "Access", action = "Token" }
                 );
@@ -293,7 +286,7 @@ namespace OrchardCore.OpenId
             {
                 routes.MapAreaControllerRoute(
                     name: "UserInfo.Me",
-                    areaName: OpenIdConstants.Features.Core,
+                    areaName: typeof(Startup).Namespace,
                     pattern: settings.UserinfoEndpointPath.Value,
                     defaults: new { controller = "UserInfo", action = "Me" }
                 );
@@ -307,10 +300,14 @@ namespace OrchardCore.OpenId
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOpenIddict()
-                .AddValidation();
+                .AddValidation(options =>
+                {
+                    options.UseAspNetCore();
+                    options.UseDataProtection();
+                    options.UseSystemNetHttp();
+                });
 
             services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
-            services.TryAddTransient<JwtBearerHandler>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
             services.TryAddEnumerable(new[]
@@ -320,23 +317,19 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
-            // Note: the OpenIddict extensions add an authentication options initializer that takes care of
+            // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
             // registering the validation handler. Yet, it MUST NOT be registered at this stage as it is
             // lazily registered by OpenIdValidationConfiguration only after checking the OpenID validation
-            // settings are valid and can be safely used in this tenant without causing exceptions.
+            // settings are valid and can be safely used in this tenant without causing runtime exceptions.
             // To prevent that, the initializer is manually removed from the services collection of the tenant.
-            services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictValidationConfiguration>();
+            services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictValidationAspNetCoreConfiguration>();
 
-            // Register the options initializers required by OpenIddict and the JWT handler.
             services.TryAddEnumerable(new[]
             {
-                // Orchard-specific initializers:
                 ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<JwtBearerOptions>, OpenIdValidationConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
-
-                // Built-in initializers (note: the OpenIddict initializers are registered by AddValidation()).
-                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, JwtBearerPostConfigureOptions>()
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
             });
         }
     }

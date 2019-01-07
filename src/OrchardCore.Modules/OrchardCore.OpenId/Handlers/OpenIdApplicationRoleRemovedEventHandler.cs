@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Security;
 
-namespace OrchardCore.OpenId.Handlers
+namespace OrchardCore.OpenId.Services.Handlers
 {
     public class OpenIdApplicationRoleRemovedEventHandler : IRoleRemovedEventHandler
     {
@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Handlers
 
         public async Task RoleRemovedAsync(string roleName)
         {
-            foreach (var application in await _manager.ListInRoleAsync(roleName))
+            await foreach (var application in _manager.ListInRoleAsync(roleName))
             {
                 var roles = await _manager.GetRolesAsync(application);
                 await _manager.SetRolesAsync(application, roles.Remove(roleName, StringComparer.OrdinalIgnoreCase));

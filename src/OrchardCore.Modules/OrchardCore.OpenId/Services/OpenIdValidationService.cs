@@ -157,8 +157,7 @@ namespace OrchardCore.OpenId.Services
                         else
                         {
                             var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                            var scopes = await manager.FindByResourceAsync(resource);
-                            if (scopes.IsDefaultOrEmpty)
+                            if (!await manager.FindByResourceAsync(resource).AnyAsync())
                             {
                                 results.Add(new ValidationResult(S["No appropriate scope was found."], new[]
                                 {
