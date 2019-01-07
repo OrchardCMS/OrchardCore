@@ -177,11 +177,11 @@ namespace OrchardCore.Environment.Shell
             else
             {
                 // Load all tenants, and activate their shell.
-                await Task.WhenAll(allSettings.Select(async settings =>
+                await Task.WhenAll(allSettings.Select(settings =>
                 {
                     try
                     {
-                        await GetOrCreateShellContextAsync(settings);
+                        return GetOrCreateShellContextAsync(settings);
                     }
                     catch (Exception ex)
                     {
@@ -191,6 +191,8 @@ namespace OrchardCore.Environment.Shell
                         {
                             throw;
                         }
+
+                        return Task.CompletedTask;
                     }
                 }));
             }
