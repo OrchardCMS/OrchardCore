@@ -65,7 +65,7 @@ namespace OrchardCore.Mvc
         private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));
             manager.FeatureProviders.Add(new ShellViewFeatureProvider(httpContextAccessor));
         }
 

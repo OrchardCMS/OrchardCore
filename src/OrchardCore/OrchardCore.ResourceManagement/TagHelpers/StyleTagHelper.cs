@@ -15,7 +15,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
-        public string Source { get; set; }
+        public string Src { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
@@ -39,10 +39,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
+            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
-                var setting = _resourceManager.Include("stylesheet", Source, DebugSrc);
+                var setting = _resourceManager.Include("stylesheet", Src, DebugSrc);
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -68,7 +68,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Source))
+            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
 
@@ -108,12 +108,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Source))
+            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
-                definition.SetUrl(Source, DebugSrc);
+                definition.SetUrl(Src, DebugSrc);
 
                 if (!String.IsNullOrEmpty(Version))
                 {
