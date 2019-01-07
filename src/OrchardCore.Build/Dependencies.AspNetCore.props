@@ -35,6 +35,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.SystemWeb" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
@@ -173,7 +174,6 @@
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="2.2.0" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.2.0" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
   </ItemGroup>
 
   <PropertyGroup>
