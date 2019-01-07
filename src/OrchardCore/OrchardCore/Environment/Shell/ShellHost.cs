@@ -165,18 +165,22 @@ namespace OrchardCore.Environment.Shell
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
+            var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
+            var otherSettings = allSettings.Except(new[] { defaultSettings }).ToArray();
 
             features.Wait();
 
-            // No settings, run the Setup.
-            if (allSettings.Length == 0)
+            // The 'Default' tenant is not running, run the Setup.
+            if (defaultSettings?.State != TenantState.Running)
             {
                 var setupContext = await CreateSetupContextAsync();
                 AddAndRegisterShell(setupContext);
+                allSettings = otherSettings;
             }
-            else
+
+            if (allSettings.Length > 0)
             {
-                // Load all tenants, and activate their shell.
+                // Create and register all tenant shells.
                 await Task.WhenAll(allSettings.Select(async settings =>
                 {
                     try

@@ -198,9 +198,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
                 var directory = Directory.CreateDirectory(Path.Combine(
-                options.Value.ShellsApplicationDataPath,
-                options.Value.ShellsContainerName,
-                settings.Name, "DataProtection-Keys"));
+                    options.Value.ShellsApplicationDataPath,
+                    options.Value.ShellsContainerName,
+                    settings.Name, "DataProtection-Keys"));
 
                 // Re-register the data protection services to be tenant-aware so that modules that internally
                 // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that

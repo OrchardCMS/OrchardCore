@@ -77,9 +77,9 @@ namespace OrchardCore.Tenants.Controllers
                         IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                     };
 
-                    if (x.Settings.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings.Secret))
+                    if (x.Settings.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x.Settings["Secret"]))
                     {
-                        entry.Token = dataProtector.Protect(x.Settings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                        entry.Token = dataProtector.Protect(x.Settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                     }
 
                     return entry;
@@ -136,13 +136,14 @@ namespace OrchardCore.Tenants.Controllers
                     Name = model.Name,
                     RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
                     RequestUrlHost = model.RequestUrlHost,
-                    ConnectionString = model.ConnectionString,
-                    TablePrefix = model.TablePrefix,
-                    DatabaseProvider = model.DatabaseProvider,
                     State = TenantState.Uninitialized,
-                    Secret = Guid.NewGuid().ToString(),
-                    RecipeName = model.RecipeName
                 };
+
+                shellSettings["ConnectionString"] = model.ConnectionString;
+                shellSettings["TablePrefix"] = model.TablePrefix;
+                shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                shellSettings["Secret"] = Guid.NewGuid().ToString();
+                shellSettings["RecipeName"] = model.RecipeName;
 
                 _shellSettingsManager.SaveSettings(shellSettings);
                 var shellContext = await _orchardHost.GetOrCreateShellContextAsync(shellSettings);
@@ -196,10 +197,10 @@ namespace OrchardCore.Tenants.Controllers
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
                 model.Recipes = recipes;
 
-                model.DatabaseProvider = shellSettings.DatabaseProvider;
-                model.TablePrefix = shellSettings.TablePrefix;
-                model.ConnectionString = shellSettings.ConnectionString;
-                model.RecipeName = shellSettings.RecipeName;
+                model.DatabaseProvider = shellSettings["DatabaseProvider"];
+                model.TablePrefix = shellSettings["TablePrefix"];
+                model.ConnectionString = shellSettings["ConnectionString"];
+                model.RecipeName = shellSettings["RecipeName"];
                 model.CanSetDatabasePresets = true;
             }
 
@@ -244,11 +245,11 @@ namespace OrchardCore.Tenants.Controllers
                 // tenant has not been initialized yet
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
-                    shellSettings.DatabaseProvider = model.DatabaseProvider;
-                    shellSettings.TablePrefix = model.TablePrefix;
-                    shellSettings.ConnectionString = model.ConnectionString;
-                    shellSettings.RecipeName = model.RecipeName;
-                    shellSettings.Secret = Guid.NewGuid().ToString();
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
                 }
 
                 await _orchardHost.UpdateShellSettingsAsync(shellSettings);
@@ -260,10 +261,10 @@ namespace OrchardCore.Tenants.Controllers
             // tenant has not been initialized yet
             if (shellSettings.State == TenantState.Uninitialized)
             {
-                model.DatabaseProvider = shellSettings.DatabaseProvider;
-                model.TablePrefix = shellSettings.TablePrefix;
-                model.ConnectionString = shellSettings.ConnectionString;
-                model.RecipeName = shellSettings.RecipeName;
+                model.DatabaseProvider = shellSettings["DatabaseProvider"];
+                model.TablePrefix = shellSettings["TablePrefix"];
+                model.ConnectionString = shellSettings["ConnectionString"];
+                model.RecipeName = shellSettings["RecipeName"];
                 model.CanSetDatabasePresets = true;
             }
 
