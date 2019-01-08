@@ -1,32 +1,38 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
+using OrchardCore.Abstractions.Shell;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Holds the tenant <see cref="IConfiguration"/> which is lazyly built
-    /// from the application configuration, the 'App_Data/appsettings.json'
+    /// Holds the tenant <see cref="IConfiguration"/> which is lazily built
+    /// from the application configuration appsettings.json, the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    internal class ShellConfiguration
+    public class ShellConfiguration : IShellConfiguration
     {
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
 
-        private readonly ShellSettings _shellSettings;
+        private readonly string _name;
         private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private IConfigurationBuilder _configurationBuilder;
 
-        public ShellConfiguration(ShellSettings settings, Func<string, IConfigurationBuilder> factory)
+        public ShellConfiguration()
         {
-            _shellSettings = settings;
+        }
+
+        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
+        {
+            _name = name;
             _configBuilderFactory = factory;
         }
 
-        public ShellConfiguration(ShellSettings settings, ShellConfiguration configuration)
+        public ShellConfiguration(string name, ShellConfiguration configuration)
         {
-            _shellSettings = settings;
-
+            _name = name;
             if (configuration._configuration == null)
             {
                 _configBuilderFactory = configuration._configBuilderFactory;
@@ -38,7 +44,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// The tenant lazyly built <see cref="IConfiguration"/>.
+        /// The tenant lazily built <see cref="IConfiguration"/>.
         /// </summary>
         public IConfiguration Configuration
         {
@@ -51,7 +57,7 @@ namespace OrchardCore.Environment.Shell
                         if (_configuration == null)
                         {
                             var configurationBuilder = _configurationBuilder ??
-                                _configBuilderFactory?.Invoke(_shellSettings.Name) ??
+                                _configBuilderFactory?.Invoke(_name) ??
                                 new ConfigurationBuilder();
 
                             _updatableData = new ConfigurationBuilder()
@@ -83,6 +89,21 @@ namespace OrchardCore.Environment.Shell
                     }
                 }
             }
+        }
+
+        public IConfigurationSection GetSection(string key)
+        {
+            return Configuration.GetSection(key);
+        }
+
+        public IEnumerable<IConfigurationSection> GetChildren()
+        {
+            return Configuration.GetChildren();
+        }
+
+        public IChangeToken GetReloadToken()
+        {
+            return Configuration.GetReloadToken();
         }
     }
 }

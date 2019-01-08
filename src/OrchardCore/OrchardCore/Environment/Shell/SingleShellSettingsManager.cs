@@ -6,7 +6,7 @@ namespace OrchardCore.Environment.Shell
     {
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            yield return new ShellSettings
+            yield return new ShellSettings()
             {
                 Name = "Default",
                 State = Models.TenantState.Running

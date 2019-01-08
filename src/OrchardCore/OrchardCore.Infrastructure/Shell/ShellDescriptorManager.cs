@@ -114,7 +114,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             var connection = await connectionAccessor.GetConnectionAsync();
             var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = _shellSettings.TablePrefix;
+            var tablePrefix = _shellSettings["TablePrefix"];
 
             if (!String.IsNullOrEmpty(tablePrefix))
             {

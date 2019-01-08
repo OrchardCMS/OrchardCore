@@ -1,7 +1,6 @@
-using System;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
@@ -9,22 +8,25 @@ namespace OrchardCore.Environment.Shell
     /// <summary>
     /// Represents the minimalistic set of fields stored for each tenant. This model
     /// is obtained from the 'IShellSettingsManager', which by default reads this
-    /// from the 'App_Data/Sites/tenants.json' file.
+    /// from the 'App_Data/tenants.json' file.
     /// </summary>
     public class ShellSettings
     {
-        private ShellConfiguration _configuration;
+        private IShellConfiguration _configuration;
 
-        public ShellSettings(): this(factory: null) { }
-
-        public ShellSettings(Func<string, IConfigurationBuilder> factory)
+        public ShellSettings()
         {
-            _configuration = new ShellConfiguration(this, factory);
+            _configuration = new ShellConfiguration();
+        }
+
+        public ShellSettings(IShellConfiguration configuration)
+        {
+            _configuration = configuration;
         }
 
         public ShellSettings(ShellSettings settings)
         {
-            _configuration = new ShellConfiguration(this, settings._configuration);
+            _configuration = settings._configuration;
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;
@@ -39,11 +41,8 @@ namespace OrchardCore.Environment.Shell
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State { get; set; } = TenantState.Invalid;
 
-        /// <summary>
-        /// The tenant lazyly built <see cref="IConfiguration"/>.
-        /// </summary>
         [JsonIgnore]
-        public IConfiguration Configuration => _configuration.Configuration;
+        public IShellConfiguration ShellConfiguration => _configuration;
 
         [JsonIgnore]
         public string this[string key]

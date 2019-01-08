@@ -32,7 +32,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             {
                 var configuredFeatures = new ConfiguredFeatures();
 
-                _shellSettings.Configuration.Bind(configuredFeatures);
+                _shellSettings.ShellConfiguration.Bind(configuredFeatures);
 
                 var features = _alwaysEnabledFeatures.Concat(configuredFeatures
                     .Features.Select(id => new ShellFeature(id))).Distinct();

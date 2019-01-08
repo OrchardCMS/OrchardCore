@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
@@ -50,6 +51,13 @@ namespace OrchardCore.Environment.Shell.Builders
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
+            tenantServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            {
+                // Resolve it lazily as it's constructed lazily
+                var shellSettings = sp.GetRequiredService<ShellSettings>();
+                return shellSettings.ShellConfiguration;
+            });
+
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
 
@@ -74,6 +82,12 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
+            moduleServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            {
+                // Resolve it lazily as it's constructed lazily
+                var shellSettings = sp.GetRequiredService<ShellSettings>();
+                return shellSettings.ShellConfiguration;
+            });
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
 

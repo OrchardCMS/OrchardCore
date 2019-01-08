@@ -24,12 +24,14 @@ namespace OrchardCore.Environment.Shell
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> options)
         {
+            // e.g., App_Data
             var appDataPath = options.Value.ShellsApplicationDataPath;
 
+            // e.g., App_Data/Sites
             _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
             Directory.CreateDirectory(_tenantsContainerPath);
 
-            _tenantsFilePath = Path.Combine(_tenantsContainerPath, "tenants.json");
+            _tenantsFilePath = Path.Combine(appDataPath, "tenants.json");
 
             var environment = hostingEnvironment.EnvironmentName;
             var ENVIRONMENT = environment.ToUpperInvariant();
@@ -39,10 +41,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(applicationConfiguration)
 
                 .AddJsonFile($"{appsettings}.json", optional: true)
-                .AddJsonFile($"{appsettings}.{environment}.json", optional: true)
-
-                .AddEnvironmentVariables("ORCHARDCORE_")
-                .AddEnvironmentVariables($"ORCHARDCORE_{ENVIRONMENT}_");
+                .AddJsonFile($"{appsettings}.{environment}.json", optional: true);
 
             var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
                 .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
@@ -52,7 +51,7 @@ namespace OrchardCore.Environment.Shell
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
             }
 
-            _configuration = configurationBuilder.Build().GetSection("Tenants");
+            _configuration = configurationBuilder.Build().GetSection("OrchardCore");
 
             _configuredTenants = _configuration.GetChildren()
                 .Where(section => section["State"] != null)
@@ -85,7 +84,9 @@ namespace OrchardCore.Environment.Shell
                     .AddConfiguration(tenantsSettings.GetSection(tenant))
                     .Build();
 
-                var shellSettings = new ShellSettings(_configBuilderFactory)
+                var shellConfiguration = new ShellConfiguration(tenant, _configBuilderFactory);
+
+                var shellSettings = new ShellSettings(shellConfiguration)
                 {
                     Name = tenant,
                     RequestUrlHost = settings["RequestUrlHost"],
@@ -153,7 +154,7 @@ namespace OrchardCore.Environment.Shell
 
             var localConfigObject = new JObject();
 
-            var sections = settings.Configuration.GetChildren().Where(s => s.Value != null).ToArray();
+            var sections = settings.ShellConfiguration.GetChildren().Where(s => s.Value != null).ToArray();
 
             foreach (var section in sections)
             {
