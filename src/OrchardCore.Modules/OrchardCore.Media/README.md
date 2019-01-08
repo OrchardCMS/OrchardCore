@@ -38,9 +38,8 @@ Renders an `<img src />` HTML tag.
 
 #### Options
 
-##### `alt` (Default)
-
-The alternate text attribute value
+You can add as many html attributes as you want with the img_tag.
+`{{ 'animals/kittens.jpg' | asset_url | img_tag: alt: 'kittens', class: 'kittens black', data_order: some_var }}`
 
 ## Image resizing filters
 
