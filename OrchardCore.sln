@@ -355,9 +355,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentManageme
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ReverseProxy", "src\OrchardCore.Modules\OrchardCore.ReverseProxy\OrchardCore.ReverseProxy.csproj", "{76871CE0-43F9-49D3-AAAB-4A8510F76447}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminTrees.Abstractions", "src\OrchardCore\OrchardCore.AdminTrees.Abstractions\OrchardCore.AdminTrees.Abstractions.csproj", "{3850142E-FA8B-4C26-A4BA-542928D4DF35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminMenu.Abstractions", "src\OrchardCore\OrchardCore.AdminMenu.Abstractions\OrchardCore.AdminMenu.Abstractions.csproj", "{3850142E-FA8B-4C26-A4BA-542928D4DF35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminTrees", "src\OrchardCore.Modules\OrchardCore.AdminTrees\OrchardCore.AdminTrees.csproj", "{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminMenu", "src\OrchardCore.Modules\OrchardCore.AdminMenu\OrchardCore.AdminMenu.csproj", "{9B11A694-BD8F-47F0-AF0C-BC7E11579DC4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Microsoft.Authentication", "src\OrchardCore.Modules\OrchardCore.Microsoft.Authentication\OrchardCore.Microsoft.Authentication.csproj", "{6B15CC95-04C7-42A4-96A5-F98664242069}"
 EndProject

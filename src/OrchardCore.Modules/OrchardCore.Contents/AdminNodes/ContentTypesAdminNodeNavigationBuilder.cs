@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.AdminTrees.Services;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Settings;
