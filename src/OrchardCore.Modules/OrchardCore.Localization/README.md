@@ -7,9 +7,16 @@ It also supports plural forms.
 
 PO files are found via the following steps:
 
+whith source code : 
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
 - Then all files matching `/App_Data/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
+
+with Nuget package solution : 
+- For each module and theme all files matching 
+    - `[YourCustomProjectFolder]/App_Data/Localization/[ModuleId]/[CultureName].po`
+    - `[YourCustomProjectFolder]/App_Data/Localization/[ModuleId]-[CultureName].po`
+    - `[YourCustomProjectFolder]/App_Data/Localization/[CultureName]/[ModuleId].po`
 
 ## File format
 
