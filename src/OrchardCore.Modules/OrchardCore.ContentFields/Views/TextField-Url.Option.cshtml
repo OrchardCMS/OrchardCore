@@ -1,4 +1,4 @@
 @{
     string currentEditor = Model.Editor;
 }
-<option value="Url" selected="@String.IsNullOrEmpty(currentEditor)">@T["Url"]</option>
+<option value="Url" selected="@(currentEditor == "Url")">@T["Url"]</option>
