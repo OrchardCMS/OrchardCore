@@ -3,6 +3,123 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+  opacity: 0.9;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+  height: 11px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+  width: 11px;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
  * Bootstrap v4.1.3 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
@@ -7111,7 +7228,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul li .item-label {
         cursor: pointer; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
-      line-height: 3em; }
+      line-height: 3em;
+      width: 260px;
+      transition: width 0.2s ease-in-out;
+      background-color: #EAEAEA; }
       body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
         content: "";
         width: 92%;
@@ -7309,7 +7429,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul li .item-label {
         cursor: pointer; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
-      line-height: 3em; }
+      line-height: 3em;
+      width: 47px;
+      transition: width 0.2s ease-in-out;
+      background-color: #EAEAEA; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:first-child > span.title:after {
         content: "";
         width: 75%;
@@ -7383,11 +7506,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       background-color: rgba(0, 0, 0, 0.1); }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
       overflow: hidden; }
-      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li span.title, .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li span.icon {
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li span.title {
         display: none; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible {
       overflow: visible;
-      width: 308px; }
+      width: 308px;
+      transition: none; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.title, .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.icon {
         display: block; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul {
@@ -7415,8 +7539,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         padding: 0 5px;
         flex-shrink: 0;
         font-size: 22px;
-        width: 48px;
-        border-right: 1px solid #DEDEDE; }
+        width: 48px; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.icon svg {
           width: 35px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > .item-label > span.title {
@@ -7661,120 +7784,3 @@ ul.pager {
     .persona .persona-content.small, .persona .persona-content.hint {
       font-size: 11px;
       line-height: 24px; }
-
-/*
- * Container style
- */
-.ps {
-  overflow: hidden !important;
-  overflow-anchor: none;
-  -ms-overflow-style: none;
-  touch-action: auto;
-  -ms-touch-action: auto;
-}
-
-/*
- * Scrollbar rail styles
- */
-.ps__rail-x {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-  height: 15px;
-  /* there must be 'bottom' or 'top' for ps__rail-x */
-  bottom: 0px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__rail-y {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-  width: 15px;
-  /* there must be 'right' or 'left' for ps__rail-y */
-  right: 0;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps--active-x > .ps__rail-x,
-.ps--active-y > .ps__rail-y {
-  display: block;
-  background-color: transparent;
-}
-
-.ps:hover > .ps__rail-x,
-.ps:hover > .ps__rail-y,
-.ps--focus > .ps__rail-x,
-.ps--focus > .ps__rail-y,
-.ps--scrolling-x > .ps__rail-x,
-.ps--scrolling-y > .ps__rail-y {
-  opacity: 0.6;
-}
-
-.ps .ps__rail-x:hover,
-.ps .ps__rail-y:hover,
-.ps .ps__rail-x:focus,
-.ps .ps__rail-y:focus,
-.ps .ps__rail-x.ps--clicking,
-.ps .ps__rail-y.ps--clicking {
-  background-color: #eee;
-  opacity: 0.9;
-}
-
-/*
- * Scrollbar thumb styles
- */
-.ps__thumb-x {
-  background-color: #aaa;
-  border-radius: 6px;
-  transition: background-color .2s linear, height .2s ease-in-out;
-  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
-  height: 6px;
-  /* there must be 'bottom' for ps__thumb-x */
-  bottom: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__thumb-y {
-  background-color: #aaa;
-  border-radius: 6px;
-  transition: background-color .2s linear, width .2s ease-in-out;
-  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
-  width: 6px;
-  /* there must be 'right' for ps__thumb-y */
-  right: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-.ps__rail-x:hover > .ps__thumb-x,
-.ps__rail-x:focus > .ps__thumb-x,
-.ps__rail-x.ps--clicking .ps__thumb-x {
-  background-color: #999;
-  height: 11px;
-}
-
-.ps__rail-y:hover > .ps__thumb-y,
-.ps__rail-y:focus > .ps__thumb-y,
-.ps__rail-y.ps--clicking .ps__thumb-y {
-  background-color: #999;
-  width: 11px;
-}
-
-/* MS supports */
-@supports (-ms-overflow-style: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
-
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
