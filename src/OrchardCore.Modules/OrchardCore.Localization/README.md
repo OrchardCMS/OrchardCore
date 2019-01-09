@@ -18,9 +18,9 @@ PO files are found at these locations:
 `[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
 ### Examples:
-`/App_Data/Localization/fr.po`
-`/App_Data/Localization/fr-CA.po`
-`/App_Data/Localization/es-MX.po`
+- `/App_Data/Localization/fr.po`
+- `/App_Data/Localization/fr-CA.po`
+- `/App_Data/Localization/es-MX.po`
 
 ## File format
 
