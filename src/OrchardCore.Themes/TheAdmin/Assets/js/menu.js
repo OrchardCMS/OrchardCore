@@ -57,6 +57,11 @@ function setCompactStatus(explicit) {
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
+    //after menu has collapsed we set the transitions to none so that we don't do any transition
+    //animation when open a sub-menu
+    setTimeout(function () {
+        $('#left-nav > ul > li').css("transition", "none");
+    }, 200); 
     
     //$('#left-nav').scrollTop = 0;
     //leftMenuPS.update();
@@ -76,6 +81,7 @@ function setCompactStatus(explicit) {
         isCompactExplicit = explicit;
     }
     persistAdminPreferences();
+    
 }
 
 
@@ -87,6 +93,7 @@ function unSetCompactStatus() {
     $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
+    $('#left-nav > ul > li').css("transition", "");
 
     if (leftMenuPS == null) {
         leftMenuPS = new PerfectScrollbar('#left-nav', { suppressScrollX: true });
