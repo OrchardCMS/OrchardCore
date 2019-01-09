@@ -15,7 +15,7 @@ whith source code :
 with Nuget package solution : 
 - For each module and theme all files matching 
     - `[YourCustomProjectFolder]/App_Data/Localization/[ModuleId]/[CultureName].po`
-    - `[YourCustomProjectFolder]/App_Data/Localization/[ModuleId]-[CultureName].po`
+    - `[YourCustomProjectFolder]/App_Data/Localization/[ModuleId].[CultureName].po`
     - `[YourCustomProjectFolder]/App_Data/Localization/[CultureName]/[ModuleId].po`
 
 ## File format

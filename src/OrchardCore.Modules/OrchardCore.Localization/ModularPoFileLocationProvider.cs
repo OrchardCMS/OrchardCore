@@ -60,7 +60,7 @@ namespace OrchardCore.Localization
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id, poFileName)));
 
                 // \src\OrchardCore.Cms.Web\App_Data/Localization/OrchardCore.Cms.Web-fr-CA.po
-                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id + "-" + poFileName)));
+                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id + "." + poFileName)));
 
                 // \src\OrchardCore.Cms.Web\App_Data/Localization/fr-CA/OrchardCore.Cms.Web.po
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, cultureName, extension.Id + PoFileExtension)));
