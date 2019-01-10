@@ -18,7 +18,7 @@ namespace OrchardCore.Users.Drivers
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
         private readonly IUserStore<IUser> _userStore;
         private readonly IUserEmailStore<IUser> _userEmailStore;
         private readonly IUserRoleStore<IUser> _userRoleStore;
@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Drivers
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IUserService userService,
-            IRoleProvider roleProvider,
+            IRoleService roleService,
             IUserStore<IUser> userStore,
             IUserEmailStore<IUser> userEmailStore,
             IUserRoleStore<IUser> userRoleStore,
@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Drivers
         {
             _userManager = userManager;
             _userService = userService;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
             _userStore = userStore;
             _userEmailStore = userEmailStore;
             _userRoleStore = userRoleStore;
@@ -157,7 +157,7 @@ namespace OrchardCore.Users.Drivers
 
         private async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
         }
     }
