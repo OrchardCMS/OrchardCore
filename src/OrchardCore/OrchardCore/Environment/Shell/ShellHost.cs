@@ -173,7 +173,7 @@ namespace OrchardCore.Environment.Shell
             // The 'Default' tenant is not running, run the Setup.
             if (defaultSettings?.State != TenantState.Running)
             {
-                var setupContext = await CreateSetupContextAsync();
+                var setupContext = await CreateSetupContextAsync(defaultSettings);
                 AddAndRegisterShell(setupContext);
                 allSettings = otherSettings;
             }
@@ -306,16 +306,22 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a transient shell for the default tenant's setup.
         /// </summary>
-        private Task<ShellContext> CreateSetupContextAsync()
+        private Task<ShellContext> CreateSetupContextAsync(ShellSettings defaultSettings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings(ShellHelper.DefaultShellName);
-            return _shellContextFactory.CreateSetupContextAsync(shellSettings);
+            if (defaultSettings == null)
+            {
+                // Creates a default shell settings based on the configuration.
+                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                shellSettings.Name = ShellHelper.DefaultShellName;
+                defaultSettings = shellSettings;
+            }
+
+            return _shellContextFactory.CreateSetupContextAsync(defaultSettings);
         }
 
         /// <summary>

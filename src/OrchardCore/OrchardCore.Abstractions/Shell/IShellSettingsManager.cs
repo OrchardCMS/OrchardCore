@@ -7,8 +7,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a default shell settings based on the configuration.
         /// </summary>
-        /// <param name="name">The tenant name.</param>
-        ShellSettings CreateDefaultSettings(string name);
+        ShellSettings CreateDefaultSettings();
 
         /// <summary>
         /// Retrieves all shell settings stored.

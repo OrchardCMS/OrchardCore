@@ -64,17 +64,15 @@ namespace OrchardCore.Environment.Shell
                 .AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
         }
 
-        public ShellSettings CreateDefaultSettings(string name)
+        public ShellSettings CreateDefaultSettings()
         {
             Func<string, IConfigurationBuilder> factory = (tenant) => new ConfigurationBuilder()
-                .AddConfiguration(_configuration)
-                .AddConfiguration(_configuration.GetSection(tenant));
+                .AddConfiguration(_configuration);
 
-            var shellConfiguration = new ShellConfiguration(name, factory);
+            var shellConfiguration = new ShellConfiguration(null, factory);
 
             return new ShellSettings(shellConfiguration)
             {
-                Name = name,
                 RequestUrlHost = shellConfiguration["RequestUrlHost"],
                 RequestUrlPrefix = shellConfiguration["RequestUrlPrefix"],
                 State = TenantState.Uninitialized

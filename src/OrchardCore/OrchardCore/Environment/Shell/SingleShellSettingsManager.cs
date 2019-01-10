@@ -4,7 +4,7 @@ namespace OrchardCore.Environment.Shell
 {
     public class SingleShellSettingsManager : IShellSettingsManager
     {
-        public ShellSettings CreateDefaultSettings(string name)
+        public ShellSettings CreateDefaultSettings()
         {
             return new ShellSettings()
             {
