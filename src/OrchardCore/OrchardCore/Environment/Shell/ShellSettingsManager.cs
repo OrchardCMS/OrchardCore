@@ -58,10 +58,17 @@ namespace OrchardCore.Environment.Shell
                 .Distinct()
                 .ToArray();
 
-            _configBuilderFactory = (tenant) => new ConfigurationBuilder()
-                .AddConfiguration(_configuration)
-                .AddConfiguration(_configuration.GetSection(tenant))
-                .AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
+            _configBuilderFactory = (tenant) =>
+            {
+                var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+
+                if (_configuredTenants.Contains(tenant))
+                {
+                    builder.AddConfiguration(_configuration.GetSection(tenant));
+                }
+
+                return builder.AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
+            };
         }
 
         public ShellSettings CreateDefaultSettings()
