@@ -6,6 +6,5 @@ namespace OrchardCore.Google.Analytics.ViewModels
     {
         [Required(AllowEmptyStrings = false)]
         public string TrackingID { get; set; }
-        public bool ScriptsAtHead { get; set; }
     }
 }

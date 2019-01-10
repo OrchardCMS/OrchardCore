@@ -22,13 +22,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\gtag.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

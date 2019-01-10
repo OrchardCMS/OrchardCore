@@ -32,7 +32,6 @@ namespace OrchardCore.Google.Analytics.Recipes
             container.Alter<GoogleAnalyticsSettings>(nameof(GoogleAnalyticsSettings), aspect =>
             {
                 aspect.TrackingID = model.TrackingID;
-                aspect.ScriptsAtHead = model.ScriptsAtHead;
             });
         }
     }
