@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell

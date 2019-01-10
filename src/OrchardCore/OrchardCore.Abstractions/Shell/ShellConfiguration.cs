@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Abstractions.Shell;
 
 namespace OrchardCore.Environment.Shell
 {

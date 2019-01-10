@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace OrchardCore.Abstractions.Shell
+namespace OrchardCore.Environment.Shell
 {
     public interface IShellConfiguration : IConfiguration
     {
