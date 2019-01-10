@@ -96,7 +96,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdApplicationViewModel();
 
-            var roleService = HttpContext.RequestServices.GetService<IRoleService>();
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
             if (roleService != null)
             {
                 foreach (var role in await roleService.GetRoleNamesAsync())
@@ -250,7 +250,7 @@ namespace OrchardCore.OpenId.Controllers
                 Type = await _applicationManager.GetClientTypeAsync(application)
             };
 
-            var roleService = HttpContext.RequestServices.GetService<IRoleService>();
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
             if (roleService != null)
             {
                 foreach (var role in await roleService.GetRoleNamesAsync())
