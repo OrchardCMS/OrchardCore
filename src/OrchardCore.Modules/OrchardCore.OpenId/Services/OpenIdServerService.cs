@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -37,7 +36,22 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdServerSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<OpenIdServerSettings>();
+            if (container.Properties.TryGetValue(nameof(OpenIdServerSettings), out var settings))
+            {
+                return settings.ToObject<OpenIdServerSettings>();
+            }
+
+            // If the OpenID server settings haven't been populated yet, the authorization,
+            // logout, token and userinfo endpoints are assumed to be enabled by default.
+            // In this case, only the authorization code and refresh token flows are used.
+            return new OpenIdServerSettings
+            {
+                AuthorizationEndpointPath = "/connect/authorize",
+                GrantTypes = { GrantTypes.AuthorizationCode, GrantTypes.RefreshToken },
+                LogoutEndpointPath = "/connect/logout",
+                TokenEndpointPath = "/connect/token",
+                UserinfoEndpointPath = "/connect/userinfo"
+            };
         }
 
         public async Task UpdateSettingsAsync(OpenIdServerSettings settings)
