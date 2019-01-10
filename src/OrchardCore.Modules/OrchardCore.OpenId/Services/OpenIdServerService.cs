@@ -47,16 +47,6 @@ namespace OrchardCore.OpenId.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            // Automatically remove expired keys before persisting the settings.
-            for (var index = settings.SigningKeys.Count - 1; index >= 0; index--)
-            {
-                var key = settings.SigningKeys[index];
-                if (key.ExpirationDate != null && key.ExpirationDate.Value.AddDays(5) < DateTimeOffset.UtcNow)
-                {
-                    settings.SigningKeys.RemoveAt(index);
-                }
-            }
-
             var container = await _siteService.GetSiteSettingsAsync();
             container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
