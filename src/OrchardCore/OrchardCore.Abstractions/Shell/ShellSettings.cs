@@ -12,21 +12,23 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private IShellConfiguration _configuration;
+        private ShellConfiguration _configuration;
+        private string _requestUrlHost;
+        private string _requestUrlPrefix;
 
         public ShellSettings()
         {
             _configuration = new ShellConfiguration();
         }
 
-        public ShellSettings(IShellConfiguration configuration)
+        public ShellSettings(ShellConfiguration configuration)
         {
             _configuration = configuration;
         }
 
         public ShellSettings(ShellSettings settings)
         {
-            _configuration = settings._configuration;
+            _configuration = new ShellConfiguration(settings.Name, settings._configuration);
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;
@@ -35,8 +37,18 @@ namespace OrchardCore.Environment.Shell
         }
 
         public string Name { get; set; }
-        public string RequestUrlHost { get; set; }
-        public string RequestUrlPrefix { get; set; }
+
+        public string RequestUrlHost
+        {
+            get => _requestUrlHost;
+            set => _requestUrlHost = value ?? _requestUrlHost;
+        }
+
+        public string RequestUrlPrefix
+        {
+            get => _requestUrlPrefix;
+            set => _requestUrlPrefix = value ?? _requestUrlPrefix;
+        }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State { get; set; } = TenantState.Invalid;

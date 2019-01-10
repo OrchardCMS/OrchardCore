@@ -4,6 +4,15 @@ namespace OrchardCore.Environment.Shell
 {
     public class SingleShellSettingsManager : IShellSettingsManager
     {
+        public ShellSettings CreateDefaultSettings(string name)
+        {
+            return new ShellSettings()
+            {
+                Name = "Default",
+                State = Models.TenantState.Running
+            };
+        }
+
         public IEnumerable<ShellSettings> LoadSettings()
         {
             yield return new ShellSettings()

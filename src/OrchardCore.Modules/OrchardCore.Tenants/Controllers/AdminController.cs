@@ -89,8 +89,53 @@ namespace OrchardCore.Tenants.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Add()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Unauthorized();
+            }
 
-        public async Task<IActionResult> Create()
+            if (!IsDefaultShell())
+            {
+                return Unauthorized();
+            }
+
+            var model = new AddTenantViewModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(AddTenantViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Unauthorized();
+            }
+
+            if (!IsDefaultShell())
+            {
+                return Unauthorized();
+            }
+
+            var allShells = await GetShellsAsync();
+
+            if (allShells.Any(tenant => string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError(nameof(AddTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
+            }
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Create", new { model.Name });
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public async Task<IActionResult> Create(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
@@ -105,7 +150,21 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
 
-            var model = new EditTenantViewModel();
+            // Creates a default shell settings based on the configuration.
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings(name);
+
+            var model = new EditTenantViewModel
+            {
+                Name = name,
+                Recipes = recipes,
+                RequestUrlHost = shellSettings.RequestUrlHost,
+                RequestUrlPrefix = shellSettings.RequestUrlPrefix,
+                DatabaseProvider = shellSettings["DatabaseProvider"],
+                TablePrefix = shellSettings["TablePrefix"],
+                ConnectionString = shellSettings["ConnectionString"],
+                RecipeName = shellSettings["RecipeName"]
+            };
+
             model.Recipes = recipes;
 
             return View(model);
@@ -131,13 +190,13 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                var shellSettings = new ShellSettings
-                {
-                    Name = model.Name,
-                    RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
-                    RequestUrlHost = model.RequestUrlHost,
-                    State = TenantState.Uninitialized,
-                };
+                // Creates a default shell settings based on the configuration.
+                var shellSettings = _shellSettingsManager.CreateDefaultSettings(model.Name);
+
+                // Update settings, null values have no effect.
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
+                shellSettings.State = TenantState.Uninitialized;
 
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;

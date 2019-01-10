@@ -34,7 +34,6 @@ namespace OrchardCore.Environment.Shell
             _tenantsFilePath = Path.Combine(appDataPath, "tenants.json");
 
             var environment = hostingEnvironment.EnvironmentName;
-            var ENVIRONMENT = environment.ToUpperInvariant();
             var appsettings = Path.Combine(appDataPath, "appsettings");
 
             var configurationBuilder = new ConfigurationBuilder()
@@ -63,6 +62,23 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_configuration)
                 .AddConfiguration(_configuration.GetSection(tenant))
                 .AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
+        }
+
+        public ShellSettings CreateDefaultSettings(string name)
+        {
+            Func<string, IConfigurationBuilder> factory = (tenant) => new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(tenant));
+
+            var shellConfiguration = new ShellConfiguration(name, factory);
+
+            return new ShellSettings(shellConfiguration)
+            {
+                Name = name,
+                RequestUrlHost = shellConfiguration["RequestUrlHost"],
+                RequestUrlPrefix = shellConfiguration["RequestUrlPrefix"],
+                State = TenantState.Uninitialized
+            };
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -102,81 +118,66 @@ namespace OrchardCore.Environment.Shell
 
         public void SaveSettings(ShellSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var configuration = new ConfigurationBuilder()
-                .AddConfiguration(_configuration)
-                .AddConfiguration(_configuration.GetSection(settings.Name))
-                .Build();
-
-            var shellSettings = new ShellSettings()
-            {
-                Name = settings.Name
-            };
-
-            configuration.Bind(shellSettings);
-
-            var configObject = JObject.FromObject(shellSettings);
-            var settingsObject = JObject.FromObject(settings);
-
-            settingsObject.Remove("Name");
-
-            foreach (var property in configObject)
-            {
-                var setting = settingsObject.Value<string>(property.Key);
-                var configValue = configObject.Value<string>(property.Key);
-
-                if (setting == null || setting == configValue)
-                {
-                    settingsObject.Remove(property.Key);
-                }
-            }
-
             lock (this)
             {
-                try
+                if (settings == null)
                 {
-                    var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
-                        : JObject.Parse(File.ReadAllText(_tenantsFilePath));
-
-                    tenantsObject[settings.Name] = settingsObject;
-
-                    File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
+                    throw new ArgumentNullException(nameof(settings));
                 }
 
-                catch (IOException)
+                var configuration = new ConfigurationBuilder()
+                    .AddConfiguration(_configuration)
+                    .AddConfiguration(_configuration.GetSection(settings.Name))
+                    .Build();
+
+                var shellSettings = new ShellSettings()
                 {
-                }
-            }
+                    Name = settings.Name
+                };
 
-            var localConfigObject = new JObject();
+                configuration.Bind(shellSettings);
 
-            var sections = settings.ShellConfiguration.GetChildren().Where(s => s.Value != null).ToArray();
+                var configObject = JObject.FromObject(shellSettings);
+                var settingsObject = JObject.FromObject(settings);
 
-            foreach (var section in sections)
-            {
-                if (section.Value != configuration[section.Key])
+                settingsObject.Remove("Name");
+
+                foreach (var property in configObject)
                 {
-                    localConfigObject[section.Key] = section.Value;
+                    var setting = settingsObject.Value<string>(property.Key);
+                    var configValue = configObject.Value<string>(property.Key);
+
+                    if (setting == null || setting == configValue)
+                    {
+                        settingsObject.Remove(property.Key);
+                    }
                 }
-            }
 
-            localConfigObject.Remove("Name");
+                var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
+                    : JObject.Parse(File.ReadAllText(_tenantsFilePath));
 
-            var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-            var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
+                tenantsObject[settings.Name] = settingsObject;
+                File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
 
-            try
-            {
+                var localConfigObject = new JObject();
+
+                var sections = settings.ShellConfiguration.GetChildren().Where(s => s.Value != null).ToArray();
+
+                foreach (var section in sections)
+                {
+                    if (section.Value != configuration[section.Key])
+                    {
+                        localConfigObject[section.Key] = section.Value;
+                    }
+                }
+
+                localConfigObject.Remove("Name");
+
+                var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
+                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
+
                 Directory.CreateDirectory(tenantFolder);
                 File.WriteAllText(localConfigPath, localConfigObject.ToString());
-            }
-
-            catch (IOException)
-            {
             }
         }
     }

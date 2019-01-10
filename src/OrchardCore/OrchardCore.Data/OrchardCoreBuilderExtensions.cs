@@ -10,6 +10,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -49,7 +50,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    if (shellSettings["DatabaseProvider"] == null)
+                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }

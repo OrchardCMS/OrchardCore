@@ -86,21 +86,33 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var allShells = await GetShellsAsync();
-
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            // Creates a default shell settings based on the configuration.
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings(model.Name);
+
+            // Update settings, null values have no effect.
+            shellSettings.RequestUrlHost = model.RequestUrlHost;
+            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
+            shellSettings.State = TenantState.Uninitialized;
+
+            shellSettings["ConnectionString"] = model.ConnectionString;
+            shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+            shellSettings["Secret"] = Guid.NewGuid().ToString();
+            shellSettings["RecipeName"] = model.RecipeName;
+
+            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
-                if (model.RequestUrlPrefix.Contains('/'))
+                if (shellSettings.RequestUrlPrefix.Contains('/'))
                 {
                     ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
                 }
@@ -108,30 +120,16 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var shellSettings))
+                if (_shellHost.TryGetSettings(model.Name, out var settings))
                 {
                     // Site already exists, return 200 for indempotency purpose
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(shellSettings, token));
+                    return StatusCode(201, GetTenantUrl(settings, token));
                 }
                 else
                 {
-                    shellSettings = new ShellSettings
-                    {
-                        Name = model.Name,
-                        RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
-                        RequestUrlHost = model.RequestUrlHost,
-                        State = TenantState.Uninitialized,
-                    };
-
-                    shellSettings["ConnectionString"] = model.ConnectionString;
-                    shellSettings["TablePrefix"] = model.TablePrefix;
-                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-                    shellSettings["Secret"] = Guid.NewGuid().ToString();
-                    shellSettings["RecipeName"] = model.RecipeName;
-
                     _shellSettingsManager.SaveSettings(shellSettings);
                     var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
 
@@ -178,7 +176,14 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The tenant can't be setup."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, model.DatabaseProvider, StringComparison.OrdinalIgnoreCase));
+            var databaseProvider = shellSettings["DatabaseProvider"];
+
+            if (String.IsNullOrEmpty(databaseProvider))
+            {
+                databaseProvider = model.DatabaseProvider;
+            }
+
+            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {

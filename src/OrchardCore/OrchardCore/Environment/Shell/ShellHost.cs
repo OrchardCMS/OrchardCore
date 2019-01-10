@@ -313,7 +313,9 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            return _shellContextFactory.CreateSetupContextAsync(ShellHelper.BuildDefaultUninitializedShell);
+            // Creates a default shell settings based on the configuration.
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings(ShellHelper.DefaultShellName);
+            return _shellContextFactory.CreateSetupContextAsync(shellSettings);
         }
 
         /// <summary>

@@ -81,7 +81,7 @@ namespace OrchardCore.Environment.Shell
 
             set
             {
-                if (Configuration[key] != value)
+                if (value != null && Configuration[key] != value)
                 {
                     lock (this)
                     {
