@@ -108,7 +108,7 @@ namespace OrchardCore.OpenId.Configuration
             options.IgnoreScopePermissions = true;
             options.UseRollingTokens = settings.UseRollingTokens;
 
-            foreach (var key in GetSigningKeysAsync().GetAwaiter().GetResult())
+            foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
             }
@@ -154,7 +154,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             options.TokenValidationParameters.ValidAudience = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-            options.TokenValidationParameters.IssuerSigningKeys = GetSigningKeysAsync().GetAwaiter().GetResult();
+            options.TokenValidationParameters.IssuerSigningKeys = _serverService.GetSigningKeysAsync().GetAwaiter().GetResult();
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
@@ -208,21 +208,6 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             return settings;
-        }
-
-        private async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
-        {
-            // If no signing credentials were found, generate a new key and persist it.
-            var keys = await _serverService.GetSigningKeysAsync();
-            if (keys.IsDefaultOrEmpty)
-            {
-                var key = await _serverService.GenerateSigningKeyAsync();
-                await _serverService.AddSigningKeyAsync(key);
-
-                return ImmutableArray.Create(key);
-            }
-
-            return keys;
         }
     }
 }

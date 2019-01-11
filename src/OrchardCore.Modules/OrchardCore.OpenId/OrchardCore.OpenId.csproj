@@ -1,7 +1,7 @@
-  <Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.2</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,5 +26,9 @@
     <PackageReference Include="OpenIddict" />
     <PackageReference Include="System.Security.Cryptography.Cng" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
+    <DefineConstants>$(DefineConstants);SUPPORTS_CERTIFICATE_GENERATION;SUPPORTS_EPHEMERAL_KEY_SETS</DefineConstants>
+  </PropertyGroup>
 
 </Project>

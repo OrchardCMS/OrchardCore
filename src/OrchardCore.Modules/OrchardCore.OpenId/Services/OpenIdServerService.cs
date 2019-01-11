@@ -9,8 +9,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -20,15 +23,24 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdServerService : IOpenIdServerService
     {
         private readonly IDataProtector _dataProtector;
+        private readonly ILogger<OpenIdServerService> _logger;
+        private readonly IOptionsMonitor<ShellOptions> _shellOptions;
+        private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdServerService> T;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
+            ILogger<OpenIdServerService> logger,
+            IOptionsMonitor<ShellOptions> shellOptions,
+            ShellSettings shellSettings,
             ISiteService siteService,
             IStringLocalizer<OpenIdServerService> stringLocalizer)
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
+            _logger = logger;
+            _shellOptions = shellOptions;
+            _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
@@ -232,11 +244,10 @@ namespace OrchardCore.OpenId.Services
 
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
         {
-            var keys = ImmutableArray.CreateBuilder<SecurityKey>();
-
             var settings = await GetSettingsAsync();
 
-            // If a certificate was provided, register it before adding the signing keys.
+            // If a certificate was explicitly provided, return it immediately
+            // instead of using the fallback managed certificates logic.
             if (settings.CertificateStoreLocation != null &&
                 settings.CertificateStoreName != null &&
                 !string.IsNullOrEmpty(settings.CertificateThumbprint))
@@ -247,139 +258,146 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate != null)
                 {
-                    keys.Add(new X509SecurityKey(certificate));
+                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
                 }
+
+                return ImmutableArray.Create<SecurityKey>();
             }
 
-            foreach (var key in settings.SigningKeys.OrderByDescending(key => key.ExpirationDate).ToList())
+            try
             {
-                // If the signing key has an expiration date, only add it if is still valid.
-                if (key.ExpirationDate != null && key.ExpirationDate.Value.AddDays(1) < DateTimeOffset.UtcNow)
-                {
-                    continue;
-                }
+                var certificates = await GetCertificatesAsync();
 
-                // Note: only RSA signing keys are currently supported by the OpenID module.
-                if (!string.Equals(key.Type, JsonWebAlgorithmsKeyTypes.RSA, StringComparison.OrdinalIgnoreCase))
+#if SUPPORTS_CERTIFICATE_GENERATION
+                // If the certificates list is empty or only contains certificates about to expire,
+                // generate a new certificate and add it on top of the list to ensure it's preferred
+                // by OpenIddict to the other certificates when issuing JWT access or identity tokens.
+                if (certificates.IsEmpty || !certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
                 {
-                    continue;
+                    certificates = certificates.Insert(0, await GenerateSigningCertificateAsync());
                 }
+#endif
 
-                // Note: the parameters may be null if the payload couldn't be decrypted.
-                var parameters = DecryptRsaSigningKey(key.Payload);
-                if (parameters == null)
-                {
-                    continue;
-                }
+                return ImmutableArray.CreateRange<SecurityKey>(
+                    from certificate in certificates
+                    select new X509SecurityKey(certificate));
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning(exception, "An error occurred while trying to retrieve the X.509 signing certificates.");
 
-                keys.Add(new RsaSecurityKey(parameters.Value));
+                return ImmutableArray.Create<SecurityKey>();
             }
 
-            return keys.ToImmutable();
-
-            RSAParameters? DecryptRsaSigningKey(ReadOnlySpan<byte> payload)
+            async Task<ImmutableArray<X509Certificate2>> GetCertificatesAsync()
             {
-                // Note: an exception thrown in this block may be caused by a corrupted or inappropriate key
-                // (for instance, if the key was created for another application or another environment).
-                // Always catch the exception and return null in this case to avoid leaking sensitive data.
-                try
-                {
-                    var bytes = _dataProtector.Unprotect(payload.ToArray());
-                    if (bytes == null)
-                    {
-                        return null;
-                    }
+                var directory = new DirectoryInfo(Path.Combine(
+                    _shellOptions.CurrentValue.ShellsApplicationDataPath,
+                    _shellOptions.CurrentValue.ShellsContainerName,
+                    _shellSettings.Name, "IdentityModel-Signing-Certificates"));
 
-                    using (var stream = new MemoryStream(bytes))
-                    using (var reader = new BinaryReader(stream))
+                if (!directory.Exists)
+                {
+                    return ImmutableArray.Create<X509Certificate2>();
+                }
+
+                var certificates = ImmutableArray.CreateBuilder<X509Certificate2>();
+
+                foreach (var file in directory.EnumerateFiles("*.pfx", SearchOption.TopDirectoryOnly))
+                {
+                    try
                     {
-                        return new RSAParameters
+                        // Extract the certificate password from the separate .pwd file.
+                        var password = await GetPasswordAsync(Path.ChangeExtension(file.FullName, ".pwd"));
+
+                        var flags =
+#if SUPPORTS_EPHEMERAL_KEY_SETS
+                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                                X509KeyStorageFlags.EphemeralKeySet :
+                                X509KeyStorageFlags.MachineKeySet;
+#else
+                                X509KeyStorageFlags.MachineKeySet;
+#endif
+
+                        // Only add the certificate if it's still valid.
+                        var certificate = new X509Certificate2(file.FullName, password, flags);
+                        if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
                         {
-                            D = reader.ReadBytes(reader.ReadInt32()),
-                            DP = reader.ReadBytes(reader.ReadInt32()),
-                            DQ = reader.ReadBytes(reader.ReadInt32()),
-                            Exponent = reader.ReadBytes(reader.ReadInt32()),
-                            InverseQ = reader.ReadBytes(reader.ReadInt32()),
-                            Modulus = reader.ReadBytes(reader.ReadInt32()),
-                            P = reader.ReadBytes(reader.ReadInt32()),
-                            Q = reader.ReadBytes(reader.ReadInt32())
-                        };
+                            certificates.Add(certificate);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogWarning(exception, "An error occurred while trying to extract a X.509 certificate.");
+
+                        continue;
                     }
                 }
 
-                catch
+                return certificates.ToImmutable();
+            }
+
+            async Task<string> GetPasswordAsync(string path)
+            {
+                using (var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var reader = new StreamReader(stream))
                 {
-                    return null;
+                    return _dataProtector.Unprotect(await reader.ReadToEndAsync());
                 }
             }
-        }
 
-        public async Task AddSigningKeyAsync(SecurityKey key)
-        {
-            var settings = await GetSettingsAsync();
-
-            if (key is RsaSecurityKey rsaSecurityKey)
+#if SUPPORTS_CERTIFICATE_GENERATION
+            async Task<X509Certificate2> GenerateSigningCertificateAsync()
             {
-                settings.SigningKeys.Add(new OpenIdServerSettings.SigningKey
+                var subject = GetSubjectName();
+                var algorithm = GenerateRsaSigningKey(size: 2048);
+
+                // Note: ensure the digitalSignature bit is added to the certificate, so that no validation error
+                // is returned to clients that fully validate the certificates chain and their X.509 key usages.
+                var request = new CertificateRequest(subject, algorithm, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, critical: true));
+
+                var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMonths(3));
+
+                // Note: setting the friendly name is not supported on Unix machines (including Linux and macOS).
+                // To ensure an exception is not thrown by the property setter, an OS runtime check is used here.
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    CreationDate = DateTimeOffset.UtcNow,
-                    ExpirationDate = DateTimeOffset.UtcNow.AddDays(90),
-                    Payload = EncryptRsaSigningKey(rsaSecurityKey.Rsa).ToArray(),
-                    Type = JsonWebAlgorithmsKeyTypes.RSA
-                });
-            }
-            else
-            {
-                throw new InvalidOperationException("The specified security key is not supported.");
-            }
-
-            await UpdateSettingsAsync(settings);
-
-            ReadOnlySpan<byte> EncryptRsaSigningKey(RSA algorithm)
-            {
-                var parameters = algorithm.ExportParameters(includePrivateParameters: true);
-
-                using (var stream = new MemoryStream())
-                using (var writer = new BinaryWriter(stream))
-                {
-                    writer.Write(parameters.D.Length);
-                    writer.Write(parameters.D);
-                    writer.Write(parameters.DP.Length);
-                    writer.Write(parameters.DP);
-                    writer.Write(parameters.DQ.Length);
-                    writer.Write(parameters.DQ);
-                    writer.Write(parameters.Exponent.Length);
-                    writer.Write(parameters.Exponent);
-                    writer.Write(parameters.InverseQ.Length);
-                    writer.Write(parameters.InverseQ);
-                    writer.Write(parameters.Modulus.Length);
-                    writer.Write(parameters.Modulus);
-                    writer.Write(parameters.P.Length);
-                    writer.Write(parameters.P);
-                    writer.Write(parameters.Q.Length);
-                    writer.Write(parameters.Q);
-                    writer.Flush();
-
-                    return _dataProtector.Protect(stream.ToArray());
+                    certificate.FriendlyName = "OrchardCore OpenID Server Signing Certificate";
                 }
+
+                return await SaveSigningCertificateAsync(certificate, GeneratePassword());
             }
-        }
 
-        public Task<SecurityKey> GenerateSigningKeyAsync() => GenerateSigningKeyAsync<RsaSecurityKey>();
-
-        public Task<SecurityKey> GenerateSigningKeyAsync<TSecurityKey>() where TSecurityKey : SecurityKey
-        {
-            if (typeof(TSecurityKey) == typeof(RsaSecurityKey))
+            X500DistinguishedName GetSubjectName()
             {
-                return Task.FromResult<SecurityKey>(new RsaSecurityKey(GenerateRsaSigningKey(size: 2048)));
+                try { return new X500DistinguishedName("CN=" + (_shellSettings.RequestUrlHost ?? "localhost")); }
+                catch { return new X500DistinguishedName("CN=localhost"); }
             }
 
-            throw new InvalidOperationException("The specified security key type is not supported.");
+            string GeneratePassword()
+            {
+                Span<byte> password = stackalloc byte[256 / 8];
+                RandomNumberGenerator.Fill(password);
+                return Convert.ToBase64String(password, Base64FormattingOptions.None);
+            }
+
+            async Task<X509Certificate2> SaveSigningCertificateAsync(X509Certificate2 certificate, string password)
+            {
+                var directory = Directory.CreateDirectory(Path.Combine(
+                    _shellOptions.CurrentValue.ShellsApplicationDataPath,
+                    _shellOptions.CurrentValue.ShellsContainerName,
+                    _shellSettings.Name, "IdentityModel-Signing-Certificates"));
+
+                var path = Path.Combine(directory.FullName, Guid.NewGuid().ToString());
+                await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password));
+                await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));
+
+                return certificate;
+            }
 
             RSA GenerateRsaSigningKey(int size)
             {
-                RSA algorithm = null;
-
                 // By default, the default RSA implementation used by .NET Core relies on the newest Windows CNG APIs.
                 // Unfortunately, when a new key is generated using the default RSA.Create() method, it is not bound
                 // to the machine account, which may cause security exceptions when running Orchard on IIS using a
@@ -397,36 +415,12 @@ namespace OrchardCore.OpenId.Services
                         Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
                     });
 
-                    algorithm = new RSACng(key);
+                    return new RSACng(key);
                 }
 
-                else
-                {
-                    algorithm = RSA.Create();
-
-                    // Note: a 1024-bit key might be returned by RSA.Create() on .NET Desktop/Mono,
-                    // where RSACryptoServiceProvider is still the default implementation and
-                    // where custom implementations can be registered via CryptoConfig.
-                    // To ensure the key size is always acceptable, replace it if necessary.
-                    if (algorithm.KeySize < size)
-                    {
-                        algorithm.KeySize = size;
-                    }
-
-                    if (algorithm.KeySize < size && algorithm is RSACryptoServiceProvider)
-                    {
-                        algorithm.Dispose();
-                        algorithm = new RSACryptoServiceProvider(size);
-                    }
-
-                    if (algorithm.KeySize < size)
-                    {
-                        throw new InvalidOperationException("The RSA key generation failed.");
-                    }
-                }
-
-                return algorithm;
+                return RSA.Create(size);
             }
+#endif
         }
 
         private static X509Certificate2 GetCertificate(StoreLocation location, StoreName name, string thumbprint)
