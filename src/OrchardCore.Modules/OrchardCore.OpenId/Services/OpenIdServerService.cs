@@ -261,33 +261,49 @@ namespace OrchardCore.OpenId.Services
                     return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
                 }
 
-                return ImmutableArray.Create<SecurityKey>();
+                _logger.LogWarning("The signing certificate '{Thumbprint}' could not be found in the " +
+                                   "{StoreLocation}/{StoreName} store.", settings.CertificateThumbprint,
+                                   settings.CertificateStoreLocation.Value.ToString(),
+                                   settings.CertificateStoreName.Value.ToString());
             }
 
             try
             {
                 var certificates = await GetCertificatesAsync();
+                if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
+                {
+                    return ImmutableArray.CreateRange<SecurityKey>(
+                        from certificate in certificates
+                        select new X509SecurityKey(certificate));
+                }
 
 #if SUPPORTS_CERTIFICATE_GENERATION
-                // If the certificates list is empty or only contains certificates about to expire,
-                // generate a new certificate and add it on top of the list to ensure it's preferred
-                // by OpenIddict to the other certificates when issuing JWT access or identity tokens.
-                if (certificates.IsEmpty || !certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
+                try
                 {
+                    // If the certificates list is empty or only contains certificates about to expire,
+                    // generate a new certificate and add it on top of the list to ensure it's preferred
+                    // by OpenIddict to the other certificates when issuing JWT access or identity tokens.
                     certificates = certificates.Insert(0, await GenerateSigningCertificateAsync());
-                }
-#endif
 
-                return ImmutableArray.CreateRange<SecurityKey>(
-                    from certificate in certificates
-                    select new X509SecurityKey(certificate));
+                    return ImmutableArray.CreateRange<SecurityKey>(
+                        from certificate in certificates
+                        select new X509SecurityKey(certificate));
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "An error occured while trying to generate a X.509 signing certificate.");
+                }
+#else
+                _logger.LogError("This platform doesn't support X.509 certificate generation.");
+#endif
             }
             catch (Exception exception)
             {
                 _logger.LogWarning(exception, "An error occurred while trying to retrieve the X.509 signing certificates.");
-
-                return ImmutableArray.Create<SecurityKey>();
             }
+
+            // If none of the previous attempts succeeded, try to generate an ephemeral RSA key.
+            return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(GenerateRsaSigningKey(2048)));
 
             async Task<ImmutableArray<X509Certificate2>> GetCertificatesAsync()
             {
@@ -346,6 +362,61 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
+            RSA GenerateRsaSigningKey(int size)
+            {
+                RSA algorithm;
+
+                // By default, the default RSA implementation used by .NET Core relies on the newest Windows CNG APIs.
+                // Unfortunately, when a new key is generated using the default RSA.Create() method, it is not bound
+                // to the machine account, which may cause security exceptions when running Orchard on IIS using a
+                // virtual application pool identity or without the profile loading feature enabled (off by default).
+                // To ensure a RSA key can be generated flawlessly, it is manually created using the managed CNG APIs.
+                // For more information, visit https://github.com/openiddict/openiddict-core/issues/204.
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Warning: ensure a null key name is specified to ensure the RSA key is not persisted by CNG.
+                    var key = CngKey.Create(CngAlgorithm.Rsa, keyName: null, new CngKeyCreationParameters
+                    {
+                        ExportPolicy = CngExportPolicies.AllowPlaintextExport,
+                        KeyCreationOptions = CngKeyCreationOptions.MachineKey,
+                        KeyUsage = CngKeyUsages.Signing,
+                        Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
+                    });
+
+                    algorithm = new RSACng(key);
+                }
+                else
+                {
+#if SUPPORTS_DIRECT_KEY_CREATION_WITH_SPECIFIED_SIZE
+                    algorithm = RSA.Create(size);
+#else
+                    algorithm = RSA.Create();
+
+                    // Note: a 1024-bit key might be returned by RSA.Create() on .NET Desktop/Mono,
+                    // where RSACryptoServiceProvider is still the default implementation and
+                    // where custom implementations can be registered via CryptoConfig.
+                    // To ensure the key size is always acceptable, replace it if necessary.
+                    if (algorithm.KeySize < size)
+                    {
+                        algorithm.KeySize = size;
+                    }
+
+                    if (algorithm.KeySize < size && algorithm is RSACryptoServiceProvider)
+                    {
+                        algorithm.Dispose();
+                        algorithm = new RSACryptoServiceProvider(size);
+                    }
+
+                    if (algorithm.KeySize < size)
+                    {
+                        throw new InvalidOperationException("The RSA key generation failed.");
+                    }
+#endif
+                }
+
+                return algorithm;
+            }
+
 #if SUPPORTS_CERTIFICATE_GENERATION
             async Task<X509Certificate2> GenerateSigningCertificateAsync()
             {
@@ -394,31 +465,6 @@ namespace OrchardCore.OpenId.Services
                 await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));
 
                 return certificate;
-            }
-
-            RSA GenerateRsaSigningKey(int size)
-            {
-                // By default, the default RSA implementation used by .NET Core relies on the newest Windows CNG APIs.
-                // Unfortunately, when a new key is generated using the default RSA.Create() method, it is not bound
-                // to the machine account, which may cause security exceptions when running Orchard on IIS using a
-                // virtual application pool identity or without the profile loading feature enabled (off by default).
-                // To ensure a RSA key can be generated flawlessly, it is manually created using the managed CNG APIs.
-                // For more information, visit https://github.com/openiddict/openiddict-core/issues/204.
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    // Warning: ensure a null key name is specified to ensure the RSA key is not persisted by CNG.
-                    var key = CngKey.Create(CngAlgorithm.Rsa, keyName: null, new CngKeyCreationParameters
-                    {
-                        ExportPolicy = CngExportPolicies.AllowPlaintextExport,
-                        KeyCreationOptions = CngKeyCreationOptions.MachineKey,
-                        KeyUsage = CngKeyUsages.Signing,
-                        Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
-                    });
-
-                    return new RSACng(key);
-                }
-
-                return RSA.Create(size);
             }
 #endif
         }
