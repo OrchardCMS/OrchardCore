@@ -4,13 +4,19 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
-using OrchardCore.Google.Configuration;
-using OrchardCore.Google.Drivers;
-using OrchardCore.Google.Services;
+using OrchardCore.Google.Authentication.Configuration;
+using OrchardCore.Google.Authentication.Drivers;
+using OrchardCore.Google.Authentication.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Google.Analytics;
+using OrchardCore.Google.Analytics.Drivers;
+using OrchardCore.Google.Analytics.Recipes;
+using OrchardCore.Recipes;
+using OrchardCore.Google.Authentication.Recipes;
 
 namespace OrchardCore.Google
 {
@@ -27,10 +33,11 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddRecipeExecutionStep<GoogleAuthenticationSettingsStep>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGoogleAuthentication>();
-            // Register the options initializers required by the Twitter Handler.
+            // Register the options initializers required by the Google Handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
@@ -41,4 +48,22 @@ namespace OrchardCore.Google
             });
         }
     }
+
+    [Feature(GoogleConstants.Features.GoogleAnalytics)]
+    public class GoogleAnalyticsStartup : StartupBase
+    {
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
+            services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenuGoogleAnalytics>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(GoogleAnalyticsFilter));
+            });
+        }
+
+    }
+
 }

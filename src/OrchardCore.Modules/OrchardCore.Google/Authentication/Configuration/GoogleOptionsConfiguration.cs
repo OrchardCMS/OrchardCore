@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Google.Services;
-using OrchardCore.Google.Settings;
+using OrchardCore.Google.Authentication.Services;
+using OrchardCore.Google.Authentication.Settings;
 
-namespace OrchardCore.Google.Configuration
+namespace OrchardCore.Google.Authentication.Configuration
 {
     public class GoogleOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,

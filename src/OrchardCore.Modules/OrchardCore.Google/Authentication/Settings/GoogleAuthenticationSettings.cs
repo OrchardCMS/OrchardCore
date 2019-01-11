@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Google.Settings
+namespace OrchardCore.Google.Authentication.Settings
 {
     public class GoogleAuthenticationSettings
     {
