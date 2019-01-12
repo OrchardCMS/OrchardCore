@@ -33,12 +33,11 @@ namespace OrchardCore.Environment.Shell
 
             _tenantsFilePath = Path.Combine(appDataPath, "tenants.json");
 
-            var environment = hostingEnvironment.EnvironmentName;
             var appsettings = Path.Combine(appDataPath, "appsettings");
+            var environment = hostingEnvironment.EnvironmentName;
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddConfiguration(applicationConfiguration)
-
                 .AddJsonFile($"{appsettings}.json", optional: true)
                 .AddJsonFile($"{appsettings}.{environment}.json", optional: true);
 
@@ -164,7 +163,11 @@ namespace OrchardCore.Environment.Shell
                 tenantsObject[settings.Name] = settingsObject;
                 File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
 
-                var localConfigObject = new JObject();
+                var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
+                var localConfigPath = Path.Combine(tenantFolder, $"appsettings.json");
+
+                var localConfigObject = !File.Exists(localConfigPath) ? new JObject()
+                    : JObject.Parse(File.ReadAllText(localConfigPath));
 
                 var sections = settings.ShellConfiguration.GetChildren().Where(s => s.Value != null).ToArray();
 
@@ -177,9 +180,6 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 localConfigObject.Remove("Name");
-
-                var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
 
                 Directory.CreateDirectory(tenantFolder);
                 File.WriteAllText(localConfigPath, localConfigObject.ToString());
