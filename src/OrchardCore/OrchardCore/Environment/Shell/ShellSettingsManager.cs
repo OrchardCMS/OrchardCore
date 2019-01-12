@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Models;
+using YamlDotNet.Serialization;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -87,6 +88,13 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
+            // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
+            if (!File.Exists(_tenantsFilePath) && File.Exists(Path.Combine(_tenantsContainerPath,
+                ShellHelper.DefaultShellName, "Settings.txt")))
+            {
+                UpgradeFromBeta2();
+            }
+
             var tenantsSettings = new ConfigurationBuilder()
                 .AddJsonFile(_tenantsFilePath, optional: true)
                 .Build();
@@ -164,7 +172,7 @@ namespace OrchardCore.Environment.Shell
                 File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
 
                 var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-                var localConfigPath = Path.Combine(tenantFolder, $"appsettings.json");
+                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
 
                 var localConfigObject = !File.Exists(localConfigPath) ? new JObject()
                     : JObject.Parse(File.ReadAllText(localConfigPath));
@@ -183,6 +191,50 @@ namespace OrchardCore.Environment.Shell
 
                 Directory.CreateDirectory(tenantFolder);
                 File.WriteAllText(localConfigPath, localConfigObject.ToString());
+            }
+        }
+
+        private void UpgradeFromBeta2()
+        {
+            // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
+
+            var tenantFolders = Directory.GetDirectories(_tenantsContainerPath);
+
+            foreach (var tenantFolder in tenantFolders)
+            {
+                var oldSettingsPath = Path.Combine(tenantFolder, "Settings.txt");
+                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
+
+                if (!File.Exists(oldSettingsPath) || File.Exists(localConfigPath))
+                {
+                    continue;
+                }
+
+                var tenant = Path.GetFileName(tenantFolder);
+                var defaultSettings = CreateDefaultSettings();
+
+                using (var reader = new StreamReader(oldSettingsPath))
+                {
+                    var yamlObject = new Deserializer().Deserialize(reader);
+                    var settingsObject = JObject.FromObject(yamlObject)[tenant];
+
+                    var shellSettings = new ShellSettings(defaultSettings)
+                    {
+                        Name = tenant,
+                        RequestUrlHost = settingsObject.Value<string>("RequestUrlHost"),
+                        RequestUrlPrefix = settingsObject.Value<string>("RequestUrlPrefix"),
+                        State = Enum.TryParse<TenantState>(settingsObject.Value<string>("State"),
+                            out var tenantState) ? tenantState : TenantState.Invalid
+                    };
+
+                    shellSettings["TablePrefix"] = settingsObject.Value<string>("TablePrefix");
+                    shellSettings["DatabaseProvider"] = settingsObject.Value<string>("DatabaseProvider");
+                    shellSettings["ConnectionString"] = settingsObject.Value<string>("ConnectionString");
+                    shellSettings["RecipeName"] = settingsObject.Value<string>("RecipeName");
+                    shellSettings["Secret"] = settingsObject.Value<string>("Secret");
+
+                    SaveSettings(shellSettings);
+                }
             }
         }
     }
