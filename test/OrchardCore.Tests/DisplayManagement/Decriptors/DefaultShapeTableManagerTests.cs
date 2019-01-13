@@ -203,6 +203,11 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 return Task.FromResult(_extensionManager.GetFeatures());
             }
 
+            public Task<IEnumerable<IFeatureInfo>> GetAlwaysEnabledFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
             public Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
             {
                 throw new NotImplementedException();
