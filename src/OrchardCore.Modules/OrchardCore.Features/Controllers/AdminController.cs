@@ -59,6 +59,7 @@ namespace OrchardCore.Features.Controllers
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync();
 
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
@@ -72,6 +73,7 @@ namespace OrchardCore.Features.Controllers
                 {
                     Descriptor = moduleFeatureInfo,
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
+                    IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),

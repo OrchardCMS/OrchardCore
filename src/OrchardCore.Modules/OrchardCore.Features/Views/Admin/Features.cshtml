@@ -90,7 +90,7 @@
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var missingDependencies = feature.FeatureDependencies
                                 .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
+                            var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
                             var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @featureName">
