@@ -19,6 +19,7 @@ using OpenIddict.Validation;
 using OpenIddict.Validation.Internal;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -123,7 +124,8 @@ namespace OrchardCore.OpenId
         {
             services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
             services.TryAddTransient<JwtBearerHandler>();
-            services.AddScoped<IDisplayDriver<ISite>, OpenIdServerSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>();
+            services.AddScoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>();
             services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
 
             services.AddRecipeExecutionStep<OpenIdServerSettingsStep>();
@@ -230,7 +232,8 @@ namespace OrchardCore.OpenId
         {
             services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
             services.TryAddTransient<JwtBearerHandler>();
-            services.AddScoped<IDisplayDriver<ISite>, OpenIdValidationSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>();
+            services.AddScoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>();
 
             services.AddOpenIddict()
                 .AddValidation();
