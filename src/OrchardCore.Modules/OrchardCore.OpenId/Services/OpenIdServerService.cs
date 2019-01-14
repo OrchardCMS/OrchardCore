@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -8,6 +9,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,6 +26,7 @@ namespace OrchardCore.OpenId.Services
     {
         private readonly IDataProtector _dataProtector;
         private readonly ILogger<OpenIdServerService> _logger;
+        private readonly IMemoryCache _memoryCache;
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
@@ -32,6 +35,7 @@ namespace OrchardCore.OpenId.Services
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
             ILogger<OpenIdServerService> logger,
+            IMemoryCache memoryCache,
             IOptionsMonitor<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ISiteService siteService,
@@ -39,6 +43,7 @@ namespace OrchardCore.OpenId.Services
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
             _logger = logger;
+            _memoryCache = memoryCache;
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
@@ -269,7 +274,7 @@ namespace OrchardCore.OpenId.Services
 
             try
             {
-                var certificates = await GetCertificatesAsync();
+                var certificates = (await GetManagedSigningCertificatesAsync()).Select(tuple => tuple.certificate).ToList();
                 if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
                 {
                     return ImmutableArray.CreateRange<SecurityKey>(
@@ -283,7 +288,7 @@ namespace OrchardCore.OpenId.Services
                     // If the certificates list is empty or only contains certificates about to expire,
                     // generate a new certificate and add it on top of the list to ensure it's preferred
                     // by OpenIddict to the other certificates when issuing JWT access or identity tokens.
-                    certificates = certificates.Insert(0, await GenerateSigningCertificateAsync());
+                    certificates.Insert(0, await GenerateSigningCertificateAsync());
 
                     return ImmutableArray.CreateRange<SecurityKey>(
                         from certificate in certificates
@@ -302,65 +307,14 @@ namespace OrchardCore.OpenId.Services
                 _logger.LogWarning(exception, "An error occurred while trying to retrieve the X.509 signing certificates.");
             }
 
-            // If none of the previous attempts succeeded, try to generate an ephemeral RSA key.
-            return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(GenerateRsaSigningKey(2048)));
-
-            async Task<ImmutableArray<X509Certificate2>> GetCertificatesAsync()
+            // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
+            // and add it in the tenant memory cache so that future calls to this method return it.
+            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate(nameof(RsaSecurityKey), entry =>
             {
-                var directory = new DirectoryInfo(Path.Combine(
-                    _shellOptions.CurrentValue.ShellsApplicationDataPath,
-                    _shellOptions.CurrentValue.ShellsContainerName,
-                    _shellSettings.Name, "IdentityModel-Signing-Certificates"));
+                entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                if (!directory.Exists)
-                {
-                    return ImmutableArray.Create<X509Certificate2>();
-                }
-
-                var certificates = ImmutableArray.CreateBuilder<X509Certificate2>();
-
-                foreach (var file in directory.EnumerateFiles("*.pfx", SearchOption.TopDirectoryOnly))
-                {
-                    try
-                    {
-                        // Extract the certificate password from the separate .pwd file.
-                        var password = await GetPasswordAsync(Path.ChangeExtension(file.FullName, ".pwd"));
-
-                        var flags =
-#if SUPPORTS_EPHEMERAL_KEY_SETS
-                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                                X509KeyStorageFlags.EphemeralKeySet :
-                                X509KeyStorageFlags.MachineKeySet;
-#else
-                                X509KeyStorageFlags.MachineKeySet;
-#endif
-
-                        // Only add the certificate if it's still valid.
-                        var certificate = new X509Certificate2(file.FullName, password, flags);
-                        if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
-                        {
-                            certificates.Add(certificate);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.LogWarning(exception, "An error occurred while trying to extract a X.509 certificate.");
-
-                        continue;
-                    }
-                }
-
-                return certificates.ToImmutable();
-            }
-
-            async Task<string> GetPasswordAsync(string path)
-            {
-                using (var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var reader = new StreamReader(stream))
-                {
-                    return _dataProtector.Unprotect(await reader.ReadToEndAsync());
-                }
-            }
+                return new RsaSecurityKey(GenerateRsaSigningKey(2048));
+            }));
 
             RSA GenerateRsaSigningKey(int size)
             {
@@ -437,36 +391,66 @@ namespace OrchardCore.OpenId.Services
                     certificate.FriendlyName = "OrchardCore OpenID Server Signing Certificate";
                 }
 
-                return await SaveSigningCertificateAsync(certificate, GeneratePassword());
-            }
-
-            X500DistinguishedName GetSubjectName()
-            {
-                try { return new X500DistinguishedName("CN=" + (_shellSettings.RequestUrlHost ?? "localhost")); }
-                catch { return new X500DistinguishedName("CN=localhost"); }
-            }
-
-            string GeneratePassword()
-            {
-                Span<byte> password = stackalloc byte[256 / 8];
-                RandomNumberGenerator.Fill(password);
-                return Convert.ToBase64String(password, Base64FormattingOptions.None);
-            }
-
-            async Task<X509Certificate2> SaveSigningCertificateAsync(X509Certificate2 certificate, string password)
-            {
                 var directory = Directory.CreateDirectory(Path.Combine(
                     _shellOptions.CurrentValue.ShellsApplicationDataPath,
                     _shellOptions.CurrentValue.ShellsContainerName,
                     _shellSettings.Name, "IdentityModel-Signing-Certificates"));
 
+                var password = GeneratePassword();
                 var path = Path.Combine(directory.FullName, Guid.NewGuid().ToString());
+
                 await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password));
                 await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));
 
                 return certificate;
+
+                X500DistinguishedName GetSubjectName()
+                {
+                    try { return new X500DistinguishedName("CN=" + (_shellSettings.RequestUrlHost ?? "localhost")); }
+                    catch { return new X500DistinguishedName("CN=localhost"); }
+                }
+
+                string GeneratePassword()
+                {
+                    Span<byte> data = stackalloc byte[256 / 8];
+                    RandomNumberGenerator.Fill(data);
+                    return Convert.ToBase64String(data, Base64FormattingOptions.None);
+                }
             }
 #endif
+        }
+
+        public async Task PruneSigningKeysAsync()
+        {
+            List<Exception> exceptions = null;
+
+            foreach (var (path, certificate) in await GetManagedSigningCertificatesAsync())
+            {
+                // Only delete expired certificates that expired at least 7 days ago.
+                if (certificate.NotAfter.AddDays(7) < DateTime.Now)
+                {
+                    try
+                    {
+                        // Delete both the X.509 certificate and its password file.
+                        File.Delete(path);
+                        File.Delete(Path.ChangeExtension(path, ".pwd"));
+                    }
+                    catch (Exception exception)
+                    {
+                        if (exceptions == null)
+                        {
+                            exceptions = new List<Exception>();
+                        }
+
+                        exceptions.Add(exception);
+                    }
+                }
+            }
+
+            if (exceptions != null)
+            {
+                throw new AggregateException(exceptions);
+            }
         }
 
         private static X509Certificate2 GetCertificate(StoreLocation location, StoreName name, string thumbprint)
@@ -482,6 +466,63 @@ namespace OrchardCore.OpenId.Services
                     case 0: return null;
                     case 1: return certificates[0];
                     default: throw new InvalidOperationException("Multiple certificates with the same thumbprint were found.");
+                }
+            }
+        }
+
+        private async Task<ImmutableArray<(string path, X509Certificate2 certificate)>> GetManagedSigningCertificatesAsync()
+        {
+            var directory = new DirectoryInfo(Path.Combine(
+                _shellOptions.CurrentValue.ShellsApplicationDataPath,
+                _shellOptions.CurrentValue.ShellsContainerName,
+                _shellSettings.Name, "IdentityModel-Signing-Certificates"));
+
+            if (!directory.Exists)
+            {
+                return ImmutableArray.Create<(string, X509Certificate2)>();
+            }
+
+            var certificates = ImmutableArray.CreateBuilder<(string, X509Certificate2)>();
+
+            foreach (var file in directory.EnumerateFiles("*.pfx", SearchOption.TopDirectoryOnly))
+            {
+                try
+                {
+                    // Extract the certificate password from the separate .pwd file.
+                    var password = await GetPasswordAsync(Path.ChangeExtension(file.FullName, ".pwd"));
+
+                    var flags =
+#if SUPPORTS_EPHEMERAL_KEY_SETS
+                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                                X509KeyStorageFlags.EphemeralKeySet :
+                                X509KeyStorageFlags.MachineKeySet;
+#else
+                                X509KeyStorageFlags.MachineKeySet;
+#endif
+
+                    // Only add the certificate if it's still valid.
+                    var certificate = new X509Certificate2(file.FullName, password, flags);
+                    if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
+                    {
+                        certificates.Add((file.FullName, certificate));
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogWarning(exception, "An error occurred while trying to extract a X.509 certificate.");
+
+                    continue;
+                }
+            }
+
+            return certificates.ToImmutable();
+
+            async Task<string> GetPasswordAsync(string path)
+            {
+                using (var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var reader = new StreamReader(stream))
+                {
+                    return _dataProtector.Unprotect(await reader.ReadToEndAsync());
                 }
             }
         }
