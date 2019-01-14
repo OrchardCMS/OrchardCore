@@ -26,7 +26,7 @@ namespace OrchardCore.Roles
         {
             services.TryAddScoped<RoleManager<IRole>>();
             services.TryAddScoped<IRoleStore<IRole>, RoleStore>();
-            services.TryAddScoped<IRoleProvider, RoleStore>();
+            services.TryAddScoped<IRoleService, RoleService>();
             services.TryAddScoped<IRoleClaimStore<IRole>, RoleStore>();
             services.AddRecipeExecutionStep<RolesStep>();
 

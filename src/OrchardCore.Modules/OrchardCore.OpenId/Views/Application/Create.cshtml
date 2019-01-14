@@ -12,13 +12,13 @@
 <form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
-        <span asp-validation-for="ClientId" class="text-danger"></span>
         <input asp-for="ClientId" class="form-control" autofocus />
+        <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="form-group" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName">@T["Display Name"]</label>
-        <span asp-validation-for="DisplayName" class="text-danger"></span>
         <input asp-for="DisplayName" class="form-control" autofocus />
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
     <div class="form-group" asp-validation-class-for="Type">
         <label asp-for="Type">@T["Type"]</label>
@@ -30,8 +30,8 @@
     </div>
     <div class="form-group" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret">@T["Client Secret"]</label>
-        <span asp-validation-for="ClientSecret" class="text-danger"></span>
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
+        <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
 
     <h3>Flows</h3>
@@ -83,8 +83,8 @@
     <div id="RedirectSection" class="form-group collapse">
         <div asp-validation-class-for="RedirectUris">
             <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
-            <span asp-validation-for="RedirectUris" class="text-danger"></span>
             <input asp-for="RedirectUris" class="form-control" autofocus />
+            <span asp-validation-for="RedirectUris" class="text-danger"></span>
         </div>
         <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
             <fieldset class="form-group">
@@ -96,8 +96,8 @@
             <div class="form-group collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="form-group" asp-validation-class-for="PostLogoutRedirectUris">
                     <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
-                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
+                    <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                 </div>
             </div>
         </fieldset>
@@ -125,6 +125,7 @@
         {
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="RoleEntries[i].Selected">
+                <input type="hidden" asp-for="RoleEntries[i].Name">
                 <label class="custom-control-label" asp-for="RoleEntries[i].Selected">@Model.RoleEntries[i].Name</label>
             </div>
         }

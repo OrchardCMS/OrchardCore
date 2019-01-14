@@ -32,7 +32,6 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IHtmlLocalizer<ApplicationController> H;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IRoleProvider _roleProvider;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
@@ -42,7 +41,6 @@ namespace OrchardCore.OpenId.Controllers
             ISiteService siteService,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IRoleProvider roleProvider,
             IOpenIdApplicationManager applicationManager,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
             INotifier notifier,
@@ -54,7 +52,6 @@ namespace OrchardCore.OpenId.Controllers
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
-            _roleProvider = roleProvider;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
@@ -99,12 +96,20 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdApplicationViewModel();
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
+            if (roleService != null)
             {
-                model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
+                foreach (var role in await roleService.GetRoleNamesAsync())
                 {
-                    Name = role
-                });
+                    model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
+                    {
+                        Name = role
+                    });
+                }
+            }
+            else
+            {
+                _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
@@ -131,12 +136,6 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required for confidential applications."]);
             }
 
-            if (!model.AllowAuthorizationCodeFlow && !model.AllowClientCredentialsFlow &&
-                !model.AllowImplicitFlow && !model.AllowPasswordFlow && !model.AllowRefreshTokenFlow)
-            {
-                ModelState.AddModelError(string.Empty, "At least one flow must be enabled.");
-            }
-
             if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
             {
                 ModelState.AddModelError(nameof(model.ClientId), T["The client identifier is already taken by another application."]);
@@ -146,7 +145,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
                 ViewData["ReturnUrl"] = returnUrl;
-                return View("Create", model);
+                return View(model);
             }
 
             var descriptor = new OpenIdApplicationDescriptor
@@ -251,13 +250,21 @@ namespace OrchardCore.OpenId.Controllers
                 Type = await _applicationManager.GetClientTypeAsync(application)
             };
 
-            foreach (var role in await _roleProvider.GetRoleNamesAsync())
+            var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
+            if (roleService != null)
             {
-                model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
+                foreach (var role in await roleService.GetRoleNamesAsync())
                 {
-                    Name = role,
-                    Selected = await _applicationManager.IsInRoleAsync(application, role)
-                });
+                    model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
+                    {
+                        Name = role,
+                        Selected = await _applicationManager.IsInRoleAsync(application, role)
+                    });
+                }
+            }
+            else
+            {
+                _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
@@ -273,39 +280,28 @@ namespace OrchardCore.OpenId.Controllers
                 return Unauthorized();
             }
 
+            var application = await _applicationManager.FindByPhysicalIdAsync(model.Id);
+            if (application == null)
+            {
+                return NotFound();
+            }
+
+            // If the application was a public client and is now a confidential client, ensure a client secret was provided.
+            if (string.IsNullOrEmpty(model.ClientSecret) &&
+               !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
+                await _applicationManager.IsPublicAsync(application))
+            {
+                ModelState.AddModelError(nameof(model.ClientSecret), T["Setting a new client secret is required."]);
+            }
+
             if (!string.IsNullOrEmpty(model.ClientSecret) &&
                  string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), T["No client secret can be set for public applications."]);
             }
-            else if (string.IsNullOrEmpty(model.ClientSecret) &&
-                     string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required for confidential applications."]);
-            }
-
-            if (!model.UpdateClientSecret &&
-                string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(string.Empty, T["Setting a new client secret is required"]);
-            }
-
-            if (!model.AllowAuthorizationCodeFlow && !model.AllowClientCredentialsFlow &&
-                !model.AllowImplicitFlow && !model.AllowPasswordFlow && !model.AllowRefreshTokenFlow)
-            {
-                ModelState.AddModelError(string.Empty, "At least one flow must be enabled.");
-            }
-
-            object application = null;
 
             if (ModelState.IsValid)
             {
-                application = await _applicationManager.FindByPhysicalIdAsync(model.Id);
-                if (application == null)
-                {
-                    return NotFound();
-                }
-
                 var other = await _applicationManager.FindByClientIdAsync(model.ClientId);
                 if (other != null && !string.Equals(
                     await _applicationManager.GetIdAsync(other),
@@ -330,7 +326,7 @@ namespace OrchardCore.OpenId.Controllers
             descriptor.DisplayName = model.DisplayName;
             descriptor.Type = model.Type;
 
-            if (model.UpdateClientSecret)
+            if (!string.IsNullOrEmpty(model.ClientSecret))
             {
                 descriptor.ClientSecret = model.ClientSecret;
             }
@@ -424,16 +420,16 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.PostLogoutRedirectUris.Clear();
             foreach (Uri uri in
-            (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-             select new Uri(uri, UriKind.Absolute)))
+                (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                 select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.PostLogoutRedirectUris.Add(uri);
             }
 
             descriptor.RedirectUris.Clear();
             foreach (Uri uri in
-           (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-            select new Uri(uri, UriKind.Absolute)))
+               (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.RedirectUris.Add(uri);
             }

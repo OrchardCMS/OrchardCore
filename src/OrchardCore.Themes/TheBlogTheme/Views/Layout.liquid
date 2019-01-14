@@ -2,39 +2,37 @@
 <html lang="{{ Culture.Name }}">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
-    <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
+
     {% resources type: "Meta" %}
 
-    <!-- javascript -->
-
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    {% script name:"bootstrap-bundle", use_cdn:"true", version:"4", at:"Foot" %}
-    {% script source:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
-    {% script source:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
-    {% script source:"/TheBlogTheme/js/clean-blog-ext.min.js", debug_src:"/TheBlogTheme/js/clean-blog-ext.js", at:"Foot" %}
-    {% resources type: "HeadScript" %}
-
-    <!-- CSS -->
+    <!-- Bootstrap core CSS -->
+    {% style src:"/TheBlogTheme/vendor/bootstrap/css/bootstrap.min.css", debug_src:"/TheBlogTheme/vendor/bootstrap/css/bootstrap.css" %}
 
     <!-- Custom fonts for this template -->
+    {% style name:"font-awesome", version:"5" %}
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
-    {% style name:"bootstrap", use_cdn:"true", version:"4" %}    
-    {% style name:"font-awesome", use_cdn:"true", version:"4" %}
+    <!-- Custom styles for this template -->
+    {% style src:"/TheBlogTheme/css/clean-blog.min.css", debug_src:"/TheBlogTheme/css/clean-blog.css" %}
+    {% style src:"/TheBlogTheme/css/bootstrap-grid-ext.min.css", debug_src:"/TheBlogTheme/css/bootstrap-grid-ext.css" %}
 
+    <!-- Bootstrap core JavaScript -->
+    {% script src:"/TheBlogTheme/vendor/jquery/jquery.min.js", debug_src:"/TheBlogTheme/vendor/jquery/jquery.js", at:"Foot" %}
+    {% script src:"/TheBlogTheme/vendor/bootstrap/js/bootstrap.bundle.min.js", debug_src:"/TheBlogTheme/vendor/bootstrap/js/bootstrap.bundle.js", at:"Foot" %}
+
+    <!-- Custom scripts for this template -->
+    {% script src:"/TheBlogTheme/js/clean-blog.min.js", debug_src:"/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
+
+    {% script src:"/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"/OrchardCore.Menu/Scripts/activate-links.js", at:"Foot" %}
+    {% script src:"/TheBlogTheme/js/clean-blog-ext.min.js", debug_src:"/TheBlogTheme/js/clean-blog-ext.js", at:"Foot" %}
+
+    {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
 
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="/TheBlogTheme/css/bootstrap-grid-ext.min.css">
-    <link rel="stylesheet" href="/TheBlogTheme/css/clean-blog.min.css">
 </head>
 <body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">

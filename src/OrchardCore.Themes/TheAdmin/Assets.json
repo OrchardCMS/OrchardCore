@@ -10,8 +10,8 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
+      "../../../node_modules/popper.js/dist/umd/popper.js",
+      "../../../node_modules/bootstrap/dist/js/bootstrap.js",
       "Assets/js/*.js"
     ],
     "output": "wwwroot/Scripts/TheAdmin.js"

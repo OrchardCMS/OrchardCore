@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Data.Abstractions;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
@@ -15,6 +18,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly ShellSettings _shellSettings;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
@@ -23,12 +27,14 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
+            IServiceProvider serviceProvider,
             ShellSettings shellSettings,
             IEnumerable<ShellFeature> shellFeatures,
             IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
+            _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManagerEventHandlers = shellDescriptorManagerEventHandlers;
@@ -42,6 +48,13 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             if (_shellDescriptor == null)
             {
                 _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
+
+                if (_shellDescriptor == null)
+                {
+                    // If no descriptor was found, try to update from Beta2
+                    await UpgradeFromBeta2();
+                    _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
+                }
 
                 if (_shellDescriptor != null)
                 {
@@ -90,6 +103,38 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             _shellDescriptor = shellDescriptorRecord;
 
             await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
+        }
+
+        private async Task UpgradeFromBeta2()
+        {
+            // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
+            // c.f. https://github.com/OrchardCMS/OrchardCore/issues/2439
+
+            var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>();
+
+            var connection = await connectionAccessor.GetConnectionAsync();
+            var dialect = SqlDialectFactory.For(connection);
+            var tablePrefix = _shellSettings.TablePrefix;
+
+            if (!String.IsNullOrEmpty(tablePrefix))
+            {
+                tablePrefix += '_';
+            }
+
+            var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
+
+            var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";
+            var newShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Abstractions";
+
+            var updateShellDescriptorCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellDescriptorType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellDescriptorType)}";
+
+            var oldShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions";
+            var newShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Abstractions";
+
+            var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
+
+            await connection.ExecuteAsync(updateShellDescriptorCmd);
+            await connection.ExecuteAsync(updateShellStateCmd);
         }
     }
 }

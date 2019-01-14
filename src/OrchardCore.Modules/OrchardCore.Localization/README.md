@@ -5,11 +5,22 @@ It also supports plural forms.
 
 ## PO files locations
 
-PO files are found via the following steps:
+PO files are found at these locations:
 
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
-- Then all files matching `/App_Data/Localization/[CultureName].po`
+- All files matching `/App_Data/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
+- For each module and theme all files matching 
+    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
+    - `/App_Data/Localization/[ModuleId].[CultureName].po`
+    - `/App_Data/Localization/[CultureName]/[ModuleId].po`
+
+`[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
+
+### Examples:
+- `/App_Data/Localization/fr.po`
+- `/App_Data/Localization/fr-CA.po`
+- `/App_Data/Localization/es-MX.po`
 
 ## File format
 

@@ -34,13 +34,12 @@ Renders an `<img src />` HTML tag.
 
 #### Output
 
-`<img src="/media/animals/kittens.jpg" />`
+`<img src="~/media/animals/kittens.jpg" />`
 
 #### Options
 
-##### `alt` (Default)
-
-The alternate text attribute value
+You can add as many html attributes as you want with the img_tag.
+`{{ 'animals/kittens.jpg' | asset_url | img_tag: alt: 'kittens', class: 'kittens black', data_order: some_var }}`
 
 ## Image resizing filters
 
@@ -54,7 +53,7 @@ Convert the input URL to create a resized image with the specified size argument
 
 #### Output
 
-`<img src="/media/animals/kittens.jpg?width=100&height=240" />`
+`<img src="~/media/animals/kittens.jpg?width=100&height=240" />`
 
 #### Arguments
 
@@ -102,7 +101,7 @@ Stretches the resized image to fit the bounds of its container.
 
 ### Output
 
-`<img src="/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
 
 ## Razor Helpers
 

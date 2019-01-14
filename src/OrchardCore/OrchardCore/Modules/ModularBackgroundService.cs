@@ -312,9 +312,18 @@ namespace OrchardCore.Modules
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
+            var urlHost = shell.Settings.RequestUrlHost?.Split(new[] { "," },
+                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
             var context = new DefaultHttpContext();
-            context.Request.Host = new HostString(shell.Settings.RequestUrlHost ?? "localhost");
-            context.Request.Path = "/" + shell.Settings.RequestUrlPrefix ?? "";
+            context.Request.Host = new HostString(urlHost ?? "localhost");
+
+            if (!String.IsNullOrWhiteSpace(shell.Settings.RequestUrlPrefix))
+            {
+                context.Request.PathBase = "/" + shell.Settings.RequestUrlPrefix.Trim(' ', '/');
+            }
+
+            context.Request.Path = "/";
             context.Items["IsBackground"] = true;
             return context;
         }

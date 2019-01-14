@@ -4,9 +4,12 @@
 */
 
 #mediaApp {
-  margin: 0px -15px 0px -15px;
-  margin-top: 0;
-  height: 100%; }
+  position: absolute;
+  top: 128px;
+  bottom: 0;
+  right: 0;
+  left: 260px;
+  transition: left 0.2s ease-in-out, width 0.2s ease-in-out; }
   #mediaApp #mediaContainer {
     display: flex;
     flex-direction: column;
@@ -28,6 +31,15 @@
     margin-bottom: 8px; }
   #mediaApp a.disabled {
     cursor: default; }
+
+.modal-content .modal-body #mediaApp {
+  position: static;
+  margin: 0px -15px 0px -15px;
+  margin-top: 0;
+  height: 100%; }
+
+.left-sidebar-compact #mediaApp {
+  left: 48px; }
 
 .upload {
   background-color: rgba(0, 0, 0, 0.05);
@@ -401,6 +413,10 @@ ol.media-items-grid {
     overflow: hidden;
     text-overflow: ellipsis;
     display: block; }
+
+.break-word {
+  word-break: break-all;
+  word-wrap: break-word; }
 
 [v-cloak] {
   display: none !important; }

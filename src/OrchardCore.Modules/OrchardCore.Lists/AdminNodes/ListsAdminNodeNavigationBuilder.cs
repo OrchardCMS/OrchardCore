@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.AdminTrees.Services;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 using YesSql;
 using System.Threading.Tasks;
@@ -95,7 +95,8 @@ namespace OrchardCore.Lists.AdminNodes
                         m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
                         m.Permission(Contents.Permissions.EditOwnContent);
                         m.Resource(ci);
-                        m.SelectionPriority(_node.SelectionPriority);
+                        m.Priority(_node.Priority);
+                        m.Position(_node.Position);
                         m.LocalNav();
                         AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));                     
                     });

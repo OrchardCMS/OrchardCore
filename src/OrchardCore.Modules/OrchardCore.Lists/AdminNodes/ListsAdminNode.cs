@@ -1,4 +1,4 @@
-using OrchardCore.AdminTrees.Models;
+using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.Lists.AdminNodes
 {

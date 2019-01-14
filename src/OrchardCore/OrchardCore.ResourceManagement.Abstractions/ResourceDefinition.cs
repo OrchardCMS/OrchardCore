@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -23,7 +23,8 @@ namespace OrchardCore.ResourceManagement
         };
         private static readonly Dictionary<string, TagRenderMode> _fileTagRenderModes = new Dictionary<string, TagRenderMode> {
             { "script", TagRenderMode.Normal },
-            { "link", TagRenderMode.SelfClosing }
+            { "link", TagRenderMode.SelfClosing },
+            { "stylesheet", TagRenderMode.SelfClosing }
         };
         
         private string _basePath;
@@ -212,11 +213,21 @@ namespace OrchardCore.ResourceManagement
 
             if (url.StartsWith("~/", StringComparison.Ordinal))
             {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                url = url.Substring(1);
+                if (!String.IsNullOrEmpty(_basePath))
+                {
+                    url = _basePath + url.Substring(1);
+                }
+                else
+                {
+                    url = applicationPath + url.Substring(1);
+                }
+                
             }
 
-            var tagBuilder = new TagBuilder(TagName);
+            var tagBuilder = new TagBuilder(TagName)
+            {
+                TagRenderMode = TagRenderMode
+            };
 
             if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {

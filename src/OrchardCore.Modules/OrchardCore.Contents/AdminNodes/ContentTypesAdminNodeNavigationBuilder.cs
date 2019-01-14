@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.AdminTrees.Services;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -52,7 +52,8 @@ namespace OrchardCore.Contents.AdminNodes
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
-                    cTypeMenu.SelectionPriority(node.SelectionPriority);
+                    cTypeMenu.Priority(node.Priority);
+                    cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(Permissions.EditOwnContent);
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));

@@ -1,26 +1,62 @@
 [
   {
     "generateSourceMaps": false,
-    "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
+    "inputs": [ "../../../node_modules/bootstrap-scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
-    "inputs": [
-      "Assets/Bootstrap/js/bootstrap.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap.js"
+    "inputs": [ "../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
+    "output": "wwwroot/Styles/bootstrap-slider.css"
   },
   {
-    "inputs": [
-      "Assets/Bootstrap/js/popper.js"
-    ],
+    "inputs": [ "../../../node_modules/bootstrap-slider/dist/bootstrap-slider.js" ],
+    "output": "wwwroot/Scripts/bootstrap-slider.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/lib/codemirror.css" ],
+    "output": "wwwroot/Scripts/codemirror/codemirror.css"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/lib/codemirror.js" ],
+    "output": "wwwroot/Scripts/codemirror/codemirror.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/addon/mode/multiplex.js" ],
+    "output": "wwwroot/Scripts/codemirror/addon/mode/multiplex.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/addon/mode/simple.js" ],
+    "output": "wwwroot/Scripts/codemirror/addon/mode/simple.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/mode/javascript/javascript.js" ],
+    "output": "wwwroot/Scripts/codemirror/mode/javascript/javascript.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/mode/sql/sql.js" ],
+    "output": "wwwroot/Scripts/codemirror/mode/sql/sql.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/mode/xml/xml.js" ],
+    "output": "wwwroot/Scripts/codemirror/mode/xml/xml.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/jquery/dist/jquery.js" ],
+    "output": "wwwroot/Scripts/jquery.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/jquery/dist/jquery.slim.js" ],
+    "output": "wwwroot/Scripts/jquery.slim.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/popper.js/dist/umd/popper.js" ],
     "output": "wwwroot/Scripts/popper.js"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/trumbowyg/scss/trumbowyg.scss",
-      "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
+      "../../../node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
+      "../../../node_modules/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg.css"
   },

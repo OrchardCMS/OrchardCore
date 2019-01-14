@@ -51,6 +51,7 @@ nav:
         - Indexing: OrchardCore.Modules/OrchardCore.Indexing/README.md
         - Lucene: OrchardCore.Modules/OrchardCore.Lucene/README.md
         - Queries: OrchardCore.Modules/OrchardCore.Queries/README.md
+        - Taxonomies: OrchardCore.Modules/OrchardCore.Taxonomies/README.md
         - Templates: OrchardCore.Modules/OrchardCore.Templates/README.md
         - Themes: OrchardCore.Modules/OrchardCore.Themes/README.md
         - Liquid: OrchardCore.Modules/OrchardCore.Liquid/README.md
@@ -58,7 +59,7 @@ nav:
         - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Flows: OrchardCore.Modules/OrchardCore.Flows/README.md
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
-        - Admin Trees: OrchardCore.Modules/OrchardCore.AdminTrees/README.md
+        - Admin Menu: OrchardCore.Modules/OrchardCore.AdminMenu/README.md
     - Core Modules:
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
@@ -74,4 +75,7 @@ nav:
         - Tenants: OrchardCore.Modules/OrchardCore.Tenants/README.md
         - Workflows: OrchardCore.Modules/OrchardCore.Workflows/README.md
         - DataProtection (Azure Storage): OrchardCore.Modules/OrchardCore.DataProtection.Azure/README.md
+    - Authentication Modules:
+        - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
+        - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md

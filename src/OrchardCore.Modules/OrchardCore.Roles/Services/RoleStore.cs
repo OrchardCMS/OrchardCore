@@ -13,12 +13,11 @@ using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
-using OrchardCore.Security.Services;
 using YesSql;
 
 namespace OrchardCore.Roles.Services
 {
-    public class RoleStore : IRoleClaimStore<IRole>, IRoleProvider
+    public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         private const string Key = "RolesManager.Roles";
 
@@ -50,6 +49,9 @@ namespace OrchardCore.Roles.Services
         {
         }
 
+        public IQueryable<IRole> Roles =>
+            GetRolesAsync().Result.Roles.AsQueryable();
+
         public Task<RolesDocument> GetRolesAsync()
         {
             return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
@@ -73,28 +75,6 @@ namespace OrchardCore.Roles.Services
             roles.Serial++;
             _session.Save(roles);
             _memoryCache.Set(Key, roles);
-        }
-
-        public async Task<IEnumerable<string>> GetRoleNamesAsync()
-        {
-            var roles = await GetRolesAsync();
-            return roles.Roles.Select(x => x.RoleName).OrderBy(x => x).ToList();
-        }
-
-        public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrEmpty(role))
-            {
-                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
-            }
-
-            var entity = await FindByNameAsync(role, cancellationToken);
-            if (entity == null)
-            {
-                return Array.Empty<Claim>();
-            }
-
-            return await GetClaimsAsync(entity, cancellationToken);
         }
 
         #region IRoleStore<IRole>

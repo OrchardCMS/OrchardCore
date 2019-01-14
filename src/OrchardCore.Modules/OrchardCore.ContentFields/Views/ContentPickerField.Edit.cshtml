@@ -17,8 +17,8 @@
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
-<script asp-src="/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect"></script>
-<style asp-src="/OrchardCore.ContentFields/Styles/contentPicker.min.css" debug-src="/OrchardCore.ContentFields/Styles/contentPicker.css"></style>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<style asp-src="~/OrchardCore.ContentFields/Styles/contentPicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/contentPicker.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
 <style asp-src="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
@@ -34,7 +34,7 @@
         <draggable v-model="arrayOfItems" >
             <li v-for="(item, i) in arrayOfItems"
             class="list-group-item content-picker-default__list-item" 
-            :key="item.contentItemId">{{ item.displayText }}
+            :key="item.contentItemId">{{ item.displayText }} <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span>
 
                 <div class="btn-group btn-group-sm float-right" role="group">
                     <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete" ><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
@@ -45,15 +45,18 @@
 </fieldset>
 
 <fieldset class="form-group row">
-    <div class="col-xl-6">
+    <div class="col-xl-6" >
         <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
-        <vue-multiselect v-model="value" :options="options" track-by="contentItemId" 
+        <vue-multiselect v-model="value" :options="options" track-by="contentItemId"
                          label="displayText" placeholder="@T["Type to search"]"
                          @@search-change="asyncFind" @@select="onSelect"
                          :searchable="true" :close-on-select="true" :reset-after="true"
                          :show-labels="true" :hide-selected="@multiple"
                          :disabled="isDisabled"
                          select-label="@T["Select"]" deselect-label="@T["Remove"]">
+            <template slot="option" slot-scope="props">
+                <div  v-cloak><span>{{ props.option.displayText }}</span><span class="small ml-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
+            </template>
         </vue-multiselect>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
