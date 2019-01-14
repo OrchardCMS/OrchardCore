@@ -107,13 +107,13 @@ namespace OrchardCore.Tenants.Controllers
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null && t.ShellSettings != null &&
-                    (( t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                    ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(options.SqlProvider))
             {
-                entries = entries.Where(t =>t.ShellSettings != null && t.ShellSettings != null &&
+                entries = entries.Where(t => t.ShellSettings != null && t.ShellSettings != null &&
                     (string.IsNullOrEmpty(options.SqlProvider) || t.ShellSettings.DatabaseProvider != null && t.ShellSettings.DatabaseProvider == options.SqlProvider)).ToList();
             }
 
@@ -170,7 +170,7 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
-            foreach(var tenantName in model.TenantNames)
+            foreach (var tenantName in model.TenantNames)
             {
                 var shellContext = (await GetShellsAsync())
                     .Where(x => string.Equals(x.Settings.Name, tenantName, StringComparison.OrdinalIgnoreCase))
@@ -188,27 +188,30 @@ namespace OrchardCore.Tenants.Controllers
                     case "Disable":
                         if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
-                            _notifier.Error(H["You cannot disable the default tenant."]);
+                            _notifier.Warning(H["You cannot disable the default tenant."]);
                         }
-
-                        if (shellSettings.State != TenantState.Running)
+                        else if (shellSettings.State != TenantState.Running)
                         {
-                            _notifier.Error(H["You can only disable an Enabled tenant."]);
+                            _notifier.Warning(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
                         }
-
-                        shellSettings.State = TenantState.Disabled;
-                        await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        else
+                        {
+                            shellSettings.State = TenantState.Disabled;
+                            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        }
 
                         break;
 
                     case "Enable":
                         if (shellSettings.State != TenantState.Disabled)
                         {
-                            _notifier.Error(H["You can only enable a Disabled tenant."]);
+                            _notifier.Warning(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
                         }
-
-                        shellSettings.State = TenantState.Running;
-                        await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        else
+                        {
+                            shellSettings.State = TenantState.Running;
+                            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        }
 
                         break;
 
@@ -220,7 +223,7 @@ namespace OrchardCore.Tenants.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-            public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
