@@ -189,13 +189,11 @@ namespace OrchardCore.Tenants.Controllers
                         if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
                             _notifier.Error(H["You cannot disable the default tenant."]);
-                            return RedirectToAction(nameof(Index));
                         }
 
                         if (shellSettings.State != TenantState.Running)
                         {
                             _notifier.Error(H["You can only disable an Enabled tenant."]);
-                            return RedirectToAction(nameof(Index));
                         }
 
                         shellSettings.State = TenantState.Disabled;
