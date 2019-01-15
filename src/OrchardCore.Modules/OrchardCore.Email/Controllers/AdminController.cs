@@ -167,9 +167,13 @@ namespace OrchardCore.Email.Controllers
         private static bool ValidateEmail(string email)
         {
             var regexOptions = RegexOptions.Singleline | RegexOptions.IgnoreCase;
-            // From https://stackoverflow.com/questions/16167983/best-regular-expression-for-email-validation-in-c-sharp
-            // Retrieved 2018-11-16
-            string pattern = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
+            // From https://www.regular-expressions.info/email.html
+
+            string pattern = @"\A(?=[a-z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\z)
+                             (?=[a-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)
+                             [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*
+                             @(?:(?=[a-z0-9-]{1,63}\.)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+
+                             (?=[a-z0-9-]{1,63}\z)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\z";
 
             return Regex.IsMatch(email, pattern, regexOptions);
         }
