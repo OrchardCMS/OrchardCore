@@ -41,7 +41,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 
                 var nodes = result["data"]["recentBlogPosts"];
 
-                Assert.Equal(2, nodes.Count());
+                Assert.Equal(3, nodes.Count() + 1);
                 Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
                 Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
             }
