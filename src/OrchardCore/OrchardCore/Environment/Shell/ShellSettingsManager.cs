@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Models;
@@ -37,17 +38,19 @@ namespace OrchardCore.Environment.Shell
             var appsettings = Path.Combine(appDataPath, "appsettings");
             var environment = hostingEnvironment.EnvironmentName;
 
+            var lastProviders = (applicationConfiguration as IConfigurationRoot)?.Providers
+                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
+                            p is CommandLineConfigurationProvider)
+                .ToList();
+
             var configurationBuilder = new ConfigurationBuilder()
                 .AddConfiguration(applicationConfiguration)
                 .AddJsonFile($"{appsettings}.json", optional: true)
                 .AddJsonFile($"{appsettings}.{environment}.json", optional: true);
 
-            var commandLineProvider = (applicationConfiguration as IConfigurationRoot)?
-                .Providers.FirstOrDefault(p => p is CommandLineConfigurationProvider);
-
-            if (commandLineProvider != null)
+            if (lastProviders.Count() > 0)
             {
-                configurationBuilder.AddConfiguration(new ConfigurationRoot(new[] { commandLineProvider }));
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
 
             _configuration = configurationBuilder.Build().GetSection("OrchardCore");
@@ -73,8 +76,8 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings CreateDefaultSettings()
         {
-            Func<string, IConfigurationBuilder> factory = (tenant) => new ConfigurationBuilder()
-                .AddConfiguration(_configuration);
+            Func<string, IConfigurationBuilder> factory = (tenant) =>
+                new ConfigurationBuilder().AddConfiguration(_configuration);
 
             var shellConfiguration = new ShellConfiguration(null, factory);
 
@@ -88,10 +91,10 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
             if (!File.Exists(_tenantsFilePath) && File.Exists(Path.Combine(_tenantsContainerPath,
                 ShellHelper.DefaultShellName, "Settings.txt")))
             {
+                // If no 'tenants.json' and an old 'Settings.txt', try to update from Beta2.
                 UpgradeFromBeta2();
             }
 
