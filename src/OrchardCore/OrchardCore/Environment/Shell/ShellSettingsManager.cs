@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
@@ -15,38 +14,42 @@ namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
+        // TODO: Can be removed when going to RC.
         private readonly string _tenantsContainerPath;
         private readonly string _tenantsFilePath;
+
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<string> _configuredTenants;
         private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
+        private readonly IEnumerable<IShellConfigurationSources> _shellConfigurationSources;
+        private readonly IShellSettingsSources _shellSettingsSources;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            IHostingEnvironment hostingEnvironment,
+            IEnumerable<IShellConfigurationSources> shellConfigurationSources,
+            IShellSettingsSources shellSettingsSources,
             IOptions<ShellOptions> options)
         {
-            // e.g., App_Data
+            // TODO: Can be removed when going to RC.
             var appDataPath = options.Value.ShellsApplicationDataPath;
-
-            // e.g., App_Data/Sites
             _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
-            Directory.CreateDirectory(_tenantsContainerPath);
-
             _tenantsFilePath = Path.Combine(appDataPath, "tenants.json");
 
-            var appsettings = Path.Combine(appDataPath, "appsettings");
-            var environment = hostingEnvironment.EnvironmentName;
+            _shellConfigurationSources = shellConfigurationSources;
+            _shellSettingsSources = shellSettingsSources;
 
             var lastProviders = (applicationConfiguration as IConfigurationRoot)?.Providers
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
                             p is CommandLineConfigurationProvider)
-                .ToList();
+                .ToArray();
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddConfiguration(applicationConfiguration)
-                .AddJsonFile($"{appsettings}.json", optional: true)
-                .AddJsonFile($"{appsettings}.{environment}.json", optional: true);
+                .AddConfiguration(applicationConfiguration);
+
+            foreach (var sources in _shellConfigurationSources)
+            {
+                configurationBuilder.AddSources(sources);
+            }
 
             if (lastProviders.Count() > 0)
             {
@@ -70,7 +73,9 @@ namespace OrchardCore.Environment.Shell
                     builder.AddConfiguration(_configuration.GetSection(tenant));
                 }
 
-                return builder.AddJsonFile(Path.Combine(_tenantsContainerPath, tenant, "appsettings.json"), optional: true);
+                var sources = _shellConfigurationSources.LastOrDefault();
+
+                return builder.AddSources(tenant, sources);
             };
         }
 
@@ -91,6 +96,7 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
+            // TODO: Can be removed when going to RC.
             if (!File.Exists(_tenantsFilePath) && File.Exists(Path.Combine(_tenantsContainerPath,
                 ShellHelper.DefaultShellName, "Settings.txt")))
             {
@@ -99,7 +105,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var tenantsSettings = new ConfigurationBuilder()
-                .AddJsonFile(_tenantsFilePath, optional: true)
+                .AddSources(_shellSettingsSources)
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
@@ -133,74 +139,69 @@ namespace OrchardCore.Environment.Shell
 
         public void SaveSettings(ShellSettings settings)
         {
-            lock (this)
+            if (settings == null)
             {
-                if (settings == null)
-                {
-                    throw new ArgumentNullException(nameof(settings));
-                }
-
-                var configuration = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
-                    .AddConfiguration(_configuration.GetSection(settings.Name))
-                    .Build();
-
-                var shellSettings = new ShellSettings()
-                {
-                    Name = settings.Name
-                };
-
-                configuration.Bind(shellSettings);
-
-                var configObject = JObject.FromObject(shellSettings);
-                var settingsObject = JObject.FromObject(settings);
-
-                settingsObject.Remove("Name");
-
-                foreach (var property in configObject)
-                {
-                    var setting = settingsObject.Value<string>(property.Key);
-                    var configValue = configObject.Value<string>(property.Key);
-
-                    if (setting == null || setting == configValue)
-                    {
-                        settingsObject.Remove(property.Key);
-                    }
-                }
-
-                var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
-                    : JObject.Parse(File.ReadAllText(_tenantsFilePath));
-
-                tenantsObject[settings.Name] = settingsObject;
-                File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
-
-                var tenantFolder = Path.Combine(_tenantsContainerPath, settings.Name);
-                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
-
-                var localConfigObject = !File.Exists(localConfigPath) ? new JObject()
-                    : JObject.Parse(File.ReadAllText(localConfigPath));
-
-                var sections = settings.ShellConfiguration.GetChildren().Where(s => s.Value != null).ToArray();
-
-                foreach (var section in sections)
-                {
-                    if (section.Value != configuration[section.Key])
-                    {
-                        localConfigObject[section.Key] = section.Value;
-                    }
-                }
-
-                localConfigObject.Remove("Name");
-
-                Directory.CreateDirectory(tenantFolder);
-                File.WriteAllText(localConfigPath, localConfigObject.ToString());
+                throw new ArgumentNullException(nameof(settings));
             }
+
+            var baseConfig = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(settings.Name))
+                .Build();
+
+            var shellSettings = new ShellSettings()
+            {
+                Name = settings.Name
+            };
+
+            baseConfig.Bind(shellSettings);
+
+            var configObject = JObject.FromObject(shellSettings);
+            var settingsObject = JObject.FromObject(settings);
+
+            settingsObject.Remove("Name");
+
+            foreach (var property in configObject)
+            {
+                var setting = settingsObject.Value<string>(property.Key);
+                var configValue = configObject.Value<string>(property.Key);
+
+                if (setting == null || setting == configValue)
+                {
+                    settingsObject.Remove(property.Key);
+                }
+            }
+
+            _shellSettingsSources.Save(settings.Name,
+                settingsObject.ToObject<Dictionary<string, string>>());
+
+            var localConfig = new JObject();
+
+            var sections = settings.ShellConfiguration.GetChildren()
+                .Where(s => s.Value != null)
+                .ToArray();
+
+            foreach (var section in sections)
+            {
+                if (section.Value != baseConfig[section.Key])
+                {
+                    localConfig[section.Key] = section.Value;
+                }
+                else
+                {
+                    localConfig[section.Key] = null;
+                }
+            }
+
+            localConfig.Remove("Name");
+
+            _shellConfigurationSources.LastOrDefault().Save(settings.Name,
+                localConfig.ToObject<Dictionary<string, string>>());
         }
 
+        // TODO: Can be removed when going to RC.
         private void UpgradeFromBeta2()
         {
-            // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
-
             var tenantFolders = Directory.GetDirectories(_tenantsContainerPath);
 
             foreach (var tenantFolder in tenantFolders)

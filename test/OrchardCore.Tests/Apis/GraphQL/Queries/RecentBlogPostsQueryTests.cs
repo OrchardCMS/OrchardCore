@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
@@ -40,6 +41,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
 
                 var nodes = result["data"]["recentBlogPosts"];
 
+                Assert.Equal(2, nodes.Count());
                 Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
                 Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
             }
