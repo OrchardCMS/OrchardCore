@@ -14,12 +14,12 @@ namespace OrchardCore.Roles.Deployment
     public class AllRolesDeploymentSource : IDeploymentSource
     {
         private readonly RoleManager<IRole> _roleManager;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
 
-        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleProvider roleProvider)
+        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleService roleService)
         {
             _roleManager = roleManager;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -32,7 +32,7 @@ namespace OrchardCore.Roles.Deployment
             }
 
             // Get all roles
-            var allRoleNames = await _roleProvider.GetRoleNamesAsync();
+            var allRoleNames = await _roleService.GetRoleNamesAsync();
             var permissions = new JArray();
             var tasks = new List<Task>();
 
