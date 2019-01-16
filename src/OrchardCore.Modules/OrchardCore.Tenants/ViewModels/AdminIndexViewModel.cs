@@ -37,7 +37,6 @@ namespace OrchardCore.Tenants.ViewModels
     public class TenantIndexOptions
     {
         public string Search { get; set; }
-        public string SqlProvider { get; set; }
         public TenantsFilter Filter { get; set; }
         public TenantsBulkAction BulkAction { get; set; }
         public TenantsOrder OrderBy { get; set; }

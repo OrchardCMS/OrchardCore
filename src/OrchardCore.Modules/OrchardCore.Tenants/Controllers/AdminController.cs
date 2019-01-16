@@ -111,12 +111,6 @@ namespace OrchardCore.Tenants.Controllers
                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            if (!string.IsNullOrWhiteSpace(options.SqlProvider))
-            {
-                entries = entries.Where(t => t.ShellSettings != null && t.ShellSettings != null &&
-                    (string.IsNullOrEmpty(options.SqlProvider) || t.ShellSettings.DatabaseProvider != null && t.ShellSettings.DatabaseProvider == options.SqlProvider)).ToList();
-            }
-
             switch (options.Filter)
             {
                 case TenantsFilter.Disabled:
@@ -152,7 +146,6 @@ namespace OrchardCore.Tenants.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
             routeData.Values.Add("Options.Search", options.Search);
-            routeData.Values.Add("Options.SqlProvider", options.SqlProvider);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
