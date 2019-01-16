@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class ShellSettingsSources : IShellSettingsSources
+    public class TenantsSettingsSources : ITenantsSettingsSources
     {
         private readonly string _tenants;
 
-        public ShellSettingsSources(IOptions<ShellOptions> shellOptions)
+        public TenantsSettingsSources(IOptions<ShellOptions> shellOptions)
         {
             _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
         }
@@ -24,11 +24,11 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
             lock (this)
             {
-                var tenantsObject = !File.Exists(_tenants) ? new JObject()
+                var settings = !File.Exists(_tenants) ? new JObject()
                 : JObject.Parse(File.ReadAllText(_tenants));
 
-                tenantsObject[tenant] = JObject.FromObject(data);
-                File.WriteAllText(_tenants, tenantsObject.ToString());
+                settings[tenant] = JObject.FromObject(data);
+                File.WriteAllText(_tenants, settings.ToString());
             }
         }
     }

@@ -61,9 +61,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var services = builder.ApplicationServices;
 
-            services.AddSingleton<IShellSettingsSources, ShellSettingsSources>();
-            services.AddSingleton<IShellConfigurationSources, ShellConfigurationSources>();
-            services.AddSingleton<IShellLocalConfigurationSources, ShellLocalConfigurationSources>();
+            services.AddSingleton<ITenantsSettingsSources, TenantsSettingsSources>();
+            services.AddSingleton<ITenantsConfigurationSources, TenantsConfigurationSources>();
+            services.AddSingleton<ITenantConfigurationSources, TenantConfigurationSources>();
             services.AddScoped<IShellDescriptorManager, ConfiguredFeaturesShellDescriptorManager>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();

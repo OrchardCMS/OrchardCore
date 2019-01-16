@@ -3,17 +3,17 @@ using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public interface IShellLocalConfigurationSources
+    public interface ITenantConfigurationSources
     {
         void AddSources(string tenant, IConfigurationBuilder builder);
         void Save(string tenant, IDictionary<string, string> data);
     }
 
-    public static class ShellLocalConfigurationSourcesExtensions
+    public static class TenantConfigurationSourcesExtensions
     {
-        public static IConfigurationBuilder AddSources(this IConfigurationBuilder builder, string tenant, IShellLocalConfigurationSources sources)
+        public static IConfigurationBuilder AddSources(this IConfigurationBuilder builder, string tenant, ITenantConfigurationSources sources)
         {
-            sources?.AddSources(tenant, builder);
+            sources.AddSources(tenant, builder);
             return builder;
         }
     }

@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class ShellLocalConfigurationSources : IShellLocalConfigurationSources
+    public class TenantConfigurationSources : ITenantConfigurationSources
     {
         private readonly string _container;
 
-        public ShellLocalConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public TenantConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
@@ -31,23 +31,23 @@ namespace OrchardCore.Environment.Shell.Configuration
                 var tenantFolder = Path.Combine(_container, tenant);
                 var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
-                var localConfig = !File.Exists(appsettings) ? new JObject()
+                var config = !File.Exists(appsettings) ? new JObject()
                     : JObject.Parse(File.ReadAllText(appsettings));
 
                 foreach (var key in data.Keys)
                 {
                     if (data[key] != null)
                     {
-                        localConfig[key] = data[key];
+                        config[key] = data[key];
                     }
                     else
                     {
-                        localConfig.Remove(key);
+                        config.Remove(key);
                     }
                 }
 
                 Directory.CreateDirectory(tenantFolder);
-                File.WriteAllText(appsettings, localConfig.ToString());
+                File.WriteAllText(appsettings, config.ToString());
             }
         }
     }

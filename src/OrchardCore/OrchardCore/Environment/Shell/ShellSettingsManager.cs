@@ -21,24 +21,22 @@ namespace OrchardCore.Environment.Shell
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<string> _configuredTenants;
         private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
-        private readonly IEnumerable<IShellConfigurationSources> _configurationSources;
-        private readonly IShellLocalConfigurationSources _localConfigurationSources;
-        private readonly IShellSettingsSources _settingsSources;
+        private readonly ITenantConfigurationSources _tenantConfigurationSources;
+        private readonly ITenantsSettingsSources _tenantsSettingsSources;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            IEnumerable<IShellConfigurationSources> configurationSources,
-            IShellLocalConfigurationSources localConfigurationSources,
-            IShellSettingsSources settingsSources,
+            IEnumerable<ITenantsConfigurationSources> tenantsConfigurationSources,
+            ITenantConfigurationSources tenantConfigurationSources,
+            ITenantsSettingsSources tenantsSettingsSources,
             IOptions<ShellOptions> options)
         {
             // TODO: Can be removed when going to RC.
             var appDataPath = options.Value.ShellsApplicationDataPath;
             _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
 
-            _configurationSources = configurationSources;
-            _localConfigurationSources = localConfigurationSources;
-            _settingsSources = settingsSources;
+            _tenantConfigurationSources = tenantConfigurationSources;
+            _tenantsSettingsSources = tenantsSettingsSources;
 
             var lastProviders = (applicationConfiguration as IConfigurationRoot)?.Providers
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
@@ -46,12 +44,8 @@ namespace OrchardCore.Environment.Shell
                 .ToArray();
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddConfiguration(applicationConfiguration);
-
-            foreach (var sources in _configurationSources)
-            {
-                configurationBuilder.AddSources(sources);
-            }
+                .AddConfiguration(applicationConfiguration)
+                .AddSources(tenantsConfigurationSources);
 
             if (lastProviders.Count() > 0)
             {
@@ -75,7 +69,7 @@ namespace OrchardCore.Environment.Shell
                     builder.AddConfiguration(_configuration.GetSection(tenant));
                 }
 
-                return builder.AddSources(tenant, _localConfigurationSources);
+                return builder.AddSources(tenant, _tenantConfigurationSources);
             };
         }
 
@@ -97,7 +91,7 @@ namespace OrchardCore.Environment.Shell
         public IEnumerable<ShellSettings> LoadSettings()
         {
             var tenantsSettings = new ConfigurationBuilder()
-                .AddSources(_settingsSources)
+                .AddSources(_tenantsSettingsSources)
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
@@ -147,7 +141,7 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var baseConfig = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddConfiguration(_configuration)
                 .AddConfiguration(_configuration.GetSection(settings.Name))
                 .Build();
@@ -157,7 +151,7 @@ namespace OrchardCore.Environment.Shell
                 Name = settings.Name
             };
 
-            baseConfig.Bind(shellSettings);
+            configuration.Bind(shellSettings);
 
             var configObject = JObject.FromObject(shellSettings);
             var settingsObject = JObject.FromObject(settings);
@@ -175,10 +169,10 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            _settingsSources.Save(settings.Name,
+            _tenantsSettingsSources.Save(settings.Name,
                 settingsObject.ToObject<Dictionary<string, string>>());
 
-            var localConfig = new JObject();
+            var tenantConfig = new JObject();
 
             var sections = settings.ShellConfiguration.GetChildren()
                 .Where(s => s.Value != null)
@@ -186,20 +180,19 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var section in sections)
             {
-                if (section.Value != baseConfig[section.Key])
+                if (section.Value != configuration[section.Key])
                 {
-                    localConfig[section.Key] = section.Value;
+                    tenantConfig[section.Key] = section.Value;
                 }
                 else
                 {
-                    localConfig[section.Key] = null;
+                    tenantConfig[section.Key] = null;
                 }
             }
 
-            localConfig.Remove("Name");
+            tenantConfig.Remove("Name");
 
-            _localConfigurationSources.Save(settings.Name,
-                localConfig.ToObject<Dictionary<string, string>>());
+            _tenantConfigurationSources.Save(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
         }
 
         // TODO: Can be removed when going to RC.
