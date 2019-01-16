@@ -8,7 +8,7 @@ namespace OrchardCore.Demo.Controllers
         [Route("Demo/Index")]
         public IActionResult Index()
         {
-          var ceshi=2;
+          
             return Content("Index content");
         }
         [Route("Demo/About")]
