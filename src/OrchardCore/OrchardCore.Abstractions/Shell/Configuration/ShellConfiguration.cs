@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Configuration
 {
     /// <summary>
     /// Holds the tenant <see cref="IConfiguration"/> which is lazily built

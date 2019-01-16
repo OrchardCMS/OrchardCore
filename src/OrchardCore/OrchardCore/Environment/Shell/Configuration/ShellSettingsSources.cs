@@ -4,31 +4,31 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Configuration
 {
     public class ShellSettingsSources : IShellSettingsSources
     {
-        private readonly string _tenantsFilePath;
+        private readonly string _tenants;
 
         public ShellSettingsSources(IOptions<ShellOptions> shellOptions)
         {
-            _tenantsFilePath = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
+            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
         }
 
         public void AddSources(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile(_tenantsFilePath, optional: true);
+            builder.AddJsonFile(_tenants, optional: true);
         }
 
         public void Save(string tenant, IDictionary<string, string> data)
         {
             lock (this)
             {
-                var tenantsObject = !File.Exists(_tenantsFilePath) ? new JObject()
-                : JObject.Parse(File.ReadAllText(_tenantsFilePath));
+                var tenantsObject = !File.Exists(_tenants) ? new JObject()
+                : JObject.Parse(File.ReadAllText(_tenants));
 
                 tenantsObject[tenant] = JObject.FromObject(data);
-                File.WriteAllText(_tenantsFilePath, tenantsObject.ToString());
+                File.WriteAllText(_tenants, tenantsObject.ToString());
             }
         }
     }

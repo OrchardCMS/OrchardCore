@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using YamlDotNet.Serialization;
 
@@ -16,27 +17,28 @@ namespace OrchardCore.Environment.Shell
     {
         // TODO: Can be removed when going to RC.
         private readonly string _tenantsContainerPath;
-        private readonly string _tenantsFilePath;
 
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<string> _configuredTenants;
         private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
-        private readonly IEnumerable<IShellConfigurationSources> _shellConfigurationSources;
-        private readonly IShellSettingsSources _shellSettingsSources;
+        private readonly IEnumerable<IShellConfigurationSources> _configurationSources;
+        private readonly IShellLocalConfigurationSources _localConfigurationSources;
+        private readonly IShellSettingsSources _settingsSources;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            IEnumerable<IShellConfigurationSources> shellConfigurationSources,
-            IShellSettingsSources shellSettingsSources,
+            IEnumerable<IShellConfigurationSources> configurationSources,
+            IShellLocalConfigurationSources localConfigurationSources,
+            IShellSettingsSources settingsSources,
             IOptions<ShellOptions> options)
         {
             // TODO: Can be removed when going to RC.
             var appDataPath = options.Value.ShellsApplicationDataPath;
             _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
-            _tenantsFilePath = Path.Combine(appDataPath, "tenants.json");
 
-            _shellConfigurationSources = shellConfigurationSources;
-            _shellSettingsSources = shellSettingsSources;
+            _configurationSources = configurationSources;
+            _localConfigurationSources = localConfigurationSources;
+            _settingsSources = settingsSources;
 
             var lastProviders = (applicationConfiguration as IConfigurationRoot)?.Providers
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
@@ -46,7 +48,7 @@ namespace OrchardCore.Environment.Shell
             var configurationBuilder = new ConfigurationBuilder()
                 .AddConfiguration(applicationConfiguration);
 
-            foreach (var sources in _shellConfigurationSources)
+            foreach (var sources in _configurationSources)
             {
                 configurationBuilder.AddSources(sources);
             }
@@ -73,9 +75,7 @@ namespace OrchardCore.Environment.Shell
                     builder.AddConfiguration(_configuration.GetSection(tenant));
                 }
 
-                var sources = _shellConfigurationSources.LastOrDefault();
-
-                return builder.AddSources(tenant, sources);
+                return builder.AddSources(tenant, _localConfigurationSources);
             };
         }
 
@@ -96,19 +96,22 @@ namespace OrchardCore.Environment.Shell
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            // TODO: Can be removed when going to RC.
-            if (!File.Exists(_tenantsFilePath) && File.Exists(Path.Combine(_tenantsContainerPath,
-                ShellHelper.DefaultShellName, "Settings.txt")))
-            {
-                // If no 'tenants.json' and an old 'Settings.txt', try to update from Beta2.
-                UpgradeFromBeta2();
-            }
-
             var tenantsSettings = new ConfigurationBuilder()
-                .AddSources(_shellSettingsSources)
+                .AddSources(_settingsSources)
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+
+            // TODO: Can be removed when going to RC.
+            if (!tenants.Any() && File.Exists(Path.Combine(_tenantsContainerPath,
+                ShellHelper.DefaultShellName, "Settings.txt")))
+            {
+                // If no tenants and an old 'Settings.txt', try to update from Beta2.
+                UpgradeFromBeta2();
+                tenantsSettings.Reload();
+                tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+            }
+
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
             var allSettings = new List<ShellSettings>();
@@ -172,7 +175,7 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            _shellSettingsSources.Save(settings.Name,
+            _settingsSources.Save(settings.Name,
                 settingsObject.ToObject<Dictionary<string, string>>());
 
             var localConfig = new JObject();
@@ -195,7 +198,7 @@ namespace OrchardCore.Environment.Shell
 
             localConfig.Remove("Name");
 
-            _shellConfigurationSources.LastOrDefault().Save(settings.Name,
+            _localConfigurationSources.Save(settings.Name,
                 localConfig.ToObject<Dictionary<string, string>>());
         }
 

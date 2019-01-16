@@ -5,29 +5,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class ShellConfigurationSources : IShellConfigurationSources
+    public class ShellLocalConfigurationSources : IShellLocalConfigurationSources
     {
         private readonly string _container;
-        private readonly string _environment;
-        private readonly string _appsettings;
 
-        public ShellConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public ShellLocalConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
             Directory.CreateDirectory(_container);
-
-            _environment = hostingEnvironment.EnvironmentName;
-            _appsettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "appsettings");
-        }
-
-        public void AddSources(IConfigurationBuilder builder)
-        {
-            builder
-                .AddJsonFile($"{_appsettings}.json", optional: true)
-                .AddJsonFile($"{_appsettings}.{_environment}.json", optional: true);
         }
 
         public void AddSources(string tenant, IConfigurationBuilder builder)

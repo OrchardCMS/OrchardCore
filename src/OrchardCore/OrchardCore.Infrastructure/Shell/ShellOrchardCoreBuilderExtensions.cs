@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Data.Descriptors;
 using OrchardCore.Environment.Shell.Descriptor;
 
@@ -34,6 +35,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IShellSettingsSources, ShellSettingsSources>();
             services.AddSingleton<IShellConfigurationSources, ShellConfigurationSources>();
+            services.AddSingleton<IShellLocalConfigurationSources, ShellLocalConfigurationSources>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 

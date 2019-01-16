@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
