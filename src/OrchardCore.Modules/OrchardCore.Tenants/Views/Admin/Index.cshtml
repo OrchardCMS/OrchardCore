@@ -4,19 +4,18 @@
 @using OrchardCore.Environment.Shell
 @using System.Collections.Generic
 @using System.Net
-@inject IEnumerable<DatabaseProvider> databaseProviders
 
 @{
-    List<SelectListItem> tenantStatuses = new List<SelectListItem>() {
-new SelectListItem() { Text = T["All Tenants"].Value, Value = TenantsFilter.All.ToString() },
+    List<SelectListItem> tenantStates = new List<SelectListItem>() {
+new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
 new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
 new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
 new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
 };
 
     List<SelectListItem> tenantSorts = new List<SelectListItem>() {
-new SelectListItem() { Text = T["Name"].Value, Value = TenantsOrder.Name.ToString() },
-new SelectListItem() { Text = T["State"].Value, Value = TenantsOrder.State.ToString() }
+new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
+new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
 };
 
     List<SelectListItem> tenantActions = new List<SelectListItem>() {
@@ -57,29 +56,14 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
 <fieldset class="admin-toolbar container-fluid">
     <form asp-action="Index" method="get">
         <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
+            <div class="col-md-1 col-xl-1 form-group">
                 <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" asp-for="Options.Filter" asp-items="@tenantStatuses"></select>
+                <select id="filterResults" class="form-control" asp-for="Options.Filter" asp-items="@tenantStates"></select>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
                 <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2 my-2 my-lg-0" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="SqlProvider" class="label col-form-label">@T["Provider:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" asp-for="Options.SqlProvider">
-                    <option value="">@T["All"]</option>
-                    @foreach (var provider in databaseProviders)
-                    {
-                        <option value="@provider.Value">@provider.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
                 <select id="orderResults" class="form-control" asp-for="Options.OrderBy" asp-items="@tenantSorts"></select>
@@ -95,10 +79,10 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
     <fieldset class="admin-toolbar container-fluid">
         <div class="row">
             <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Bulk actions:"]</label>
+                <label for="bulkActions" class="label col-form-label">@T["Actions:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" name="bulkAction" asp-items="@tenantActions"></select>
+                <select class="form-control" name="bulkActions" asp-items="@tenantActions"></select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
