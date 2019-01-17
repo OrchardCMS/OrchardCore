@@ -61,11 +61,14 @@ namespace OrchardCore.Title
                 {
                     if (UpdateTitleAndBody(contentItemVersion.Content))
                     {
+                        _session.Save(contentItemVersion);
                         _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
                     }
 
                     lastDodcumentId = contentItemVersion.Id;
                 }
+
+                await _session.CommitAsync();
             } 
 
             bool UpdateTitleAndBody(JToken content)

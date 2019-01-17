@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Loaders;
 using System.Threading.Tasks;
 using System.Collections.Generic;
