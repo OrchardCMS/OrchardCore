@@ -3,7 +3,7 @@
     <PackageManagement Include="Libuv" Version="1.10.0" />
     <PackageManagement Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageManagement Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.2.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.ApplicationInsights.HostingStartup" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
@@ -37,7 +37,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
-    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.0" />    
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.1" />    
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
@@ -85,18 +85,18 @@
     <PackageManagement Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Routing" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.HttpSys" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.IISIntegration" Version="2.2.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets" Version="2.2.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.SpaServices" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.WebSockets" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
     <PackageManagement Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNet.Identity.AspNetCoreCompat" Version="0.3.4" />
     <PackageManagement Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.2" />
@@ -108,17 +108,17 @@
     <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.2.0" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.10.0" />
     <PackageManagement Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.2.1" />
     <PackageManagement Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.2" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.1" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="2.2.0" />
