@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using OrchardCore.Alias.Indexes;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Alias.GraphQL
 {

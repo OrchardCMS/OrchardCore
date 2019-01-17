@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Models;
 using OrchardCore.Modules;
 
