@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using GraphQL.Types;
 using YesSql;
 
-namespace OrchardCore.Apis.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public abstract class GraphQLFilter<TSourceType> : IGraphQLFilter<TSourceType> where TSourceType : class
     {

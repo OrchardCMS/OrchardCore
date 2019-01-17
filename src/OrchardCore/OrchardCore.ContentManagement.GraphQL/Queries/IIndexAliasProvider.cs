@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.Apis.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public interface IIndexAliasProvider
     {
