@@ -181,7 +181,8 @@ namespace OrchardCore.Contents.Controllers
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
                 .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+                .TypeDisplayName(model.TypeDisplayName ?? "")
+                .DisplayText(model.DisplayText ?? "");
 
             return View(viewModel);
         }
