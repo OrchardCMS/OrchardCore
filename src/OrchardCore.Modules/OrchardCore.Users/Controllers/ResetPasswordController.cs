@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
@@ -12,6 +14,7 @@ using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -25,6 +28,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
+        private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+        private readonly ILogger<ResetPasswordController> _logger;
 
         public ResetPasswordController(
             IUserService userService,
@@ -33,13 +38,17 @@ namespace OrchardCore.Users.Controllers
             ISmtpService smtpService,
             IShapeFactory shapeFactory,
             IHtmlDisplay displayManager,
-            IStringLocalizer<ResetPasswordController> stringLocalizer) : base(smtpService, shapeFactory, displayManager)
+            IStringLocalizer<ResetPasswordController> stringLocalizer,
+            ILogger<ResetPasswordController> logger,
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, shapeFactory, displayManager)
         {
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
 
             T = stringLocalizer;
+            _logger = logger;
+            _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         }
 
         IStringLocalizer T { get; set; }
@@ -65,6 +74,8 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            await _passwordRecoveryFormEvents.InvokeAsync(i => i.RecoveringPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+
             if (ModelState.IsValid)
             {
                 var user = await _userService.GetForgotPasswordUserAsync(model.UserIdentifier) as User;
@@ -77,7 +88,10 @@ namespace OrchardCore.Users.Controllers
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                 var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
-                await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl }, "TemplateUserLostPassword");
+                await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
+
+                await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
+                
             }
 
             // If we got this far, something failed, redisplay form
@@ -116,10 +130,14 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            await _passwordRecoveryFormEvents.InvokeAsync(i => i.ResettingPasswordAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
+
             if (ModelState.IsValid)
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
                 {
+                    await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordResetAsync(), _logger);
+
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }
             }

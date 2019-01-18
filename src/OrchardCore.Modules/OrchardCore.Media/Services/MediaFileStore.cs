@@ -32,9 +32,9 @@ namespace OrchardCore.Media.Services
             return _fileStore.GetDirectoryInfoAsync(path);
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null)
+        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
-            return _fileStore.GetDirectoryContentAsync(path);
+            return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
         }
 
         public Task<bool> TryCreateDirectoryAsync(string path)

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 
@@ -8,6 +8,7 @@ namespace OrchardCore.Autoroute.ViewModels
     {
         public string Path { get; set; }
         public bool SetHomepage { get; set; }
+        public bool UpdatePath { get; set; }
         public bool IsHomepage { get; set; }
         
         [BindNever]

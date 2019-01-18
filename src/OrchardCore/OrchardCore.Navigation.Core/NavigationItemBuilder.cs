@@ -37,6 +37,12 @@ namespace OrchardCore.Navigation
             return this;
         }
 
+        public NavigationItemBuilder Priority(int priority)
+        {
+            _item.Priority = priority;
+            return this;
+        }
+
         public NavigationItemBuilder Url(string url)
         {
             _item.Url = url;

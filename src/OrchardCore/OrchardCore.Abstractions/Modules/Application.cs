@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +7,7 @@ namespace OrchardCore.Modules
 {
     public class Application
     {
-        private readonly Dictionary<string, List<Module>> _modulesByName;
+        private readonly Dictionary<string, Module> _modulesByName;
         private readonly List<Module> _modules;
 
         public static readonly string ModulesPath = "Areas";
@@ -26,7 +25,7 @@ namespace OrchardCore.Modules
             Assembly = Assembly.Load(new AssemblyName(Name));
 
             _modules = new List<Module>(modules);
-            _modulesByName = _modules.GroupBy(x => x.Name).ToDictionary(x => x.Key, x => x.ToList());
+            _modulesByName = _modules.ToDictionary(m => m.Name, m => m);
         }
 
         public string Name { get; }
@@ -39,12 +38,12 @@ namespace OrchardCore.Modules
 
         public Module GetModule(string name)
         {
-            if (!_modulesByName.TryGetValue(name, out var modules) || modules.Count == 0)
+            if (!_modulesByName.TryGetValue(name, out var module))
             {
                 return new Module(string.Empty);
             }
 
-            return modules[modules.Count - 1];
+            return module;
         }
     }
 }

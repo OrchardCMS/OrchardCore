@@ -182,7 +182,7 @@ namespace OrchardCore.Mvc
             var path = NormalizePath(filter);
 
             // "Areas/**/*.*".
-            if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
+            if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal) && !path.Contains('*'))
             {
                 // Skip the "Areas/" root folder.
                 path = path.Substring(Application.ModulesRoot.Length);

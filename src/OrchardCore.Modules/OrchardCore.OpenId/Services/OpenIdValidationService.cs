@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -16,20 +16,20 @@ namespace OrchardCore.OpenId.Services
 {
     public class OpenIdValidationService : IOpenIdValidationService
     {
-        private readonly IMemoryCache _cache;
+        private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdValidationService> T;
 
         public OpenIdValidationService(
-            IMemoryCache cache,
+            ShellDescriptor shellDescriptor,
             ShellSettings shellSettings,
             IShellHost shellHost,
             ISiteService siteService,
             IStringLocalizer<OpenIdValidationService> stringLocalizer)
         {
-            _cache = cache;
+            _shellDescriptor = shellDescriptor;
             _shellSettings = shellSettings;
             _shellHost = shellHost;
             _siteService = siteService;
@@ -39,7 +39,22 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdValidationSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<OpenIdValidationSettings>();
+            if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
+            {
+                return settings.ToObject<OpenIdValidationSettings>();
+            }
+
+            // If the OpenID validation settings haven't been populated yet, assume the validation
+            // feature will use the OpenID server registered in this tenant if it's been enabled.
+            if (_shellDescriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+            {
+                return new OpenIdValidationSettings
+                {
+                    Tenant = _shellSettings.Name
+                };
+            }
+
+            return new OpenIdValidationSettings();
         }
 
         public async Task UpdateSettingsAsync(OpenIdValidationSettings settings)
@@ -91,7 +106,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (string.IsNullOrEmpty(settings.Authority) && !string.IsNullOrEmpty(settings.Audience))
+            if (!string.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(T["No audience can be set when using another tenant."], new[]
                 {

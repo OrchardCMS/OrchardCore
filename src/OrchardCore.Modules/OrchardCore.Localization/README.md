@@ -1,15 +1,26 @@
-# Localization (OrchardCore.Localization)
+# Localization (`OrchardCore.Localization`)
 
 This module provides the infrastructure necessary to support the PO (Portable Object) localization file format.
 It also supports plural forms.
 
 ## PO files locations
 
-PO files are found via the following steps:
+PO files are found at these locations:
 
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
-- Then all files matching `/App_Data/Localization/[CultureName].po`
+- All files matching `/App_Data/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
+- For each module and theme all files matching 
+    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
+    - `/App_Data/Localization/[ModuleId].[CultureName].po`
+    - `/App_Data/Localization/[CultureName]/[ModuleId].po`
+
+`[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
+
+### Examples:
+- `/App_Data/Localization/fr.po`
+- `/App_Data/Localization/fr-CA.po`
+- `/App_Data/Localization/es-MX.po`
 
 ## File format
 
@@ -20,7 +31,7 @@ This article explains how PO files are organized, including plural forms.
 
 ## Translation contexts
 
-To prevent different PO files entries from overriding each other, entries define a context for each translation string.
+To prevent entries in different PO files from overriding each other, they define a context for each translation string.
 For instance two views could use the string named `Hello` but they might have different translation. It's then necessary to
 provide two entries and specify which _context_ is associated with each translation. In this case each view name is a context.
 

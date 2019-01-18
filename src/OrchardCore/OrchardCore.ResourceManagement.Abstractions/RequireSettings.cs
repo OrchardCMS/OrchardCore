@@ -21,14 +21,26 @@ namespace OrchardCore.ResourceManagement
         public Dictionary<string, string> Attributes
         {
             get { return _attributes ?? (_attributes = new Dictionary<string, string>()); }
-            set { _attributes = value; }
+            private set { _attributes = value; }
+        }
+
+        public RequireSettings()
+        {
+
+        }
+
+        public RequireSettings(ResourceManagementOptions options)
+        {
+            CdnMode = options.UseCdn;
+            DebugMode = options.DebugMode;
+            Culture = options.Culture;
         }
 
         public bool HasAttributes
         {
             get { return _attributes != null && _attributes.Any(a => a.Value != null); }
         }
-
+        
         /// <summary>
         /// The resource will be displayed in the head of the page
         /// </summary>

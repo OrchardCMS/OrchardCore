@@ -71,6 +71,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
 
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");

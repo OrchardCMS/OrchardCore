@@ -1,12 +1,15 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
@@ -87,11 +90,11 @@ namespace OrchardCore.DisplayManagement.Notify
             // Assign values to the Items collection instead of TempData and
             // combine any existing entries added by the previous request with new ones.
 
-            _existingEntries = messageEntries.Concat(_existingEntries).ToArray();
+            _existingEntries = messageEntries.Concat(_existingEntries).Distinct(new NotifyEntryComparer(_htmlEncoder)).ToArray();
 
             // Result is not a view, so assume a redirect and assign values to TemData.
             // String data type used instead of complex array to be session-friendly.
-            if (!(filterContext.Result is ViewResult) && _existingEntries.Length > 0)
+            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult) && _existingEntries.Length > 0)
             {
                 filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
             }
@@ -107,7 +110,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (!(filterContext.Result is ViewResult))
+            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult))
             {
                 await next();
                 return;

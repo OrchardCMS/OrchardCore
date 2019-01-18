@@ -11,7 +11,8 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "blogContentItemId": "[js:uuid()]"
+    "blogContentItemId": "[js:uuid()]",
+    "menuContentItemId": "[js:uuid()]"
     // "now": "[js: new Date().toISOString()]"
   },
 
@@ -36,6 +37,7 @@
 
         // Content Management
         "OrchardCore.Alias",
+        "OrchardCore.AdminMenu",
         "OrchardCore.Autoroute",
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
@@ -635,7 +637,7 @@
                 "Editor": null,
                 "Position": "0",
                 "Multiple": false,
-                "Required":  true
+                "Required": true
               }
             },
             {
@@ -716,7 +718,7 @@
       "Data": [
         {
           "ContentType": "Menu",
-          "ContentItemId": "[js: uuid()]",
+          "ContentItemId": "[js: variables('menuContentItemId')]",
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
@@ -859,9 +861,149 @@
           "Name": "RecentBlogPosts",
           "Index": "Search",
           "Template": "[js:base64('ew0KICAicXVlcnkiOiB7DQogICAgInRlcm0iIDogeyAiQ29udGVudC5Db250ZW50SXRlbS5Db250ZW50VHlwZSIgOiAiQmxvZ1Bvc3QiIH0gDQogIH0sDQogICJzb3J0IjogeyAiQ29udGVudC5Db250ZW50SXRlbS5DcmVhdGVkVXRjIjogeyAib3JkZXIiOiAiZGVzYyIgfSB9LA0KICAic2l6ZSI6IDMNCn0=')]",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
       ]
+    },
+    {
+        "name": "AdminMenu",
+        "data": [
+          {
+            "Id": "baef6f85ad13481681cde70ada401333",
+            "Name": "Admin menu from blog recipe",
+            "Enabled": true,
+            "MenuItems": [
+              {
+                "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                "LinkText": "Blog",
+                "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+                "IconClass": "fas fa-rss",
+                "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              },
+              {
+                "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                "LinkText": "Main Menu",                
+                "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+                "IconClass": "fas fa-sitemap",
+                "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              },
+              {
+                "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
+                "LinkText": "Content",
+                "IconClass": null,
+                "UniqueId": "3e590d44f8704e4588e272dd966ce291",
+                "Enabled": true,
+                "Text": null,
+                "Id": null,
+                "Href": null,
+                "Url": null,
+                "Position": null,
+                "LinkToFirstChild": true,
+                "LocalNav": false,
+                "Culture": null,
+                "Resource": null,
+                "Items": [
+                  {
+                    "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                    "LinkText": "Content Items",
+                    "LinkUrl": "Admin/Contents/ContentItems/",
+                    "IconClass": null,
+                    "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
+                    "Enabled": true,
+                    "Text": null,
+                    "Id": null,
+                    "Href": null,
+                    "Url": null,
+                    "Position": 0,
+                    "LinkToFirstChild": true,
+                    "LocalNav": false,
+                    "Culture": null,
+                    "Resource": null,
+                    "Items": [],
+                    "RouteValues": null,
+                    "Permissions": [],
+                    "Classes": []
+                  },
+                  {
+                    "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
+                    "LinkText": "Content Types",
+                    "IconClass": null,
+                    "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
+                    "Enabled": true,
+                    "Text": null,
+                    "Id": null,
+                    "Href": null,
+                    "Url": null,
+                    "Position": 1,
+                    "Priority": 50,
+                    "LinkToFirstChild": true,
+                    "LocalNav": false,
+                    "Culture": null,
+                    "Resource": null,
+                    "Items": [
+                      {
+                        "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                        "ShowAll": true,
+                        "IconClass": null,
+                        "ContentTypes": [],
+                        "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
+                        "Enabled": true,
+                        "Text": null,
+                        "Id": null,
+                        "Href": null,
+                        "Url": null,
+                        "Position": null,
+                        "LinkToFirstChild": true,
+                        "LocalNav": false,
+                        "Culture": null,
+                        "Resource": null,
+                        "Items": [],
+                        "RouteValues": null,
+                        "Permissions": [],
+                        "Classes": []
+                      }
+                    ],
+                    "RouteValues": null,
+                    "Permissions": [],
+                    "Classes": []
+                  }
+                ],
+                "RouteValues": null,
+                "Permissions": [],
+                "Classes": []
+              }
+            ]
+          } 
+        ]
     }
   ]
 }

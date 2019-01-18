@@ -7,7 +7,6 @@ namespace OrchardCore.OpenId.Settings
 {
     public class OpenIdServerSettings
     {
-        public bool TestingModeEnabled { get; set; }
         public TokenFormat AccessTokenFormat { get; set; }
         public string Authority { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,8 @@ namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {
+        private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+
         public override int Order => -200;
 
         private readonly IServiceProvider _serviceProvider;
@@ -28,6 +31,9 @@ namespace OrchardCore.Mvc
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Register an isolated tenant part manager.
+            services.AddSingleton(new ApplicationPartManager());
+
             var builder = services.AddMvc(options =>
             {
                 // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
@@ -49,9 +55,9 @@ namespace OrchardCore.Mvc
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
-            
-            // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
-            builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
+
+            // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
+            builder.Services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
         }
@@ -59,9 +65,10 @@ namespace OrchardCore.Mvc
         private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.FeatureProviders.Add(new ShellViewFeatureProvider(httpContextAccessor));
         }
-        
+
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
@@ -71,6 +78,11 @@ namespace OrchardCore.Mvc
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+        }
+
+        internal class RazorViewCompilationMemoryCacheProvider : IViewCompilationMemoryCacheProvider
+        {
+            public IMemoryCache CompilationMemoryCache { get; } = _cache;
         }
     }
 }

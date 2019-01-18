@@ -1,39 +1,39 @@
-# Markdown (OrchardCore.Markdown)
+# Markdown (`OrchardCore.Markdown`)
 
 ## Theming
 
 ### Shapes
 
-The following shapes are rendered when the **BodyPMarkdownBodyPartart** is attached to a content type
+The following shapes are rendered when the `MarkdownBodyPart` is attached to a content type:
 
 | Name | Display Type | Default Location | Model Type |
 | ------| ------------ |----------------- | ---------- |
 | `MarkdownBodyPart` | `Detail` | `Content:5` | `MarkdownBodyPartViewModel` |
 | `MarkdownBodyPart` | `Summary` | `Content:10` | `MarkdownBodyPartViewModel` |
 
-### BodyPartViewModel
+### `BodyPartViewModel`
 
 The following properties are available on the `MarkdownBodyPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `Markdown` | `string` | The Markdown value after all tokens have been processed |
-| `Html` | `string` | The HTML content resulting from the Markdown source |
-| `ContentItem` | `ContentItem` | The content item of the part |
-| `MarkdownBodyPart` | `MarkdownBodyPart` | The `MarkdownBodyPart` instance|
-| `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part |
+| `Markdown` | `string` | The Markdown value after all tokens have been processed. |
+| `Html` | `string` | The HTML content resulting from the Markdown source. |
+| `ContentItem` | `ContentItem` | The content item of the part. |
+| `MarkdownBodyPart` | `MarkdownBodyPart` | The `MarkdownBodyPart` instance. |
+| `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part. |
 
-### MarkdownBodyPart
+### `MarkdownBodyPart`
 
-The following properties are available on `MarkdownBodyPart`
+The following properties are available on `MarkdownBodyPart`:
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead |
-| `Content` | The raw content of the part |
-| `ContentItem` | The content item containing this part |
+| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead. |
+| `Content` | The raw content of the part. |
+| `ContentItem` | The content item containing this part. |
 
-### MarkdownField
+### `MarkdownField`
 
 This shape is rendered when a `MarkdownField` is attached to a content part.
 The shape base class is of type `MarkdownFieldViewModel`.
@@ -42,11 +42,11 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `Markdown` | `string` | The Markdown value once all tokens have been processed |
-| `Html` | `string` | The HTML content resulting from the Markdown source |
-| `Field` | `MarkdownField` | The `MarkdownField` instance|
-| `Part` | `ContentPart` | The part this field attached to |
-| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition |
+| `Markdown` | `string` | The Markdown value once all tokens have been processed. |
+| `Html` | `string` | The HTML content resulting from the Markdown source. |
+| `Field` | `MarkdownField` | The `MarkdownField` instance. |
+| `Part` | `ContentPart` | The part this field is attached to. |
+| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition. |
 
 ## Editors
 
@@ -54,8 +54,8 @@ The __Markdown Part__ editor can be different for each content type. In the __Ma
 content type, just select the one that needs to be used.
 
 There are two predefined editor names:
-- `Default` is the editor that is used by default
-- `Wysiwyg` is the editor that provides a WYSIWYG experience
+- `Default` is the editor that is used by default.
+- `Wysiwyg` is the editor that provides a WYSIWYG experience.
 
 ### Custom Editors
 
@@ -101,7 +101,7 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named 
-`Markdown.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
+`Markdown.Editor.cshtml`. The WYSIWYG editor is defined by using the file named 
 `Markdown-Wysiwyg.Editor.cshtml`.
 
 ## CREDITS

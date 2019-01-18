@@ -10,8 +10,8 @@
     <fieldset class="form-group">
         <div class="form-row">
             <div class="col">
-                <label for="CultureName">@T["Add a culture..."]</label>
-                <select name="SystemCultureName" class="form-control">
+                <label for="SystemCultureName">@T["Add a culture..."]</label>
+                <select id="SystemCultureName" name="SystemCultureName" class="form-control">
                     @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
                     {
                         <option value="@culture.Name" selected="@String.Equals(Model.CurrentCulture, culture.Name, StringComparison.OrdinalIgnoreCase)">

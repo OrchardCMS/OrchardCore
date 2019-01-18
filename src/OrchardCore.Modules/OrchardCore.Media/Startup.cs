@@ -8,14 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.Navigation;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
@@ -27,15 +30,15 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Mvc;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
-using SixLabors.ImageSharp.Web.Memory;
 using SixLabors.ImageSharp.Web.Processors;
+using SixLabors.Memory;
 
 namespace OrchardCore.Media
 {
@@ -85,74 +88,75 @@ namespace OrchardCore.Media
 
             // ImageSharp
 
-            services.AddImageSharpCore(
-                    options =>
+            services.AddImageSharpCore(options =>
+            {
+                options.Configuration = Configuration.Default;
+                options.MaxBrowserCacheDays = 7;
+                options.MaxCacheDays = 365;
+                options.CachedNameLength = 12;
+                options.OnParseCommands = validation =>
+                {
+                    // Force some parameters to prevent disk filling.
+                    // For more advanced resize parameters the usage of profiles will be necessary.
+                    // This can be done with a custom IImageWebProcessor implementation that would 
+                    // accept profile names.
+
+                    validation.Commands.Remove(ResizeWebProcessor.Compand);
+                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
+                    validation.Commands.Remove(ResizeWebProcessor.Xy);
+                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
+                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
+
+                    if (validation.Commands.Count > 0)
                     {
-                        options.Configuration = Configuration.Default;
-                        options.MaxBrowserCacheDays = 7;
-                        options.MaxCacheDays = 365;
-                        options.CachedNameLength = 12;
-                        options.OnValidate = validation =>
+                        if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
                         {
-                            // Force some parameters to prevent disk filling.
-                            // For more advanced resize parameters the usage of profiles will be necessary.
-                            // This can be done with a custom IImageWebProcessor implementation that would 
-                            // accept profile names.
+                            validation.Commands[ResizeWebProcessor.Mode] = "max";
+                        }
 
-                            validation.Commands.Remove(ResizeWebProcessor.Compand);
-                            validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                            validation.Commands.Remove(ResizeWebProcessor.Xy);
-                            validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                            validation.Commands.Remove(BackgroundColorWebProcessor.Color);
-
-                            if (validation.Commands.Count > 0)
+                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
+                        {
+                            if (Int32.TryParse(width, out var parsedWidth))
                             {
-                                if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                                if (Array.BinarySearch<int>(Sizes, parsedWidth) == -1)
                                 {
-                                    validation.Commands[ResizeWebProcessor.Mode] = "max";
-                                }
-
-                                if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
-                                {
-                                    if (Int32.TryParse(width, out var parsedWidth))
-                                    {
-                                        if (Array.BinarySearch<int>(Sizes, parsedWidth) == -1)
-                                        {
-                                            validation.Commands.Clear();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        validation.Commands.Remove(ResizeWebProcessor.Width);
-                                    }
-                                }
-
-                                if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
-                                {
-                                    if (Int32.TryParse(height, out var parsedHeight))
-                                    {
-                                        if (Array.BinarySearch<int>(Sizes, parsedHeight) == -1)
-                                        {
-                                            validation.Commands.Clear();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        validation.Commands.Remove(ResizeWebProcessor.Height);
-                                    }
+                                    validation.Commands.Clear();
                                 }
                             }
-                        };
-                        options.OnProcessed = _ => { };
-                        options.OnPrepareResponse = _ => { };
-                    })
-                    .SetRequestParser<QueryCollectionRequestParser>()
-                    .SetBufferManager<PooledBufferManager>()
-                    .SetCacheHash<CacheHash>()
-                    .SetAsyncKeyLock<AsyncKeyLock>()
-                    .SetCache<PhysicalFileSystemCache>()
-                    .AddResolver<MediaFileSystemResolver>()
-                    .AddProcessor<ResizeWebProcessor>();
+                            else
+                            {
+                                validation.Commands.Remove(ResizeWebProcessor.Width);
+                            }
+                        }
+
+                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
+                        {
+                            if (Int32.TryParse(height, out var parsedHeight))
+                            {
+                                if (Array.BinarySearch<int>(Sizes, parsedHeight) == -1)
+                                {
+                                    validation.Commands.Clear();
+                                }
+                            }
+                            else
+                            {
+                                validation.Commands.Remove(ResizeWebProcessor.Height);
+                            }
+                        }
+                    }
+                };
+                options.OnProcessed = _ => { };
+                options.OnPrepareResponse = _ => { };
+            })
+
+            .SetRequestParser<QueryCollectionRequestParser>()
+            .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
+            .SetCache<PhysicalFileSystemCache>()
+            .SetCacheHash<CacheHash>()
+            .AddProvider<MediaFileProvider>()
+            .AddProcessor<ResizeWebProcessor>()
+            .AddProcessor<FormatWebProcessor>()
+            .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
@@ -173,7 +177,7 @@ namespace OrchardCore.Media
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-            string mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
 
             if (!Directory.Exists(mediaPath))
             {
@@ -187,13 +191,31 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsUrlPrefix,
-                FileProvider = new PhysicalFileProvider(mediaPath)
+                FileProvider = new PhysicalFileProvider(mediaPath),
+                ServeUnknownFileTypes = true,
+
+                // Cache the media files for 7 days
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
+                }
             });
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
         {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
         }
     }
 }

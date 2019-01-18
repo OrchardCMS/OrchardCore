@@ -4,9 +4,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidPage : Razor.RazorPage<dynamic>
     {
-        public override async Task ExecuteAsync()
+        public override Task ExecuteAsync()
         {
-            await LiquidViewTemplate.RenderAsync(this);
+            return LiquidViewTemplate.RenderAsync(this);
         }
     }
 }

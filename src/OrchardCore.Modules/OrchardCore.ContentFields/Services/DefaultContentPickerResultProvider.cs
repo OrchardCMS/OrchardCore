@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Services
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {
-                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query));
+                query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
             }
 
             var contentItems = await query.Take(20).ListAsync();
@@ -39,7 +39,8 @@ namespace OrchardCore.ContentFields.Services
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItem.DisplayText
+                    DisplayText = contentItem.ToString(),
+                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                 });
             }
 

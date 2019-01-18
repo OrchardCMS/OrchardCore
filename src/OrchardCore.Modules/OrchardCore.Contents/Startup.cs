@@ -30,6 +30,8 @@ using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.AdminMenu.Services;
+using OrchardCore.Contents.AdminNodes;
 
 namespace OrchardCore.Contents
 {
@@ -65,6 +67,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
 
             services.AddTagHelpers<ContentLinkTagHelper>();
+
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -115,7 +118,7 @@ namespace OrchardCore.Contents
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
-                template: "Admin/Contents/ContentItems",
+                template: "Admin/Contents/ContentItems/{typeId?}",
                 defaults: new { controller = "Admin", action = "List" }
             );
         }
@@ -147,6 +150,18 @@ namespace OrchardCore.Contents
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
         }
     }
+
+
+    [RequireFeatures("OrchardCore.AdminMenu")]
+    public class AdminMenuStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
+            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
+            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+        }
+     }
 
     [Feature("OrchardCore.Contents.FileContentDefinition")]
     public class FileContentDefinitionStartup : StartupBase

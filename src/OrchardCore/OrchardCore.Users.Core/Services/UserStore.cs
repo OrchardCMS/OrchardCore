@@ -20,15 +20,15 @@ namespace OrchardCore.Users.Services
         IUserLoginStore<IUser>
     {
         private readonly ISession _session;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
 
         public UserStore(ISession session,
-            IRoleProvider roleProvider,
+            IRoleService roleService,
             ILookupNormalizer keyNormalizer)
         {
             _session = session;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
             _keyNormalizer = keyNormalizer;
         }
 
@@ -308,7 +308,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync();
             var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
             if (string.IsNullOrWhiteSpace(roleName))
@@ -326,7 +326,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync();
             var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
             if (string.IsNullOrWhiteSpace(roleName))
