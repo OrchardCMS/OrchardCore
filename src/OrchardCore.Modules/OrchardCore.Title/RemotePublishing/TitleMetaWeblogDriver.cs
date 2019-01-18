@@ -32,6 +32,7 @@ namespace OrchardCore.Title.RemotePublishing
             if (contentItem.As<TitlePart>() != null)
             {
                 contentItem.Alter<TitlePart>(x => x.Title = rpcStruct.Optional<string>("title"));
+                contentItem.DisplayText = rpcStruct.Optional<string>("title");
             }
         }
     }
