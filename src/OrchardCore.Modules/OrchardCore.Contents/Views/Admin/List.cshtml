@@ -64,7 +64,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                 <label for="DisplayText" class="label col-form-label">@T["Title"]</label>
             </div>
             <div class="col-md-4 col-xl-2 form-group">
-                <input id="DisplayText" class="form-control" name="DisplayText" />
+                <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
