@@ -134,6 +134,23 @@ Keep these things in mind when working with the deployment step editor:
 - Selecting a directory will ensure that all the files in that directory at the time this deployment plan executes, are added to the package during execution, regardless of what you see here now.
 - Selecting all files in a directory will ensure that only those files are added to the package when this deployment plan executes, even if at that time, that directory has more files than what you see here now.
 
+## Configuration
+
+The following configuration values are used by default and can be customized:
+
+```json
+    "OrchardCore.Media": {
+      // The accepted sizes for custom width and height
+      "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
+
+      // The number of days to store images in the browser cache
+      "MaxBrowserCacheDays": 30,
+
+      // The number of days to store images in the image cache
+      "MaxCacheDays": 365
+    }
+```
+
 ## CREDITS
 
 ### ImageSharp

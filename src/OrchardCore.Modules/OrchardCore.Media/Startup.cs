@@ -4,17 +4,18 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
@@ -49,17 +50,29 @@ namespace OrchardCore.Media
         /// </summary>
         private const string AssetsUrlPrefix = "/media";
 
+        public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
         /// </summary>
         private const string AssetsPath = "Media";
 
+        private readonly int[] _supportedSizes;
+        private readonly int _maxBrowserCacheDays;
+        private readonly int _maxCacheDays;
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
         }
 
-        public static int[] Sizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
+
+            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
+            _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
+            _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
+        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -91,8 +104,8 @@ namespace OrchardCore.Media
             services.AddImageSharpCore(options =>
             {
                 options.Configuration = Configuration.Default;
-                options.MaxBrowserCacheDays = 7;
-                options.MaxCacheDays = 365;
+                options.MaxBrowserCacheDays = _maxBrowserCacheDays;
+                options.MaxCacheDays = _maxCacheDays;
                 options.CachedNameLength = 12;
                 options.OnParseCommands = validation =>
                 {
@@ -118,7 +131,7 @@ namespace OrchardCore.Media
                         {
                             if (Int32.TryParse(width, out var parsedWidth))
                             {
-                                if (Array.BinarySearch<int>(Sizes, parsedWidth) == -1)
+                                if (Array.BinarySearch<int>(_supportedSizes, parsedWidth) < 0)
                                 {
                                     validation.Commands.Clear();
                                 }
@@ -133,7 +146,7 @@ namespace OrchardCore.Media
                         {
                             if (Int32.TryParse(height, out var parsedHeight))
                             {
-                                if (Array.BinarySearch<int>(Sizes, parsedHeight) == -1)
+                                if (Array.BinarySearch<int>(_supportedSizes, parsedHeight) < 0)
                                 {
                                     validation.Commands.Clear();
                                 }
@@ -193,12 +206,6 @@ namespace OrchardCore.Media
                 RequestPath = AssetsUrlPrefix,
                 FileProvider = new PhysicalFileProvider(mediaPath),
                 ServeUnknownFileTypes = true,
-
-                // Cache the media files for 7 days
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
-                }
             });
         }
 

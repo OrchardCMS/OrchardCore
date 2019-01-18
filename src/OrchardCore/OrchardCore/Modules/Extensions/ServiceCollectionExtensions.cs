@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 
@@ -132,10 +133,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.RequestPath = "";
                 options.FileProvider = fileProvider;
 
+                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
+
+                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", "public, max-age=2592000, s-max-age=31557600");
+
                 // Cache static files for a year as they are coming from embedded resources and should not vary
                 options.OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(365).TotalSeconds;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                 };
 
                 app.UseStaticFiles(options);
