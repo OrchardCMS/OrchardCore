@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            IEnumerable<ITenantsConfigurationSources> configurationSources,
+            ITenantsConfigurationSources configurationSources,
             ITenantConfigurationSources tenantConfigSources,
             ITenantsSettingsSources settingsSources,
             IOptions<ShellOptions> options)
