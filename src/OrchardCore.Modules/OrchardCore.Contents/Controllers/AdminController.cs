@@ -78,6 +78,11 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
+            if (!string.IsNullOrEmpty(model.DisplayText))
+            {
+                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+            }
+            
             switch (model.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
