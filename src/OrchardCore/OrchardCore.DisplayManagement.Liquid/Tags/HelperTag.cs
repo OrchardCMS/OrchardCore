@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperBlock : ArgumentsBlock
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
+        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, List<Statement> statements)
         {
             return new HelperStatement(new ArgumentsExpression(arguments), null, statements).WriteToAsync(writer, encoder, context);
         }
@@ -40,7 +40,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
 
-        public HelperStatement(ArgumentsExpression arguments, string helper = null, IList<Statement> statements = null) : base(statements)
+        public HelperStatement(ArgumentsExpression arguments, string helper = null, List<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
             _helper = helper;

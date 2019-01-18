@@ -17,7 +17,7 @@ namespace OrchardCore.DynamicCache.Liquid
         private static readonly char[] SplitChars = new [] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
-        public CacheStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
+        public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
         }

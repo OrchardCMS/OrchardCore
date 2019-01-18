@@ -2,7 +2,7 @@ using System;
 using OrchardCore.ContentManagement;
 using YesSql;
 
-namespace OrchardCore.Apis.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public class IndexAlias
     {
