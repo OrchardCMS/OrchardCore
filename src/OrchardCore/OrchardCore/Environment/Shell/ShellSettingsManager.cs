@@ -78,14 +78,10 @@ namespace OrchardCore.Environment.Shell
             Func<string, IConfigurationBuilder> factory = (tenant) =>
                 new ConfigurationBuilder().AddConfiguration(_configuration);
 
-            var shellConfiguration = new ShellConfiguration(null, factory);
+            var settings = new TenantSettings(_configuration);
+            var configuration = new TenantConfiguration(null, factory);
 
-            return new ShellSettings(shellConfiguration)
-            {
-                RequestUrlHost = shellConfiguration["RequestUrlHost"],
-                RequestUrlPrefix = shellConfiguration["RequestUrlPrefix"],
-                State = TenantState.Uninitialized
-            };
+            return new ShellSettings(settings, configuration);
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -112,20 +108,18 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var tenant in allTenants)
             {
-                var settings = new ConfigurationBuilder()
+                var tenantSettings = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
                     .AddConfiguration(tenantsSettings.GetSection(tenant))
                     .Build();
 
-                var shellConfiguration = new ShellConfiguration(tenant, _configBuilderFactory);
+                var settings = new TenantSettings(tenantSettings);
+                var configuration = new TenantConfiguration(tenant, _configBuilderFactory);
 
-                var shellSettings = new ShellSettings(shellConfiguration)
+                var shellSettings = new ShellSettings(settings, configuration)
                 {
                     Name = tenant,
-                    RequestUrlHost = settings["RequestUrlHost"],
-                    RequestUrlPrefix = settings["RequestUrlPrefix"],
-                    State = settings.GetValue<TenantState>("State")
                 };
 
                 allSettings.Add(shellSettings);
@@ -173,7 +167,7 @@ namespace OrchardCore.Environment.Shell
 
             var tenantConfig = new JObject();
 
-            var sections = settings.ShellConfiguration.GetChildren()
+            var sections = settings.TenantConfiguration.GetChildren()
                 .Where(s => s.Value != null)
                 .ToArray();
 

@@ -51,11 +51,11 @@ namespace OrchardCore.Environment.Shell.Builders
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
-            tenantServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            tenantServiceCollection.AddSingleton<ITenantConfiguration>(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
-                return shellSettings.ShellConfiguration;
+                return shellSettings.TenantConfiguration;
             });
 
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
@@ -82,11 +82,11 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
-            moduleServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            moduleServiceCollection.AddSingleton<ITenantConfiguration>(sp =>
             {
                 // Resolve it lazily as it's constructed lazily
                 var shellSettings = sp.GetRequiredService<ShellSettings>();
-                return shellSettings.ShellConfiguration;
+                return shellSettings.TenantConfiguration;
             });
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);

@@ -65,7 +65,7 @@ namespace OrchardCore.Media
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
         }
 
-        public Startup(IShellConfiguration shellConfiguration)
+        public Startup(ITenantConfiguration shellConfiguration)
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
 

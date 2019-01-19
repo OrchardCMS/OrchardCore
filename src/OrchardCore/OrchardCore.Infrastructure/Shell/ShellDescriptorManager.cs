@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellConfiguration _shellConfiguration;
+        private readonly ITenantConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
@@ -32,7 +32,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         public ShellDescriptorManager(
             IServiceProvider serviceProvider,
             ShellSettings shellSettings,
-            IShellConfiguration shellConfiguration,
+            ITenantConfiguration shellConfiguration,
             IEnumerable<ShellFeature> shellFeatures,
             IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,

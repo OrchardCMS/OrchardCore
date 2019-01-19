@@ -15,9 +15,9 @@ namespace OrchardCore.Media.Azure
     public class Startup : StartupBase
     {
         private ILogger<Startup> _logger;
-        private readonly IShellConfiguration _configuration;
+        private readonly ITenantConfiguration _configuration;
 
-        public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
+        public Startup(ILogger<Startup> logger, ITenantConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;

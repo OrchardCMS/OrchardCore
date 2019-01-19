@@ -7,10 +7,10 @@ namespace OrchardCore.Environment.Shell.Configuration
 {
     /// <summary>
     /// Holds the tenant <see cref="IConfiguration"/> which is lazily built
-    /// from the application configuration appsettings.json, the 'App_Data/appsettings.json'
+    /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    public class ShellConfiguration : IShellConfiguration
+    public class TenantConfiguration : ITenantConfiguration
     {
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
@@ -19,17 +19,17 @@ namespace OrchardCore.Environment.Shell.Configuration
         private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private IConfigurationBuilder _configurationBuilder;
 
-        public ShellConfiguration()
+        public TenantConfiguration()
         {
         }
 
-        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
+        public TenantConfiguration(string name, Func<string, IConfigurationBuilder> factory)
         {
             _name = name;
             _configBuilderFactory = factory;
         }
 
-        public ShellConfiguration(string name, ShellConfiguration configuration)
+        public TenantConfiguration(string name, TenantConfiguration configuration)
         {
             _name = name;
             if (configuration._configuration == null)
@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         /// <summary>
         /// The tenant lazily built <see cref="IConfiguration"/>.
         /// </summary>
-        public IConfiguration Configuration
+        private IConfiguration Configuration
         {
             get
             {
