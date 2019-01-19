@@ -78,8 +78,8 @@ namespace OrchardCore.Environment.Shell
             Func<string, IConfigurationBuilder> factory = (tenant) =>
                 new ConfigurationBuilder().AddConfiguration(_configuration);
 
-            var settings = new TenantSettings(_configuration);
-            var configuration = new TenantConfiguration(null, factory);
+            var settings = new ShellConfiguration(_configuration);
+            var configuration = new ShellConfiguration(null, factory);
 
             return new ShellSettings(settings, configuration);
         }
@@ -114,8 +114,8 @@ namespace OrchardCore.Environment.Shell
                     .AddConfiguration(tenantsSettings.GetSection(tenant))
                     .Build();
 
-                var settings = new TenantSettings(tenantSettings);
-                var configuration = new TenantConfiguration(tenant, _configBuilderFactory);
+                var settings = new ShellConfiguration(tenantSettings);
+                var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
 
                 var shellSettings = new ShellSettings(settings, configuration)
                 {
@@ -167,7 +167,7 @@ namespace OrchardCore.Environment.Shell
 
             var tenantConfig = new JObject();
 
-            var sections = settings.TenantConfiguration.GetChildren()
+            var sections = settings.ShellConfiguration.GetChildren()
                 .Where(s => s.Value != null)
                 .ToArray();
 

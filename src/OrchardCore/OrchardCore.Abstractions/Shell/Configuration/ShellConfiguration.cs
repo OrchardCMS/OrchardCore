@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Shell.Configuration
     /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    public class TenantConfiguration : ITenantConfiguration
+    public class ShellConfiguration : IShellConfiguration
     {
         private IConfiguration _configuration;
         private IConfiguration _updatableData;
@@ -19,17 +19,35 @@ namespace OrchardCore.Environment.Shell.Configuration
         private Func<string, IConfigurationBuilder> _configBuilderFactory;
         private IConfigurationBuilder _configurationBuilder;
 
-        public TenantConfiguration()
+        public ShellConfiguration()
         {
         }
 
-        public TenantConfiguration(string name, Func<string, IConfigurationBuilder> factory)
+        public ShellConfiguration(IConfiguration configuration)
+        {
+            _configurationBuilder = new ConfigurationBuilder()
+                .AddConfiguration(configuration);
+        }
+
+        public ShellConfiguration(string name, Func<string, IConfigurationBuilder> factory)
         {
             _name = name;
             _configBuilderFactory = factory;
         }
 
-        public TenantConfiguration(string name, TenantConfiguration configuration)
+        public ShellConfiguration(ShellConfiguration configuration)
+        {
+            if (configuration._configuration == null)
+            {
+                _configurationBuilder = configuration._configurationBuilder;
+                return;
+            }
+
+            _configurationBuilder = new ConfigurationBuilder()
+                .AddConfiguration(configuration._configuration);
+        }
+
+        public ShellConfiguration(string name, ShellConfiguration configuration)
         {
             _name = name;
             if (configuration._configuration == null)

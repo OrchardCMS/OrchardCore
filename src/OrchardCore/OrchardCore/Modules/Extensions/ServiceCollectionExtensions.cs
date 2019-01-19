@@ -133,7 +133,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.RequestPath = "";
                 options.FileProvider = fileProvider;
 
-                var shellConfiguration = serviceProvider.GetRequiredService<ITenantConfiguration>();
+                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
 
                 var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", "public, max-age=2592000, s-max-age=31557600");
 

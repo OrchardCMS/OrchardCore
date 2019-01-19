@@ -13,16 +13,16 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private TenantSettings _settings;
-        private TenantConfiguration _configuration;
+        private ShellConfiguration _settings;
+        private ShellConfiguration _configuration;
 
         public ShellSettings()
         {
-            _settings = new TenantSettings();
-            _configuration = new TenantConfiguration();
+            _settings = new ShellConfiguration();
+            _configuration = new ShellConfiguration();
         }
 
-        public ShellSettings(TenantSettings settings, TenantConfiguration configuration)
+        public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
         {
             _settings = settings;
             _configuration = configuration;
@@ -30,8 +30,8 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings(ShellSettings settings)
         {
-            _settings = new TenantSettings(settings._settings);
-            _configuration = new TenantConfiguration(settings.Name, settings._configuration);
+            _settings = new ShellConfiguration(settings._settings);
+            _configuration = new ShellConfiguration(settings.Name, settings._configuration);
 
             Name = settings.Name;
         }
@@ -58,7 +58,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         [JsonIgnore]
-        public ITenantConfiguration TenantConfiguration => _configuration;
+        public IShellConfiguration ShellConfiguration => _configuration;
 
         [JsonIgnore]
         public string this[string key]

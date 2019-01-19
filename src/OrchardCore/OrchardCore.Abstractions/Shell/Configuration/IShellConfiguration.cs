@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public interface ITenantConfiguration : IConfiguration
+    public interface IShellConfiguration : IConfiguration
     {
     }
 }
