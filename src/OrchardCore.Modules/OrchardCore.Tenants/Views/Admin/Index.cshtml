@@ -79,10 +79,10 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
     <fieldset class="admin-toolbar container-fluid">
         <div class="row">
             <div class="col-md-2 col-xl-1 form-group">
-                <label for="bulkActions" class="label col-form-label">@T["Actions:"]</label>
+                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" name="bulkActions" asp-items="@tenantActions"></select>
+                <select class="form-control" name="bulkAction" asp-items="@tenantActions"></select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-secondary">@T["Apply"]</button>

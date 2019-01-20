@@ -37,8 +37,28 @@ namespace OrchardCore.Hosting.ShellBuilders
         /// </summary>
         public RequestDelegate Pipeline { get; set; }
 
+        private bool _placeHolder;
+
+        public class PlaceHolder : ShellContext
+        {
+            /// <summary>
+            /// Used as a place holder for a shell that will be lazily created.
+            /// </summary>
+            public PlaceHolder()
+            {
+                _placeHolder = true;
+                _released = true;
+                _disposed = true;
+            }
+        }
+
         public IServiceScope CreateScope()
         {
+            if (_placeHolder)
+            {
+                return null;
+            }
+
             var scope = new ServiceScopeWrapper(this);
 
             // A new scope can be only used on a non released shell.
@@ -47,7 +67,7 @@ namespace OrchardCore.Hosting.ShellBuilders
                 return scope;
             }
 
-            (scope as ServiceScopeWrapper).Dispose();
+            scope.Dispose();
 
             return null;
         }
