@@ -44,7 +44,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     gridView: false,
                     mediaFilter: '',
                     sortBy: '',
-                    sortAsc: true
+                    sortAsc: true,
+                    itemsInPage: []
                 },
                 created: function () {
                     var self = this;
@@ -114,7 +115,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
 
-                    
+                    // handler for pager events
+                    bus.$on('pagerEvent', function (itemsInPage) {
+                        self.itemsInPage = itemsInPage;
+                    });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },

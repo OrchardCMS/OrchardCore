@@ -197,6 +197,20 @@ ol.media-items-grid {
   .media-items-table .sort-indicator {
     display: inline-block; }
 
+#media-pager .page-number {
+  min-width: 34px;
+  text-align: center; }
+
+#media-pager .page-size-label, #media-pager .page-info {
+  white-space: nowrap; }
+
+@media only screen and (max-width: 1200px) {
+  #media-pager .page-number {
+    display: none; } }
+
+.modal-body #media-pager .page-number, .modal-body #media-pager .media-first-button, .modal-body #media-pager .media-last-button {
+  display: none; }
+
 .action-bar {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   /* Upload button */ }

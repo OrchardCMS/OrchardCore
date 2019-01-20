@@ -12,6 +12,7 @@
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
+
     <div id="mediaContainer" class="align-items-stretch">
         <div id="navigationApp" class="media-container-navigation flex-shrink-0 m-0 p-0" v-cloak>
             <ol id="folder-tree">
@@ -91,18 +92,19 @@
             <upload-list />
 
             <media-items-table :sort-by="sortBy" :sort-asc="sortAsc"
-                               :filtered-media-items="filteredMediaItems"
+                               :filtered-media-items="itemsInPage"
                                :selected-medias="selectedMedias"
                                :thumb-size="thumbSize"
-                               v-show="filteredMediaItems.length > 0 && !gridView"></media-items-table>
+                               v-show="itemsInPage.length > 0 && !gridView"></media-items-table>
 
             <media-items-grid v-show="gridView"
-                              :filtered-media-items="filteredMediaItems"
+                              :filtered-media-items="itemsInPage"
                               :selected-medias="selectedMedias"
                               :thumb-size="thumbSize"></media-items-grid>
 
             <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
             <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
+            <pager :source-items="filteredMediaItems"> </pager>
         </div>
     </div>
 </div>
