@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text;
@@ -59,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             // Write all well-known properties
             o.Add(new JProperty(nameof(NotifyEntry.Type), notifyEntry.Type.ToString()));
-            o.Add(new JProperty(nameof(NotifyEntry.Message), stringBuilder.ToString()));
+            o.Add(new JProperty(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder)));
 
             o.WriteTo(writer);
         }

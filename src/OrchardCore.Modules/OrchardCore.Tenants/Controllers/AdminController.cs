@@ -7,14 +7,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Settings;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -30,6 +34,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly IClock _clock;
         private readonly INotifier _notifier;
+        private readonly ISiteService _siteService;
+
+        private readonly dynamic New;
 
         public AdminController(
             IShellHost orchardHost,
@@ -41,6 +48,8 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
+            ISiteService siteService,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -53,7 +62,9 @@ namespace OrchardCore.Tenants.Controllers
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _notifier = notifier;
+            _siteService = siteService;
 
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -61,14 +72,21 @@ namespace OrchardCore.Tenants.Controllers
         public IStringLocalizer S { get; set; }
         public IHtmlLocalizer H { get; set; }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
             var shells = await GetShellsAsync();
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var model = new AdminIndexViewModel
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+            // default options
+            if (options == null)
             {
-                ShellSettingsEntries = shells.Select(x =>
+                options = new TenantIndexOptions();
+            }
+
+            var entries = shells.Select(x =>
                 {
                     var entry = new ShellSettingsEntry
                     {
@@ -83,12 +101,120 @@ namespace OrchardCore.Tenants.Controllers
                     }
 
                     return entry;
-                }).ToList()
+                }).ToList();
+
+            if (!string.IsNullOrWhiteSpace(options.Search))
+            {
+                entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
+                    (t.ShellSettings != null && t.ShellSettings != null &&
+                    ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                    (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+            }
+
+            switch (options.Filter)
+            {
+                case TenantsFilter.Disabled:
+                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
+                    break;
+                case TenantsFilter.Running:
+                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
+                    break;
+                case TenantsFilter.Uninitialized:
+                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
+                    break;
+            }
+
+            switch (options.OrderBy)
+            {
+                case TenantsOrder.Name:
+                    entries = entries.OrderBy(t => t.Name).ToList();
+                    break;
+                case TenantsOrder.State:
+                    entries = entries.OrderBy(t => t.ShellSettings?.State).ToList();
+                    break;
+                default:
+                    entries = entries.OrderByDescending(t => t.Name).ToList();
+                    break;
+            }
+            var count = entries.Count();
+
+            var results = entries
+                .Skip(pager.GetStartIndex())
+                .Take(pager.PageSize).ToList();
+
+            // Maintain previous route data when generating page links
+            var routeData = new RouteData();
+            routeData.Values.Add("Options.Filter", options.Filter);
+            routeData.Values.Add("Options.Search", options.Search);
+            routeData.Values.Add("Options.OrderBy", options.OrderBy);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+
+            var model = new AdminIndexViewModel
+            {
+                ShellSettingsEntries = results,
+                Options = options,
+                Pager = pagerShape
             };
 
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Index(BulkActionViewModel model)
+        {
+            foreach (var tenantName in model.TenantNames)
+            {
+                var shellContext = (await GetShellsAsync())
+                    .Where(x => string.Equals(x.Settings.Name, tenantName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                if (shellContext == null)
+                {
+                    break;
+                }
+
+                var shellSettings = shellContext.Settings;
+
+                switch (model.BulkAction.ToString())
+                {
+                    case "Disable":
+                        if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _notifier.Warning(H["You cannot disable the default tenant."]);
+                        }
+                        else if (shellSettings.State != TenantState.Running)
+                        {
+                            _notifier.Warning(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
+                        }
+                        else
+                        {
+                            shellSettings.State = TenantState.Disabled;
+                            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        }
+
+                        break;
+
+                    case "Enable":
+                        if (shellSettings.State != TenantState.Disabled)
+                        {
+                            _notifier.Warning(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
+                        }
+                        else
+                        {
+                            shellSettings.State = TenantState.Running;
+                            await _orchardHost.UpdateShellSettingsAsync(shellSettings);
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
 
         public async Task<IActionResult> Create()
         {

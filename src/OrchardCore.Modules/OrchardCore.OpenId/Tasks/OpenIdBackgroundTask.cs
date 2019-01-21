@@ -6,22 +6,40 @@ using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Services;
 
 namespace OrchardCore.OpenId.Tasks
 {
-    [BackgroundTask(Schedule = "*/30 * * * *", Description = "Remove orphaned tokens / authorizations.")]
+    [BackgroundTask(Schedule = "*/30 * * * *", Description = "Performs various cleanup operations for OpenID-related features.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger<OpenIdBackgroundTask> _logger;
+        private readonly IOpenIdServerService _serverService;
 
-        public OpenIdBackgroundTask(ILogger<OpenIdBackgroundTask> logger)
+        public OpenIdBackgroundTask(
+            ILogger<OpenIdBackgroundTask> logger,
+            IOpenIdServerService serverService)
         {
             _logger = logger;
+            _serverService = serverService;
         }
 
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
-            // Note: this background task is responsible of automatically removing orphaned tokens/authorizations
+            try
+            {
+                await _serverService.PruneSigningKeysAsync();
+            }
+            catch (OperationCanceledException exception) when (exception.CancellationToken == cancellationToken)
+            {
+                _logger.LogDebug("The X.509 certificates pruning task was aborted.");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "An error occurred while pruning X.509 certificates from the shell storage.");
+            }
+
+            // Note: this background task is also responsible of automatically removing orphaned tokens/authorizations
             // (i.e tokens that are no longer valid and ad-hoc authorizations that have no valid tokens associated).
             // Since ad-hoc authorizations and their associated tokens are removed as part of the same operation
             // when they no longer have any token attached, it's more efficient to remove the authorizations first.

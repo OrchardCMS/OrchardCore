@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -97,11 +98,15 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+            // To make configuration easier and avoid having to configure it in two different features,
+            // the transport security requirement enforced by OpenIddict by default is always turned off.
+            options.AllowInsecureHttp = true;
+
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
             options.UseRollingTokens = settings.UseRollingTokens;
-            options.AllowInsecureHttp = settings.TestingModeEnabled;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {

@@ -26,5 +26,19 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             return services;
         }
+
+
+        /// <summary>
+        /// Registers a type providing custom filters for content item filters
+        /// </summary>
+        /// <typeparam name="TObjectTypeToFilter"></typeparam>
+        /// <typeparam name="TFilterType"></typeparam>
+        /// <param name="services"></param>
+        public static void AddGraphQLFilterType<TObjectTypeToFilter, TFilterType>(this IServiceCollection services)
+            where TObjectTypeToFilter : class
+            where TFilterType : GraphQLFilter<TObjectTypeToFilter>
+        {
+            services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
+        }
     }
 }
