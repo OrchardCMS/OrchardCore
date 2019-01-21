@@ -1,4 +1,4 @@
-using OrchardCore.ContentManagement.GraphQL.Queries.Models;
+using OrchardCore.ContentTypes.GraphQL.Models;
 
 namespace OrchardCore.ContentTypes.GraphQL.ViewModels
 {

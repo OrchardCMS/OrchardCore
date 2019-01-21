@@ -1,9 +1,10 @@
-using System;
 using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
@@ -11,11 +12,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     public class DynamicContentTypeBuilder : IContentTypeBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly GraphQLContentOptions _contentOptions;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+            IOptions<GraphQLContentOptions> contentOptionsAccessor,
             IStringLocalizer<DynamicContentTypeBuilder> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+            _contentOptions = contentOptionsAccessor.Value;
 
             T = localizer;
         }
@@ -37,7 +41,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
 
-                if (part.ShouldCollapseFieldsToParent()) {
+                if (_contentOptions.ShouldCollapse(part)) {
                     foreach (var field in part.PartDefinition.Fields)
                     {
                         foreach (var fieldProvider in contentFieldProviders)
