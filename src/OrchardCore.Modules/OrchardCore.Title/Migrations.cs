@@ -45,11 +45,11 @@ namespace OrchardCore.Title
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            var lastDodcumentId = 0;
+            var lastDocumentId = 0;
 
             for(;;)
             {
-                var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDodcumentId).Take(10).ListAsync();
+                var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
                 
                 if (!contentItemVersions.Any())
                 {
@@ -59,13 +59,14 @@ namespace OrchardCore.Title
 
                 foreach(var contentItemVersion in contentItemVersions)
                 {
-                    if (UpdateTitleAndBody(contentItemVersion.Content))
+                    if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
+                        && UpdateTitleAndBody(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
                         _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
                     }
 
-                    lastDodcumentId = contentItemVersion.Id;
+                    lastDocumentId = contentItemVersion.Id;
                 }
 
                 await _session.CommitAsync();
