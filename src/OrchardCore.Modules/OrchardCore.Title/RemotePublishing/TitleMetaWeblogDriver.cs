@@ -29,10 +29,7 @@ namespace OrchardCore.Title.RemotePublishing
 
         public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            if (contentItem.As<TitlePart>() != null)
-            {
-                contentItem.Alter<TitlePart>(x => x.Title = rpcStruct.Optional<string>("title"));
-            }
+            contentItem.DisplayText = rpcStruct.Optional<string>("title");
         }
     }
 }
