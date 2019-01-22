@@ -60,7 +60,7 @@ namespace OrchardCore.Title
                 foreach(var contentItemVersion in contentItemVersions)
                 {
                     if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
-                        && UpdateTitleAndBody(contentItemVersion.Content))
+                        && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
                         _logger.LogInformation($"A content item version's Title was upgraded: '{contentItemVersion.ContentItemVersionId}'");
@@ -72,7 +72,7 @@ namespace OrchardCore.Title
                 await _session.CommitAsync();
             } 
 
-            bool UpdateTitleAndBody(JToken content)
+            bool UpdateTitle(JToken content)
             {
                 var changed = false;
 
@@ -89,7 +89,7 @@ namespace OrchardCore.Title
 
                 foreach (var token in content)
                 {
-                    changed = UpdateTitleAndBody(token) || changed;
+                    changed = UpdateTitle(token) || changed;
                 }
 
                 return changed;
