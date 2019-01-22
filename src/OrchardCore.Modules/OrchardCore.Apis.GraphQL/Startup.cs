@@ -3,6 +3,7 @@ using GraphQL;
 using GraphQL.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Modules;
@@ -13,6 +14,13 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class Startup : StartupBase
     {
+        private IConfiguration _configuration;
+
+        public Startup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
@@ -27,13 +35,20 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+#if DEBUG
+            var exposeExceptions = _configuration.GetValue<bool>($"Modules:OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}", true);
+#else
+            var exposeExceptions = _configuration.GetValue<bool>($"Modules:OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}", false);
+#endif
+
             app.UseMiddleware<GraphQLMiddleware>(new GraphQLSettings
             {
                 BuildUserContext = ctx => new GraphQLContext
                 {
                     User = ctx.User,
-                    ServiceProvider = ctx.RequestServices
-                }
+                    ServiceProvider = ctx.RequestServices,
+                },
+                ExposeExceptions = exposeExceptions
             });
         }
     }
