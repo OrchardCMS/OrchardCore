@@ -164,10 +164,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
-
-#if DEBUG
-                _.ExposeExceptions = true;
-#endif
+                _.ExposeExceptions = _settings.ExposeExceptions;
             });
 
             var httpResult = result.Errors?.Count > 0
