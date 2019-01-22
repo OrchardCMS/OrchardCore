@@ -13,6 +13,7 @@ namespace OrchardCore.Lists.GraphQL
         {
             services.AddInputObjectGraphType<ContainedPart, ContainedInputObjectType>();
             services.AddObjectGraphType<ContainedPart, ContainedQueryObjectType>();
+            services.AddObjectGraphType<ListPart, ListQueryObjectType>();
             services.AddTransient<IIndexAliasProvider, ContainedPartIndexAliasProvider>();
         }
     }
