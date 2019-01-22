@@ -38,7 +38,12 @@ namespace OrchardCore.Html
             return 2;
         }
 
-        public async Task<int> UpdateFrom2()
+        public int UpdateFrom2()
+        {
+            return 3;
+        }
+
+        public async Task<int> UpdateFrom3()
         {
             // This code can be removed in RC
 
@@ -58,7 +63,7 @@ namespace OrchardCore.Html
 
             var lastDocumentId = 0;
 
-            for (; ; )
+            for (;;)
             {
                 var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
 
@@ -70,8 +75,7 @@ namespace OrchardCore.Html
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
-                        && UpdateBody(contentItemVersion.Content))
+                    if (UpdateBody(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
                         _logger.LogInformation($"A content item version's BodyPart was upgraded: '{contentItemVersion.ContentItemVersionId}'");
@@ -106,7 +110,7 @@ namespace OrchardCore.Html
                 return changed;
             }
 
-            return 3;
+            return 4;
         }
 
     }
