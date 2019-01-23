@@ -5,12 +5,12 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class TenantsConfigurationSources : ITenantsConfigurationSources
+    public class ShellsConfigurationSources : IShellsConfigurationSources
     {
         private readonly string _environment;
         private readonly string _appsettings;
 
-        public TenantsConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public ShellsConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             _environment = hostingEnvironment.EnvironmentName;
             _appsettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "appsettings");

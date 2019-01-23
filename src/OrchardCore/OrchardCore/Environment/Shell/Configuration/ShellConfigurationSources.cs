@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class TenantConfigurationSources : ITenantConfigurationSources
+    public class ShellConfigurationSources : IShellConfigurationSources
     {
         private readonly string _container;
 
-        public TenantConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
+        public ShellConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);

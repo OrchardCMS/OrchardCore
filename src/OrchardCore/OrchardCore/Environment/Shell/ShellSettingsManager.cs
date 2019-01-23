@@ -21,14 +21,14 @@ namespace OrchardCore.Environment.Shell
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<string> _configuredTenants;
         private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
-        private readonly ITenantConfigurationSources _tenantConfigSources;
-        private readonly ITenantsSettingsSources _settingsSources;
+        private readonly IShellConfigurationSources _tenantConfigSources;
+        private readonly IShellsSettingsSources _settingsSources;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
-            ITenantsConfigurationSources configurationSources,
-            ITenantConfigurationSources tenantConfigSources,
-            ITenantsSettingsSources settingsSources,
+            IShellsConfigurationSources configurationSources,
+            IShellConfigurationSources tenantConfigSources,
+            IShellsSettingsSources settingsSources,
             IOptions<ShellOptions> options)
         {
             // TODO: Can be removed when going to RC.

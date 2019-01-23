@@ -33,9 +33,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var services = builder.ApplicationServices;
 
-            services.AddSingleton<ITenantsSettingsSources, TenantsSettingsSources>();
-            services.AddSingleton<ITenantsConfigurationSources, TenantsConfigurationSources>();
-            services.AddSingleton<ITenantConfigurationSources, TenantConfigurationSources>();
+            services.AddSingleton<IShellsSettingsSources, ShellsSettingsSources>();
+            services.AddSingleton<IShellsConfigurationSources, ShellsConfigurationSources>();
+            services.AddSingleton<IShellConfigurationSources, ShellConfigurationSources>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 

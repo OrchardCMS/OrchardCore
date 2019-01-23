@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
-    public class TenantsSettingsSources : ITenantsSettingsSources
+    public class ShellsSettingsSources : IShellsSettingsSources
     {
         private readonly string _tenants;
 
-        public TenantsSettingsSources(IOptions<ShellOptions> shellOptions)
+        public ShellsSettingsSources(IOptions<ShellOptions> shellOptions)
         {
             _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
         }
