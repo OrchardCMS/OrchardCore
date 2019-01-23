@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Options
@@ -23,6 +24,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         /// <param name="definition"></param>
         /// <returns></returns>
         public bool ShouldCollapse(ContentTypePartDefinition definition)
+        {
+            if (IsCollapsedByDefault(definition))
+            {
+                return true;
+            }
+
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
+
+            if (settings.Collapse)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool IsCollapsedByDefault(ContentTypePartDefinition definition)
         {
             var contentType = definition.ContentTypeDefinition.Name;
             var partName = definition.PartDefinition.Name;

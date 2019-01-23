@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
+using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.ContentTypes.GraphQL.Models;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentTypes.GraphQL.Settings
+namespace OrchardCore.ContentTypes.GraphQL.Drivers
 {
     public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
@@ -27,6 +27,8 @@ namespace OrchardCore.ContentTypes.GraphQL.Settings
 
             return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
             {
+                model.Definition = contentTypePartDefinition;
+                model.Options = _contentOptions;
                 model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
             }).Location("Content");
         }

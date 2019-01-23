@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.ContentTypes.GraphQL.Settings;
+using OrchardCore.ContentTypes.GraphQL.Drivers;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.GraphQL
