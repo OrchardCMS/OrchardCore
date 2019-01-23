@@ -75,13 +75,11 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings CreateDefaultSettings()
         {
-            Func<string, IConfigurationBuilder> factory = (tenant) =>
-                new ConfigurationBuilder().AddConfiguration(_configuration);
-
-            var settings = new ShellConfiguration(_configuration);
-            var configuration = new ShellConfiguration(null, factory);
-
-            return new ShellSettings(settings, configuration);
+            return new ShellSettings
+            (
+                new ShellConfiguration(_configuration),
+                new ShellConfiguration(_configuration)
+            );
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
@@ -150,32 +148,36 @@ namespace OrchardCore.Environment.Shell
             var configSettings = JObject.FromObject(shellSettings);
             var tenantSettings = JObject.FromObject(settings);
 
-            tenantSettings.Remove("Name");
-
             foreach (var property in configSettings)
             {
                 var tenantValue = tenantSettings.Value<string>(property.Key);
                 var configValue = configSettings.Value<string>(property.Key);
 
-                if (tenantValue == null || tenantValue == configValue)
+                if (tenantValue != configValue)
                 {
-                    tenantSettings.Remove(property.Key);
+                    tenantSettings[property.Key] = tenantValue;
+                }
+                else
+                {
+                    tenantSettings[property.Key] = null;
                 }
             }
+
+            tenantSettings.Remove("Name");
 
             _settingsSources.Save(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
             var tenantConfig = new JObject();
 
             var sections = settings.ShellConfiguration.GetChildren()
-                .Where(s => s.Value != null)
+                .Where(s => !s.GetChildren().Any())
                 .ToArray();
 
             foreach (var section in sections)
             {
-                if (section.Value != configuration[section.Key])
+                if (settings[section.Key] != configuration[section.Key])
                 {
-                    tenantConfig[section.Key] = section.Value;
+                    tenantConfig[section.Key] = settings[section.Key];
                 }
                 else
                 {

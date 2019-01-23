@@ -94,7 +94,6 @@ namespace OrchardCore.Tenants.Controllers
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            // Update settings, null values have no effect.
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;
             shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();

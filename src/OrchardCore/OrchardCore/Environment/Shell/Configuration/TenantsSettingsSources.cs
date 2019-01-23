@@ -24,11 +24,25 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
             lock (this)
             {
-                var settings = !File.Exists(_tenants) ? new JObject()
+                var tenantsSettings = !File.Exists(_tenants) ? new JObject()
                 : JObject.Parse(File.ReadAllText(_tenants));
 
-                settings[tenant] = JObject.FromObject(data);
-                File.WriteAllText(_tenants, settings.ToString());
+                var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
+
+                foreach (var key in data.Keys)
+                {
+                    if (data[key] != null)
+                    {
+                        settings[key] = data[key];
+                    }
+                    else
+                    {
+                        settings.Remove(key);
+                    }
+                }
+
+                tenantsSettings[tenant] = settings;
+                File.WriteAllText(_tenants, tenantsSettings.ToString());
             }
         }
     }
