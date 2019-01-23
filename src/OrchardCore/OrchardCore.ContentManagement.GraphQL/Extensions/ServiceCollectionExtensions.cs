@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             return services.Configure<GraphQLContentOptions>(options => {
                 options.PartOptions = options.PartOptions.Union(new[] { new GraphQLContentPartOption {
-                    Name = nameof(TContentPart),
+                    Name = typeof(TContentPart).Name,
                     Collapse = true
                 } });
             });
