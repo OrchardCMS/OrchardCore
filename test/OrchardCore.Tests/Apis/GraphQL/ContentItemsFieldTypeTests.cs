@@ -109,7 +109,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
 
             Assert.Single(dogs);
-            Assert.Equal("doug", cats.First().As<Animal>().Name);
+            Assert.Equal("doug", dogs.First().As<Animal>().Name);
         }
     }
 
