@@ -8,7 +8,6 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
@@ -120,7 +119,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 foreach (var alias in aliasProvider.GetAliases())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                    indexes.Add(alias.Index, alias);
+
+                    if (!indexes.ContainsKey(alias.Index))
+                    {
+                        indexes.Add(alias.Index, alias);
+                    }
                 }
             }
 
