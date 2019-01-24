@@ -12,7 +12,7 @@ PO files are found at these locations:
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
 - For each module and theme all files matching 
     - `/App_Data/Localization/[ModuleId]/[CultureName].po`
-    - `/App_Data/Localization/[ModuleId].[CultureName].po`
+    - `/App_Data/Localization/[ModuleId]-[CultureName].po`
     - `/App_Data/Localization/[CultureName]/[ModuleId].po`
 
 `[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.

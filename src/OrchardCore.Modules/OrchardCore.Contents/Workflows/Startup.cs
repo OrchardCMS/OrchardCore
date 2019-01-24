@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.Workflows
             services.AddActivity<ContentCreatedEvent, ContentCreatedEventDisplay>();
             services.AddActivity<ContentDeletedEvent, ContentDeletedEventDisplay>();
             services.AddActivity<ContentPublishedEvent, ContentPublishedEventDisplay>();
+            services.AddActivity<ContentUnpublishedEvent, ContentUnpublishedEventDisplay>();
             services.AddActivity<ContentUpdatedEvent, ContentUpdatedEventDisplay>();
             services.AddActivity<ContentVersionedEvent, ContentVersionedEventDisplay>();
             services.AddActivity<DeleteContentTask, DeleteContentTaskDisplay>();

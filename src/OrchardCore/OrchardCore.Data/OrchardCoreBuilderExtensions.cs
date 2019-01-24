@@ -154,14 +154,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (session != null)
             {
-                try
-                {
-                    await session.CommitAsync();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // The session might already be disposed by the ServiceScope
-                }
+                await session.CommitAsync();
             }
         }
     }
