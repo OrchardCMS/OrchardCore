@@ -284,11 +284,6 @@ namespace OrchardCore.Tenants.Controllers
             return Ok(executionId);
         }
 
-        private async Task<IEnumerable<ShellContext>> GetShellsAsync()
-        {
-            return (await _shellHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
-        }
-
         private bool IsDefaultShell()
         {
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);

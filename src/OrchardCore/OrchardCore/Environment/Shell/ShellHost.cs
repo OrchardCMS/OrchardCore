@@ -181,6 +181,12 @@ namespace OrchardCore.Environment.Shell
                 // Pre-create and register all tenant shells.
                 foreach (var settings in allSettings)
                 {
+                    if (settings.Name == ShellHelper.DefaultShellName)
+                    {
+                        await GetOrCreateShellContextAsync(settings);
+                        continue;
+                    }
+
                     AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
                 };
             }
@@ -343,30 +349,9 @@ namespace OrchardCore.Environment.Shell
             return GetOrCreateShellContextAsync(settings);
         }
 
-        public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
+        public IEnumerable<ShellContext> ListShellContexts()
         {
-            var shells = _shellContexts?.Values.ToArray();
-
-            if (shells == null || shells.Length == 0)
-            {
-                return Enumerable.Empty<ShellContext>();
-            }
-
-            var shellContexts = new List<ShellContext>();
-
-            foreach (var shell in shells)
-            {
-                if (!shell.Released)
-                {
-                    shellContexts.Add(shell);
-                }
-                else
-                {
-                    shellContexts.Add(await GetOrCreateShellContextAsync(shell.Settings));
-                }
-            }
-
-            return shellContexts;
+            return _shellContexts?.Values.ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         /// <summary>

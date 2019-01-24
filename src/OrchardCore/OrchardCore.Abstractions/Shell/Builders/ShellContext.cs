@@ -73,7 +73,7 @@ namespace OrchardCore.Hosting.ShellBuilders
         }
 
         /// <summary>
-        /// Whether the <see cref="ShellContext"/> instance has been released, for instance when a tenant is changed.
+        /// Whether the <see cref="ShellContext"/> instance is not yet built or has been released, for instance when a tenant is changed.
         /// </summary>
         public bool Released => _released;
 
