@@ -1,4 +1,4 @@
-.modal-body {
+.media-modal .modal-body {
     padding-bottom: 0px; // to keep the line separating the dir browser from the thumbnails straight to the bottom.
     #mediaContainer {
 
@@ -37,17 +37,17 @@
 
     // there is a size's range where the table mode overflows the modal.
     // We fix it by hidding extra columns while in that range
-    .optional-col {
+    .media-modal .optional-col {
         display: none;
     }
 }
 
 
 @media only screen and ( min-width: 992px ) {
-    .modal-body {
+    .media-modal .modal-body {
         #mediaContainer {
             #navigationApp {                
-                width: 290px;
+                width: 260px;
                 overflow: auto;
             }
         }
@@ -60,4 +60,16 @@
     margin: 0px -15px 0px -15px;
     margin-top: 0;
     height: 100%;
+}
+
+
+.media-modal.modal-dialog,
+.media-modal .modal-content {
+    height: 95%;
+}
+
+.media-modal .modal-body {
+    max-height: calc(100% - 120px);
+    //height: 100%;
+    overflow-y: scroll;
 }

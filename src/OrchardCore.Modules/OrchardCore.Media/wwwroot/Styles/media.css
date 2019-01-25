@@ -398,32 +398,32 @@ ol.media-items-grid {
     padding: 4px;
     white-space: nowrap; }
 
-.modal-body {
+.media-modal .modal-body {
   padding-bottom: 0px; }
-  .modal-body #mediaContainer #navigationApp {
+  .media-modal .modal-body #mediaContainer #navigationApp {
     border-right: none !important;
     width: 100%; }
-  .modal-body #mediaContainer #mediaContainerMain {
+  .media-modal .modal-body #mediaContainer #mediaContainerMain {
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     padding-left: 1.5rem !important;
     margin-left: 0 !important; }
-  .modal-body #mediaContainer .visible-on-modal {
+  .media-modal .modal-body #mediaContainer .visible-on-modal {
     display: flex !important; }
-  .modal-body #mediaContainer .hidden-on-modal {
+  .media-modal .modal-body #mediaContainer .hidden-on-modal {
     display: none !important; }
-  .modal-body #mediaContainer #folder-tree a,
-  .modal-body #mediaContainer .breadcrumb-item a {
+  .media-modal .modal-body #mediaContainer #folder-tree a,
+  .media-modal .modal-body #mediaContainer .breadcrumb-item a {
     font-size: 0.9rem; }
 
 @media only screen and (max-width: 992px) and (min-width: 768px) {
   .modal-body #mediaApp #mediaContainer {
     flex-direction: column; }
-  .optional-col {
+  .media-modal .optional-col {
     display: none; } }
 
 @media only screen and (min-width: 992px) {
-  .modal-body #mediaContainer #navigationApp {
-    width: 290px;
+  .media-modal .modal-body #mediaContainer #navigationApp {
+    width: 260px;
     overflow: auto; } }
 
 .modal-content .modal-body #mediaApp {
@@ -431,6 +431,14 @@ ol.media-items-grid {
   margin: 0px -15px 0px -15px;
   margin-top: 0;
   height: 100%; }
+
+.media-modal.modal-dialog,
+.media-modal .modal-content {
+  height: 95%; }
+
+.media-modal .modal-body {
+  max-height: calc(100% - 120px);
+  overflow-y: scroll; }
 
 .media-container-main-item-title {
   border-top: solid 1px #dee2e6;
