@@ -85,7 +85,7 @@ after_deploy:
       dotnet publish -c Release --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta3 .
-      Write-Host "$env:DOCKER_PASS" -NoNewLine | docker login -u="$env:DOCKER_USER" --password-stdin
+      echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }
 
@@ -95,6 +95,6 @@ after_deploy:
       dotnet publish -c Release  --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:dev .
-      Write-Host "$env:DOCKER_PASS" -NoNewLine | docker login -u="$env:DOCKER_USER" --password-stdin
+      echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }
