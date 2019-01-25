@@ -28,7 +28,7 @@ script:
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
         docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta3 .;
-        docker login -u="$DOCKER_USER" -p="$DOCKER_PASS";
+        echo "$DOCKER_PASS" | docker login -u="$DOCKER_USER" --password-stdin;
         docker push orchardproject/orchardcore-cms-linux;
     fi;
   - if [[ "$TRAVIS_BRANCH" == "dev" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
@@ -36,7 +36,7 @@ script:
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
         docker build -t orchardproject/orchardcore-cms-linux:dev .;
-        docker login -u="$DOCKER_USER" -p="$DOCKER_PASS";
+        echo "$DOCKER_PASS" | docker login -u="$DOCKER_USER" --password-stdin;
         docker push orchardproject/orchardcore-cms-linux;
     fi;
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/OrchardCore.Tests/OrchardCore.Tests.csproj; fi
