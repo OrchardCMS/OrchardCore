@@ -60,21 +60,28 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 builder.CreateMapIndexTable(nameof(AnimalIndex), column => column
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
+
+
+                builder.CreateMapIndexTable(nameof(AnimalTraitsIndex), column => column
+                    .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
+                    .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
+                );
             }
+
+            _store.RegisterIndexes<ContentItemIndexProvider>();
         }
 
 
         [Fact]
         public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases() {
-            _store.RegisterIndexes<ContentItemIndexProvider>();
-            _store.RegisterIndexes<MultipleIndexProvider>();
+            _store.RegisterIndexes<AnimalIndexProvider>();
 
             var services = new FakeServiceCollection();
             services.Populate(new ServiceCollection());
             services.Services.AddScoped<ISession>(x => new Session(_store, System.Data.IsolationLevel.Unspecified));
             services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-            services.Services.AddScoped<IIndexProvider, MultipleIndexProvider>();
-            services.Services.AddScoped<IIndexAliasProvider, MultipleIndexAliasProvider>();
+            services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
             services.Build();
 
             var retrunType = new ListGraphType<StringGraphType>();
@@ -111,11 +118,67 @@ namespace OrchardCore.Tests.Apis.GraphQL
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<Animal>().Name);
         }
+
+        [Fact]
+        public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
+        {
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped<ISession>(x => new Session(_store, System.Data.IsolationLevel.Unspecified));
+            services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
+            services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
+            services.Build();
+
+            var retrunType = new ListGraphType<StringGraphType>();
+            retrunType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+            var context = new ResolveFieldContext
+            {
+                Arguments = new Dictionary<string, object>(),
+                UserContext = new GraphQLContext
+                {
+                    ServiceProvider = services
+                },
+                ReturnType = retrunType
+            };
+
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new Animal { Name = "doug", IsHappy = true, IsScary = false });
+
+            var ci1 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
+            ci1.Weld(new Animal { Name = "doug", IsHappy = false, IsScary = true });
+
+            var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
+            ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
+
+
+            var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+            session.Save(ci);
+            session.Save(ci1);
+            session.Save(ci2);
+            await session.CommitAsync();
+
+            var type = new ContentItemsFieldType("Animal", new Schema());
+
+            context.Arguments["where"] = JObject.Parse("{ animals: { name: \"doug\", isScary: true } }");
+            var animals = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+            Assert.Single(animals);
+            Assert.Equal("doug", animals.First().As<Animal>().Name);
+            Assert.True(animals.First().As<Animal>().IsScary);
+            Assert.False(animals.First().As<Animal>().IsHappy);
+        }
     }
 
     public class Animal : ContentPart
     {
         public string Name { get; set; }
+        public bool IsHappy { get; set; }
+        public bool IsScary { get; set; }
     }
 
     public class AnimalIndex : MapIndex
@@ -123,7 +186,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public string Name { get; set; }
     }
 
-    public class MultipleIndexProvider : IndexProvider<ContentItem>
+    public class AnimalIndexProvider : IndexProvider<ContentItem>
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
@@ -138,7 +201,30 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
     }
 
-    public class MultipleIndexAliasProvider : IIndexAliasProvider
+    public class AnimalTraitsIndex : MapIndex
+    {
+        public bool IsHappy { get; set; }
+        public bool IsScary { get; set; }
+    }
+
+    public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
+    {
+        public override void Describe(DescribeContext<ContentItem> context)
+        {
+            context.For<AnimalTraitsIndex>()
+                .Map(contentItem =>
+                {
+                    return new AnimalTraitsIndex
+                    {
+                        IsHappy = contentItem.As<Animal>().IsHappy,
+                        IsScary = contentItem.As<Animal>().IsScary
+                    };
+                });
+        }
+    }
+
+
+    public class MultipleAliasIndexProvider : IIndexAliasProvider
     {
         private static readonly IndexAlias[] _aliases = new[]
         {
@@ -153,6 +239,24 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Alias = "dogs",
                 Index = nameof(AnimalIndex),
                 With = q => q.With<AnimalIndex>()
+            }
+        };
+
+        public IEnumerable<IndexAlias> GetAliases()
+        {
+            return _aliases;
+        }
+    }
+
+    public class MultipleIndexesIndexProvider : IIndexAliasProvider
+    {
+        private static readonly IndexAlias[] _aliases = new[]
+        {
+            new IndexAlias
+            {
+                Alias = "animals",
+                Index = nameof(AnimalIndex),
+                With = q => q.With<AnimalIndex>().With<AnimalTraitsIndex>()
             }
         };
 
