@@ -153,7 +153,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var ci1 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
             ci1.Weld(new Animal { Name = "doug", IsHappy = false, IsScary = true });
 
-            var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
+            var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
             ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
 
