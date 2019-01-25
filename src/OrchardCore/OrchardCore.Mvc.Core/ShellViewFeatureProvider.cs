@@ -69,9 +69,11 @@ namespace OrchardCore.Mvc
                         {
                             var assembly = Assembly.LoadFile(precompiledAssemblyPath);
 
+                            var applicationPart = new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) };
+
                             foreach (var provider in mvcFeatureProviders)
                             {
-                                provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
+                                provider.PopulateFeature(applicationPart, moduleFeature);
                             }
 
                             // Razor views are precompiled in the context of their modules, but at runtime
@@ -90,7 +92,7 @@ namespace OrchardCore.Mvc
                             {
                                 foreach (var provider in mvcFeatureProviders)
                                 {
-                                    provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
+                                    provider.PopulateFeature(applicationPart, moduleFeature);
                                 }
 
                                 foreach (var descriptor in moduleFeature.ViewDescriptors)
