@@ -12,14 +12,27 @@
         height: 100%;
         align-items: stretch;
     }
+
+    .media-container-middle {
+        flex-grow: 1;
+        overflow: auto;
+    }
     // on large screen they are side by side
     @media only screen and ( min-width: 768px ) {
         #mediaContainer {
             flex-direction: row;
+
+            #mediaContainerMain {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
         }
         // we don't want left navigation 100% tall when on stacked over the thumbs list
         #navigationApp {
             height: 100%;
+            width: 260px;
+            overflow: auto;
         }
     }
 
@@ -31,7 +44,6 @@
     #navigationApp {
         border-right: $media-border-content;
         border-top: $media-border-content;
-        min-width: 260px;
     }
 
     .message-warning {
@@ -42,13 +54,6 @@
     a.disabled {
         cursor: default;
     }
-}
-
-.modal-content .modal-body #mediaApp {
-    position: static;
-    margin: 0px -15px 0px -15px;
-    margin-top: 0;
-    height: 100%;
 }
 
 .left-sidebar-compact #mediaApp {

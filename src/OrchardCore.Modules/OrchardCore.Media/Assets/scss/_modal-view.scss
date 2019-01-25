@@ -4,6 +4,7 @@
 
         #navigationApp {
             border-right: none !important;
+            width: 100%;
         }
 
         #mediaContainerMain {
@@ -26,18 +27,37 @@
         .breadcrumb-item a {
             font-size: 0.9rem;
         }
-        // there is a size's range where the table mode overflows the modal.
-        // We fix it by hidding extra columns while in that range
-        @media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
-            .optional-col {
-                display: none;
+    }
+}
+
+@media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
+    .modal-body #mediaApp #mediaContainer {
+        flex-direction: column;
+    }
+
+    // there is a size's range where the table mode overflows the modal.
+    // We fix it by hidding extra columns while in that range
+    .optional-col {
+        display: none;
+    }
+}
+
+
+@media only screen and ( min-width: 992px ) {
+    .modal-body {
+        #mediaContainer {
+            #navigationApp {                
+                width: 290px;
+                overflow: auto;
             }
         }
     }
+}
 
-    @media only screen and ( max-width: 992px ) and ( min-width: 768px ) {
-        #mediaApp #mediaContainer {
-            flex-direction: column;
-        }
-    }
+
+.modal-content .modal-body #mediaApp {
+    position: static;
+    margin: 0px -15px 0px -15px;
+    margin-top: 0;
+    height: 100%;
 }
