@@ -123,6 +123,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
+            _store.RegisterIndexes<AnimalTraitsIndexProvider>();
 
             var services = new FakeServiceCollection();
             services.Populate(new ServiceCollection());
