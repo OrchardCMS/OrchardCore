@@ -76,10 +76,27 @@ namespace OrchardCore.Mvc
 
                             // Razor views are precompiled in the context of their modules, but at runtime
                             // their paths need to be relative to the virtual "Areas/{ModuleId}" folders.
+                            // Note: For the app's module this folder is "Areas/{env.ApplicationName}".
                             foreach (var descriptor in moduleFeature.ViewDescriptors)
                             {
                                 descriptor.RelativePath = '/' + module.SubPath + descriptor.RelativePath;
                                 feature.ViewDescriptors.Add(descriptor);
+                            }
+
+                            // For the app's module we still allow to explicitly specify view paths relative to the app content root.
+                            // So for the application's module we re-apply the feature providers without updating the relative paths.
+                            // Note: This is only needed in prod mode if app's views are precompiled and views files no longer exist.
+                            if (module.Name == _hostingEnvironment.ApplicationName)
+                            {
+                                foreach (var provider in mvcFeatureProviders)
+                                {
+                                    provider.PopulateFeature(new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) }, moduleFeature);
+                                }
+
+                                foreach (var descriptor in moduleFeature.ViewDescriptors)
+                                {
+                                    feature.ViewDescriptors.Add(descriptor);
+                                }
                             }
 
                             moduleFeature.ViewDescriptors.Clear();
