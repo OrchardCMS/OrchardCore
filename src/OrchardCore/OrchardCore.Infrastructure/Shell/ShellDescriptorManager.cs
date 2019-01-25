@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Abstractions;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
@@ -20,6 +22,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ShellSettings _shellSettings;
+        private readonly IShellConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
@@ -29,6 +32,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         public ShellDescriptorManager(
             IServiceProvider serviceProvider,
             ShellSettings shellSettings,
+            IShellConfiguration shellConfiguration,
             IEnumerable<ShellFeature> shellFeatures,
             IEnumerable<IShellDescriptorManagerEventHandler> shellDescriptorManagerEventHandlers,
             ISession session,
@@ -36,6 +40,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         {
             _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;
+            _shellConfiguration = shellConfiguration;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
             _shellDescriptorManagerEventHandlers = shellDescriptorManagerEventHandlers;
             _session = session;
@@ -58,7 +63,13 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
                 if (_shellDescriptor != null)
                 {
-                    _shellDescriptor.Features = _alwaysEnabledFeatures.Concat(
+                    var configuredFeatures = new ConfiguredFeatures();
+                    _shellConfiguration.Bind(configuredFeatures);
+
+                    var features = _alwaysEnabledFeatures.Concat(configuredFeatures.Features
+                        .Select(id => new ShellFeature(id) { AlwaysEnabled = true })).Distinct();
+
+                    _shellDescriptor.Features = features.Concat(
                         _shellDescriptor.Features).Distinct().ToList();
                 }
             }
@@ -105,6 +116,11 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
         }
 
+        private class ConfiguredFeatures
+        {
+            public string[] Features { get; set; } = new string[] { };
+        }
+
         private async Task UpgradeFromBeta2()
         {
             // TODO: Can be removed when going RC as users are not supposed to go from beta2 to RC
@@ -114,7 +130,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             var connection = await connectionAccessor.GetConnectionAsync();
             var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = _shellSettings.TablePrefix;
+            var tablePrefix = _shellSettings["TablePrefix"];
 
             if (!String.IsNullOrEmpty(tablePrefix))
             {

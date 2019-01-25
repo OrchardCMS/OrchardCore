@@ -17,24 +17,24 @@ namespace OrchardCore.Modules
     public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
-            IShellHost orchardHost,
+            IShellHost shellHost,
             IRunningShellTable runningShellTable)
         {
             _next = next;
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
             _runningShellTable = runningShellTable;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
             // Ensure all ShellContext are loaded and available.
-            await _orchardHost.InitializeAsync();
+            await _shellHost.InitializeAsync();
 
             var shellSettings = _runningShellTable.Match(httpContext);
 
@@ -52,7 +52,7 @@ namespace OrchardCore.Modules
                 var hasPendingTasks = false;
 
                 // We need to get a scope and the ShellContext that created it
-                var (scope, shellContext) = await _orchardHost.GetScopeAndContextAsync(shellSettings);
+                var (scope, shellContext) = await _shellHost.GetScopeAndContextAsync(shellSettings);
 
                 using (scope)
                 {
@@ -70,7 +70,7 @@ namespace OrchardCore.Modules
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                using (var activatingScope = await _orchardHost.GetScopeAsync(shellSettings))
+                                using (var activatingScope = await _shellHost.GetScopeAsync(shellSettings))
                                 {
 
                                     var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
@@ -104,7 +104,7 @@ namespace OrchardCore.Modules
                 // Create a new scope only if there are pending tasks
                 if (hasPendingTasks)
                 {
-                    using (var pendingScope = await _orchardHost.GetScopeAsync(shellSettings))
+                    using (var pendingScope = await _shellHost.GetScopeAsync(shellSettings))
                     {
                         if (pendingScope != null)
                         {

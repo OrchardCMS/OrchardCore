@@ -56,7 +56,7 @@ namespace OrchardCore.Tenants
                 // Cache the tenant static files for 7 days
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "max-age=" + (int)TimeSpan.FromDays(7).TotalSeconds;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public, max-age=2592000, s-max-age=31557600";
                 }
             });
         }
