@@ -25,7 +25,7 @@ script:
   - dotnet build -c Release
   - if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
-        rm -rf ./App_Data
+        rm -rf ./App_Data;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
         docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-beta3 .;
@@ -34,7 +34,7 @@ script:
     fi;
   - if [[ "$TRAVIS_BRANCH" == "dev" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
-        rm -rf ./App_Data
+        rm -rf ./App_Data;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
         docker build -t orchardproject/orchardcore-cms-linux:dev .;
