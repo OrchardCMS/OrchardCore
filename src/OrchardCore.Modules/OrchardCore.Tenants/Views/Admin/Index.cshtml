@@ -1,4 +1,6 @@
 @model AdminIndexViewModel
+@inject ShellSettings ShellSettings
+@using Microsoft.AspNetCore.Http;
 @using OrchardCore.Data;
 @using OrchardCore.Environment.Shell.Models
 @using OrchardCore.Environment.Shell
@@ -36,7 +38,19 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
         tenantUrlHost += ":" + requestHostInfo.Port;
     }
 
-    var result = $"{Context.Request.Scheme}://{tenantUrlHost}";
+    var pathBase = Context.Request.PathBase.Value ?? string.Empty;
+
+    if (!string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix))
+    {
+        var prefix = "/" + ShellSettings.RequestUrlPrefix;
+
+        if (pathBase.EndsWith(prefix))
+        {
+            pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+        }
+    }
+
+    var result = $"{Context.Request.Scheme}://{tenantUrlHost}{pathBase}";
 
     if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
     {

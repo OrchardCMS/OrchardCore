@@ -274,7 +274,7 @@ namespace OrchardCore.Tenants.Controllers
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/');
                 shellSettings.State = TenantState.Uninitialized;
 
                 shellSettings["ConnectionString"] = model.ConnectionString;
@@ -372,7 +372,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/');
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 
                 // The user can change the 'preset' database information only if the 

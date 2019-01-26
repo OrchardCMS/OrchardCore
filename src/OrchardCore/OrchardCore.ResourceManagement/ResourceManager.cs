@@ -410,6 +410,13 @@ namespace OrchardCore.ResourceManagement
                 _links = new List<LinkEntry>();
             }
 
+            var href = link.Href;
+
+            if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
+            {
+                link.Href = _pathBase + href.Substring(1);
+            }
+
             _links.Add(link);
         }
 
