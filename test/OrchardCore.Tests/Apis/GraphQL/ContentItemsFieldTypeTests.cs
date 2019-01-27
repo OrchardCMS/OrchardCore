@@ -22,7 +22,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
     {
         protected Store _store;
 
-        public ContentItemsFieldTypeTests() {
+        public ContentItemsFieldTypeTests()
+        {
             _store = new Store(new Configuration().UseInMemory());
 
             CreateTables();
@@ -73,7 +74,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
 
         [Fact]
-        public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases() {
+        public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
+        {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             var services = new FakeServiceCollection();
@@ -90,7 +92,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var context = new ResolveFieldContext
             {
                 Arguments = new Dictionary<string, object>(),
-                UserContext = new GraphQLContext {
+                UserContext = new GraphQLContext
+                {
                     ServiceProvider = services
                 },
                 ReturnType = retrunType
@@ -255,9 +258,21 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             new IndexAlias
             {
-                Alias = "animals",
-                Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>().With<AnimalTraitsIndex>()
+                Alias = "animals.name",
+                Index = $"Name",
+                With = q => q.With<AnimalIndex>()
+            },
+            new IndexAlias
+            {
+                Alias = "animals.isHappy",
+                Index = $"IsHappy",
+                With = q => q.With<AnimalTraitsIndex>()
+            },
+            new IndexAlias
+            {
+                Alias = "animals.isScary",
+                Index = $"IsScary",
+                With = q => q.With<AnimalTraitsIndex>()
             }
         };
 
