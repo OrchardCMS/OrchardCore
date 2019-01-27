@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="**\*.less;**\*.scss;" />
     <EmbeddedResource Remove="wwwroot\about.html" />
     <EmbeddedResource Remove="wwwroot\contact.html" />
     <EmbeddedResource Remove="wwwroot\gulpfile.js" />
