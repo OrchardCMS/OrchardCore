@@ -95,7 +95,7 @@ namespace OrchardCore.Tenants.Controllers
 
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/');
+            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
             shellSettings.State = TenantState.Uninitialized;
 
             shellSettings["ConnectionString"] = model.ConnectionString;

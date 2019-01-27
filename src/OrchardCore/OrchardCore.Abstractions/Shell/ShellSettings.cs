@@ -47,7 +47,7 @@ namespace OrchardCore.Environment.Shell
         public string RequestUrlPrefix
         {
             get => _settings["RequestUrlPrefix"];
-            set => _settings["RequestUrlPrefix"] = value;
+            set => _settings["RequestUrlPrefix"] = value?.Trim(' ', '/');
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
