@@ -90,7 +90,7 @@ You can also read the [Code Generation Templates documentation](Templates/README
 - Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
-- Optionally install [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
+- Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
 
 ### Contributing
 
