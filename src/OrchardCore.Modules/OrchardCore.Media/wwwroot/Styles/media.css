@@ -15,9 +15,13 @@
     flex-direction: column;
     height: 100%;
     align-items: stretch; }
-  #mediaApp .media-container-middle {
-    flex-grow: 1;
-    overflow: auto; }
+    #mediaApp #mediaContainer #mediaContainerMain {
+      display: flex;
+      flex-direction: column; }
+      #mediaApp #mediaContainer #mediaContainerMain .media-container-middle {
+        flex-grow: 1;
+        flex-shrink: 0;
+        overflow: auto; }
   @media only screen and (min-width: 768px) {
     #mediaApp #mediaContainer {
       flex-direction: row; }
@@ -25,6 +29,8 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between; }
+        #mediaApp #mediaContainer #mediaContainerMain .media-container-middle {
+          flex-shrink: 1; }
     #mediaApp #navigationApp {
       height: 100%;
       width: 260px;
@@ -398,33 +404,9 @@ ol.media-items-grid {
     padding: 4px;
     white-space: nowrap; }
 
-.media-modal .modal-body {
-  padding-bottom: 0px; }
-  .media-modal .modal-body #mediaContainer #navigationApp {
-    border-right: none !important;
-    width: 100%; }
-  .media-modal .modal-body #mediaContainer #mediaContainerMain {
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
-    padding-left: 1.5rem !important;
-    margin-left: 0 !important; }
-  .media-modal .modal-body #mediaContainer .visible-on-modal {
-    display: flex !important; }
-  .media-modal .modal-body #mediaContainer .hidden-on-modal {
-    display: none !important; }
-  .media-modal .modal-body #mediaContainer #folder-tree a,
-  .media-modal .modal-body #mediaContainer .breadcrumb-item a {
-    font-size: 0.9rem; }
-
-@media only screen and (max-width: 992px) and (min-width: 768px) {
-  .modal-body #mediaApp #mediaContainer {
-    flex-direction: column; }
-  .media-modal .optional-col {
-    display: none; } }
-
-@media only screen and (min-width: 992px) {
-  .media-modal .modal-body #mediaContainer #navigationApp {
-    width: 260px;
-    overflow: auto; } }
+.media-modal.modal-dialog,
+.media-modal .modal-content {
+  height: 95%; }
 
 .modal-content .modal-body #mediaApp {
   position: static;
@@ -432,13 +414,23 @@ ol.media-items-grid {
   margin-top: 0;
   height: 100%; }
 
-.media-modal.modal-dialog,
-.media-modal .modal-content {
-  height: 95%; }
-
 .media-modal .modal-body {
-  max-height: calc(100% - 120px);
-  overflow-y: scroll; }
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 0px; }
+  .media-modal .modal-body #mediaContainer #navigationApp {
+    border-right: none !important; }
+  .media-modal .modal-body #mediaContainer #mediaContainerMain {
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 1.5rem !important;
+    margin-left: 0 !important; }
+  .media-modal .modal-body #mediaContainer #folder-tree a,
+  .media-modal .modal-body #mediaContainer .breadcrumb-item a {
+    font-size: 0.9rem; }
+
+@media only screen and (max-width: 992px) and (min-width: 768px) {
+  .modal-dialog.media-modal {
+    max-width: 800px; } }
 
 .media-container-main-item-title {
   border-top: solid 1px #dee2e6;
