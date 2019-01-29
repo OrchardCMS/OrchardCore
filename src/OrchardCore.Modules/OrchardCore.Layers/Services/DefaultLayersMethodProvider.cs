@@ -77,9 +77,10 @@ namespace OrchardCore.Layers.Services
                 Name = "currentCulture",
                 Method = serviceProvider => (Func<string, object>)(culture =>
                 {
-                    var currentCulture = CultureInfo.CurrentCulture.Name.ToLowerInvariant();
+                    var currentCulture = CultureInfo.CurrentCulture;
 
-                    return string.Equals(culture.ToLowerInvariant(), currentCulture, StringComparison.OrdinalIgnoreCase);
+                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
                 })
             };
             
