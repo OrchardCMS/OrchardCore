@@ -37,11 +37,15 @@ namespace OrchardCore.Users
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
+        private readonly PathString _pathBase;
 
-        public Startup(ShellSettings shellSettings)
+        public Startup(ShellSettings shellSettings, IHttpContextAccessor httpContextAccessor)
         {
             _tenantName = shellSettings.Name;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+
+            // 'PathBase' doesn't include any tenant prefix when 'Startup' is resolved to call 'ConfigureServices()'.
+            _pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? new PathString(String.Empty);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -86,7 +90,8 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + _tenantName;
-                options.Cookie.Path = _tenantPrefix;
+                // Use 'PathBase' if e.g under a virtual folder.
+                options.Cookie.Path = _pathBase + _tenantPrefix;
                 options.LoginPath = "/" + LoginPath;
                 options.AccessDeniedPath = options.LoginPath;
 
