@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -157,19 +156,14 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
                 var tenantName = settings.Name;
                 var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
-                // 'PathBase' doesn't include any tenant prefix when called from 'ConfigureServices()'.
-                var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? new PathString(String.Empty);
-
                 services.AddAntiforgery(options =>
                 {
                     options.Cookie.Name = "orchantiforgery_" + tenantName;
-                    // Use 'PathBase' if e.g under a virtual folder.
-                    options.Cookie.Path = pathBase + tenantPrefix;
+                    options.Cookie.Path = tenantPrefix;
                 });
             });
         }

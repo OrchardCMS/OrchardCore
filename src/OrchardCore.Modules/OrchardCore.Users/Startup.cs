@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -8,13 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -24,9 +23,8 @@ using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using YesSql.Indexes;
 using OrchardCore.Users.ViewModels;
-using Fluid;
+using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -37,15 +35,11 @@ namespace OrchardCore.Users
 
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
-        private readonly PathString _pathBase;
 
-        public Startup(ShellSettings shellSettings, IHttpContextAccessor httpContextAccessor)
+        public Startup(ShellSettings shellSettings)
         {
             _tenantName = shellSettings.Name;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
-
-            // 'PathBase' doesn't include any tenant prefix when 'Startup' is resolved to call 'ConfigureServices()'.
-            _pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? new PathString(String.Empty);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -90,8 +84,13 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + _tenantName;
-                // Use 'PathBase' if e.g under a virtual folder.
-                options.Cookie.Path = _pathBase + _tenantPrefix;
+
+                // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+                // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                // tenant prefix but may also start by a path related e.g to a virtual folder.
+
+                // options.Cookie.Path = _tenantPrefix;
+
                 options.LoginPath = "/" + LoginPath;
                 options.AccessDeniedPath = options.LoginPath;
 
