@@ -13,7 +13,7 @@ namespace OrchardCore.Layers.Services
         private readonly GlobalMethod _isAnonymous;
         private readonly GlobalMethod _isAuthenticated;
         private readonly GlobalMethod _url;
-        private readonly GlobalMethod _currentCulture;
+        private readonly GlobalMethod _culture;
 
         private readonly GlobalMethod[] _allMethods;
 
@@ -72,9 +72,9 @@ namespace OrchardCore.Layers.Services
                 })
             };
 
-            _currentCulture = new GlobalMethod
+            _culture = new GlobalMethod
             {
-                Name = "currentCulture",
+                Name = "culture",
                 Method = serviceProvider => (Func<string, object>)(culture =>
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
@@ -84,7 +84,7 @@ namespace OrchardCore.Layers.Services
                 })
             };
             
-            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _currentCulture };
+            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
