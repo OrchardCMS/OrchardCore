@@ -137,7 +137,6 @@ namespace OrchardCore.Setup.Services
                     try
                     {
                         store = scope.ServiceProvider.GetRequiredService<IStore>();
-                        await store.InitializeAsync();
                     }
                     catch (Exception e)
                     {

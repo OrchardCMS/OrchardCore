@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -128,7 +129,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>();
 
-            var connection = await connectionAccessor.GetConnectionAsync();
+            var connection = await connectionAccessor.GetConnectionAsync() as DbConnection;
             var dialect = SqlDialectFactory.For(connection);
             var tablePrefix = _shellSettings["TablePrefix"];
 
