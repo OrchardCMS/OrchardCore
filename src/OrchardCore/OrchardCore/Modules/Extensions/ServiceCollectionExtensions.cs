@@ -158,7 +158,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
 
                 var tenantName = settings.Name;
-                var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
                 // Re-register the antiforgery  services to be tenant-aware.
                 var collection = new ServiceCollection()

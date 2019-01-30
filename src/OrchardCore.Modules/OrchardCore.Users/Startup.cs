@@ -34,12 +34,10 @@ namespace OrchardCore.Users
         private const string ChangePasswordPath = "ChangePassword";
 
         private readonly string _tenantName;
-        private readonly string _tenantPrefix;
 
         public Startup(ShellSettings shellSettings)
         {
             _tenantName = shellSettings.Name;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -88,7 +86,6 @@ namespace OrchardCore.Users
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
-
                 // options.Cookie.Path = _tenantPrefix;
 
                 options.LoginPath = "/" + LoginPath;
