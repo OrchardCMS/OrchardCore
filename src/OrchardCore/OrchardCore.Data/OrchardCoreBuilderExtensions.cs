@@ -56,12 +56,14 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration();
 
                     switch (shellSettings["DatabaseProvider"])
                     {
                         case "SqlConnection":
-                            storeConfiguration.UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
@@ -69,13 +71,19 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                             var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                             Directory.CreateDirectory(databaseFolder);
-                            storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
+                                .UseDefaultIdGenerator(shellSettings.Name);
                             break;
                         case "MySql":
-                            storeConfiguration.UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Postgres":
-                            storeConfiguration.UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         default:
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
@@ -83,10 +91,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        storeConfiguration.TablePrefix = shellSettings["TablePrefix"] + "_";
+                        storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = new Store(storeConfiguration);
+                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);

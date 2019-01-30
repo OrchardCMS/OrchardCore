@@ -13,7 +13,6 @@ using OrchardCore.ContentManagement.Records;
 using Xunit;
 using YesSql;
 using YesSql.Indexes;
-using YesSql.Provider.Sqlite;
 using YesSql.Sql;
 
 namespace OrchardCore.Tests.Apis.GraphQL
@@ -24,7 +23,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         public ContentItemsFieldTypeTests()
         {
-            _store = new Store(new Configuration().UseInMemory());
+            _store = StoreFactory.CreateAsync(new Configuration()).GetAwaiter().GetResult() as Store;
 
             CreateTables();
         }
@@ -37,12 +36,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         private void CreateTables()
         {
-            // Create tables
-            _store.InitializeAsync().Wait();
-
             using (var session = _store.CreateSession())
             {
-                var builder = new SchemaBuilder(session);
+                var builder = new SchemaBuilder(_store.Configuration, session.DemandAsync().GetAwaiter().GetResult());
 
                 builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -61,7 +57,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 builder.CreateMapIndexTable(nameof(AnimalIndex), column => column
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
-
 
                 builder.CreateMapIndexTable(nameof(AnimalTraitsIndex), column => column
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
