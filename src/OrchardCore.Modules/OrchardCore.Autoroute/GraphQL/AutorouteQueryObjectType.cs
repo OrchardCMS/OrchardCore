@@ -11,7 +11,8 @@ namespace OrchardCore.Autoroute.GraphQL
             Name = "AutoroutePart";
             Description = T["Custom URLs (permalinks) for your content item."];
 
-            Field(x => x.Path).Description(T["The permalinks for yout content item."]);
+            Field(x => x.Path).Description(T["The permalinks for your content item."]);
+            Field<StringGraphType>("TommyTwoToes", resolve: x => x.Source.Path, description: T["The permalinks for your content item."]);
         }
     }
 }

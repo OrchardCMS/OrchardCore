@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
+using GraphQL.Execution;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +46,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in queryGraphTypeResolved.Fields)
                         {
-                            contentItemType.AddField(field);
+                            var rolledUpField = new FieldType
+                            {
+                                Name = field.Name,
+                                Type = field.Type,
+                                Description = field.Description,
+                                DeprecationReason = field.DeprecationReason,
+                                Arguments = field.Arguments,
+                                Resolver = new FuncFieldResolver<ContentItem, object>(context => {
+                                    var nameToResolve = partName;
+                                    var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
+
+                                    return field.Resolver.Resolve(new ResolveFieldContext
+                                    {
+                                        Arguments = context.Arguments,
+                                        Source = resolvedPart,
+                                        FieldDefinition = field,
+                                    });
+                                })
+                            };
+
+                            contentItemType.AddField(rolledUpField);
                         }
                     }
                     else
