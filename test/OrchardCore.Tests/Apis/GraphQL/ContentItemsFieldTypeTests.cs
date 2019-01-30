@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
@@ -13,17 +14,21 @@ using OrchardCore.ContentManagement.Records;
 using Xunit;
 using YesSql;
 using YesSql.Indexes;
+using YesSql.Provider.Sqlite;
 using YesSql.Sql;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class ContentItemsFieldTypeTests : IDisposable
     {
-        protected Store _store;
+        protected IStore _store;
+        protected string _tempFilename;
 
         public ContentItemsFieldTypeTests()
         {
-            _store = StoreFactory.CreateAsync(new Configuration()).GetAwaiter().GetResult() as Store;
+            _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var connectionString = @"Data Source=" + _tempFilename + ";Cache=Shared";
+            _store = StoreFactory.CreateAsync(new Configuration().UseSqLite(connectionString)).GetAwaiter().GetResult();
 
             CreateTables();
         }
@@ -32,6 +37,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.Dispose();
             _store = null;
+
+            if (File.Exists(_tempFilename))
+            {
+                File.Delete(_tempFilename);
+            }
         }
 
         private void CreateTables()
@@ -75,7 +85,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var services = new FakeServiceCollection();
             services.Populate(new ServiceCollection());
-            services.Services.AddScoped<ISession>(x => new Session(_store, System.Data.IsolationLevel.Unspecified));
+            services.Services.AddScoped<ISession>(x => _store.CreateSession());
             services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
             services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
             services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
@@ -125,7 +135,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var services = new FakeServiceCollection();
             services.Populate(new ServiceCollection());
-            services.Services.AddScoped<ISession>(x => new Session(_store, System.Data.IsolationLevel.Unspecified));
+            services.Services.AddScoped<ISession>(x => _store.CreateSession());
             services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
             services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
             services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
