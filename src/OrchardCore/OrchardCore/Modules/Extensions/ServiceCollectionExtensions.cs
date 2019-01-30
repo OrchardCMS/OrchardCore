@@ -168,8 +168,6 @@ namespace Microsoft.Extensions.DependencyInjection
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                         // set by the pipeline and comming from the request 'PathBase' which already ends with the
                         // tenant prefix but may also start by a path related e.g to a virtual folder.
-
-                        // options.Cookie.Path = tenantPrefix;
                     });
 
                 services.Add(collection);
