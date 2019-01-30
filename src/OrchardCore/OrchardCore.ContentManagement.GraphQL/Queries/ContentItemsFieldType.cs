@@ -86,9 +86,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentItemsQuery = await FilterWhereArguments(query, where, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
-            var contentItems = await contentItemsQuery.ListAsync();
-
-            return contentItems.ToList();
+            return await contentItemsQuery.ListAsync();
         }
 
         private async Task<IQuery<ContentItem>> FilterWhereArguments(
