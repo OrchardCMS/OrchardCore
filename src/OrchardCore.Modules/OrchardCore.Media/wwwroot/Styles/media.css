@@ -403,6 +403,9 @@ ol.media-items-grid {
     .modal-body #mediaApp #mediaContainer {
       flex-direction: column; } }
 
+#mediaModalBody.html-body-part {
+  z-index: 99999; }
+
 .media-container-main-item-title {
   border-top: solid 1px #dee2e6;
   padding-top: 24px;
