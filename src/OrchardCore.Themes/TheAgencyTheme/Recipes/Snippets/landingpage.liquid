@@ -246,7 +246,7 @@
                             <!-- Project Details Go Here -->
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
                             <p class="item-intro text-muted">{{ project.Project.Category.Text }}</p>
-                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'min' }}" alt="{{ project.DisplayText }}">
+                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'max' }}" alt="{{ project.DisplayText }}">
                             <p>{{ project.HtmlBodyPart.Html | raw }}</p>
                             {% comment %}
                             <ul class="list-inline">
