@@ -62,6 +62,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                         Arguments = context.Arguments,
                                         Source = resolvedPart,
                                         FieldDefinition = field,
+                                        UserContext = context.UserContext
                                     });
                                 })
                             };
