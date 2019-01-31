@@ -18,6 +18,7 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
+using YesSql.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -73,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             Directory.CreateDirectory(databaseFolder);
                             storeConfiguration
                                 .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
-                                .UseDefaultIdGenerator(shellSettings.Name);
+                                .UseDefaultIdGenerator();
                             break;
                         case "MySql":
                             storeConfiguration

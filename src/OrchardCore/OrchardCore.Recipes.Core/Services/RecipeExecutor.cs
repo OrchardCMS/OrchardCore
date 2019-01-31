@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,31 +25,24 @@ namespace OrchardCore.Recipes.Services
     public class RecipeExecutor : IRecipeExecutor
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
-        private readonly IRecipeResultStore _recipeResultStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
-        public RecipeExecutor(
-            IHttpContextAccessor httpContextAccessor,
-            IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            IRecipeResultStore recipeResultStore,
-            IApplicationLifetime applicationLifetime,
-            ShellSettings shellSettings,
-            IShellHost shellHost,
-            ILogger<RecipeExecutor> logger,
-            IStringLocalizer<RecipeExecutor> localizer)
+        public RecipeExecutor(IHttpContextAccessor httpContextAccessor,
+                              IEnumerable<IRecipeEventHandler> recipeEventHandlers,
+                              ShellSettings shellSettings,
+                              IShellHost shellHost,
+                              ILogger<RecipeExecutor> logger,
+                              IStringLocalizer<RecipeExecutor> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
-            _recipeResultStore = recipeResultStore;
             Logger = logger;
             T = localizer;
         }
@@ -56,7 +50,7 @@ namespace OrchardCore.Recipes.Services
         public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
-        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
             await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
 
@@ -65,8 +59,6 @@ namespace OrchardCore.Recipes.Services
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
 
                 var result = new RecipeResult { ExecutionId = executionId };
-
-                await _recipeResultStore.CreateAsync(result);
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
@@ -102,9 +94,14 @@ namespace OrchardCore.Recipes.Services
                                                 RecipeDescriptor = recipeDescriptor
                                             };
 
+                                            if (cancellationToken.IsCancellationRequested)
+                                            {
+                                                Logger.LogError("Recipe interrupted by cancellation token.");
+                                                return null;
+                                            }
+
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
                                             result.Steps.Add(stepResult);
-                                            await _recipeResultStore.UpdateAsync(result);
 
                                             ExceptionDispatchInfo capturedException = null;
                                             try
@@ -124,7 +121,6 @@ namespace OrchardCore.Recipes.Services
                                             }
 
                                             stepResult.IsCompleted = true;
-                                            await _recipeResultStore.UpdateAsync(result);
 
                                             if (stepResult.IsSuccessful == false)
                                             {
@@ -136,7 +132,7 @@ namespace OrchardCore.Recipes.Services
                                                 foreach (var descriptor in recipeStep.InnerRecipes)
                                                 {
                                                     var innerExecutionId = Guid.NewGuid().ToString();
-                                                    await ExecuteAsync(innerExecutionId, descriptor, environment);
+                                                    await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                                 }
 
                                             }
@@ -250,11 +246,6 @@ namespace OrchardCore.Recipes.Services
             {
                 _variablesMethodProvider.ScriptingManager = scriptingManager;
                 scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
-            }
-
-            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
-            {
-                throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
             EvaluateJsonTree(scriptingManager, context, context.Step);
