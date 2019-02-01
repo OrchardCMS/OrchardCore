@@ -210,8 +210,15 @@ ol.media-items-grid {
   min-width: 34px;
   text-align: center; }
 
-#media-pager .page-size-label, #media-pager .page-info {
-  white-space: nowrap; }
+#media-pager .page-size-info, #media-pager .page-info, #media-pager .total-info {
+  white-space: nowrap;
+  user-select: none; }
+  #media-pager .page-size-info span:hover, #media-pager .page-info span:hover, #media-pager .total-info span:hover {
+    background-color: inherit; }
+
+@media only screen and (max-width: 576px) {
+  #media-pager .media-last-button, #media-pager .media-first-button, #media-pager .page-info, #media-pager .total-info, #media-pager .page-size-label {
+    display: none; } }
 
 @media only screen and (max-width: 1200px) {
   #media-pager .page-number {

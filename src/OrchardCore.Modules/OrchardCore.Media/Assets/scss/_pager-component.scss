@@ -5,8 +5,21 @@
         text-align: center;
     }
 
-    .page-size-label, .page-info {
+    .page-size-info, .page-info, .total-info {
         white-space: nowrap;
+        user-select: none;
+
+        span:hover {
+            background-color: inherit;
+        }
+    }
+}
+
+@media only screen and ( max-width: 576px ) {
+    #media-pager {
+        .media-last-button, .media-first-button, .page-info, .total-info, .page-size-label  {
+            display: none;
+        }
     }
 }
 

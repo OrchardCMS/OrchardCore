@@ -2759,8 +2759,8 @@ Vue.component('mediaItemsTable', {
 });
 
 // This component receives a list of all the items, unpaged.
-// As the user interacts with the pager, it raises succesive events with the items in the current page.
-// It's the parent's responsibility to listen for that events and display the items received
+// As the user interacts with the pager, it raises events with the items in the current page.
+// It's the parent's responsibility to listen for these events and display the received items
 // <pager> component
 Vue.component('pager', {
     template: '\
@@ -2772,7 +2772,7 @@ Vue.component('pager', {
                 <li class="page-item" :class="{disabled : !canDoPrev}"> \
                     <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">Previous</a> \
                 </li> \
-                <li class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
+                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
                     <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
                         {{link}} \
                         <span v-if="current == link -1" class="sr-only">(current)</span>\
@@ -2784,9 +2784,9 @@ Vue.component('pager', {
                 <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
                     <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">Last</a> \
                 </li> \
-                <li class="page-item ml-4">\
-                    <div style="display: flex; ">\
-                        <span class="page-link text-muted page-size-label">Page Size</span>\
+                <li class="page-item ml-4 page-size-info">\
+                    <div style="display: flex;">\
+                        <span class="page-link disabled text-muted page-size-label">Page Size</span>\
                         <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
                             <option v-for="option in pageSizeOptions" v-bind:value="option"> \
                                 {{option}} \
@@ -2795,7 +2795,10 @@ Vue.component('pager', {
                     </div>\
                 </li> \
                 <li class="page-item ml-4 page-info"> \
-                    <span class="page-link"> {{current + 1}} - {{totalPages}}</span> \
+                    <span class="page-link disabled text-muted "> Page: {{current + 1}}/{{totalPages}}</span> \
+                </li> \
+                <li class="page-item ml-4 total-info"> \
+                     <span class="page-link disabled text-muted "> Total items: {{total}}</span> \
                 </li> \
             </ul> \
         </nav>\
@@ -2832,7 +2835,8 @@ Vue.component('pager', {
             return this.sourceItems ? this.sourceItems.length : 0;
         },
         totalPages: function () {
-            return Math.ceil(this.total / this.pageSize);
+            var pages = Math.ceil(this.total / this.pageSize);
+            return pages > 0 ? pages : 1;
         },
         isLastPage: function () {
             return this.current + 1 >= this.totalPages;
@@ -2865,24 +2869,25 @@ Vue.component('pager', {
         pageLinks: function () {
 
             var links = [];
-            var linksCount = 4;
 
-            var nextItem = this.current - linksCount;
-            if (nextItem < 0) {
-                nextItem = -1;
-            }
+            links.push(this.current + 1);
 
-            for (var i = 0; i < linksCount; i++) {
-                if (nextItem >= this.totalPages) {
-                    break;
-                }
-                nextItem = nextItem + 1;
-                links.push(nextItem + 1);
+            // Add 2 items before current
+            var beforeCurrent = this.current > 0 ? this.current : -1;
+            links.unshift(beforeCurrent);
 
-            }
+            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
+            links.unshift(beforeBeforeCurrent);
+
+
+            // Add 2 items after current
+            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
+            links.push(afterCurrent);
+
+            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
+            links.push(afterAfterCurrent);
 
             return links;
-
         }
     },
     watch: {
