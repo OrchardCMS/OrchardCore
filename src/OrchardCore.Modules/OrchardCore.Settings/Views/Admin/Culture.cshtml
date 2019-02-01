@@ -3,14 +3,14 @@
 
 <h1>@RenderTitleSegments(T["Settings"])</h1>
 
-<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })@T[" &#62; "]@T["Supported Cultures"]</p>
+<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })&nbsp;@T["&#62;"]&nbsp;@T["Supported Cultures"]</p>
 <h3>@T["Available Cultures"]</h3>
 
 <form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     <fieldset class="form-group">
         <div class="form-row">
             <div class="col">
-                <label for="SystemCultureName">@T["Add a culture..."]</label>
+                <label for="SystemCultureName">@T["Add a culture:"]</label>
                 <select id="SystemCultureName" name="SystemCultureName" class="form-control">
                     @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
                     {

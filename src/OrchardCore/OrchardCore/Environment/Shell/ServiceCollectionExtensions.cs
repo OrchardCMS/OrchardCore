@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
 
             {
-                // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
+                // Use a single default site by default, i.e. if WithTenants hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
                 services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
 

@@ -5,6 +5,11 @@ namespace OrchardCore.Environment.Shell
     public interface IShellSettingsManager
     {
         /// <summary>
+        /// Creates a default shell settings based on the configuration.
+        /// </summary>
+        ShellSettings CreateDefaultSettings();
+
+        /// <summary>
         /// Retrieves all shell settings stored.
         /// </summary>
         /// <returns>All shell settings.</returns>

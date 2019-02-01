@@ -441,6 +441,9 @@ ol.media-items-grid {
   .modal-dialog.media-modal {
     max-width: 800px; } }
 
+#mediaModalBody.html-body-part {
+  z-index: 99999; }
+
 .media-container-main-item-title {
   border-top: solid 1px #dee2e6;
   padding-top: 24px;

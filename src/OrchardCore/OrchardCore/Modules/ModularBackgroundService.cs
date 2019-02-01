@@ -50,23 +50,33 @@ namespace OrchardCore.Modules
                 Logger.LogDebug("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
-            while ((await GetRunningShells()).Count() < 1)
+            try
             {
-                await Task.Delay(MinIdleTime, stoppingToken);
+                while (GetRunningShells().Count() < 1)
+                {
+                    await Task.Delay(MinIdleTime, stoppingToken);
+                }
+
+                var previousShells = Enumerable.Empty<ShellContext>();
+
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    var runningShells = GetRunningShells();
+                    await UpdateAsync(previousShells, runningShells, stoppingToken);
+                    previousShells = runningShells;
+
+                    var pollingDelay = Task.Delay(PollingTime, stoppingToken);
+
+                    await RunAsync(runningShells, stoppingToken);
+                    await WaitAsync(pollingDelay, stoppingToken);
+                }
             }
 
-            var previousShells = Enumerable.Empty<ShellContext>();
+            catch (TaskCanceledException) { }
 
-            while (!stoppingToken.IsCancellationRequested)
+            catch (Exception e)
             {
-                var runningShells = await GetRunningShells();
-                await UpdateAsync(previousShells, runningShells, stoppingToken);
-                previousShells = runningShells;
-
-                var pollingDelay = Task.Delay(PollingTime, stoppingToken);
-
-                await RunAsync(runningShells, stoppingToken);
-                await WaitAsync(pollingDelay, stoppingToken);
+                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -241,9 +251,9 @@ namespace OrchardCore.Modules
             }
         }
 
-        private async Task<IEnumerable<ShellContext>> GetRunningShells()
+        private IEnumerable<ShellContext> GetRunningShells()
         {
-            return (await _shellHost.ListShellContextsAsync()).Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
@@ -308,19 +318,24 @@ namespace OrchardCore.Modules
         }
     }
 
-    internal static class ShellContextExtensions
+    internal static class ShellExtensions
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
-            var urlHost = shell.Settings.RequestUrlHost?.Split(new[] { "," },
+            return shell.Settings.CreateHttpContext();
+        }
+
+        public static HttpContext CreateHttpContext(this ShellSettings settings)
+        {
+            var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             var context = new DefaultHttpContext();
             context.Request.Host = new HostString(urlHost ?? "localhost");
 
-            if (!String.IsNullOrWhiteSpace(shell.Settings.RequestUrlPrefix))
+            if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
             {
-                context.Request.PathBase = "/" + shell.Settings.RequestUrlPrefix.Trim(' ', '/');
+                context.Request.PathBase = "/" + settings.RequestUrlPrefix.Trim(' ', '/');
             }
 
             context.Request.Path = "/";

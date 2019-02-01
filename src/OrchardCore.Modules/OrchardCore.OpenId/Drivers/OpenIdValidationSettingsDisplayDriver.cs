@@ -28,15 +28,15 @@ namespace OrchardCore.OpenId.Drivers
 
                 var availableTenants = new List<string>();
 
-                foreach (var shellContext in (await _shellHost.ListShellContextsAsync())
-                    .Where(s => s.Settings.State == TenantState.Running))
+                foreach (var shellSettings in _shellHost.GetAllSettings()
+                    .Where(s => s.State == TenantState.Running))
                 {
-                    using (var scope = shellContext.CreateScope())
+                    using (var scope = await _shellHost.GetScopeAsync(shellSettings))
                     {
                         var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
                         if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
                         {
-                            availableTenants.Add(shellContext.Settings.Name);
+                            availableTenants.Add(shellSettings.Name);
                         }
                     }
                 }

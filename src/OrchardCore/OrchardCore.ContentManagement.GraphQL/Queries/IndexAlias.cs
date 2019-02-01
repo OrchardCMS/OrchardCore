@@ -1,5 +1,4 @@
 using System;
-using OrchardCore.ContentManagement;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries

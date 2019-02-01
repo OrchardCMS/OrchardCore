@@ -15,6 +15,7 @@ using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Editors;
@@ -52,6 +53,8 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
+
+            services.SetPartAsCollapsed<AutoroutePart>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

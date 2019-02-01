@@ -177,7 +177,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 120 : 240 ;
+                        return this.smallThumbs ? 160 : 240 ;
                     },
                     currentPrefs: {
                         get: function () {
@@ -2512,7 +2512,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 return this.selectedMedia || this.mediaItems.length === 1;
             },
             thumbSize: function () {
-                return this.smallThumbs ? 120 : 240;
+                return this.smallThumbs ? 160 : 240;
             },
             currentPrefs: {
                 get: function () {

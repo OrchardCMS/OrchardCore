@@ -1,6 +1,6 @@
 # Orchard Core
 
-Orchard Core is a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://www.asp.net/vnext). 
+Orchard Core is a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/). 
 
 Orchard Core consists of two different targets:
 
@@ -11,6 +11,8 @@ It’s important to note the differences between the framework and the CMS. Some
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE)
+[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://orchardcore.readthedocs.io/en/latest/)
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
@@ -71,6 +73,8 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 - Follow the samples on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications
 
+- Follow the tutorial inside the [Training Demo Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) to learn how to develop Orchard Core modules.
+
 ### Command line
 
 - Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
@@ -86,6 +90,7 @@ You can also read the [Code Generation Templates documentation](Templates/README
 - Download Visual Studio 2017 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
+- Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
 
 ### Contributing
 

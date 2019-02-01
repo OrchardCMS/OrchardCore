@@ -61,9 +61,15 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
     <fieldset class="filter-options container-fluid">
         <div class="row">
             <div class="col-md-2 col-xl-1 form-group">
+                <label for="DisplayText" class="label col-form-label">@T["Title"]</label>
+            </div>
+            <div class="col-md-4 col-xl-2 form-group">
+                <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
+            </div>
+            <div class="col-md-2 col-xl-1 form-group">
                 <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
+            <div class="col-md-4 col-xl-2 form-group">
                 <select id="contentResults" class="form-control" name="Id">
                     <option value="">@T["All content types"]</option>
                     @foreach (var option in Model.Options.FilterOptions)
@@ -87,16 +93,16 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                     </select>
                 </div>
                 }*@
-            <div class="col-md-2 col-xl-1 form-group">
+            @*<div class="col-md-2 col-xl-1 form-group">
                 <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>
+            </div>*@
             <div class="col-md-4 col-xl-2 form-group">
                 <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
+            <div class="col-md-4 col-xl-2 form-group">
                 <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
@@ -137,3 +143,4 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
         });
     })
 </script>
+

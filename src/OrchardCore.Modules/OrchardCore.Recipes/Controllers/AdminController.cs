@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -112,7 +113,8 @@ namespace OrchardCore.Recipes.Controllers
                 {
                     site.SiteName,
                     AdminUsername = User.Identity.Name,
-                });
+                },
+                CancellationToken.None);
             }
 
             finally

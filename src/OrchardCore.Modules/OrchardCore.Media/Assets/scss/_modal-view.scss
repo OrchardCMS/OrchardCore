@@ -41,3 +41,7 @@
         max-width: 800px;
     }
 }
+
+#mediaModalBody.html-body-part {
+    z-index: 99999; //to make it visible when trumbowyg is full screen.
+}
