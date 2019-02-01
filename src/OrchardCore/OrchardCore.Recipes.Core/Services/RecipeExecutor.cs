@@ -221,6 +221,12 @@ namespace OrchardCore.Recipes.Services
                 }
             }
 
+            // E.g if we run migrations defined in a recipe.
+            if (!recipeStep.RecipeDescriptor.RequireNewScope)
+            {
+                return;
+            }
+
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
             using (var localScope = await _shellHost.GetScopeAsync(_shellSettings))
