@@ -2767,10 +2767,10 @@ Vue.component('pager', {
         <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">\
             <ul class= "pagination  pagination-sm"> \
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}"> \
-                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">First</a> \
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a> \
                 </li> \
                 <li class="page-item" :class="{disabled : !canDoPrev}"> \
-                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">Previous</a> \
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a> \
                 </li> \
                 <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
                     <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
@@ -2779,14 +2779,14 @@ Vue.component('pager', {
                     </a> \
                 </li> \
                 <li class="page-item" :class="{disabled : !canDoNext}"> \
-                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">Next</a> \
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a> \
                 </li> \
                 <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
-                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">Last</a> \
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a> \
                 </li> \
                 <li class="page-item ml-4 page-size-info">\
                     <div style="display: flex;">\
-                        <span class="page-link disabled text-muted page-size-label">Page Size</span>\
+                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>\
                         <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
                             <option v-for="option in pageSizeOptions" v-bind:value="option"> \
                                 {{option}} \
@@ -2795,10 +2795,10 @@ Vue.component('pager', {
                     </div>\
                 </li> \
                 <li class="page-item ml-4 page-info"> \
-                    <span class="page-link disabled text-muted "> Page: {{current + 1}}/{{totalPages}}</span> \
+                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span> \
                 </li> \
                 <li class="page-item ml-4 total-info"> \
-                     <span class="page-link disabled text-muted "> Total items: {{total}}</span> \
+                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span> \
                 </li> \
             </ul> \
         </nav>\
@@ -2810,8 +2810,21 @@ Vue.component('pager', {
         return {
             pageSize: 5,
             pageSizeOptions: [5, 10, 30, 50, 100],
-            current: 0
+            current: 0,
+            T: {}
         };
+    },
+    created: function () {
+        var self = this;
+
+        // retrieving localized strings from view
+        self.T.pagerFirstButton = $('#t-pager-first-button').val();
+        self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
+        self.T.pagerNextButton = $('#t-pager-next-button').val();
+        self.T.pagerLastButton = $('#t-pager-last-button').val();
+        self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
+        self.T.pagerPageLabel = $('#t-pager-page-label').val();
+        self.T.pagerTotalLabel = $('#t-pager-total-label').val();        
     },
     methods: {
         next: function () {

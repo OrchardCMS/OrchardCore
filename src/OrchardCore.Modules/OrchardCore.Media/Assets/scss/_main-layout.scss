@@ -21,6 +21,10 @@
                 flex-shrink: 0;
                 overflow: auto;
             }
+
+            .media-container-footer {
+                border-top: $media-border-content;
+            }
         }
     }
     // on large screen they are side by side
@@ -33,8 +37,8 @@
                 flex-direction: column;
                 justify-content: space-between;
 
-                .media-container-middle {                 
-                    flex-shrink: 1;                    
+                .media-container-middle {
+                    flex-shrink: 1;
                 }
             }
         }

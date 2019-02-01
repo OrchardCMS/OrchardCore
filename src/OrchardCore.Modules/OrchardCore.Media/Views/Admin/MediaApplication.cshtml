@@ -89,7 +89,7 @@
                     </div>
                 </nav>
             </div>
-            <div class="media-container-middle">
+            <div class="media-container-middle mb-2">
                 <upload-list />
 
                 <media-items-table :sort-by="sortBy" :sort-asc="sortAsc"
@@ -147,6 +147,14 @@
 <input type="hidden" id="t-size-header" value="@T["Size"]" />
 <input type="hidden" id="t-type-header" value="@T["Type"]" />
 
+@*Localizable Strings for pagerComponent*@
+<input type="hidden" id="t-pager-first-button" value="@T["First"]" />
+<input type="hidden" id="t-pager-previous-button" value="@T["Previous"]" />
+<input type="hidden" id="t-pager-next-button" value="@T["Next"]" />
+<input type="hidden" id="t-pager-last-button" value="@T["Last"]" />
+<input type="hidden" id="t-pager-page-size-label" value="@T["Page Size"]" />
+<input type="hidden" id="t-pager-page-label" value="@T["Page:"]" />
+<input type="hidden" id="t-pager-total-label" value="@T["Total items:"]" />
 
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
