@@ -45,7 +45,7 @@ namespace OrchardCore.Data
             {
                 if (disposing)
                 {                    
-                    _connection.Dispose();
+                    _connection?.Dispose();
                 }
             }
             _disposed = true;
