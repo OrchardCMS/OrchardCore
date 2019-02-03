@@ -118,6 +118,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     // handler for pager events
                     bus.$on('pagerEvent', function (itemsInPage) {
                         self.itemsInPage = itemsInPage;
+                        self.selectedMedias = [];
                     });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
