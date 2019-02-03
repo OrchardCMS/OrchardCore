@@ -14,17 +14,17 @@
 
 
     <div id="mediaContainer" class="align-items-stretch">
-        <div id="navigationApp" class="media-container-navigation flex-shrink-0 m-0 p-0" v-cloak style="overflow:auto;">
+        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak >
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                 </folder>
             </ol>
         </div>
 
-        <div id="mediaContainerMain" class="flex-grow-1 pl-0 ml-4 mr-4" v-cloak>
+        <div id="mediaContainerMain" class="pl-0 ml-4 mr-4" v-cloak>
             <div class="media-container-top-bar">
                 <nav class="nav action-bar pb-2">
-                    <div class="form-inline">
+                    <div class="form-inline mr-auto">
                         <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="selectAll">
                             @T["Select All"]
                         </a>
@@ -39,7 +39,7 @@
                         </a>
                     </div>
 
-                    <div class="nav-item ml-auto">
+                    <div class="nav-item">
                         <div class="media-filter">
                             <div class="input-group input-group-sm">
                                 <span class="fa fa-filter icon-inside-input"></span>

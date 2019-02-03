@@ -18,7 +18,7 @@
 
 @media only screen and ( max-width: 576px ) {
     #media-pager {
-        .media-last-button, .media-first-button, .page-info, .total-info, .page-size-label  {
+        .media-last-button, .media-first-button, .total-info, .page-size-label  {
             display: none;
         }
     }
@@ -27,14 +27,5 @@
 @media only screen and ( max-width: 1200px ) {
     #media-pager .page-number {
         display: none;
-    }
-}
-
-
-.modal-body {
-    #media-pager {
-        .page-number, .media-first-button, .media-last-button {
-            display: none;
-        }
     }
 }

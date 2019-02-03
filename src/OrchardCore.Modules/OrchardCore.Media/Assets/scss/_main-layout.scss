@@ -6,15 +6,24 @@
     left: 260px;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 
+
     #mediaContainer {
         display: flex;
         flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
         height: 100%;
         align-items: stretch;
 
+        #navigationApp {
+            border-right: $media-border-content;
+            border-top: $media-border-content;
+            flex-shrink: 0;
+        }
+
         #mediaContainerMain {
+            height: 100%;
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
 
             .media-container-middle {
                 flex-grow: 1;
@@ -52,12 +61,6 @@
 
     .alert-info {
         font-size: 0.875rem;
-    }
-
-
-    #navigationApp {
-        border-right: $media-border-content;
-        border-top: $media-border-content;
     }
 
     .message-warning {

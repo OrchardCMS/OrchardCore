@@ -15,9 +15,15 @@
     flex-direction: column;
     height: 100%;
     align-items: stretch; }
+    #mediaApp #mediaContainer #navigationApp {
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      flex-shrink: 0; }
     #mediaApp #mediaContainer #mediaContainerMain {
+      height: 100%;
       display: flex;
-      flex-direction: column; }
+      flex-direction: column;
+      flex-grow: 1; }
       #mediaApp #mediaContainer #mediaContainerMain .media-container-middle {
         flex-grow: 1;
         flex-shrink: 0;
@@ -39,9 +45,6 @@
       overflow: auto; } }
   #mediaApp .alert-info {
     font-size: 0.875rem; }
-  #mediaApp #navigationApp {
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    border-top: 1px solid rgba(0, 0, 0, 0.1); }
   #mediaApp .message-warning {
     padding: 20px;
     margin-bottom: 8px; }
@@ -219,15 +222,12 @@ ol.media-items-grid {
     background-color: inherit; }
 
 @media only screen and (max-width: 576px) {
-  #media-pager .media-last-button, #media-pager .media-first-button, #media-pager .page-info, #media-pager .total-info, #media-pager .page-size-label {
+  #media-pager .media-last-button, #media-pager .media-first-button, #media-pager .total-info, #media-pager .page-size-label {
     display: none; } }
 
 @media only screen and (max-width: 1200px) {
   #media-pager .page-number {
     display: none; } }
-
-.modal-body #media-pager .page-number, .modal-body #media-pager .media-first-button, .modal-body #media-pager .media-last-button {
-  display: none; }
 
 .action-bar {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -437,12 +437,16 @@ ol.media-items-grid {
   .media-modal .modal-body #mediaContainer .breadcrumb-item a {
     font-size: 0.9rem; }
 
-@media only screen and (max-width: 992px) and (min-width: 768px) {
+@media only screen and (min-width: 576px) {
   .modal-dialog.media-modal {
-    max-width: 800px; } }
+    max-width: 992px;
+    padding-left: 17px; } }
 
 #mediaModalBody.html-body-part {
   z-index: 99999; }
+
+.modal-body #media-pager .page-number, .modal-body #media-pager .media-first-button, .modal-body #media-pager .media-last-button {
+  display: none; }
 
 .media-container-main-item-title {
   border-top: solid 1px #dee2e6;
