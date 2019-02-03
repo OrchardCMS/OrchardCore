@@ -11,6 +11,8 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
@@ -105,6 +107,14 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
