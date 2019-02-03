@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
-using OrchardCore.Data.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -18,7 +17,6 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
-using YesSql.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -128,17 +126,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return session;
                 });
 
-                services.AddScoped<IDbConnectionAccessor>(sp =>
-                {
-                    var store = sp.GetService<IStore>();
-
-                    if (store == null)
-                    {
-                        return null;
-                    }
-
-                    return new DbConnectionAccessor(store);
-                });
+                services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;
