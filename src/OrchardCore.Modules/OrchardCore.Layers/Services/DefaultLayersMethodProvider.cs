@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
@@ -12,6 +13,7 @@ namespace OrchardCore.Layers.Services
         private readonly GlobalMethod _isAnonymous;
         private readonly GlobalMethod _isAuthenticated;
         private readonly GlobalMethod _url;
+        private readonly GlobalMethod _culture;
 
         private readonly GlobalMethod[] _allMethods;
 
@@ -69,8 +71,20 @@ namespace OrchardCore.Layers.Services
                         : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase); ;
                 })
             };
+
+            _culture = new GlobalMethod
+            {
+                Name = "culture",
+                Method = serviceProvider => (Func<string, object>)(culture =>
+                {
+                    var currentCulture = CultureInfo.CurrentCulture;
+
+                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
+                })
+            };
             
-            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url };
+            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
