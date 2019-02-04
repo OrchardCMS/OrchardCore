@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Apis;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -12,6 +14,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Lists.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
+using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Tests.Apis.Context;
@@ -264,19 +267,13 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
             {
                 Builder = (builder) =>
                 {
-                    builder.RegisterStartup<InternalStartup>();
+                    builder.ConfigureServices((services) =>
+                    {
+                        services.AddSingleton<ContentPart, BlogPostPart>();
+                        services.AddScoped<IRecipeEventHandler, AlterBlogPostStep>();
+                        services.AddObjectGraphType<BlogPostPart, BlogPostPartQueryObjectType>();
+                    }, 100);
                 };
-            }
-
-            private class InternalStartup : StartupBase
-            {
-                public override int Order => 100;
-
-                public override void ConfigureServices(IServiceCollection services)
-                {
-                    services.AddSingleton<ContentPart, BlogPostPart>();
-                    services.AddRecipeExecutionStep<AlterBlogPostStep>();
-                }
             }
 
             //private class BlogPostMigrations : DataMigration
@@ -303,12 +300,12 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
             //    }
             //}
 
-            private class AlterBlogPostStep : IRecipeStepHandler
+            private class AlterBlogPostStep : IRecipeEventHandler
             {
-                private readonly IContentDefinitionManager _contentDefinitionManager;
+                private readonly IServiceProvider _contentDefinitionManager;
                 private readonly ISession _session;
 
-                public AlterBlogPostStep(IContentDefinitionManager contentDefinitionManager, ISession session)
+                public AlterBlogPostStep(IServiceProvider contentDefinitionManager, ISession session)
                 {
                     _contentDefinitionManager = contentDefinitionManager;
                     _session = session;
@@ -316,16 +313,51 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
                 public Task ExecuteAsync(RecipeExecutionContext context)
                 {
-                    _contentDefinitionManager.AlterTypeDefinition("BlogPost", type => type
+                    return Task.CompletedTask;
+                }
+
+                public Task ExecutionFailedAsync(string executionId, RecipeDescriptor descriptor)
+                {
+                    return Task.CompletedTask;
+                }
+
+                public Task RecipeExecutedAsync(string executionId, RecipeDescriptor descriptor)
+                {
+                    _contentDefinitionManager.GetService< IContentDefinitionManager>().AlterTypeDefinition("BlogPost", type => type
                         .WithPart(nameof(BlogPostPart), p => p
                         .WithSettings(
                           new GraphQLContentTypePartSettings
                           {
                               Collapse = true
-                          }))
-                    );
+                          })));
 
                     return Task.CompletedTask;
+                }
+
+                public Task RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor)
+                {
+                    return Task.CompletedTask;
+                }
+
+                public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
+                {
+                    return Task.CompletedTask;
+                }
+
+                public Task RecipeStepExecutingAsync(RecipeExecutionContext context)
+                {
+                    return Task.CompletedTask;
+                }
+            }
+
+            public class BlogPostPartQueryObjectType : ObjectGraphType<BlogPostPart>
+            {
+                public BlogPostPartQueryObjectType()
+                {
+                    Name = "BlogPostPart";
+                    Description = "Test.";
+
+                    Field(x => x.Name);
                 }
             }
         }
