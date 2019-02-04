@@ -159,8 +159,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
                     var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
 
-                    await connection.ExecuteAsync(updateShellDescriptorCmd);
-                    await connection.ExecuteAsync(updateShellStateCmd);
+                    await connection.ExecuteAsync(updateShellDescriptorCmd, null, transaction);
+                    await connection.ExecuteAsync(updateShellStateCmd, null, transaction);
 
                     transaction.Commit();
                 }
