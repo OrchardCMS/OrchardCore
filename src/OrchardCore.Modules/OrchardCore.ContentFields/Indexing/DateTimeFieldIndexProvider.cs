@@ -13,19 +13,19 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class DateTimeFieldIndex : MapIndex
+    public class DateTimeFieldIndex : ContentFieldIndex
     {
-        public string FieldName { get; set; }
         public DateTime? DateTime { get; set; }
     }
 
-    public class DateTimeFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class DateTimeFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public DateTimeFieldIndexProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -77,7 +77,9 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new DateTimeFieldIndex
                         {
-                            FieldName = fieldDefinition.Name,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
                             DateTime = field.Value
                         });
                     }

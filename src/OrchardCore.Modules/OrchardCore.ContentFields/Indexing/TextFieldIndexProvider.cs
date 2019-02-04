@@ -13,19 +13,19 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class TextFieldIndex : MapIndex
+    public class TextFieldIndex : ContentFieldIndex
     {
-        public string FieldName { get; set; }
         public string Text { get; set; }
     }
 
-    public class TextFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class TextFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TextFieldIndexProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -77,7 +77,9 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new TextFieldIndex
                         {
-                            FieldName = fieldDefinition.Name,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
                             Text = field.Text
                         });
                     }

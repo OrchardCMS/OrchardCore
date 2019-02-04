@@ -14,19 +14,19 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class ContentPickerFieldIndex : MapIndex
+    public class ContentPickerFieldIndex : ContentFieldIndex
     {
-        public string FieldName { get; set; }
         public string ContentItemIds { get; set; }
     }
 
-    public class ContentPickerFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class ContentPickerFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public ContentPickerFieldIndexProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -80,7 +80,9 @@ namespace OrchardCore.ContentFields.Indexing
                         {
                             results.Add(new ContentPickerFieldIndex
                             {
-                                FieldName = fieldDefinition.Name,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
                                 ContentItemIds = JsonConvert.SerializeObject(field.ContentItemIds).ToString()
                             });
                         }

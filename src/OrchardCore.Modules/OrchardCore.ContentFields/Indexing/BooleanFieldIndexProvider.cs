@@ -13,19 +13,19 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class BooleanFieldIndex : MapIndex
+    public class BooleanFieldIndex : ContentFieldIndex
     {
-        public string FieldName { get; set; }
         public bool? Boolean { get; set; }
     }
 
-    public class BooleanFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class BooleanFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public BooleanFieldIndexProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -77,7 +77,9 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new BooleanFieldIndex
                         {
-                            FieldName = fieldDefinition.Name,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
                             Boolean = field.Value
                         });
                     }

@@ -13,26 +13,27 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class DateFieldIndex : ContentFieldIndex
+    public class ContentFieldIndex : MapIndex
     {
-        public DateTime? Date { get; set; }
+        public string ContentType { get; set; }
+        public string ContentPart { get; set; }
+        public string ContentField { get; set; }
     }
 
-    public class DateFieldIndexProvider : ContentFieldIndexProvider
+    public class ContentFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public DateFieldIndexProvider(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        public ContentFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context.For<ContentFieldIndex>()
                 .Map(contentItem =>
                 {
                     if (!contentItem.IsPublished())
@@ -52,10 +53,10 @@ namespace OrchardCore.ContentFields.Indexing
                     // Search for Text fields
                     var fieldDefinitions = _contentDefinitionManager
                         .GetTypeDefinition(contentItem.ContentType)
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields)
                         .ToArray();
 
-                    var results = new List<DateFieldIndex>();
+                    var results = new List<ContentFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -73,14 +74,13 @@ namespace OrchardCore.ContentFields.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<DateField>();
+                        var field = jField.ToObject<TextField>();
 
-                        results.Add(new DateFieldIndex
+                        results.Add(new ContentFieldIndex
                         {
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Date = field.Value
+                            ContentField = fieldDefinition.Name
                         });
                     }
 

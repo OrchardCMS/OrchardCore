@@ -13,19 +13,19 @@ namespace OrchardCore.ContentFields.Indexing
 {
     // Remark: 
 
-    public class NumericFieldIndex : MapIndex
+    public class NumericFieldIndex : ContentFieldIndex
     {
-        public string FieldName { get; set; }
         public decimal? Numeric { get; set; }
     }
 
-    public class NumericFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class NumericFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public NumericFieldIndexProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -77,7 +77,9 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new NumericFieldIndex
                         {
-                            FieldName = fieldDefinition.Name,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
                             Numeric = field.Value
                         });
                     }
