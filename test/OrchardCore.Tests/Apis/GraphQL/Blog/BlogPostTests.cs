@@ -1,12 +1,22 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Settings;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Data.Migration;
 using OrchardCore.Lists.Models;
+using OrchardCore.Modules;
+using OrchardCore.Recipes;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
+using YesSql;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Blog
 {
@@ -22,13 +32,13 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("Blog", builder =>
+                    .Query(context.BlogContentType, builder =>
                     {
                         builder
                             .AddField("contentItemId");
                     });
 
-                Assert.Single(result["data"]["blog"].Children()["contentItemId"]
+                Assert.Single(result["data"][context.BlogContentType.ToCamelCase()].Children()["contentItemId"]
                     .Where(b => b.ToString() == context.BlogContentItemId));
             }
         }
@@ -41,7 +51,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 await context.InitializeAsync();
 
                 var blogPostContentItemId1 = await context
-                    .CreateContentItem("BlogPost", builder =>
+                    .CreateContentItem(context.BlogPostContentType, builder =>
                     {
                         builder
                             .DisplayText = "Some sorta blogpost!";
@@ -60,7 +70,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     });
 
                 var blogPostContentItemId2 = await context
-                    .CreateContentItem("BlogPost", builder =>
+                    .CreateContentItem(context.BlogPostContentType, builder =>
                     {
                         builder
                             .DisplayText = "Some sorta other blogpost!";
@@ -81,7 +91,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("BlogPost", builder =>
+                    .Query(context.BlogPostContentType, builder =>
                     {
                         builder
                             .WithNestedQueryField("AutoroutePart", "path: \"Path1\"");
@@ -92,7 +102,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
                 Assert.Equal(
                     "Some sorta blogpost!",
-                    result["data"]["blogPost"][0]["displayText"].ToString());
+                    result["data"][context.BlogPostContentType.ToCamelCase()][0]["displayText"].ToString());
             }
         }
 
@@ -106,14 +116,14 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("BlogPost", builder =>
+                    .Query(context.BlogPostContentType, builder =>
                     {
                         builder.AddField("Subtitle");
                     });
 
                 Assert.Equal(
                     "Problems look mighty small from 150 miles up",
-                    result["data"]["blogPost"][0]["subtitle"].ToString());
+                    result["data"][context.BlogPostContentType.ToCamelCase()][0]["subtitle"].ToString());
             }
         }
 
@@ -125,16 +135,16 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 await context.InitializeAsync();
 
                 var blogPostContentItemId = await context
-                    .CreateContentItem("BlogPost", builder =>
+                    .CreateContentItem(context.BlogPostContentType, builder =>
                     {
                         builder
                             .DisplayText = "Some sorta blogpost!";
 
                         builder
-                            .Weld("BlogPost", new ContentPart());
+                            .Weld(context.BlogPostContentType, new ContentPart());
 
                         builder
-                            .Alter<ContentPart>("BlogPost", (cp) =>
+                            .Alter<ContentPart>(context.BlogPostContentType, (cp) =>
                             {
                                 cp.Weld("Subtitle", new TextField());
 
@@ -154,7 +164,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("BlogPost", builder =>
+                    .Query(context.BlogPostContentType, builder =>
                     {
                         builder
                             .WithQueryField("ContentItemId", blogPostContentItemId);
@@ -165,7 +175,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
                 Assert.Equal(
                     "Hey - Is this working!?!?!?!?",
-                    result["data"]["blogPost"][0]["subtitle"].ToString());
+                    result["data"][context.BlogPostContentType.ToCamelCase()][0]["subtitle"].ToString());
             }
         }
 
@@ -178,7 +188,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 await context.InitializeAsync();
 
                 var draft = await context
-                    .CreateContentItem("BlogPost", builder =>
+                    .CreateContentItem(context.BlogPostContentType, builder =>
                     {
                         builder.DisplayText = "Draft blog post";
                         builder.Published = false;
@@ -195,18 +205,128 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                     .Query("blogPost(status: PUBLISHED) { displayText, published }");
 
                 Assert.Single(result["data"]["blogPost"]);
-                Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
+                Assert.Equal(true, result["data"][context.BlogPostContentType.ToCamelCase()][0]["published"]);
 
                 result = await context.GraphQLClient.Content
                     .Query("blogPost(status: DRAFT) { displayText, published }");
 
                 Assert.Single(result["data"]["blogPost"]);
-                Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
+                Assert.Equal(false, result["data"][context.BlogPostContentType.ToCamelCase()][0]["published"]);
 
                 result = await context.GraphQLClient.Content
                     .Query("blogPost(status: LATEST) { displayText, published }");
 
-                Assert.Equal(2, result["data"]["blogPost"].Count());
+                Assert.Equal(2, result["data"][context.BlogPostContentType.ToCamelCase()].Count());
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNameFromBlogPostWhenNameIsRolledUpOnSameNamePart()
+        {
+            using (var context = new BlogContext<BlogSiteStartupWithRollup>())
+            {
+                await context.InitializeAsync();
+
+                var blogPostContentItemId = await context
+                    .CreateContentItem(context.BlogPostContentType, builder =>
+                    {
+                        builder
+                            .DisplayText = "Little Carl likes to dance";
+
+                        builder
+                            .Weld(new BlogPostPart
+                            {
+                                Name = "Dancing with Greg"
+                            });
+                    });
+
+                var result = await context
+                    .GraphQLClient
+                    .Content
+                    .Query(context.BlogPostContentType, builder =>
+                    {
+                        builder
+                            .WithQueryField("ContentItemId", blogPostContentItemId);
+
+                        builder
+                            .AddField("Name");
+                    });
+
+                Assert.Equal(
+                    "Dancing with Greg",
+                    result["data"][context.BlogPostContentType.ToCamelCase()][0]["name"].ToString());
+            }
+        }
+
+        private class BlogSiteStartupWithRollup : SiteStartup
+        {
+            public BlogSiteStartupWithRollup()
+            {
+                Builder = (builder) =>
+                {
+                    builder.RegisterStartup<InternalStartup>();
+                };
+            }
+
+            private class InternalStartup : StartupBase
+            {
+                public override int Order => 100;
+
+                public override void ConfigureServices(IServiceCollection services)
+                {
+                    services.AddSingleton<ContentPart, BlogPostPart>();
+                    services.AddRecipeExecutionStep<AlterBlogPostStep>();
+                }
+            }
+
+            //private class BlogPostMigrations : DataMigration
+            //{
+            //    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+            //    public BlogPostMigrations(IContentDefinitionManager contentDefinitionManager)
+            //    {
+            //        _contentDefinitionManager = contentDefinitionManager;
+            //    }
+
+            //    public int Create()
+            //    {
+            //        _contentDefinitionManager.AlterTypeDefinition("BlogPost", type => type
+            //              .WithPart(nameof(BlogPostPart), p => p
+            //                .WithSettings(
+            //                  new GraphQLContentTypePartSettings
+            //                  {
+            //                      Collapse = true
+            //                  }))
+            //              );
+
+            //        return 1;
+            //    }
+            //}
+
+            private class AlterBlogPostStep : IRecipeStepHandler
+            {
+                private readonly IContentDefinitionManager _contentDefinitionManager;
+                private readonly ISession _session;
+
+                public AlterBlogPostStep(IContentDefinitionManager contentDefinitionManager, ISession session)
+                {
+                    _contentDefinitionManager = contentDefinitionManager;
+                    _session = session;
+                }
+
+                public Task ExecuteAsync(RecipeExecutionContext context)
+                {
+                    _contentDefinitionManager.AlterTypeDefinition("BlogPost", type => type
+                        .WithPart(nameof(BlogPostPart), p => p
+                        .WithSettings(
+                          new GraphQLContentTypePartSettings
+                          {
+                              Collapse = true
+                          }))
+                    );
+
+                    return Task.CompletedTask;
+                }
             }
         }
     }

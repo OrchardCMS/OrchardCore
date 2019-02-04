@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -19,6 +20,10 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
+        public Action<IServiceCollection> ApplicationServices;
+        public Action<IServiceCollection> TenantServices;
+        public Action<OrchardCoreBuilder> Builder;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOrchardCms(builder =>
@@ -33,9 +38,13 @@ namespace OrchardCore.Tests.Apis.Context
                     {
                         options.AddScheme<AlwaysLoggedInApiAuthenticationHandler>("Api", null);
                     });
-                }));
+
+                    TenantServices?.Invoke(collection);
+                })
+                .CallTenantRegistration(Builder));
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
+            ApplicationServices?.Invoke(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -57,6 +66,18 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 return _moduleNames;
             }
+        }
+    }
+
+    public static class OrchardCoreBuilderExtensions {
+        public static OrchardCoreBuilder CallTenantRegistration(this OrchardCoreBuilder builder, Action<OrchardCoreBuilder> externalBuilder)
+        {
+            if (builder != null)
+            {
+                externalBuilder(builder);
+            }
+
+            return builder;
         }
     }
 

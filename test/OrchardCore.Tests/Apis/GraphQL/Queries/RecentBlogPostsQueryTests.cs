@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                 await context.InitializeAsync();
 
                 var blogPostContentItemId = await context
-                    .CreateContentItem("BlogPost", builder =>
+                    .CreateContentItem(context.BlogPostContentType, builder =>
                     {
                         builder.Published = true;
                         builder.Latest = true;

@@ -1,10 +1,16 @@
 using System.Threading.Tasks;
+using GraphQL;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class BlogContext : SiteContext
+    public class BlogContext<TSiteStartup> : SiteContext<TSiteStartup> where TSiteStartup : SiteStartup
     {
         public string BlogContentItemId { get; private set; }
+
+        public override string RecipeName => "Blog";
+
+        public string BlogContentType => "Blog";
+        public string BlogPostContentType => "BlogPost";
 
         public override async Task InitializeAsync()
         {
@@ -12,13 +18,17 @@ namespace OrchardCore.Tests.Apis.Context
 
             var result = await GraphQLClient
                 .Content
-                .Query("blog", builder =>
+                .Query(BlogContentType.ToCamelCase(), builder =>
                 {
                     builder
                         .AddField("contentItemId");
                 });
 
-            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            BlogContentItemId = result["data"][BlogContentType.ToCamelCase()].First["contentItemId"].ToString();
         }
+    }
+
+    public class BlogContext : BlogContext<SiteStartup>
+    {
     }
 }

@@ -6,9 +6,9 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext : IDisposable
+    public abstract class SiteContext<TStartup> : IDisposable where TStartup : SiteStartup
     {
-        public static OrchardTestFixture<SiteStartup> Site { get; }
+        public static OrchardTestFixture<TStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
 
         public HttpClient Client { get; private set; }
@@ -16,9 +16,11 @@ namespace OrchardCore.Tests.Apis.Context
 
         static SiteContext()
         {
-            Site = new OrchardTestFixture<SiteStartup>();
+            Site = new OrchardTestFixture<TStartup>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
+
+        public abstract string RecipeName { get; }
 
         public virtual async Task InitializeAsync()
         {
@@ -27,7 +29,7 @@ namespace OrchardCore.Tests.Apis.Context
             var createModel = new Tenants.ViewModels.CreateApiViewModel
             {
                 DatabaseProvider = "Sqlite",
-                RecipeName = "Blog",
+                RecipeName = RecipeName,
                 Name = tenantName,
                 RequestUrlPrefix = tenantName
             };
@@ -44,7 +46,7 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 SiteName = "Test Site",
                 DatabaseProvider = "Sqlite",
-                RecipeName = "Blog",
+                RecipeName = RecipeName,
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
