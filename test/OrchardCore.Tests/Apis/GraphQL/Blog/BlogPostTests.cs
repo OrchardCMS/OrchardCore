@@ -10,13 +10,10 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data.Migration;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Lists.Models;
-using OrchardCore.Modules;
-using OrchardCore.Recipes;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
 using YesSql;
@@ -224,40 +221,40 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
         }
 
         [Fact]
-        public async Task ShouldGetNameFromBlogPostWhenNameIsRolledUpOnSameNamePart()
+        public async Task ShouldGetNameFromBlogWhenNameIsCollapsedOnSameNamePart()
         {
             using (var context = new BlogContext<BlogSiteStartupWithRollup>())
             {
                 await context.InitializeAsync();
 
-                var blogPostContentItemId = await context
-                    .CreateContentItem(context.BlogPostContentType, builder =>
+                var contentItemId = await context
+                    .CreateContentItem(context.BlogContentType, builder =>
                     {
                         builder
                             .DisplayText = "Little Carl likes to dance";
 
                         builder
-                            .Weld(new BlogPostPart
+                            .Weld(new BlogPart
                             {
-                                Name = "Dancing with Greg"
+                                SecondName = "Dancing with Greg"
                             });
                     });
 
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query(context.BlogPostContentType, builder =>
+                    .Query(context.BlogContentType, builder =>
                     {
                         builder
-                            .WithQueryField("ContentItemId", blogPostContentItemId);
+                            .WithQueryField("ContentItemId", contentItemId);
 
                         builder
-                            .AddField("Name");
+                            .AddField("SecondName");
                     });
 
                 Assert.Equal(
                     "Dancing with Greg",
-                    result["data"][context.BlogPostContentType.ToCamelCase()][0]["name"].ToString());
+                    result["data"][context.BlogContentType.ToCamelCase()][0]["secondName"].ToString());
             }
         }
 
@@ -269,43 +266,19 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 {
                     builder.ConfigureServices((services) =>
                     {
-                        services.AddSingleton<ContentPart, BlogPostPart>();
-                        services.AddScoped<IRecipeEventHandler, AlterBlogPostStep>();
-                        services.AddObjectGraphType<BlogPostPart, BlogPostPartQueryObjectType>();
+                        services.AddSingleton<ContentPart, BlogPart>();
+                        services.AddScoped<IRecipeEventHandler, AlterBlogStep>();
+                        services.AddObjectGraphType<BlogPart, BlogPartQueryObjectType>();
                     }, 100);
                 };
             }
 
-            //private class BlogPostMigrations : DataMigration
-            //{
-            //    private readonly IContentDefinitionManager _contentDefinitionManager;
-
-            //    public BlogPostMigrations(IContentDefinitionManager contentDefinitionManager)
-            //    {
-            //        _contentDefinitionManager = contentDefinitionManager;
-            //    }
-
-            //    public int Create()
-            //    {
-            //        _contentDefinitionManager.AlterTypeDefinition("BlogPost", type => type
-            //              .WithPart(nameof(BlogPostPart), p => p
-            //                .WithSettings(
-            //                  new GraphQLContentTypePartSettings
-            //                  {
-            //                      Collapse = true
-            //                  }))
-            //              );
-
-            //        return 1;
-            //    }
-            //}
-
-            private class AlterBlogPostStep : IRecipeEventHandler
+            private class AlterBlogStep : IRecipeEventHandler
             {
                 private readonly IServiceProvider _contentDefinitionManager;
                 private readonly ISession _session;
 
-                public AlterBlogPostStep(IServiceProvider contentDefinitionManager, ISession session)
+                public AlterBlogStep(IServiceProvider contentDefinitionManager, ISession session)
                 {
                     _contentDefinitionManager = contentDefinitionManager;
                     _session = session;
@@ -323,13 +296,14 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
 
                 public Task RecipeExecutedAsync(string executionId, RecipeDescriptor descriptor)
                 {
-                    _contentDefinitionManager.GetService< IContentDefinitionManager>().AlterTypeDefinition("BlogPost", type => type
-                        .WithPart(nameof(BlogPostPart), p => p
-                        .WithSettings(
-                          new GraphQLContentTypePartSettings
-                          {
-                              Collapse = true
-                          })));
+                    _contentDefinitionManager.GetService<IContentDefinitionManager>().AlterTypeDefinition("Blog", type => type
+                        .WithPart(nameof(BlogPart), p => p
+                            .WithPosition("10")
+                            .WithSettings(
+                              new GraphQLContentTypePartSettings
+                              {
+                                  Collapse = true
+                              })));
 
                     return Task.CompletedTask;
                 }
@@ -350,14 +324,14 @@ namespace OrchardCore.Tests.Apis.GraphQL.Blog
                 }
             }
 
-            public class BlogPostPartQueryObjectType : ObjectGraphType<BlogPostPart>
+            public class BlogPartQueryObjectType : ObjectGraphType<BlogPart>
             {
-                public BlogPostPartQueryObjectType()
+                public BlogPartQueryObjectType()
                 {
-                    Name = "BlogPostPart";
+                    Name = "BlogPart";
                     Description = "Test.";
 
-                    Field(x => x.Name);
+                    Field(x => x.SecondName);
                 }
             }
         }

@@ -2,8 +2,8 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class BlogPostPart : ContentPart
+    public class BlogPart : ContentPart
     {
-        public string Name { get; set; }
+        public string SecondName { get; set; }
     }
 }
