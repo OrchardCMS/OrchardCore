@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.HealthChecks\OrchardCore.HealthChecks.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Profile\OrchardCore.Profile.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
   </ItemGroup>
 
