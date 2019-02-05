@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -16,7 +14,7 @@ namespace OrchardCore.ContentFields.Indexing
 
     public class ContentPickerFieldIndex : ContentFieldIndex
     {
-        public string ContentItemIds { get; set; }
+        public string ContentItemId { get; set; }
     }
 
     public class ContentPickerFieldIndexProvider : ContentFieldIndexProvider
@@ -58,6 +56,7 @@ namespace OrchardCore.ContentFields.Indexing
 
                     var results = new List<ContentPickerFieldIndex>();
 
+                    // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
                         var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
@@ -76,14 +75,14 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<ContentPickerField>();
 
-                        if (field.ContentItemIds.Length > 0)
+                        foreach (var contentItemId in field.ContentItemIds)
                         {
                             results.Add(new ContentPickerFieldIndex
                             {
+                                ContentItemId = contentItemId,
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                ContentItemIds = JsonConvert.SerializeObject(field.ContentItemIds).ToString()
+                                ContentField = fieldDefinition.Name
                             });
                         }
                     }

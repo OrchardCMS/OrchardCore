@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType")
                 .Column<string>("ContentPart")
                 .Column<string>("ContentField")
-                .Column<string>("ContentItemIds")
+                .Column<string>("ContentItemId")
             );
 
             return 1;
