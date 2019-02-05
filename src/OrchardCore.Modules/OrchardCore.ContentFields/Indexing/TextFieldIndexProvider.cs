@@ -76,31 +76,33 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<TextField>();
 
-                        if (field.Text.Length > 4000)
+                        if (!String.IsNullOrEmpty(field.Text))
                         {
-                            results.Add(new TextFieldIndex
+                            if (field.Text.Length > 4000)
                             {
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                RichText = field.Text
-                            });
-                        }
-                        else {
-                            results.Add(new TextFieldIndex
+                                results.Add(new TextFieldIndex
+                                {
+                                    ContentType = contentItem.ContentType,
+                                    ContentPart = fieldDefinition.PartDefinition.Name,
+                                    ContentField = fieldDefinition.Name,
+                                    RichText = field.Text
+                                });
+                            }
+                            else
                             {
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Text = field.Text
-                            });
+                                results.Add(new TextFieldIndex
+                                {
+                                    ContentType = contentItem.ContentType,
+                                    ContentPart = fieldDefinition.PartDefinition.Name,
+                                    ContentField = fieldDefinition.Name,
+                                    Text = field.Text
+                                });
+                            }
                         }
                     }
 
                     return results;
                 });
         }
-
-
     }
 }
