@@ -267,6 +267,14 @@ namespace OrchardCore.Hosting.ShellBuilders
                 var disposeShellContext = ScopeReleased();
 
                 _httpContext.RequestServices = _existingServices;
+
+                var disposables = _serviceScope.ServiceProvider.GetServices<IShellScopePreDisposable>();
+
+                foreach (var disposable in disposables)
+                {
+                    disposable?.Dispose();
+                }
+
                 _serviceScope.Dispose();
 
                 if (disposeShellContext)
