@@ -1,7 +1,8 @@
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Navigation
 {
@@ -31,6 +32,30 @@ namespace OrchardCore.Navigation
             }
 
             return this;
+        }
+
+        public async Task<NavigationBuilder> AddAsync(LocalizedString caption, string position, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
+        {
+            var childBuilder = new NavigationItemBuilder();
+
+            childBuilder.Caption(caption);
+            childBuilder.Position(position);
+            childBuilder.Priority(priority);
+            await itemBuilder(childBuilder);
+            Contained.AddRange(childBuilder.Build());
+
+            if (classes != null)
+            {
+                foreach (var className in classes)
+                    childBuilder.AddClass(className);
+            }
+
+            return this;
+        }
+
+        public Task<NavigationBuilder> AddAsync(LocalizedString caption, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null)
+        {
+            return AddAsync(caption, null, itemBuilder, classes);
         }
 
         public NavigationBuilder Add(LocalizedString caption, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null)
