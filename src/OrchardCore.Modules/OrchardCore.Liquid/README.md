@@ -243,8 +243,8 @@ The following properties are available on the `Request` object.
 | `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header. |
 | `ContentLength` | `600` | The `Content-Length` header. |
 | `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request. |
-| `Headers` | Usage: `Request.Headers.accept` | The request headers. |
-| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. |
+| `Headers` | Usage: `Request.Headers.accept` | The request headers. Each property value is an array of values.|
+| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. Each property value is an array of values. |
 | `Form` | Usage: `Request.Form.value` | The collection of form values. |
 | `Protocol` | `https` | The protocol of this request. |
 | `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped. |
