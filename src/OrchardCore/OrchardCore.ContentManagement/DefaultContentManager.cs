@@ -472,9 +472,12 @@ namespace OrchardCore.ContentManagement
 
             await Handlers.InvokeAsync(async handler => await handler.CloningAsync(context), _logger);
 
+            context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+
             await Handlers.InvokeAsync(async handler => await handler.ClonedAsync(context), _logger);
 
-            return cloneContentItem;
+            _session.Save(context.CloneContentItem);
+            return context.CloneContentItem;
         }
     }
 }
