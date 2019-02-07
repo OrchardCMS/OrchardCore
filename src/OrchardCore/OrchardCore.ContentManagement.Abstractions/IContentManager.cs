@@ -83,6 +83,13 @@ namespace OrchardCore.ContentManagement
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
         Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
+        /// <summary>
+        /// Makes a clone of the content item
+        /// </summary>
+        /// <param name="contentItem">The content item to clone</param>
+        /// <returns>Clone of the item</returns>
+        Task<ContentItem> CloneAsync(ContentItem contentItem);
+
     }
 
     public static class ContentManagerExtensions

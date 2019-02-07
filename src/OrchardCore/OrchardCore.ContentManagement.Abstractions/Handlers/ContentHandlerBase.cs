@@ -94,10 +94,14 @@ namespace OrchardCore.ContentManagement.Handlers
             return Task.CompletedTask;
         }
 
-
-        // TODO: Implement Clone event
-        //protected virtual void Cloning(CloneContentContext context) { }
-        //protected virtual void Cloned(CloneContentContext context) { }
+        public virtual Task CloningAsync(CloneContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+        public virtual Task ClonedAsync(CloneContentContext context)
+        {
+            return Task.CompletedTask;
+        }
 
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
