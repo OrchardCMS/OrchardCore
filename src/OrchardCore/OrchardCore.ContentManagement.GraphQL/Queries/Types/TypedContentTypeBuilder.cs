@@ -31,6 +31,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             foreach (var part in contentTypeDefinition.Parts)
             {
+                if (_contentOptions.ShouldIgnore(part)) continue;
+
                 var partName = part.Name;
 
                 // Check if another builder has already added a field for this part.

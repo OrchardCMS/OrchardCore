@@ -41,6 +41,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
 
+                if (_contentOptions.ShouldIgnore(part)) continue;
+
                 if (_contentOptions.ShouldCollapse(part)) {
                     foreach (var field in part.PartDefinition.Fields)
                     {

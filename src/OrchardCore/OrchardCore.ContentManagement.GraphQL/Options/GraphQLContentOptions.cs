@@ -81,6 +81,66 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             return false;
         }
+
+        public bool ShouldIgnore(ContentTypePartDefinition definition)
+        {
+            if (IsIgnoredByDefault(definition))
+            {
+                return true;
+            }
+
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
+
+            if (settings.Ignore)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool IsIgnoredByDefault(ContentTypePartDefinition definition)
+        {
+            var contentType = definition.ContentTypeDefinition.Name;
+            var partName = definition.PartDefinition.Name;
+
+            if (contentType == partName)
+            {
+                return true;
+            }
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+
+            if (contentTypeOption != null)
+            {
+                if (contentTypeOption.Ignore)
+                {
+                    return true;
+                }
+
+                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
+
+                if (contentTypePartOption != null)
+                {
+                    if (contentTypePartOption.Ignore)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+
+            if (contentPartOption != null)
+            {
+                if (contentPartOption.Ignore)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public class GraphQLContentTypeOption
@@ -88,6 +148,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public string ContentType { get; set; }
 
         public bool Collapse { get; set; }
+
+        public bool Ignore { get; set; }
 
         public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
             = Enumerable.Empty<GraphQLContentPartOption>();
@@ -98,5 +160,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public string Name { get; set; }
 
         public bool Collapse { get; set; }
+
+        public bool Ignore { get; set; }
     }
 }
