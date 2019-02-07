@@ -15,25 +15,6 @@ namespace OrchardCore.Navigation
             Contained = new List<MenuItem>();
         }
 
-        public NavigationBuilder Add(LocalizedString caption, string position, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
-        {
-            var childBuilder = new NavigationItemBuilder();
-
-            childBuilder.Caption(caption);
-            childBuilder.Position(position);
-            childBuilder.Priority(priority);
-            itemBuilder(childBuilder);
-            Contained.AddRange(childBuilder.Build());
-
-            if (classes != null)
-            {
-                foreach (var className in classes)
-                    childBuilder.AddClass(className);
-            }
-
-            return this;
-        }
-
         public async Task<NavigationBuilder> AddAsync(LocalizedString caption, string position, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
         {
             var childBuilder = new NavigationItemBuilder();
@@ -47,7 +28,9 @@ namespace OrchardCore.Navigation
             if (classes != null)
             {
                 foreach (var className in classes)
+                {
                     childBuilder.AddClass(className);
+                }
             }
 
             return this;
@@ -56,6 +39,16 @@ namespace OrchardCore.Navigation
         public Task<NavigationBuilder> AddAsync(LocalizedString caption, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null)
         {
             return AddAsync(caption, null, itemBuilder, classes);
+        }
+
+        public NavigationBuilder Add(LocalizedString caption, string position, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
+        {
+            return AddAsync(caption, position, builder =>
+            {
+                itemBuilder(builder);
+                return Task.CompletedTask;
+            },
+            classes, priority).GetAwaiter().GetResult();
         }
 
         public NavigationBuilder Add(LocalizedString caption, Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null)
