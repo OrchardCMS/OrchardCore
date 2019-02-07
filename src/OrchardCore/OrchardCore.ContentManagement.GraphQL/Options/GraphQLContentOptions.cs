@@ -162,5 +162,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public bool Collapse { get; set; }
 
         public bool Ignore { get; set; }
+
+        public IEnumerable<GraphQLContentPartPropertyOption> PartOptions { get; set; }
+            = Enumerable.Empty<GraphQLContentPartPropertyOption>();
+    }
+
+    public class GraphQLContentPartPropertyOption
+    {
+        public string Name { get; set; }
+
+        public bool Ignore { get; set; }
     }
 }
