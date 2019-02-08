@@ -45,7 +45,7 @@ namespace OrchardCore.Mvc
 
             builder.SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
 
-            services.AddMvcCore().AddModularRazorPages();
+            services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
             
@@ -53,11 +53,11 @@ namespace OrchardCore.Mvc
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();
 
-            builder.Services.TryAddEnumerable(
+            services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
             // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
-            builder.Services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
+            services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
         }
