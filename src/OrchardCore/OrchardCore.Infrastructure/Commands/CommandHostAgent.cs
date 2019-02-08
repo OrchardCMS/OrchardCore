@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Commands
         {
             // Display header
             await output.WriteLineAsync();
-            await output.WriteLineAsync(T[$"{title}"]);
+            await output.WriteLineAsync(title);
 
             // Push exceptions in a stack so we display from inner most to outer most
             var errors = new Stack<Exception>();
