@@ -12,7 +12,6 @@ namespace OrchardCore.Mvc.RazorPages
         {
             builder.AddRazorPages();
             builder.Services.AddModularRazorPages();
-
             return builder;
         }
 
