@@ -119,14 +119,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 if (env.IsDevelopment())
                 {
                     var fileProviders = new List<IFileProvider>();
+                    fileProviders.Add(env.WebRootFileProvider);
                     fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
                     fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
                     fileProvider = new CompositeFileProvider(fileProviders);
                 }
                 else
                 {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
+                    var fileProviders = new List<IFileProvider>();
+                    fileProviders.Add(env.WebRootFileProvider);
+                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
+                    fileProvider = new CompositeFileProvider(fileProviders);
                 }
+
+                env.WebRootFileProvider = fileProvider;
 
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
 
