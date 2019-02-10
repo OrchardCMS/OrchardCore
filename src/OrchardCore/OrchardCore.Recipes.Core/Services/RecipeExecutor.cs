@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -220,6 +219,12 @@ namespace OrchardCore.Recipes.Services
                         Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
+            }
+
+            // E.g if we run migrations defined in a recipe.
+            if (!recipeStep.RecipeDescriptor.RequireNewScope)
+            {
+                return;
             }
 
             // The recipe execution might have invalidated the shell by enabling new features,
