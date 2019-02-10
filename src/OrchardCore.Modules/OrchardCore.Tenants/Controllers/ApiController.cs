@@ -15,7 +15,6 @@ using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -96,7 +95,7 @@ namespace OrchardCore.Tenants.Controllers
 
             shellSettings.Name = model.Name;
             shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
+            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
             shellSettings.State = TenantState.Uninitialized;
 
             shellSettings["ConnectionString"] = model.ConnectionString;
@@ -299,7 +298,19 @@ namespace OrchardCore.Tenants.Controllers
                 tenantUrlHost += ":" + requestHostInfo.Port;
             }
 
-            var result = $"{Request.Scheme}://{tenantUrlHost}";
+            var pathBase = Request.PathBase.Value ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(_currentShellSettings.RequestUrlPrefix))
+            {
+                var prefix = "/" + _currentShellSettings.RequestUrlPrefix;
+
+                if (pathBase.EndsWith(prefix))
+                {
+                    pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+                }
+            }
+
+            var result = $"{Request.Scheme}://{tenantUrlHost}{pathBase}";
 
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
