@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -22,12 +22,25 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
+    
+    <!-- Remove this dependency in RC -->
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Remove these references once ncrontab targets netstandard2.0-->
+    <PackageReference Include="System.Collections" />
+    <PackageReference Include="System.Diagnostics.Debug" />
+    <PackageReference Include="System.Globalization" />
+    <PackageReference Include="System.IO" />
+    <PackageReference Include="System.Net.Primitives" />
+    <PackageReference Include="System.Resources.ResourceManager" />
   </ItemGroup>
 
 </Project>
