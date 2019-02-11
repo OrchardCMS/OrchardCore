@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -23,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
-
+            
             return services;
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -99,6 +100,45 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
+        public bool ShouldIgnore(ContentTypePartDefinition definition, FieldType field)
+        {
+            if (ShouldIgnore(definition)) {
+                return true;
+            }
+
+            var fieldName = field.Name;
+
+            var contentType = definition.ContentTypeDefinition.Name;
+            var partName = definition.PartDefinition.Name;
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+
+            if (contentTypeOption != null)
+            {
+                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
+
+                if (contentTypePartOption != null)
+                {
+                    if (contentTypePartOption.IgnoredPropertyNames.Contains(fieldName))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+
+            if (contentPartOption != null)
+            {
+                if (contentPartOption.IgnoredPropertyNames.Contains(fieldName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool IsIgnoredByDefault(ContentTypePartDefinition definition)
         {
             var contentType = definition.ContentTypeDefinition.Name;
@@ -141,36 +181,5 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             return false;
         }
-    }
-
-    public class GraphQLContentTypeOption
-    {
-        public string ContentType { get; set; }
-
-        public bool Collapse { get; set; }
-
-        public bool Ignore { get; set; }
-
-        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentPartOption>();
-    }
-
-    public class GraphQLContentPartOption
-    {
-        public string Name { get; set; }
-
-        public bool Collapse { get; set; }
-
-        public bool Ignore { get; set; }
-
-        public IEnumerable<GraphQLContentPartPropertyOption> PartOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentPartPropertyOption>();
-    }
-
-    public class GraphQLContentPartPropertyOption
-    {
-        public string Name { get; set; }
-
-        public bool Ignore { get; set; }
     }
 }
