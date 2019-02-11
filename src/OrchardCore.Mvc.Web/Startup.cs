@@ -24,9 +24,7 @@ namespace OrchardCore.Mvc.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseStaticFiles();
-
+            
             app.UseOrchardCore();
         }
     }
