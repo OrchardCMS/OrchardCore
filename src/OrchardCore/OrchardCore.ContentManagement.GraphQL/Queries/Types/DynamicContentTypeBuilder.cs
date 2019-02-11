@@ -49,6 +49,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         foreach (var fieldProvider in contentFieldProviders)
                         {
                             var fieldType = fieldProvider.GetField(field);
+
+                            if (_contentOptions.ShouldIgnore(field, fieldType)) continue;
+
                             if (fieldType != null)
                             {
                                 contentItemType.AddField(fieldType);

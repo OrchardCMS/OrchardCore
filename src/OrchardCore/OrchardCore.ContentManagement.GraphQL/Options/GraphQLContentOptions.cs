@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -14,6 +13,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
             = Enumerable.Empty<GraphQLContentPartOption>();
 
+        public IEnumerable<GraphQLField> IgnoredFields { get; set; }
+            = Enumerable.Empty<GraphQLField>();
+
         /// <summary>
         /// Collapsing works at a heirachy
         ///
@@ -23,7 +25,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         /// </summary>
         /// <param name="definition"></param>
         /// <returns></returns>
-        public bool ShouldCollapse(ContentTypePartDefinition definition)
+        internal bool ShouldCollapse(ContentTypePartDefinition definition)
         {
             if (IsCollapsedByDefault(definition))
             {
@@ -83,7 +85,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
-        public bool ShouldIgnore(ContentTypePartDefinition definition)
+        internal bool ShouldIgnore(ContentTypePartDefinition definition)
         {
             if (IsIgnoredByDefault(definition))
             {
@@ -95,45 +97,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             if (settings.Ignore)
             {
                 return true;
-            }
-
-            return false;
-        }
-
-        public bool ShouldIgnore(ContentTypePartDefinition definition, FieldType field)
-        {
-            if (ShouldIgnore(definition)) {
-                return true;
-            }
-
-            var fieldName = field.Name;
-
-            var contentType = definition.ContentTypeDefinition.Name;
-            var partName = definition.PartDefinition.Name;
-
-            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
-
-            if (contentTypeOption != null)
-            {
-                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
-
-                if (contentTypePartOption != null)
-                {
-                    if (contentTypePartOption.IgnoredPropertyNames.Contains(fieldName))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
-
-            if (contentPartOption != null)
-            {
-                if (contentPartOption.IgnoredPropertyNames.Contains(fieldName))
-                {
-                    return true;
-                }
             }
 
             return false;
