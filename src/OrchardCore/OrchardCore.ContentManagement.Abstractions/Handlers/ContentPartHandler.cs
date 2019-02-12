@@ -157,17 +157,17 @@ namespace OrchardCore.ContentManagement.Handlers
         }
         async Task IContentPartHandler.CloningAsync(CloneContentContext context, ContentPart part)
         {
-            if (part is TPart)
+            if (part is TPart tpart)
             {
-                await CloningAsync(context, (TPart)part);
+                await CloningAsync(context, tpart);
             }
         }
 
         async Task IContentPartHandler.ClonedAsync(CloneContentContext context, ContentPart part)
         {
-            if (part is TPart)
+            if (part is TPart tpart)
             {
-                await ClonedAsync(context, (TPart)part);
+                await ClonedAsync(context, tpart);
             }
         }
 
