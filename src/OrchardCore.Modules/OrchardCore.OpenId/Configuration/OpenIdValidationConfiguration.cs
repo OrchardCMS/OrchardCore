@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -194,14 +193,13 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                var (scope, shellContext) = _shellHost.GetScopeAndContextAsync(settings.Tenant).GetAwaiter().GetResult();
-                using (scope)
+                using (var scope = _shellHost.GetScopeAsync(settings.Tenant).GetAwaiter().GetResult())
                 {
                     // If the other tenant is released, ensure the current tenant is also restarted as it
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
                     // To make sure the other tenant is not disposed before all the pending requests are
                     // processed by the current tenant, a tenant dependency is manually added.
-                    shellContext.AddDependentShell(_shellHost.GetOrCreateShellContextAsync(_shellSettings).GetAwaiter().GetResult());
+                    scope.ShellContext.AddDependentShell(_shellHost.GetOrCreateShellContextAsync(_shellSettings).GetAwaiter().GetResult());
 
                     // Note: the data protection provider is always registered as a singleton and thus will
                     // survive the current scope, which is mainly used to prevent the other tenant from being

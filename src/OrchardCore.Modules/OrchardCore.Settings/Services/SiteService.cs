@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -16,7 +16,6 @@ namespace OrchardCore.Settings.Services
     public class SiteService : ISiteService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISignal _signal;
         private readonly IClock _clock;
         private const string SiteCacheKey = "SiteService";
@@ -24,13 +23,11 @@ namespace OrchardCore.Settings.Services
         public SiteService(
             ISignal signal,
             IMemoryCache memoryCache,
-            IHttpContextAccessor httpContextAccessor,
             IClock clock)
         {
             _signal = signal;
             _clock = clock;
             _memoryCache = memoryCache;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc/>
@@ -111,9 +108,9 @@ namespace OrchardCore.Settings.Services
             return;
         }
 
-        private YesSql.ISession GetSession()
+        private ISession GetSession()
         {
-            return _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+            return ShellScope.Current.ServiceProvider.GetService<ISession>();
         }
     }
 }

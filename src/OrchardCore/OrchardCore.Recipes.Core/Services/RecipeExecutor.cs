@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -158,45 +155,13 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            IServiceScope scope;
-            ShellContext shellContext;
-            IServiceProvider serviceProvider;
+            var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
+                ? await _shellHost.GetScopeAsync(_shellSettings) : null;
 
-            if (recipeStep.RecipeDescriptor.RequireNewScope)
+            await shellScope.UsingAsync(async scope =>
             {
-                (scope, shellContext) = await _shellHost.GetScopeAndContextAsync(_shellSettings);
-                serviceProvider = scope.ServiceProvider;
-            }
-            else
-            {
-                (scope, shellContext) = (null, null);
-                serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            }
-
-            using (scope)
-            {
-                if (recipeStep.RecipeDescriptor.RequireNewScope && !shellContext.IsActivated)
-                {
-                    using (var activatingScope = shellContext.CreateScope())
-                    {
-                        var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            await tenantEvent.ActivatingAsync();
-                        }
-
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            await tenantEvent.ActivatedAsync();
-                        }
-                    }
-
-                    shellContext.IsActivated = true;
-                }
-
-                var recipeStepHandlers = serviceProvider.GetServices<IRecipeStepHandler>();
-                var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
+                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
+                var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
                 // Substitutes the script elements by their actual values
@@ -220,21 +185,7 @@ namespace OrchardCore.Recipes.Services
                         Logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
-            }
-
-            // The recipe execution might have invalidated the shell by enabling new features,
-            // so the deferred tasks need to run on an updated shell context if necessary.
-            using (var localScope = await _shellHost.GetScopeAsync(_shellSettings))
-            {
-                var deferredTaskEngine = localScope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                // The recipe might have added some deferred tasks to process
-                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                {
-                    var taskContext = new DeferredTaskContext(localScope.ServiceProvider);
-                    await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                }
-            }
+            });
         }
 
         /// <summary>

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -122,10 +122,9 @@ namespace OrchardCore.AdminMenu
             return treeList;
         }
 
-        private YesSql.ISession GetSession()
+        private ISession GetSession()
         {
-            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+            return ShellScope.Current.ServiceProvider.GetService<ISession>();
         }
     }
 }

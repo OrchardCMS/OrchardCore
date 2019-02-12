@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Hosting.ShellBuilders;
 
 namespace OrchardCore.Environment.Shell.Builders
 {

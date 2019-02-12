@@ -1,39 +1,37 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
     public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
 
         private ApplicationPartManager _applicationPartManager;
         private IEnumerable<IApplicationFeatureProvider<ViewsFeature>> _featureProviders;
 
-        public ShellViewFeatureProvider(IHttpContextAccessor httpContextAccessor)
+        public ShellViewFeatureProvider(IServiceProvider services)
         {
-            _httpContextAccessor = httpContextAccessor;
-            var services = _httpContextAccessor.HttpContext.RequestServices;
             _hostingEnvironment = services.GetRequiredService<IHostingEnvironment>();
             _applicationContext = services.GetRequiredService<IApplicationContext>();
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            var services = _httpContextAccessor.HttpContext?.RequestServices;
+            var services = ShellScope.Current?.ServiceProvider;
 
-            // 'HttpContext' is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
-            // So, here we resolve and cache tenant level singletons, application singletons are resolved in the constructor.
+            // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
+            // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
 
             if (services != null && _featureProviders == null)
             {

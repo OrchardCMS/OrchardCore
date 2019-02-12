@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -144,7 +144,9 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                using (var scope = shellContext.CreateScope())
+                var shellScope = shellContext.CreateScope();
+
+                await shellScope.UsingAsync(async scope =>
                 {
                     IStore store;
 
@@ -163,7 +165,7 @@ namespace OrchardCore.Setup.Services
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
-                        return null;
+                        return;
                     }
 
                     // Create the "minimum shell descriptor"
@@ -173,14 +175,11 @@ namespace OrchardCore.Setup.Services
                         .UpdateShellDescriptorAsync(0,
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
+                });
 
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return null;
                 }
 
                 executionId = Guid.NewGuid().ToString("n");
@@ -210,13 +209,12 @@ namespace OrchardCore.Setup.Services
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
-                using (var scope = shellContext.CreateScope())
-                {
-                    var hasErrors = false;
+                var shellScope = shellContext.CreateScope();
 
+                await shellScope.UsingAsync(async scope =>
+                {
                     void reportError(string key, string message)
                     {
-                        hasErrors = true;
                         context.Errors[key] = message;
                     }
 
@@ -235,19 +233,11 @@ namespace OrchardCore.Setup.Services
                         context.SiteTimeZone,
                         reportError
                     ), logger);
+                });
 
-                    if (hasErrors)
-                    {
-                        return executionId;
-                    }
-
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return executionId;
                 }
             }
 

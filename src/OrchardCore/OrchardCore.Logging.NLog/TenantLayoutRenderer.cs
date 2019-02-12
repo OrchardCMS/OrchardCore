@@ -2,7 +2,7 @@ using System.Text;
 using NLog;
 using NLog.LayoutRenderers;
 using NLog.Web.LayoutRenderers;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Logging
 {

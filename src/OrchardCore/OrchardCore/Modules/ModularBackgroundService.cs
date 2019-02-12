@@ -12,8 +12,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -88,6 +89,8 @@ namespace OrchardCore.Modules
 
                 var schedulers = GetSchedulersToRun(tenant);
 
+                ShellScope.StartFlow();
+
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 foreach (var scheduler in schedulers)
@@ -97,12 +100,11 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    IServiceScope scope = null;
-                    ShellContext context = null;
+                    ShellScope shellScope = null;
 
                     try
                     {
-                        (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
+                        shellScope = await _shellHost.GetScopeAsync(shell.Settings);
                     }
 
                     catch (Exception e)
@@ -111,20 +113,20 @@ namespace OrchardCore.Modules
                         return;
                     }
 
-                    using (scope)
+                    if (shellScope.ShellContext.Pipeline == null)
                     {
-                        if (scope == null || context.Pipeline == null)
-                        {
-                            break;
-                        }
+                        break;
+                    }
 
+                    await shellScope.UsingAsync(async scope =>
+                    {
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
 
                         if (task == null)
                         {
-                            continue;
+                            return;
                         }
 
                         try
@@ -141,7 +143,7 @@ namespace OrchardCore.Modules
                         {
                             Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-                    }
+                    });
                 }
             });
         }
@@ -159,14 +161,15 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                ShellScope.StartFlow();
+
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
-                IServiceScope scope = null;
-                ShellContext context = null;
+                ShellScope shellScope = null;
 
                 try
                 {
-                    (scope, context) = await _shellHost.GetScopeAndContextAsync(shell.Settings);
+                    shellScope = await _shellHost.GetScopeAsync(shell.Settings);
                 }
 
                 catch (Exception e)
@@ -175,13 +178,13 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                using (scope)
+                if (shellScope.ShellContext.Pipeline == null)
                 {
-                    if (scope == null || context.Pipeline == null)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
+                await shellScope.UsingAsync(async scope =>
+                {
                     var tasks = scope.ServiceProvider.GetServices<IBackgroundTask>();
 
                     CleanSchedulers(tenant, tasks);
@@ -199,7 +202,7 @@ namespace OrchardCore.Modules
                     {
                         var taskName = task.GetTaskName();
 
-                        if (!_schedulers.TryGetValue(tenant + taskName, out BackgroundTaskScheduler scheduler))
+                        if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
                             _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
@@ -235,7 +238,7 @@ namespace OrchardCore.Modules
                         scheduler.Released = false;
                         scheduler.Updated = true;
                     }
-                }
+                });
             });
         }
 

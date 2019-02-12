@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -64,9 +63,8 @@ namespace OrchardCore.Mvc
 
         private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
-            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));
-            manager.FeatureProviders.Add(new ShellViewFeatureProvider(httpContextAccessor));
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(services));
+            manager.FeatureProviders.Add(new ShellViewFeatureProvider(services));
         }
 
         internal static void AddMvcModuleCoreServices(IServiceCollection services)

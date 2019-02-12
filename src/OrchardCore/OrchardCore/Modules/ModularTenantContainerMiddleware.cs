@@ -1,13 +1,9 @@
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -19,7 +15,6 @@ namespace OrchardCore.Modules
         private readonly RequestDelegate _next;
         private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
@@ -49,71 +44,15 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                var hasPendingTasks = false;
+                ShellScope.StartFlow();
 
-                // We need to get a scope and the ShellContext that created it
-                var (scope, shellContext) = await _shellHost.GetScopeAndContextAsync(shellSettings);
+                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
-                using (scope)
+                await shellScope.UsingAsync(scope =>
                 {
-                    // Register the shell context as a custom feature
-                    httpContext.Features.Set(shellContext);
-
-                    if (!shellContext.IsActivated)
-                    {
-                        var semaphore = _semaphores.GetOrAdd(shellSettings.Name, (name) => new SemaphoreSlim(1));
-
-                        await semaphore.WaitAsync();
-
-                        try
-                        {
-                            // The tenant gets activated here
-                            if (!shellContext.IsActivated)
-                            {
-                                using (var activatingScope = await _shellHost.GetScopeAsync(shellSettings))
-                                {
-
-                                    var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
-                                    foreach (var tenantEvent in tenantEvents)
-                                    {
-                                        await tenantEvent.ActivatingAsync();
-                                    }
-
-                                    foreach (var tenantEvent in tenantEvents.Reverse())
-                                    {
-                                        await tenantEvent.ActivatedAsync();
-                                    }
-                                }
-
-                                shellContext.IsActivated = true;
-                            }
-                        }
-                        finally
-                        {
-                            semaphore.Release();
-                            _semaphores.TryRemove(shellSettings.Name, out semaphore);
-                        }
-                    }
-
-                    await _next.Invoke(httpContext);
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                    hasPendingTasks = deferredTaskEngine?.HasPendingTasks ?? false;
-                }
-
-                // Create a new scope only if there are pending tasks
-                if (hasPendingTasks)
-                {
-                    using (var pendingScope = await _shellHost.GetScopeAsync(shellSettings))
-                    {
-                        if (pendingScope != null)
-                        {
-                            var deferredTaskEngine = pendingScope.ServiceProvider.GetService<IDeferredTaskEngine>();
-                            var context = new DeferredTaskContext(pendingScope.ServiceProvider);
-                            await deferredTaskEngine.ExecuteTasksAsync(context);
-                        }
-                    }
-                }
+                    httpContext.Features.Set(scope.ShellContext);
+                    return _next.Invoke(httpContext);
+                });
             }
         }
     }
