@@ -48,19 +48,27 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                Logger.LogDebug("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                Logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
-            try
+            while (GetRunningShells().Count() < 1)
             {
-                while (GetRunningShells().Count() < 1)
+                try
                 {
                     await Task.Delay(MinIdleTime, stoppingToken);
                 }
+                catch (TaskCanceledException)
+                {
+                    Logger.LogError("Testing message 1");
+                    break;
+                }
+            }
 
-                var previousShells = Enumerable.Empty<ShellContext>();
+            var previousShells = Enumerable.Empty<ShellContext>();
 
-                while (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
@@ -71,13 +79,11 @@ namespace OrchardCore.Modules
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
-            }
 
-            catch (TaskCanceledException) { }
-
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Error while executing '{ServiceName}', the service is still running.", nameof(ModularBackgroundService));
+                }
             }
         }
 

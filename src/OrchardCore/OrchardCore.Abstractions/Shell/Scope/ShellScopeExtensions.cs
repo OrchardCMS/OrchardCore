@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Shell.Scope
 {
     public static class ShellScopeExtensions
     {
-        public async static Task UsingAsync(this ShellScope scope, Func<ShellScope, Task> execute)
+        public static async Task UsingAsync(this ShellScope scope, Func<ShellScope, Task> execute)
         {
             if (scope == null)
             {
