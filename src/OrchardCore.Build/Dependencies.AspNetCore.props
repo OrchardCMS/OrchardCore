@@ -177,5 +177,14 @@
     <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.2.0" />
     <PackageManagement Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageManagement Include="System.Security.Cryptography.Cng" Version="4.5.0" />
+
+    <!-- These definitions are are used in projects that incur package downgrades. -->
+    <PackageManagement Include="System.Collections" Version="4.3.0" />
+    <PackageManagement Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageManagement Include="System.Globalization" Version="4.3.0" />
+    <PackageManagement Include="System.IO" Version="4.3.0" />
+    <PackageManagement Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageManagement Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageManagement Include="System.Resources.ResourceManager" Version="4.3.0" />
   </ItemGroup>
 </Project>

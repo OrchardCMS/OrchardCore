@@ -37,12 +37,12 @@ namespace OrchardCore.Recipes.Commands
 
             foreach (var recipe in recipes)
             {
-                await Context.Output.WriteLineAsync(T[$"Recipe: {recipe.Name}"]);
-                await Context.Output.WriteLineAsync(T[$"  Version:     {recipe.Version}"]);
-                await Context.Output.WriteLineAsync(T[$"  Tags:        {string.Join(",", recipe.Tags)}"]);
-                await Context.Output.WriteLineAsync(T[$"  Description: {recipe.Description}"]);
-                await Context.Output.WriteLineAsync(T[$"  Author:      {recipe.Author}"]);
-                await Context.Output.WriteLineAsync(T[$"  Website:     {recipe.WebSite}"]);
+                await Context.Output.WriteLineAsync(T["Recipe: {0}", recipe.Name]);
+                await Context.Output.WriteLineAsync(T["  Version:     {0}", recipe.Version]);
+                await Context.Output.WriteLineAsync(T["  Tags:        {0}", string.Join(",", recipe.Tags)]);
+                await Context.Output.WriteLineAsync(T["  Description: {0}", recipe.Description]);
+                await Context.Output.WriteLineAsync(T["  Author:      {0}", recipe.Author]);
+                await Context.Output.WriteLineAsync(T["  Website:     {0}", recipe.WebSite]);
             }
         }
     }

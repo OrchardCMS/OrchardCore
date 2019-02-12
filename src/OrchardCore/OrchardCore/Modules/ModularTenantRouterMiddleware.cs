@@ -50,8 +50,10 @@ namespace OrchardCore.Modules
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
             if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
-                httpContext.Request.PathBase += ("/" + shellContext.Settings.RequestUrlPrefix);
-                httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
+                PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
+                httpContext.Request.PathBase += prefix;
+                httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
+                httpContext.Request.Path = remainingPath;
             }
 
             // Do we need to rebuild the pipeline ?

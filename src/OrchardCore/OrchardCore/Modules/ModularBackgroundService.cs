@@ -338,7 +338,7 @@ namespace OrchardCore.Modules
 
             if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
             {
-                context.Request.PathBase = "/" + settings.RequestUrlPrefix.Trim(' ', '/');
+                context.Request.PathBase = "/" + settings.RequestUrlPrefix;
             }
 
             context.Request.Path = "/";

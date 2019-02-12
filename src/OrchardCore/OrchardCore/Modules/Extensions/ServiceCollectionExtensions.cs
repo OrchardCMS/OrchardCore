@@ -157,13 +157,19 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
 
                 var tenantName = settings.Name;
-                var tenantPrefix = "/" + settings.RequestUrlPrefix;
 
-                services.AddAntiforgery(options =>
-                {
-                    options.Cookie.Name = "orchantiforgery_" + tenantName;
-                    options.Cookie.Path = tenantPrefix;
-                });
+                // Re-register the antiforgery  services to be tenant-aware.
+                var collection = new ServiceCollection()
+                    .AddAntiforgery(options =>
+                    {
+                        options.Cookie.Name = "orchantiforgery_" + tenantName;
+
+                        // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+                        // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                        // tenant prefix but may also start by a path related e.g to a virtual folder.
+                    });
+
+                services.Add(collection);
             });
         }
 
