@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -187,6 +189,7 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
@@ -197,6 +200,12 @@ namespace OrchardCore.Media
                 Directory.CreateDirectory(mediaPath);
             }
 
+            var fileProviders = new List<IFileProvider>();
+            fileProviders.Add(env.WebRootFileProvider);
+            fileProviders.Add(new PhysicalFileProvider(mediaPath));
+
+            env.WebRootFileProvider = new CompositeFileProvider(fileProviders);
+
             // ImageSharp before the static file provider
             app.UseImageSharp();
 
@@ -204,7 +213,7 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsUrlPrefix,
-                FileProvider = new PhysicalFileProvider(mediaPath),
+                FileProvider = env.WebRootFileProvider,
                 ServeUnknownFileTypes = true,
             });
         }

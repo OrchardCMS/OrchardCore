@@ -113,31 +113,11 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Configure((app, routes, serviceProvider) =>
             {
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
-                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
-
-                IFileProvider fileProvider;
-                if (env.IsDevelopment())
-                {
-                    var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(env.WebRootFileProvider);
-                    fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
-                    fileProvider = new CompositeFileProvider(fileProviders);
-                }
-                else
-                {
-                    var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(env.WebRootFileProvider);
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
-                    fileProvider = new CompositeFileProvider(fileProviders);
-                }
-
-                env.WebRootFileProvider = fileProvider;
-
+                
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
 
                 options.RequestPath = "";
-                options.FileProvider = fileProvider;
+                options.FileProvider = env.WebRootFileProvider;
 
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
 

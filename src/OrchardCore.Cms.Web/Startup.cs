@@ -18,8 +18,6 @@ namespace OrchardCore.Cms.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
             app.UseOrchardCore();
         }
     }

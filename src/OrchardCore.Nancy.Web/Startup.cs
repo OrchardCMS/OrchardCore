@@ -25,8 +25,6 @@ namespace OrchardCore.Nancy.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
             app.UseOrchardCore();
         }
     }

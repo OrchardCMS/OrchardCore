@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -19,6 +20,17 @@ namespace Microsoft.AspNetCore.Builder
             env.ContentRootFileProvider = new CompositeFileProvider(
                 new ModuleEmbeddedFileProvider(appContext),
                 env.ContentRootFileProvider);
+
+            var fileProviders = new List<IFileProvider>();
+            fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
+            fileProviders.Add(env.WebRootFileProvider);
+
+            if (env.IsDevelopment())
+            {
+                fileProviders.Insert(0, new ModuleProjectStaticFileProvider(appContext));
+            }
+
+            env.WebRootFileProvider = new CompositeFileProvider(fileProviders);
 
             app.UseMiddleware<PoweredByMiddleware>();
 

@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -37,6 +39,7 @@ namespace OrchardCore.Tenants
         
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
@@ -46,10 +49,16 @@ namespace OrchardCore.Tenants
             {
                 Directory.CreateDirectory(contentRoot);
             }
+            
+            var fileProviders = new List<IFileProvider>();
+            fileProviders.Add(env.WebRootFileProvider);
+            fileProviders.Add(new PhysicalFileProvider(contentRoot));
+
+            env.WebRootFileProvider = new CompositeFileProvider(fileProviders);
 
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(contentRoot),
+                FileProvider = env.WebRootFileProvider,
                 DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true,
 
