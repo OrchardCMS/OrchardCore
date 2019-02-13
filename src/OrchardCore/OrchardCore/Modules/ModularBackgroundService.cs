@@ -59,7 +59,6 @@ namespace OrchardCore.Modules
                 }
                 catch (TaskCanceledException)
                 {
-                    Logger.LogError("Testing message 1");
                     break;
                 }
             }

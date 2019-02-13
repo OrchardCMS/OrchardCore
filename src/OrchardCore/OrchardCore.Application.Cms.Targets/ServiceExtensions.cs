@@ -30,7 +30,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddDataAccess()
                 .AddDataStorage()
                 .AddBackgroundService()
-                .AddDeferredTasks()
 
                 .AddTheming()
                 .AddLiquidViews()
