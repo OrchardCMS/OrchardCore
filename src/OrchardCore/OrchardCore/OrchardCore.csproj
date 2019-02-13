@@ -33,14 +33,4 @@
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Remove these references once ncrontab targets netstandard2.0-->
-    <PackageReference Include="System.Collections" />
-    <PackageReference Include="System.Diagnostics.Debug" />
-    <PackageReference Include="System.Globalization" />
-    <PackageReference Include="System.IO" />
-    <PackageReference Include="System.Net.Primitives" />
-    <PackageReference Include="System.Resources.ResourceManager" />
-  </ItemGroup>
-
 </Project>
