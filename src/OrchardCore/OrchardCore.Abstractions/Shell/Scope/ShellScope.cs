@@ -13,6 +13,9 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
 {
+    /// <summary>
+    /// Custom 'IServiceScope' managing the shell state and its execution flow.
+    /// </summary>
     public class ShellScope : IServiceScope
     {
         private readonly IServiceScope _serviceScope;
@@ -115,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Adds a delegate to be invoked when 'DisposeAsync()' is called on this scope.
+        /// Adds a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
         public void BeforeDispose(Func<ShellScope, Task> callback)
         {
@@ -123,9 +126,9 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Adds a Task to be executed in a new scope at he end of 'DisposeAsync()'.
+        /// Adds a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
         /// </summary>
-        public void AddTask(Func<ShellScope, Task> task)
+        public void AddDeferredTask(Func<ShellScope, Task> task)
         {
             _deferredTasks.Add(task);
         }

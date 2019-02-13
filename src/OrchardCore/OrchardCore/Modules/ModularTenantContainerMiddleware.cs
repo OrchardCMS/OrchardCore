@@ -50,7 +50,9 @@ namespace OrchardCore.Modules
 
                 await shellScope.UsingAsync(scope =>
                 {
+                    // Register the shell for logging purposes.
                     httpContext.Features.Set(scope.ShellContext);
+
                     return _next.Invoke(httpContext);
                 });
             }
