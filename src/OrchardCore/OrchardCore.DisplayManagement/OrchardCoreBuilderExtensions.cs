@@ -79,7 +79,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<INotifier, Notifier>();
 
-                    services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
                     services.AddShapeAttributes<DateTimeShapes>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();
