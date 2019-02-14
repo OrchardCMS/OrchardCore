@@ -6,6 +6,9 @@
 
     var collapsedByDefault = options.IsCollapsedByDefault(Model.Definition);
     var collapsed = collapsedByDefault ? true : settings.Collapse;
+    
+    var ignoredByDefault = options.IsIgnoredByDefault(Model.Definition);
+    var ignored = ignoredByDefault ? true : settings.Ignore;
 }
 
 <div class="form-group">
@@ -16,8 +19,21 @@
         {
             <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
         }
-        else {
+        else
+        {
             <span class="hint">@T["Check to collapse fields in the GraphQL schema."]</span>
+        }
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Settings.Ignore" checked="@ignored" asp-is-disabled="@ignoredByDefault" />
+        <label class="custom-control-label" asp-for="Settings.Ignore">@T["Hide"]</label>
+        @if (ignoredByDefault)
+        {
+            <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
+        }
+        else
+        {
+            <span class="hint">@T["Check to remove type from the GraphQL schema."]</span>
         }
     </div>
 </div>
