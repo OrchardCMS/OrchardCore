@@ -166,11 +166,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             var contentType = definition.ContentTypeDefinition.Name;
             var partName = definition.PartDefinition.Name;
 
-            if (contentType == partName)
-            {
-                return true;
-            }
-
             var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
 
             if (contentTypeOption != null)
