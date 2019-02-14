@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentManagement.GraphQL.Settings;
@@ -13,6 +14,61 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
             = Enumerable.Empty<GraphQLContentPartOption>();
 
+        public IEnumerable<GraphQLField> HiddenFields { get; set; }
+            = Enumerable.Empty<GraphQLField>();
+
+        public GraphQLContentOptions ConfigureContentType(string contentType, Action<GraphQLContentTypeOption> action)
+        {
+            var option = new GraphQLContentTypeOption(contentType);
+
+            action(option);
+
+            ContentTypeOptions = ContentTypeOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
+            where TContentPart : ContentPart
+        {
+            var option = new GraphQLContentPartOption<TContentPart>();
+
+            action(option);
+
+            PartOptions = PartOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
+        {
+            var option = new GraphQLContentPartOption(partName);
+
+            action(option);
+
+            PartOptions = PartOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions IgnoreField<IObjectGraphType>(string fieldName) where IObjectGraphType : new()
+        {
+            HiddenFields = HiddenFields.Union(new[] {
+                new GraphQLField<IObjectGraphType>(fieldName),
+            });
+
+            return this;
+        }
+
+        public GraphQLContentOptions IgnoreField(Type fieldType, string fieldName)
+        {
+            HiddenFields = HiddenFields.Union(new[] {
+                new GraphQLField(fieldType, fieldName),
+            });
+
+            return this;
+        }
+
         /// <summary>
         /// Collapsing works at a heirachy
         ///
@@ -22,7 +78,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         /// </summary>
         /// <param name="definition"></param>
         /// <returns></returns>
-        public bool ShouldCollapse(ContentTypePartDefinition definition)
+        internal bool ShouldCollapse(ContentTypePartDefinition definition)
         {
             if (IsCollapsedByDefault(definition))
             {
@@ -81,22 +137,66 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             return false;
         }
-    }
 
-    public class GraphQLContentTypeOption
-    {
-        public string ContentType { get; set; }
+        internal bool ShouldSkip(ContentTypePartDefinition definition)
+        {
+            if (IsHiddenByDefault(definition))
+            {
+                return true;
+            }
 
-        public bool Collapse { get; set; }
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
 
-        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentPartOption>();
-    }
+            if (settings.Hidden)
+            {
+                return true;
+            }
 
-    public class GraphQLContentPartOption
-    {
-        public string Name { get; set; }
+            return false;
+        }
 
-        public bool Collapse { get; set; }
+        internal bool ShouldSkip(Type fieldType, string fieldName)
+        {
+            return HiddenFields
+                .Any(x => x.FieldType == fieldType && x.FieldName == fieldName);
+        }
+
+        public bool IsHiddenByDefault(ContentTypePartDefinition definition)
+        {
+            var contentType = definition.ContentTypeDefinition.Name;
+            var partName = definition.PartDefinition.Name;
+
+            var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+
+            if (contentTypeOption != null)
+            {
+                if (contentTypeOption.Hidden)
+                {
+                    return true;
+                }
+
+                var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
+
+                if (contentTypePartOption != null)
+                {
+                    if (contentTypePartOption.Hidden)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+
+            if (contentPartOption != null)
+            {
+                if (contentPartOption.Hidden)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
