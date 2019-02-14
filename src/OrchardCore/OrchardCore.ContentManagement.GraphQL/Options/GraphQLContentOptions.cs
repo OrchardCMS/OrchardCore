@@ -20,10 +20,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public GraphQLContentOptions ConfigureContentType(string contentType, Action<GraphQLContentTypeOption> action)
         {
-            var option = new GraphQLContentTypeOption
-            {
-                ContentType = contentType
-            };
+            var option = new GraphQLContentTypeOption(contentType);
 
             action(option);
 
@@ -46,7 +43,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public GraphQLContentOptions ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
         {
-            var option = new GraphQLContentPartOption { Name = partName };
+            var option = new GraphQLContentPartOption(partName);
 
             action(option);
 

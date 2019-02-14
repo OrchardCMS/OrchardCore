@@ -6,7 +6,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 {
     public class GraphQLContentTypeOption
     {
-        public string ContentType { get; set; }
+        public GraphQLContentTypeOption(string contentType)
+        {
+            if (string.IsNullOrEmpty(contentType))
+            {
+                throw new ArgumentNullException(nameof(contentType));
+            }
+
+            ContentType = contentType;
+        }
+
+        public string ContentType { get; }
 
         public bool Collapse { get; set; }
 
@@ -29,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public GraphQLContentTypeOption ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
         {
-            var option = new GraphQLContentPartOption { Name = partName };
+            var option = new GraphQLContentPartOption(partName);
 
             action(option);
 
