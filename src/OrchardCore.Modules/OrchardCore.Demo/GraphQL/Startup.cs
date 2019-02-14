@@ -15,16 +15,19 @@ namespace OrchardCore.Demo.GraphQL
             {
                 // Top Level Content Type options
                 options.ContentTypeOptions = options.ContentTypeOptions.Union(new[] {
-                        new GraphQLContentTypeOption("Blog") {
+                        new GraphQLContentTypeOption("Blog")
+                        {
                             Collapse = false,
                             Ignore = false,
                             PartOptions = new GraphQLContentPartOption[] {
                                 // Content Part options attached to Content Type
-                                new GraphQLContentPartOption("TestContentPartA") {
+                                new GraphQLContentPartOption("TestContentPartA")
+                                {
                                     Collapse = false,
                                     Ignore = false
                                 },
-                                new GraphQLContentPartOption<TestContentPartA> {
+                                new GraphQLContentPartOption<TestContentPartA>
+                                {
                                     Collapse = false,
                                     Ignore = false
                                 }
@@ -63,11 +66,13 @@ namespace OrchardCore.Demo.GraphQL
 
                 // Top level Part Options
                 options.PartOptions = options.PartOptions.Union(new[] {
-                    new GraphQLContentPartOption("TestContentPartA") {
+                    new GraphQLContentPartOption("TestContentPartA")
+                    {
                         Collapse = false,
                         Ignore = false
                     },
-                    new GraphQLContentPartOption<TestContentPartA> {
+                    new GraphQLContentPartOption<TestContentPartA>
+                    {
                         Collapse = false,
                         Ignore = false
                     }

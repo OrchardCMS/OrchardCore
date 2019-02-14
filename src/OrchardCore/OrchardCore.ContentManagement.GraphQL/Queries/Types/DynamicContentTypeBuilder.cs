@@ -50,7 +50,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             var fieldType = fieldProvider.GetField(field);
 
-                            if (_contentOptions.ShouldIgnore(field, fieldType)) continue;
+                            if (_contentOptions.ShouldIgnore(fieldType.Type, fieldType.Name)) continue;
 
                             if (fieldType != null)
                             {

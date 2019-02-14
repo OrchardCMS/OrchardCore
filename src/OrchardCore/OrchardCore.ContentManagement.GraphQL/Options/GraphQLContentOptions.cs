@@ -156,6 +156,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
+        internal bool ShouldIgnore(Type fieldType, string fieldName)
+        {
+            return IgnoredFields
+                .Any(x => x.FieldType == fieldType && x.FieldName == fieldName);
+        }
+
         public bool IsIgnoredByDefault(ContentTypePartDefinition definition)
         {
             var contentType = definition.ContentTypeDefinition.Name;

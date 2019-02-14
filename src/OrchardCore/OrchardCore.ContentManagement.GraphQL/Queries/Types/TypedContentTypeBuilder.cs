@@ -48,7 +48,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in queryGraphTypeResolved.Fields)
                         {
-                            if (_contentOptions.ShouldIgnore(part, field)) continue;
+                            if (_contentOptions.ShouldIgnore(queryGraphType, field.Name)) continue;
 
                             var rolledUpField = new FieldType
                             {
