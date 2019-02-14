@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -15,6 +17,61 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public IEnumerable<GraphQLField> IgnoredFields { get; set; }
             = Enumerable.Empty<GraphQLField>();
+
+        public GraphQLContentOptions ConfigureContentType(string contentType, Action<GraphQLContentTypeOption> action)
+        {
+            var option = new GraphQLContentTypeOption
+            {
+                ContentType = contentType
+            };
+
+            action(option);
+
+            ContentTypeOptions = ContentTypeOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
+            where TContentPart : ContentPart
+        {
+            var option = new GraphQLContentPartOption<TContentPart>();
+
+            action(option);
+
+            PartOptions = PartOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
+        {
+            var option = new GraphQLContentPartOption { Name = partName };
+
+            action(option);
+
+            PartOptions = PartOptions.Union(new[] { option });
+
+            return this;
+        }
+
+        public GraphQLContentOptions IgnoreField<IObjectGraphType>(string fieldName) where IObjectGraphType : new()
+        {
+            IgnoredFields = IgnoredFields.Union(new[] {
+                new GraphQLField<IObjectGraphType>(fieldName),
+            });
+
+            return this;
+        }
+
+        public GraphQLContentOptions IgnoreField(Type fieldType, string fieldName)
+        {
+            IgnoredFields = IgnoredFields.Union(new[] {
+                new GraphQLField(fieldType, fieldName),
+            });
+
+            return this;
+        }
 
         /// <summary>
         /// Collapsing works at a heirachy

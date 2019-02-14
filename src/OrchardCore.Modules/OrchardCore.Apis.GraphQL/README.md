@@ -70,3 +70,6 @@ Executing a GraphQL query requires the issuer to have the `ExecuteGraphQL` permi
 cookie and OAuth 2.0 authentication. This means it's compatible with the OpenId module and supports JSON Web Token (JWT).
 
 By default anonymous users are not able to execute a GraphQL query.
+
+## Ignore Fields
+

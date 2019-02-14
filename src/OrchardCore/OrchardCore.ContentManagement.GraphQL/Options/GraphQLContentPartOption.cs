@@ -1,28 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using GraphQL;
 
 namespace OrchardCore.ContentManagement.GraphQL.Options
 {
-    public class GraphQLContentPartOption : GraphQLContentPartOption<object>
-    {
-    }
-
-    public class GraphQLContentPartOption<TSourceType>
+    public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart
     {
         public GraphQLContentPartOption()
         {
-            Name = nameof(TSourceType);
+            Name = nameof(TContentPart);
         }
 
-        public string Name { get; set; }
-        public bool Collapse { get; set; }
-
-        public bool Ignore { get; set; }
-        public IList<string> IgnoredPropertyNames { get; set; }
-
-        public GraphQLContentPartOption<TSourceType> IgnoreProperty(
-            Expression<Action<TSourceType>> expression)
+        public GraphQLContentPartOption<TContentPart> IgnoreProperty<TReturnType>(
+            Expression<Func<TContentPart, TReturnType>> expression)
         {
             string name;
             try
@@ -40,5 +31,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             return this;
         }
+    }
+
+    public class GraphQLContentPartOption
+    {
+        public string Name { get; set; }
+        public bool Collapse { get; set; }
+
+        public bool Ignore { get; set; }
+        public IList<string> IgnoredPropertyNames { get; set; }
     }
 }
