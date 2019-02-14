@@ -69,7 +69,8 @@ namespace OrchardCore.Modules
                 {
                     if (shellContext.Pipeline == null)
                     {
-                        shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider, shellScope.ServiceProvider);
+                        var pipeline = BuildTenantPipeline(shellContext.ServiceProvider, shellScope.ServiceProvider);
+                        shellContext.Pipeline = state => pipeline.Invoke(state as HttpContext);
                     }
                 }
 
@@ -80,7 +81,12 @@ namespace OrchardCore.Modules
                 }
             }
 
+            // For middlewares that rely on 'RequestServices'.
+            var existingServices = httpContext.RequestServices;
+            httpContext.RequestServices = shellScope.ServiceProvider;
+
             await shellContext.Pipeline.Invoke(httpContext);
+            httpContext.RequestServices = existingServices;
         }
 
         // Build the middleware pipeline for the current tenant

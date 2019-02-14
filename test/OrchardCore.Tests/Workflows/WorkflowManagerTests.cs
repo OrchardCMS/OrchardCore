@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
@@ -59,18 +62,29 @@ namespace OrchardCore.Tests.Workflows
                 }
             };
 
+            var shellContext = new ShellContext()
+            {
+                Settings = new ShellSettings() { Name = "Default" },
+                ServiceProvider = serviceProvider
+            };
+
+            ShellScope.StartFlow();
+
             var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
             var a = 10d;
             var b = 22d;
             var expectedSum = a + b;
             var expectedResult = expectedSum.ToString() + System.Environment.NewLine;
 
-            var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
-            var actualResult = stringBuilder.ToString();
+            using (var scope = shellContext.CreateScope())
+            {
+                var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
+                var actualResult = stringBuilder.ToString();
 
-            Assert.Equal(expectedResult, actualResult);
-            Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
-            Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
+                Assert.Equal(expectedResult, actualResult);
+                Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
+                Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
+            }
         }
 
         private IServiceProvider CreateServiceProvider()
@@ -90,7 +104,7 @@ namespace OrchardCore.Tests.Workflows
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
-            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
+            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
             return new JavaScriptWorkflowScriptEvaluator(
                 scriptingManager,

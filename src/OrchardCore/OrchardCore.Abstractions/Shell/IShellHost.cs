@@ -21,8 +21,7 @@ namespace OrchardCore.Environment.Shell
         Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         /// <remarks>
