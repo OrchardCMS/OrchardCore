@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -30,15 +29,12 @@ namespace OrchardCore.Modules
             new ConcurrentDictionary<string, IChangeToken>();
 
         private readonly IShellHost _shellHost;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ModularBackgroundService(
             IShellHost shellHost,
-            IHttpContextAccessor httpContextAccessor,
             ILogger<ModularBackgroundService> logger)
         {
             _shellHost = shellHost;
-            _httpContextAccessor = httpContextAccessor;
             Logger = logger;
         }
 
@@ -96,8 +92,6 @@ namespace OrchardCore.Modules
 
                 ShellScope.StartFlow();
 
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
                 foreach (var scheduler in schedulers)
                 {
                     if (stoppingToken.IsCancellationRequested)
@@ -105,18 +99,7 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    ShellScope shellScope = null;
-
-                    try
-                    {
-                        shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                    }
-
-                    catch (Exception e)
-                    {
-                        Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
-                        return;
-                    }
+                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
                     if (shellScope.ShellContext.Pipeline == null)
                     {
@@ -168,20 +151,7 @@ namespace OrchardCore.Modules
 
                 ShellScope.StartFlow();
 
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
-                ShellScope shellScope = null;
-
-                try
-                {
-                    shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                }
-
-                catch (Exception e)
-                {
-                    Logger.LogError(e, "Can't resolve a scope on tenant '{TenantName}'.", tenant);
-                    return;
-                }
+                var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
                 if (shellScope.ShellContext.Pipeline == null)
                 {
@@ -323,32 +293,6 @@ namespace OrchardCore.Modules
                     _schedulers.TryRemove(key, out var scheduler);
                 }
             }
-        }
-    }
-
-    internal static class ShellExtensions
-    {
-        public static HttpContext CreateHttpContext(this ShellContext shell)
-        {
-            return shell.Settings.CreateHttpContext();
-        }
-
-        public static HttpContext CreateHttpContext(this ShellSettings settings)
-        {
-            var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
-                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-            var context = new DefaultHttpContext();
-            context.Request.Host = new HostString(urlHost ?? "localhost");
-
-            if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
-            {
-                context.Request.PathBase = "/" + settings.RequestUrlPrefix;
-            }
-
-            context.Request.Path = "/";
-            context.Items["IsBackground"] = true;
-            return context;
         }
     }
 }
