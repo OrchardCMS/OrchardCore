@@ -135,7 +135,7 @@ namespace OrchardCore.Demo.Controllers
 
         public string CreateTask()
         {
-            ShellScope.Current?.AddDeferredTask(scope =>
+            ShellScope.Current.AddDeferredTask(scope =>
             {
                 var logger = scope.ServiceProvider.GetService<ILogger<HomeController>>();
                 logger.LogError("Task deferred successfully");
