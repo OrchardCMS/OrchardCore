@@ -18,18 +18,18 @@ namespace OrchardCore.Demo.GraphQL
                         new GraphQLContentTypeOption("Blog")
                         {
                             Collapse = false,
-                            Ignore = false,
+                            Hidden = false,
                             PartOptions = new GraphQLContentPartOption[] {
                                 // Content Part options attached to Content Type
                                 new GraphQLContentPartOption("TestContentPartA")
                                 {
                                     Collapse = false,
-                                    Ignore = false
+                                    Hidden = false
                                 },
                                 new GraphQLContentPartOption<TestContentPartA>
                                 {
                                     Collapse = false,
-                                    Ignore = false
+                                    Hidden = false
                                 }
                             }
                         }
@@ -39,23 +39,23 @@ namespace OrchardCore.Demo.GraphQL
                 options.ConfigureContentType("Blog", (typeConfig) =>
                 {
                     typeConfig.Collapse = false;
-                    typeConfig.Ignore = false;
+                    typeConfig.Hidden = false;
 
                     typeConfig
                         .ConfigurePart("TestContentPartA", (partConfig) =>
                         {
                             partConfig.Collapse = false;
-                            partConfig.Ignore = false;
+                            partConfig.Hidden = false;
                         })
                         .ConfigurePart<TestContentPartA>((partConfig) =>
                         {
                             partConfig.Collapse = false;
-                            partConfig.Ignore = false;
+                            partConfig.Hidden = false;
                         });
                 });
 
                 // Ignore Fields on GraphQL Objects
-                options.IgnoredFields = options.IgnoredFields.Union(new[] {
+                options.HiddenFields = options.HiddenFields.Union(new[] {
                     new GraphQLField(typeof(TestQueryObjectType), "lineIgnored"),
                     new GraphQLField<TestQueryObjectType>("lineOtherIgnored")
                 });
@@ -69,12 +69,12 @@ namespace OrchardCore.Demo.GraphQL
                     new GraphQLContentPartOption("TestContentPartA")
                     {
                         Collapse = false,
-                        Ignore = false
+                        Hidden = false
                     },
                     new GraphQLContentPartOption<TestContentPartA>
                     {
                         Collapse = false,
-                        Ignore = false
+                        Hidden = false
                     }
                 });
 
@@ -82,12 +82,12 @@ namespace OrchardCore.Demo.GraphQL
                     .ConfigurePart("TestContentPartA", (partConfig) =>
                     {
                         partConfig.Collapse = false;
-                        partConfig.Ignore = false;
+                        partConfig.Hidden = false;
                     })
                     .ConfigurePart<TestContentPartA>((partConfig) =>
                     {
                         partConfig.Collapse = false;
-                        partConfig.Ignore = false;
+                        partConfig.Hidden = false;
                     });
             });
         }

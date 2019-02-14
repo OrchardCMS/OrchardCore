@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
             = Enumerable.Empty<GraphQLContentPartOption>();
 
-        public IEnumerable<GraphQLField> IgnoredFields { get; set; }
+        public IEnumerable<GraphQLField> HiddenFields { get; set; }
             = Enumerable.Empty<GraphQLField>();
 
         public GraphQLContentOptions ConfigureContentType(string contentType, Action<GraphQLContentTypeOption> action)
@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public GraphQLContentOptions IgnoreField<IObjectGraphType>(string fieldName) where IObjectGraphType : new()
         {
-            IgnoredFields = IgnoredFields.Union(new[] {
+            HiddenFields = HiddenFields.Union(new[] {
                 new GraphQLField<IObjectGraphType>(fieldName),
             });
 
@@ -62,7 +62,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public GraphQLContentOptions IgnoreField(Type fieldType, string fieldName)
         {
-            IgnoredFields = IgnoredFields.Union(new[] {
+            HiddenFields = HiddenFields.Union(new[] {
                 new GraphQLField(fieldType, fieldName),
             });
 
@@ -138,16 +138,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
-        internal bool ShouldIgnore(ContentTypePartDefinition definition)
+        internal bool ShouldSkip(ContentTypePartDefinition definition)
         {
-            if (IsIgnoredByDefault(definition))
+            if (IsHiddenByDefault(definition))
             {
                 return true;
             }
 
             var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
 
-            if (settings.Ignore)
+            if (settings.Hidden)
             {
                 return true;
             }
@@ -155,13 +155,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
-        internal bool ShouldIgnore(Type fieldType, string fieldName)
+        internal bool ShouldSkip(Type fieldType, string fieldName)
         {
-            return IgnoredFields
+            return HiddenFields
                 .Any(x => x.FieldType == fieldType && x.FieldName == fieldName);
         }
 
-        public bool IsIgnoredByDefault(ContentTypePartDefinition definition)
+        public bool IsHiddenByDefault(ContentTypePartDefinition definition)
         {
             var contentType = definition.ContentTypeDefinition.Name;
             var partName = definition.PartDefinition.Name;
@@ -175,7 +175,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             if (contentTypeOption != null)
             {
-                if (contentTypeOption.Ignore)
+                if (contentTypeOption.Hidden)
                 {
                     return true;
                 }
@@ -184,7 +184,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
                 if (contentTypePartOption != null)
                 {
-                    if (contentTypePartOption.Ignore)
+                    if (contentTypePartOption.Hidden)
                     {
                         return true;
                     }
@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             if (contentPartOption != null)
             {
-                if (contentPartOption.Ignore)
+                if (contentPartOption.Hidden)
                 {
                     return true;
                 }

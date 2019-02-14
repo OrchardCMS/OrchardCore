@@ -4,7 +4,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 {
     public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart
     {
-        public GraphQLContentPartOption() : base(nameof(TContentPart))
+        public GraphQLContentPartOption() : base(typeof(TContentPart).Name)
         {
         }
     }
@@ -24,6 +24,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public string Name { get; }
 
         public bool Collapse { get; set; }
-        public bool Ignore { get; set; }
+        public bool Hidden { get; set; }
     }
 }

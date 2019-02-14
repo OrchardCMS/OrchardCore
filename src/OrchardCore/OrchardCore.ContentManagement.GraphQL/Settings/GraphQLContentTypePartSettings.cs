@@ -4,6 +4,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Settings
     {
         public bool Collapse { get; set; }
 
-        public bool Ignore { get; set; }
+        public bool Hidden { get; set; }
     }
 }
