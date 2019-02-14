@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
-using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
@@ -43,22 +39,6 @@ namespace OrchardCore.ContentManagement.GraphQL
             where TFilterType : GraphQLFilter<TObjectTypeToFilter>
         {
             services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
-        }
-
-        /// <summary>
-        /// Registers a type describing output arguments
-        /// </summary>
-        /// <typeparam name="TInput"></typeparam>
-        /// <typeparam name="TInputType"></typeparam>
-        /// <param name="services"></param>
-        public static void AddObjectGraphType<TInput, TInputType>(this IServiceCollection services,
-                Action<GraphQLContentOptions> configure)
-                where TInput : class
-                where TInputType : ObjectGraphType<TInput>
-        {
-            services.AddObjectGraphType<TInput, TInputType>();
-
-            services.Configure(configure);
         }
     }
 }
