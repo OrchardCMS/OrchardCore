@@ -53,6 +53,38 @@ namespace OrchardCore.Environment.Shell.Scope
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
+        /// Start holding shell scopes along the async flow.
+        /// </summary>
+        public static void StartFlow()
+        {
+            if (_current.Value == null)
+            {
+                _current.Value = new ShellScopeHolder();
+            }
+        }
+
+        /// <summary>
+        /// Retrieve the current shell scope from the async flow.
+        /// </summary>
+        public static ShellScope Current
+        {
+            get => _current.Value?.Scope;
+
+            set
+            {
+                if (_current.Value != null)
+                {
+                    _current.Value.Scope = value;
+                }
+            }
+        }
+
+        private class ShellScopeHolder
+        {
+            public ShellScope Scope;
+        }
+
+        /// <summary>
         /// Activate the shell, if not yet done, by calling the related tenant event handlers.
         /// </summary>
         public async Task ActivateShellAsync()
@@ -230,37 +262,5 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
-
-        /// <summary>
-        /// Start holding shell scopes along the async flow.
-        /// </summary>
-        public static void StartFlow()
-        {
-            if (_current.Value == null)
-            {
-                _current.Value = new ShellScopeHolder();
-            }
-        }
-
-        /// <summary>
-        /// Retrieve the current shell scope from the async flow.
-        /// </summary>
-        public static ShellScope Current
-        {
-            get => _current.Value?.Scope;
-
-            set
-            {
-                if (_current.Value != null)
-                {
-                    _current.Value.Scope = value;
-                }
-            }
-        }
-
-        private class ShellScopeHolder
-        {
-            public ShellScope Scope;
-        }
     }
 }
