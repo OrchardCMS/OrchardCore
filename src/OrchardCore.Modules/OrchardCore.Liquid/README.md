@@ -520,7 +520,7 @@ Input
 
 ### `shape`
 
-Renders a specific named tag with its properties
+Creates and renders a new shape, with optional caching arguments.
 
 Input
 
@@ -533,6 +533,18 @@ When using the shape tag a specific wrapper and / or alternate can be specified.
 ```liquid
 {% shape "menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
 ```
+
+### `shape_cache`
+
+Sets the caching parameters of a shape.
+
+Input
+
+```liquid
+{% shape_cache my_shape cache_id: "my-shape", cache_expires_after: "00:05:00" %}
+```
+
+For more information about the available caching paramters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
 
 ### `zone`
 
