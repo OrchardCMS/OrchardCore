@@ -34,8 +34,9 @@ namespace OrchardCore.Localization
             {
                 options.SetDefaultCulture(siteSettings.Culture);
             }
-            else
+            else if (siteSettings.SupportedCultures.Length > 0)
             {
+                // If other cultures are added, the system one won't be, so we add it manually
                 options.SetDefaultCulture(CultureInfo.InstalledUICulture.Name);
             }
 
