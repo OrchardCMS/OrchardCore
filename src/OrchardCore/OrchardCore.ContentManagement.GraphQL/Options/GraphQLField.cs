@@ -1,10 +1,11 @@
 using System;
+using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Options
 {
-    public class GraphQLField<IObjectGraphType> : GraphQLField where IObjectGraphType : new()
+    public class GraphQLField<IGraphType> : GraphQLField where IGraphType : IObjectGraphType
     {
-        public GraphQLField(string fieldName) : base (typeof(IObjectGraphType), fieldName)
+        public GraphQLField(string fieldName) : base (typeof(IGraphType), fieldName)
         {
         }
     }
