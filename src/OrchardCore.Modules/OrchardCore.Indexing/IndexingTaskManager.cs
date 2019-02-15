@@ -41,6 +41,11 @@ namespace OrchardCore.Indexing.Services
             Logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
+
+            if (!String.IsNullOrEmpty(_tablePrefix))
+            {
+                _tablePrefix += '_';
+            }
         }
 
         public ILogger Logger { get; set; }
