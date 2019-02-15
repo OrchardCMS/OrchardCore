@@ -1,31 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Remove="Views\Navigation-profile.cshtml" />
-    <EmbeddedResource Remove="Views\NavigationItem-profile.cshtml" />
-    <EmbeddedResource Remove="Views\NavigationItemLink-profile.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Drivers\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.ContentManagement.Display" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.Data.Abstractions" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.Menu" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.Recipes.Abstractions" Version="1.0.0-beta3-70668" />
-    <PackageReference Include="OrchardCore.Setup.Abstractions" Version="1.0.0-beta3-70668" />
+   
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Menu\OrchardCore.Menu.csproj" />
   </ItemGroup>
 
 </Project>

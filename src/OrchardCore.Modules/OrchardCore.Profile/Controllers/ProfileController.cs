@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -20,16 +18,13 @@ namespace OrchardCore.Profile.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
         public ProfileController(
             IProfileService profileService,
             IDisplayManager<IProfile> profileDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<ProfileController> h,
-            IStringLocalizer<ProfileController> s,
-            IContentDefinitionManager contentDefinitionManager
+            IStringLocalizer<ProfileController> s
             )
         {
             _profileDisplayManager = profileDisplayManager;
@@ -38,7 +33,6 @@ namespace OrchardCore.Profile.Controllers
             _authorizationService = authorizationService;
             H = h;
             S = s;
-            _contentDefinitionManager = contentDefinitionManager;
         }
 
         IHtmlLocalizer H { get; set; }
@@ -63,7 +57,6 @@ namespace OrchardCore.Profile.Controllers
                 profile.UserName = User.Identity.Name;
                 await _profileService.UpdateProfileAsync(profile);
             }
-
             var viewModel = new ProfileIndexViewModel
             {
                 GroupId = groupId,

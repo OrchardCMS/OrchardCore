@@ -8,9 +8,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Profile.Service;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Profile.Navigation;
-using OrchardCore.DisplayManagement.Descriptors;
-using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Profile
 {
@@ -25,15 +22,6 @@ namespace OrchardCore.Profile
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddNavigation();
-
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(ProfileMenuFilter));
-            });
-
-            services.AddScoped<IShapeTableProvider, ProfileNavigationShapes>();
-
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<IProfileService, ProfileService>();
             services.AddScoped<IDisplayManager<IProfile>, DisplayManager<IProfile>>();

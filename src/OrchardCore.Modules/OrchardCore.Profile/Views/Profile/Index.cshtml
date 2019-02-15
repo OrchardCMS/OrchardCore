@@ -10,74 +10,24 @@
     #main {
         margin-top: 85px;
     }
-
-    .menu {
-        padding: 0px;
-    }
-
-        .menu li {
-            padding: 0px;
-            text-align: center;
-        }
-
-            .menu li a {
-                color: #000;
-                text-decoration: none;
-                display: block;
-                padding: 10px;
-            }
-
-        .menu .active a {
-            color: #fff;
-        }
-
-    a{
-        color: #007bff;
-    }
-        a:hover {
-            color: #003f84;
-        }
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-        button:hover {
-            background-color: #003f84;
-            border-color: #003f84;
-        }
-
-    .status {
-        font-size: 14px;
-        color: #ffc600;
-    }
 </style>
-
 
 <div class="row">
     <div class="col-md-6">
-        <h4>@RenderTitleSegments(T["Profile"])</h4>
+        <h1>@RenderTitleSegments(T["Profile"])</h1>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6" style="padding-top: 15px;">
         <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline" style="float:right;">
             <button type="submit" class="btn btn-link nav-link" role="button" style="padding: 0px;"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
         </form>
         <label style="float:right;">Logged In User - <strong>@User.Identity.Name</strong></label>
     </div>
     <div class="col-md-12">
-        <hr style="margin-bottom: 2rem;margin-top:10px;" />
+        <hr />
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="list-group" id="myList">
-            @*@await DisplayAsync(await New.ProfileMenu())*@
-            @await RenderSectionAsync("ProfileNavigation", required: true)
-        </div>
-    </div>
-    <div class="col-md-9">
-        <h2 style="font-size: 20px;">Submitted Forms</h2><hr/>
-        @await DisplayAsync(Model.Shape)
-    </div>
-</div>
-<hr />
+
+
+
+@await DisplayAsync(Model.Shape)
