@@ -462,5 +462,22 @@ namespace OrchardCore.ContentManagement
                 _session.Save(publishedItem);
             }
         }
+
+        public async Task<ContentItem> CloneAsync(ContentItem contentItem)
+        {
+            var cloneContentItem = await NewAsync(contentItem.ContentType);
+            await CreateAsync(cloneContentItem, VersionOptions.Draft);
+
+            var context = new CloneContentContext(contentItem, cloneContentItem);
+
+            context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+            context.CloneContentItem.DisplayText = contentItem.DisplayText;
+
+            await Handlers.InvokeAsync(async handler => await handler.CloningAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.ClonedAsync(context), _logger);
+
+            _session.Save(context.CloneContentItem);
+            return context.CloneContentItem;
+        }
     }
 }

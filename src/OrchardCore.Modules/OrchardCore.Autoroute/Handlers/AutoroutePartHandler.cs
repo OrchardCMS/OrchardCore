@@ -119,6 +119,14 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
+        public async override Task CloningAsync(CloneContentContext context, AutoroutePart part)
+        {
+            var clonedPart = context.CloneContentItem.As<AutoroutePart>();
+            clonedPart.Path = await GenerateUniquePathAsync(part.Path, clonedPart );
+            clonedPart.SetHomepage = false;
+            clonedPart.Apply();
+        }
+
         private Task RemoveTagAsync(AutoroutePart part)
         {
             return _tagCache.RemoveTagAsync($"alias:{part.Path}");

@@ -543,31 +543,33 @@ namespace OrchardCore.Contents.Controllers
             }
         }
 
-        //[HttpPost]
-        //public ActionResult Clone(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.GetLatest(id);
+        [HttpPost]
+        public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-        //    if (contentItem == null)
-        //        return NotFound();
+            if (contentItem == null)
+                return NotFound();
 
-        //    if (!await _authorizationService.Authorize(User, Permissions.EditContent, contentItem, T("Couldn't clone content")))
-        //        return Unauthorized();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
+            {
+                return Unauthorized();
+            }
 
-        //    try
-        //    {
-        //        Services.ContentManager.Clone(contentItem);
-        //    }
-        //    catch (InvalidOperationException)
-        //    {
-        //        Services.Notifier.Warning(T("Could not clone the content item."));
-        //        return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //    }
+            try
+            {
+                await _contentManager.CloneAsync(contentItem);
+            }
+            catch (InvalidOperationException)
+            {
+                _notifier.Warning(T["Could not clone the content item."]);
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            }
 
-        //    Services.Notifier.Information(T("Successfully cloned. The clone was saved as a draft."));
+            _notifier.Information(T["Successfully cloned. The clone was saved as a draft."]);
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
 
         [HttpPost]

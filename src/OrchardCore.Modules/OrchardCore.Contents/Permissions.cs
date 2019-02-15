@@ -19,6 +19,8 @@ namespace OrchardCore.Contents
         public static readonly Permission ViewOwnContent = new Permission("ViewOwnContent", "View own content", new[] { ViewContent });
         public static readonly Permission PreviewContent = new Permission("PreviewContent", "Preview content", new[] { EditContent, PublishContent });
         public static readonly Permission PreviewOwnContent = new Permission("PreviewOwnContent", "Preview own content", new[] { PreviewContent });
+        public static readonly Permission CloneContent = new Permission("CloneContent", "Clone content", new[] { EditContent });
+        public static readonly Permission CloneOwnContent = new Permission("CloneOwnContent", "Clone own content", new[] { CloneContent });
 
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
@@ -35,7 +37,9 @@ namespace OrchardCore.Contents
                 ViewContent,
                 ViewOwnContent,
                 PreviewOwnContent,
-                PreviewContent
+                PreviewContent,
+                CloneContent,
+                CloneOwnContent
             };
         }
 
@@ -44,22 +48,22 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent}
+                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent,CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent}
+                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent,CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent,EditOwnContent,DeleteOwnContent,PreviewOwnContent}
+                    Permissions = new[] {PublishOwnContent,EditOwnContent,DeleteOwnContent,PreviewOwnContent,CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent,PreviewOwnContent}
+                    Permissions = new[] {EditOwnContent,PreviewOwnContent,CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",

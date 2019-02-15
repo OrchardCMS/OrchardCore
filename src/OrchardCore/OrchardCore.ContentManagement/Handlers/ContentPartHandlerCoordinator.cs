@@ -422,5 +422,42 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 }
             }
         }
+        public override async Task ClonedAsync(CloneContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    await _partHandlers.InvokeAsync(async handler => await handler.ClonedAsync(context, part), Logger);
+                }
+            }
+        }
+        public override async Task CloningAsync(CloneContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    await _partHandlers.InvokeAsync(async handler => await handler.CloningAsync(context, part), Logger);
+                }
+            }
+        }
+        
     }
 }
