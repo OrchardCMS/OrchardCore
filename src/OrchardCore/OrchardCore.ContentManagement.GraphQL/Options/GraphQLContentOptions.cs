@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -51,10 +52,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return this;
         }
 
-        public GraphQLContentOptions IgnoreField<IObjectGraphType>(string fieldName) where IObjectGraphType : new()
+        public GraphQLContentOptions IgnoreField<IGraphType>(string fieldName) where IGraphType : IObjectGraphType
         {
             HiddenFields = HiddenFields.Union(new[] {
-                new GraphQLField<IObjectGraphType>(fieldName),
+                new GraphQLField<IGraphType>(fieldName),
             });
 
             return this;
