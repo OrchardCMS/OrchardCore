@@ -95,6 +95,11 @@ namespace OrchardCore.Indexing.Services
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
             var tablePrefix = shellSettings["TablePrefix"];
 
+            if (!String.IsNullOrEmpty(tablePrefix))
+            {
+                tablePrefix += '_';
+            }
+
             var contentItemIds = new HashSet<string>();
 
             // Remove duplicate tasks, only keep the last one
