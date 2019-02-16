@@ -1,4 +1,4 @@
-﻿@model AdminIndexViewModel
+@model AdminIndexViewModel
 
 <h1>@RenderTitleSegments(T["Indexes"])</h1>
 
@@ -23,7 +23,7 @@
                         <div class="related">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
                             <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-message="@T["This will restart the indexing of all content items. Continue?"]" itemprop="UnsafeUrl">@T["Reset"]</a>
-                            <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-message="@T["You index will be rebuilt, which might alter some services during the process. Continue?"]" itemprop="UnsafeUrl">@T["Rebuild"]</a>
+                            <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" itemprop="UnsafeUrl">@T["Rebuild"]</a>
                             <a asp-action="Delete" asp-route-IndexName="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <h5>@entry.Name</h5>
