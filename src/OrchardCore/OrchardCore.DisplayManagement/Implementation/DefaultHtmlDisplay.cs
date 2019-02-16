@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -16,7 +15,6 @@ namespace OrchardCore.DisplayManagement.Implementation
     {
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
         private readonly IThemeManager _themeManager;
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +24,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         public DefaultHtmlDisplay(
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
-            IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
@@ -34,7 +31,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             _shapeTableManager = shapeTableManager;
             _shapeDisplayEvents = shapeDisplayEvents;
-            _httpContextAccessor = httpContextAccessor;
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
             _serviceProvider = serviceProvider;

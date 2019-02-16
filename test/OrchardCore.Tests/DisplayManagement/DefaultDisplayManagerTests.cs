@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,7 +31,6 @@ namespace OrchardCore.Tests.DisplayManagement
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-            serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
