@@ -19,6 +19,5 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Tenants.FileProvider",
     Name = "Static File Provider",
     Description = "Provides a way to serve independent static files for each tenant.",
-    Category = "Infrastructure",
-    DefaultTenantOnly = true
+    Category = "Infrastructure"
 )]

@@ -21,8 +21,6 @@ namespace OrchardCore.Templates.Cms.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseStaticFiles();
 #if (UseSerilog)
             app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
 #else

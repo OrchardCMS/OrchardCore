@@ -199,13 +199,7 @@ namespace OrchardCore.Media
             {
                 Directory.CreateDirectory(mediaPath);
             }
-
-            var fileProviders = new List<IFileProvider>();
-            fileProviders.Add(env.WebRootFileProvider);
-            fileProviders.Add(new PhysicalFileProvider(mediaPath));
-
-            env.WebRootFileProvider = new CompositeFileProvider(fileProviders);
-
+            
             // ImageSharp before the static file provider
             app.UseImageSharp();
 
@@ -213,7 +207,7 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsUrlPrefix,
-                FileProvider = env.WebRootFileProvider,
+                FileProvider = new PhysicalFileProvider(mediaPath),
                 ServeUnknownFileTypes = true,
             });
         }

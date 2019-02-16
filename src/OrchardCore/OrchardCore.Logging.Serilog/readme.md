@@ -60,7 +60,6 @@ add a reference to `OrchardCore.Logging.Serilog`
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseStaticFiles();
             app.UseOrchardCore(c => c.UseSerilogTenantNameLoggingMiddleware());
         }
 ```

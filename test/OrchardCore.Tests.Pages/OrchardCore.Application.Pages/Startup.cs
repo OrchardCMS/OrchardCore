@@ -18,8 +18,6 @@ namespace OrchardCore.Application.Pages
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
             app.UseOrchardCore();
         }
     }

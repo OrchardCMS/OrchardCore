@@ -50,15 +50,9 @@ namespace OrchardCore.Tenants
                 Directory.CreateDirectory(contentRoot);
             }
             
-            var fileProviders = new List<IFileProvider>();
-            fileProviders.Add(env.WebRootFileProvider);
-            fileProviders.Add(new PhysicalFileProvider(contentRoot));
-
-            env.WebRootFileProvider = new CompositeFileProvider(fileProviders);
-
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = env.WebRootFileProvider,
+                FileProvider = new PhysicalFileProvider(contentRoot),
                 DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true,
 
