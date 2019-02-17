@@ -85,14 +85,14 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            var pathBase = _httpContextAccessor?.HttpContext?.Request.PathBase ?? new PathString(null);
+            var pathBase = _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
             var publicUrl = new PathString(_publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path));
             return pathBase.Add(publicUrl);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            var pathBase = _httpContextAccessor?.HttpContext?.Request.PathBase ?? new PathString(null);
+            var pathBase = _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
             var publicUrlBase = pathBase.Add(_publicUrlBase);
 
             if (!publicUrl.StartsWith(publicUrlBase, StringComparison.OrdinalIgnoreCase))
