@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
@@ -10,11 +11,16 @@ namespace OrchardCore.Media.Services
     {
         private readonly IFileStore _fileStore;
         private readonly string _publicUrlBase;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MediaFileStore(IFileStore fileStore, string publicUrlBase)
+        public MediaFileStore(
+            IFileStore fileStore,
+            string publicUrlBase,
+            IHttpContextAccessor httpContextAccessor)
         {
             _fileStore = fileStore;
             _publicUrlBase = publicUrlBase;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public MediaFileStore(IFileStore fileStore)
@@ -79,17 +85,22 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            return _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
+            var pathBase = _httpContextAccessor?.HttpContext?.Request.PathBase ?? new PathString(null);
+            var publicUrl = new PathString(_publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path));
+            return pathBase.Add(publicUrl);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            if (!publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
+            var pathBase = _httpContextAccessor?.HttpContext?.Request.PathBase ?? new PathString(null);
+            var publicUrlBase = pathBase.Add(_publicUrlBase);
+
+            if (!publicUrl.StartsWith(publicUrlBase, StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
             }
 
-            return publicUrl.Substring(_publicUrlBase.Length);
+            return publicUrl.Substring(publicUrlBase.Value.Length);
         }
     }
 }

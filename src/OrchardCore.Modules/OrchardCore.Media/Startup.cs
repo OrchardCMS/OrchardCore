@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Deployment;
@@ -84,9 +84,14 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                return new MediaFileStore(fileStore, mediaUrlBase);
+                // To map between paths and public urls we need to take into account the request 'PathBase'
+                // which may start by e.g a virtual path and which already contains the 'RequestUrlPrefix'.
+                // We can't do that here because this tenant may be built in the context of another one.
+                // So, it is done on demand by the 'MediaFileStore' by using an 'IHttpContextAccessor'.
+
+                return new MediaFileStore(fileStore, AssetsUrlPrefix, httpContextAccessor);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();

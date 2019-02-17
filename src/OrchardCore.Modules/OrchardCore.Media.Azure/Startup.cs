@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Azure
                     if (!String.IsNullOrEmpty(options.PublicHostName))
                         mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
 
-                    return new MediaFileStore(fileStore, mediaBaseUri.ToString());
+                    return new MediaFileStore(fileStore, mediaBaseUri.ToString(), httpContextAccessor: null);
                 }));
             }
 
