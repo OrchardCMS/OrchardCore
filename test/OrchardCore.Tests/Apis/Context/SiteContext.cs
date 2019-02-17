@@ -54,6 +54,8 @@ namespace OrchardCore.Tests.Apis.Context
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
             setupResult.EnsureSuccessStatusCode();
 
+            await Task.Delay(100);
+
             Client = Site.CreateDefaultClient(url);
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
