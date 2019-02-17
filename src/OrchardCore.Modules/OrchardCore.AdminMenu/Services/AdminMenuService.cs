@@ -124,7 +124,7 @@ namespace OrchardCore.AdminMenu
 
         private ISession GetSession()
         {
-            return ShellScope.Current.ServiceProvider.GetService<ISession>();
+            return ShellScope.Services.GetService<ISession>();
         }
     }
 }

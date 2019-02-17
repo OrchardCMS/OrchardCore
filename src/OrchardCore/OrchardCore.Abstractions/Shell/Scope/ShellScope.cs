@@ -53,6 +53,22 @@ namespace OrchardCore.Environment.Shell.Scope
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
+        /// Retrieve the 'ShellContext' of the current shell scope.
+        /// </summary>
+        public static ShellContext Context
+        {
+            get => Current?.ShellContext;
+        }
+
+        /// <summary>
+        /// Retrieve the 'IServiceProvider' of the current shell scope.
+        /// </summary>
+        public static IServiceProvider Services
+        {
+            get => Current?.ServiceProvider;
+        }
+
+        /// <summary>
         /// Start holding shell scopes along the async flow.
         /// </summary>
         public static void StartFlow()
@@ -137,20 +153,24 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Adds a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
+        /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        public void BeforeDispose(Func<ShellScope, Task> callback)
-        {
-            _beforeDispose.Add(callback);
-        }
+        public void RegisterBeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
 
         /// <summary>
-        /// Adds a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
+        /// Registers a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
         /// </summary>
-        public void AddDeferredTask(Func<ShellScope, Task> task)
-        {
-            _deferredTasks.Add(task);
-        }
+        public void RegisterDeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
+
+        /// <summary>
+        /// Adds a delegate to be invoked just before the current shell scope will be disposed.
+        /// </summary>
+        public static void AddBeforeDispose(Func<ShellScope, Task> callback) => Current?.RegisterBeforeDispose(callback);
+
+        /// <summary>
+        /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
+        /// </summary>
+        public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.RegisterDeferredTask(task);
 
         public async Task BeforeDisposeAsync()
         {

@@ -41,7 +41,7 @@ namespace OrchardCore.Scripting
             }
 
             var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
-            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Current.ServiceProvider, fileProvider, basePath);
+            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, fileProvider, basePath);
             return engine.Evaluate(scope, script);
         }
 

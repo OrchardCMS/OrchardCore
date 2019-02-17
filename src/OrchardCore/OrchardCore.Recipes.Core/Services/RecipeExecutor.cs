@@ -21,7 +21,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
@@ -29,14 +28,12 @@ namespace OrchardCore.Recipes.Services
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
-        public RecipeExecutor(IHttpContextAccessor httpContextAccessor,
-                              IEnumerable<IRecipeEventHandler> recipeEventHandlers,
+        public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
                               IShellHost shellHost,
                               ILogger<RecipeExecutor> logger,
                               IStringLocalizer<RecipeExecutor> localizer)
         {
-            _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;

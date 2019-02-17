@@ -67,7 +67,7 @@ namespace OrchardCore.Indexing.Services
             {
                 if (_tasksQueue.Count == 0)
                 {
-                    ShellScope.Current.AddDeferredTask(scope => FlushAsync(scope, _tasksQueue));
+                    ShellScope.AddDeferredTask(scope => FlushAsync(scope, _tasksQueue));
                 }
 
                 _tasksQueue.Add(indexingTask);

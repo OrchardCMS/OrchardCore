@@ -28,7 +28,7 @@ namespace OrchardCore.Mvc
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            var services = ShellScope.Current?.ServiceProvider;
+            var services = ShellScope.Services;
 
             // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
             // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.

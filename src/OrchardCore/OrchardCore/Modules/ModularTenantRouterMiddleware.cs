@@ -43,8 +43,7 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("Begin Routing Request");
             }
 
-            var shellScope = ShellScope.Current;
-            var shellContext = shellScope.ShellContext;
+            var shellContext = ShellScope.Context;
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
@@ -69,7 +68,7 @@ namespace OrchardCore.Modules
                 {
                     if (shellContext.Pipeline == null)
                     {
-                        var pipeline = BuildTenantPipeline(shellContext.ServiceProvider, shellScope.ServiceProvider);
+                        var pipeline = BuildTenantPipeline(shellContext.ServiceProvider, ShellScope.Services);
                         shellContext.Pipeline = state => pipeline.Invoke(state as HttpContext);
                     }
                 }
@@ -82,11 +81,11 @@ namespace OrchardCore.Modules
             }
 
             // For middlewares that rely on 'RequestServices'.
-            var existingServices = httpContext.RequestServices;
-            httpContext.RequestServices = shellScope.ServiceProvider;
+            var requestServices = httpContext.RequestServices;
+            httpContext.RequestServices = ShellScope.Services;
 
             await shellContext.Pipeline.Invoke(httpContext);
-            httpContext.RequestServices = existingServices;
+            httpContext.RequestServices = requestServices;
         }
 
         // Build the middleware pipeline for the current tenant

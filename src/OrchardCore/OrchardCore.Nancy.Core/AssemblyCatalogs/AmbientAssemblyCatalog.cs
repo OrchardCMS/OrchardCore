@@ -23,7 +23,7 @@ namespace OrchardCore.Nancy.AssemblyCatalogs
         /// <returns>An <see cref="IReadOnlyCollection{T}"/> of <see cref="Assembly"/> instances.</returns>
         public IReadOnlyCollection<Assembly> GetAssemblies()
         {
-            var shellBluePrint = ShellScope.Current.ServiceProvider.GetRequiredService<ShellBlueprint>();
+            var shellBluePrint = ShellScope.Services.GetRequiredService<ShellBlueprint>();
             return shellBluePrint.Dependencies.Keys
                 .Select(type => type.Assembly)
                 .Distinct()

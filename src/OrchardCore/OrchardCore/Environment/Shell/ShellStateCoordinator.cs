@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Shell
 
         private void FireApplyChangesIfNeeded()
         {
-            ShellScope.Current.AddDeferredTask(async scope =>
+            ShellScope.AddDeferredTask(async scope =>
             {
                 var stateManager = scope.ServiceProvider.GetRequiredService<IShellStateManager>();
                 var shellStateUpdater = scope.ServiceProvider.GetRequiredService<IShellStateUpdater>();

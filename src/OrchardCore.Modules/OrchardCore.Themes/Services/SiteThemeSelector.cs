@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using OrchardCore.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Theming;
 
 namespace OrchardCore.Themes.Services
 {
@@ -13,14 +12,10 @@ namespace OrchardCore.Themes.Services
     public class SiteThemeSelector : IThemeSelector
     {
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SiteThemeSelector(
-            ISiteThemeService siteThemeService, 
-            IHttpContextAccessor httpContextAccessor)
+        public SiteThemeSelector(ISiteThemeService siteThemeService)
         {
             _siteThemeService = siteThemeService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
