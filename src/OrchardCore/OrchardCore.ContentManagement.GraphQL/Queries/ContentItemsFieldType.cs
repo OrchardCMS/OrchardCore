@@ -233,7 +233,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var property = values[0];
                 if (!string.IsNullOrEmpty(tableAlias))
                 {
-                    property = tableAlias + "." + property;
+                    property = tableAlias + "Part." + property;
                 }
 
                 if (values.Length == 1)
