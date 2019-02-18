@@ -33,7 +33,13 @@
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>
-    @await RenderSectionAsync("Footer", required: false)
+    @if (ThemeLayout["Footer"] != null) {
+    <footer>
+        <div class="container">
+            @await RenderSectionAsync("Footer", required: false)
+        </div>
+    </footer>
+    }
     <resources type="FootScript" />
 </body>
 </html>
