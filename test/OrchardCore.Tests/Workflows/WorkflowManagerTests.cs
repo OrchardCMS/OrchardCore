@@ -12,9 +12,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
@@ -62,29 +59,18 @@ namespace OrchardCore.Tests.Workflows
                 }
             };
 
-            var shellContext = new ShellContext()
-            {
-                Settings = new ShellSettings() { Name = "Default" },
-                ServiceProvider = serviceProvider
-            };
-
-            ShellScope.StartFlow();
-
             var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
             var a = 10d;
             var b = 22d;
             var expectedSum = a + b;
             var expectedResult = expectedSum.ToString() + System.Environment.NewLine;
 
-            using (var scope = shellContext.CreateScope())
-            {
-                var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
-                var actualResult = stringBuilder.ToString();
+            var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType, input: new RouteValueDictionary(new { A = a, B = b }));
+            var actualResult = stringBuilder.ToString();
 
-                Assert.Equal(expectedResult, actualResult);
-                Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
-                Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
-            }
+            Assert.Equal(expectedResult, actualResult);
+            Assert.True(workflowExecutionContext.Output.ContainsKey("Sum"));
+            Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
         private IServiceProvider CreateServiceProvider()

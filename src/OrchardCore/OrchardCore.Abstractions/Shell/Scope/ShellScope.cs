@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
@@ -18,6 +19,8 @@ namespace OrchardCore.Environment.Shell.Scope
     public class ShellScope : IServiceScope
     {
         private readonly IServiceScope _serviceScope;
+        private readonly IServiceProvider _existingServices;
+        private readonly HttpContext _httpContext;
 
         private bool _disposed = false;
         private readonly ShellScope _existingScope;
@@ -47,6 +50,16 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _existingScope = ShellScope.Current;
             ShellScope.Current = this;
+
+            var httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
+
+            _httpContext = httpContextAccessor?.HttpContext;
+            _existingServices = _httpContext?.RequestServices;
+
+            if (_httpContext != null)
+            {
+                _httpContext.RequestServices = ServiceProvider;
+            }
         }
 
         public ShellContext ShellContext { get; }
@@ -267,6 +280,11 @@ namespace OrchardCore.Environment.Shell.Scope
             var disposeShellContext = _disposeShellContext || await TerminateShellAsync();
 
             ShellScope.Current = _existingScope;
+
+            if (_httpContext != null)
+            {
+                _httpContext.RequestServices = _existingServices;
+            }
 
             _serviceScope.Dispose();
 

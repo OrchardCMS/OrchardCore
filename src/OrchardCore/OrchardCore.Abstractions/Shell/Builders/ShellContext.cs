@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -28,10 +28,9 @@ namespace OrchardCore.Environment.Shell.Builders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// A delegate intended to be executed in a 'ShellScope'.
-        /// E.g the HTTP 'RequestDelegate' built for this shell.
+        /// The HTTP Request delegate built for this shell.
         /// </summary>
-        public Func<object, Task> Pipeline { get; set; }
+        public RequestDelegate Pipeline { get; set; }
 
 
         private bool _placeHolder;
