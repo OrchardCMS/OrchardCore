@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Diagnostics.Controllers
 {
@@ -8,9 +9,13 @@ namespace OrchardCore.Diagnostics.Controllers
         {
             ViewData["StatusCode"] = status;
 
-            if (status == 404)
+            if (status == (int)HttpStatusCode.NotFound)
             {
                 return View("NotFound");
+            }
+            else if (status == (int)HttpStatusCode.Unauthorized)
+            {
+                return View("Unauthorized");
             }
 
             return View("Error");
