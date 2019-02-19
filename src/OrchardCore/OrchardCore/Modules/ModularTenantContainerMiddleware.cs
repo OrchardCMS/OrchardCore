@@ -54,7 +54,7 @@ namespace OrchardCore.Modules
                     // Used e.g by NLog to retrieve the tenant name.
                     httpContext.Features.Set(shellScope.ShellContext);
 
-                    return _next(httpContext);
+                    return _next.Invoke(httpContext);
                 });
             }
         }
