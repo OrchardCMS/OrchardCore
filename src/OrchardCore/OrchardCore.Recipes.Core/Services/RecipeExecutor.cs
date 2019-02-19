@@ -153,7 +153,8 @@ namespace OrchardCore.Recipes.Services
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
             var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
-                ? await _shellHost.GetScopeAsync(_shellSettings) : null;
+                ? await _shellHost.GetScopeAsync(_shellSettings)
+                : ShellScope.Current;
 
             await shellScope.UsingAsync(async scope =>
             {

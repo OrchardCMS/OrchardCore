@@ -14,7 +14,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Environment.Shell.Scope
 {
     /// <summary>
-    /// Custom 'IServiceScope' managing the shell state and its execution flow.
+    /// Custom 'IServiceScope' managing the shell state and the execution flow.
     /// </summary>
     public class ShellScope : IServiceScope
     {
@@ -83,22 +83,34 @@ namespace OrchardCore.Environment.Shell.Scope
         public static ShellScope Current
         {
             get => _current.Value;
-            set => _current.Value = value;
         }
 
         /// <summary>
-        /// Start holding the shell scope along the async flow.
+        /// Start holding this shell scope along the async flow.
         /// </summary>
-        public void StartFlow() => Current = this;
+        private void StartAsyncFlow() => _current.Value = this;
 
-        public async Task ExecuteAsync(Func<ShellScope, Task> execute)
+        /// <summary>
+        /// The body of the execution flow using this shell scope.
+        /// </summary>
+        public async Task UsingAsync(Func<ShellScope, Task> execute)
         {
-            await ActivateShellAsync();
+            if (Current == this)
+            {
+                await execute(Current);
+                return;
+            }
 
-            StartFlow();
-            await execute(this);
+            using (this)
+            {
+                StartAsyncFlow();
 
-            await BeforeDisposeAsync();
+                await ActivateShellAsync();
+
+                await execute(this);
+
+                await BeforeDisposeAsync();
+            }
         }
 
         /// <summary>
@@ -127,7 +139,7 @@ namespace OrchardCore.Environment.Shell.Scope
                             return;
                         }
 
-                        scope.StartFlow();
+                        scope.StartAsyncFlow();
 
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
@@ -200,7 +212,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Then create a new scope (maybe based on a new shell) to execute tasks.
                 using (var scope = await shellHost.GetScopeAsync(ShellContext.Settings))
                 {
-                    scope.StartFlow();
+                    scope.StartAsyncFlow();
 
                     var factory = scope.ServiceProvider.GetService<ILoggerFactory>();
                     var logger = factory?.CreateLogger<ShellScope>();
