@@ -5,13 +5,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 {
 
     [HtmlTargetElement("meta", Attributes = NameAttributeName)]
+    [HtmlTargetElement("meta", Attributes = PropertyAttributeName)]
     public class MetaTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
+        private const string PropertyAttributeName = "asp-property";
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
 
+        [HtmlAttributeName(PropertyAttributeName)]
         public string Property { get; set; }
 
         public string Content { get; set; }
