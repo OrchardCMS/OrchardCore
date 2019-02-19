@@ -48,10 +48,13 @@ namespace OrchardCore.Modules
 
                 await shellScope.UsingAsync(scope =>
                 {
-                    // Register the shell for logging purposes.
-                    httpContext.Features.Set(scope.ShellContext);
+                    // Make 'RequestServices' aware of the current 'ShellScope'.
+                    httpContext.UseShellScopeServices();
 
-                    return _next.Invoke(httpContext);
+                    // Used e.g by NLog to retrieve the tenant name.
+                    httpContext.Features.Set(shellScope.ShellContext);
+
+                    return _next(httpContext);
                 });
             }
         }

@@ -322,6 +322,9 @@ namespace OrchardCore.Modules
 
             context.Request.Path = "/";
             context.Items["IsBackground"] = true;
+
+            context.UseShellScopeServices();
+
             return context;
         }
     }
