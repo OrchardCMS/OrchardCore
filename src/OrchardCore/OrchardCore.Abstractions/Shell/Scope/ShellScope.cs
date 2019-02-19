@@ -23,10 +23,9 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly HttpContext _httpContext;
 
         private bool _disposed = false;
-        private readonly ShellScope _existingScope;
         internal bool _disposeShellContext = false;
 
-        private static AsyncLocal<ShellScopeHolder> _current = new AsyncLocal<ShellScopeHolder>();
+        private static AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
         private List<Func<ShellScope, Task>> _beforeDispose { get; set; } = new List<Func<ShellScope, Task>>();
         private List<Func<ShellScope, Task>> _deferredTasks { get; set; } = new List<Func<ShellScope, Task>>();
         private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
@@ -47,9 +46,6 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _serviceScope = shellContext.ServiceProvider.CreateScope();
             ServiceProvider = _serviceScope.ServiceProvider;
-
-            _existingScope = ShellScope.Current;
-            ShellScope.Current = this;
 
             var httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
 
@@ -82,35 +78,27 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Start holding shell scopes along the async flow.
-        /// </summary>
-        public static void StartFlow()
-        {
-            if (_current.Value == null)
-            {
-                _current.Value = new ShellScopeHolder();
-            }
-        }
-
-        /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
         public static ShellScope Current
         {
-            get => _current.Value?.Scope;
-
-            set
-            {
-                if (_current.Value != null)
-                {
-                    _current.Value.Scope = value;
-                }
-            }
+            get => _current.Value;
+            set => _current.Value = value;
         }
 
-        private class ShellScopeHolder
+        /// <summary>
+        /// Start holding the shell scope along the async flow.
+        /// </summary>
+        public void StartFlow() => Current = this;
+
+        public async Task ExecuteAsync(Func<ShellScope, Task> execute)
         {
-            public ShellScope Scope;
+            await ActivateShellAsync();
+
+            StartFlow();
+            await execute(this);
+
+            await BeforeDisposeAsync();
         }
 
         /// <summary>
@@ -138,6 +126,8 @@ namespace OrchardCore.Environment.Shell.Scope
                         {
                             return;
                         }
+
+                        scope.StartFlow();
 
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
 
@@ -210,6 +200,8 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Then create a new scope (maybe based on a new shell) to execute tasks.
                 using (var scope = await shellHost.GetScopeAsync(ShellContext.Settings))
                 {
+                    scope.StartFlow();
+
                     var factory = scope.ServiceProvider.GetService<ILoggerFactory>();
                     var logger = factory?.CreateLogger<ShellScope>();
 
@@ -278,8 +270,6 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             var disposeShellContext = _disposeShellContext || await TerminateShellAsync();
-
-            ShellScope.Current = _existingScope;
 
             if (_httpContext != null)
             {

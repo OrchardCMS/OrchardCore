@@ -44,8 +44,6 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                ShellScope.StartFlow();
-
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
                 await shellScope.UsingAsync(scope =>

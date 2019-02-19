@@ -96,8 +96,6 @@ namespace OrchardCore.Modules
 
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
-                ShellScope.StartFlow();
-
                 foreach (var scheduler in schedulers)
                 {
                     if (stoppingToken.IsCancellationRequested)
@@ -156,8 +154,6 @@ namespace OrchardCore.Modules
                 }
 
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
-                ShellScope.StartFlow();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 

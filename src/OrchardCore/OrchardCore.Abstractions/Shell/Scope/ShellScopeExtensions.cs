@@ -15,11 +15,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
             using (scope)
             {
-                await scope.ActivateShellAsync();
-
-                await execute(scope);
-
-                await scope.BeforeDisposeAsync();
+                await scope.ExecuteAsync(execute);
             }
         }
     }
