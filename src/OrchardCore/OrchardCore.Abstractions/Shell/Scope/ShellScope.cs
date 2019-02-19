@@ -91,7 +91,7 @@ namespace OrchardCore.Environment.Shell.Scope
         private void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
-        /// The body of the execution flow using this shell scope.
+        /// Execute a delegate using this shell scope.
         /// </summary>
         public async Task UsingAsync(Func<ShellScope, Task> execute)
         {
