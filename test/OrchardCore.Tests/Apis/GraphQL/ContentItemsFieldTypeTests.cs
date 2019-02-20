@@ -187,7 +187,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
         [Fact]
-        public async Task ShouldFilterPartsWithoutPartPrefix()
+        public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -221,7 +221,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 await session.CommitAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema());
-
 
                 context.Arguments["where"] = JObject.Parse("{ animal: { name: \"doug\" } }");
                 var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
