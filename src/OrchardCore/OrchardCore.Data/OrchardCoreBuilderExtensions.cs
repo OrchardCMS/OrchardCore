@@ -109,7 +109,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    ShellScope.AddBeforeDispose(scope =>
+                    ShellScope.RegisterBeforeDispose(scope =>
                     {
                         return session.CommitAsync();
                     });

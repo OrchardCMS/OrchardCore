@@ -17,15 +17,18 @@ namespace OrchardCore.Environment.Shell.Scope
     /// </summary>
     public class ShellScope : IServiceScope
     {
+        private static AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
+
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores =
+            new ConcurrentDictionary<string, SemaphoreSlim>();
+
         private readonly IServiceScope _serviceScope;
 
-        private bool _disposed = false;
-        internal bool _disposeShellContext = false;
+        private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
+        private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
-        private static AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
-        private List<Func<ShellScope, Task>> _beforeDispose { get; set; } = new List<Func<ShellScope, Task>>();
-        private List<Func<ShellScope, Task>> _deferredTasks { get; set; } = new List<Func<ShellScope, Task>>();
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private bool _disposeShellContext = false;
+        private bool _disposed = false;
 
         public ShellScope(ShellContext shellContext)
         {
@@ -38,7 +41,8 @@ namespace OrchardCore.Environment.Shell.Scope
             // a scope on a disabled shell or already disposed.
             if (shellContext.ServiceProvider == null)
             {
-                throw new ArgumentNullException(nameof(shellContext.ServiceProvider), $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
+                throw new ArgumentNullException(nameof(shellContext.ServiceProvider),
+                    $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
             }
 
             _serviceScope = shellContext.ServiceProvider.CreateScope();
@@ -75,7 +79,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        private void StartAsyncFlow() => _current.Value = this;
+        public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
         /// Execute a delegate using this shell scope.
@@ -157,22 +161,22 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        public void RegisterBeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
+        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
 
         /// <summary>
-        /// Registers a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
+        /// Adds a Task to be executed in a new scope at the end of 'BeforeDisposeAsync()'.
         /// </summary>
-        public void RegisterDeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
+        private void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
 
         /// <summary>
-        /// Adds a delegate to be invoked just before the current shell scope will be disposed.
+        /// Registers a delegate to be invoked just before the current shell scope will be disposed.
         /// </summary>
-        public static void AddBeforeDispose(Func<ShellScope, Task> callback) => Current?.RegisterBeforeDispose(callback);
+        public static void RegisterBeforeDispose(Func<ShellScope, Task> callback) => Current?.BeforeDispose(callback);
 
         /// <summary>
         /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
         /// </summary>
-        public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.RegisterDeferredTask(task);
+        public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.DeferredTask(task);
 
         public async Task BeforeDisposeAsync()
         {
@@ -201,8 +205,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 {
                     scope.StartAsyncFlow();
 
-                    var factory = scope.ServiceProvider.GetService<ILoggerFactory>();
-                    var logger = factory?.CreateLogger<ShellScope>();
+                    var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
 
                     for (var i = 0; i < deferredTasks.Length; i++)
                     {
@@ -214,7 +217,8 @@ namespace OrchardCore.Environment.Shell.Scope
                         }
                         catch (Exception e)
                         {
-                            logger?.LogError(e, "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
+                            logger?.LogError(e,
+                                "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
                     }
