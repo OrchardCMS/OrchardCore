@@ -1,0 +1,14 @@
+.counter-display {
+    display: inline-block;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 0.5rem;
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    line-height: 1;
+    font-weight: bold;
+}
+.counter-display.is-invalid {
+    background-color: #dc3545;
+}

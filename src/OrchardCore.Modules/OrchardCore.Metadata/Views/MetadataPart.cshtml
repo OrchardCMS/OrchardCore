@@ -1,0 +1,63 @@
+@model MetadataPartViewModel
+
+@if (!String.IsNullOrWhiteSpace(Model.MetaDescription))
+{
+    <meta asp-name="description" content="@Model.MetaDescription" />
+}
+@if (Model.Settings.SupportMetaKeywords && !String.IsNullOrWhiteSpace(Model.MetaKeywords))
+{
+    <meta asp-name="keywords" content="@Model.MetaKeywords" />
+}
+@if (Model.Settings.SupportOpenGraph || Model.Settings.SupportTwitterCards)
+{
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphTitle))
+    {
+        <meta asp-property="og:title" content="@Model.OpenGraphTitle" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphDescription))
+    {
+        <meta asp-property="og:description" content="@Model.OpenGraphDescription" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphImage))
+    {
+        <meta asp-property="og:image" content="@Model.OpenGraphImage" />
+    }
+}
+@if (Model.Settings.SupportOpenGraph)
+{
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphType))
+    {
+        <meta asp-property="og:type" content="@Model.OpenGraphType" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphUrl))
+    {
+        <meta asp-property="or:url" content="@Model.OpenGraphUrl" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphSite_name))
+    {
+        <meta asp-property="og:site_name" content="@Model.OpenGraphSite_name" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphImageAlt))
+    {
+        <meta asp-property="og:image:alt" content="@Model.OpenGraphImageAlt" />
+    }
+}
+@if (Model.Settings.SupportTwitterCards)
+{
+    @if (!String.IsNullOrWhiteSpace(Model.TwitterCard))
+    {
+        <meta asp-name="twitter:card" content="@Model.TwitterCard" />
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.OpenGraphImageAlt))
+    {
+        <meta asp-name="twitter:image:alt" content="@Model.OpenGraphImageAlt" />
+    }
+}
+@if (!String.IsNullOrWhiteSpace(Model.FacebookAppId))
+{
+    <meta asp-property="fb:app_id" content="@Model.FacebookAppId" />
+}
+@if (!String.IsNullOrWhiteSpace(Model.TwitterSite))
+{
+    <meta asp-name="twitter:site" content="@Model.TwitterSite" />
+}
