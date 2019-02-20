@@ -205,7 +205,10 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                using (var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+
+                var result = false;
+                await shellScope.UsingAsync(scope =>
                 {
                     var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
                     var dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
@@ -216,10 +219,14 @@ namespace OrchardCore.Setup.Controllers
                     {
                         if (_shellSettings["Secret"] == tokenValue)
                         {
-                            return true;
+                            result = true;
                         }
                     }
-                }
+
+                    return Task.CompletedTask;
+                });
+
+                return result;
             }
             catch (Exception ex)
             {
