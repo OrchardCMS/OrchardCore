@@ -133,9 +133,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                var shellScope = shellContext.CreateScope();
-
-                await shellScope.UsingAsync(async scope =>
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
                     IStore store;
 
@@ -191,9 +189,7 @@ namespace OrchardCore.Setup.Services
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
-                var shellScope = shellContext.CreateScope();
-
-                await shellScope.UsingAsync(async scope =>
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
                     void reportError(string key, string message)
                     {

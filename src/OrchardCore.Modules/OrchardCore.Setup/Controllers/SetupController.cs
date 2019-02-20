@@ -205,9 +205,10 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
+                var result = false;
+
                 var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
 
-                var result = false;
                 await shellScope.UsingAsync(scope =>
                 {
                     var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
