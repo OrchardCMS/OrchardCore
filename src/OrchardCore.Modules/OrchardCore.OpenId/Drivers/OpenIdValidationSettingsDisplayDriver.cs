@@ -31,14 +31,17 @@ namespace OrchardCore.OpenId.Drivers
                 foreach (var shellSettings in _shellHost.GetAllSettings()
                     .Where(s => s.State == TenantState.Running))
                 {
-                    using (var scope = await _shellHost.GetScopeAsync(shellSettings))
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                    await shellScope.UsingAsync(scope =>
                     {
                         var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
                         if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
                         {
                             availableTenants.Add(shellSettings.Name);
                         }
-                    }
+                        return Task.CompletedTask;
+                    });
                 }
 
                 model.AvailableTenants = availableTenants;
