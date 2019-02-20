@@ -90,7 +90,7 @@ namespace OrchardCore.Metadata.Drivers
                         });
                     }
                 }
-                // Extended metatags for Facebook Open Graph 
+                // Extended metatags for Facebook Open Graph
                 if (settings.SupportOpenGraph)
                 {
                     if (!String.IsNullOrWhiteSpace(viewModel.OpenGraphType))
@@ -141,7 +141,7 @@ namespace OrchardCore.Metadata.Drivers
                 }
             }
 
-            // TODO these should be added on every page regardless of whether the Metadata part is added to the content type 
+            // TODO these should be added on every page regardless of whether the Metadata part is added to the content type
             // If an Facebook App id is registered in the site settings
             if (!String.IsNullOrWhiteSpace(viewModel.FacebookAppId))
             {
@@ -233,7 +233,6 @@ namespace OrchardCore.Metadata.Drivers
             viewModel.OpenGraphUrl = siteSettings.BaseUrl;
             viewModel.MetadataPart = part;
             viewModel.Settings = settings;
-
         }
 
         private string GenerateText(string text, string alternateText)
