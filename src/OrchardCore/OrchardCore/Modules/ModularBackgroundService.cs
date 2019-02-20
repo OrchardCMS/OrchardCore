@@ -309,10 +309,11 @@ namespace OrchardCore.Modules
 
         public static HttpContext CreateHttpContext(this ShellSettings settings)
         {
+            var context = new DefaultHttpContext().UseShellScopeServices();
+
             var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-            var context = new DefaultHttpContext();
             context.Request.Host = new HostString(urlHost ?? "localhost");
 
             if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
@@ -322,8 +323,6 @@ namespace OrchardCore.Modules
 
             context.Request.Path = "/";
             context.Items["IsBackground"] = true;
-
-            context.UseShellScopeServices();
 
             return context;
         }

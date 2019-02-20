@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace OrchardCore.Environment.Shell.Scope
 {
     /// <summary>
-    /// Custom 'IServiceProvider' which is aware of the current 'ShellScope'.
+    /// Custom 'IServiceProvider' aware of 'ShellScope' switchings.
     /// </summary>
     public class ShellScopeServices : IServiceProvider
     {
@@ -20,9 +20,12 @@ namespace OrchardCore.Environment.Shell.Scope
     public static class HttpContextExtensions
     {
         /// <summary>
-        /// Make 'RequestServices' aware of the current 'ShellScope'.
+        /// Makes 'RequestServices' aware of 'ShellScope' switchings.
         /// </summary>
-        public static void UseShellScopeServices(this HttpContext context)
-            => context.RequestServices = new ShellScopeServices(context.RequestServices);
+        public static HttpContext UseShellScopeServices(this HttpContext context)
+        {
+            context.RequestServices = new ShellScopeServices(context.RequestServices);
+            return context;
+        }
     }
 }
