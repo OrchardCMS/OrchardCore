@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -32,7 +33,6 @@ namespace OrchardCore.Media.Controllers
             _contentTypeProvider = contentTypeProvider;
             _logger = logger;
             T = stringLocalizer;
-            
         }
 
         public async Task<IActionResult> Index()
@@ -114,6 +114,7 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        [MediaSizeLimit]
         public async Task<ActionResult<object>> Upload(
             string path,
             string contentType,
