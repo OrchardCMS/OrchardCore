@@ -65,9 +65,9 @@ namespace OrchardCore.Modules
 
             var previousShells = Enumerable.Empty<ShellContext>();
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
@@ -78,11 +78,11 @@ namespace OrchardCore.Modules
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
+            }
 
-                catch (Exception e)
-                {
-                    Logger.LogError(e, "Error while executing '{ServiceName}', the service is still running.", nameof(ModularBackgroundService));
-                }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -309,7 +309,10 @@ namespace OrchardCore.Modules
 
         public static HttpContext CreateHttpContext(this ShellSettings settings)
         {
-            var context = new DefaultHttpContext().UseShellScopeServices();
+            var context = new DefaultHttpContext();
+
+            /// Makes the 'RequestServices' aware of the current 'ShellScope'.
+            context.RequestServices = new ShellScopeServices(context.RequestServices);
 
             var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();

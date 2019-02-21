@@ -2,7 +2,7 @@ using System.Text;
 using NLog;
 using NLog.LayoutRenderers;
 using NLog.Web.LayoutRenderers;
-using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Logging
 {
@@ -16,10 +16,8 @@ namespace OrchardCore.Logging
 
         protected override void DoAppend(StringBuilder builder, LogEventInfo logEvent)
         {
-            var context = HttpContextAccessor.HttpContext;
-
-            // If there is no ShellContext in the Features then the log is rendered from the Host
-            var tenantName = context.Features.Get<ShellContext>()?.Settings?.Name ?? "None";
+            // If there is no ShellScope then the log is rendered from the Host
+            var tenantName = ShellScope.Context?.Settings.Name ?? "None";
             builder.Append(tenantName);
         }
     }

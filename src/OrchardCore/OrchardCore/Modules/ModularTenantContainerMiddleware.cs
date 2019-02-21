@@ -44,19 +44,12 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                // Makes 'RequestServices' aware of 'ShellScope' switchings.
-                httpContext.UseShellScopeServices();
+                /// Makes the 'RequestServices' aware of the current 'ShellScope'.
+                httpContext.RequestServices = new ShellScopeServices(httpContext.RequestServices);
 
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
-                await shellScope.UsingAsync(scope =>
-                {
-                    // For app level services running later and outside
-                    // any shell scope, e.g NLog to get the tenant name.
-                    httpContext.Features.Set(scope.ShellContext);
-
-                    return _next.Invoke(httpContext);
-                });
+                await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
             }
         }
     }
