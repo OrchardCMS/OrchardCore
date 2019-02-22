@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using Fluid;
 
@@ -16,7 +17,7 @@ namespace OrchardCore.Liquid
         {
             using (var sw = new StringWriter())
             {
-                await manager.RenderAsync(template, sw, HtmlEncoder.Default, context);
+                await manager.RenderAsync(template, sw, HtmlEncoder.Create(UnicodeRanges.All), context);
                 return sw.ToString();
             }
         }
