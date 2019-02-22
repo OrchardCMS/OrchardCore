@@ -14,7 +14,7 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the
+    /// All <see cref="ShellContext"/> object are loaded when <see cref="InitializeAsync"/> is called. They can be removed when the
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>

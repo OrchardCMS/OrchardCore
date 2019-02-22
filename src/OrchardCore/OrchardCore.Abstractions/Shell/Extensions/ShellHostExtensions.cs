@@ -22,13 +22,9 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>
         /// <param name="tenant">The tenant name related to the service scope to get.</param>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
         public static Task<ShellScope> GetScopeAsync(this IShellHost shellHost, string tenant)
         {
             return shellHost.GetScopeAsync(shellHost.GetSettings(tenant));

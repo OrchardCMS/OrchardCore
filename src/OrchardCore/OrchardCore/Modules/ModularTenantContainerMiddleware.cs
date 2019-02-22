@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Http;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -44,8 +44,8 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                /// Makes the 'RequestServices' aware of the current 'ShellScope'.
-                httpContext.RequestServices = new ShellScopeServices(httpContext.RequestServices);
+                // Makes 'RequestServices' aware of the current 'ShellScope'.
+                httpContext.UseShellScopeServices();
 
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 

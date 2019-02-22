@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -21,13 +20,9 @@ namespace OrchardCore.Environment.Shell
         Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
         
         /// <summary>

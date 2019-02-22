@@ -13,8 +13,8 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Http;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -309,10 +309,7 @@ namespace OrchardCore.Modules
 
         public static HttpContext CreateHttpContext(this ShellSettings settings)
         {
-            var context = new DefaultHttpContext();
-
-            /// Makes the 'RequestServices' aware of the current 'ShellScope'.
-            context.RequestServices = new ShellScopeServices(context.RequestServices);
+            var context = new DefaultHttpContext().UseShellScopeServices();
 
             var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();

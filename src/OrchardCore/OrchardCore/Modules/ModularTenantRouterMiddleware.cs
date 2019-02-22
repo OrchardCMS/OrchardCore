@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Http;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
@@ -79,7 +80,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            await shellContext.Pipeline.Invoke(httpContext);
+            await shellContext.Pipeline(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant
