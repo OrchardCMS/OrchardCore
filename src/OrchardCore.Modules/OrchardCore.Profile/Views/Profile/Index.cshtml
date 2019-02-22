@@ -7,7 +7,11 @@
         padding-bottom: 0px;
     }
 
-    #main {
+    #main form{
+        margin-top:0px !important;
+    }
+
+    .profileRow {
         margin-top: 85px;
     }
 
@@ -53,12 +57,12 @@
 </style>
 
 
-<div class="row">
+<div class="row profileRow">
     <div class="col-md-6">
         <h4>@RenderTitleSegments(T["Profile"])</h4>
     </div>
     <div class="col-md-6">
-        <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline" style="float:right;">
+        <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline" style="float:right;    margin-top: 5px;">
             <button type="submit" class="btn btn-link nav-link" role="button" style="padding: 0px;"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
         </form>
         <label style="float:right;">@T["Logged In User"] - <strong>@User.Identity.Name</strong></label>
