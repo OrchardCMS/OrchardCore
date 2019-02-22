@@ -113,6 +113,8 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
