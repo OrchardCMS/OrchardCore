@@ -61,7 +61,7 @@
         <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline" style="float:right;">
             <button type="submit" class="btn btn-link nav-link" role="button" style="padding: 0px;"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
         </form>
-        <label style="float:right;">Logged In User - <strong>@User.Identity.Name</strong></label>
+        <label style="float:right;">@T["Logged In User"] - <strong>@User.Identity.Name</strong></label>
     </div>
     <div class="col-md-12">
         <hr style="margin-bottom: 2rem;margin-top:10px;" />
@@ -70,13 +70,11 @@
 
 <div class="row">
     <div class="col-md-3">
-        <div class="list-group" id="myList">
-            @*@await DisplayAsync(await New.ProfileMenu())*@
+        <div class="list-group" id="myList">          
             @await RenderSectionAsync("ProfileNavigation", required: true)
         </div>
     </div>
     <div class="col-md-9">
-        <h2 style="font-size: 20px;">Submitted Forms</h2><hr/>
         @await DisplayAsync(Model.Shape)
     </div>
 </div>
