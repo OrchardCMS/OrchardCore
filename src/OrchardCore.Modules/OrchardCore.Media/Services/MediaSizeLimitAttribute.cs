@@ -11,10 +11,7 @@ namespace OrchardCore.Media.Services
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
     {
-        /// <summary>
-        /// We need to run before the AutoValidateAntiforgeryTokenAuthorizationFilter which is setup as a global filter with order 0
-        /// </summary>
-        public int Order { get; set; } = -1;
+        public int Order { get; set; } = 900;
 
         /// <inheritdoc />
         public bool IsReusable => true;
