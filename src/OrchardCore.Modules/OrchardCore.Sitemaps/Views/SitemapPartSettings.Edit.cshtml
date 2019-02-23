@@ -1,0 +1,17 @@
+@model SitemapPartSettingsViewModel
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ExcludePart" value="@Model.ExcludePart">
+        <label class="custom-control-label" asp-for="ExcludePart">@T["Exclude part"]</label>
+        <span class="hint">@T["Always exclude all content items of this content type."]</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ExcludeByDefault" value="@Model.ExcludeByDefault">
+        <label class="custom-control-label" asp-for="ExcludeByDefault">@T["Exclude by default"]</label>
+        <span class="hint">@T["Exclude content item by default, but allow overriding at content item level."]</span>
+    </div>
+</div>

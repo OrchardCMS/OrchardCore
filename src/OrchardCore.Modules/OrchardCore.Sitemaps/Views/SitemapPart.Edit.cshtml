@@ -1,0 +1,22 @@
+@model SitemapPartViewModel
+<fieldset>
+    <legend>@T["Seo Sitemap"]</legend>
+    <div class="form-group" asp-validation-class-for="ChangeFrequency">
+        <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
+        <select asp-for="ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+        <span class="hint">@T["The frequency this content item is likely to change."]</span>
+    </div>
+    <div class="form-group" asp-validation-class-for="Priority">
+        <label asp-for="Priority">@T["Priority"] </label>
+        <input asp-for="Priority" class="form-control content-preview-text" />
+        <span class="hint">@T["The priority of this content item relative to other content on your site. Valid values range from 0.0 to 1.0."]</span>
+    </div>
+
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="Exclude" checked="@Model.Exclude">
+            <label class="custom-control-label" asp-for="Exclude">@T["Exclude from site map"]</label>
+            <span class="hint">@T["Check to exclude this content item from the site map."]</span>
+        </div>
+    </div>
+</fieldset>

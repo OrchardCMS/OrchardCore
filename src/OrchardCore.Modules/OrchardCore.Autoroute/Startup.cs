@@ -25,8 +25,10 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Sitemaps;
 using YesSql;
 using YesSql.Indexes;
+using OrchardCore.Autoroute.Sitemaps;
 
 namespace OrchardCore.Autoroute
 {
@@ -54,6 +56,8 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
+
+            services.AddScoped<ISitemapProvider, AutorouteSitemapProvider>();
 
             services.Configure<GraphQLContentOptions>(options =>
             {
