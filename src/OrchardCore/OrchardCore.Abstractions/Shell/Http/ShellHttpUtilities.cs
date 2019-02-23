@@ -17,6 +17,13 @@ namespace OrchardCore.Environment.Shell.Http
         }
 
         /// <summary>
+        /// Registers the <see cref="ShellContext"/> to be available for the full request.
+        /// E.g for logging purposes when an exception is catched outside any shell scope.
+        /// </summary>
+        public static void RegisterShellContext(this HttpContext httpContext, ShellContext shellContext)
+            => httpContext.Features.Set<ShellContext>(shellContext);
+
+        /// <summary>
         /// Invokes the <see cref="ShellContext.Pipeline"/> as a <see cref="RequestDelegate"/>
         /// </summary>
         public static Task Pipeline(this ShellContext shellContext, HttpContext httpContext)

@@ -44,10 +44,15 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                // Makes 'RequestServices' aware of the current 'ShellScope'.
-                httpContext.UseShellScopeServices();
-
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                httpContext
+
+                    // Makes 'RequestServices' aware of the current 'ShellScope'.
+                    .UseShellScopeServices()
+
+                    // For logging infos outside any 'ShellScope'.
+                    .RegisterShellContext(shellScope.ShellContext);
 
                 await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
             }

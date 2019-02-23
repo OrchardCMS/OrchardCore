@@ -63,7 +63,7 @@ namespace OrchardCore.Mvc
 
         private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
-            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(services));
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart());
             manager.FeatureProviders.Add(new ShellViewFeatureProvider(services));
         }
 

@@ -28,9 +28,8 @@ namespace OrchardCore.Mvc
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
         /// <param name="assembly"></param>
-        public ShellFeatureApplicationPart(IServiceProvider services)
+        public ShellFeatureApplicationPart()
         {
-
         }
 
         public override string Name
