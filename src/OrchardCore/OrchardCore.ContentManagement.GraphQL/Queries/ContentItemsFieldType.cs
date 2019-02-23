@@ -100,9 +100,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            var expressions = Expression.Conjunction();
-            BuildWhereExpressions(where, expressions, null);
-
             var transaction = await session.DemandAsync();
             IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
 
@@ -111,12 +108,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             // Add all provided table alias to the current predicate query
             var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
-            var indexes = new Dictionary<string, IndexAlias>();
+            var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
+            var indexAliases = new List<string>();
+
             foreach (var aliasProvider in providers)
             {
                 foreach (var alias in aliasProvider.GetAliases())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
+                    indexAliases.Add(alias.Alias);
 
                     if (!indexes.ContainsKey(alias.Index))
                     {
@@ -124,6 +124,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                 }
             }
+
+            var expressions = Expression.Conjunction();
+            BuildWhereExpressions(where, expressions, null, indexAliases);
 
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
             query = query.Where(whereSqlClause);
@@ -203,7 +206,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias)
+        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias, IEnumerable<string> indexAliases)
         {
             if (where is JArray array)
             {
@@ -211,17 +214,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     if (child is JObject whereObject)
                     {
-                        BuildExpressionsInternal(whereObject, expressions, tableAlias);
+                        BuildExpressionsInternal(whereObject, expressions, tableAlias, indexAliases);
                     }
                 }
             }
             else if (where is JObject whereObject)
             {
-                BuildExpressionsInternal(whereObject, expressions, tableAlias);
+                BuildExpressionsInternal(whereObject, expressions, tableAlias, indexAliases);
             }
         }
 
-        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias)
+        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias, IEnumerable<string> indexAliases)
         {
             foreach (var entry in where.Properties())
             {
@@ -233,7 +236,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var property = values[0];
                 if (!string.IsNullOrEmpty(tableAlias))
                 {
-                    property = tableAlias + "." + property;
+                    // check if we need to stick a suffix of 'Part' on the alias.
+                    if (!tableAlias.EndsWith("Part")) {
+             
+                        var aliasLookup = indexAliases.FirstOrDefault(x => x.Equals($"{tableAlias}Part", StringComparison.OrdinalIgnoreCase));
+                        if (aliasLookup != null)
+                        {
+                            tableAlias = aliasLookup;
+                        }
+                    }
+
+                    property = $"{tableAlias}.{property}";
                 }
 
                 if (values.Length == 1)
@@ -241,24 +254,24 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Disjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, indexAliases);
                     }
                     else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, indexAliases);
                     }
                     else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
-                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias);
+                        BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, indexAliases);
                         expression = Expression.Not(expression);
                     }
                     else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
                     {
                         // Loop through the part's properties, passing the name of the part as the table tableAlias.
                         // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
-                        BuildWhereExpressions(entry.Value, expressions, values[0]);
+                        BuildWhereExpressions(entry.Value, expressions, values[0], indexAliases);
                     }
                     else
                     {

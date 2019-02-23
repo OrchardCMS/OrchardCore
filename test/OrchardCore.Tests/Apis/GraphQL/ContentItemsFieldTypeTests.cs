@@ -185,6 +185,50 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Assert.False(animals.First().As<Animal>().IsHappy);
             }
         }
+
+        [Fact]
+        public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
+        {
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
+                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Build();
+
+                var retrunType = new ListGraphType<StringGraphType>();
+                retrunType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = retrunType
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.CommitAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema());
+
+                context.Arguments["where"] = JObject.Parse("{ animal: { name: \"doug\" } }");
+                var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
+        }
     }
 
     public class Animal : ContentPart
@@ -193,6 +237,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public bool IsHappy { get; set; }
         public bool IsScary { get; set; }
     }
+
+    public class AnimalPart : Animal { };
 
     public class AnimalIndex : MapIndex
     {
@@ -208,7 +254,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     return new AnimalIndex
                     {
-                        Name = contentItem.As<Animal>().Name
+                        Name = contentItem.As<Animal>() != null ?
+                                contentItem.As<Animal>().Name
+                                : contentItem.As<AnimalPart>().Name
                     };
                 });
         }
@@ -227,10 +275,23 @@ namespace OrchardCore.Tests.Apis.GraphQL
             context.For<AnimalTraitsIndex>()
                 .Map(contentItem =>
                 {
+                    var animal = contentItem.As<Animal>();
+
+                    if (animal != null)
+                    {
+                        return new AnimalTraitsIndex
+                        {
+                            IsHappy = contentItem.As<Animal>().IsHappy,
+                            IsScary = contentItem.As<Animal>().IsScary
+                        };
+                    }
+
+                    var animalPartSuffix = contentItem.As<AnimalPart>();
+
                     return new AnimalTraitsIndex
                     {
-                        IsHappy = contentItem.As<Animal>().IsHappy,
-                        IsScary = contentItem.As<Animal>().IsScary
+                        IsHappy = animalPartSuffix.IsHappy,
+                        IsScary = animalPartSuffix.IsScary
                     };
                 });
         }
@@ -250,6 +311,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             new IndexAlias
             {
                 Alias = "dogs",
+                Index = nameof(AnimalIndex),
+                With = q => q.With<AnimalIndex>()
+            },
+            new IndexAlias
+            {
+                Alias = nameof(AnimalPart),
                 Index = nameof(AnimalIndex),
                 With = q => q.With<AnimalIndex>()
             }

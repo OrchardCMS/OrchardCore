@@ -1,4 +1,5 @@
 using Fluid;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -25,10 +26,10 @@ namespace OrchardCore.Forms
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(config =>
+            services.Configure<MvcOptions>(options =>
             {
-                config.Filters.Add<ExportModelStateAttribute>();
-                config.Filters.Add<ImportModelStateAttribute>();
+                options.Filters.Add<ExportModelStateAttribute>();
+                options.Filters.Add<ImportModelStateAttribute>();
             });
 
             services.AddScoped<IContentPartDisplayDriver, FormPartDisplay>();

@@ -41,14 +41,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 // This builder only handles parts with fields.
                 if (!part.PartDefinition.Fields.Any()) continue;
 
+                if (_contentOptions.ShouldSkip(part)) continue;
+
                 if (_contentOptions.ShouldCollapse(part)) {
                     foreach (var field in part.PartDefinition.Fields)
                     {
                         foreach (var fieldProvider in contentFieldProviders)
                         {
                             var fieldType = fieldProvider.GetField(field);
+
                             if (fieldType != null)
                             {
+                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) continue;
+
                                 contentItemType.AddField(fieldType);
                                 break;
                             }

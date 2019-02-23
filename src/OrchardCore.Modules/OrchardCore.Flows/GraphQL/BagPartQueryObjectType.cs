@@ -13,7 +13,7 @@ namespace OrchardCore.Flows.GraphQL
         public BagPartQueryObjectType(IStringLocalizer<BagPartQueryObjectType> T)
         {
             Name = "BagPart";
-            Description = T["A BagPart allows content items directly within another content item"];
+            Description = T["A BagPart allows to add content items directly within another content item"];
 
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")

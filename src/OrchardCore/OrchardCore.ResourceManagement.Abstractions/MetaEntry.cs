@@ -14,7 +14,7 @@ namespace OrchardCore.ResourceManagement
             _builder.TagRenderMode = TagRenderMode.SelfClosing;
         }
 
-        public MetaEntry(string name = null, string content = null, string httpEquiv = null, string charset = null)
+        public MetaEntry(string name = null, string content = null, string httpEquiv = null, string charset = null) : this()
         {
             if (!String.IsNullOrEmpty(name))
             {

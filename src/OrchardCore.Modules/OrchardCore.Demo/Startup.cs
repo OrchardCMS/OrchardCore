@@ -15,8 +15,8 @@ using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Models;
 
@@ -45,6 +45,13 @@ namespace OrchardCore.Demo
                 areaName: "OrchardCore.Demo",
                 template: "Home/IndexError",
                 defaults: new { controller = "Home", action = "IndexError" }
+            );
+
+            routes.MapAreaRoute(
+                name: "AdminDemo",
+                areaName: "OrchardCore.Demo",
+                template: "Admin/Demo/Index",
+                defaults: new { controller = "Admin", action = "Index" }
             );
 
             builder.UseMiddleware<NonBlockingMiddleware>();
