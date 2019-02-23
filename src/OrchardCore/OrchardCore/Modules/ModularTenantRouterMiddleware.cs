@@ -80,7 +80,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            await shellContext.Pipeline(httpContext);
+            await shellContext.PipelineInvoke(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant

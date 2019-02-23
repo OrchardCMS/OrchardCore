@@ -26,9 +26,7 @@ namespace OrchardCore.Environment.Shell.Http
         /// <summary>
         /// Invokes the <see cref="ShellContext.Pipeline"/> as a <see cref="RequestDelegate"/>
         /// </summary>
-        public static Task Pipeline(this ShellContext shellContext, HttpContext httpContext)
-        {
-            return (shellContext.Pipeline as RequestDelegate).Invoke(httpContext);
-        }
+        public static Task PipelineInvoke(this ShellContext shellContext, HttpContext httpContext)
+            => (shellContext.Pipeline as RequestDelegate).Invoke(httpContext);
     }
 }
