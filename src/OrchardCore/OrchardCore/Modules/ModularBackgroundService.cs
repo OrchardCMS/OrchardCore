@@ -13,7 +13,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Http;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules

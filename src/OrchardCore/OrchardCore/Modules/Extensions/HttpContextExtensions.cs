@@ -1,11 +1,12 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
-namespace OrchardCore.Environment.Shell.Http
+namespace OrchardCore.Modules
 {
-    public static class ShellHttpUtilities
+    internal static class HttpContextExtensions
     {
         /// <summary>
         /// Makes <see cref="HttpContext.RequestServices"/> aware of the current <see cref="ShellScope"/>.
@@ -24,9 +25,9 @@ namespace OrchardCore.Environment.Shell.Http
             => httpContext.Features.Set<ShellContext>(shellContext);
 
         /// <summary>
-        /// Invokes the <see cref="ShellContext.Pipeline"/> as a <see cref="RequestDelegate"/>
+        /// Invokes a <see cref="Delegate"/> as a <see cref="RequestDelegate"/>
         /// </summary>
-        public static Task PipelineInvoke(this ShellContext shellContext, HttpContext httpContext)
-            => (shellContext.Pipeline as RequestDelegate).Invoke(httpContext);
+        public static Task Invoke(this Delegate pipeline, HttpContext httpContext)
+            => (pipeline as RequestDelegate).Invoke(httpContext);
     }
 }

@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Http;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
