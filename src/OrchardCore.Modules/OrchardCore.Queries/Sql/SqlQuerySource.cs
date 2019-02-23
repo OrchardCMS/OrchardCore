@@ -46,6 +46,8 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
+            templateContext.AmbientValues.Add("TemplateType", "Query");
+
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();

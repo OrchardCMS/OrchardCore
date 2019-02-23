@@ -62,6 +62,8 @@ namespace OrchardCore.Lucene
                     }
                 }
 
+                templateContext.AmbientValues.Add("TemplateType", "Query");
+
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 
