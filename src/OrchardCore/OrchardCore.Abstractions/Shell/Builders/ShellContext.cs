@@ -27,9 +27,14 @@ namespace OrchardCore.Environment.Shell.Builders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// The Pipeline Delegate built for this shell.
+        /// The Pipeline built for this shell.
         /// </summary>
-        public Delegate Pipeline { get; set; }
+        public Object Pipeline { get; set; }
+
+        /// <summary>
+        /// Converts the Pipeline to a given type T.
+        /// </summary>
+        public T GetPipeline<T>() where T : class => Pipeline as T;
 
         private bool _placeHolder;
 

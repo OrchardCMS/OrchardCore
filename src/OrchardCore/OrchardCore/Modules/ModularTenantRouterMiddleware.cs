@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Scope;
@@ -79,20 +80,22 @@ namespace OrchardCore.Modules
                 }
             }
 
-            await shellContext.Pipeline.Invoke(httpContext);
+            await shellContext.GetPipeline<ShellRequestPipeline>().Next.Invoke(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant
-        private RequestDelegate BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
+        private ShellRequestPipeline BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
         {
             var appBuilder = new ApplicationBuilder(rootServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
+            var shellPipeline = new ShellRequestPipeline();
+
             Action<IApplicationBuilder> configure = builder =>
             {
-                ConfigureTenantPipeline(builder, scopeServiceProvider);
+                ConfigureTenantPipeline(builder, shellPipeline, scopeServiceProvider);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -102,12 +105,12 @@ namespace OrchardCore.Modules
 
             configure(appBuilder);
 
-            var pipeline = appBuilder.Build();
+            shellPipeline.Next = appBuilder.Build();
 
-            return pipeline;
+            return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder, IServiceProvider scopeServiceProvider)
+        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder, ShellRequestPipeline shellPipeline, IServiceProvider scopeServiceProvider)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
@@ -129,9 +132,9 @@ namespace OrchardCore.Modules
 
             tenantRouteBuilder.Configure(routeBuilder);
 
-            var router = routeBuilder.Build();
+            shellPipeline.Router = routeBuilder.Build();
 
-            appBuilder.UseRouter(router);
+            appBuilder.UseRouter(shellPipeline.Router);
         }
     }
 }
