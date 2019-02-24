@@ -68,7 +68,10 @@ namespace OrchardCore.Autoroute.Sitemaps
 
                 var changeFrequency = sitemapPart != null ? sitemapPart.ChangeFrequency : ChangeFrequency.Daily;
                 var priority = sitemapPart != null ? sitemapPart.Priority : 0.5f;
-
+                //TODO this should probably recieved a context with a url helper and build from Content
+                //var contentItemMetadata = await ContentManager.PopulateAspectAsync<ContentItemMetadata>(item);
+                //var relativeUrl = Url.RouteUrl(contentItemMetadata.DisplayRouteValues);
+                //var absoluteUrl = Url.ToAbsoluteUrl(relativeUrl);
                 string path = autoroutePart.Path;
                 if (!String.IsNullOrEmpty(path))
                 {
