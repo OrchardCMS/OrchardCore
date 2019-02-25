@@ -53,6 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             if (fieldType != null)
                             {
                                 if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) continue;
+
                                 contentItemType.AddField(fieldType);
                                 break;
                             }
