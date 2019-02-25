@@ -253,7 +253,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
 
                 var animalWhereInput = new AnimalPartCollapsedWhereInput();
-                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
                 var context = new ResolveFieldContext
                 {
@@ -263,7 +262,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         ServiceProvider = services
                     },
                     ReturnType = returnType,
-                    FieldDefinition = inputs
+                    FieldDefinition = new FieldType
+                    {
+                        Name = "Inputs",
+                        Arguments = new QueryArguments
+                            {
+                                new QueryArgument<WhereInputObjectGraphType>
+                                {
+                                    Name = "where",
+                                    Description = "filters the animals",
+                                    ResolvedType = animalWhereInput
+                                }
+                            }
+                    }
                 };
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
