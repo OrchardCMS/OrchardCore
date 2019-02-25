@@ -29,12 +29,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// The Pipeline built for this shell.
         /// </summary>
-        public Object Pipeline { get; set; }
-
-        /// <summary>
-        /// Converts the Pipeline to a given type T.
-        /// </summary>
-        public T GetPipeline<T>() where T : class => Pipeline as T;
+        public IShellPipeline Pipeline { get; set; }
 
         private bool _placeHolder;
 

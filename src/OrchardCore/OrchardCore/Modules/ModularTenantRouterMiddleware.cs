@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
@@ -80,11 +81,11 @@ namespace OrchardCore.Modules
                 }
             }
 
-            await shellContext.GetPipeline<ShellRequestPipeline>().Next.Invoke(httpContext);
+            await shellContext.Pipeline.Invoke(httpContext);
         }
 
         // Build the middleware pipeline for the current tenant
-        private ShellRequestPipeline BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
+        private IShellPipeline BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
         {
             var appBuilder = new ApplicationBuilder(rootServiceProvider, _features);
 
@@ -95,7 +96,7 @@ namespace OrchardCore.Modules
 
             Action<IApplicationBuilder> configure = builder =>
             {
-                ConfigureTenantPipeline(builder, shellPipeline, scopeServiceProvider);
+                shellPipeline.Router = ConfigureTenantPipeline(builder, scopeServiceProvider);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -110,7 +111,7 @@ namespace OrchardCore.Modules
             return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder, ShellRequestPipeline shellPipeline, IServiceProvider scopeServiceProvider)
+        private IRouter ConfigureTenantPipeline(IApplicationBuilder appBuilder, IServiceProvider scopeServiceProvider)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
@@ -132,9 +133,11 @@ namespace OrchardCore.Modules
 
             tenantRouteBuilder.Configure(routeBuilder);
 
-            shellPipeline.Router = routeBuilder.Build();
+            var router = routeBuilder.Build();
 
-            appBuilder.UseRouter(shellPipeline.Router);
+            appBuilder.UseRouter(router);
+
+            return router;
         }
     }
 }
