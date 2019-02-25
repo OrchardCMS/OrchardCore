@@ -111,14 +111,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             // Add all provided table alias to the current predicate query
             var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
             var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
-            var indexAliases = new Dictionary<string, string>();
+            var indexAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var aliasProvider in providers)
             {
                 foreach (var alias in aliasProvider.GetAliases())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                    indexAliases.Add(alias.Alias.ToLower(), alias.Alias);
+                    indexAliases.Add(alias.Alias, alias.Alias);
 
                     if (!indexes.ContainsKey(alias.Index))
                     {
@@ -252,7 +252,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                             if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
                                 (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
                             {
-                                tableAlias = indexAliases.TryGetValue(partName.ToLower(), out var indexTableAlias) ? indexTableAlias : tableAlias;
+                                tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
                                 break;
                             }
                         }
