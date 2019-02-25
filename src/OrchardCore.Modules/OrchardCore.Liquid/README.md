@@ -213,6 +213,7 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
+| `Identity.Claims` |  | The claims of the authenticated user. |
 
 ### Site
 
