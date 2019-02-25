@@ -106,22 +106,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in inputGraphTypeResolved.Fields)
                         {
-                            field.Metadata = field.Metadata.AddPartMetaData(partName, true);
-                            whereInput.AddField(field);
+                            whereInput.AddField(field.WithCollapsedPartMetaData().WithPartNameMetaData(partName));
                         }
                     }
                     else
                     {
-                        var field = new FieldType
+                        whereInput.AddField(new FieldType
                         {
                             Type = inputGraphTypeResolved.GetType(),
                             Name = partName.ToFieldName(),
                             Description = inputGraphTypeResolved.Description
-                        };
-
-                        field.Metadata = field.Metadata.AddPartMetaData(partName);
-
-                        whereInput.AddField(field);
+                        }.WithPartNameMetaData(partName));
                     }
                 }
             }

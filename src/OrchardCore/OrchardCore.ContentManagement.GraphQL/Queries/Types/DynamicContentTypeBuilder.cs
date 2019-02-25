@@ -53,7 +53,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             if (fieldType != null)
                             {
                                 if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) continue;
-                                fieldType.Metadata = fieldType.Metadata.AddPartMetaData(part.PartDefinition.Name, true);
                                 contentItemType.AddField(fieldType);
                                 break;
                             }
@@ -74,7 +73,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             return context.Source.Get(typeToResolve, nameToResolve);
                         });
 
-                    field.Metadata = field.Metadata.AddPartMetaData(part.PartDefinition.Name);
                     field.ResolvedType = new DynamicPartGraphType(_httpContextAccessor, part);
                 }
             }
