@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in inputGraphTypeResolved.Fields)
                         {
-                            whereInput.AddField(field.WithCollapsedPartMetaData().WithPartNameMetaData(partName));
+                            whereInput.AddField(field.WithPartCollapsedMetaData().WithPartNameMetaData(partName));
                         }
                     }
                     else
