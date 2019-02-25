@@ -8,6 +8,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
@@ -200,8 +201,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
                 services.Build();
 
-                var retrunType = new ListGraphType<StringGraphType>();
-                retrunType.ResolvedType = new StringGraphType() { Name = "Animal" };
+                var returnType = new ListGraphType<StringGraphType>();
+                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+                var animalWhereInput = new AnimalPartWhereInput();
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
                 var context = new ResolveFieldContext
                 {
@@ -210,7 +214,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     {
                         ServiceProvider = services
                     },
-                    ReturnType = retrunType
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
                 };
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
@@ -228,6 +233,74 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Assert.Single(dogs);
                 Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
             }
+        }
+
+        [Fact]
+        public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
+        {
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
+                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Build();
+
+                var returnType = new ListGraphType<StringGraphType>();
+                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+                var animalWhereInput = new AnimalPartCollapsedWhereInput();
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.CommitAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema());
+
+                context.Arguments["where"] = JObject.Parse("{ name: \"doug\" }");
+                var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
+        }
+    }
+
+    public class AnimalPartWhereInput : WhereInputObjectGraphType
+    {
+        public AnimalPartWhereInput()
+        {
+            Name = "Test";
+            Description = "Foo";
+            AddField(new FieldType { Name = "Animal", Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" } } });
+        }
+    }
+
+    public class AnimalPartCollapsedWhereInput : WhereInputObjectGraphType
+    {
+        public AnimalPartCollapsedWhereInput()
+        {
+            Name = "Test";
+            Description = "Foo";
+            AddField(new FieldType { Name = "Name", Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" }, { "PartCollapsed", true } } });
         }
     }
 
