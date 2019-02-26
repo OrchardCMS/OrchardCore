@@ -143,7 +143,97 @@ namespace AdvancedForms.Drivers
  ### `Display List`
  
  ### List.Edit
+  ```
+    @model ProfileViewModel
+    <style>
+        .btn-group{
+            display : none;
+        }
+    </style>
+
+    @if (Model.ContentItemSummaries.Count > 0)
+    {
+        <ul class="list-group">
+            @foreach (var contentItemSummary in Model.ContentItemSummaries)
+            {
+                    @await DisplayAsync(contentItemSummary)
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            @T["No result found."]
+        </div>
+    }
+    
+  ```
 
  ### Content.SubmissionProfile.ListItem.cshtml
+ ```
+    @using OrchardCore.ContentManagement
+    @inject IContentManager ContentManager
+    @{
+        ContentItem contentItem = Model.ContentItem;
+        var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+        var hasDraft = contentItem.HasDraft();
+        string action = contentItem.Content.AutoroutePart.Path.ToString().Split("/")[1];
+        string status = string.Empty;
+        dynamic selectedContent = await ContentManager.GetAsync(contentItem.Content.AdvancedFormSubmissions.Status.Text.ToString(), VersionOptions.Published);
+        if (selectedContent == null)
+        {
+            selectedContent = await ContentManager.GetAsync(contentItem.Content.AdvancedFormSubmissions.Status.Text.ToString(), VersionOptions.DraftRequired);
+        }
+        if (selectedContent != null)
+        {
+            status = selectedContent.DisplayText;
+        }
+    }
 
+    <li class="list-group-item tedt">
+        <div class="properties">
+            <div class="related float-right">
+                <a href="/AdvancedForms/@action/Edit/@contentItem.ContentItemId?returnUrl=@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                @if (hasPublished)
+                {
+                    <a href="/@contentItem.Content.AutoroutePart.Path" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
+                }
+            </div>       
+            <a href="/AdvancedForms/@action/Edit/@contentItem.ContentItemId">@action.Replace("-", " ")</a> 
+            <br />
+            <div class="metadata">
+                @if (hasPublished)
+                {
+                    <span class="badge badge-success" title="@T["Published"]">
+                        <i class="fa fa-check" aria-hidden="true"></i> @T["Published"]
+                    </span>
+                }
+                @if (hasDraft)
+                {
+                    <span class="badge badge-primary" title="@T["Draft"]">
+                        <i class="fa fa-pencil" aria-hidden="true"></i> @T["Draft"]
+                    </span>
+                }
+                    <span class="badge badge-secondary" title="@T[@status]" style="color:#fff;"> @T["Status - " + @status]</span>
+                <div>
+                    <span class="hint">@T["Last modified {0} by {1}", (object)(await DisplayAsync(await New.TimeSpan(Utc: contentItem.ModifiedUtc))), contentItem.Author]</span>
+                </div>
+            </div>
+        </div>
+    </li>
+    
+ ```
 
+ ### ProfileViewModel.cs
+ ```
+     using System.Collections.Generic;
+
+    namespace AdvancedForms.ViewModels
+    {
+        public class ProfileViewModel
+        {
+            public List<dynamic> ContentItemSummaries { get; set; }
+        }
+    }
+
+  ```
