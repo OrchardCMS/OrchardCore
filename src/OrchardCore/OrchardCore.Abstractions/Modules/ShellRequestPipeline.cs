@@ -9,7 +9,6 @@ namespace OrchardCore.Modules
     {
         public IRouter Router { get; set; }
         public RequestDelegate Next { get; set; }
-
         public Task Invoke(object context) => Next(context as HttpContext);
     }
 }

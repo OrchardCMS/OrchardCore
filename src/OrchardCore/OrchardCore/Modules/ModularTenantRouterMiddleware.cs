@@ -70,7 +70,7 @@ namespace OrchardCore.Modules
                 {
                     if (shellContext.Pipeline == null)
                     {
-                        shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider, ShellScope.Services);
+                        shellContext.Pipeline = BuildTenantPipeline();
                     }
                 }
 
@@ -85,9 +85,9 @@ namespace OrchardCore.Modules
         }
 
         // Build the middleware pipeline for the current tenant
-        private IShellPipeline BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
+        private IShellPipeline BuildTenantPipeline()
         {
-            var appBuilder = new ApplicationBuilder(rootServiceProvider, _features);
+            var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
@@ -96,7 +96,7 @@ namespace OrchardCore.Modules
 
             Action<IApplicationBuilder> configure = builder =>
             {
-                shellPipeline.Router = ConfigureTenantPipeline(builder, scopeServiceProvider);
+                shellPipeline.Router = ConfigureTenantPipeline(builder);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -111,7 +111,7 @@ namespace OrchardCore.Modules
             return shellPipeline;
         }
 
-        private IRouter ConfigureTenantPipeline(IApplicationBuilder appBuilder, IServiceProvider scopeServiceProvider)
+        private IRouter ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
@@ -128,7 +128,7 @@ namespace OrchardCore.Modules
             // And the ShellSettings test in TenantRoute would also be useless.
             foreach (var startup in startups)
             {
-                startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
+                startup.Configure(appBuilder, routeBuilder, ShellScope.Services);
             }
 
             tenantRouteBuilder.Configure(routeBuilder);

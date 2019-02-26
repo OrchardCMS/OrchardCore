@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
@@ -44,13 +43,13 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
-
                 // Makes 'RequestServices' aware of the current 'ShellScope'.
                 httpContext.UseShellScopeServices();
 
-                // Used as logging infos available until the end of the request.
-                httpContext.Features.Set<ShellContext>(shellScope.ShellContext);
+                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                // For logging infos available until the end of the request.
+                httpContext.Features.Set(shellScope.ShellContext);
 
                 await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
             }
