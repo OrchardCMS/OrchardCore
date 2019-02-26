@@ -18,7 +18,6 @@ Provides user profiles
 		public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IProfileNavigationProvider, ProfileMenu>();            
-            services.AddSingleton<IProfileService, ProfileService>();
             services.AddScoped<IDisplayManager<IProfile>, DisplayManager<IProfile>>();
             services.AddScoped<IDisplayDriver<IProfile>, DefaultProfileDisplayDriver>();
         }
