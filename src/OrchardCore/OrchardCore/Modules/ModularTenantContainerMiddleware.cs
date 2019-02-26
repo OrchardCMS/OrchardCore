@@ -48,7 +48,7 @@ namespace OrchardCore.Modules
 
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
-                // For logging infos available until the end of the request.
+                // Holds the 'ShellContext' for the full request.
                 httpContext.Features.Set(shellScope.ShellContext);
 
                 await shellScope.UsingAsync(scope => _next.Invoke(httpContext));

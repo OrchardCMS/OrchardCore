@@ -303,7 +303,11 @@ namespace OrchardCore.Modules
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
         {
-            return shell.Settings.CreateHttpContext();
+            var context = shell.Settings.CreateHttpContext();
+
+            context.Features.Set(shell);
+
+            return context;
         }
 
         public static HttpContext CreateHttpContext(this ShellSettings settings)
