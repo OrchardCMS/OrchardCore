@@ -1,5 +1,5 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
-
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
+    
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
@@ -26,9 +26,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ Path: x.mediaPath });
+                        mediaPaths.push({ Path: x.mediaPath, IsRemoved: x.isRemoved, IsNew: x.isNew });
                     });
-                    return JSON.stringify(mediaPaths);                    
+                    return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
                     var self = this;
@@ -36,6 +36,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                     var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
                         self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
@@ -44,7 +45,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                                     self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
-                                    console.log(error);
+                                    console.log(JSON.stringify(error));
                                     self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
                                 }
                             });
@@ -76,7 +77,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                     this.smallThumbs = newPrefs.smallThumbs;
                 }
             }
-
         },
         mounted: function () {
             var self = this;
@@ -90,51 +90,90 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             self.$on('selectMediaRequested', function (media) {
                 self.selectMedia(media);
             });
+            
+            var selector = '#' + idOfUploadButton;
 
-            self.$on('filesUploaded', function (files) {                
-                self.addMediaFiles(files);                
+            $(document).bind('drop dragover', function (e) {
+                e.preventDefault();
+            });
+
+            
+            var editorId = mediaFieldEditor.attr('id');
+
+            $(selector).fileupload({
+                limitConcurrentUploads: 20,
+                dropZone: $('#' + editorId),
+                dataType: 'json',
+                url: uploadAction,
+                add: function (e, data) {
+                    var count = data.files.length;
+                    var i;
+                    for (i = 0; i < count; i++) {
+                        data.files[i].uploadName =
+                            self.getUniqueId() + data.files[i].name;
+                    }
+                    data.submit();
+                },
+                formData: function () {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                    return [
+                        { name: 'path', value: tempUploadFolder },
+                        { name: '__RequestVerificationToken', value: antiForgeryToken }
+                    ];
+                },
+                done: function (e, data) {
+                    var newMediaItems = [];
+                    if (data.result.files.length > 0) {
+                        for (var i = 0; i < data.result.files.length; i++) {
+                            data.result.files[i].isNew = true;
+                            newMediaItems.push(data.result.files[i]);
+                        }
+                    }
+
+                    if (newMediaItems.length > 1 && allowMultiple === false) {
+                        alert($('#onlyOneItemMessage').val());
+                        mediaFieldApp.mediaItems.push(newMediaItems[0]);
+                    } else {
+                        mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('error on upload!!');
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
             });
         },
         methods: {
             selectMedia: function (media) {
                 this.selectedMedia = media;
             },
-            showModal: function (event) {
-                var self = this;
-                if (self.canAddMedia) {
-                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
-                    $("#mediaApp").show();
-                    var modal = $(modalBodyElement).modal();
-                    $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        self.addMediaFiles(mediaApp.selectedMedias);
-
-                        // we don't want the included medias to be still selected the next time we open the modal.
-                        mediaApp.selectedMedias = [];
-
-                        modal.modal('hide');
-                        return true;
-                    });
-                }
-            },
-            addMediaFiles: function (files) {
-                if ((files.length > 1) && (allowMultiple === false)) {
-                    alert($('#onlyOneItemMessage').val());
-                    mediaFieldApp.mediaItems.push(files[0]);
-                } else {
-                    mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
-                }
+            getUniqueId: function () {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                });
             },
             removeSelected: function (event) {
+                var removed = {};
                 if (this.selectedMedia) {
                     var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
                     if (index > -1) {
-                        this.mediaItems.splice(index, 1);
+                        removed = this.mediaItems[index];
+                        removed.isRemoved = true;
+                        this.mediaItems.splice([index], 1, removed);
+                        //this.mediaItems.splice(index, 1);
                     }
                 }
                 else {
                     // The remove button can also remove a unique media item
                     if (this.mediaItems.length === 1) {
-                        this.mediaItems.splice(0, 1);
+                        removed = this.mediaItems[index];
+                        removed.isRemoved = true;
+                        this.mediaItems.splice(0, 1, removed);                        
+                        //this.mediaItems.splice(0, 1);
                     }
                 }
                 this.selectedMedia = null;
