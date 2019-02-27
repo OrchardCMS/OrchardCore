@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Resolvers;
 
 namespace OrchardCore.Media.Processing
@@ -9,18 +10,25 @@ namespace OrchardCore.Media.Processing
     {
         private readonly IMediaFileStore _mediaStore;
         private readonly string _filePath;
+        private readonly ImageMetaData _metadata;
 
-        public MediaFileResolver(IMediaFileStore mediaStore, string filePath)
+        public MediaFileResolver(IMediaFileStore mediaStore, string filePath, in ImageMetaData metadata)
         {
             _mediaStore = mediaStore;
             _filePath = filePath;
+            _metadata = metadata;
+        }
+
+        public MediaFileResolver(IMediaFileStore mediaStore, in ImageMetaData metadata)
+        {
+            _mediaStore = mediaStore;
+            _metadata = metadata;
         }
 
         /// <inheritdoc/>
-        public async Task<DateTime> GetLastWriteTimeUtcAsync()
+        public async Task<ImageMetaData> GetMetaDataAsync()
         {
-            var file = await _mediaStore.GetFileInfoAsync(_filePath);
-            return file.LastModifiedUtc;
+            return await Task.FromResult(_metadata);
         }
 
         /// <inheritdoc/>
