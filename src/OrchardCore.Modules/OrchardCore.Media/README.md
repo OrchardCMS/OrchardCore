@@ -147,7 +147,14 @@ The following configuration values are used by default and can be customized:
       "MaxBrowserCacheDays": 30,
 
       // The number of days to store images in the image cache
-      "MaxCacheDays": 365
+      "MaxCacheDays": 365,
+
+      // The maximum payload of an upload action in bytes
+      "MaxRequestBodySize": 100000000,
+
+      // The maximum size of an uploaded file in bytes. 
+      // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+      "MaxFileSize": 30000000,
     }
 ```
 
