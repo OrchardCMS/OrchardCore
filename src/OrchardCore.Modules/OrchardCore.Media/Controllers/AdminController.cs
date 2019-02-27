@@ -65,19 +65,31 @@ namespace OrchardCore.Media.Controllers
 
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
-            return content.ToArray();
+
+            var allowed = new List<IFileStoreEntry>();
+
+            foreach (var entry in content)
+            {
+                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
+                {
+                    allowed.Add(entry);
+                }
+            }
+
+            return allowed.ToArray();            
         }
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
-            {
-                return Unauthorized();
-            }
-
             if (string.IsNullOrEmpty(path))
             {
                 path = "";
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+            {
+                return Unauthorized();
             }
 
             if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
@@ -87,8 +99,16 @@ namespace OrchardCore.Media.Controllers
 
             var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
 
+            var allowed = new List<IFileStoreEntry>();
+            foreach (var entry in files)
+            {
+                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
+                {
+                    allowed.Add(entry);
+                }
+            }
 
-            return files.Select(CreateFileResult).ToArray();
+            return allowed.Select(CreateFileResult).ToArray();
         }
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
@@ -171,7 +191,8 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFolder(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Unauthorized();
             }
@@ -196,7 +217,8 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMedia(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Unauthorized();
             }
@@ -215,7 +237,9 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)oldPath)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
             {
                 return Unauthorized();
             }
@@ -248,6 +272,14 @@ namespace OrchardCore.Media.Controllers
                 return Unauthorized();
             }
 
+            foreach (var path in paths)
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+                {
+                    return Unauthorized();
+                }
+            }
+
             if (paths == null)
             {
                 return NotFound();
@@ -267,7 +299,9 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)sourceFolder)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)targetFolder))
             {
                 return Unauthorized();
             }
@@ -313,17 +347,18 @@ namespace OrchardCore.Media.Controllers
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)
         {
-            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
-            {
-                return Unauthorized();
-            }
-
             if (string.IsNullOrEmpty(path))
             {
                 path = "";
             }
 
             var newPath = _mediaFileStore.Combine(path, name);
+
+            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
+            {
+                return Unauthorized();
+            }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
