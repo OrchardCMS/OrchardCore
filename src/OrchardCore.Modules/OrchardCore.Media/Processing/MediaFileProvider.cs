@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Processing
                 return null;
             }
             var metadata = new ImageMetaData(file.LastModifiedUtc);
-            return await Task.FromResult<IImageResolver>(new MediaFileResolver(_mediaStore, filePath, metadata));
+            return new MediaFileResolver(_mediaStore, filePath, metadata);
         }
     }
 }
