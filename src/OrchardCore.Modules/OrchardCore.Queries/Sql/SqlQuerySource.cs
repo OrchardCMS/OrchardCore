@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -48,12 +47,7 @@ namespace OrchardCore.Queries.Sql
             }
 
 
-            string tokenizedQuery;
-            using (var writer = new StringWriter())
-            {
-                await _liquidTemplateManager.RenderAsync(sqlQuery.Template, writer, NullEncoder.Default, templateContext);
-                tokenizedQuery = writer.ToString();
-            }
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
