@@ -8,15 +8,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Admin]
-    public class BaseEmailController : Controller
+    public abstract class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;
         private readonly IShapeFactory _shapeFactory;
