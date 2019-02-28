@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -64,8 +65,12 @@ namespace OrchardCore.Lucene
 
                 templateContext.AmbientValues.Add("TemplateType", "Query");
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
-                var parameterizedQuery = JObject.Parse(tokenizedContent);
+                JObject parameterizedQuery;
+                using (var writer = new StringWriter())
+                {
+                    await _liquidTemplateManager.RenderAsync(luceneQuery.Template, writer, NullEncoder.Default, templateContext);
+                    parameterizedQuery = JObject.Parse(writer.ToString());
+                }
 
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);

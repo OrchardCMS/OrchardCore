@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -46,18 +47,22 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
-            templateContext.AmbientValues.Add("TemplateType", "Query");
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
+            string tokenizedQuery;
+            using (var writer = new StringWriter())
+            {
+                await _liquidTemplateManager.RenderAsync(sqlQuery.Template, writer, NullEncoder.Default, templateContext);
+                tokenizedQuery = writer.ToString();
+            }
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
-            
+
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 return new object[0];
             }
-                        
+
             if (sqlQuery.ReturnDocuments)
             {
                 IEnumerable<int> documentIds;

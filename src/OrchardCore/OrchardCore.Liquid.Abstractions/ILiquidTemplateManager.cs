@@ -15,11 +15,9 @@ namespace OrchardCore.Liquid
     {
         public static async Task<string> RenderAsync(this ILiquidTemplateManager manager, string template, TemplateContext context)
         {
-            context.AmbientValues.TryGetValue("TemplateType", out var templateType);
-
             using (var sw = new StringWriter())
             {
-                await manager.RenderAsync(template, sw, templateType != null && templateType.ToString() == "Query" ? NullEncoder.Default : HtmlEncoder.Default, context);
+                await manager.RenderAsync(template, sw, HtmlEncoder.Default, context);
                 return sw.ToString();
             }
         }
