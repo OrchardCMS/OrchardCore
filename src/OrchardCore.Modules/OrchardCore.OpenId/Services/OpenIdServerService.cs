@@ -497,11 +497,14 @@ namespace OrchardCore.OpenId.Services
                                 X509KeyStorageFlags.EphemeralKeySet :
                                 X509KeyStorageFlags.MachineKeySet;
 #else
-                                X509KeyStorageFlags.MachineKeySet;
+                                X509KeyStorageFlags.MachineKeySet |
+                                X509KeyStorageFlags.PersistKeySet |
+                                X509KeyStorageFlags.Exportable;
 #endif
 
                     // Only add the certificate if it's still valid.
                     var certificate = new X509Certificate2(file.FullName, password, flags);
+
                     if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
                     {
                         certificates.Add((file.FullName, certificate));
