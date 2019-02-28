@@ -3,7 +3,7 @@
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
   "author": "The Orchard Team",
-  "website": "http://orchardproject.net",
+  "website": "https://orchardproject.net",
   "version": "2.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
