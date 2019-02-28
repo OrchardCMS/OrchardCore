@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp.Web;
@@ -26,9 +25,9 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public async Task<ImageMetaData> GetMetaDataAsync()
+        public Task<ImageMetaData> GetMetaDataAsync()
         {
-            return await Task.FromResult(_metadata);
+            return Task.FromResult(_metadata);
         }
 
         /// <inheritdoc/>
