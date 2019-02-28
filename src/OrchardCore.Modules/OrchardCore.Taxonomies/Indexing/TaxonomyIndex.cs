@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -25,13 +23,12 @@ namespace OrchardCore.Taxonomies.Indexing
 
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public TaxonomyIndexProvider(IServiceProvider serviceProvider)
+        public TaxonomyIndexProvider(IContentDefinitionManager contentDefinitionManager)
         {
-            _serviceProvider = serviceProvider;
+            _contentDefinitionManager = contentDefinitionManager;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
@@ -49,9 +46,6 @@ namespace OrchardCore.Taxonomies.Indexing
                     {
                         return null;
                     }
-
-                    // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
                     var fieldDefinitions = _contentDefinitionManager
