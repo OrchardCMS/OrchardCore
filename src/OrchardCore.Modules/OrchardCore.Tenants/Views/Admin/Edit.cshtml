@@ -17,14 +17,14 @@
         <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
         <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlPrefix" class="text-danger"></span>
-        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL is \"https://orchardproject.net/site1\""]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="RequestUrlHost">
         <label asp-for="RequestUrlHost">@T["Hostname"]</label>
         <input asp-for="RequestUrlHost" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlHost" class="text-danger"></span>
-        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\""]</span>
+        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant URL is \"https://orchardproject.net/\""]</span>
         <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
     </div>
 
