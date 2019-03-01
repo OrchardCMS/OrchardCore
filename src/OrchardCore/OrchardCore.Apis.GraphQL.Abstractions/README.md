@@ -157,6 +157,114 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 
 Done.
 
+## Querying related content items
+
+One of the features of Content Items, is that they can be related to other Content Items.
+
+Imagine we have the following Content Types: (abbreviated for readability)
+
+```json
+{
+      "Name": "Movie",
+      "DisplayName": "Movie"
+}
+
+{
+      "ContentPartFieldDefinitionRecords": [
+        {
+          "FieldName": "TextField",
+          "Name": "ReleaseYear",
+        },
+        {
+          "FieldName": "TextField",
+          "Name": "Name",
+        }
+      ]
+    }
+
+```
+and
+```json
+{
+      "Name": "Person",
+      "DisplayName": "Person"
+}
+
+{
+      "ContentPartFieldDefinitionRecords": [
+        {
+          "FieldName": "TextField",
+          "Name": "Name",
+        },
+        {
+          "FieldName": "ContentPickerField",
+          "Name": "FavoriteMovies",
+        },
+        {
+          "Settings": {
+            "DisplayName": "Favorite Movies",
+            "Multiple": true,
+            "DisplayedContentTypes": [
+              "Movie"
+            ],
+          }
+        }
+      ]
+    }
+
+```
+Note that the field ```FavoriteMovies``` is of type ```ContentPickerField``` which allows you select multiple ´Movies´ as per the ```DisplayedContentTypes```
+
+### Get the related content items GraphQL query
+
+Now, if we would want to get the Favorite Movies of the Person items we query, the following query will throw an error:
+
+```json
+{
+  person {
+    name
+    favoriteMovies { 
+      contentItems {
+      	name
+        releaseYear
+      }
+    }
+  }
+}
+```
+
+The error will complain that ```name``` and ```releaseYear``` are not fields of a Content Item.
+
+```text
+GraphQL.Validation.ValidationError: Cannot query field \"name\" on type \"ContentItem\". Did you mean to use an inline fragment on \"Movie\" or \"Person\"?
+
+GraphQL.Validation.ValidationError: Cannot query field \"releaseYear\" on type \"ContentItem\". Did you mean to use an inline fragment on \"Movie\"?
+
+```
+
+The ´inline fragment´ the error hints about, is a construct to tell the query parser what it is supposed to do with these generic items, and have them treated as a ´Movie´ type instead of as a generic ´Content Item´.
+
+The following query gives us the results we want:
+
+```json
+{
+  person {
+    name
+    favoriteMovies {
+      contentItems {
+        ... on Movie {
+          name
+          releaseYear
+        }
+      }
+    }
+  }
+}
+```
+
+**Notice** the ```... on Movie``` fragment, that tells the GraphQL parser to treat the discovered object as ´Movie´.
+
+
 ## More Info
 
 For more information on GraphQL you can visit the following links:
