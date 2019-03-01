@@ -97,9 +97,9 @@ namespace OrchardCore.OpenId.Services
                 results.Add(new ValidationResult(T["At least one OpenID Connect flow must be enabled."]));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+                if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
                     results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
                     {
@@ -107,7 +107,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
                     {

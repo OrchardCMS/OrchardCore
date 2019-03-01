@@ -78,7 +78,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(string.IsNullOrEmpty(settings.Authority) ^ string.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(T["Either a tenant or an authority must be registered."], new[]
                 {
@@ -87,9 +87,9 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+                if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
                     results.Add(new ValidationResult(T["The specified authority is not valid."], new[]
                     {
@@ -97,7 +97,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -114,7 +114,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority) && string.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(T["An audience must be set when configuring the authority."], new[]
                 {
