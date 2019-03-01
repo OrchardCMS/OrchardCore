@@ -72,7 +72,8 @@ namespace OrchardCore.Media.Drivers
                 {
                     try
                     {
-                        await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem.ContentItemId);
+                        await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(
+                            items, context.ContentPart.ContentItem.ContentItemId, context.ContentPart.ContentItem.ContentType);
                     }
                     catch (Exception)
                     {

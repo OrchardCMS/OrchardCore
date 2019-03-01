@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace OrchardCore.Media.Services
 {
@@ -31,7 +33,7 @@ namespace OrchardCore.Media.Services
         public string MediaFieldsTempSubFolder { get; }
 
 
-        public async Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, string contentItemId)
+        public async Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, string contentItemId, string contentType)
         {
             if (items == null)
             {
@@ -42,7 +44,7 @@ namespace OrchardCore.Media.Services
 
             RemoveTemporary(items);
 
-            MoveNewToContentItemDirAndUpdatePaths(items, contentItemId);
+            MoveNewToContentItemDirAndUpdatePaths(items, contentItemId, contentType);
         }
 
         private async Task EnsureGlobalDirectoriesExist()
@@ -60,102 +62,52 @@ namespace OrchardCore.Media.Services
 
 
         // Newly added files
-        private void MoveNewToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, string contentItemId)
+        private void MoveNewToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, string contentItemId, string contentType)
         {
             items.Where(x => !x.IsRemoved && x.IsNew).ToList()
                 .ForEach(async x =>
                 {
-                    var targetDir = _fileStore.Combine(MediaFieldsFolder, GetSplittedDirName(contentItemId));
-                    var uploadFileName = (await _fileStore.GetFileInfoAsync(x.Path)).Name;
-                    var finalFileName = await BuildUniqueNameFromTemporaryGuidName(uploadFileName, targetDir);
-                    var finalFilePath = _fileStore.Combine(new string[] { targetDir, finalFileName });
+                    var targetDir = _fileStore.Combine(MediaFieldsFolder, contentType, contentItemId);
+                    var finalFileName = (await GetFileHashAsync(x.Path)) + GetFileExtension(x.Path);
+                    var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
                     await _fileStore.TryCreateDirectoryAsync(targetDir);
 
-                    // move the file
-                    await _fileStore.MoveFileAsync(x.Path, finalFilePath);
+                    // we don't move it if the same exact file is already there. To preserve disk space.
+                    if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
+                    {
+                        await _fileStore.MoveFileAsync(x.Path, finalFilePath);
+                    }
 
                     // update the path
                     x.Path = finalFilePath;
                 });
         }
 
-
-
-        private async Task<string> BuildUniqueNameFromTemporaryGuidName(string uploadFileName, string targetDir)
+        
+        private async Task<string> GetFileHashAsync(string filePath)
         {
-            // remove-guid.
-            var noGuid = uploadFileName.Substring(36);
-
-            // get extension.
-            var lastPoint = noGuid.LastIndexOf(".");
-            var ext = lastPoint > -1 ? noGuid.Substring(lastPoint) : "";
-
-            // get filename-without-extension
-            var fileNameWithoutExtension = lastPoint > -1 ? noGuid.Substring(0, lastPoint) : noGuid;
-
-            // does this filename exist? -> build another one .
-            if (await IsFileNameUnique(fileNameWithoutExtension, ext, targetDir) == false)
+            using (var fs = await _fileStore.GetFileStreamAsync(filePath))
+            using (HashAlgorithm hashAlgorithm = MD5.Create())
             {
-                return await GenerateUniqueNameAsync(fileNameWithoutExtension, ext, targetDir);
-            }
-
-            return fileNameWithoutExtension + ext;
-        }
-
-        private async Task<string> GenerateUniqueNameAsync(string fileNameWithoutExtension, string ext, string targetDir)
-        {
-            var fileName = fileNameWithoutExtension;
-            var version = 1;
-            var unversionedFileName = fileName;
-
-            var versionSeparatorPosition = fileName.LastIndexOf("-v-");
-            if (versionSeparatorPosition > -1)
-            {
-                int.TryParse(fileName.Substring(versionSeparatorPosition).TrimStart(new char[] { '-', 'v', '-' }), out version);
-                unversionedFileName = fileName.Substring(0, versionSeparatorPosition);
-            }
-
-            while (true)
-            {
-                var versionedFileName = $"{unversionedFileName}-v-{version++}";
-                if (await IsFileNameUnique(versionedFileName, ext, targetDir))
-                {
-                    return versionedFileName + ext;
-                }
+                byte[] hash = hashAlgorithm.ComputeHash(fs);
+                return ByteArrayToHexString(hash);
             }
         }
 
-        private async Task<bool> IsFileNameUnique(string fileName, string fileExtension, string directory)
+        public string ByteArrayToHexString(byte[] bytes)
         {
-            return await _fileStore.GetFileInfoAsync(_fileStore.Combine(directory, fileName + fileExtension)) == null;
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in bytes)
+                sb.Append(b.ToString("x2").ToLower());
+
+            return sb.ToString();
         }
 
-
-        /// <summary>
-        /// Converts an content item id string into a path composed of several nested dirs. 
-        /// It is a mechanism to avoid having too many dirs in the root dir.
-        /// </summary>
-        private string GetSplittedDirName(string id)
+        private string GetFileExtension(string path)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentNullException("Name to split can't be null");
-            }
-
-            if (id.Length != 26)
-            {
-                throw new ArgumentException("Name to split must be 26 characters long.");
-            }
-
-            var result = new StringBuilder();
-            for (int i = 0; i < 13; i++)
-            {
-                result.Append(id.Substring(i * 2, 2));
-                result.Append("\\");
-            }
-
-            return result.ToString().TrimEnd('\\');
+            var lastPoint = path.LastIndexOf(".");
+            return lastPoint > -1 ? path.Substring(lastPoint) : "";
         }
     }
 }

@@ -10,7 +10,7 @@ Vue.component('mediaFieldThumbsContainer', {
          </div>\
          <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
-                :key="media.name"\
+                :key="media.vuekey" \
                 class="media-container-main-list-item card"\
                 :style="{width: thumbSize + 2 + \'px\'}"\
                 :class="{selected: selectedMedia == media}"\

@@ -42,6 +42,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
                                 method: 'GET',
                                 success: function (data) {
+                                    data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
                                     self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
