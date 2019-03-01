@@ -33,14 +33,11 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), async model =>
+            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-                model.Updater = context.Updater;
-                model.SelectedContentItemIds = string.Join(",", field.ContentItemIds);
-                model.ContentItems = await _contentManager.GetAsync(field.ContentItemIds);
             })
             .Location("Content")
             .Location("SummaryAdmin", "");

@@ -24,12 +24,12 @@ This modules provides common content fields.
 From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
-```csharp
-var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
-```
-
 ```liquid
 {{ Model.ContentItem.Content.Article.MyField.Value }}
+```
+
+```razor
+var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
 ```
 
 From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
@@ -46,13 +46,15 @@ The convention for a field view model is to also expose these properties:
 
 Some view models have special properties that are computed from the actual field data and which are more useful for templating.
 
-### `DisplayHtmlFieldViewModel`
+### `HtmlField`
+
+#### `DisplayHtmlFieldViewModel`
 
 | Property | Description |
 | --- | --- |
 | `Html` | The processed HTML, once all liquid tags have been processed. |
 
-#### `HtmlField` Example
+#### Example
 
 ```liquid
 {{ Model.Html }}
@@ -64,13 +66,15 @@ or, to display the raw content before the tags are converted:
 {{ Model.Field.Html }}
 ```
 
-### `DisplayDateTimeFieldViewModel`
+### `DateTimeField`
+
+#### `DisplayDateTimeFieldViewModel`
 
 | Property | Description |
 | --- | --- |
 | `LocalDateTime` | The date time in the time zone of the site. |
 
-#### `DateTimeField` example
+#### Example
 
 ```liquid
 {{ Model.LocalDateTime }}
@@ -82,18 +86,22 @@ or, to display the UTC value before is it converted:
 {{ Model.Field.Value }}
 ```
 
-### `DisplayContentPickerFieldViewModel`
+### `ContentPickerField`
 
-| Property | Description |
-| --- | --- |
-| `ContentItems` | The list of content items. |
-
-#### `ContentPickerField` example
+#### Example
 
 ```liquid
-{% for contentItem in Model.ContentItems %}
+{% assign contentItems = Model.Field.Content.ContentItemIds | content_item_id %}
+{% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
 {% endfor %}
+```
+
+```razor
+@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.Field.ContentItemIds))
+{
+    @contentItem.DisplayText
+}
 ```
 
 ## Creating Custom Fields
@@ -153,7 +161,7 @@ This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Optio
 
 This template will need to render an `<option>` tag. Here is an example for a Wysiwyg options on the Html Field:
 
-```csharp
+```razor
 @{
     string currentEditor = Model.Editor;
 }
