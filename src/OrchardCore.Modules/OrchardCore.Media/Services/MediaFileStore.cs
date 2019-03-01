@@ -85,15 +85,13 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            var pathBase = _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
             var publicUrl = new PathString(_publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path));
-            return pathBase.Add(publicUrl);
+            return PathBase.Add(publicUrl);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            var pathBase = _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
-            var publicUrlBase = pathBase.Add(_publicUrlBase);
+            var publicUrlBase = PathBase.Add(_publicUrlBase);
 
             if (!publicUrl.StartsWith(publicUrlBase, StringComparison.OrdinalIgnoreCase))
             {
@@ -102,5 +100,7 @@ namespace OrchardCore.Media.Services
 
             return publicUrl.Substring(publicUrlBase.Value.Length);
         }
+
+        private PathString PathBase => _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
     }
 }
