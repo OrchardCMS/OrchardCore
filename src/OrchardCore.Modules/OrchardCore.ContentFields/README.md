@@ -9,6 +9,7 @@ This modules provides common content fields.
 | Name | Properties | Shape Type | Shape Class |
 | --- | --- | --- | --- |
 | `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
+| `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
 | `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
 | `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
 | `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
@@ -16,6 +17,7 @@ This modules provides common content fields.
 | `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
 | `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
 | `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
+| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` | `YoutubeField` | `YoutubeFieldDisplayViewModel` |
 
 ## Usage
 
@@ -40,7 +42,7 @@ The convention for a field view model is to also expose these properties:
 | --- | --- |
 | `Field` | The ContentField. |
 | `Part` | The ContentPart that contains the field. |
-| `ContentPartFieldDefinition` | The Content Part Field Definition that contains the part. Which also give access to the Content Type |
+| `PartFieldDefinition` | The Content Part Field Definition that contains the part. Which also give access to the Content Type |
 
 Some view models have special properties that are computed from the actual field data and which are more useful for templating.
 
@@ -78,6 +80,20 @@ or, to display the UTC value before is it converted:
 
 ```liquid
 {{ Model.Field.Value }}
+```
+
+### `DisplayContentPickerFieldViewModel`
+
+| Property | Description |
+| --- | --- |
+| `ContentItems` | The list of content items. |
+
+#### `ContentPickerField` example
+
+```liquid
+{% for contentItem in Model.ContentItems %}
+    {{ contentItem.DisplayText }}
+{% endfor %}
 ```
 
 ## Creating Custom Fields
