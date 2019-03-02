@@ -91,14 +91,14 @@ or, to display the UTC value before is it converted:
 #### Example
 
 ```liquid
-{% assign contentItems = Model.Field.Content.ContentItemIds | content_item_id %}
+{% assign contentItems = Model.ContentItemIds | content_item_id %}
 {% for contentItem in contentItems %}
     {{ contentItem.DisplayText }}
 {% endfor %}
 ```
 
 ```razor
-@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.Field.ContentItemIds))
+@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
 {
     @contentItem.DisplayText
 }
