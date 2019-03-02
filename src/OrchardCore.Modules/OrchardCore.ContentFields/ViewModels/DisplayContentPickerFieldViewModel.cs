@@ -8,7 +8,7 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class DisplayContentPickerFieldViewModel
     {
-        public string[] ContentItemIds { get; set; }
+        public string[] ContentItemIds => Field.ContentItemIds;
         public ContentPickerField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }

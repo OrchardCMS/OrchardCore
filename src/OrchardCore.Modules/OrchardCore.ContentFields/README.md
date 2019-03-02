@@ -83,7 +83,7 @@ or, to display the raw content before the tags are converted:
 or, to display the UTC value before is it converted:
 
 ```liquid
-{{ Model.Field.Value }}
+{{ Model.Value }}
 ```
 
 ### `ContentPickerField`

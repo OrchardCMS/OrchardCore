@@ -35,7 +35,6 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
             {
-                model.ContentItemIds = field.ContentItemIds;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
