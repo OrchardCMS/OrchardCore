@@ -9,6 +9,7 @@ using OrchardCore.Environment.Shell.Configuration;
 namespace OrchardCore.Media.Services
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    [Obsolete("This type is being deprecated because of GH/#3263")]
     public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
     {
         public int Order { get; set; } = 900;
