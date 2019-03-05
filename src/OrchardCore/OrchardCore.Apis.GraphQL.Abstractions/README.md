@@ -161,59 +161,7 @@ Done.
 
 One of the features of Content Items, is that they can be related to other Content Items.
 
-Imagine we have the following Content Types: (abbreviated for readability)
-
-```json
-{
-      "Name": "Movie",
-      "DisplayName": "Movie"
-}
-
-{
-      "ContentPartFieldDefinitionRecords": [
-        {
-          "FieldName": "TextField",
-          "Name": "ReleaseYear",
-        },
-        {
-          "FieldName": "TextField",
-          "Name": "Name",
-        }
-      ]
-    }
-
-```
-and
-```json
-{
-      "Name": "Person",
-      "DisplayName": "Person"
-}
-
-{
-      "ContentPartFieldDefinitionRecords": [
-        {
-          "FieldName": "TextField",
-          "Name": "Name",
-        },
-        {
-          "FieldName": "ContentPickerField",
-          "Name": "FavoriteMovies",
-        },
-        {
-          "Settings": {
-            "DisplayName": "Favorite Movies",
-            "Multiple": true,
-            "DisplayedContentTypes": [
-              "Movie"
-            ],
-          }
-        }
-      ]
-    }
-
-```
-Note that the field ```FavoriteMovies``` is of type ```ContentPickerField``` which allows you select multiple ´Movies´ as per the ```DisplayedContentTypes```
+Imagine we have the following Content Types: Movie (with name and ReleaseYear as text fields) and Person with a FavoriteMovies field (content picker field of Movie).
 
 ### Get the related content items GraphQL query
 
@@ -235,14 +183,9 @@ Now, if we would want to get the Favorite Movies of the Person items we query, t
 
 The error will complain that ```name``` and ```releaseYear``` are not fields of a Content Item.
 
-```text
-GraphQL.Validation.ValidationError: Cannot query field \"name\" on type \"ContentItem\". Did you mean to use an inline fragment on \"Movie\" or \"Person\"?
-
-GraphQL.Validation.ValidationError: Cannot query field \"releaseYear\" on type \"ContentItem\". Did you mean to use an inline fragment on \"Movie\"?
-
-```
-
 The ´inline fragment´ the error hints about, is a construct to tell the query parser what it is supposed to do with these generic items, and have them treated as a ´Movie´ type instead of as a generic ´Content Item´.
+
+**Notice** the ```... on Movie``` fragment, that tells the GraphQL parser to treat the discovered object as ´Movie´.
 
 The following query gives us the results we want:
 
@@ -261,8 +204,6 @@ The following query gives us the results we want:
   }
 }
 ```
-
-**Notice** the ```... on Movie``` fragment, that tells the GraphQL parser to treat the discovered object as ´Movie´.
 
 
 ## More Info
