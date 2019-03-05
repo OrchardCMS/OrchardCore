@@ -1,99 +1,70 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This
-    /// model is obtained from the IShellSettingsManager, which by default reads this
-    /// from the App_Data settings.txt files.
+    /// Represents the minimalistic set of fields stored for each tenant. This model
+    /// is obtained from the 'IShellSettingsManager', which by default reads this
+    /// from the 'App_Data/tenants.json' file.
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _tenantState;
+        private ShellConfiguration _settings;
+        private ShellConfiguration _configuration;
 
-        private readonly IDictionary<string, string> _values;
-
-        public ShellSettings() : this(new Dictionary<string, string>()) { }
-
-        public ShellSettings(IDictionary<string, string> configuration)
+        public ShellSettings()
         {
-            _values = new Dictionary<string, string>(configuration);
-
-            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
-                _tenantState = TenantState.Invalid;
-            }
+            _settings = new ShellConfiguration();
+            _configuration = new ShellConfiguration();
         }
 
-        public string this[string key]
+        public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
         {
-            get
-            {
-                string retVal;
-                return _values.TryGetValue(key, out retVal) ? retVal : null;
-            }
-            set { _values[key] = value; }
+            _settings = settings;
+            _configuration = configuration;
         }
 
-        public IDictionary<string, string> Configuration => _values;
-
-        public string Name
+        public ShellSettings(ShellSettings settings)
         {
-            get { return this["Name"] ?? ""; }
-            set { this["Name"] = value; }
+            _settings = new ShellConfiguration(settings._settings);
+            _configuration = new ShellConfiguration(settings.Name, settings._configuration);
+
+            Name = settings.Name;
         }
+
+        public string Name { get; set; }
 
         public string RequestUrlHost
         {
-            get { return this["RequestUrlHost"]; }
-            set { this["RequestUrlHost"] = value; }
+            get => _settings["RequestUrlHost"];
+            set => _settings["RequestUrlHost"] = value;
         }
 
         public string RequestUrlPrefix
         {
-            get { return this["RequestUrlPrefix"]; }
-            set { _values["RequestUrlPrefix"] = value; }
+            get => _settings["RequestUrlPrefix"]?.Trim(' ', '/');
+            set => _settings["RequestUrlPrefix"] = value;
         }
 
-        public string DatabaseProvider
-        {
-            get { return this["DatabaseProvider"]; }
-            set { _values["DatabaseProvider"] = value; }
-        }
-
-        public string TablePrefix
-        {
-            get { return this["TablePrefix"]; }
-            set { _values["TablePrefix"] = value; }
-        }
-
-        public string ConnectionString
-        {
-            get { return this["ConnectionString"]; }
-            set { _values["ConnectionString"] = value; }
-        }
-
-        public string RecipeName
-        {
-            get { return this["RecipeName"]; }
-            set { _values["RecipeName"] = value; }
-        }
-
-        public string Secret
-        {
-            get { return this["Secret"]; }
-            set { _values["Secret"] = value; }
-        }
-        
+        [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State
         {
-            get => _tenantState;
-            set
-            {
-                _tenantState = value;
-                this["State"] = value.ToString();
-            }
+            get => _settings.GetValue<TenantState>("State");
+            set => _settings["State"] = value.ToString();
+        }
+
+        [JsonIgnore]
+        public IShellConfiguration ShellConfiguration => _configuration;
+
+        [JsonIgnore]
+        public string this[string key]
+        {
+            get => _configuration[key];
+            set => _configuration[key] = value;
         }
     }
 }

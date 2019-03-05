@@ -37,6 +37,7 @@ namespace OrchardCore.Lucene
                     .Add(T["Settings"], settings => settings
                         .Add(T["Search"], T["Search"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
+                            .Permission(Permissions.ManageIndexes)
                             .LocalNav()
                         )));
 

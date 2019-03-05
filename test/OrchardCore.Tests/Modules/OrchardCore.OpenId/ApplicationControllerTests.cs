@@ -17,7 +17,6 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using Xunit;
 
@@ -33,7 +32,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 Mock.Of<IAuthorizationService>(),
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -51,7 +49,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -75,7 +72,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -111,7 +107,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),

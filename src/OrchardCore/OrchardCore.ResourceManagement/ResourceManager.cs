@@ -22,6 +22,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, MetaEntry> _metas;
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
+        private HashSet<string> _localScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
         private readonly IOptions<ResourceManagementOptions> _options;
@@ -38,6 +39,7 @@ namespace OrchardCore.ResourceManagement
             _providers = resourceProviders;
 
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
+            _localScripts = new HashSet<string>();
         }
 
         public IEnumerable<ResourceManifest> ResourceManifests
@@ -61,7 +63,7 @@ namespace OrchardCore.ResourceManagement
         {
             get
             {
-                if(_dynamicManifest == null)
+                if (_dynamicManifest == null)
                 {
                     _dynamicManifest = new ResourceManifest();
                 }
@@ -179,18 +181,18 @@ namespace OrchardCore.ResourceManagement
             ResourceDefinition resource;
 
             var resources = (from p in ResourceManifests
-                            from r in p.GetResources(type)
-                            where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            select r.Value).SelectMany(x => x);
+                             from r in p.GetResources(type)
+                             where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
+                             select r.Value).SelectMany(x => x);
 
-            if(!String.IsNullOrEmpty(settings.Version))
+            if (!String.IsNullOrEmpty(settings.Version))
             {
                 // Specific version, filter
                 var upper = GetUpperBoundVersion(settings.Version);
                 var lower = GetLowerBoundVersion(settings.Version);
                 resources = from r in resources
                             let version = r.Version != null ? new Version(r.Version) : null
-                            where lower <= version && version < upper 
+                            where lower <= version && version < upper
                             select r;
             }
 
@@ -203,8 +205,8 @@ namespace OrchardCore.ResourceManagement
             if (resource == null && _dynamicManifest != null)
             {
                 resources = (from r in _dynamicManifest.GetResources(type)
-                            where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            select r.Value).SelectMany(x => x);
+                             where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
+                             select r.Value).SelectMany(x => x);
 
                 if (!String.IsNullOrEmpty(settings.Version))
                 {
@@ -253,7 +255,7 @@ namespace OrchardCore.ResourceManagement
                 if (int.TryParse(minimumVersion, out major))
                 {
                     return new Version(major + 1, 0, 0);
-                }                
+                }
             }
 
             if (version.Build != -1)
@@ -265,7 +267,7 @@ namespace OrchardCore.ResourceManagement
             {
                 return new Version(version.Major, version.Minor + 1, 0);
             }
-            
+
             return version;
         }
 
@@ -286,7 +288,7 @@ namespace OrchardCore.ResourceManagement
                     return new Version(major, 0, 0);
                 }
             }
-            
+
             return version;
         }
 
@@ -326,7 +328,7 @@ namespace OrchardCore.ResourceManagement
 
         public IEnumerable<MetaEntry> GetRegisteredMetas()
         {
-            if(_metas == null)
+            if (_metas == null)
             {
                 return Enumerable.Empty<MetaEntry>();
             }
@@ -403,9 +405,16 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterLink(LinkEntry link)
         {
-            if(_links == null)
+            if (_links == null)
             {
                 _links = new List<LinkEntry>();
+            }
+
+            var href = link.Href;
+
+            if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
+            {
+                link.Href = _pathBase + href.Substring(1);
             }
 
             _links.Add(link);
@@ -418,12 +427,12 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            if(_metas == null)
+            if (_metas == null)
             {
                 _metas = new Dictionary<string, MetaEntry>();
             }
 
-            var index = meta.Name ?? meta.HttpEquiv ?? "charset";
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
             _metas[index] = meta;
         }
@@ -435,7 +444,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            var index = meta.Name ?? meta.HttpEquiv;
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv;
 
             if (String.IsNullOrEmpty(index))
             {
@@ -555,7 +564,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml( context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_pathBase));
             }
 
             foreach (var context in GetRegisteredFootScripts())
@@ -568,6 +577,28 @@ namespace OrchardCore.ResourceManagement
                 first = false;
 
                 builder.AppendHtml(context);
+            }
+        }
+
+        public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
+        {
+            var localScripts = this.GetRequiredResources("script");
+
+            var first = true;
+
+            foreach (var context in localScripts.Where(r => r.Settings.Location == ResourceLocation.Unspecified))
+            {
+                if (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name)
+                {
+                    if (!first)
+                    {
+                        builder.AppendHtml(Environment.NewLine);
+                    }
+
+                    first = false;
+
+                    builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                }
             }
         }
 

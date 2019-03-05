@@ -78,6 +78,11 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
+            if (!string.IsNullOrEmpty(model.DisplayText))
+            {
+                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+            }
+            
             switch (model.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
@@ -163,7 +168,10 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            var routeData = new RouteData();
+            routeData.Values.Add("DisplayText", model.DisplayText);
+            
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var contentItemSummaries = new List<dynamic>();
@@ -176,7 +184,8 @@ namespace OrchardCore.Contents.Controllers
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
                 .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+                .TypeDisplayName(model.TypeDisplayName ?? "")
+                .DisplayText(model.DisplayText ?? "");
 
             return View(viewModel);
         }

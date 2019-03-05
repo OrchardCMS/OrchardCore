@@ -15,6 +15,13 @@
     <span class="hint">@T["The end value. With JavaScript support."]</span>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="StepExpression">
+    <label asp-for="StepExpression">@T["Step Expression"]</label>
+    <input type="text" asp-for="StepExpression" class="form-control code" />
+    <span asp-validation-for="StepExpression"></span>
+    <span class="hint">@T["The loop Step value. With JavaScript support."]</span>
+</fieldset>
+
 <fieldset class="form-group" asp-validation-class-for="LoopVariableName">
     <label asp-for="LoopVariableName">@T["Looping Variable"]</label>
     <input type="text" asp-for="LoopVariableName" class="form-control" />

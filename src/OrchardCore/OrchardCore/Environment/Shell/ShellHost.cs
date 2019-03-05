@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell
                     if (!_initialized)
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
-                        await CreateAndRegisterShellsAsync();
+                        await PreCreateAndRegisterShellsAsync();
                     }
                 }
                 finally
@@ -87,9 +87,7 @@ namespace OrchardCore.Environment.Shell
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
                             shell = await CreateShellContextAsync(settings);
-                            RegisterShell(shell);
-
-                            _shellContexts.TryAdd(settings.Name, shell);
+                            AddAndRegisterShell(shell);
                         }
 
                     }
@@ -151,7 +149,7 @@ namespace OrchardCore.Environment.Shell
             return ReloadShellContextAsync(settings);
         }
 
-        async Task CreateAndRegisterShellsAsync()
+        async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -165,53 +163,38 @@ namespace OrchardCore.Environment.Shell
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
+            var defaultSettings = allSettings.FirstOrDefault(s => s.Name == ShellHelper.DefaultShellName);
+            var otherSettings = allSettings.Except(new[] { defaultSettings }).ToArray();
 
             features.Wait();
 
-            // No settings, run the Setup.
-            if (allSettings.Length == 0)
+            // The 'Default' tenant is not running, run the Setup.
+            if (defaultSettings?.State != TenantState.Running)
             {
-                var setupContext = await CreateSetupContextAsync();
+                var setupContext = await CreateSetupContextAsync(defaultSettings);
                 AddAndRegisterShell(setupContext);
+                allSettings = otherSettings;
             }
-            else
+
+            if (allSettings.Length > 0)
             {
-                // Load all tenants, and activate their shell.
-                await Task.WhenAll(allSettings.Select(async settings =>
+                // Pre-create and register all tenant shells.
+                foreach (var settings in allSettings)
                 {
-                    try
+                    if (settings.Name == ShellHelper.DefaultShellName)
                     {
                         await GetOrCreateShellContextAsync(settings);
+                        continue;
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "A tenant could not be started '{TenantName}'", settings.Name);
 
-                        if (ex.IsFatal())
-                        {
-                            throw;
-                        }
-                    }
-                }));
+                    AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
+                };
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Done creating shells");
+                _logger.LogInformation("Done pre-creating and registering shells");
             }
-        }
-
-        /// <summary>
-        /// Registers the shell settings in RunningShellTable
-        /// </summary>
-        private void RegisterShell(ShellContext context)
-        {
-            if (!CanRegisterShell(context))
-            {
-                return;
-            }
-
-            RegisterShellSettings(context.Settings);
         }
 
         /// <summary>
@@ -219,12 +202,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private void AddAndRegisterShell(ShellContext context)
         {
-            if (!CanRegisterShell(context))
-            {
-                return;
-            }
-
-            if (_shellContexts.TryAdd(context.Settings.Name, context))
+            if (_shellContexts.TryAdd(context.Settings.Name, context) && CanRegisterShell(context))
             {
                 RegisterShellSettings(context.Settings);
             }
@@ -302,14 +280,23 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Creates a transient shell for the default tenant's setup.
         /// </summary>
-        private Task<ShellContext> CreateSetupContextAsync()
+        private Task<ShellContext> CreateSetupContextAsync(ShellSettings defaultSettings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            return _shellContextFactory.CreateSetupContextAsync(ShellHelper.BuildDefaultUninitializedShell);
+            if (defaultSettings == null)
+            {
+                // Creates a default shell settings based on the configuration.
+                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                shellSettings.Name = ShellHelper.DefaultShellName;
+                shellSettings.State = TenantState.Uninitialized;
+                defaultSettings = shellSettings;
+            }
+
+            return _shellContextFactory.CreateSetupContextAsync(defaultSettings);
         }
 
         /// <summary>
@@ -362,30 +349,9 @@ namespace OrchardCore.Environment.Shell
             return GetOrCreateShellContextAsync(settings);
         }
 
-        public async Task<IEnumerable<ShellContext>> ListShellContextsAsync()
+        public IEnumerable<ShellContext> ListShellContexts()
         {
-            var shells = _shellContexts?.Values.ToArray();
-
-            if (shells == null || shells.Length == 0)
-            {
-                return Enumerable.Empty<ShellContext>();
-            }
-
-            var shellContexts = new List<ShellContext>();
-
-            foreach (var shell in shells)
-            {
-                if (!shell.Released)
-                {
-                    shellContexts.Add(shell);
-                }
-                else
-                {
-                    shellContexts.Add(await GetOrCreateShellContextAsync(shell.Settings));
-                }
-            }
-
-            return shellContexts;
+            return _shellContexts?.Values.ToArray() ?? Enumerable.Empty<ShellContext>();
         }
 
         /// <summary>

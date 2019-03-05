@@ -27,6 +27,7 @@ afterAll(async () => {
     }
 
     orchard.stop();
+    orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
 });
 
 describe('Browser is initialized', () => {

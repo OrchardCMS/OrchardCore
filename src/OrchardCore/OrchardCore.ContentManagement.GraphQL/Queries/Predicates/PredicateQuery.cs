@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.ContentManagement.Records;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates

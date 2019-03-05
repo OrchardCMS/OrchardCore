@@ -55,21 +55,21 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority == null)
             {
                 results.Add(new ValidationResult(T["The authority cannot be null or empty."], new[]
                 {
                     nameof(settings.Authority)
                 }));
             }
-            else if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+            else if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
             {
                 results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
                 {
                     nameof(settings.Authority)
                 }));
             }
-            else if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+            else if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
             {
                 results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
                 {

@@ -219,6 +219,7 @@ The following activities are available with any default Orchard installation:
 | Content Created | Event | Executes when content is created. | [link] |
 | Content Deleted | Event | Executes when content is deleted. | [link] |
 | Content Published | Event | Executes when content is published. | [link] |
+| Content Unpublished | Event | Executes when content is unpublished. | [link] |
 | Content Updated | Event | Executes when content is updated. | [link] |
 | Content Versioned| Event | Executes when content is versioned. | [link] |
 | Create Content | Task | Create a content item. | [link] |

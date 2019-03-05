@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
@@ -97,20 +98,20 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+            // To make configuration easier and avoid having to configure it in two different features,
+            // the transport security requirement enforced by OpenIddict by default is always turned off.
+            options.AllowInsecureHttp = true;
+
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
+            options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
-            options.AllowInsecureHttp = settings.TestingModeEnabled;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
-            }
-
-            if (!string.IsNullOrEmpty(settings.Authority))
-            {
-                options.Issuer = new Uri(settings.Authority, UriKind.Absolute);
             }
 
             if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
@@ -153,9 +154,9 @@ namespace OrchardCore.OpenId.Configuration
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.TokenValidationParameters.ValidIssuer = settings.Authority;
+                options.TokenValidationParameters.ValidIssuer = settings.Authority.AbsoluteUri;
             }
             else
             {

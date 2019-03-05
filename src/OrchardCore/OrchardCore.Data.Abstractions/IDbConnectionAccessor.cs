@@ -1,11 +1,9 @@
-using System;
-using System.Data;
-using System.Threading.Tasks;
+using System.Data.Common;
 
-namespace OrchardCore.Data.Abstractions
+namespace OrchardCore.Data
 {
     public interface IDbConnectionAccessor
     {
-        Task<IDbConnection> GetConnectionAsync();
+        DbConnection CreateConnection();
     }
 }

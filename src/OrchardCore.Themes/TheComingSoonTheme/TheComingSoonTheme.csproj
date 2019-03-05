@@ -1,20 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
+    <Compile Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <None Remove="wwwroot\node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="**\*.less;**\*.scss;" />
+    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
+    <EmbeddedResource Remove="wwwroot\index.html" />
+    <EmbeddedResource Remove="wwwroot\package-lock.json" />
+    <EmbeddedResource Remove="wwwroot\package.json" />
   </ItemGroup>
 
 </Project>

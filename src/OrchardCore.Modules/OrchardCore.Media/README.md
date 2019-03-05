@@ -38,9 +38,8 @@ Renders an `<img src />` HTML tag.
 
 #### Options
 
-##### `alt` (Default)
-
-The alternate text attribute value
+You can add as many html attributes as you want with the img_tag.
+`{{ 'animals/kittens.jpg' | asset_url | img_tag: alt: 'kittens', class: 'kittens black', data_order: some_var }}`
 
 ## Image resizing filters
 
@@ -108,21 +107,21 @@ Stretches the resized image to fit the bounds of its container.
 
 To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `Orchard` property, e.g.:
 
-`@Orchard.AssetUrl(Model.Field.Paths[0])`
+`@Orchard.AssetUrl(Model.Paths[0])`
 
 To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height and resizeMode parameters, e.g.:
 
-`@Orchard.AssetUrl(Model.Field.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
 ### Razor image resizing tag helpers
 
 To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
 
-`<img asset-src="Model.Field.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
-`<img src="@Orchard.AssetUrl(Model.Field.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
@@ -134,6 +133,67 @@ Keep these things in mind when working with the deployment step editor:
 - Selecting a file will ensure that only that file is added to the package when this deployment plan executes, regardless of what you see here now.
 - Selecting a directory will ensure that all the files in that directory at the time this deployment plan executes, are added to the package during execution, regardless of what you see here now.
 - Selecting all files in a directory will ensure that only those files are added to the package when this deployment plan executes, even if at that time, that directory has more files than what you see here now.
+
+## Configuration
+
+The following configuration values are used by default and can be customized:
+
+```json
+    "OrchardCore.Media": {
+      // The accepted sizes for custom width and height
+      "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
+
+      // The number of days to store images in the browser cache
+      "MaxBrowserCacheDays": 30,
+
+      // The number of days to store images in the image cache
+      "MaxCacheDays": 365,
+
+      // The maximum size of an uploaded file in bytes. 
+      // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+      "MaxFileSize": 30000000,
+
+      // The list of allowed file extensions
+      "AllowedFileExtensions": [
+
+            // Images
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".ico",
+
+            // Documents
+            ".pdf", // Portable Document Format; Adobe Acrobat
+            ".doc", // Microsoft Word Document
+            ".docx",    
+            ".ppt", // Microsoft PowerPoint Presentation
+            ".pptx", 
+            ".pps", 
+            ".ppsx", 
+            ".odt", // OpenDocument Text Document
+            ".xls", // Microsoft Excel Document
+            ".xlsx", 
+            ".psd", // Adobe Photoshop Document
+
+            // Audio
+            ".mp3",
+            ".m4a",
+            ".ogg",
+            ".wav",
+
+            // Video
+            ".mp4", // MPEG-4
+            ".m4v", 
+            ".mov", // QuickTime
+            ".wmv", // Windows Media Video
+            ".avi",
+            ".mpg",
+            ".ogv", // Ogg
+            ".3gp", // 3GPP
+        ]
+    }
+```
 
 ## CREDITS
 

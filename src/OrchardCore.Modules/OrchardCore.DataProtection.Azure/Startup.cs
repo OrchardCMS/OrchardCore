@@ -7,19 +7,20 @@ using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DataProtection.Azure
 {
     public class Startup : StartupBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IShellConfiguration _configuration;
         private readonly IOptions<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger<Startup> _logger;
 
         public Startup(
-            IConfiguration configuration,
+            IShellConfiguration configuration,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ILogger<Startup> logger)
@@ -32,7 +33,7 @@ namespace OrchardCore.DataProtection.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ConnectionString");
+            var connectionString = _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:ConnectionString");
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 var blobName = $"{_shellOptions.Value.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
@@ -47,7 +48,7 @@ namespace OrchardCore.DataProtection.Azure
 
         private CloudBlobContainer GetBlobContainer(string connectionString)
         {
-            var containerName = _configuration.GetValue<string>("Modules:OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
+            var containerName = _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
 
             try
             {

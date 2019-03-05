@@ -43,5 +43,8 @@ module.exports = {
         if (server) {
             server.kill('SIGINT');
         }
+    },
+    cleanAppData: function (dir) {
+        rimraf(dir + 'App_Data', function () { console.log('App_Data deleted'); });
     }
 };

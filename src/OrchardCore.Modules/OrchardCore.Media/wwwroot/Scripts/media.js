@@ -49,7 +49,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     gridView: false,
                     mediaFilter: '',
                     sortBy: '',
-                    sortAsc: true
+                    sortAsc: true,
+                    itemsInPage: []
                 },
                 created: function () {
                     var self = this;
@@ -119,7 +120,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
 
-                    
+                    // handler for pager events
+                    bus.$on('pagerEvent', function (itemsInPage) {
+                        self.itemsInPage = itemsInPage;
+                        self.selectedMedias = [];
+                    });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
@@ -173,7 +178,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 120 : 240 ;
+                        return this.smallThumbs ? 160 : 240 ;
                     },
                     currentPrefs: {
                         get: function () {
@@ -2508,7 +2513,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 return this.selectedMedia || this.mediaItems.length === 1;
             },
             thumbSize: function () {
-                return this.smallThumbs ? 120 : 240;
+                return this.smallThumbs ? 160 : 240;
             },
             currentPrefs: {
                 get: function () {
@@ -2600,9 +2605,13 @@ Vue.component('mediaItemsGrid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)" \
                     draggable="true" v-on:dragstart="dragStart(media, $event)"> \
                     <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
-                            <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" :style="{ maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\' }"/> \
+                        <img v-if="media.mime.startsWith(\'image\')" \
+                                :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                                :data-mime="media.mime" \
+                                :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
+                        <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                     </div> \
-                    <div class="media-container-main-item-title card-body"> \
+                <div class="media-container-main-item-title card-body"> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
@@ -2684,12 +2693,13 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
                             <td> \
                                 <div class="media-name-cell"> \
-                                    {{ media.name }} \
+                                   <span class="break-word"> {{ media.name }} </span>\
                                     <div class="buttons-container"> \
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
@@ -2720,7 +2730,6 @@ Vue.component('mediaItemsTable', {
     },
     created: function () {
         var self = this;
-        // retrieving localized strings from view
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
         self.T.sizeHeader = $('#t-size-header').val();
@@ -2751,6 +2760,161 @@ Vue.component('mediaItemsTable', {
         },
         dragStart: function (media, e) {
             bus.$emit('mediaDragStartRequested', media, e);
+        }
+    }
+});
+
+// This component receives a list of all the items, unpaged.
+// As the user interacts with the pager, it raises events with the items in the current page.
+// It's the parent's responsibility to listen for these events and display the received items
+// <pager> component
+Vue.component('pager', {
+    template: '\
+        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">\
+            <ul class= "pagination  pagination-sm"> \
+                <li class="page-item media-first-button" :class="{disabled : !canDoFirst}"> \
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoPrev}"> \
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a> \
+                </li> \
+                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
+                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
+                        {{link}} \
+                        <span v-if="current == link -1" class="sr-only">(current)</span>\
+                    </a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoNext}"> \
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a> \
+                </li> \
+                <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a> \
+                </li> \
+                <li class="page-item ml-4 page-size-info">\
+                    <div style="display: flex;">\
+                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>\
+                        <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
+                            <option v-for="option in pageSizeOptions" v-bind:value="option"> \
+                                {{option}} \
+                            </option> \
+                        </select> \
+                    </div>\
+                </li> \
+                <li class="page-item ml-4 page-info"> \
+                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span> \
+                </li> \
+                <li class="page-item ml-4 total-info"> \
+                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span> \
+                </li> \
+            </ul> \
+        </nav>\
+        ',
+    props: {
+        sourceItems: Array
+    },
+    data: function () {
+        return {
+            pageSize: 5,
+            pageSizeOptions: [5, 10, 30, 50, 100],
+            current: 0,
+            T: {}
+        };
+    },
+    created: function () {
+        var self = this;
+
+        // retrieving localized strings from view
+        self.T.pagerFirstButton = $('#t-pager-first-button').val();
+        self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
+        self.T.pagerNextButton = $('#t-pager-next-button').val();
+        self.T.pagerLastButton = $('#t-pager-last-button').val();
+        self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
+        self.T.pagerPageLabel = $('#t-pager-page-label').val();
+        self.T.pagerTotalLabel = $('#t-pager-total-label').val();        
+    },
+    methods: {
+        next: function () {
+            this.current = this.current + 1;
+        },
+        previous: function () {
+            this.current = this.current - 1;
+        },
+        goFirst: function () {
+            this.current = 0;
+        },
+        goLast: function () {
+            this.current = this.totalPages - 1;
+        },
+        goTo: function (targetPage) {
+            this.current = targetPage;
+        }
+    },
+    computed: {
+        total: function () {
+            return this.sourceItems ? this.sourceItems.length : 0;
+        },
+        totalPages: function () {
+            var pages = Math.ceil(this.total / this.pageSize);
+            return pages > 0 ? pages : 1;
+        },
+        isLastPage: function () {
+            return this.current + 1 >= this.totalPages;
+        },
+        isFirstPage: function () {
+            return this.current === 0;
+        },
+        canDoNext: function () {
+            return !this.isLastPage;
+        },
+        canDoPrev: function () {
+            return !this.isFirstPage;
+        },
+        canDoFirst: function () {
+            return !this.isFirstPage;
+        },
+        canDoLast: function () {
+            return !this.isLastPage;
+        },
+        // this computed is only to have a central place where we detect changes and leverage Vue JS reactivity to raise our event.
+        // That event will be handled by the parent media app to display the items in the page.
+        // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
+        itemsInCurrentPage: function () {
+            var start = this.pageSize * this.current;
+            var end = start + this.pageSize;
+            var result = this.sourceItems.slice(start, end);
+            bus.$emit('pagerEvent', result);
+            return result;
+        },
+        pageLinks: function () {
+
+            var links = [];
+
+            links.push(this.current + 1);
+
+            // Add 2 items before current
+            var beforeCurrent = this.current > 0 ? this.current : -1;
+            links.unshift(beforeCurrent);
+
+            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
+            links.unshift(beforeBeforeCurrent);
+
+
+            // Add 2 items after current
+            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
+            links.push(afterCurrent);
+
+            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
+            links.push(afterAfterCurrent);
+
+            return links;
+        }
+    },
+    watch: {
+        sourceItems: function () {
+            this.current = 0; // resetting current page after receiving a new list of unpaged items
+        },
+        pageSize: function () {
+            this.current = 0;
         }
     }
 });

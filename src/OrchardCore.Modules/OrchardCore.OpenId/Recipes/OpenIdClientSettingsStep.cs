@@ -1,10 +1,9 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.OpenId.Recipes
 {
@@ -31,7 +30,7 @@ namespace OrchardCore.OpenId.Recipes
 
             var settings = await _clientService.GetSettingsAsync();
             settings.Scopes = model.Scopes.Split(' ', ',');
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.CallbackPath = model.CallbackPath;
             settings.ClientId = model.ClientId;
             settings.ClientSecret = model.ClientSecret;
@@ -48,6 +47,7 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdClientSettingsStepModel
     {
         public string DisplayName { get; set; }
+        [Url]
         public string Authority { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }

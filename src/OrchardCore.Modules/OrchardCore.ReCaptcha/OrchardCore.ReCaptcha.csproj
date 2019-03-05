@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>   
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
   </ItemGroup>
@@ -17,10 +17,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ReCaptcha.Core\OrchardCore.ReCaptcha.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
   </ItemGroup>
 
 </Project>

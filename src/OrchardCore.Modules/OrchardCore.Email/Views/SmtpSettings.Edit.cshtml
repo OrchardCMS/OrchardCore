@@ -5,7 +5,7 @@
 
 <fieldset class="form-group" asp-validation-class-for="DefaultSender">
     <label asp-for="DefaultSender">@T["Sender email address"]</label>
-    <input asp-for="DefaultSender" class="form-control" type="email" />
+    <input asp-for="DefaultSender" class="form-control" type="text" />
     <span asp-validation-for="DefaultSender"></span>
     <span class="hint">@T["The default email address to use as a sender."]</span>
 </fieldset>
