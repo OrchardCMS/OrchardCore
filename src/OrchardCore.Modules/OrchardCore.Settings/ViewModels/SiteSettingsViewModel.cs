@@ -10,6 +10,7 @@ namespace OrchardCore.Settings.ViewModels
         public string TimeZone { get; set; }
         public string Culture { get; set; }
         public bool UseCdn { get; set; }
+        public int PageSize { get; set; }
         public ResourceDebugMode ResourceDebugMode { get; set; }
         public IEnumerable<CultureInfo> SiteCultures { get; set; }
     }

@@ -16,6 +16,15 @@
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
+<div class="row">
+    <fieldset class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+        <label asp-for="PageSize">@T["Page Size"]</label>
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The Page size that will be used by the Pagers in the Admin Panel of the web site."]</span>
+    </fieldset>
+</div>
+
 <fieldset class="form-group" asp-validation-class-for="UseCdn">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
