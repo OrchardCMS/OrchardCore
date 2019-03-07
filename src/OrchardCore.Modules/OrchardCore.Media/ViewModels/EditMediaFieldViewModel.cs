@@ -24,7 +24,7 @@ namespace OrchardCore.Media.ViewModels
         // It will be true if the media item is a new upload from a attached media field.
         public bool IsNew { get; set; }
 
-        // It will be true if the media item has marked for deletion using a attached media field.
+        // It will be true if the media item has been marked for deletion using a attached media field.
         public bool IsRemoved { get; set; }
     }
 }

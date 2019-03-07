@@ -424,7 +424,7 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
-            var context = new RemoveContentContext(contentItem);
+            var context = new RemoveContentContext(contentItem, true);
 
             await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
@@ -445,7 +445,9 @@ namespace OrchardCore.ContentManagement
                 throw new InvalidOperationException("Not a draft version.");
             }
 
-            var context = new RemoveContentContext(contentItem);
+            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            var context = new RemoveContentContext(contentItem, publishedItem == null);
 
             await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
@@ -454,8 +456,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
 
-            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
-
+            
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
