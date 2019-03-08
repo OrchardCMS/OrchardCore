@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules.FileProviders;
 
@@ -91,6 +93,13 @@ namespace OrchardCore.Modules
 
                     // Skip the module id to resolve the subpath.
                     var fileSubPath = path.Substring(index + 1);
+
+                    // If it is the app's module.
+                    if (module == Application.Name)
+                    {
+                        // Serve the file from the physical application root folder.
+                        return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
+                    }
 
                     // Get the embedded file info from the module assembly.
                     return Application.GetModule(module).GetFileInfo(fileSubPath);
