@@ -4,7 +4,6 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
-    var uploadAction = "/OrchardCore.Media/Admin/Upload";
     var mediaFieldId = Html.IdFor(m => m);
 }
 
@@ -15,7 +14,7 @@
     initializeAttachedMediaField(
         document.getElementById('@mediaFieldId'),
         '@mediaFieldId-field-file-upload',
-        '@uploadAction',
+        '@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" }) ',
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         @(settings.Multiple ? "true" : "false"),
         '@Model.TempUploadFolder');
