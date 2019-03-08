@@ -2,35 +2,44 @@ const child_process = require('child_process');
 const fs = require('fs');
 const rimraf = require('rimraf');
 
+var LOG;
+
 module.exports = {
+    printLog: function () {
+        console.log(LOG);
+    },
+    log: function (msg) {
+        let now = new Date().toLocaleTimeString();
+        LOG += `[${now}] ${msg}\n`;
+    },
     run: function (dir, assembly, clean) {
+        LOG = "";
 
         if (fs.existsSync(dir + 'bin/release/netcoreapp2.2/' + assembly)) {
-            console.log('Application already built, skipping build');
+            log('Application already built, skipping build');
         }
         else {
-            console.log('Building ...');
+            log('Building ...');
             child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: dir });
         }
 
         if (clean === true) {
-            rimraf(dir + 'App_Data', function () { console.log('App_Data deleted'); });
+            rimraf(dir + 'App_Data', function () { log('App_Data deleted'); });
         }
 
-        console.log('Starting application ...');
+        log('Starting application ...');
         let server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.2/' + assembly], { cwd: dir });
 
         server.stdout.on('data', (data) => {
-            let now = new Date().toLocaleTimeString();
-            console.log(`[${now}] ${data}`);
+            log(data);
         });
 
         server.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
+            log(`stderr: ${data}`);
         });
 
         server.on('close', (code) => {
-            console.log(`Server process exited with code ${code}`);
+            log(`Server process exited with code ${code}`);
         });
 
         global.__SERVER_GLOBAL__ = server;
@@ -45,6 +54,6 @@ module.exports = {
         }
     },
     cleanAppData: function (dir) {
-        rimraf(dir + 'App_Data', function () { console.log('App_Data deleted'); });
+        rimraf(dir + 'App_Data', function () { log('App_Data deleted'); });
     }
 };
