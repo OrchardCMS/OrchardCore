@@ -2,44 +2,43 @@ const child_process = require('child_process');
 const fs = require('fs');
 const rimraf = require('rimraf');
 
-var LOG;
+global.log = function (msg) {
+    let now = new Date().toLocaleTimeString();
+    global._LOG_ += `[${now}] ${msg}\n`;
+};
 
 module.exports = {
     printLog: function () {
-        console.log(LOG);
-    },
-    log: function (msg) {
-        let now = new Date().toLocaleTimeString();
-        LOG += `[${now}] ${msg}\n`;
+        console.log(global._LOG_);
     },
     run: function (dir, assembly, clean) {
-        LOG = "";
+        global._LOG_ = "";
 
         if (fs.existsSync(dir + 'bin/release/netcoreapp2.2/' + assembly)) {
-            log('Application already built, skipping build');
+            global.log('Application already built, skipping build');
         }
         else {
-            log('Building ...');
+            global.log('Building ...');
             child_process.spawnSync('dotnet', ['build', '-c', 'release'], { cwd: dir });
         }
 
         if (clean === true) {
-            rimraf(dir + 'App_Data', function () { log('App_Data deleted'); });
+            rimraf(dir + 'App_Data', function () { global.log('App_Data deleted'); });
         }
 
-        log('Starting application ...');
+        global.log('Starting application ...');
         let server = child_process.spawn('dotnet', ['bin/release/netcoreapp2.2/' + assembly], { cwd: dir });
 
         server.stdout.on('data', (data) => {
-            log(data);
+            global.log(data);
         });
 
         server.stderr.on('data', (data) => {
-            log(`stderr: ${data}`);
+            global.log(`stderr: ${data}`);
         });
 
         server.on('close', (code) => {
-            log(`Server process exited with code ${code}`);
+            global.log(`Server process exited with code ${code}`);
         });
 
         global.__SERVER_GLOBAL__ = server;
@@ -54,6 +53,6 @@ module.exports = {
         }
     },
     cleanAppData: function (dir) {
-        rimraf(dir + 'App_Data', function () { log('App_Data deleted'); });
+        rimraf(dir + 'App_Data', function () { global.log('App_Data deleted'); });
     }
 };
