@@ -33,14 +33,11 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), async model =>
+            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-                model.Updater = context.Updater;
-                model.SelectedContentItemIds = string.Join(",", field.ContentItemIds);
-                model.ContentItems = await _contentManager.GetAsync(field.ContentItemIds);
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
@@ -50,7 +47,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = field.ContentItemIds == null ? string.Empty : string.Join(",", field.ContentItemIds);
+                model.ContentItemIds = string.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -58,7 +55,7 @@ namespace OrchardCore.ContentFields.Fields
 
                 model.SelectedItems = new List<ContentPickerItemViewModel>();
 
-                foreach (var contentItemId in field.ContentItemIds ?? new string[0])
+                foreach (var contentItemId in field.ContentItemIds)
                 {
                     var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 

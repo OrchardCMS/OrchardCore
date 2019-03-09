@@ -219,13 +219,13 @@ namespace OrchardCore.Users.Services
                 {
                     // Password
                     case "PasswordRequiresDigit":
-                        reportError("Password", T["Passwords must have at least one digit ('0'-'9')."]);
+                        reportError("Password", T["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
                     case "PasswordRequiresLower":
-                        reportError("Password", T["Passwords must have at least one lowercase ('a'-'z')."]);
+                        reportError("Password", T["Passwords must have at least one lowercase character ('a'-'z')."]);
                         break;
                     case "PasswordRequiresUpper":
-                        reportError("Password", T["Passwords must have at least one uppercase('A'-'Z')."]);
+                        reportError("Password", T["Passwords must have at least one uppercase character ('A'-'Z')."]);
                         break;
                     case "PasswordRequiresNonAlphanumeric":
                         reportError("Password", T["Passwords must have at least one non letter or digit character."]);

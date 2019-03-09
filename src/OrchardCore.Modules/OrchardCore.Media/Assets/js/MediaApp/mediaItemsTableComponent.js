@@ -32,7 +32,8 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
                             <td> \

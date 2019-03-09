@@ -106,16 +106,12 @@ namespace OrchardCore.OpenId.Configuration
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
+            options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
-            }
-
-            if (!string.IsNullOrEmpty(settings.Authority))
-            {
-                options.Issuer = new Uri(settings.Authority, UriKind.Absolute);
             }
 
             if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
@@ -158,9 +154,9 @@ namespace OrchardCore.OpenId.Configuration
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.TokenValidationParameters.ValidIssuer = settings.Authority;
+                options.TokenValidationParameters.ValidIssuer = settings.Authority.AbsoluteUri;
             }
             else
             {
