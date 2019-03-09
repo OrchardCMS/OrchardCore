@@ -41,6 +41,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
                                 method: 'GET',
                                 success: function (data) {
+                                    data.vuekey = data.name + i.toString();
                                     self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
