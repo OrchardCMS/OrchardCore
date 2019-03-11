@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,6 +10,8 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentElement : IContent
     {
+        internal Dictionary<string, ContentElement> _elements = new Dictionary<string, ContentElement>();
+
         protected ContentElement() : this(new JObject())
         {
         }
@@ -33,8 +36,7 @@ namespace OrchardCore.ContentManagement
         /// <param name="name">The name of the property to look for.</param>
         public bool Has(string name)
         {
-            JToken value;
-            return Data.TryGetValue(name, out value);
+            return Data.ContainsKey(name);
         }        
     }
 }
