@@ -5,11 +5,6 @@ namespace OrchardCore.Title.Model
 {
     public class TitlePart : ContentPart
     {
-        public TitlePart()
-        {
-                
-        }
-
         [Required]
         public string Title { get; set; }
     }
