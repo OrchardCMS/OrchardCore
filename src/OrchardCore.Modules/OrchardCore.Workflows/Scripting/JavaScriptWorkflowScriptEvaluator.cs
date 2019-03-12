@@ -33,6 +33,11 @@ namespace OrchardCore.Workflows.Evaluators
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
+            if (expression.Expression?.Trim() == string.Empty)
+            {
+                return await Task.FromResult<T>(default(T));
+            }
+
             var workflowType = workflowContext.WorkflowType;
             var directive = $"js:{expression}";
             var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
