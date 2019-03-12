@@ -104,7 +104,10 @@ namespace OrchardCore.Localization.PortableObject
             var pluralForm = count.HasValue ? _dictionary.PluralRule(count.Value) : 0;
             if (pluralForm >= pluralForms.Length)
             {
-                throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist in values provided by the IStringLocalizer.Plural method. Provided values: {pluralForms}");
+                _logger.LogWarning($"Plural form '{pluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {String.Join(", ", pluralForms)}");
+
+                // Use the latest available form
+                return pluralForms[pluralForms.Length - 1];
             }
 
             return pluralForms[pluralForm];
