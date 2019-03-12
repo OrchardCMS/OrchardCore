@@ -1,11 +1,12 @@
 # How to run tasks on application startup from a module
 
-You can add a class that implements IModularTenantEvents and use the ActivatedAsync or ActivatingAsync handlers.
+You can add a class that implements `IModularTenantEvents` and use the 
+`ActivatedAsync()` or `ActivatingAsync()` handlers.
 
 The events are raised per tenant.
-One thing to take into account is that tenants are lazy loaded. 
-So, when the app starts the event handlers are not called. 
-They are called when the first request arrives for each specific tenant.
+One thing to take into account is that tenants are lazy loaded, so when the app
+starts the event handlers are not called but instead are called when the first 
+request arrives for each specific tenant.
 
 An example implementation:
 
@@ -42,7 +43,8 @@ public class MyStartupTaskService : IModularTenantEvents
 }
 ```
 
-Then you have to register your service on ConfigureServices() method of the module's Startup.cs file:
+Then you have to register your service on `ConfigureServices()` method of the module's Startup.cs file:
+
 ```csharp
 services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
 ```
