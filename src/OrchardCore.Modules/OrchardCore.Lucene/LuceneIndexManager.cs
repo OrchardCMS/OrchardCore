@@ -59,7 +59,15 @@ namespace OrchardCore.Lucene
 
         public void CreateIndex(string indexName)
         {
-            Write(indexName);
+            lock (this)
+            {
+                Write(indexName);
+
+                if (_writers.TryRemove(indexName, out var writer))
+                {
+                    writer.Value.Dispose();
+                }
+            }
         }
 
         public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
