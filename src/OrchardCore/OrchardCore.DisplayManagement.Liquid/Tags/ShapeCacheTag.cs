@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     if (TimeSpan.TryParse(arguments["cache_sliding_duration"].ToStringValue(), out var timespan))
                     {
-                        metadata.Cache().WithExpiryAfter(timespan);
+                        metadata.Cache().WithExpirySliding(timespan);
                     }
                 }
             }
