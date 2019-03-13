@@ -74,7 +74,7 @@ namespace OrchardCore.Workflows.Http
             var workflowTypeStore = serviceProvider.GetRequiredService<IWorkflowTypeStore>();
             var workflowStore = serviceProvider.GetRequiredService<IWorkflowStore>();
             var workflowTypeDictionary = workflowTypeStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.WorkflowTypeId);
-            var workflowDictionary = workflowStore.ListAsync().GetAwaiter().GetResult().ToDictionary(x => x.Id);
+            var workflowDictionary = workflowStore.ListByActivityNameAsync(HttpRequestFilterEvent.EventName).GetAwaiter().GetResult().ToDictionary(x => x.Id);
 
             ConfigureWorkflowRouteEntries(serviceProvider, workflowTypeDictionary, workflowDictionary);
         }
