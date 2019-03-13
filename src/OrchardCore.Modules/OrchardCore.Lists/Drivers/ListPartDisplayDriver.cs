@@ -72,7 +72,7 @@ namespace OrchardCore.Lists.Drivers
         {
             var settings = GetSettings(part);
             PagerSlimParameters pagerParameters = new PagerSlimParameters();
-            await updater.TryUpdateModelAsync(pagerParameters);
+            await (updater?.TryUpdateModelAsync(pagerParameters) ?? Task.CompletedTask);
 
             PagerSlim pager = new PagerSlim(pagerParameters, settings.PageSize);
 
