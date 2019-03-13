@@ -93,7 +93,7 @@ namespace OrchardCore.ContentManagement.Display
                 groupId,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
-                new ModelStateWrapperUpdater(updater)
+                updater != null ? new ModelStateWrapperUpdater(updater) : null
             );
 
             await BindPlacementAsync(context);
