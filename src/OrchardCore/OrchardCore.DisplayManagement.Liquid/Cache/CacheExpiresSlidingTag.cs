@@ -41,7 +41,7 @@ namespace OrchardCore.DynamicCache.Liquid
             if (input.Type == FluidValues.String)
             {
                 var stringValue = input.ToStringValue();
-                if (TimeSpan.TryParse(stringValue, out value))
+                if (!TimeSpan.TryParse(stringValue, out value))
                 {
                     return Completion.Normal;
                 }
