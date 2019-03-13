@@ -41,6 +41,11 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static ContentElement Get(this ContentElement contentElement, Type contentElementType, string name)
         {
+            if (contentElement._elements.TryGetValue(name, out var element))
+            {
+                return element;
+            }
+
             var elementData = contentElement.Data[name] as JObject;
 
             if (elementData == null)
@@ -51,6 +56,8 @@ namespace OrchardCore.ContentManagement
             var result = (ContentElement)elementData.ToObject(contentElementType);
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
+
+            contentElement._elements[name] = result;
 
             return result;
         }
@@ -67,10 +74,11 @@ namespace OrchardCore.ContentManagement
 
             if (existing == null)
             {
-                existing = new TElement();
-                existing.ContentItem = contentElement.ContentItem;
-                contentElement.Data[name] = existing.Data;
-                return existing;
+                var newElement = new TElement();
+                newElement.ContentItem = contentElement.ContentItem;
+                contentElement.Data[name] = newElement.Data;
+                contentElement._elements[name] = newElement;
+                return newElement;
             }
 
             return existing;
@@ -91,6 +99,7 @@ namespace OrchardCore.ContentManagement
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
+                contentElement._elements[name] = element;
             }
 
             return contentElement;
