@@ -34,7 +34,7 @@ namespace OrchardCore.Workflows.Evaluators
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
-            if (String.IsNullOrWhitespace(expression.Expression))
+            if (String.IsNullOrWhiteSpace(expression.Expression))
             {
                 return await Task.FromResult<T>(default(T));
             }
