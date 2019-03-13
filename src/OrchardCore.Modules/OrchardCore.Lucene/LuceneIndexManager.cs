@@ -291,15 +291,21 @@ namespace OrchardCore.Lucene
 
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
         {
-            var pool = _indexPools.GetOrAdd(indexName, n =>
+            IndexReaderPool pool;
+
+            do
             {
-                return new Lazy<IndexReaderPool>(() =>
+                pool = _indexPools.GetOrAdd(indexName, n =>
                 {
-                    var directory = CreateDirectory(indexName);
-                    var reader = DirectoryReader.Open(directory);
-                    return new IndexReaderPool(reader);
-                });
-            }).Value;
+                    return new Lazy<IndexReaderPool>(() =>
+                    {
+                        var directory = CreateDirectory(indexName);
+                        var reader = DirectoryReader.Open(directory);
+                        return new IndexReaderPool(reader);
+                    });
+                }).Value;
+
+            } while (pool.IsDirty);
 
             return pool.Acquire();
         }
@@ -357,7 +363,6 @@ namespace OrchardCore.Lucene
 
     internal class IndexReaderPool : IDisposable
     {
-        private bool _dirty;
         private int _count;
         private IndexReader _reader;
 
@@ -368,7 +373,7 @@ namespace OrchardCore.Lucene
 
         public void MakeDirty()
         {
-            _dirty = true;
+            IsDirty = true;
         }
 
         public IndexReaderLease Acquire()
@@ -378,11 +383,13 @@ namespace OrchardCore.Lucene
 
         public void Release()
         {
-            if (_dirty && _count == 0)
+            if (IsDirty && _count == 0)
             {
                 _reader.Dispose();
             }
         }
+
+        public bool IsDirty { get; private set; }
 
         public void Dispose()
         {
