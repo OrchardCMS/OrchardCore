@@ -401,9 +401,24 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
+            // By default, re-use the principal stored in the authorization code/refresh token.
+            var principal = info.Principal;
+
+            // If the user service is available, try to refresh the principal by retrieving
+            // the user object from the database and creating a new claims-based principal.
+            var service = HttpContext.RequestServices.GetService<IUserService>();
+            if (service != null)
+            {
+                var user = await service.GetUserByUniqueIdAsync(principal.GetUserIdentifier());
+                if (user != null)
+                {
+                    principal = await service.CreatePrincipalAsync(user);
+                }
+            }
+
             // Create a new authentication ticket, but reuse the properties stored in the
             // authorization code/refresh token, including the scopes originally granted.
-            var ticket = await CreateUserTicketAsync(info.Principal, application, null, request, info.Properties);
+            var ticket = await CreateUserTicketAsync(principal, application, null, request, info.Properties);
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
@@ -417,7 +432,9 @@ namespace OrchardCore.OpenId.Controllers
 
             var identity = (ClaimsIdentity) principal.Identity;
 
-            if (!identity.HasClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User))
+            // Note: make sure this claim is not added multiple times (which may happen when the principal
+            // was extracted from an authorization code or from a refresh token ticket is re-used as-is).
+            if (string.IsNullOrEmpty(principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value))
             {
                 identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
                     OpenIddictConstants.Destinations.AccessToken,

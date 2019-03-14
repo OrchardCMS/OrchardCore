@@ -191,25 +191,12 @@ namespace OrchardCore.Users.Services
         /// </summary>
         /// <param name="userIdentification">The username or email address to refer to</param>
         private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
-        {
-            userIdentifier = userIdentifier.Normalize();
+            => await _userManager.FindByNameAsync(userIdentifier) ??
+               await _userManager.FindByEmailAsync(userIdentifier);
 
-            var user = await _userManager.FindByNameAsync(userIdentifier);
+        public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
 
-            if (user == null)
-            {
-                user = await _userManager.FindByEmailAsync(userIdentifier);
-            }
-
-            return user;
-        }
-
-        public Task<IUser> GetUserAsync(string userName)
-        {
-            userName = userName.Normalize();
-
-            return _userManager.FindByNameAsync(userName);
-        }
+        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
