@@ -89,7 +89,7 @@ namespace OrchardCore.Users
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
                 options.LoginPath = "/" + LoginPath;
-                options.AccessDeniedPath = options.LoginPath;
+                options.AccessDeniedPath = "/Error/403";
 
                 // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
                 // Note: it has no practical impact on the security of the site since all endpoints are always

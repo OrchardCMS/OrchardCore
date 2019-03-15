@@ -13,9 +13,9 @@ namespace OrchardCore.Diagnostics.Controllers
             {
                 return View("NotFound");
             }
-            else if (status == (int)HttpStatusCode.Unauthorized)
+            else if (status == (int)HttpStatusCode.Forbidden)
             {
-                return View("Unauthorized");
+                return View("Forbidden");
             }
 
             return View("Error");

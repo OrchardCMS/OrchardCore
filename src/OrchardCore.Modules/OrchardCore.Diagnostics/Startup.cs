@@ -53,7 +53,7 @@ namespace OrchardCore.Diagnostics
             routes.MapAreaRoute(
                 name: "Diagnostics.Error",
                 areaName: "OrchardCore.Diagnostics",
-                template: "Error",
+                template: "Error/{status?}",
                 defaults: new { controller = "Diagnostics", action = "Error" }
             );
         }
