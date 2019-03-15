@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return Unauthorized();
+                return Forbid();
             }
             else
             {
