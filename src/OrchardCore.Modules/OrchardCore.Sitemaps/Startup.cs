@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -18,6 +19,8 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.SitemapNodes;
 
 namespace OrchardCore.Sitemaps
 {
@@ -25,6 +28,20 @@ namespace OrchardCore.Sitemaps
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            //new
+
+
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddSingleton<ISitemapSetService, SitemapSetService>();
+            services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
+
+
+            // index treeNode
+            services.AddSingleton<ISitemapNodeProviderFactory>(new SitemapNodeProviderFactory<SitemapIndexNode>());
+            //services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
+            services.AddScoped<IDisplayDriver<MenuItem>, SitemapIndexNodeDriver>();
+
+            //old
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, SitemapsSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, Permissions>();

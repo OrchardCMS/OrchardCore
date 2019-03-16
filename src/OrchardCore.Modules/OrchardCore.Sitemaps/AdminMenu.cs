@@ -13,10 +13,10 @@ namespace OrchardCore.Sitemaps
     {
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -26,14 +26,20 @@ namespace OrchardCore.Sitemaps
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Sitemaps"], T["Sitemaps"], layers => layers
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Sitemaps"], S["Sitemaps"], layers => layers
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SitemapsSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageSitemaps)
                             .LocalNav()
                         )));
 
+            builder.Add(S["Configuration"], cfg => cfg
+                    .Add(S["Sitemaps"], "1.6", admt => admt
+                        .Permission(Permissions.ManageSitemaps)
+                        .Action("List", "Set", new { area = "OrchardCore.Sitemaps" })
+                        .LocalNav()
+                    ));
             return Task.CompletedTask;
         }
     }

@@ -6,8 +6,18 @@ namespace OrchardCore.Sitemaps.SitemapNodes
 {
     public class SitemapIndexNode : SitemapNode
     {
+        /// <summary>
+        /// Description of the sitemap
+        /// </summary>
         [Required]
-        public string LinkText { get; set; }
-        public string IconClass { get; set; }
+        
+        public string Description { get; set; }
+
+        /// <summary>
+        /// name of the file served, i.e. sitemap-index.xml, or sitemap-content.xml, or sitemap.xml. TODO use for routing
+        /// Probably move to base
+        /// </summary>
+        [Required]
+        public string Name { get; set; }
     }
 }

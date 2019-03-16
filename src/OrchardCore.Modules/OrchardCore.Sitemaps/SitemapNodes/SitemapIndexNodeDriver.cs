@@ -10,7 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AdminMenu.AdminNodes
+namespace OrchardCore.Sitemaps.SitemapNodes
 {
     public class SitemapIndexNodeDriver : DisplayDriver<MenuItem, SitemapIndexNode>
     {
@@ -26,18 +26,18 @@ namespace OrchardCore.AdminMenu.AdminNodes
         {
             return Initialize<SitemapIndexNodeViewModel>("SitemapIndexNode_Fields_TreeEdit", model =>
             {
-                model.LinkText = treeNode.LinkText;
-                model.IconClass = treeNode.IconClass;
+                model.Description = treeNode.Description;
+                model.Name = treeNode.Name;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SitemapIndexNode treeNode, IUpdateModel updater)
         {
             var model = new SitemapIndexNodeViewModel();
-            if(await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkText, x => x.IconClass))
+            if(await updater.TryUpdateModelAsync(model, Prefix, x => x.Description, x => x.Name))
             {
-                treeNode.LinkText = model.LinkText;
-                treeNode.IconClass = model.IconClass;
+                treeNode.Description = model.Description;
+                treeNode.Name = model.Name;
             };
             
             return Edit(treeNode);

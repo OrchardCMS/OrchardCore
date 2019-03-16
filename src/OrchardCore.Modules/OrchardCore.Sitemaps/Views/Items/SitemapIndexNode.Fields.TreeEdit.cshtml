@@ -1,0 +1,32 @@
+@model SitemapIndexNodeViewModel
+
+<style asp-src="~/OrchardCore.Sitemaps/Styles/sitemaps.min.css" debug-src="~/OrchardCore.Sitemaps/Styles/sitemaps.css" at="Head" depends-on="admin"></style>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.js" at="Foot" depends-on="admin"></script>
+
+<h5>@T["Placeholder"]</h5>
+
+<fieldset class="form-group" asp-validation-class-for="Description">
+    <label asp-for="Description">@T["Description"]</label>
+    <input asp-for="Description" class="form-control" />
+    <span asp-validation-for="Description"></span>
+    <span class="hint">@T["Description of the sitemap"]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="Name">
+    <label asp-for="Name">@T["Name"]</label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name"></span>
+    <span class="hint">@T["Filename the sitemap should be served as, e.g. sitemap-index.xml"]</span>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+
+        $('button.remove-icon').on('click', function (e) {
+            var node = $(e.target).data('related-node');
+            $('#' + node).val('');
+            //$('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class to an empty string is not enough.
+        });
+    });
+</script>

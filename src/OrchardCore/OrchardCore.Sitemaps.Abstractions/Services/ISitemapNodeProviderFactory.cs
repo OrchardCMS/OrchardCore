@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.Services
         SitemapNode Create();
     }
 
-    public class AdminNodeProviderFactory<TSitemapNode> : ISitemapNodeProviderFactory where TSitemapNode : SitemapNode, new()
+    public class SitemapNodeProviderFactory<TSitemapNode> : ISitemapNodeProviderFactory where TSitemapNode : SitemapNode, new()
     {
         private static readonly string TypeName = typeof(TSitemapNode).Name;
 

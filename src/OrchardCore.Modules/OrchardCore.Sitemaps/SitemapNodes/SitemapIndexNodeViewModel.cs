@@ -5,7 +5,9 @@ namespace OrchardCore.Sitemaps.SitemapNodes
     public class SitemapIndexNodeViewModel
     {
         [Required]
-        public string LinkText { get; set; }
-        public string IconClass { get; set; }
+        public string Description { get; set; }
+
+        [Required]
+        public string Name { get; set; }
     }
 }

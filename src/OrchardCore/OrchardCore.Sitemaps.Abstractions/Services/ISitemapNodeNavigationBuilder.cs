@@ -4,6 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Services
 {
+    //this moves to becoming the builder to assemble sitemaps
     public interface ISitemapNodeNavigationBuilder
     {
         // This Name will be used to determine if the node passed has to be handled.

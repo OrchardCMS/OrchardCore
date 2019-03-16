@@ -1,0 +1,5 @@
+@model ShapeViewModel<SitemapIndexNode>
+
+<div class="@(Model.Value.Enabled ? "" : "disabled")">
+    <span>@Model.Value.Description <span class="text-muted">- @T["Placeholder"]</span></span>
+</div>

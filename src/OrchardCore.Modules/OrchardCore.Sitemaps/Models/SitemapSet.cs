@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Models
 {
-    public class SitemapMenu
+    public class SitemapSet
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
         public string Name { get; set; }
@@ -33,7 +33,7 @@ namespace OrchardCore.Sitemaps.Models
             if (MenuItems.Contains(itemToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
             {
                 MenuItems.Remove(itemToRemove);
-                return true; // success
+                return true; 
             }
             else
             {
@@ -41,12 +41,12 @@ namespace OrchardCore.Sitemaps.Models
                 {
                     if (firstLevelMenuItem.RemoveMenuItem(itemToRemove))
                     {
-                        return true; // success
+                        return true; 
                     }
                 }                
             }
 
-            return false; // failure
+            return false; 
         }
 
         public bool InsertMenuItemAt(SitemapNode menuItemToInsert, SitemapNode destinationMenuItem, int position)
@@ -60,7 +60,7 @@ namespace OrchardCore.Sitemaps.Models
             if (destinationMenuItem == null)
             {
                 MenuItems.Insert(position, menuItemToInsert);
-                return true; // success
+                return true; 
             }
             else
             {
@@ -68,11 +68,11 @@ namespace OrchardCore.Sitemaps.Models
                 {
                     if (firstLevelMenuItem.InsertMenuItem(menuItemToInsert, destinationMenuItem, position))
                     {
-                        return true; // success
+                        return true; 
                     }
                 }                
             }
-            return false; // failure
+            return false; 
         }
 
     }
