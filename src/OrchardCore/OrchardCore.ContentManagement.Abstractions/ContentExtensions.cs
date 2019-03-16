@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static ContentElement Get(this ContentElement contentElement, Type contentElementType, string name)
         {
-            if (contentElement._elements.TryGetValue(name, out var element))
+            if (contentElement.Elements.TryGetValue(name, out var element))
             {
                 return element;
             }
@@ -57,7 +57,7 @@ namespace OrchardCore.ContentManagement
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
 
-            contentElement._elements[name] = result;
+            contentElement.Elements[name] = result;
 
             return result;
         }
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement
                 var newElement = new TElement();
                 newElement.ContentItem = contentElement.ContentItem;
                 contentElement.Data[name] = newElement.Data;
-                contentElement._elements[name] = newElement;
+                contentElement.Elements[name] = newElement;
                 return newElement;
             }
 
@@ -92,14 +92,13 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Weld(this ContentElement contentElement, string name, ContentElement element)
         {
-            JToken result;
-            if (!contentElement.Data.TryGetValue(name, out result))
+            if (!contentElement.Data.ContainsKey(name))
             {
                 element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
-                contentElement._elements[name] = element;
+                contentElement.Elements[name] = element;
             }
 
             return contentElement;
