@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private static readonly string[] _properties = { "PreviousText", "NextText", "PreviousClass", "NextClass" };
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue() as dynamic;
 

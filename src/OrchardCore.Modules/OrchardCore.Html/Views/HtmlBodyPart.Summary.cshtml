@@ -9,7 +9,7 @@
     var templateContext = new TemplateContext();
     templateContext.SetValue("ContentItem", Model.HtmlBodyPart.ContentItem);
 
-    var renderedBody = await TemplateManager.RenderAsync(body, templateContext);
+    var renderedBody = await TemplateManager.RenderAsync(body, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
 }
 
 @Html.Raw(renderedBody.RemoveTags(true).Ellipsize(200))

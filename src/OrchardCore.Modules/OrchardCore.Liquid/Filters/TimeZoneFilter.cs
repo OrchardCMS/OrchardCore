@@ -16,7 +16,7 @@ namespace OrchardCore.Liquid.Filters
             _localClock = localClock;
         }
 
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             DateTimeOffset value = DateTimeOffset.MinValue;
 
