@@ -5,14 +5,16 @@ namespace OrchardCore.Contents.SitemapNodes
 {
     public class ContentTypesSitemapNode : SitemapNode
     {
-        public bool ShowAll { get; set; }
-        public string IconClass { get; set; }
+        public bool IndexAll { get; set; }
+        public ChangeFrequency ChangeFrequency { get; set; }
+        public float IndexPriority { get; set; }
         public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };
     }
 
     public class ContentTypeSitemapEntry
     {
         public string ContentTypeId { get; set; }
-        public string IconClass { get; set; }
+        public ChangeFrequency ChangeFrequency { get; set; }
+        public float IndexPriority { get; set; }
     }
 }
