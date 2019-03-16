@@ -127,8 +127,6 @@ namespace OrchardCore.Modules
                 startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
             }
 
-            tenantRouteBuilder.Configure(routeBuilder);
-
             var router = routeBuilder.Build();
 
             appBuilder.UseRouter(router);

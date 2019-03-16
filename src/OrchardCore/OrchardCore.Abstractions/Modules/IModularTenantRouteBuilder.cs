@@ -6,7 +6,5 @@ namespace OrchardCore.Modules
     public interface IModularTenantRouteBuilder
     {
         IRouteBuilder Build(IApplicationBuilder appBuilder);
-
-        void Configure(IRouteBuilder builder);
     }
 }

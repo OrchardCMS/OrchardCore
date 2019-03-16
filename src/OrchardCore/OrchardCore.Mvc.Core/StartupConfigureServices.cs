@@ -16,7 +16,7 @@ using OrchardCore.Mvc.RazorPages;
 
 namespace OrchardCore.Mvc
 {
-    public class Startup : StartupBase
+    public class StartupConfigureServices : StartupBase
     {
         private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
@@ -24,7 +24,7 @@ namespace OrchardCore.Mvc
 
         private readonly IServiceProvider _serviceProvider;
 
-        public Startup(IServiceProvider serviceProvider)
+        public StartupConfigureServices(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

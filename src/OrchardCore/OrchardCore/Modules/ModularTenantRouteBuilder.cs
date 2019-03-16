@@ -17,9 +17,5 @@ namespace OrchardCore.Modules
 
             return routeBuilder;
         }
-
-        public void Configure(IRouteBuilder builder)
-        {
-        }
     }
 }

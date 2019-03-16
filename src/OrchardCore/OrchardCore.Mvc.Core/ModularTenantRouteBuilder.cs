@@ -23,23 +23,5 @@ namespace OrchardCore.Mvc
 
             return routeBuilder;
         }
-
-        public void Configure(IRouteBuilder builder)
-        {
-            var inlineConstraintResolver = builder.ServiceProvider.GetService<IInlineConstraintResolver>();
-
-            // The default route is added to each tenant as a template route, with a prefix
-            builder.Routes.Add(new Route(
-                builder.DefaultHandler,
-                "Default",
-                "{area:exists}/{controller}/{action}/{id?}",
-                null,
-                null,
-                null,
-                inlineConstraintResolver)
-            );
-
-            builder.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(builder.ServiceProvider));
-        }
     }
 }
