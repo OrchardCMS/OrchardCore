@@ -164,26 +164,25 @@ namespace OrchardCore.Resources
                 .SetVersion("4.7.0")
                 ;
 
-            manifest 
+            manifest
                 .DefineStyle("font-awesome")
-                .SetUrl("~/OrchardCore.Resources/fontawesome/v5.7.2/css/all.min.css", "~/OrchardCore.Resources/fontawesome/v5.7.2/css/all.css")
-                .SetCdn("https://use.fontawesome.com/releases/v5.7.2/css/all.css")
-                .SetCdnIntegrity("sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr")
-                .SetVersion("5.7.2")
+                .SetCdn("https://use.fontawesome.com/releases/v5.5.0/css/all.css")
+                .SetCdnIntegrity("sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU")
+                .SetVersion("5.5.0")
                 ;
 
             manifest
                 .DefineScript("font-awesome")
-                .SetUrl("~/OrchardCore.Resources/fontawesome/v5.7.2/js/all.min.js", "~/OrchardCore.Resources/fontawesome/v5.7.2/js/all.js")
-                .SetCdn("https://use.fontawesome.com/releases/v5.7.2/js/all.js")
-                .SetCdnIntegrity("sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP")
-                .SetVersion("5.7.2")
+                .SetCdn("https://use.fontawesome.com/releases/v5.5.0/js/all.js")
+                .SetCdnIntegrity("sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0")
+                .SetVersion("5.5.0")
                 ;
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
-                .SetUrl("~/OrchardCore.Resources/fontawesome/v5.7.2/js/v4-shims.min.js", "~/OrchardCore.Resources/fontawesome/v5.7.2/js/v4-shims.js")
-                .SetVersion("5.7.2")
+                .SetCdn("https://use.fontawesome.com/releases/v5.5.0/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-vBDTb50BKnwbvJZ5ZC5dsGJNQydTI7ZoAjCeJkdta6nSewwGXCnppKI5lrIQX4Qu")
+                .SetVersion("5.5.0")
                 ;
         }
     }
