@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
@@ -62,6 +65,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // These services might be moved at a higher level if no components from OrchardCore needs them.
             services.AddLocalization();
+
+            // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
+            services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+
             services.AddWebEncoders();
 
             // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouter() which requires the routing services to be
@@ -95,7 +102,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
             builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
-            
+
             builder.ApplicationServices.AddExtensionManagerHost();
 
             builder.ConfigureServices(services =>
@@ -245,6 +252,27 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
+        }
+
+        private class NullStringLocalizerFactory : IStringLocalizerFactory
+        {
+            public IStringLocalizer Create(Type resourceSource) => NullStringLocalizer.Instance;
+            public IStringLocalizer Create(string baseName, string location) => NullStringLocalizer.Instance;
+        }
+
+        private class NullStringLocalizer : IStringLocalizer
+        {
+            public static NullStringLocalizer Instance { get; } = new NullStringLocalizer();
+
+            public LocalizedString this[string name] => new LocalizedString(name, name);
+
+            public LocalizedString this[string name, params object[] arguments]
+                => new LocalizedString(name, string.Format(name, arguments));
+
+            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+                => Enumerable.Empty<LocalizedString>();
+
+            public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
         }
     }
 }
