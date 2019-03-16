@@ -182,7 +182,7 @@ namespace OrchardCore.Resources
                 .DefineScript("font-awesome-v4-shims")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.7.2/js/v4-shims.min.js","https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.7.2/js/v4-shims.js")
                 .SetCdnIntegrity("sha256-Dy8KjLriNkSRrlgRJaVAoXdvxOlz8ico4RVRmZJsxD8=", "sha256-Hr8WbqmgdrcXJGhodaZ1ATNeusCHFbb3GxGVyA32C9E=")
-                .SetVersion("5.5.0")
+                .SetVersion("5.7.2")
                 ;
         }
     }
