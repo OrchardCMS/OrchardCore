@@ -63,9 +63,8 @@ namespace OrchardCore.Workflows.Expressions
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Input, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
             context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
-            //context.SetValue("Workflow", workflowContext);
+
             context.SetValue(nameof(WorkflowExecutionContext), workflowContext);
-            
             // Add services.
             context.AmbientValues.Add("Services", services);
 
