@@ -1,6 +1,12 @@
 # Run a task on tenant activation
 
-This guide will walk you through the steps for running a task when a tenant is activated or deactivated 
+The `Startup` classes are used to initialize the services and piece of middleware. 
+They are called when a tenant is initialized.
+
+The interface `OrchardCore.Modules.IModularTenantEvents` provides a way to define user code that will 
+be executed when the tenant is first hit (tenant activation) and when it is deactivated.
+
+In the following example the class `MyStartupTaskService` implements `IModularTenantEvents`.
 
 ## What you will build ##
 
@@ -9,7 +15,8 @@ You will build a module that will print out a message with the name of the tenan
 ## What you will need ##
 
 - Latest versions (current) for both Runtime and SDK of .NET Core. You can download them from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
-- A text editor and a terminal where you cant type dotnet commands. 
+
+- A text editor and a terminal where you cant type dotnet commands.
 
 ## Creating an Orchard Core site and module ##
 
@@ -36,7 +43,7 @@ The last command will create a reference to the module on the application.
 
 ## Adding our service to the module ##
 
-Add a "Services" folder inside the MyModule.OrchardCore folder.
+Add a "Services" folder inside the "MyModule.OrchardCore" folder.
 Add a file "MyStartupTaskService.cs" to that folder, with the following content:
 
 ```csharp
@@ -86,7 +93,7 @@ namespace MyModule.OrchardCore.Services
 
 ```
 
-Then you have to register your service on the Startup.cs file of the module.
+Then you have to register your service on the "Startup.cs" file of the module.
 
 First add this `using` statement:
 
@@ -142,7 +149,8 @@ Go back to the admin of the "Default" tenant, and go again to "Configuration:Ten
 
 Now click "Reload" on your second tenant. The messages are not printed. Why is that?
 
-That is because tenants are lazy loaded, so when the app starts the event handlers are not called, but instead they are called when the first request arrives for each specific tenant.
+That is because tenants are lazy-loaded, meaning that when the app starts the event handlers are 
+not invoked. They are instead called when the first request is processed.
 
 So what you have to do in order to test your module is just browse to that tenant. As soon as you do that you will see the message for that specific tenant printed out.
 
