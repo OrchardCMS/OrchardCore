@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
@@ -11,16 +10,11 @@ namespace OrchardCore.Media.Services
     {
         private readonly IFileStore _fileStore;
         private readonly string _publicUrlBase;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MediaFileStore(
-            IFileStore fileStore,
-            string publicUrlBase,
-            IHttpContextAccessor httpContextAccessor)
+        public MediaFileStore(IFileStore fileStore, string publicUrlBase)
         {
             _fileStore = fileStore;
             _publicUrlBase = publicUrlBase;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public MediaFileStore(IFileStore fileStore)
@@ -85,22 +79,17 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            var publicUrl = new PathString(_publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path));
-            return PathBase.Add(publicUrl);
+            return _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            var publicUrlBase = PathBase.Add(_publicUrlBase);
-
-            if (!publicUrl.StartsWith(publicUrlBase, StringComparison.OrdinalIgnoreCase))
+            if (!publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
             }
 
-            return publicUrl.Substring(publicUrlBase.Value.Length);
+            return publicUrl.Substring(_publicUrlBase.Length);
         }
-
-        private PathString PathBase => _httpContextAccessor?.HttpContext.Request.PathBase ?? new PathString(null);
     }
 }

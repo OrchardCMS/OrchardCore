@@ -85,13 +85,12 @@ namespace OrchardCore.Media
                 var fileStore = new FileSystemStore(mediaPath);
 
                 var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
 
-                // To map between paths and public urls we need to take into account the request 'PathBase'
-                // which may start by e.g a virtual path and which already contains the 'RequestUrlPrefix'.
-                // We can't do that here because this tenant may be built in the context of another one.
-                // So, it is done on demand by the 'MediaFileStore' by using an 'IHttpContextAccessor'.
+                // 'PathBase' includes the tenant prefix and may start by e.g a virtual folder.
+                var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
 
-                return new MediaFileStore(fileStore, AssetsUrlPrefix, httpContextAccessor);
+                return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
