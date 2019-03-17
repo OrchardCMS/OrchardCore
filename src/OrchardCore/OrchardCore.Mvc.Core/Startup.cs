@@ -1,10 +1,13 @@
 using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,7 +19,7 @@ using OrchardCore.Mvc.RazorPages;
 
 namespace OrchardCore.Mvc
 {
-    public class StartupConfigureServices : StartupBase
+    public class Startup : StartupBase
     {
         private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
@@ -24,9 +27,27 @@ namespace OrchardCore.Mvc
 
         private readonly IServiceProvider _serviceProvider;
 
-        public StartupConfigureServices(IServiceProvider serviceProvider)
+        public Startup(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var inlineConstraintResolver = routes.ServiceProvider.GetService<IInlineConstraintResolver>();
+
+            // The default route is added to each tenant as a template route, with a prefix
+            routes.Routes.Add(new Route(
+                routes.DefaultHandler,
+                "Default",
+                "{area:exists}/{controller}/{action}/{id?}",
+                null,
+                null,
+                null,
+                inlineConstraintResolver)
+            );
+
+            routes.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(routes.ServiceProvider));
         }
 
         public override void ConfigureServices(IServiceCollection services)

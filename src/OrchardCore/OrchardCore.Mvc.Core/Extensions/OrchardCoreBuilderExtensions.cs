@@ -9,9 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            return builder
-                .RegisterStartup<StartupConfigureServices>()
-                .RegisterStartup<StartupConfigure>();
+            return builder.RegisterStartup<Startup>();
         }
     }
 }
