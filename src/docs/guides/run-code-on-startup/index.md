@@ -158,6 +158,10 @@ So what you have to do in order to test your module is just browse to that tenan
 MyModule.OrchardCore.Services.MyStartupTaskService[0] Tenant 'Tenant2' Activated
 ```
 
+
+> Note: `ActivatingAsync` events are invoked in the order of their registration, which is derived from
+the modules dependency graph. The `ActivatedAsync` events are invoked in the reverse order.
+
 ## Summary ##
 
 You just created an application that can run any task on its startup or shut down.
