@@ -2,11 +2,11 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-
+@inject OrchardCore.Settings.ISiteService SiteService
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 
-    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { } ;
+    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
 
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))
@@ -17,10 +17,15 @@
     {
         return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
     }
+    var site = await SiteService.GetSiteSettingsAsync();
 }
 
 <div class="@(Model.Value.Enabled ? "" : "disabled")">
-
+    <span>@Model.Value.Description</span>
+    @{ 
+        var path = Model.Value.SitemapSet.RootPath + Model.Value.Path;
+    }
+    <code>@path</code>
     @if (Model.Value.IndexAll)
     {
         <span class="badge badge-info">@T["Index All Content Types"]</span>
