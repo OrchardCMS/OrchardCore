@@ -72,7 +72,6 @@ namespace OrchardCore.Modules
                             {
                                 using (var activatingScope = await _shellHost.GetScopeAsync(shellSettings))
                                 {
-
                                     var tenantEvents = activatingScope.ServiceProvider.GetServices<IModularTenantEvents>();
 
                                     foreach (var tenantEvent in tenantEvents)
