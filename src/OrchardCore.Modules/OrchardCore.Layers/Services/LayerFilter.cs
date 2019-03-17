@@ -64,7 +64,7 @@ namespace OrchardCore.Layers.Services
 			{
                 // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
                 // In this case don't render Layers.
-                var selectedTheme = (await _themeManager.GetThemeAsync()).Id;
+                var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
                 var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
                 if (selectedTheme == adminTheme)
                 {

@@ -88,11 +88,10 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             await _verifyContainerTask;
 
-            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+            var blobDirectory = GetBlobDirectoryReference(path);
 
-            if (await placeholderBlob.ExistsAsync())
+            if (path == string.Empty || await BlobDirectoryExists(blobDirectory))
             {
-                var blobDirectory = GetBlobDirectoryReference(path);
                 return new BlobDirectory(path, _clock.UtcNow);
             }
             return null;
@@ -297,6 +296,21 @@ namespace OrchardCore.FileStorage.AzureBlob
             // listing directories.
             await placeholderBlob.UploadTextAsync(
                 "This is a directory marker file created by Orchard Core. It is safe to delete it.");
+        }
+
+        private async Task<bool> BlobDirectoryExists(CloudBlobDirectory blobDirectory)
+        {
+            // CloudBlobDirectory exists if it has at least one blob
+            BlobContinuationToken continuationToken = null;
+            var segment = await blobDirectory.ListBlobsSegmentedAsync(
+                useFlatBlobListing: false,
+                blobListingDetails: BlobListingDetails.None,
+                maxResults: 1,
+                currentToken: continuationToken,
+                options: null,
+                operationContext: null);
+
+            return segment.Results.Any();
         }
 
         private async Task CreateBasePathIfNotExistsAsync()

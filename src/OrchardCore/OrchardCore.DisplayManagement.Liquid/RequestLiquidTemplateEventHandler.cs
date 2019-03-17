@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     case "QueryString": return new StringValue(request.QueryString.Value);
                     case "ContentType": return new StringValue(request.ContentType);
-                    case "ContentLength": return new NumberValue(request.ContentLength ?? 0);
+                    case "ContentLength": return NumberValue.Create(request.ContentLength ?? 0);
                     case "Cookies": return new ObjectValue(request.Cookies);
                     case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
                     case "Query": return new ObjectValue(request.Query);
@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     case "Path": return new StringValue(request.Path.Value);
                     case "PathBase": return new StringValue(request.PathBase.Value);
                     case "Host": return new StringValue(request.Host.Value);
-                    case "IsHttps": return new BooleanValue(request.IsHttps);
+                    case "IsHttps": return BooleanValue.Create(request.IsHttps);
                     case "Scheme": return new StringValue(request.Scheme);
                     case "Method": return new StringValue(request.Method);
 
