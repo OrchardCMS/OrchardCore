@@ -49,7 +49,11 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
                     // To make the 'BlobFileStore' tenant aware.
-                    options.BasePath = '/' + shellSettings.RequestUrlPrefix;
+
+                    if (shellSettings.RequestUrlPrefix != null)
+                    {
+                        options.BasePath = '/' + shellSettings.RequestUrlPrefix;
+                    }
 
                     var fileStore = new BlobFileStore(options, clock);
 
