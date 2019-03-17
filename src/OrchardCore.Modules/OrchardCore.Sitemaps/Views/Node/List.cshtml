@@ -90,14 +90,14 @@
 <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
 
 <script at="Foot">
-    function moveNode(sitemapGroupId, nodeToMoveId, destinationNodeId, position) {
+    function moveNode(sitemapSetId, nodeToMoveId, destinationNodeId, position) {
         var url = "@Url.Action("MoveNode", "Node", new { area = "OrchardCore.Sitemaps"})";
         $.ajax({
             url: url,
             method: 'POST',
             data: {
                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                treeId: sitemapGroupId,
+                treeId: sitemapSetId,
                 nodeToMoveId: nodeToMoveId,
                 destinationNodeId: destinationNodeId,
                 position: position
@@ -114,18 +114,18 @@
     $(function () {
         $('#sitemap-node')
             .nestedSortable({
-                handle: 'div.menu-item-title',
-                items: 'li.menu-item',
-                toleranceElement: '> div.menu-item-title',
+                handle: 'div.sitemap-node-title',
+                items: 'li.sitemap-node',
+                toleranceElement: '> div.sitemap-node-title',
                 relocate: function (event, helper) {
                     // get var required by rest api
-                    var sitemapGroupId = '@Model.SitemapSet.Id';
+                    var sitemapSetId = '@Model.SitemapSet.Id';
                     var nodeToMoveId = helper.item.data('treenode-id');
                     var destinationNodeId = helper.item.parent().closest('[data-treenode-id]').data('treenode-id'); // get the id of the new parent
                     var position = helper.item.index();
-
+                    console.log(sitemapSetId + ' ' + nodeToMoveId + ' ' + destinationNodeId + ' ' + position);
                     // make request to rest api
-                    moveNode(sitemapGroupId, nodeToMoveId, destinationNodeId, position);
+                    moveNode(sitemapSetId, nodeToMoveId, destinationNodeId, position);
                 }
             });
     });

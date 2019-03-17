@@ -132,7 +132,7 @@
 
             var selected = $(e.target).prop('checked');
             selected ? listItem.removeClass('disabled') : listItem.addClass('disabled');
-            var selects = $(listItem).find('select').each(function () {
+            $(listItem).find('select').each(function () {
                 selected ? $(this).prop('disabled', false) : $(this).prop('disabled', 'disabled');
             });
         });

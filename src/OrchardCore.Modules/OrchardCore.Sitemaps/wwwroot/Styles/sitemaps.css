@@ -26,27 +26,27 @@ html, body, .ta-wrapper {
   .disabled-tree .tree-name-link {
     color: #808080; }
 
-.disabled-tree, .disabled-admin-node {
+.disabled-tree, .disabled-sitemap-node {
   background-color: #f5f5f5;
   color: #808080; }
 
-#menu {
+#sitemap-node {
   list-style: none;
   padding-left: 0; }
 
-#menu li {
+#sitemap-node li {
   list-style: none;
   cursor: move;
   background-color: white; }
 
 .card-columns {
   column-count: 1; }
-  .card-columns .card.admin-node-thumbnail .card-body {
+  .card-columns .card.sitemap-node-thumbnail .card-body {
     height: 160px;
     overflow: hidden; }
 
 @media only screen and (min-width: 768px) {
   .card-columns {
     column-count: 2; }
-    .card-columns .card.admin-node-thumbnail .card-body {
+    .card-columns .card.sitemap-node-thumbnail .card-body {
       height: 200px; } }

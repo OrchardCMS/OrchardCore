@@ -13,7 +13,7 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// The child nodes.
         /// </summary>
-        public List<SitemapNode> ChildNodes { get; set; }
+        public List<SitemapNode> ChildNodes { get; set; } = new List<SitemapNode>();
 
         public SitemapNode GetSitemapNodeById(string id)
         {

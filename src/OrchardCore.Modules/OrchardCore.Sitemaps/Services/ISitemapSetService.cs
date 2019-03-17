@@ -11,31 +11,31 @@ namespace OrchardCore.Sitemaps.Services
     {
 
         /// <summary>
-        /// Returns all the sitemap menus
+        /// Returns all the sitemap sets
         /// </summary>
         Task<List<Models.SitemapSet>> GetAsync();
 
         /// <summary>
-        /// Persist an sitemap menu
+        /// Persist a sitemap set
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
         Task SaveAsync(Models.SitemapSet tree);
 
         /// <summary>
-        /// Returns an sitemap menu.
+        /// Returns a sitemap set.
         /// </summary>
         Task<Models.SitemapSet> GetByIdAsync(string id);
 
         /// <summary>
-        /// Deletes an sitemap menu
+        /// Deletes a sitemap set
         /// </summary>
         /// <param name="tree"></param>
         /// <returns>The count of deleted items</returns>
         Task<int> DeleteAsync(Models.SitemapSet tree);
 
         /// <summary>
-        /// Gets a change token that is set when the sitemap menu has changed.
+        /// Gets a change token that is set when the sitemap set has changed.
         /// </summary>
         IChangeToken ChangeToken { get; }
 
