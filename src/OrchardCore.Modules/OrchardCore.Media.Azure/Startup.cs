@@ -1,9 +1,11 @@
 using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Services;
@@ -14,6 +16,11 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : StartupBase
     {
+        /// <summary>
+        /// The url prefix used to route asset files
+        /// </summary>
+        private const string AssetsUrlPrefix = "/media";
+
         private ILogger<Startup> _logger;
         private readonly IShellConfiguration _configuration;
 
@@ -39,13 +46,20 @@ namespace OrchardCore.Media.Azure
                     var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
 
+                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                    // To make the 'BlobFileStore' tenant aware.
+                    options.BasePath = '/' + shellSettings.RequestUrlPrefix;
+
                     var fileStore = new BlobFileStore(options, clock);
 
-                    var mediaBaseUri = fileStore.BaseUri;
-                    if (!String.IsNullOrEmpty(options.PublicHostName))
-                        mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
+                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                    var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
 
-                    return new MediaFileStore(fileStore, mediaBaseUri.ToString());
+                    // 'PathBase' includes the tenant prefix and may start by e.g a virtual folder.
+                    var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
+
+                    return new MediaFileStore(fileStore, mediaUrlBase);
                 }));
             }
 
