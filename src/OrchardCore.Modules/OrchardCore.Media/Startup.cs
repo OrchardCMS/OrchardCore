@@ -87,7 +87,7 @@ namespace OrchardCore.Media
                 var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
                 var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
 
-                // 'PathBase' includes the tenant prefix and may start by e.g a virtual folder.
+                // 'PathBase' includes the 'RequestUrlPrefix' and may start by a virtual folder.
                 var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
