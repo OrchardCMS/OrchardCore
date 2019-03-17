@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Http.Services
             _workflowTypeRouteEntries = workflowTypeRouteEntries;
         }
 
-        private async Task RegisterInstanceRoutesAsync()
+        private async Task RegisterRoutesAsync()
         {
             // Registers all the routes that running workflow instances are paused on.
 
@@ -40,6 +40,13 @@ namespace OrchardCore.Workflows.Http.Services
             int pageSize = 50;
 
             var workflowTypeDictionary = (await _workflowTypeStore.ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+
+            var workflowTypeRouteEntryQuery =
+                from workflowType in workflowTypeDictionary.Values
+                from entry in WorkflowTypeRouteEntries.GetWorkflowTypeRoutesEntries(workflowType, _activityLibrary)
+                select entry;
+
+            _workflowTypeRouteEntries.AddEntries(workflowTypeRouteEntryQuery);
 
             while (true)
             {
@@ -74,24 +81,9 @@ namespace OrchardCore.Workflows.Http.Services
             }
         }
 
-        private async Task RegisterTypeRoutesAsync()
-        {
-            // Registers all the routes that workflow types are starting on.
-
-            var workflowTypes = await _workflowTypeStore.ListAsync();
-
-            var workflowTypeRouteEntryQuery =
-                from workflowType in workflowTypes
-                from entry in WorkflowTypeRouteEntries.GetWorkflowTypeRoutesEntries(workflowType, _activityLibrary)
-                select entry;
-
-            _workflowTypeRouteEntries.AddEntries(workflowTypeRouteEntryQuery);
-        }
-
         public override async Task ActivatingAsync()
         {
-            await RegisterInstanceRoutesAsync();
-            await RegisterTypeRoutesAsync();
+            await RegisterRoutesAsync();
         }
     }
 }
