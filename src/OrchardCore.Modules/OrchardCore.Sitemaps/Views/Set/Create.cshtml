@@ -1,15 +1,35 @@
 @model SitemapSetCreateViewModel
-
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 <h1>@RenderTitleSegments(T["Create Sitemap Set {0}", Model.Name])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 
 <form asp-action="Create" method="post">
-    <div class="form-group" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
-        <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
-    </div>
+    <fieldset>
+        <div class="form-group" asp-validation-class-for="Name">
+            <label asp-for="Name">@T["Name"]</label>
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="form-group" asp-validation-class-for="RootPath">
+            <label asp-for="RootPath">@T["Root Path"]</label>
+            <div class="input-group">
+                @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
+                {
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@site.BaseUrl</div>
+                    </div>
+                }
+                <input asp-for="RootPath" class="form-control" />
+                <span asp-validation-for="RootPath"></span>
+            </div>
+        </div>
+    </fieldset>
     <fieldset>
         <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Create"]</button>

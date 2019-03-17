@@ -35,11 +35,12 @@
                 {
                     if (menuItem != null)
                     {
+                        //can we add an alternate in here?
                         dynamic sitemapNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
                         sitemapNodeShape.SitemapSetId = Model.SitemapSet.Id;
                         sitemapNodeShape.MenuItem = menuItem;
                         sitemapNodeShape.Index = index++;
-
+                        sitemapNodeShape.Metadata.Alternates.Add("SitemapNode_TreeSummary");
                         @await DisplayAsync(sitemapNodeShape)
                     }
                 }

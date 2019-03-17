@@ -1,4 +1,8 @@
 @model SitemapSetEditViewModel
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 <style asp-src="~/OrchardCore.Sitemaps/Styles/sitemaps.min.css" debug-src="~/OrchardCore.Sitemaps/Styles/sitemaps.css" at="Head" depends-on="admin"></style>
 
 <h1>@RenderTitleSegments(T["Edit Sitemap Set: {0}", Model.Name])</h1>
@@ -10,6 +14,21 @@
             <label asp-for="Name">@T["Name"]</label>
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name" class="text-danger">@T["The name is required"]</span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="form-group" asp-validation-class-for="RootPath">
+            <label asp-for="RootPath">@T["Root Path"]</label>
+            <div class="input-group">
+                @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
+                {
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@site.BaseUrl</div>
+                    </div>
+                }
+                <input asp-for="RootPath" class="form-control"/>
+                <span asp-validation-for="RootPath"></span>
+            </div>
         </div>
     </fieldset>
     <fieldset>

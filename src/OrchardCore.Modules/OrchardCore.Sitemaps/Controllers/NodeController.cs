@@ -74,6 +74,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 var treeNode = factory.Create();
                 dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
+                thumbnail.Metadata.Alternates.Add("SitemapNode_TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }

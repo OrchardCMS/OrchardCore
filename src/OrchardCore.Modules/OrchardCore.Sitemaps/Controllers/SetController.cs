@@ -140,7 +140,12 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.SitemapSet {Name = model.Name, Id = _sitemapIdGenerator.GenerateUniqueId()};
+                var tree = new Models.SitemapSet
+                {
+                    Id = _sitemapIdGenerator.GenerateUniqueId(),
+                    Name = model.Name,
+                    RootPath = model.RootPath
+                };
 
                 await _sitemapSetService.SaveAsync(tree);
                 
@@ -168,7 +173,8 @@ namespace OrchardCore.Sitemaps.Controllers
             var model = new SitemapSetEditViewModel
             {
                 Id = tree.Id,
-                Name = tree.Name
+                Name = tree.Name,
+                RootPath = tree.RootPath
             };
 
             return View(model);
@@ -192,6 +198,7 @@ namespace OrchardCore.Sitemaps.Controllers
             if (ModelState.IsValid)
             {
                 tree.Name = model.Name;
+                tree.RootPath = model.RootPath;
 
                 await _sitemapSetService.SaveAsync(tree);                
 
@@ -215,7 +222,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (tree == null)
             {
-                _notifier.Error(H["Can't find the sitemap gsetroup."]);
+                _notifier.Error(H["Can't find the sitemap set."]);
                 return RedirectToAction(nameof(List));
             }
 
