@@ -26,6 +26,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapSetService _sitemapSetService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly ISitemapIdGenerator _sitemapIdGenerator;
 
         public SetController(
             IAuthorizationService authorizationService,
@@ -33,6 +34,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             INotifier notifier,
+            ISitemapIdGenerator sitemapIdGenerator,
             IStringLocalizer<SetController> stringLocalizer,
             IHtmlLocalizer<SetController> htmlLocalizer,
             ILogger<SetController> logger)
@@ -42,6 +44,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _siteService = siteService;
             New = shapeFactory;
             _notifier = notifier;
+            _sitemapIdGenerator = sitemapIdGenerator;
 
             T = stringLocalizer;
             H = htmlLocalizer;
@@ -137,7 +140,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.SitemapSet {Name = model.Name};
+                var tree = new Models.SitemapSet {Name = model.Name, Id = _sitemapIdGenerator.GenerateUniqueId()};
 
                 await _sitemapSetService.SaveAsync(tree);
                 

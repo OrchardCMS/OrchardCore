@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps.Models
 {
     public class SitemapNode : MenuItem
     {
-        public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
+        public string UniqueId { get; set; } //= Guid.NewGuid().ToString("n");
         public bool Enabled { get; set; } = true;        
         
         public SitemapNode GetMenuItemById(string id)

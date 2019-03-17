@@ -15,12 +15,18 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapNodeProviderFactory<TSitemapNode> : ISitemapNodeProviderFactory where TSitemapNode : SitemapNode, new()
     {
         private static readonly string TypeName = typeof(TSitemapNode).Name;
+        private readonly ISitemapIdGenerator _sitemapIdGenerator;
 
         public string Name => TypeName;
 
+        public SitemapNodeProviderFactory(ISitemapIdGenerator sitemapIdGenerator)
+        {
+            _sitemapIdGenerator = sitemapIdGenerator;
+        }
+
         public SitemapNode Create()
         {
-            return new TSitemapNode();
+            return new TSitemapNode() { UniqueId = _sitemapIdGenerator.GenerateUniqueId() };
         }
     }
 }

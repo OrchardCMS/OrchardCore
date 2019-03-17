@@ -179,7 +179,7 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ISitemapNodeProviderFactory>(new SitemapNodeProviderFactory<ContentTypesSitemapNode>());
+            services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<ContentTypesSitemapNode>>();
             //services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesSitemapNodeDriver>();
         }

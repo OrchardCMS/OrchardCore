@@ -13,6 +13,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -31,13 +32,15 @@ namespace OrchardCore.Sitemaps
             //new
 
 
+            services.AddIdGeneration();
+            services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<ISitemapSetService, SitemapSetService>();
+            services.AddScoped<ISitemapSetService, SitemapSetService>();
             services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
 
 
             // index treeNode
-            services.AddSingleton<ISitemapNodeProviderFactory>(new SitemapNodeProviderFactory<SitemapIndexNode>());
+            services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
             //services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, SitemapIndexNodeDriver>();
 
