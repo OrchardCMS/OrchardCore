@@ -73,7 +73,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _factories)
             {
-                var treeNode = factory.Create();
+                var treeNode = factory.Create(tree);
                 dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
@@ -102,7 +102,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = _factories.FirstOrDefault(x => x.Name == type)?.Create();
+            var treeNode = _factories.FirstOrDefault(x => x.Name == type)?.Create(tree);
 
             if (treeNode == null)
             {
@@ -136,7 +136,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = _factories.FirstOrDefault(x => x.Name == model.SitemapNodeType)?.Create();
+            var treeNode = _factories.FirstOrDefault(x => x.Name == model.SitemapNodeType)?.Create(tree);
 
             if (treeNode == null)
             {

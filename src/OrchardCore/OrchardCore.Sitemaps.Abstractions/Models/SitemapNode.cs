@@ -1,32 +1,44 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Newtonsoft.Json;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Models
 {
-    public class SitemapNode 
+    public class SitemapNode
     {
-        public string Id { get; set; } 
+        public string Id { get; set; }
         public bool Enabled { get; set; } = true;
+
+        [Required]
+        public string Path { get; set; }
+
+        [JsonIgnore]
+        public SitemapSet SitemapSet { get; set; }
 
         /// <summary>
         /// The child nodes.
         /// </summary>
         public List<SitemapNode> ChildNodes { get; set; } = new List<SitemapNode>();
 
-        public SitemapNode GetSitemapNodeById(string id)
+        public SitemapNode GetSitemapNodeById(string id, SitemapSet sitemapSet)
         {
             var tempStack = new Stack<SitemapNode>(new SitemapNode[] { this });
 
             while (tempStack.Any())
             {
                 // evaluate first node
-                SitemapNode item = tempStack.Pop();
-                if (item.Id.Equals(id, StringComparison.OrdinalIgnoreCase)) return item;
+                var item = tempStack.Pop();
+                if (item.Id.Equals(id, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.SitemapSet = sitemapSet;
+                    return item;
+                }
 
                 // not that one; continue with the rest.
-                foreach (var i in item.ChildNodes) tempStack.Push((SitemapNode)i);
+                foreach (var i in item.ChildNodes) tempStack.Push(i);
             }
 
             //not found

@@ -13,11 +13,5 @@ namespace OrchardCore.Sitemaps.SitemapNodes
         
         public string Description { get; set; }
 
-        /// <summary>
-        /// name of the file served, i.e. sitemap-index.xml, or sitemap-content.xml, or sitemap.xml. TODO use for routing
-        /// Probably move to base
-        /// </summary>
-        [Required]
-        public string Name { get; set; }
     }
 }

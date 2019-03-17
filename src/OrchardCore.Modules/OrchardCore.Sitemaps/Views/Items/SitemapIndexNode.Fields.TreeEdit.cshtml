@@ -1,5 +1,8 @@
 @model SitemapIndexNodeViewModel
-
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 <style asp-src="~/OrchardCore.Sitemaps/Styles/sitemaps.min.css" debug-src="~/OrchardCore.Sitemaps/Styles/sitemaps.css" at="Head" depends-on="admin"></style>
 <script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.js" at="Foot" depends-on="admin"></script>
 
@@ -9,13 +12,24 @@
     <label asp-for="Description">@T["Description"]</label>
     <input asp-for="Description" class="form-control" />
     <span asp-validation-for="Description"></span>
-    <span class="hint">@T["Description of the sitemap"]</span>
+    <span class="hint">@T["Description of the sitemap node"]</span>
 </fieldset>
-
-<fieldset class="form-group" asp-validation-class-for="Name">
-    <label asp-for="Name">@T["Name"]</label>
-    <input asp-for="Name" class="form-control" />
-    <span asp-validation-for="Name"></span>
-    <span class="hint">@T["Filename the sitemap should be served as, e.g. sitemap-index.xml"]</span>
+<fieldset>
+    <div class="form-group" asp-validation-class-for="Path">
+        <label asp-for="Path">@T["Path"]</label>
+        <div class="input-group">
+            @{
+                String prependPath = site.BaseUrl + Model.SitemapNode.SitemapSet.RootPath;
+            }
+            @if (!String.IsNullOrWhiteSpace(prependPath))
+            {
+                <div class="input-group-prepend">
+                    <div class="input-group-text">@prependPath</div>
+                </div>
+            }
+            <input asp-for="Path" class="form-control" />
+            <span asp-validation-for="Path"></span>
+        </div>
+    </div>
 </fieldset>
 

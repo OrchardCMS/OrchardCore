@@ -18,7 +18,7 @@ namespace OrchardCore.Sitemaps.Models
         {
             foreach (var sitemapNode in SitemapNodes)
             {
-                var found = sitemapNode.GetSitemapNodeById(id);
+                var found = sitemapNode.GetSitemapNodeById(id, this);
                 if (found != null)
                 {
                     return found;

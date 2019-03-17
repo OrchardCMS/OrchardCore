@@ -9,7 +9,7 @@ namespace OrchardCore.Sitemaps.Services
     public interface ISitemapNodeProviderFactory
     {
         string Name { get; }
-        SitemapNode Create();
+        SitemapNode Create(SitemapSet sitemapSet);
     }
 
     public class SitemapNodeProviderFactory<TSitemapNode> : ISitemapNodeProviderFactory where TSitemapNode : SitemapNode, new()
@@ -24,9 +24,13 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapIdGenerator = sitemapIdGenerator;
         }
 
-        public SitemapNode Create()
+        public SitemapNode Create(SitemapSet sitemapSet)
         {
-            return new TSitemapNode() { Id = _sitemapIdGenerator.GenerateUniqueId() };
+            return new TSitemapNode()
+            {
+                Id = _sitemapIdGenerator.GenerateUniqueId(),
+                SitemapSet = sitemapSet
+            };
         }
     }
 }

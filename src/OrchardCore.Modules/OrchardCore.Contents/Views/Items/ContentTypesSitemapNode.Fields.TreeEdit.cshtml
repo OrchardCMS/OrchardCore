@@ -1,13 +1,40 @@
 @using OrchardCore.Sitemaps.Models
 @model ContentTypesSitemapNodeViewModel
-
+@inject OrchardCore.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
 <h5>@T["Content Types"]</h5>
 
-
 <div class="row">
     <div class="col col-xl-9">
+        @*General fields*@
+        <fieldset class="form-group" asp-validation-class-for="Description">
+            <label asp-for="Description">@T["Description"]</label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description"></span>
+            <span class="hint">@T["Description of the sitemap node"]</span>
+        </fieldset>
+        <fieldset>
+            <div class="form-group" asp-validation-class-for="Path">
+                <label asp-for="Path">@T["Path"]</label>
+                <div class="input-group">
+                    @{
+                        String prependPath = site.BaseUrl + Model.SitemapNode.SitemapSet.RootPath;
+                    }
+                    @if (!String.IsNullOrWhiteSpace(prependPath))
+                    {
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">@prependPath</div>
+                        </div>
+                    }
+                    <input asp-for="Path" class="form-control" />
+                    <span asp-validation-for="Path"></span>
+                </div>
+            </div>
+        </fieldset>
 
         @*Panel Switcher*@
         <div class="form-group form-check">
@@ -26,9 +53,9 @@
                     <select asp-for="ChangeFrequency" class="form-control w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
                     <span class="hint">@T["The default frequency these content types are likely to change."]</span>
                 </div>
-                <div class="form-group" asp-validation-class-for="IndexPriority">
-                    <label asp-for="IndexPriority">@T["Index Priority"] </label>
-                    <select asp-for="IndexPriority" class="form-control w-25">
+                <div class="form-group" asp-validation-class-for="Priority">
+                    <label asp-for="Priority">@T["Priority"] </label>
+                    <select asp-for="Priority" class="form-control w-25">
                         <option value="0.0">0.0</option>
                         <option value="0.1">0.1</option>
                         <option value="0.2">0.2</option>
@@ -76,9 +103,9 @@
                                         <select asp-for="ContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
                                         <span class="hint">@T["The default frequency these content types are likely to change."]</span>
                                     </div>
-                                    <div class="form-group w-25" asp-validation-class-for="IndexPriority">
-                                        <label asp-for="ContentTypes[i].IndexPriority">@T["Index Priority"] </label>
-                                        <select asp-for="ContentTypes[i].IndexPriority" class="form-control" disabled="@notChecked">
+                                    <div class="form-group w-25" asp-validation-class-for="Priority">
+                                        <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
+                                        <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
                                             <option value="0.0">0.0</option>
                                             <option value="0.1">0.1</option>
                                             <option value="0.2">0.2</option>

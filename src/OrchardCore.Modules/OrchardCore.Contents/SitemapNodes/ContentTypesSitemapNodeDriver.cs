@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -7,7 +6,6 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Navigation;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Contents.SitemapNodes
@@ -40,16 +38,19 @@ namespace OrchardCore.Contents.SitemapNodes
                 ContentTypeId = x.Name,
                 IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
                 ChangeFrequency = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.ChangeFrequency ?? ChangeFrequency.Daily,
-                IndexPriority = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IndexPriority ?? 0.5f
+                Priority = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IndexPriority ?? 0.5f
             }).ToArray();
 
 
             return Initialize<ContentTypesSitemapNodeViewModel>("ContentTypesSitemapNode_Fields_TreeEdit", model =>
             {
+                model.Description = treeNode.Description;
+                model.Path = treeNode.Path;
                 model.IndexAll = treeNode.IndexAll;
                 model.ChangeFrequency = treeNode.ChangeFrequency;
-                model.IndexPriority = treeNode.IndexPriority;
+                model.Priority = treeNode.Priority;
                 model.ContentTypes = entries;
+                model.SitemapNode = treeNode;
             }).Location("Content");
         }
 
@@ -60,14 +61,16 @@ namespace OrchardCore.Contents.SitemapNodes
 
             var model = new ContentTypesSitemapNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.IndexAll, x => x.ChangeFrequency, x => x.IndexPriority, x => x.ContentTypes)) {
-
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.Description, x => x.Path, x => x.IndexAll, x => x.ChangeFrequency, x => x.Priority, x => x.ContentTypes))
+            {
+                treeNode.Description = model.Description;
+                treeNode.Path = model.Path;
                 treeNode.IndexAll = model.IndexAll;
                 treeNode.ChangeFrequency = model.ChangeFrequency;
-                treeNode.IndexPriority = model.IndexPriority;
+                treeNode.Priority = model.Priority;
                 treeNode.ContentTypes = model.ContentTypes
-                    .Where( x => x.IsChecked == true)
-                    .Select(x => new ContentTypeSitemapEntry { ContentTypeId = x.ContentTypeId, ChangeFrequency = x.ChangeFrequency, IndexPriority = x.IndexPriority })                    
+                    .Where(x => x.IsChecked == true)
+                    .Select(x => new ContentTypeSitemapEntry { ContentTypeId = x.ContentTypeId, ChangeFrequency = x.ChangeFrequency, IndexPriority = x.Priority })
                     .ToArray();
             };
 

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.SitemapNodes
 {
@@ -8,6 +10,9 @@ namespace OrchardCore.Sitemaps.SitemapNodes
         public string Description { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string Path { get; set; }
+
+        [BindNever]
+        public SitemapNode SitemapNode { get; set; }
     }
 }
