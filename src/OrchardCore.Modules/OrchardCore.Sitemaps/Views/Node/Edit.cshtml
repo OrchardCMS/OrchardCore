@@ -12,18 +12,6 @@
 
     <fieldset>
         <div class="form-group">
-            <label asp-for="Priority">@T["Selection Priority"]</label>
-            <input asp-for="Priority" class="form-control col-md-2">
-            <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Position">@T["Position Order"]</label>
-            <input asp-for="Position" class="form-control col-md-2">
-            <span class="hint">@T["The position order of this link in the admin menu."]</span>
-        </div>
-
-        <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Save"]</button>
 
             <a asp-action="Delete"

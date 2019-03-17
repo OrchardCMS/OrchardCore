@@ -1,4 +1,3 @@
-
 @using OrchardCore.Sitemaps.Models
 @model ContentTypesSitemapNodeViewModel
 
@@ -136,14 +135,6 @@
             var selects = $(listItem).find('select').each(function () {
                 selected ? $(this).prop('disabled', false) : $(this).prop('disabled', 'disabled');
             });
-            console.log(selects);
-
-        });
-
-        $('button.remove-icon').on('click', function (e) {
-            var node = $(e.target).data('related-node');
-            $('#' + node).val('');
-            //$('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class is not enough.
         });
     });
 </script>

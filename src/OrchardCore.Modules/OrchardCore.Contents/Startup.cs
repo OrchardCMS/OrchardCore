@@ -34,6 +34,7 @@ using OrchardCore.AdminMenu.Services;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.SitemapNodes;
 using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Contents
 {
@@ -181,7 +182,7 @@ namespace OrchardCore.Contents
         {
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<ContentTypesSitemapNode>>();
             //services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesSitemapNodeDriver>();
+            services.AddScoped<IDisplayDriver<SitemapNode>, ContentTypesSitemapNodeDriver>();
         }
     }
 }

@@ -12,7 +12,7 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Contents.SitemapNodes
 {
-    public class ContentTypesSitemapNodeDriver : DisplayDriver<MenuItem, ContentTypesSitemapNode>
+    public class ContentTypesSitemapNodeDriver : DisplayDriver<SitemapNode, ContentTypesSitemapNode>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

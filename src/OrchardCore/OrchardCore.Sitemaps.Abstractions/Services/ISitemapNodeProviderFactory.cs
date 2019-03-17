@@ -26,7 +26,7 @@ namespace OrchardCore.Sitemaps.Services
 
         public SitemapNode Create()
         {
-            return new TSitemapNode() { UniqueId = _sitemapIdGenerator.GenerateUniqueId() };
+            return new TSitemapNode() { Id = _sitemapIdGenerator.GenerateUniqueId() };
         }
     }
 }

@@ -12,7 +12,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.SitemapNodes
 {
-    public class SitemapIndexNodeDriver : DisplayDriver<MenuItem, SitemapIndexNode>
+    public class SitemapIndexNodeDriver : DisplayDriver<SitemapNode, SitemapIndexNode>
     {
         public override IDisplayResult Display(SitemapIndexNode treeNode)
         {

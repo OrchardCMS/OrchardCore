@@ -10,9 +10,6 @@ namespace OrchardCore.Sitemaps.ViewModels
         public string SitemapNodeId { get; set; }
         public string SitemapNodeType { get; set; }
 
-        public int Priority { get; set; }
-        public string Position { get; set; }
-
         public dynamic Editor { get; set; }
 
         [BindNever]

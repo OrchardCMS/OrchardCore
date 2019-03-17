@@ -11,14 +11,14 @@ namespace OrchardCore.Sitemaps.Models
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
         public string RootPath { get; set; } 
-        public List<SitemapNode> MenuItems { get; } = new List<SitemapNode>();
+        public List<SitemapNode> SitemapNodes { get; } = new List<SitemapNode>();
 
 
-        public SitemapNode GetMenuItemById(string id)
+        public SitemapNode GetSitemapNodeById(string id)
         {
-            foreach (var menuItem in MenuItems)
+            foreach (var sitemapNode in SitemapNodes)
             {
-                var found = menuItem.GetMenuItemById(id);
+                var found = sitemapNode.GetSitemapNodeById(id);
                 if (found != null)
                 {
                     return found;
@@ -29,18 +29,18 @@ namespace OrchardCore.Sitemaps.Models
             return null;
         }
 
-        public bool RemoveMenuItem(SitemapNode itemToRemove)
+        public bool RemoveSitemapNode(SitemapNode sitemapNodeToRemove)
         {
-            if (MenuItems.Contains(itemToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
+            if (SitemapNodes.Contains(sitemapNodeToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
             {
-                MenuItems.Remove(itemToRemove);
+                SitemapNodes.Remove(sitemapNodeToRemove);
                 return true; 
             }
             else
             {
-                foreach (var firstLevelMenuItem in MenuItems)
+                foreach (var firstLevelSitemapNode in SitemapNodes)
                 {
-                    if (firstLevelMenuItem.RemoveMenuItem(itemToRemove))
+                    if (firstLevelSitemapNode.RemoveSitemapNode(sitemapNodeToRemove))
                     {
                         return true; 
                     }
@@ -50,24 +50,24 @@ namespace OrchardCore.Sitemaps.Models
             return false; 
         }
 
-        public bool InsertMenuItemAt(SitemapNode menuItemToInsert, SitemapNode destinationMenuItem, int position)
+        public bool InsertSitemapNodeAt(SitemapNode sitemapNodeToInsert, SitemapNode destinationSitemapNode, int position)
         {
-            if (menuItemToInsert == null)
+            if (sitemapNodeToInsert == null)
             {
-                throw new ArgumentNullException("menuItemToInsert");
+                throw new ArgumentNullException("sitemapNodeToInsert");
             }
 
             // insert the node at the destination node
-            if (destinationMenuItem == null)
+            if (destinationSitemapNode == null)
             {
-                MenuItems.Insert(position, menuItemToInsert);
+                SitemapNodes.Insert(position, sitemapNodeToInsert);
                 return true; 
             }
             else
             {
-                foreach (var firstLevelMenuItem in MenuItems)
+                foreach (var firstLevelSitemapNode in SitemapNodes)
                 {
-                    if (firstLevelMenuItem.InsertMenuItem(menuItemToInsert, destinationMenuItem, position))
+                    if (firstLevelSitemapNode.InsertSitemapNode(sitemapNodeToInsert, destinationSitemapNode, position))
                     {
                         return true; 
                     }

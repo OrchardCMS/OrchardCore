@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
@@ -19,14 +20,14 @@ namespace OrchardCore.Sitemaps.Controllers
     public class NodeController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<MenuItem> _displayManager;
+        private readonly IDisplayManager<SitemapNode> _displayManager;
         private readonly IEnumerable<ISitemapNodeProviderFactory> _factories;
         private readonly ISitemapSetService _sitemapSetService;
         private readonly INotifier _notifier;
 
         public NodeController(
             IAuthorizationService authorizationService,
-            IDisplayManager<MenuItem> displayManager,
+            IDisplayManager<SitemapNode> displayManager,
             IEnumerable<ISitemapNodeProviderFactory> factories,
             ISitemapSetService sitemapSetService,
             IShapeFactory shapeFactory,
@@ -74,7 +75,6 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 var treeNode = factory.Create();
                 dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
-                thumbnail.Metadata.Alternates.Add("SitemapNode_TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -113,7 +113,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 SitemapSetId = id,
                 SitemapNode = treeNode,
-                SitemapNodeId = treeNode.UniqueId,
+                SitemapNodeId = treeNode.Id,
                 SitemapNodeType = type,
                 Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: true)
             };
@@ -148,8 +148,8 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                treeNode.UniqueId = model.SitemapNodeId;
-                tree.MenuItems.Add(treeNode);
+                treeNode.Id = model.SitemapNodeId;
+                tree.SitemapNodes.Add(treeNode);
                 await _sitemapSetService.SaveAsync(tree);
 
                 _notifier.Success(H["Sitemap node added successfully"]);
@@ -176,7 +176,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = tree.GetSitemapNodeById(treeNodeId);
 
             if (treeNode == null)
             {
@@ -187,10 +187,8 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 SitemapSetId = id,
                 SitemapNode = treeNode,
-                SitemapNodeId = treeNode.UniqueId,
+                SitemapNodeId = treeNode.Id,
                 SitemapNodeType = treeNode.GetType().Name,
-                Priority = treeNode.Priority,
-                Position = treeNode.Position,
                 Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false)
             };
 
@@ -214,7 +212,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(model.SitemapNodeId);
+            var treeNode = tree.GetSitemapNodeById(model.SitemapNodeId);
 
             if (treeNode == null)
             {
@@ -225,9 +223,6 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                treeNode.Priority = model.Priority;
-                treeNode.Position = model.Position;
-
                 await _sitemapSetService.SaveAsync(tree);
 
                 _notifier.Success(H["Sitemap node updated successfully"]);
@@ -256,14 +251,14 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = tree.GetSitemapNodeById(treeNodeId);
 
             if (treeNode == null)
             {
                 return NotFound();
             }
 
-            if (tree.RemoveMenuItem(treeNode) == false)
+            if (tree.RemoveSitemapNode(treeNode) == false)
             {
                 return new StatusCodeResult(500);
             }
@@ -290,7 +285,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var treeNode = tree.GetMenuItemById(treeNodeId);
+            var treeNode = tree.GetSitemapNodeById(treeNodeId);
 
             if (treeNode == null)
             {
@@ -303,7 +298,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             _notifier.Success(H["Sitemap node toggled successfully"]);
 
-            return RedirectToAction(nameof(List), new { id = id });
+            return RedirectToAction(nameof(List), new { id });
         }
 
 
@@ -318,26 +313,26 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var tree = await _sitemapSetService.GetByIdAsync(treeId);
 
-            if ((tree == null) || (tree.MenuItems == null))
+            if ((tree == null) || (tree.SitemapNodes == null))
             {
                 return NotFound();
             }
 
 
-            var nodeToMove = tree.GetMenuItemById(nodeToMoveId);
+            var nodeToMove = tree.GetSitemapNodeById(nodeToMoveId);
             if (nodeToMove == null)
             {
                 return NotFound();
             }
 
-            var destinationNode = tree.GetMenuItemById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
+            var destinationNode = tree.GetSitemapNodeById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
 
-            if (tree.RemoveMenuItem(nodeToMove) == false)
+            if (tree.RemoveSitemapNode(nodeToMove) == false)
             {
                 return StatusCode(500);
             }
 
-            if (tree.InsertMenuItemAt(nodeToMove, destinationNode, position) == false)
+            if (tree.InsertSitemapNodeAt(nodeToMove, destinationNode, position) == false)
             {
                 return StatusCode(500);
             }

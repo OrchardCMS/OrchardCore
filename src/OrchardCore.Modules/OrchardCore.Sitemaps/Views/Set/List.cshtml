@@ -45,7 +45,7 @@
                             </div>
                         </div>
                     </div>
-                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.SitemapSet.Id" class="tree-name-link">@entry.SitemapSet.Name</a>
+                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.SitemapSet.Id" class="tree-name-link">@entry.SitemapSet.Name</a>&nbsp;<code>@entry.SitemapSet.RootPath</code>
                 </li>
             }
         </ul>

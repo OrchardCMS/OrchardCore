@@ -36,13 +36,13 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ISitemapSetService, SitemapSetService>();
-            services.AddScoped<IDisplayManager<MenuItem>, DisplayManager<MenuItem>>();
+            services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
 
 
             // index treeNode
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
             //services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, SitemapIndexNodeDriver>();
+            services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
 
             //old
             services.AddScoped<INavigationProvider, AdminMenu>();

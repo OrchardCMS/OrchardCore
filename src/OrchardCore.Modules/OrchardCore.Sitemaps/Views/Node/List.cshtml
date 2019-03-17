@@ -1,5 +1,5 @@
 @model SitemapNodeListViewModel
-@inject OrchardCore.DisplayManagement.IDisplayManager<MenuItem> MenuItemDisplayManager
+@inject OrchardCore.DisplayManagement.IDisplayManager<SitemapNode> SitemapNodeDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 
 @{
@@ -26,21 +26,20 @@
 
 <form id="presetForm" asp-action="List">
     <div class="form-group">
-        @if (Model.SitemapSet.MenuItems.Any())
+        @if (Model.SitemapSet.SitemapNodes.Any())
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="menu" data-treenode-id="content-preset">
-                @foreach (var menuItem in Model.SitemapSet.MenuItems)
+            <ol id="sitemap-node" data-treenode-id="content-preset">
+                @foreach (var sitemapNode in Model.SitemapSet.SitemapNodes)
                 {
-                    if (menuItem != null)
+                    if (sitemapNode != null)
                     {
                         //can we add an alternate in here?
-                        dynamic sitemapNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
+                        dynamic sitemapNodeShape = await SitemapNodeDisplayManager.BuildDisplayAsync(sitemapNode, updater, "TreeSummary");
                         sitemapNodeShape.SitemapSetId = Model.SitemapSet.Id;
-                        sitemapNodeShape.MenuItem = menuItem;
+                        sitemapNodeShape.SitemapNode = sitemapNode;
                         sitemapNodeShape.Index = index++;
-                        sitemapNodeShape.Metadata.Alternates.Add("SitemapNode_TreeSummary");
                         @await DisplayAsync(sitemapNodeShape)
                     }
                 }
@@ -55,7 +54,7 @@
     </div>
 
     <div class="form-group">
-        <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
+        <a class="btn btn-secondary" asp-route-controller="Set" asp-route-action="List">@T["Back"]</a>
     </div>
 
 </form>
@@ -113,7 +112,7 @@
     }
 
     $(function () {
-        $('#menu')
+        $('#sitemap-node')
             .nestedSortable({
                 handle: 'div.menu-item-title',
                 items: 'li.menu-item',
