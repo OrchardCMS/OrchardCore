@@ -64,7 +64,7 @@ nav:
         - Data: OrchardCore/OrchardCore.Data/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
-        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md
+        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md 
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
