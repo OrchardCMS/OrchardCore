@@ -15,7 +15,6 @@ namespace OrchardCore.Https.Drivers
     public class HttpsSettingsDisplayDriver : SectionDisplayDriver<ISite, HttpsSettings>
     {
         private const string SettingsGroupId = "Https";
-        private const int DefaultSslPort = 443;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
@@ -50,9 +49,9 @@ namespace OrchardCore.Https.Drivers
                 model.RequireHttps = settings.RequireHttps;
                 model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
                 model.SslPort = settings.SslPort ??
-                                (_httpContextAccessor.HttpContext.Request.Host.Port == DefaultSslPort
-                                    ? null
-                                    : _httpContextAccessor.HttpContext.Request.Host.Port);
+                                (isHttpsRequest && !settings.RequireHttps
+                                    ? _httpContextAccessor.HttpContext.Request.Host.Port
+                                    : null);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
