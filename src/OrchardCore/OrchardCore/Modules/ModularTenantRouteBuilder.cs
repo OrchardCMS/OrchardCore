@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
@@ -9,13 +10,13 @@ namespace OrchardCore.Modules
         {
         }
 
-        public IRouteBuilder Build(IApplicationBuilder appBuilder)
+        public void Build(IApplicationBuilder appBuilder, Action<IRouteBuilder> configureRoutes)
         {
-            var routeBuilder = new RouteBuilder(appBuilder)
-            {
-            };
+            var routeBuilder = new RouteBuilder(appBuilder);
 
-            return routeBuilder;
+            configureRoutes(routeBuilder);
+
+            appBuilder.UseRouter(routeBuilder.Build());
         }
     }
 }

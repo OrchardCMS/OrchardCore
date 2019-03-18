@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Modules;
 
@@ -14,8 +13,6 @@ namespace OrchardCore.Mvc
         {
             // The default route is added to each tenant as a template route.
             routes.MapRoute("Default", "{area:exists}/{controller}/{action}/{id?}");
-
-            routes.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(routes.ServiceProvider));
         }
     }
 }

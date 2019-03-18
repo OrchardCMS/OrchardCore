@@ -41,6 +41,9 @@ namespace OrchardCore.Mvc
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                // The endpoint routing system doesn't support IRouter-based extensibility.
+                options.EnableEndpointRouting = false;
             });
 
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);

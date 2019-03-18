@@ -116,17 +116,15 @@ namespace OrchardCore.Modules
             startups = startups.OrderBy(s => s.Order);
 
             var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
-            var routeBuilder = tenantRouteBuilder.Build(appBuilder);
 
             // Configure the tenant pipeline.
-            foreach (var startup in startups)
+            tenantRouteBuilder.Build(appBuilder, routes =>
             {
-                startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
-            }
-
-            var router = routeBuilder.Build();
-
-            appBuilder.UseRouter(router);
+                foreach (var startup in startups)
+                {
+                    startup.Configure(appBuilder, routes, scopeServiceProvider);
+                }
+            });
         }
     }
 }
