@@ -118,10 +118,7 @@ namespace OrchardCore.Modules
             var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
             var routeBuilder = tenantRouteBuilder.Build(appBuilder);
 
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
-            // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSettings. This way there would just be one lookup.
-            // And the ShellSettings test in TenantRoute would also be useless.
+            // Configure the tenant pipeline.
             foreach (var startup in startups)
             {
                 startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
