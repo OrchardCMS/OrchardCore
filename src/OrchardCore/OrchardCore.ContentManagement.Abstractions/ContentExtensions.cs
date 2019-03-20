@@ -148,6 +148,7 @@ namespace OrchardCore.ContentManagement
             if (elementData != null)
             {
                 elementData.Merge(JObject.FromObject(element), JsonMergeSettings);
+                contentElement.Elements.Remove(name);
             }
             else
             {
