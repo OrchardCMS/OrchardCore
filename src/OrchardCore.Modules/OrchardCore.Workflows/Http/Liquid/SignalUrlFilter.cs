@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Http.Liquid
                 throw new ArgumentException("SignalService missing while invoking 'signal_url'");
             }
 
-            var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
+            var workflowContextValue = context.GetValue("Workflow");
 
             if (workflowContextValue.IsNil())
             {
