@@ -21,7 +21,7 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation($"Notification '{type}' with message '{type}'");
+                Logger.LogInformation($"Notification '{type}' with message '{message}'");
             }
             
             _entries.Add(new NotifyEntry { Type = type, Message = message });
