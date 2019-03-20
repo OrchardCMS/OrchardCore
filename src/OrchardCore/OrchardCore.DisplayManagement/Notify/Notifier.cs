@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Localization;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message);
+                Logger.LogInformation($"Notification '{type}' with message '{type}'");
             }
             
             _entries.Add(new NotifyEntry { Type = type, Message = message });
