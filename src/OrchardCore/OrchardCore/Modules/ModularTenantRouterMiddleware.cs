@@ -111,14 +111,14 @@ namespace OrchardCore.Modules
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with an Order of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal Order values.
-            startups = startups.OrderBy(s => s.Order);
+            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
+            var pipeline = appBuilder.ApplicationServices.GetService<ITenantPipelineBuilder>();
 
             // Configure the tenant pipeline.
-            tenantRouteBuilder.Build(appBuilder, routes =>
+            pipeline.Build(appBuilder, routes =>
             {
                 foreach (var startup in startups)
                 {

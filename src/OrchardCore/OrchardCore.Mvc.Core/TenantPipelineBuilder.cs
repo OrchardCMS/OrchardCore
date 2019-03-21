@@ -5,9 +5,9 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
-    public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
+    public class TenantPipelineBuilder : ITenantPipelineBuilder
     {
-        public ModularTenantRouteBuilder()
+        public TenantPipelineBuilder()
         {
         }
 

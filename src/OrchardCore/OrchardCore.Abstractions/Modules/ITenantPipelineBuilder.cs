@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Modules
 {
-    public interface IModularTenantRouteBuilder
+    public interface ITenantPipelineBuilder
     {
         void Build(IApplicationBuilder appBuilder, Action<IRouteBuilder> configureRoutes);
     }

@@ -1,10 +1,12 @@
 using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,17 +18,24 @@ using OrchardCore.Mvc.RazorPages;
 
 namespace OrchardCore.Mvc
 {
-    public class StartupConfigureServices : StartupBase
+    public class Startup : StartupBase
     {
         private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
-        public override int Order => -200;
+        public override int Order => -1000;
+        public override int ConfigureOrder => 1000;
 
         private readonly IServiceProvider _serviceProvider;
 
-        public StartupConfigureServices(IServiceProvider serviceProvider)
+        public Startup(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // The default route is added to each tenant as a template route.
+            routes.MapRoute("Default", "{area:exists}/{controller}/{action}/{id?}");
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -75,7 +84,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
-                ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
+                ServiceDescriptor.Transient<ITenantPipelineBuilder, TenantPipelineBuilder>());
 
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 

@@ -73,7 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ILocalClock, LocalClock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+            services.AddTransient<ITenantPipelineBuilder, TenantPipelineBuilder>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }

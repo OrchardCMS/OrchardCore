@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Modules
 {
-    public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
+    public class TenantPipelineBuilder : ITenantPipelineBuilder
     {
-        public ModularTenantRouteBuilder()
+        public TenantPipelineBuilder()
         {
         }
 
