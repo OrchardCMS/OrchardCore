@@ -6,7 +6,7 @@ Whatever you're building, these guides are designed to get you productive as qui
 
 Designed to be completed in 15-30 minutes, these guides provide quick, hands-on instructions for building the "Hello World" of any development task with Orchard Core. In most cases, the only prerequisites are a .NET SDK and a text editor.
 
-- [Creating a Modular ASP.NET Core MVC Application](create-modular-application-mvc)
+- [Creating a Modular ASP.NET Core Application](create-modular-application-mvc/index.md)
 - [Running Code on Startup](run-code-on-startup/index.md)
 
 ## Tutorials
