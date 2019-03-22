@@ -18,7 +18,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 
