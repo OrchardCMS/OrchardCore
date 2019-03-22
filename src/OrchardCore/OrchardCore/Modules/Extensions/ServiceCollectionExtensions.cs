@@ -164,11 +164,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                if (settings.State == TenantState.Uninitialized)
-                {
-                    return;
-                }
-
                 var tenantName = settings.Name;
 
                 // Re-register the antiforgery  services to be tenant-aware.

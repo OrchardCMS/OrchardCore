@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,28 +19,32 @@ namespace OrchardCore.Setup.Controllers
 {
     public class SetupController : Controller
     {
+        private readonly IClock _clock;
+        private readonly IShellHost _shellHost;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _shellHost;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly IClock _clock;
+        private readonly IAntiforgeryTokenGenerator _tokenGenerator;
         private readonly ILogger<SetupController> _logger;
 
         public SetupController(
-            ILogger<SetupController> logger,
             IClock clock,
+            IShellHost shellHost,
             ISetupService setupService,
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
-            IShellHost shellHost,
+            IAntiforgeryTokenGenerator tokenGenerator,
+            ILogger<SetupController> logger,
             IStringLocalizer<SetupController> t)
         {
-            _logger = logger;
             _clock = clock;
             _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
+            _tokenGenerator = tokenGenerator;
+
+            _logger = logger;
 
             T = t;
         }
@@ -75,6 +80,10 @@ namespace OrchardCore.Setup.Controllers
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
             }
+
+            // Prevent from having an 'AntiforgeryValidationException' on a new setup if
+            // the browser already has an antiforgery cookie related to another instance.
+            GenerateCookieToken();
 
             return View(model);
         }
@@ -174,6 +183,20 @@ namespace OrchardCore.Setup.Controllers
             }
 
             return Redirect("~/");
+        }
+
+        private void GenerateCookieToken()
+        {
+            var antiforgeryFeature = HttpContext.Features.Get<IAntiforgeryFeature>();
+            if (antiforgeryFeature == null)
+            {
+                antiforgeryFeature = new AntiforgeryFeature();
+                HttpContext.Features.Set(antiforgeryFeature);
+            }
+
+            var newCookieToken = _tokenGenerator.GenerateCookieToken();
+            antiforgeryFeature.HaveGeneratedNewCookieToken = true;
+            antiforgeryFeature.NewCookieToken = newCookieToken;
         }
 
         private void CopyShellSettingsValues(SetupViewModel model)
