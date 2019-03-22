@@ -32,6 +32,10 @@ nav:
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
+    - Guides:
+        - Index: docs/guides/README.md
+        - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
+        - Running Code on Startup: docs/guides/run-code-on-startup/index.md
     - Code Generation Templates: docs/templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
@@ -81,4 +85,3 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
-    - Guides: docs/guides/README.md

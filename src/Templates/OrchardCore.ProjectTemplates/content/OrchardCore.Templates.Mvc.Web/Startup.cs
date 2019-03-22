@@ -9,7 +9,10 @@ namespace OrchardCore.Templates.Mvc.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardCore();
+            services
+                .AddOrchardCore()
+                .AddMvc()
+                ;
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
