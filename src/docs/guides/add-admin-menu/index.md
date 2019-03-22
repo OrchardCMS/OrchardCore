@@ -1,50 +1,50 @@
 # Adding a Menu to the Admin from a Module
 
-The `INavigationProvider` is the entry point to every task related to handling admin menu items.
-
+The `INavigationProvider` interface is the entry point to every task related to handling admin navigation menu items.
 In order to add menu items from your module you just need to create a class that implements that interface.
 
-## What you will build ##
+## What you will build
 
-You will build a module that will add a menu item at the root level and two child menu items. Each menu item will point to its own view
+You will build a module that will add a menu item at the root level and two child menu items.
+Each menu item will point to its own view.
 
-## What you will need ##
+## What you will need
 
-- Latest versions for both Runtime and SDK of .NET Core. You can download them from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
+- The current version of the .NET Core SDK. You can download it from here https://www.microsoft.com/net/download/core.
+- A text editor and a terminal where you can type dotnet commands.
 
-- A text editor and a terminal where you cant type dotnet commands.
+## Creating an Orchard Core CMS site and module
 
-## Creating an Orchard Core site and module ##
+There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../templates/README.md). In this guide we will use our "Code Generation Templates".
 
-There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../templates/README.md). In this guide we will use our "Code Generation Templates". 
+You can install the latest released templates using this command:
 
-You can install the latest templates using this command:
+```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
 
-```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-beta3-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json```
-
-
->Note: At the time of writing this, Orchard Core is still in beta. This command install the latest available templates. For the majority of the scenarios we would still recommend that.
+!!! note
+    To use the development branch of the template add `--nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
 
 Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run this:
 
 ```dotnet new occms -n MySite```
 
+This creates a new Orchard Core CMS site in a new folder named `MySite`.
+We can now create a new module with the following command:
+
 ```dotnet new ocmodulecms -n MyModule```
 
-```dotnet add MySite/MySite.csproj reference MyModule/MyModule.csproj```
+The module is created in the `MyModule` folder.
+The next step is to reference the module from the application, by adding a project reference:
 
-The first two commands will create a new Orchard Core Cms application ready to be setup, and a module.
-The last command will create a reference to the module on the application.
+```dotnet add MySite reference MyModule```
 
-In order to add views to the Admin we need that our module references the `OrchardCore.Admin` package. So you need to run this command:
+## Adding our controller and views
 
-```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json --version 1.0.0-*```
+### Adding the controller
 
+Create a `DemoNavController.cs` file to the `.\MyModule\Controllers` folder, with these contents:
 
-## Adding our controller and views ##
-
-Add a "DemoNavController.cs" file to the ".\MyModule\Controllers" folder, with these contents:
-
+#### DemoNavController.cs
 
 ```csharp
 using Microsoft.AspNetCore.Mvc;
@@ -73,17 +73,23 @@ namespace MyModule.Controllers
 }
 ```
 
-The `Admin` attribute on will make this controller accesible from the Admin only.
+!!! tip
+   The `[Admin]` attribute ensures the controller is using the Admin theme and users have the permission to access it.
+   Another way to have this behavior would have been to name this class `AdminController`.
 
-Create a folder ".\MyModule\Views\DemoNav", and add to it these two views:
+### Adding the views
 
-"ChildOne.cshtml"
-```csharp
+Create a folder `.\MyModule\Views\DemoNav`, and add to it these two files:
+
+#### ChildOne.cshtml
+
+```html
 <p>View One</p>
 ```
 
-"ChildTwo.cshtml"
-```csharp
+#### ChildTwo.cshtml
+
+```html
 <p>View Two</p>
 ```
 
@@ -92,6 +98,7 @@ Create a folder ".\MyModule\Views\DemoNav", and add to it these two views:
 Now you just need to add a class that implements `INavigationProvider` interface.
 By convention, we call these classes `AdminMenu.cs` and put it in the root of our module's folder.
 
+#### AdminMenu.cs
 
 ```csharp
 using System;
@@ -107,23 +114,25 @@ namespace MyModule
         {
             T = localizer;
         }
+        
         public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             // We want to add our menus to the "admin" menu only.
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase)){
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
                 return Task.CompletedTask;
             }
 
             // Adding our menu items to the builder.
             // The builder represents the full admin menu tree.
             builder
-            .Add(T["My Root View"], "after",  rootView => rootView               
-                .Add(T["Child One"],"1", childOne => childOne
-                    .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                .Add(T["Child Two"], "2", childTwo => childTwo
-                    .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
+                .Add(T["My Root View"], "after",  rootView => rootView               
+                    .Add(T["Child One"],"1", childOne => childOne
+                        .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
+                    .Add(T["Child Two"], "2", childTwo => childTwo
+                        .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
             return Task.CompletedTask;
         }
@@ -131,50 +140,50 @@ namespace MyModule
 }
 ```
 
-Then you have to register your `INavigationProvider` on the "Startup.cs" file of the module.
+Then you have to register this service in the `Startup.cs` file of the module.
 
-Add this `using` statement to the "Startup.cs" file:
+At the top of the `Startup.cs` file, add this `using` statement:
 
 ```csharp
 using OrchardCore.Navigation;
 ```
 
-Add this line to the `ConfigureServices()` Method:
+Add this line to the `ConfigureServices()` method:
 
 ```csharp
 services.AddScoped<INavigationProvider, AdminMenu>();
 ```
 
-## Running your app and testing your menu items ##
-
-You are ready now to test your work.
+## Testing the resulting application
 
 From the root of the folder containing both projects, run this command:
 
+`dotnet run --project .\MySite\MySite.csproj`
+
+!!! note
+    If you are using the development branch of the templates, run `dotnet restore https://www.myget.org/F/orchardcore-preview/api/v3/index.json` before running the application
+
+Your application should now be running and contain the open ports:
+
 ```
-dotnet run --project .\MySite\MySite.csproj
+Now listening on: https://localhost:5001
+Now listening on: http://localhost:5000
+Application started. Press Ctrl+C to shut down.
 ```
-Your application should be built and run.
 
-Now you can browse to it and setup your site.
+Open a browser on <https://localhost:5001>
 
-For this example you will probably want to use Sqlite as database.
+If you have not already setup your site, select __Blank Site__ as the recipe, and use __SQLite__ as the database.
 
-For simplicity, use the "Blank Site" recipe.
+Once your site is ready, you should see a __The page could not be found.__ message which is expected for a __Blank Site__ recipe.
 
-Once your site is setup, you will see a "The page could not be found." message. That's expected for the "Blank Site" recipe.
+Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Login to the admin at "/admin".
+Using the left menu go to __Configuration: Modules__, search for your module, __MyModule__, and enable it.
 
-Then using the left menu go to "Configuration: Modules", search for your module, "MyModule", and enable it.
+Now your module is enabled and you should see a new entry on the admin.
+Click on the new menu items to render the Views we created earlier.
 
-Now your module is enabled and you should see a new entry on the admin. And by using it you should be able to navigate through your two views.
+## Summary
 
-
-## Summary ##
-
-You just learned how to add menus to the Admin, one of the most common tasks when developing Orchard Core Modules.
-
-For the sake of clarity we used just a little bit of the features available trough the `NavigationBuilder` object.
-
-If you want to learn more there are plenty of examples on the Orchard Core Github Repository. Just search for "AdminMenu.cs" files.
+You just learned how to add menu items to the Admin Navigation.
