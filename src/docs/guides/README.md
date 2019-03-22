@@ -8,6 +8,7 @@ Designed to be completed in 15-30 minutes, these guides provide quick, hands-on 
 
 - [Creating a Modular ASP.NET Core Application](create-modular-application-mvc/index.md)
 - [Running Code on Startup](run-code-on-startup/index.md)
+- [Adding a Menu to the Admin](add-admin-menu/index.md)
 
 ## Tutorials
 
