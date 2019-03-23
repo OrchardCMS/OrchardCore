@@ -38,6 +38,13 @@ The next step is to reference the module from the application, by adding a proje
 
 ```dotnet add MySite reference MyModule```
 
+In order to add views to the Admin we need that our module references the `OrchardCore.Admin` package. So you need to run this command:
+
+```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin```
+
+!!! note
+    To use the development branch of the template add ` --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json --version 1.0.0-*`
+
 ## Adding our controller and views
 
 ### Adding the controller
