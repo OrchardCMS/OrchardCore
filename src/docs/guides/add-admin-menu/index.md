@@ -1,4 +1,4 @@
-# Adding a Menu to the Admin from a Module
+# Adding a Menu Item to the Admin Navigation from a Module
 
 The `INavigationProvider` interface is the entry point to every task related to handling admin navigation menu items.
 In order to add menu items from your module you just need to create a class that implements that interface.
