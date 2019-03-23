@@ -84,7 +84,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
-                ServiceDescriptor.Transient<ITenantPipelineBuilder, TenantPipelineBuilder>());
+                ServiceDescriptor.Transient<IConfigureTenantPipeline, ConfigureTenantPipeline>());
 
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 

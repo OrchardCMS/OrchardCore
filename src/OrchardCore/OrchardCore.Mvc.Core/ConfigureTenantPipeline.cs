@@ -5,13 +5,13 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
-    public class TenantPipelineBuilder : ITenantPipelineBuilder
+    public class ConfigureTenantPipeline : IConfigureTenantPipeline
     {
-        public TenantPipelineBuilder()
+        public ConfigureTenantPipeline()
         {
         }
 
-        public void Build(IApplicationBuilder appBuilder, Action<IRouteBuilder> configureRoutes)
+        public void Configure(IApplicationBuilder appBuilder, Action<IRouteBuilder> configureRoutes)
         {
             appBuilder.UseMvc(configureRoutes);
         }

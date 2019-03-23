@@ -115,10 +115,10 @@ namespace OrchardCore.Modules
             // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            var pipeline = appBuilder.ApplicationServices.GetService<ITenantPipelineBuilder>();
+            var pipeline = appBuilder.ApplicationServices.GetService<IConfigureTenantPipeline>();
 
             // Configure the tenant pipeline.
-            pipeline.Build(appBuilder, routes =>
+            pipeline.Configure(appBuilder, routes =>
             {
                 foreach (var startup in startups)
                 {
