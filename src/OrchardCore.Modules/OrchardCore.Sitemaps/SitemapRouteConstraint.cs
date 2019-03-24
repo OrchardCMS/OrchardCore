@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps
 {
     public class SitemapRouteConstraint : IRouteConstraint
     {
-
+        public static string RouteKey = "sitemaps";
         public ILogger Logger { get; set; }
 
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)

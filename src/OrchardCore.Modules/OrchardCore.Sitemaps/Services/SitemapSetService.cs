@@ -20,7 +20,7 @@ namespace OrchardCore.Sitemaps.Services
         private readonly IServiceProvider _serviceProvider;
         private const string SitemapSetCacheKey = "SitemapSetService";
         //keep in memory rather than in MemoryCache for performance
-        private HashSet<string> _routes;
+        private Dictionary<string, string> _routes;
 
 
         public SitemapSetService(
@@ -42,7 +42,27 @@ namespace OrchardCore.Sitemaps.Services
             {
                 await BuildSitemapRoutes();
             }
-            return _routes.Contains(path);
+            return _routes.ContainsKey(path);
+        }
+
+        public async Task<SitemapNode> GetSitemapNodeByPathAsync(string path)
+        {
+            //don't build until we get a request that might be sitemap related (i.e. .xml)
+            if (_routes == null)
+            {
+                await BuildSitemapRoutes();
+            }
+            if (_routes.TryGetValue(path, out string nodeId))
+            {
+                var trees = (await GetSitemapSetList()).SitemapSets;
+                foreach(var tree in trees)
+                {
+                    var node = tree.GetSitemapNodeById(nodeId);
+                    if (node != null)
+                        return node;
+                }
+            }
+            return null;
         }
 
         public async Task<List<Models.SitemapSet>> GetAsync()
@@ -104,7 +124,7 @@ namespace OrchardCore.Sitemaps.Services
             {
                 sitemapSetList = await GetSitemapSetList();
             }
-            _routes = new HashSet<string>();
+            _routes = new Dictionary<string, string>();
             foreach (var sitemapSet in sitemapSetList.SitemapSets)
             {
                 var rootPath = sitemapSet.RootPath.TrimStart('/');
@@ -118,7 +138,7 @@ namespace OrchardCore.Sitemaps.Services
             {
 
                 var path = String.Concat(rootPath, sitemapNode.Path);
-                _routes.Add(path);
+                _routes.Add(path, sitemapNode.Id);
                 if (sitemapNode.ChildNodes != null)
                 {
                     BuildNodeRoutes(sitemapNode.ChildNodes, rootPath);

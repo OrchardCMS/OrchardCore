@@ -61,25 +61,12 @@ namespace OrchardCore.Sitemaps
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                  name: "sitemaps",
+                  name: SitemapRouteConstraint.RouteKey,
                   areaName: "OrchardCore.Sitemaps",
                   template: "{*sitemaps}",
                   constraints: new { sitemaps = new SitemapRouteConstraint() },
-                  defaults: new { controller = "Test", action = "Index" }
+                  defaults: new { controller = "Sitemaps", action = "Index" }
               );
-            //routes.MapAreaRoute(
-            //    name: "SitemapIndex",
-            //    areaName: "OrchardCore.Sitemaps",
-            //    template: "sitemap{number}.xml",
-            //    defaults: new { controller = "Sitemaps", action = "Index" }
-            //);
-            //routes.MapAreaRoute(
-            //       name: "sitemap.xml",
-            //       areaName: "OrchardCore.Sitemaps",
-            //       template: "sitemap.xml",
-            //       defaults: new { controller = "Sitemaps", action = "Index" }
-            //   );
-
         }
     }
 }

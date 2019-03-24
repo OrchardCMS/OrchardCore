@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
 {
@@ -9,6 +10,14 @@ namespace OrchardCore.Sitemaps.Services
     /// </summary>
     public interface ISitemapSetService
     {
+        //TODO probably moves to manager?
+        /// <summary>
+        /// Get the sitemap node that matches path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        Task<SitemapNode> GetSitemapNodeByPathAsync(string path);
+
         /// <summary>
         /// Matches a sitemap against a routevalue
         /// </summary>
