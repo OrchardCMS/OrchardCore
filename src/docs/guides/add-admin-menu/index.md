@@ -38,7 +38,7 @@ The next step is to reference the module from the application, by adding a proje
 
 ```dotnet add MySite reference MyModule```
 
-In order to add views to the Admin we need that our module references the `OrchardCore.Admin` package. So you need to run this command:
+We also need a reference to the `OrchardCore.Admin` package in order to be able to implemente the required interfaces:
 
 ```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 1.0.0-*```
 
