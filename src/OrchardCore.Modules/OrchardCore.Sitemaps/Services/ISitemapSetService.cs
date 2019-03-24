@@ -9,6 +9,12 @@ namespace OrchardCore.Sitemaps.Services
     /// </summary>
     public interface ISitemapSetService
     {
+        /// <summary>
+        /// Matches a sitemap against a routevalue
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        Task<bool> MatchSitemapRouteAsync(string path);
 
         /// <summary>
         /// Returns all the sitemap sets

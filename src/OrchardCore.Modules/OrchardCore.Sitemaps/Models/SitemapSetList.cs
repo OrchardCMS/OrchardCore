@@ -10,6 +10,6 @@ namespace OrchardCore.Sitemaps.Models
     public class SitemapSetList
     {
         public int Id { get; set; }
-        public List<SitemapSet> SitemapSet { get; set; } = new List<SitemapSet>();
+        public List<SitemapSet> SitemapSets { get; set; } = new List<SitemapSet>();
     }
 }

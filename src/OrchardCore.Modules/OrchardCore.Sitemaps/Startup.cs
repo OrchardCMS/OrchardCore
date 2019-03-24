@@ -35,7 +35,7 @@ namespace OrchardCore.Sitemaps
             services.AddIdGeneration();
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapSetService, SitemapSetService>();
+            services.AddSingleton<ISitemapSetService, SitemapSetService>();
             services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
 
 
@@ -61,17 +61,24 @@ namespace OrchardCore.Sitemaps
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "SitemapIndex",
-                areaName: "OrchardCore.Sitemaps",
-                template: "sitemap{number}.xml",
-                defaults: new { controller = "Sitemaps", action = "Index" }
-            );
-            routes.MapAreaRoute(
-                   name: "sitemap.xml",
-                   areaName: "OrchardCore.Sitemaps",
-                   template: "sitemap.xml",
-                   defaults: new { controller = "Sitemaps", action = "Index" }
-               );
+                  name: "sitemaps",
+                  areaName: "OrchardCore.Sitemaps",
+                  template: "{*sitemaps}",
+                  constraints: new { sitemaps = new SitemapRouteConstraint() },
+                  defaults: new { controller = "Test", action = "Index" }
+              );
+            //routes.MapAreaRoute(
+            //    name: "SitemapIndex",
+            //    areaName: "OrchardCore.Sitemaps",
+            //    template: "sitemap{number}.xml",
+            //    defaults: new { controller = "Sitemaps", action = "Index" }
+            //);
+            //routes.MapAreaRoute(
+            //       name: "sitemap.xml",
+            //       areaName: "OrchardCore.Sitemaps",
+            //       template: "sitemap.xml",
+            //       defaults: new { controller = "Sitemaps", action = "Index" }
+            //   );
 
         }
     }
