@@ -10,7 +10,7 @@ branches:
 # Do not build if there are only documentation changes
 skip_commits:
   files:
-    - **/*.md
+    - '**/*.md'
     - mkdocs.yml
     - src/docs/*
 
