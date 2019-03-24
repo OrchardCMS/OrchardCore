@@ -1,14 +1,13 @@
-# Creating a CMS Application
+# Creating an Orchard Core CMS website
 
-In this guide you will setup Orchard Core as a Content Management System.
+In this guide you will setup Orchard Core as a Content Management System from a project template.
 
 ## What you will need
 
 - The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
-
 - A text editor and a terminal where you can type dotnet commands.
 
-## Creating an Orchard Core Site
+## Creating the projects
 
 There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../templates/README.md). In this guide we will use our "Code Generation Templates".
 
@@ -23,14 +22,11 @@ Create an empty folder that will contain your site. Open a terminal, navigate to
 
 ```dotnet new occms -n MySite```
 
-This creates a new ASP.NET MVC application in a new folder named `MySite`.
+This creates a new Ochard Core CMS project in a folder named `MySite`.
 
-## Setting Up the Site
+## Setting up the site
 
 The application has been created by the template, but it has not been setup yet.
-
-Orchard Core is modular. It means that depending on what modules you include in your application it can be many different things. Which modules are included is determined by the specific `Recipe` selected during setup. 
-In order to build a site with all the features of a CMS with are going to use the `Blog` recipe.
 
 Run the application by executing this command:
 
@@ -47,15 +43,15 @@ Now listening on: http://localhost:5000
 Application started. Press Ctrl+C to shut down.
 ```
 
-Open a browser on <https://localhost:5001>
-It should display the setup screen.
-Fill the form and select the `Blog` recipe.
-For this exercise, you would want to use `Sqlite` as the database engine.
+Open a browser on <https://localhost:5001>, it should display the setup screen.
+
+In order to build a site with all the features of a CMS with are going to use the __Blog__ recipe. Recipes contains a list of modules and steps to configure an Orchard Core website.
+
+Fill the form and select the __Blog__ recipe and __SQLite__ for the database.
 
 Submit the form. A few seconds later you should be looking at a Blog Site.
 In order to configure it and start writing content you can go to <https://localhost:5001/admin>.
 
-
 ## Summary
 
-You just created a full blown CMS site.
+You just created an Orchard Core CMS powered blog engine.
