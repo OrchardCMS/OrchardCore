@@ -24,6 +24,7 @@ namespace OrchardCore.Media.Controllers
             ".png",
             ".gif",
             ".ico",
+            ".svg",
 
             // Documents
             ".pdf", // (Portable Document Format; Adobe Acrobat)
