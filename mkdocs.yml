@@ -87,3 +87,4 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
+        - Google: OrchardCore.Modules/OrchardCore.Google/README.md
