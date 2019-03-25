@@ -49,7 +49,12 @@ In order to build a site with all the features of a CMS with are going to use th
 
 Fill the form and select the __Blog__ recipe and __SQLite__ for the database.
 
+![image](assets/setup-screen.jpg)
+
 Submit the form. A few seconds later you should be looking at a Blog Site.
+
+![image](assets/blog-home-page.jpg)
+
 In order to configure it and start writing content you can go to <https://localhost:5001/admin>.
 
 ## Summary
