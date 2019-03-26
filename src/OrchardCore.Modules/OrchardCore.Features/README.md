@@ -5,15 +5,13 @@ List of features available in Orchard Core:
 | Name | Available |
 | ------ | ------------ |
 | Site Setup | Pre-Alpha |
-| Recipes custom steps | Pre-Alpha |
-| Recipes parameters | Pre-Alpha |
+| Setup steps (Configuration, Features, Import content) in Json | Pre-Alpha |
 | Administration | Pre-Alpha |
-| Admin Menu | Beta 3 |
+| Custom Admin Menus | Beta 3 |
 | Menu | Alpha |
 | Navigation API | Pre-Alpha |
 | Content Types | Pre-Alpha |
 | Content Parts  | Pre-Alpha |
-| Named Parts  | Alpha |
 | Content Fields (Text, Numeric, Link, Boolean) | Pre-Alpha |
 | Edit and Display modes for fields | Beta 3 |
 | Date, Time and Local DateTime Fields  | Beta 3 |
@@ -35,23 +33,17 @@ List of features available in Orchard Core:
 | Document database: YesSql | Pre-Alpha |
 | SQL Provider independent | Alpha |
 | Deployment (Import/Export) | Alpha |
-| Remote deployment | Beta |
-| Recipe migrations | Beta 3 |
 | Liquid Templating | Beta |
 | Custom Liquid Filters | Beta |
 | Theming | Beta |
 | Alternates (Override views) | Beta |
-| Placement files | Pre-Alpha |
-| Shapes | Alpha |
 | Resource manager | Pre-Alpha |
 | CDN support | Alpha |
 | Widgets | Beta |
-| Layers | Beta |
-| Zones | Beta |
+| Zones (Layout sections in which you add widgets) | Beta |
+| Layers (Display widgets depending on a rule) | Beta |
 | Scripting (JS) | Alpha |
-| Flow Page | Beta 2 |
-| Widgets List | Beta 2 |
-| Bag Part | Beta 2 |
+| Page with widgets | Beta 2 |
 | Forms | Beta 2 |
 | Asset Management | Beta |
 | Media Picker | Beta 2 |
@@ -60,7 +52,7 @@ List of features available in Orchard Core:
 | Mass Upload | Beta |
 | Modules support | Pre-Alpha |
 | Modules management | Alpha |
-| Autoroute: Friendly Urls | Alpha |
+| Friendly Urls | Alpha |
 | Custom aliases | Beta |
 | Homepage | Alpha |
 | List module | Pre-Alpha |
@@ -85,7 +77,7 @@ List of features available in Orchard Core:
 | Email verification | Beta 2 |
 | Password reset | Beta 2 |
 | Open Id: Authorization server, JWT | Beta 2 |
-| HTTPS | Beta 3 |
+| HTTPS redirection | Beta 3 |
 | Email messaging | Beta 2 |
 | Logging: NLog, Serilog | Beta 3 |
 | Indexing/Search | Alpha |
