@@ -36,7 +36,6 @@ namespace OrchardCore.Metadata.Drivers
 
         public override async Task<IDisplayResult> DisplayAsync(MetadataPart part, BuildPartDisplayContext context)
         {
-
             var viewModel = new MetadataPartViewModel();
             await BuildViewModelAsync(viewModel, part);
 
@@ -160,7 +159,6 @@ namespace OrchardCore.Metadata.Drivers
                     Content = viewModel.TwitterSite
                 });
             }
-
             return await base.DisplayAsync(part, context);
         }
 
@@ -233,6 +231,7 @@ namespace OrchardCore.Metadata.Drivers
             viewModel.OpenGraphUrl = siteSettings.BaseUrl;
             viewModel.MetadataPart = part;
             viewModel.Settings = settings;
+
         }
 
         private string GenerateText(string text, string alternateText)
