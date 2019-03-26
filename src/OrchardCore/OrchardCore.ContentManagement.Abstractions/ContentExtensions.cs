@@ -151,8 +151,15 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                contentElement.Data[name] = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                elementData = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                contentElement.Data[name] = elementData;
             }
+
+            element.Data = elementData;
+            element.ContentItem = contentElement.ContentItem;
+
+            // Replace the existing content element with the new one
+            contentElement.Elements[name] = element;
 
             return contentElement;
         }
@@ -173,6 +180,7 @@ namespace OrchardCore.ContentManagement
                 contentElement.Data = JObject.FromObject(element.Data, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             }
 
+            contentElement.Elements.Clear();
             return contentElement;
         }
 

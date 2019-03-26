@@ -1,50 +1,47 @@
 # How to run tasks on application startup from a module
 
-You can add a class that implements `IModularTenantEvents` and use the 
-`ActivatedAsync()` or `ActivatingAsync()` handlers.
+The `Startup` classes are used to initialize the services and piece of middleware. 
+They are called when a tenant is initialized.
 
-The events are raised per tenant.
-One thing to take into account is that tenants are lazy loaded, so when the app
-starts the event handlers are not called but instead are called when the first 
-request arrives for each specific tenant.
+The interface `OrchardCore.ModulesIModularTenantEvents` provides a way to define user code that will 
+be executed when the tenant is first hit (tentant activation).
 
-An example implementation:
+All tenants are lazy-loaded, meaning that when the app starts the event handlers are 
+not invoked. They are instead called when the first request is processed.
+
+In the following example the class `MyStartupTaskService` inherits from `ModularTenantEvents` 
+to implement `IModularTenantEvents`.
 
 ```csharp
 
-public class MyStartupTaskService : IModularTenantEvents
-{
-    private readonly ILogger<TempDirCleanerService> _logger;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 
-    public TempDirCleanerService(ILogger<TempDirCleanerService> logger)
+public class MyStartupTaskService : ModularTenantEvents
+{
+    private readonly ILogger<MyStartupTaskService> _logger;
+
+    public MyStartupTaskService(ILogger<MyStartupTaskService> logger)
     {
         _logger = logger;
     }
 
-    public async Task ActivatedAsync()
+    public override Task ActivatingAsync()
     {
-        _logger.LogInfo("logging tenant activation.");
-    }
+        _logger.LogInfo("A tenant has been activated.");
 
-    public Task ActivatingAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task TerminatedAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task TerminatingAsync()
-    {
-        return Task.CompletedTask;
+        return Task.CompletedTask
     }
 }
 ```
 
-Then you have to register your service on `ConfigureServices()` method of the module's Startup.cs file:
+Then this class is registered on the `ConfigureServices()` method of the module's __Startup.cs__ file.
 
 ```csharp
 services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
 ```
+
+> NB: `ActivatingAsync` events are invoked in the order of their registration, which is derived from
+the modules dependency graph. The `ActivatedAsync` events are invoked in the reverse order.
