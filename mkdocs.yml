@@ -36,6 +36,8 @@ nav:
         - Index: docs/guides/README.md
         - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
         - Running Code on Startup: docs/guides/run-code-on-startup/index.md
+        - Creating an Orchard Core CMS website: docs/guides/create-cms-application/index.md
+        - Adding a Menu Item to the Admin Navigation: docs/guides/add-admin-menu/index.md
     - Code Generation Templates: docs/templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
@@ -85,3 +87,4 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
+        - Google: OrchardCore.Modules/OrchardCore.Google/README.md

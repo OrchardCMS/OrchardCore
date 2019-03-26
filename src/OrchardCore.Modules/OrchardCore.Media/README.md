@@ -162,7 +162,8 @@ The following configuration values are used by default and can be customized:
             ".png",
             ".gif",
             ".ico",
-
+            ".svg",
+            
             // Documents
             ".pdf", // Portable Document Format; Adobe Acrobat
             ".doc", // Microsoft Word Document
