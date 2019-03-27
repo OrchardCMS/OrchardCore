@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IHostingEnvironment HostingEnvironment
+        private static IHostEnvironment HostingEnvironment
             = new StubHostingEnvironment();
 
         private static IApplicationContext ApplicationContext
