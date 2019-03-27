@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -67,8 +68,13 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-            // Razor runtime compilation
-            builder.AddRazorRuntimeCompilation();
+            // Use razor runtime compilation only if the 'refs' folder exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+            if (refsFolderExists)
+            {
+                builder.AddRazorRuntimeCompilation();
+            }
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
@@ -81,7 +87,7 @@ namespace OrchardCore.Mvc
             AddMvcModuleCoreServices(services);
         }
 
-        private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
+        internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));

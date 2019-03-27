@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Shell.Builders.Models;
-using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace OrchardCore.Mvc
 {
@@ -91,44 +88,8 @@ namespace OrchardCore.Mvc
                     return _referencePaths;
                 }
 
-                var test1 = "C:/Program Files/dotnet/packs/Microsoft.AspNetCore.App.Ref/3.0.0-preview4-19172-03/ref/netcoreapp3.0";
-                var test2 = "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Ref/3.0.0-preview4-27522-09/ref/netcoreapp3.0";
-
                 _referencePaths = DependencyContext.Default.CompileLibraries
-                    .SelectMany(library =>
-                    {
-                        if (library.Type != "referenceassembly")
-                        {
-                            return library.ResolveReferencePaths();
-                        }
-
-                        var paths = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-
-                        foreach (var assembly in library.Assemblies)
-                        {
-                            var path = Path.Combine(test1, assembly);
-
-                            if (File.Exists(path))
-                            {
-                                paths.Add(path);
-                            }
-                            else
-                            {
-                                path = Path.Combine(test2, assembly);
-
-                                if (File.Exists(path))
-                                {
-                                    paths.Add(path);
-                                }
-                                else
-                                {
-                                    ;
-                                }
-                            }
-                        }
-
-                        return paths;
-                    });
+                    .SelectMany(library => library.ResolveReferencePaths());
             }
 
             return _referencePaths;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,10 +49,10 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            // Module compiled views are not served while in dev.
+            // Module compiled views are served if not in dev or if the 'refs' folder doesn't exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
-            // *** Comment if not using runtime compilation ***
-            if (!_hostingEnvironment.IsDevelopment())
+            if (!_hostingEnvironment.IsDevelopment() || !refsFolderExists)
             {
                 // Retrieve mvc views feature providers but not this one.
                 var mvcFeatureProviders = _applicationPartManager.FeatureProviders
