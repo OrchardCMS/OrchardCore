@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -10,10 +10,6 @@
     <PackageType>Template</PackageType>
     <NoWarn>CS8021,CS2008</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Remove="NETStandard.Library" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="content\**" Exclude="**\.template.config.src\**" Pack="true">

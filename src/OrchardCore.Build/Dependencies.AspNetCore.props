@@ -6,6 +6,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0-preview4-19172-03" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.5.0" />
