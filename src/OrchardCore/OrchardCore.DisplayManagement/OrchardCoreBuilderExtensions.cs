@@ -80,6 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<INotifier, Notifier>();
 
                     services.AddShapeAttributes<DateTimeShapes>();
+                    services.AddShapeAttributes<PageTitleShape>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();
