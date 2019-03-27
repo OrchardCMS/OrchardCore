@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using OrchardCore.DisplayManagement.Liquid.Internal;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
 
@@ -45,7 +46,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.ViewDescriptors.Add(new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
+                    feature.ViewDescriptors.Add(new CompiledViewDescriptor
+                    {
+                        RelativePath = viewPath,
+                        Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", viewPath)
+                    });
                 }
             }
         }

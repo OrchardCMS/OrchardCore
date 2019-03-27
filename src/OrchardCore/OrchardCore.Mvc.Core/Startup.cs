@@ -1,11 +1,12 @@
 using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -18,15 +19,22 @@ namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {
-        private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+        //private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
-        public override int Order => -200;
+        public override int Order => -1000;
+        public override int ConfigureOrder => 1000;
 
         private readonly IServiceProvider _serviceProvider;
 
         public Startup(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // The default route is added to each tenant as a template route.
+            routes.MapRoute("Default", "{area:exists}/{controller}/{action}/{id?}");
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -41,6 +49,9 @@ namespace OrchardCore.Mvc
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                // The endpoint routing system doesn't support IRouter-based extensibility.
+                options.EnableEndpointRouting = false;
             });
 
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
@@ -48,7 +59,7 @@ namespace OrchardCore.Mvc
             services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
-            
+
             // Adding localization
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();
@@ -56,8 +67,16 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
+            // Razor runtime compilation
+            builder.AddRazorRuntimeCompilation();
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
+
+            services.AddSingleton<RazorCompilationFileProviderAccessor>();
+
             // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
-            services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
+            //services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
         }
@@ -72,7 +91,7 @@ namespace OrchardCore.Mvc
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.Replace(
-                ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
+                ServiceDescriptor.Transient<IConfigureTenantPipeline, ConfigureTenantPipeline>());
 
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 
@@ -80,9 +99,9 @@ namespace OrchardCore.Mvc
                 ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
 
-        internal class RazorViewCompilationMemoryCacheProvider : IViewCompilationMemoryCacheProvider
-        {
-            public IMemoryCache CompilationMemoryCache { get; } = _cache;
-        }
+        //internal class RazorViewCompilationMemoryCacheProvider : IViewCompilationMemoryCacheProvider
+        //{
+        //    public IMemoryCache CompilationMemoryCache { get; } = _cache;
+        //}
     }
 }

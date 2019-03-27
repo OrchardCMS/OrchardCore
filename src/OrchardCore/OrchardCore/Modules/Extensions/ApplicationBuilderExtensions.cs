@@ -1,7 +1,7 @@
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.Builder
         /// </summary>
         public static IApplicationBuilder UseOrchardCore(this IApplicationBuilder app, Action<IApplicationBuilder> configure = null)
         {
-            var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
             var appContext = app.ApplicationServices.GetRequiredService<IApplicationContext>();
 
             env.ContentRootFileProvider = new CompositeFileProvider(

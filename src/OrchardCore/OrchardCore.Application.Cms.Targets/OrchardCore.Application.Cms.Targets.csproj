@@ -1,13 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <!-- Add a ".targets" file in the package specific to the "Cms" bundle -->
   <ItemGroup>
     <None Include="OrchardCore.Application.Cms.Targets.targets" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Targets.targets</PackagePath>
+      <PackagePath>build\netcoreapp3.0\OrchardCore.Application.Cms.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 

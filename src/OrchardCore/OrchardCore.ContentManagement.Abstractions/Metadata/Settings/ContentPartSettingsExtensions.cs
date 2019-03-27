@@ -1,7 +1,7 @@
 using System;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Settings
 {

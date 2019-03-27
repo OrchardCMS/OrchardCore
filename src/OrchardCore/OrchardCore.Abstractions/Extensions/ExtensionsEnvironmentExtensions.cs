@@ -1,17 +1,17 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Environment.Extensions
 {
-    public static class ExtensionsFileSystemExtensions
+    public static class ExtensionsEnvironmentExtensions
     {
         public static IFileInfo GetExtensionFileInfo(
-            this IHostingEnvironment parentFileSystem,
+            this IHostEnvironment environment,
             IExtensionInfo extensionInfo,
             string subPath)
         {
-            return parentFileSystem.ContentRootFileProvider.GetFileInfo(
+            return environment.ContentRootFileProvider.GetFileInfo(
                 Path.Combine(extensionInfo.SubPath, subPath));
         }
     }

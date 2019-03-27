@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
@@ -36,8 +37,8 @@ namespace OrchardCore.Modules
             {
                 host.Start();
 
-                var hostingEnvironment = host.Services.GetService<IHostingEnvironment>();
-                var applicationLifetime = host.Services.GetService<IApplicationLifetime>();
+                var hostingEnvironment = host.Services.GetService<IHostEnvironment>();
+                var applicationLifetime = host.Services.GetService<IHostApplicationLifetime>();
 
                 Console.WriteLine($"Hosting environment: {hostingEnvironment.EnvironmentName}");
                 Console.WriteLine($"Content root path: {hostingEnvironment.ContentRootPath}");
@@ -58,7 +59,7 @@ namespace OrchardCore.Modules
 
                 token.Register(state =>
                 {
-                    ((IApplicationLifetime)state).StopApplication();
+                    ((IHostApplicationLifetime)state).StopApplication();
                 },
                 applicationLifetime);
 

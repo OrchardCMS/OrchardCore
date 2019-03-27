@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
@@ -13,12 +13,12 @@ namespace OrchardCore.Modules
 
     public class ModularApplicationContext : IApplicationContext
     {
-        private readonly IHostingEnvironment _environment;
+        private readonly IHostEnvironment _environment;
         private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
         private Application _application;
         private static readonly object _initLock = new object();
 
-        public ModularApplicationContext(IHostingEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
+        public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
         {
             _environment = environment;
             _moduleNamesProviders = moduleNamesProviders;

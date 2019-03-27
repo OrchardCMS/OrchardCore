@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
@@ -14,7 +15,7 @@ namespace OrchardCore.Mvc
     public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
 
         private ApplicationPartManager _applicationPartManager;
@@ -24,7 +25,7 @@ namespace OrchardCore.Mvc
         {
             _httpContextAccessor = httpContextAccessor;
             var services = _httpContextAccessor.HttpContext.RequestServices;
-            _hostingEnvironment = services.GetRequiredService<IHostingEnvironment>();
+            _hostingEnvironment = services.GetRequiredService<IHostEnvironment>();
             _applicationContext = services.GetRequiredService<IApplicationContext>();
         }
 
@@ -48,6 +49,8 @@ namespace OrchardCore.Mvc
             }
 
             // Module compiled views are not served while in dev.
+
+            // *** Comment if not using runtime compilation ***
             if (!_hostingEnvironment.IsDevelopment())
             {
                 // Retrieve mvc views feature providers but not this one.

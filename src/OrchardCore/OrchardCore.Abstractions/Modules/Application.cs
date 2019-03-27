@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
@@ -14,7 +14,7 @@ namespace OrchardCore.Modules
         public static readonly string ModuleName = "Application";
         public static readonly string ModulesRoot = ModulesPath + "/";
 
-        public Application(IHostingEnvironment environment, IEnumerable<Module> modules)
+        public Application(IHostEnvironment environment, IEnumerable<Module> modules)
         {
             Name = environment.ApplicationName;
             Path = environment.ContentRootPath;

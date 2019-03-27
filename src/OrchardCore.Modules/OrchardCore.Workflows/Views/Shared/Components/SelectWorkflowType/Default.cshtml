@@ -5,6 +5,14 @@
     @for (var i = 0; i < Model.WorkflowTypeSelections.Count; i++)
     {
         var item = Model.WorkflowTypeSelections[i];
-        <option value="@item.WorkflowType.WorkflowTypeId" @if (item.IsSelected) { <text> selected="selected" </text> }>@item.WorkflowType.Name</option>
+
+        if (item.IsSelected)
+        {
+        <option value="@item.WorkflowType.WorkflowTypeId" selected="selected">@item.WorkflowType.Name</option>
+        }
+        else
+        {
+        <option value="@item.WorkflowType.WorkflowTypeId">@item.WorkflowType.Name</option>
+        }
     }
 </select>

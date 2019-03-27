@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
@@ -16,6 +15,12 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     {
         private const string ValidationForAttributeName = "asp-validation-class-for";
         private const string HasValidationErrorClassName = "has-validation-error";
+        private readonly IHtmlHelper _htmlHelper;
+
+        public ValidationMessageTagHelper(IHtmlHelper htmlHelper)
+        {
+            _htmlHelper = htmlHelper;
+        }
 
         /// <inheritdoc />
         public override int Order
@@ -52,8 +57,13 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             if (For != null)
             {
-                var fullName = NameAndIdProvider.GetFullHtmlFieldName(ViewContext, For.Name);
-                if(ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
+                var fullName = _htmlHelper.GenerateIdFromName(For.Name);
+
+                //contextualize IHtmlHelper
+                var viewContextAware = _htmlHelper as IViewContextAware;
+                viewContextAware?.Contextualize(ViewContext);
+
+                if (ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
                 {
                     TagHelperAttribute classAttribute;
 

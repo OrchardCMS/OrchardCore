@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -79,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ILocalClock, LocalClock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+            services.AddTransient<IConfigureTenantPipeline, ConfigureTenantPipeline>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }
@@ -93,7 +94,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Registers the application main feature
             services.AddTransient(sp => new ShellFeature
             (
-                sp.GetRequiredService<IHostingEnvironment>().ApplicationName, alwaysEnabled: true)
+                sp.GetRequiredService<IHostEnvironment>().ApplicationName, alwaysEnabled: true)
             );
         }
 
@@ -117,7 +118,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.Configure((app, routes, serviceProvider) =>
             {
-                var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
                 var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
 
                 IFileProvider fileProvider;

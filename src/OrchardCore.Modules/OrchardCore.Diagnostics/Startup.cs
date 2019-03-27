@@ -1,11 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Diagnostics
 {
@@ -13,9 +13,9 @@ namespace OrchardCore.Diagnostics
     {
         private readonly FileExtensionContentTypeProvider _contentTypeProvider = new FileExtensionContentTypeProvider();
 
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
-        public Startup(IHostingEnvironment hostingEnvironment)
+        public Startup(IHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }

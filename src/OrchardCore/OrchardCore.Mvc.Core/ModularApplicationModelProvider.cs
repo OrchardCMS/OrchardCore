@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -14,12 +14,12 @@ namespace OrchardCore.Mvc
     public class ModularApplicationModelProvider : IApplicationModelProvider
     {
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly ShellSettings _shellSettings;
 
         public ModularApplicationModelProvider(
             ITypeFeatureProvider typeFeatureProvider,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             ShellDescriptor shellDescriptor,
             ShellSettings shellSettings)
         {

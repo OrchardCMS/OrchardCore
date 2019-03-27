@@ -92,7 +92,7 @@ namespace OrchardCore.Users.Drivers
             await _userStore.SetUserNameAsync(user, model.UserName, default(CancellationToken));
             await _userEmailStore.SetEmailAsync(user, model.Email, default(CancellationToken));
 
-            var userWithSameName = await _userStore.FindByNameAsync(_userManager.NormalizeKey(model.UserName), default(CancellationToken));
+            var userWithSameName = await _userStore.FindByNameAsync(_userManager.NormalizeName(model.UserName), default(CancellationToken));
             if (userWithSameName != null)
             {
                 var userWithSameNameId = await _userStore.GetUserIdAsync(userWithSameName, default(CancellationToken));
@@ -102,7 +102,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeKey(model.Email), default(CancellationToken));
+            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeEmail(model.Email), default(CancellationToken));
             if (userWithSameEmail != null)
             {
                 var userWithSameEmailId = await _userStore.GetUserIdAsync(userWithSameEmail, default(CancellationToken));
@@ -121,7 +121,7 @@ namespace OrchardCore.Users.Drivers
                     // Add new roles
                     foreach (var role in roleNames)
                     {
-                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                     }
                 }
                 else
@@ -138,15 +138,15 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                     }
 
                     // Add new roles
                     foreach (var role in roleNames)
                     {
-                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken)))
+                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken)))
                         {
-                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                         }
                     }
                 }

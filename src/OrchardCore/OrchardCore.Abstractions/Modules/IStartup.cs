@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +12,14 @@ namespace OrchardCore.Modules
     public interface IStartup
     {
         /// <summary>
-        /// Get the value to use to order startups. The default is 0.
+        /// Get the value to use to order startups to configure services. The default is 0.
         /// </summary>
         int Order { get; }
+
+        /// <summary>
+        /// Get the value to use to order startups to build the pipeline. The default is the 'Order' property.
+        /// </summary>
+        int ConfigureOrder { get; }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the container.

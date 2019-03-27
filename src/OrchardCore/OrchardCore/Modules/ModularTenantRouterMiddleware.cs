@@ -111,27 +111,20 @@ namespace OrchardCore.Modules
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with an Order of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal Order values.
-            startups = startups.OrderBy(s => s.Order);
+            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
-            var routeBuilder = tenantRouteBuilder.Build(appBuilder);
+            var pipeline = appBuilder.ApplicationServices.GetService<IConfigureTenantPipeline>();
 
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
-            // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSettings. This way there would just be one lookup.
-            // And the ShellSettings test in TenantRoute would also be useless.
-            foreach (var startup in startups)
+            // Configure the tenant pipeline.
+            pipeline.Configure(appBuilder, routes =>
             {
-                startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
-            }
-
-            tenantRouteBuilder.Configure(routeBuilder);
-
-            var router = routeBuilder.Build();
-
-            appBuilder.UseRouter(router);
+                foreach (var startup in startups)
+                {
+                    startup.Configure(appBuilder, routes, scopeServiceProvider);
+                }
+            });
         }
     }
 }

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DeferredTasks;
@@ -27,20 +27,20 @@ namespace OrchardCore.Setup.Services
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
-        private readonly IApplicationLifetime _applicationLifetime;
+        private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
             IShellHost shellHost,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizerFactory stringLocalizerFactory,
             IStringLocalizer<SetupService> stringLocalizer,
-            IApplicationLifetime applicationLifetime
+            IHostApplicationLifetime applicationLifetime
             )
         {
             _shellHost = shellHost;

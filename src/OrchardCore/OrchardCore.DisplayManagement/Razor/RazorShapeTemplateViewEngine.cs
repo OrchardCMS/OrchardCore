@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
@@ -74,17 +73,15 @@ namespace OrchardCore.DisplayManagement.Razor
                 var viewEngineResult = viewEngines[0].FindView(context.ViewContext, viewName, isMainPage: false);
                 if (viewEngineResult.Success)
                 {
-                    var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
-                    var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
-                    using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
+                    using (var output = new StringWriter())
                     {
                         // Forcing synchronous behavior so users don't have to await templates.
                         var view = viewEngineResult.View;
                         using (view as IDisposable)
                         {
-                            var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
+                            var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, output);
                             await viewEngineResult.View.RenderAsync(viewContext);
-                            return viewBuffer;
+                            return new HtmlString(output.ToString());
                         }
                     }
                 }

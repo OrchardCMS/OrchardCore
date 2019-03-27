@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewOptionsSetup : IConfigureOptions<LiquidViewOptions>
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;
 
         /// <summary>
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// </summary>
         /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> for the application.</param>
         /// <param name="applicationContext"><see cref="IApplicationContext"/> for the application.</param>
-        public LiquidViewOptionsSetup(IHostingEnvironment hostingEnvironment, IApplicationContext applicationContext)
+        public LiquidViewOptionsSetup(IHostEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {
             _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
             _applicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));

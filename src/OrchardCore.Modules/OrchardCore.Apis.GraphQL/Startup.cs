@@ -17,10 +17,10 @@ namespace OrchardCore.Apis.GraphQL
     public class Startup : StartupBase
     {
         private readonly IShellConfiguration _configuration;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
 
         public Startup(IShellConfiguration configuration,
-            IHostingEnvironment hostingEnvironment)
+            IHostEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;

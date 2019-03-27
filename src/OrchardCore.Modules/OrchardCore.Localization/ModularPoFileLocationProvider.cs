@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
@@ -24,7 +24,7 @@ namespace OrchardCore.Localization
 
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
-            IHostingEnvironment hostingEnvironment,
+            IHostEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             IOptions<LocalizationOptions> localizationOptions,
             ShellSettings shellSettings)

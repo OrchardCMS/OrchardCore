@@ -38,7 +38,7 @@ namespace OrchardCore.Users.Services
 
         public string NormalizeKey(string key)
         {
-            return _keyNormalizer == null ? key : _keyNormalizer.Normalize(key);
+            return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
         }
 
         #region IUserStore<IUser>

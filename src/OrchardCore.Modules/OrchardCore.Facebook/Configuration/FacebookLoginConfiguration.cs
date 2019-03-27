@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using OrchardCore.Modules;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Facebook.Configuration
 {
