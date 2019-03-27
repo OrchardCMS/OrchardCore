@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Windows Server 2019
 
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
@@ -33,8 +33,8 @@ install:
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
-#  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-#  - ps: .\dotnet-install.ps1 --Version 2.2.100-preview3-009430
+  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+  - ps: .\dotnet-install.ps1 --Version 3.0.100-preview4-010925
 
 build_script:
   - dotnet build -c Release
