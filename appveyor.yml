@@ -12,7 +12,7 @@ skip_commits:
   files:
     - '**/*.md'
     - mkdocs.yml
-    - src/docs/*
+    - src/docs/**/*
 
 environment:
   global:
