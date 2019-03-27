@@ -6,11 +6,11 @@ In this guide you will download and install community managed localization files
 
 - The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
 - A text editor and a terminal where you can type dotnet commands.
-- An already running Orchard Core CMS websites. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application/index.md) if you haven't done it yet.
+- An already running Orchard Core CMS website. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application/index.md) if you haven't done it yet.
 
 ## Downloading the localization files
 
-Localization files are managed by the community on the [Crowding](https://crowdin.com/project/orchard-core) website. Anyone can provide custom languages or contribute to existing ones.
+Localization files are managed by the community on the [Crowdin](https://crowdin.com/project/orchard-core) website. Anyone can provide custom languages or contribute to existing ones.
 
 ![image](assets/crowdin-languages.jpg)
 
@@ -24,7 +24,7 @@ For this guide we will download the French language.
 
 ## Extracting the localization files
 
-The zip file that you downloaded need to be extracted in the `App_Data/Localization` folder of your Orchard Core CMS website.
+The zip file that you downloaded needs to be extracted in the `App_Data/Localization` folder of your Orchard Core CMS website.
 
 - Create a folder named `Localization` under `[your_site_root]/App_Data` where `your_site_root` is the location of your website.
 - Extract the file `fr.zip` in `App_Data/Localization`
