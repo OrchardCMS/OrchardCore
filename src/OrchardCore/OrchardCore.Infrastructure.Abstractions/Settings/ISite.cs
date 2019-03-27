@@ -6,6 +6,7 @@ namespace OrchardCore.Settings
     public interface ISite : IEntity
     {
         string SiteName { get; set; }
+        string PageTitleFormat { get; set; }
         string SiteSalt { get; set; }
         string SuperUser { get; set; }
         string Culture { get; set; }

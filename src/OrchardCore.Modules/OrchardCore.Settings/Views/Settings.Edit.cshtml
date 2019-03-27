@@ -12,9 +12,16 @@
 <fieldset class="form-group" asp-validation-class-for="BaseUrl">
     <label asp-for="BaseUrl">@T["Base url"]</label>
     <input asp-for="BaseUrl" class="form-control" />
-<span asp-validation-for="BaseUrl"></span>
+    <span asp-validation-for="BaseUrl"></span>
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
+
+<div class="form-group" asp-validation-class-for="PageTitleFormat">
+    <label asp-for="PageTitleFormat">@T["Page title format"]</label>
+    <input asp-for="PageTitleFormat" class="form-control" />
+    <span asp-validation-for="PageTitleFormat"></span>
+    <span class="hint">@T["The default format of page titles."]</span>
+</div>
 
 <fieldset class="form-group" asp-validation-class-for="UseCdn">
     <div class="custom-control custom-checkbox">
