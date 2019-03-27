@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Logging;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Cms.Web
 {

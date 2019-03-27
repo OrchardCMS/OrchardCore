@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -16,10 +20,6 @@
     <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules.Pages\Module.Pages\Module.Pages.csproj" />
     <ProjectReference Include="..\OrchardCore.Themes.Pages\Theme.Pages\Theme.Pages.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->
