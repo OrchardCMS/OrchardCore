@@ -2,7 +2,7 @@ language: csharp
 sudo: required
 services:
   - docker
-dist: trusty
+dist: xenial
 mono: none
 # dotnet: 2.1.300
 branches:
@@ -16,7 +16,7 @@ env:
 os:
   - linux
   - osx
-osx_image: xcode8.3
+osx_image: xcode10.1
 script:
   - curl https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version 3.0.100-preview4-010925
   - if test "$TRAVIS_OS_NAME" == "linux"; then export PATH="/home/travis/.dotnet":"$PATH"; fi
