@@ -55,8 +55,8 @@ namespace OrchardCore.Mvc
                 options.EnableEndpointRouting = false;
             });
 
-            // There are some issues e.g with GraphQL when using the default formatters
-            // based on System.Text.Json. So, we manually add JSON.NET based formatters.
+            // There are some issues when using the default formatters based on
+            // System.Text.Json. Here, we manually add JSON.NET based formatters.
             builder.AddNewtonsoftJson();
 
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
