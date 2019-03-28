@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,15 +79,15 @@ namespace OrchardCore.Mvc
             if (refsFolderExists)
             {
                 builder.AddRazorRuntimeCompilation();
+
+                // Share across tenants the same compiler and its IMemoryCache instance.
+                services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
             }
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
 
             services.AddSingleton<RazorCompilationFileProviderAccessor>();
-
-            // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
-            //services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
         }
@@ -108,10 +109,5 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
-
-        //internal class RazorViewCompilationMemoryCacheProvider : IViewCompilationMemoryCacheProvider
-        //{
-        //    public IMemoryCache CompilationMemoryCache { get; } = _cache;
-        //}
     }
 }
