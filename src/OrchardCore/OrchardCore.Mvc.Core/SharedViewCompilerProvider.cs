@@ -5,12 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Mvc
 {
+    /// <summary>
+    /// Shares across tenants the same <see cref="IViewCompiler"/>.
+    /// </summary>
     public class SharedViewCompilerProvider : IViewCompilerProvider
     {
         private object _synLock = new object();
         private static IViewCompiler _compiler;
         private readonly IServiceProvider _services;
-
 
         public SharedViewCompilerProvider(IServiceProvider services)
         {

@@ -80,7 +80,7 @@ namespace OrchardCore.Mvc
             {
                 builder.AddRazorRuntimeCompilation();
 
-                // Share across tenants the same compiler and its IMemoryCache instance.
+                // Shares across tenants the same compiler and its 'IMemoryCache' instance.
                 services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
             }
 
