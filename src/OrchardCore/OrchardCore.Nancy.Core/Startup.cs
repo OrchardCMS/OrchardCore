@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -24,6 +25,13 @@ namespace OrchardCore.Nancy
         {
             var contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
             var options = serviceProvider.GetService<IOptions<NancyOptions>>();
+
+            app.Use((context, next) =>
+            {
+                // Allow Nancy to read the request body synchronously.
+                context.Features.Get<IHttpBodyControlFeature>().AllowSynchronousIO = true;
+                return next();
+            });
 
             app.UseOwin(x => x.UseNancy(no =>
             {
