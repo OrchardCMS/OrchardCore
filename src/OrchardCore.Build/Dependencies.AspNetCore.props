@@ -10,6 +10,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.5.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview4-19172-03" />
     <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="3.0.0-preview4.19175.2" />

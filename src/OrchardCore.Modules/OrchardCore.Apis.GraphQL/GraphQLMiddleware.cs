@@ -93,10 +93,9 @@ namespace OrchardCore.Apis.GraphQL
                     {
                         using (var sr = new StreamReader(context.Request.Body))
                         {
-                            using (var jsonTextReader = new JsonTextReader(sr))
-                            {
-                                request = _serializer.Deserialize<GraphQLRequest>(jsonTextReader);
-                            }
+                            // Asynchronous read is mandatory.
+                            var json = await sr.ReadToEndAsync();
+                            request = JObject.Parse(json).ToObject<GraphQLRequest>();
                         }
                     }
                     else if (mediaType.IsSubsetOf(_graphQlMediaType))
