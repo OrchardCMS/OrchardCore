@@ -14,9 +14,10 @@ else
 {
     if (Model.ContainedContentTypeDefinitions.Count() == 1)
     {
+        var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
         <p>
-            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@Model.ContainedContentTypeDefinitions.FirstOrDefault().Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">
-                @T["Create {0}", Model.ContainedContentTypeDefinitions.FirstOrDefault().DisplayName]
+            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">
+                @T["Create {0}", contentTypeDefinition.DisplayName]
             </a>
         </p>
     }
