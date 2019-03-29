@@ -73,7 +73,7 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-            // Use razor runtime compilation only if the 'refs' folder exists.
+            // Support razor runtime compilation only if the 'refs' folder exists.
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
             if (refsFolderExists)
