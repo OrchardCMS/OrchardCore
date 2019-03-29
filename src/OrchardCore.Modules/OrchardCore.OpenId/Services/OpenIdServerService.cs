@@ -282,7 +282,6 @@ namespace OrchardCore.OpenId.Services
                         select new X509SecurityKey(certificate));
                 }
 
-#if SUPPORTS_CERTIFICATE_GENERATION
                 try
                 {
                     // If the certificates list is empty or only contains certificates about to expire,
@@ -298,9 +297,6 @@ namespace OrchardCore.OpenId.Services
                 {
                     _logger.LogError(exception, "An error occured while trying to generate a X.509 signing certificate.");
                 }
-#else
-                _logger.LogError("This platform doesn't support X.509 certificate generation.");
-#endif
             }
             catch (Exception exception)
             {
@@ -341,37 +337,12 @@ namespace OrchardCore.OpenId.Services
                 }
                 else
                 {
-#if SUPPORTS_DIRECT_KEY_CREATION_WITH_SPECIFIED_SIZE
                     algorithm = RSA.Create(size);
-#else
-                    algorithm = RSA.Create();
-
-                    // Note: a 1024-bit key might be returned by RSA.Create() on .NET Desktop/Mono,
-                    // where RSACryptoServiceProvider is still the default implementation and
-                    // where custom implementations can be registered via CryptoConfig.
-                    // To ensure the key size is always acceptable, replace it if necessary.
-                    if (algorithm.KeySize < size)
-                    {
-                        algorithm.KeySize = size;
-                    }
-
-                    if (algorithm.KeySize < size && algorithm is RSACryptoServiceProvider)
-                    {
-                        algorithm.Dispose();
-                        algorithm = new RSACryptoServiceProvider(size);
-                    }
-
-                    if (algorithm.KeySize < size)
-                    {
-                        throw new InvalidOperationException("The RSA key generation failed.");
-                    }
-#endif
                 }
 
                 return algorithm;
             }
 
-#if SUPPORTS_CERTIFICATE_GENERATION
             async Task<X509Certificate2> GenerateSigningCertificateAsync()
             {
                 var subject = GetSubjectName();
@@ -417,7 +388,6 @@ namespace OrchardCore.OpenId.Services
                     return Convert.ToBase64String(data, Base64FormattingOptions.None);
                 }
             }
-#endif
         }
 
         public async Task PruneSigningKeysAsync()
@@ -523,13 +493,9 @@ namespace OrchardCore.OpenId.Services
                 {
                     // Note: ephemeral key sets are not supported on non-Windows platforms.
                     var flags =
-#if SUPPORTS_EPHEMERAL_KEY_SETS
                         RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                             X509KeyStorageFlags.EphemeralKeySet :
                             X509KeyStorageFlags.MachineKeySet;
-#else
-                            X509KeyStorageFlags.MachineKeySet;
-#endif
 
                     return new X509Certificate2(path, password, flags);
                 }
