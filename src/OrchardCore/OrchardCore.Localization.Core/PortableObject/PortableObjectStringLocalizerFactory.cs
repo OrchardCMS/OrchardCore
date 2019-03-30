@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +19,7 @@ namespace OrchardCore.Localization.PortableObject
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PortableObjectStringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(resourceSource.FullName, _localizationManager, _logger);
         }
 
         public IStringLocalizer Create(string baseName, string location)
@@ -43,7 +42,7 @@ namespace OrchardCore.Localization.PortableObject
 
             var relativeName = baseName.Substring(index);
 
-            return new PortableObjectStringLocalizer(CultureInfo.CurrentUICulture, relativeName, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(relativeName, _localizationManager, _logger);
         }
     }
 }

@@ -3,6 +3,12 @@
 This module provides the infrastructure necessary to support the PO (Portable Object) localization file format.
 It also supports plural forms.
 
+## Online translations
+
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+
+The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
+
 ## PO files locations
 
 PO files are found at these locations:
@@ -10,14 +16,15 @@ PO files are found at these locations:
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
 - All files matching `/App_Data/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
-- For each module and theme all files matching 
+- For each module and theme all files matching  
     - `/App_Data/Localization/[ModuleId]/[CultureName].po`
     - `/App_Data/Localization/[ModuleId]-[CultureName].po`
     - `/App_Data/Localization/[CultureName]/[ModuleId].po`
 
 `[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
-### Examples:
+### Examples
+
 - `/App_Data/Localization/fr.po`
 - `/App_Data/Localization/fr-CA.po`
 - `/App_Data/Localization/es-MX.po`
@@ -27,7 +34,6 @@ PO files are found at these locations:
 This article explains how PO files are organized, including plural forms.
 
 <https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html>
-
 
 ## Translation contexts
 
@@ -57,7 +63,7 @@ The context string must match the full name of the type the localizer is injecti
 
 #### Source
 
-```
+``` cs
 namespace MyNamespace
 {
     public class MyService : IMyService
@@ -105,7 +111,6 @@ msgstr[1] "[{0} livres]"
 - Import the `using Microsoft.Extensions.Localization` namespace.
 - Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
 
-
-```
+``` cs
 T.Plural(count, "1 book", "{0} books")
 ```

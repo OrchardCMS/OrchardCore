@@ -89,7 +89,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         
         private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
         {
-            var workflows = await _workflowStore.ListAsync(nameof(UserTaskEvent), contentItemId);
+            var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
             var user = _httpContextAccessor.HttpContext.User;
             var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
             var actionsQuery =

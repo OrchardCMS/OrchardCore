@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private static readonly char[] Separators = { ',', ' ' };
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 
@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     if (TimeSpan.TryParse(arguments["cache_sliding_duration"].ToStringValue(), out var timespan))
                     {
-                        metadata.Cache().WithExpiryAfter(timespan);
+                        metadata.Cache().WithExpirySliding(timespan);
                     }
                 }
             }
