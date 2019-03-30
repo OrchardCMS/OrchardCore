@@ -42,7 +42,7 @@ namespace OrchardCore.Sitemaps
 
             // index treeNode
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
-            //services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
+            services.AddScoped<ISitemapNodeBuilder, SitemapIndexNodeBuilder>();
             services.AddScoped<ISitemapBuilder, SitemapBuilder>();
             services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
 

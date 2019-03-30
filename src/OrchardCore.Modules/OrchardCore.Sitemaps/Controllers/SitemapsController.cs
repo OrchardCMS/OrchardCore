@@ -43,7 +43,8 @@ namespace OrchardCore.Sitemaps.Controllers
             var url = new UrlHelper(actionContext);
             var context = new SitemapBuilderContext()
             {
-                Url = url
+                Url = url,
+                Builder = _sitemapBuilder
             };
             var document = await _sitemapBuilder.BuildAsync(sitemapNode, context);
 

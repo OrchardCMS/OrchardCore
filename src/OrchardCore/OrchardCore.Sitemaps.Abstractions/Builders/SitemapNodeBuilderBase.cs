@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Builders
@@ -9,18 +11,35 @@ namespace OrchardCore.Sitemaps.Builders
     /// <typeparam name="TSitemapNode"></typeparam>
     public abstract class SitemapNodeBuilderBase<TSitemapNode> : ISitemapNodeBuilder where TSitemapNode : SitemapNode
     {
-        async Task ISitemapNodeBuilder.BuildAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
+        async Task<XDocument> ISitemapNodeBuilder.BuildAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
         {
-            var sitemap = sitemapNode as TSitemapNode;
+            var node = sitemapNode as TSitemapNode;
 
-            if (sitemap == null)
+            if (node == null)
             {
-                return;
+                return null;
             }
 
-            await BuildNodeAsync(sitemap, context);
+            return await BuildNodeAsync(node, context);
         }
 
-        public abstract Task BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context);
+        public abstract Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context);
+
+        async Task<DateTime?> ISitemapNodeBuilder.ProvideLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            var node = sitemapNode as TSitemapNode;
+
+            if (node == null)
+            {
+                return null ;
+            }
+            return await ProvideNodeLastModifiedDateAsync(node, context);
+        }
+
+        //override to provide
+        public virtual Task<DateTime?> ProvideNodeLastModifiedDateAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            return Task.FromResult<DateTime?>(null);
+        }
     }
 }

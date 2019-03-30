@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -18,9 +19,22 @@ namespace OrchardCore.Sitemaps.Builders
         {
             foreach (var nodeBuilder in _nodeBuilders)
             {
-                await nodeBuilder.BuildAsync(sitemapNode, context);
+                var result = await nodeBuilder.BuildAsync(sitemapNode, context);
+                if (result != null)
+                    return result;
             }
-            return context.Result;
+            return null;
+        }
+
+        public async Task<DateTime?> ProvideLastModifiedDateAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            foreach (var nodeBuilder in _nodeBuilders)
+            {
+                var result = await nodeBuilder.ProvideLastModifiedDateAsync(sitemapNode, context);
+                if (result != null)
+                    return result;
+            }
+            return null;
         }
     }
 }

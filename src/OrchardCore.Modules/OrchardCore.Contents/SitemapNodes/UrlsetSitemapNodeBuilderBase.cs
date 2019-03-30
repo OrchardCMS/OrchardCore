@@ -34,10 +34,11 @@ namespace OrchardCore.Contents.SitemapNodes
             _siteService = siteService;
         }
 
-        public override async Task BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
+        public override async Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
         {
+            //this does not need to recurse sitemapNode.ChildNodes. urlsets do not support children. they are end of level
             var homeRoute = await GetHomeRoute();
-            var contentItems = await GetContentItems(sitemapNode);
+            var contentItems = await GetContentItemsToBuild(sitemapNode);
 
             var root = new XElement(GetNamespace() + "urlset");
 
@@ -49,10 +50,36 @@ namespace OrchardCore.Contents.SitemapNodes
                 {
                     root.Add(url);
                 }
-
             }
             var document = new XDocument(root);
-            context.Result = new XDocument(document);
+            return new XDocument(document);
+        }
+
+        public override async Task<DateTime?> ProvideNodeLastModifiedDateAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
+        {
+            ContentItem mostRecentModifiedContentItem;
+            if (sitemapNode.IndexAll)
+            {
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
+
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
+            else
+            {
+                var typesToList = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(ctd => sitemapNode.ContentTypes.ToList()
+                    .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
+                    .Select(x => x.Name);
+
+                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeId);
+                var query = _session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => typesToList.Any(n => n == x.ContentType) && x.Published)
+                    .OrderByDescending(x => x.ModifiedUtc);
+                mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
+            }
+            return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
         protected virtual async Task<bool> BuildUrlsetMetadata(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
@@ -60,14 +87,14 @@ namespace OrchardCore.Contents.SitemapNodes
             return await BuildUrl(context, contentItem, homeRoute, url);
         }
 
-        protected virtual async Task<IEnumerable<ContentItem>> GetContentItems(TSitemapNode sitemapNode)
+        protected virtual async Task<IEnumerable<ContentItem>> GetContentItemsToBuild(TSitemapNode sitemapNode)
         {
             IEnumerable<ContentItem> contentItems;
             if (sitemapNode.IndexAll)
             {
                 var query = _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published)
-                    .OrderBy(x => x.ModifiedUtc);
+                    .OrderByDescending(x => x.ModifiedUtc);
 
                 contentItems = await query.ListAsync();
             }
@@ -81,7 +108,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeId);
                 var query = _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => typesToList.Any(n => n == x.ContentType) && x.Published)
-                    .OrderBy(x => x.ModifiedUtc);
+                    .OrderByDescending(x => x.ModifiedUtc);
                 contentItems = await query.ListAsync();
             }
 
