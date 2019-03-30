@@ -80,14 +80,18 @@ namespace OrchardCore.Media.Services
         // Newly added files
         private void MoveNewFilesToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            items.Where(x => !x.IsRemoved && x.IsNew).ToList()
+            items.Where(x => !x.IsRemoved).ToList()
                 .ForEach(async x =>
                 {
                     var targetDir = GetContentItemFolder(contentItem);
                     var finalFileName = (await GetFileHashAsync(x.Path)) + GetFileExtension(x.Path);
                     var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
-
+                    
                     await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+                    // When there is a validation error before creating the content item we can end up with an empty folder
+                    // because the content item is different on each form submit . We need to remove that empty folder.
+                    var previousDirPath = (await _fileStore.GetFileInfoAsync(x.Path)).DirectoryPath;
 
                     // fileName is a hash of the file. We preserve disk space by reusing the file.
                     if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
@@ -96,6 +100,9 @@ namespace OrchardCore.Media.Services
                     }
 
                     x.Path = finalFilePath;
+
+                    await DeleteDirIfEmpty(previousDirPath);                    
+                    
                 });
         }
 
@@ -116,6 +123,7 @@ namespace OrchardCore.Media.Services
             }
         }
 
+
         public string ByteArrayToHexString(byte[] bytes)
         {
             var sb = new StringBuilder();
@@ -127,10 +135,25 @@ namespace OrchardCore.Media.Services
             return sb.ToString();
         }
 
+
         private string GetFileExtension(string path)
         {
             var lastPoint = path.LastIndexOf(".");
             return lastPoint > -1 ? path.Substring(lastPoint) : "";
+        }
+
+
+        private async Task DeleteDirIfEmpty(string previousDirPath)
+        {
+            if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) == null)
+            {
+                return;
+            }
+
+            if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath)).Any())
+            {
+                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
+            }
         }
     }
 }
