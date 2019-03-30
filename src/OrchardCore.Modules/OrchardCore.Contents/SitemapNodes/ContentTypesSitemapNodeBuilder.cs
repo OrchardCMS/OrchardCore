@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Settings;
@@ -14,11 +15,13 @@ namespace OrchardCore.Contents.SitemapNodes
     public class ContentTypesSitemapBuilder : UrlsetSitemapNodeBuilderBase<ContentTypesSitemapNode>
     {
         public ContentTypesSitemapBuilder(
+            ILogger<ContentTypesSitemapBuilder> logger,
             ISession session,
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             ISiteService siteService)
-            : base(session,
+            : base(logger,
+                  session,
                   contentDefinitionManager,
                   contentManager,
                   siteService)

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
@@ -23,17 +24,20 @@ namespace OrchardCore.Contents.SitemapNodes
         protected readonly IContentManager _contentManager;
         protected readonly ISiteService _siteService;
         public UrlsetSitemapNodeBuilderBase(
+            ILogger logger,
             ISession session,
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             ISiteService siteService)
         {
+            Logger = logger;
             _session = session;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _siteService = siteService;
         }
 
+        public ILogger Logger { get; }
         public override async Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             //this does not need to recurse sitemapNode.ChildNodes. urlsets do not support children. they are end of level
@@ -97,6 +101,10 @@ namespace OrchardCore.Contents.SitemapNodes
                     .OrderByDescending(x => x.ModifiedUtc);
 
                 contentItems = await query.ListAsync();
+                if (contentItems.Count() > 50000)
+                {
+                    Logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
+                }
             }
             else
             {
@@ -137,15 +145,22 @@ namespace OrchardCore.Contents.SitemapNodes
             var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
             var routes = contentItemMetadata.DisplayRouteValues;
 
+            //hmmm what should happen here. should both be provided? site root and /route
+            //if you're swapping homepages regularly maybe. but if you're not you don't want your /route to turn up in google and
+            //take preference over your site /. (or even appear beside it in search results.
+            //I always put my home route with a blank path - which explains some of the weirdness
+            //I get trying to get a good url out of url.action on my home route. but the blog theme provides /blog
             String locValue = null;
             var isHomePage = homeRoute.All(x => x.Value.ToString() == routes[x.Key].ToString());
             if (isHomePage)
             {
                 locValue = context.Url.GetBaseUrl();
             }
-            var request = context.Url.ActionContext.HttpContext.Request;
-            locValue = context.Url.Action(routes["action"].ToString(), routes["controller"].ToString(), routes, request.Scheme);
-
+            else
+            {
+                var request = context.Url.ActionContext.HttpContext.Request;
+                locValue = context.Url.Action(routes["action"].ToString(), routes["controller"].ToString(), routes, request.Scheme);
+            }
             var loc = new XElement(GetNamespace() + "loc");
             loc.Add(locValue);
             url.Add(loc);

@@ -23,5 +23,10 @@ namespace OrchardCore.Contents.SitemapNodes
         public ChangeFrequency ChangeFrequency { get; set; }
         //TODO think this can change to priority now
         public float IndexPriority { get; set; }
+
+        //TODO just starting on this
+        public int Skip { get; set; } = 0;
+
+        public int Take { get; set; } = 50000;
     }
 }
