@@ -19,7 +19,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapBuilder _sitemapBuilder;
         public SitemapsController(
             ILogger<SitemapsController> logger,
-            ISitemapManager sitemapManager,
             ISitemapSetService sitemapSetService,
             ISitemapBuilder sitemapBuilder
             )
