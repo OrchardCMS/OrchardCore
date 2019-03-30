@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -19,11 +15,8 @@ namespace OrchardCore.Sitemaps.Controllers
 {
     public class SitemapsController : Controller
     {
-        private readonly ISitemapManager _sitemapManager;
         private readonly ISitemapSetService _sitemapSetService;
-
         private readonly ISitemapBuilder _sitemapBuilder;
-
         public SitemapsController(
             ILogger<SitemapsController> logger,
             ISitemapManager sitemapManager,
@@ -32,7 +25,6 @@ namespace OrchardCore.Sitemaps.Controllers
             )
         {
             Logger = logger;
-            _sitemapManager = sitemapManager;
             _sitemapSetService = sitemapSetService;
             _sitemapBuilder = sitemapBuilder;
         }
@@ -46,28 +38,27 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemapNode = await _sitemapSetService.GetSitemapNodeByPathAsync(sitemapPath);
 
-            var context = new SitemapBuilderContext();
-            //so what will this build on. propably a context
+            //this controllers UrlHelper does not contain the AutoRoute router (we're in a different ActionContext?)
+            //so construct a urlhelper with good RouteData. Suspect may change again with EndPoint routing anyway
+            var actionContext = new ActionContext(HttpContext, HttpContext.GetRouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor());
+            var url = new UrlHelper(actionContext);
+            var context = new SitemapBuilderContext()
+            {
+                Url = url
+            };
             var document = await _sitemapBuilder.BuildAsync(sitemapNode, context);
 
-            return Content(document.ToString(), "text/xml");
-            //var sitemap = await _sitemapManager.BuildSitemap(number);
-
-            //var ns = new XmlSerializerNamespaces();
-            //ns.Add("", "http://www.sitemaps.org/schemas/sitemap/0.9");
-            //var ser = new XmlSerializer(sitemap.GetType());
-            //using (var outStream = new Utf8StringWriter()) {
-            //    ser.Serialize(outStream, sitemap, ns);
-
-            //    return Content(outStream.ToString(), "application/xml");
-            //}
+            document.Declaration = new XDeclaration("1.0", "utf-8", null);
+            StringWriter writer = new Utf8StringWriter();
+            document.Save(writer, SaveOptions.None);
+            //TODO check size for > 10MB and log
+            return Content(writer.ToString(), "application/xml", Encoding.UTF8);
         }
 
         private class Utf8StringWriter : StringWriter
         {
             public override Encoding Encoding { get { return Encoding.UTF8; } }
         }
-
     }
 }
 

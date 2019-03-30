@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
-using OrchardCore.Sitemaps.Services;
-using OrchardCore.Sitemaps.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Navigation;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {

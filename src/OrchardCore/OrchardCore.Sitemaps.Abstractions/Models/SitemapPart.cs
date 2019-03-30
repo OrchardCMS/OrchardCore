@@ -7,6 +7,8 @@ namespace OrchardCore.Sitemaps.Models
 {
     public class SitemapPart : ContentPart
     {
+        //TODO implement
+        public bool OverrideSettings { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; }
 
         public float Priority { get; set; } = 0.5f;

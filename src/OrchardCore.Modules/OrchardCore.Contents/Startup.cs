@@ -35,6 +35,7 @@ using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.SitemapNodes;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.Contents
 {
@@ -181,7 +182,7 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<ContentTypesSitemapNode>>();
-            //services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
+            services.AddScoped<ISitemapNodeBuilder, ContentTypesSitemapBuilder>();
             services.AddScoped<IDisplayDriver<SitemapNode>, ContentTypesSitemapNodeDriver>();
         }
     }

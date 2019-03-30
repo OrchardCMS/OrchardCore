@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -52,7 +49,7 @@ namespace OrchardCore.Sitemaps.Drivers
 
             //probably don't do this, probably check the settings at generation time.
             //var settings = GetSettings(model);
-            
+
             //if (settings.ExcludePart)
             //{
             //    model.Exclude = true;

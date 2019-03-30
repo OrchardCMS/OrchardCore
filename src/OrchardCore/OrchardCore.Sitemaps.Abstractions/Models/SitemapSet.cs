@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Navigation;
-
 
 namespace OrchardCore.Sitemaps.Models
 {
@@ -12,7 +10,6 @@ namespace OrchardCore.Sitemaps.Models
         public bool Enabled { get; set; } = true;
         public string RootPath { get; set; } 
         public List<SitemapNode> SitemapNodes { get; } = new List<SitemapNode>();
-
 
         public SitemapNode GetSitemapNodeById(string id)
         {

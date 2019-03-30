@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
-using OrchardCore.Sitemaps.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
@@ -73,7 +73,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
 
             var trees = await _sitemapSetService.GetAsync();
-            
+
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToList();
@@ -148,7 +148,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 };
 
                 await _sitemapSetService.SaveAsync(tree);
-                
+
                 return RedirectToAction(nameof(List));
             }
 
@@ -200,7 +200,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 tree.Name = model.Name;
                 tree.RootPath = model.RootPath;
 
-                await _sitemapSetService.SaveAsync(tree);                
+                await _sitemapSetService.SaveAsync(tree);
 
                 _notifier.Success(H["Sitemap set updated successfully"]);
 

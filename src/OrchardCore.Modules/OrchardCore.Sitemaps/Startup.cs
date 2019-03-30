@@ -18,6 +18,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
@@ -42,6 +43,7 @@ namespace OrchardCore.Sitemaps
             // index treeNode
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
             //services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
+            services.AddScoped<ISitemapBuilder, SitemapBuilder>();
             services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
 
             //old

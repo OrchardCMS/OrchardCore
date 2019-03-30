@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Newtonsoft.Json;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Models
 {
