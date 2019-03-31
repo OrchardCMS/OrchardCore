@@ -15,7 +15,7 @@ namespace OrchardCore.Sitemaps.Builders
         {
             var node = sitemapNode as TSitemapNode;
 
-            if (node == null)
+            if (node == null || !node.Enabled)
             {
                 return null;
             }
@@ -29,7 +29,7 @@ namespace OrchardCore.Sitemaps.Builders
         {
             var node = sitemapNode as TSitemapNode;
 
-            if (node == null)
+            if (node == null || !node.Enabled)
             {
                 return null ;
             }

@@ -11,5 +11,22 @@ namespace OrchardCore.Sitemaps.Models
     {
         public int Id { get; set; }
         public List<SitemapSet> SitemapSets { get; set; } = new List<SitemapSet>();
+
+        public void SetNodeSet()
+        {
+            foreach (var set in SitemapSets)
+            {
+                RecurseNodes(set, set.SitemapNodes);
+            }
+        }
+
+        private void RecurseNodes(SitemapSet set, List<SitemapNode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                node.SitemapSet = set;
+                RecurseNodes(set, node.ChildNodes);
+            }
+        }
     }
 }

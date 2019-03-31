@@ -14,6 +14,7 @@ using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Contents.SitemapNodes
 {
@@ -74,10 +75,11 @@ namespace OrchardCore.Contents.SitemapNodes
             {
                 var typesToList = _contentDefinitionManager.ListTypeDefinitions()
                     .Where(ctd => sitemapNode.ContentTypes.ToList()
-                    .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
+                    .Any(s => String.Equals(ctd.Name, s.ContentTypeName, StringComparison.OrdinalIgnoreCase)))
                     .Select(x => x.Name);
 
-                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeId);
+                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeName);
+                //this doesn't use the takeall/skip option. should be ok tho its just an estimate date
                 var query = _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => typesToList.Any(n => n == x.ContentType) && x.Published)
                     .OrderByDescending(x => x.ModifiedUtc);
@@ -93,14 +95,14 @@ namespace OrchardCore.Contents.SitemapNodes
 
         protected virtual async Task<IEnumerable<ContentItem>> GetContentItemsToBuild(TSitemapNode sitemapNode)
         {
-            IEnumerable<ContentItem> contentItems;
+            List<ContentItem> contentItems = new List<ContentItem>();
             if (sitemapNode.IndexAll)
             {
                 var query = _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published)
                     .OrderByDescending(x => x.ModifiedUtc);
 
-                contentItems = await query.ListAsync();
+                contentItems = (await query.ListAsync()).ToList();
                 if (contentItems.Count() > 50000)
                 {
                     Logger.LogError($"Sitemap {sitemapNode.Description} count is over 50,000");
@@ -108,16 +110,53 @@ namespace OrchardCore.Contents.SitemapNodes
             }
             else
             {
-                var typesToList = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(ctd => sitemapNode.ContentTypes.ToList()
-                    .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
-                    .Select(x => x.Name);
+                //we assume that if sitemap is split (e.g. !TakeAll) that it's likely there will be only one content type
+                //in this particular sitemap, but we still loop the queries to .Skip & .Take - just in case,
+                //rather than reducing with Linq after one big content item query 
+                //TODO make a note in readme -> large content item recommendations
+                if (sitemapNode.ContentTypes.Any(x => !x.TakeAll))
+                {
+                    List<Task<IEnumerable<ContentItem>>> tasks = new List<Task<IEnumerable<ContentItem>>>();
+                    foreach(var takeSomeType in sitemapNode.ContentTypes.Where(x => !x.TakeAll))
+                    {
+                        var query = _session.Query<ContentItem>()
+                            .With<ContentItemIndex>(x => x.ContentType == takeSomeType.ContentTypeName && x.Published)
+                            .OrderByDescending(x => x.ModifiedUtc)
+                            .Skip(takeSomeType.Skip)
+                            .Take(takeSomeType.Take);
+                        tasks.Add(query.ListAsync());
+                    }
+                    //do others
+                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                        .Where(ctd => sitemapNode.ContentTypes.Where(x => x.TakeAll).ToList().Any(s => ctd.Name == s.ContentTypeName))
+                        .Select(x => x.Name);
+                    var othersQuery = _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc);
 
-                var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeId);
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => typesToList.Any(n => n == x.ContentType) && x.Published)
-                    .OrderByDescending(x => x.ModifiedUtc);
-                contentItems = await query.ListAsync();
+                    tasks.Add(othersQuery.ListAsync());
+                    await Task.WhenAll(tasks);
+                    tasks.ForEach(x => contentItems.AddRange(x.Result));
+                }
+                else
+                {
+                    var typeDef = _contentDefinitionManager.ListTypeDefinitions().ToList();
+                    var typesTo = _contentDefinitionManager.ListTypeDefinitions()
+                       .Where(ctd => sitemapNode.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
+                       .Select(t => t.Name)
+                       .ToList();
+
+                    var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
+                       .Where(ctd => sitemapNode.ContentTypes.ToList().Any(s => ctd.Name == s.ContentTypeName))
+                       .Select(x => x.Name)
+                       .ToList();
+
+                    var query = _session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                        .OrderByDescending(x => x.ModifiedUtc);
+
+                    contentItems = (await query.ListAsync()).ToList();
+                }
             }
 
             return contentItems;

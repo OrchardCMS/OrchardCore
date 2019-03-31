@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.Handlers;
@@ -28,17 +30,44 @@ namespace OrchardCore.Contents.SitemapNodes
 
         public override IDisplayResult Edit(ContentTypesSitemapNode treeNode)
         {
-            var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+            //TODO this isn't ideal. Possibly to restrictive
+            //checking for only types with an AutoRoute isn't satisfactory either
+            //as what happens for content items that provide own route
+            //possibly simple option is provide all content Types
+
+            //also include items that are contained
+            var indexableTypeDefs = _contentDefinitionManager.ListTypeDefinitions()
+                .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable && ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
+            //hmm this is a bit manky, but rather reduce the list of indexable items than provide a list of too many items.
+            //other alterative is list all content types. 
+            var listPartTypes = _contentDefinitionManager.ListTypeDefinitions()
+                .Where(x => x.Parts.Any(p => p.Name == "ListPart"));
+            foreach(var listPartType in listPartTypes){
+                var listPartDef = listPartType.Parts.FirstOrDefault(x => x.Name == "ListPart");
+                listPartDef.Settings.TryGetValue("ContainedContentTypes", out JToken value);
+                JArray allowedTypes = (JArray)listPartDef.Settings["ContainedContentTypes"];
+                foreach(var allowedType in allowedTypes.ToObject<List<string>>())
+                {
+                    if (!indexableTypeDefs.Any(x => x.Name == allowedType))
+                    {
+                        var defToAdd = _contentDefinitionManager.ListTypeDefinitions()
+                            .FirstOrDefault(x => x.Name == allowedType);
+                        indexableTypeDefs.Add(defToAdd);
+                    }
+                }
+            }
 
-            var entries = listable.Select(x => new ContentTypeSitemapEntryViewModel
+            var entries = indexableTypeDefs.Select(x => new ContentTypeSitemapEntryViewModel
             {
-                ContentTypeId = x.Name,
-                IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                ChangeFrequency = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.ChangeFrequency ?? ChangeFrequency.Daily,
-                Priority = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IndexPriority ?? 0.5f
+                ContentTypeName = x.Name,
+                IsChecked = treeNode.ContentTypes.Any(selected => selected.ContentTypeName == x.Name),
+                ChangeFrequency = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.ChangeFrequency ?? ChangeFrequency.Daily,
+                Priority = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Priority ?? 0.5f,
+                TakeAll = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.TakeAll  ?? true,
+                Skip = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Skip ?? 0,
+                Take = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.Take ?? 50000,
             }).ToArray();
 
 
@@ -70,7 +99,14 @@ namespace OrchardCore.Contents.SitemapNodes
                 treeNode.Priority = model.Priority;
                 treeNode.ContentTypes = model.ContentTypes
                     .Where(x => x.IsChecked == true)
-                    .Select(x => new ContentTypeSitemapEntry { ContentTypeId = x.ContentTypeId, ChangeFrequency = x.ChangeFrequency, IndexPriority = x.Priority })
+                    .Select(x => new ContentTypeSitemapEntry {
+                        ContentTypeName = x.ContentTypeName,
+                        ChangeFrequency = x.ChangeFrequency,
+                        Priority = x.Priority,
+                        TakeAll = x.TakeAll,
+                        Skip = x.Skip,
+                        Take = x.Take
+                    })
                     .ToArray();
             };
 

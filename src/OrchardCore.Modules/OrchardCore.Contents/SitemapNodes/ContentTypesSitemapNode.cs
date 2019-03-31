@@ -11,22 +11,18 @@ namespace OrchardCore.Contents.SitemapNodes
         [Required]
         public string Description { get; set; }
         public bool IndexAll { get; set; }
-        public ChangeFrequency ChangeFrequency { get; set; }
-        public float Priority { get; set; }
+        public ChangeFrequency ChangeFrequency { get; set; } 
+        public float Priority { get; set; } = 0.5f;
         public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };
     }
 
     public class ContentTypeSitemapEntry
     {
-        //is this actualy ContentTypeName ? if so rename
-        public string ContentTypeId { get; set; }
-        public ChangeFrequency ChangeFrequency { get; set; }
-        //TODO think this can change to priority now
-        public float IndexPriority { get; set; }
-
-        //TODO just starting on this
-        public int Skip { get; set; } = 0;
-
-        public int Take { get; set; } = 50000;
+        public string ContentTypeName { get; set; }
+        public ChangeFrequency ChangeFrequency { get; set; } 
+        public float Priority { get; set; } 
+        public bool TakeAll { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }

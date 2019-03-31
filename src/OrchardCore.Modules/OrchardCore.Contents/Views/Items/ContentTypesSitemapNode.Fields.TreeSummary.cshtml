@@ -15,7 +15,7 @@
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeSitemapEntry[] selectedList)
     {
-        return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
+        return selectedList.Any(selected => ctd.Name == selected.ContentTypeName);
     }
     var site = await SiteService.GetSiteSettingsAsync();
 }

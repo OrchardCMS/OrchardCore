@@ -84,12 +84,13 @@
                         <ul class="list-group">
                             @for (int i = 0; i < Model.ContentTypes.Count(); i++)
                             {
-                                var name = Model.ContentTypes[i].ContentTypeId;
+                                var name = Model.ContentTypes[i].ContentTypeName;
                                 var checkd = Model.ContentTypes[i].IsChecked;
                                 var notChecked = !checkd;
+                                var takeAll = Model.ContentTypes[i].TakeAll;
                                 <li class="list-group-item d-flex @(checkd ? "" : "disabled")">
-                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeId)"
-                                           value="@Model.ContentTypes[i].ContentTypeId" />
+                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
+                                           value="@Model.ContentTypes[i].ContentTypeName" />
                                     <div class="flex-grow-1 align-self-center">
                                         <div class="form-check">
                                             <label class="form-check-label">
@@ -103,7 +104,7 @@
                                         <select asp-for="ContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
                                         <span class="hint">@T["The default frequency these content types are likely to change."]</span>
                                     </div>
-                                    <div class="form-group w-25" asp-validation-class-for="Priority">
+                                    <div class="form-group w-25 pr-3" asp-validation-class-for="Priority">
                                         <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
                                         <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
                                             <option value="0.0">0.0</option>
@@ -119,6 +120,23 @@
                                             <option value="1.0">1.0</option>
                                         </select>
                                         <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                    </div>
+                                    <div class="w-25 d-flex flex-column justify-content-center content-types-take-container">
+                                        <div class="form-group form-check d-flex mb-2 justify-content-center">
+                                            <label asp-for="ContentTypes[i].TakeAll" class="form-check-label">
+                                                <input asp-for="ContentTypes[i].TakeAll" class="content-types-take-all-checkbox" disabled="@notChecked" />
+                                                @T["Include all"]
+                                            </label>
+                                        </div>
+                                        <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
+                                            <label asp-for="ContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>
+                                            <input asp-for="ContentTypes[i].Skip" class="form-control" disabled="@notChecked" />
+                                        </div>
+                                        <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
+                                            <label asp-for="ContentTypes[i].Take" class="form-label pr-3">@T["Take"]</label>
+                                            <input asp-for="ContentTypes[i].Take" class="form-control" disabled="@notChecked" />
+                                        </div>
+                                        <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
                                     </div>
                                 </li>
                             }
@@ -153,16 +171,24 @@
             }
         }
 
-
         $('.content-type-checkbox').on('click', function (e) {
             var listItem = $(e.target).closest('.list-group-item');
 
             var selected = $(e.target).prop('checked');
             selected ? listItem.removeClass('disabled') : listItem.addClass('disabled');
-            $(listItem).find('select').each(function () {
+            $(listItem).find('select, input').each(function () {
                 selected ? $(this).prop('disabled', false) : $(this).prop('disabled', 'disabled');
             });
         });
+
+        $('.content-types-take-all-checkbox').change(function (e) {
+            var checked = $(e.target).prop('checked');
+            $(e.target).closest('.content-types-take-container').find('input[type="number"]').each(function () {
+                var formGroup = $(this).closest('.form-group');
+                checked ? formGroup.hide() : formGroup.show();
+            });
+        });
     });
+
 </script>
 

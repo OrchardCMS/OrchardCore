@@ -23,8 +23,11 @@ namespace OrchardCore.Contents.SitemapNodes
     public class ContentTypeSitemapEntryViewModel
     {
         public bool IsChecked { get; set; }
-        public string ContentTypeId { get; set; }
+        public string ContentTypeName { get; set; }
         public ChangeFrequency ChangeFrequency { get; set; }
         public float Priority { get; set; }
+        public bool TakeAll { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }

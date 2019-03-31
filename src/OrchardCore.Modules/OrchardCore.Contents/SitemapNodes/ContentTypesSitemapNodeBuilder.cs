@@ -59,9 +59,9 @@ namespace OrchardCore.Contents.SitemapNodes
             }
             else
             {
-                var sitemapEntry = sitemapNode.ContentTypes.FirstOrDefault(x => String.Equals(x.ContentTypeId, contentItem.ContentType, StringComparison.OrdinalIgnoreCase));
+                var sitemapEntry = sitemapNode.ContentTypes.FirstOrDefault(x => x.ContentTypeName == contentItem.ContentType);
                 changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
-                priorityValue = sitemapEntry.IndexPriority.ToString();
+                priorityValue = sitemapEntry.Priority.ToString();
                 if (contentItem.Has<SitemapPart>())
                 {
                     var part = contentItem.As<SitemapPart>();

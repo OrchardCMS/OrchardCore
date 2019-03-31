@@ -98,7 +98,7 @@ namespace OrchardCore.Sitemaps.Services
         {
             return (await GetSitemapSetList())
                 .SitemapSets
-                .Where(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.Id == id)
                 .FirstOrDefault();
         }
 
@@ -108,7 +108,7 @@ namespace OrchardCore.Sitemaps.Services
             var sitemapSetList = await GetSitemapSetList();
             var session = GetSession();
 
-            var count = sitemapSetList.SitemapSets.RemoveAll(x => String.Equals(x.Id, tree.Id));
+            var count = sitemapSetList.SitemapSets.RemoveAll(x => x.Id == tree.Id);
 
             session.Save(sitemapSetList);
             await BuildSitemapRoutes(sitemapSetList);
@@ -125,7 +125,7 @@ namespace OrchardCore.Sitemaps.Services
                 sitemapSetList = await GetSitemapSetList();
             }
             _routes = new Dictionary<string, string>();
-            foreach (var sitemapSet in sitemapSetList.SitemapSets)
+            foreach (var sitemapSet in sitemapSetList.SitemapSets.Where(x => x.Enabled))
             {
                 var rootPath = sitemapSet.RootPath.TrimStart('/');
                 BuildNodeRoutes(sitemapSet.SitemapNodes, rootPath);
@@ -136,7 +136,6 @@ namespace OrchardCore.Sitemaps.Services
         {
             foreach(var sitemapNode in sitemapNodes)
             {
-
                 var path = String.Concat(rootPath, sitemapNode.Path);
                 _routes.Add(path, sitemapNode.Id);
                 if (sitemapNode.ChildNodes != null)
@@ -171,6 +170,7 @@ namespace OrchardCore.Sitemaps.Services
                 }
                 else
                 {
+                    treeList.SetNodeSet();
                     _memoryCache.Set(SitemapSetCacheKey, treeList);
                     _signal.SignalToken(SitemapSetCacheKey);
                 }
