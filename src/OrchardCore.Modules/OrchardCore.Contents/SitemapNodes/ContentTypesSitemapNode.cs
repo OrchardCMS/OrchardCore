@@ -14,6 +14,8 @@ namespace OrchardCore.Contents.SitemapNodes
         public ChangeFrequency ChangeFrequency { get; set; } 
         public float Priority { get; set; } = 0.5f;
         public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };
+        public override bool CanBeChildNode => true;
+        public override bool CanSupportChildNodes => false;
     }
 
     public class ContentTypeSitemapEntry

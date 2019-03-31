@@ -35,7 +35,6 @@
                 {
                     if (sitemapNode != null)
                     {
-                        //can we add an alternate in here?
                         dynamic sitemapNodeShape = await SitemapNodeDisplayManager.BuildDisplayAsync(sitemapNode, updater, "TreeSummary");
                         sitemapNodeShape.SitemapSetId = Model.SitemapSet.Id;
                         sitemapNodeShape.SitemapNode = sitemapNode;
@@ -117,6 +116,10 @@
                 handle: 'div.sitemap-node-title',
                 items: 'li.sitemap-node',
                 toleranceElement: '> div.sitemap-node-title',
+                disableNestingClass: 'cannot-support-child-nodes',
+                isAllowed: function (item, parent) {
+                    return !$(item).hasClass('cannot-be-child');
+                },
                 relocate: function (event, helper) {
                     // get var required by rest api
                     var sitemapSetId = '@Model.SitemapSet.Id';

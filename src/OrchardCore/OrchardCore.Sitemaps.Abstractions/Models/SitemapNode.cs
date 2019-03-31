@@ -17,6 +17,21 @@ namespace OrchardCore.Sitemaps.Models
         [JsonIgnore]
         public SitemapSet SitemapSet { get; set; }
 
+        //With the nodes we currently have we don't need both these options, one would suffice, however
+        //we might plug in more nodes below a parent to support google news or other metadata related (will require other work!)
+
+        /// <summary>
+        /// Override to disable support for child nodes
+        /// </summary>
+        [JsonIgnore]
+        public virtual bool CanSupportChildNodes => true;
+
+        /// <summary>
+        /// Override to force this Node to the root only
+        /// </summary>
+        [JsonIgnore]
+        public virtual bool CanBeChildNode => true;
+
         /// <summary>
         /// The child nodes.
         /// </summary>
@@ -88,5 +103,6 @@ namespace OrchardCore.Sitemaps.Models
             // failure
             return false;
         }
+
     }
 }

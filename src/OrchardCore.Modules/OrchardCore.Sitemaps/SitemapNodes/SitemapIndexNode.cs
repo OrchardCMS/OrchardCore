@@ -13,5 +13,8 @@ namespace OrchardCore.Sitemaps.SitemapNodes
         
         public string Description { get; set; }
 
+        public override bool CanBeChildNode => false;
+
+        public override bool CanSupportChildNodes => true;
     }
 }

@@ -49,7 +49,6 @@ namespace OrchardCore.Sitemaps.Controllers
         public IStringLocalizer T { get; set; }
         public IHtmlLocalizer H { get; set; }
 
-
         public async Task<IActionResult> List(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -317,7 +316,6 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-
             var nodeToMove = tree.GetSitemapNodeById(nodeToMoveId);
             if (nodeToMove == null)
             {
@@ -325,6 +323,16 @@ namespace OrchardCore.Sitemaps.Controllers
             }
 
             var destinationNode = tree.GetSitemapNodeById(destinationNodeId); // don't check for null. When null the item will be moved to the root.
+
+            if (destinationNode != null && !destinationNode.CanSupportChildNodes)
+            {
+                return BadRequest();
+            }
+
+            if (destinationNode != null && !nodeToMove.CanBeChildNode)
+            {
+                return BadRequest();
+            }
 
             if (tree.RemoveSitemapNode(nodeToMove) == false)
             {

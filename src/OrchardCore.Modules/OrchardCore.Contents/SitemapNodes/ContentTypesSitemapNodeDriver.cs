@@ -80,6 +80,8 @@ namespace OrchardCore.Contents.SitemapNodes
                 model.Priority = treeNode.Priority;
                 model.ContentTypes = entries;
                 model.SitemapNode = treeNode;
+                model.CanSupportChildNodes = treeNode.CanSupportChildNodes;
+                model.CanBeChildNode = treeNode.CanBeChildNode;
             }).Location("Content");
         }
 

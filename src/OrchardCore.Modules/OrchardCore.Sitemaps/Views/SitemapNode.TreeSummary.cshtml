@@ -18,8 +18,7 @@
     var path = sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
 }
 
-
-<li class="sitemap-node display-summary" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">
+<li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">
     <div class="sitemap-node sitemap-node-title border rounded p-2 pl-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.SitemapNode.Id">
         @if (Model.Content.Items.Count < 1)
         {
