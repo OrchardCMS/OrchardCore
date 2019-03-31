@@ -25,15 +25,6 @@ namespace OrchardCore.Sitemaps
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Sitemaps"], S["Sitemaps"], layers => layers
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SitemapsSettingsDisplayDriver.GroupId })
-                            .Permission(Permissions.ManageSitemaps)
-                            .LocalNav()
-                        )));
-
             builder.Add(S["Configuration"], cfg => cfg
                     .Add(S["Sitemaps"], "1.6", admt => admt
                         .Permission(Permissions.ManageSitemaps)

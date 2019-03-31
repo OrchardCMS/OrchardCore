@@ -1,7 +1,0 @@
-@model SitemapsSettingsViewModel
-<fieldset class="form-group">
-    <label asp-for="MaxEntriesPerSitemap">@T["Max Entries Per Sitemap"]</label>
-    <input type="number" asp-for="MaxEntriesPerSitemap" class="form-control content-preview-text" />
-    <span class="hint">@T["Adjust this setting if sitemaps have exceeded 10MB (uncompressed). Multiple sitemaps are formattted as sitemap{{index}}.xml"]</span>
-</fieldset>
-

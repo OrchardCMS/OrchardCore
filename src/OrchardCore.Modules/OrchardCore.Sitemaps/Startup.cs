@@ -30,29 +30,21 @@ namespace OrchardCore.Sitemaps
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            //new
-
-
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<ISitemapSetService, SitemapSetService>();
             services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
-
+            services.AddScoped<ISitemapBuilder, SitemapBuilder>();
 
             // index treeNode
             services.AddScoped<ISitemapNodeProviderFactory, SitemapNodeProviderFactory<SitemapIndexNode>>();
             services.AddScoped<ISitemapNodeBuilder, SitemapIndexNodeBuilder>();
-            services.AddScoped<ISitemapBuilder, SitemapBuilder>();
             services.AddScoped<IDisplayDriver<SitemapNode>, SitemapIndexNodeDriver>();
-
-            //old
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, SitemapsSettingsDisplayDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-
-            services.AddScoped<IDataMigration, Migrations>();
-
+            //sitemap part
             services.AddScoped<IContentPartDisplayDriver, SitemapPartDisplay>();
             services.AddSingleton<ContentPart, SitemapPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, SitemapPartSettingsDisplayDriver>();
