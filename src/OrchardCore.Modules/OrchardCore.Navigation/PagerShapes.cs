@@ -360,6 +360,7 @@ namespace OrchardCore.Navigation
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("first");
             return DisplayAsync(Shape);
         }
 
@@ -368,6 +369,7 @@ namespace OrchardCore.Navigation
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("previous");
             return DisplayAsync(Shape);
         }
 
@@ -385,6 +387,7 @@ namespace OrchardCore.Navigation
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("next");
             return DisplayAsync(Shape);
         }
 
@@ -393,6 +396,7 @@ namespace OrchardCore.Navigation
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("last");
             return DisplayAsync(Shape);
         }
 
