@@ -177,7 +177,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 return false;
             }
             var sitemapPart = contentItem.As<SitemapPart>();
-            if (sitemapPart != null && sitemapPart.Exclude)
+            if (sitemapPart != null && sitemapPart.OverrideSitemapSetConfig && sitemapPart.Exclude)
             {
                 return false; // sitemapPart not required, but to exclude or override defaults add it to the ContentItem
             }

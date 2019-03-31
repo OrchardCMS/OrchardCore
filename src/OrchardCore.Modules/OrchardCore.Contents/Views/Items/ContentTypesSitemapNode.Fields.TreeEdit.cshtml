@@ -37,9 +37,9 @@
         </fieldset>
 
         @*Panel Switcher*@
-        <div class="form-group form-check">
-            <input asp-for="IndexAll" class="form-check-input" id="ContentTypesSitemapNode_IndexAll" />
-            <label asp-for="IndexAll" class="form-check-label">@T["Index All Content Types"]</label>
+        <div class="form-group custom-control custom-checkbox">
+            <input asp-for="IndexAll" class="custom-control-input" id="ContentTypesSitemapNode_IndexAll" />
+            <label asp-for="IndexAll" class="custom-control-label">@T["Index All Content Types"]</label>
         </div>
 
         @*Index All Panel*@
@@ -79,77 +79,74 @@
                 @T["Select Content Types"]
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <ul class="list-group">
-                            @for (int i = 0; i < Model.ContentTypes.Count(); i++)
-                            {
-                                var name = Model.ContentTypes[i].ContentTypeName;
-                                var checkd = Model.ContentTypes[i].IsChecked;
-                                var notChecked = !checkd;
-                                var takeAll = Model.ContentTypes[i].TakeAll;
-                                <li class="list-group-item d-flex @(checkd ? "" : "disabled")">
-                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
-                                           value="@Model.ContentTypes[i].ContentTypeName" />
-                                    <div class="flex-grow-1 align-self-center">
-                                        <div class="form-check">
-                                            <label class="form-check-label">
-                                                <input asp-for="ContentTypes[i].IsChecked" class="content-type-checkbox" />
-                                                @name
-                                            </label>
-                                        </div>
+                <ul class="list-group">
+                    @for (int i = 0; i < Model.ContentTypes.Count(); i++)
+                    {
+                        var name = Model.ContentTypes[i].ContentTypeName;
+                        var checkd = Model.ContentTypes[i].IsChecked;
+                        var notChecked = !checkd;
+                        var takeAll = Model.ContentTypes[i].TakeAll;
+
+                        <li class="list-group-item d-flex row @(checkd ? "" : "disabled")">
+                            <div class="col-12 col-md-3">
+                                <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
+                                       value="@Model.ContentTypes[i].ContentTypeName" />
+                                <div class="form-group custom-control custom-checkbox">
+                                    <input asp-for="ContentTypes[i].IsChecked" class="custom-control-input content-type-checkbox" />
+                                    <label asp-for="ContentTypes[i].IsChecked" class="custom-control-label">@name</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <div class="form-group" asp-validation-class-for="ChangeFrequency">
+                                    <label asp-for="ContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
+                                    <select asp-for="ContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <div class="form-group" asp-validation-class-for="Priority">
+                                    <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
+                                    <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
+                                        <option value="0.0">0.0</option>
+                                        <option value="0.1">0.1</option>
+                                        <option value="0.2">0.2</option>
+                                        <option value="0.3">0.3</option>
+                                        <option value="0.4">0.4</option>
+                                        <option value="0.5">0.5</option>
+                                        <option value="0.6">0.6</option>
+                                        <option value="0.7">0.7</option>
+                                        <option value="0.8">0.8</option>
+                                        <option value="0.9">0.9</option>
+                                        <option value="1.0">1.0</option>
+                                    </select>
+                                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <div class="d-flex flex-column justify-content-center content-types-take-container">
+                                    <div class="form-group custom-control custom-checkbox d-flex mb-2 justify-content-center">
+                                        <label asp-for="ContentTypes[i].TakeAll" class="custom-control-label">@T["Include all"]</label>
+                                        <input asp-for="ContentTypes[i].TakeAll" class="custom-control-input content-types-take-all-checkbox" disabled="@notChecked" />
                                     </div>
-                                    <div class="form-group pr-3 w-25" asp-validation-class-for="ChangeFrequency">
-                                        <label asp-for="ContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
-                                        <select asp-for="ContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
-                                        <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                    <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
+                                        <label asp-for="ContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>
+                                        <input asp-for="ContentTypes[i].Skip" class="form-control" disabled="@notChecked" />
                                     </div>
-                                    <div class="form-group w-25 pr-3" asp-validation-class-for="Priority">
-                                        <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
-                                        <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
-                                            <option value="0.0">0.0</option>
-                                            <option value="0.1">0.1</option>
-                                            <option value="0.2">0.2</option>
-                                            <option value="0.3">0.3</option>
-                                            <option value="0.4">0.4</option>
-                                            <option value="0.5">0.5</option>
-                                            <option value="0.6">0.6</option>
-                                            <option value="0.7">0.7</option>
-                                            <option value="0.8">0.8</option>
-                                            <option value="0.9">0.9</option>
-                                            <option value="1.0">1.0</option>
-                                        </select>
-                                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                    <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
+                                        <label asp-for="ContentTypes[i].Take" class="form-label pr-3">@T["Take"]</label>
+                                        <input asp-for="ContentTypes[i].Take" class="form-control" disabled="@notChecked" />
                                     </div>
-                                    <div class="w-25 d-flex flex-column justify-content-center content-types-take-container">
-                                        <div class="form-group form-check d-flex mb-2 justify-content-center">
-                                            <label asp-for="ContentTypes[i].TakeAll" class="form-check-label">
-                                                <input asp-for="ContentTypes[i].TakeAll" class="content-types-take-all-checkbox" disabled="@notChecked" />
-                                                @T["Include all"]
-                                            </label>
-                                        </div>
-                                        <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
-                                            <label asp-for="ContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>
-                                            <input asp-for="ContentTypes[i].Skip" class="form-control" disabled="@notChecked" />
-                                        </div>
-                                        <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
-                                            <label asp-for="ContentTypes[i].Take" class="form-label pr-3">@T["Take"]</label>
-                                            <input asp-for="ContentTypes[i].Take" class="form-control" disabled="@notChecked" />
-                                        </div>
-                                        <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                        <span class="hint">@T["The content types to add to the sitemap."]</span>
-                    </div>
-                </div>
+                                    <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <span class="hint">@T["The content types to add to the sitemap."]</span>
             </div>
         </div>
     </div>
 </div>
-
-
 
 <script at="Foot" depends-on="jquery">
     $(function () {
@@ -176,7 +173,7 @@
 
             var selected = $(e.target).prop('checked');
             selected ? listItem.removeClass('disabled') : listItem.addClass('disabled');
-            $(listItem).find('select, input').each(function () {
+            $(listItem).find('select, input:not(.content-type-checkbox)').each(function () {
                 selected ? $(this).prop('disabled', false) : $(this).prop('disabled', 'disabled');
             });
         });
@@ -189,6 +186,5 @@
             });
         });
     });
-
 </script>
 

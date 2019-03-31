@@ -50,7 +50,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 if (contentItem.Has<SitemapPart>())
                 {
                     var part = contentItem.As<SitemapPart>();
-                    if (part.OverrideSettings)
+                    if (part.OverrideSitemapSetConfig)
                     {
                         changeFrequencyValue = part.ChangeFrequency.ToString();
                         priorityValue = part.Priority.ToString();
@@ -65,7 +65,7 @@ namespace OrchardCore.Contents.SitemapNodes
                 if (contentItem.Has<SitemapPart>())
                 {
                     var part = contentItem.As<SitemapPart>();
-                    if (part.OverrideSettings)
+                    if (part.OverrideSitemapSetConfig)
                     {
                         changeFrequencyValue = part.ChangeFrequency.ToString();
                         priorityValue = part.Priority.ToString();
