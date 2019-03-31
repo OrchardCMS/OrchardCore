@@ -9,23 +9,27 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
     public class SitemapsController : Controller
     {
-        private readonly ISitemapSetService _sitemapSetService;
+        private readonly ISitemapRoute _sitemapRoute;
         private readonly ISitemapBuilder _sitemapBuilder;
+        private readonly ISitemapSetService _sitemapSetService;
         public SitemapsController(
             ILogger<SitemapsController> logger,
-            ISitemapSetService sitemapSetService,
-            ISitemapBuilder sitemapBuilder
+            ISitemapRoute sitemapRoute,
+            ISitemapBuilder sitemapBuilder,
+            ISitemapSetService sitemapSetService
             )
         {
             Logger = logger;
-            _sitemapSetService = sitemapSetService;
+            _sitemapRoute = sitemapRoute;
             _sitemapBuilder = sitemapBuilder;
+            _sitemapSetService = sitemapSetService;
         }
 
         public ILogger Logger { get; set; }
@@ -35,8 +39,8 @@ namespace OrchardCore.Sitemaps.Controllers
             var sitemapPath = HttpContext.GetRouteValue(SitemapRouteConstraint.RouteKey)?.ToString();
             Logger.LogDebug($"Sitemap path {sitemapPath}");
 
-            var sitemapNode = await _sitemapSetService.GetSitemapNodeByPathAsync(sitemapPath);
-
+            var sitemapNodeId = await _sitemapRoute.GetSitemapNodeByPathAsync(sitemapPath);
+            var sitemapNode = await _sitemapSetService.GetSitemapNodeByIdAsync(sitemapNodeId);
             //this controllers UrlHelper does not contain the AutoRoute router (we're in a different ActionContext?)
             //so construct a urlhelper with good RouteData. Suspect may change again with EndPoint routing anyway
             var actionContext = new ActionContext(HttpContext, HttpContext.GetRouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor());

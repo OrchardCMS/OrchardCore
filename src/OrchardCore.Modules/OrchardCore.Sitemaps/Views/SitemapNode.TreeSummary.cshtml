@@ -12,11 +12,10 @@
     string disabledClass = "";
     string toggleButtonText = T["Toggle"].Value;
 
-    if (sitemapNode != null)
-    {
-        disabledClass = sitemapNode.Enabled ? "" : "disabled-sitemap-node";
-        toggleButtonText = sitemapNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
-    }
+    disabledClass = sitemapNode.Enabled ? "" : "disabled-sitemap-node";
+    toggleButtonText = sitemapNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
+
+    var path = sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
 }
 
 
@@ -26,11 +25,11 @@
         {
             <div class="related">
                 <a asp-action="Delete"
-                    asp-controller="Node"
-                    asp-route-id="@Model.SitemapSetId"
-                    asp-route-treeNodeId="@Model.SitemapNode.Id"
-                    class="btn btn-danger btn-sm"
-                    itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                   asp-controller="Node"
+                   asp-route-id="@Model.SitemapSetId"
+                   asp-route-treeNodeId="@Model.SitemapNode.Id"
+                   class="btn btn-danger btn-sm"
+                   itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
             </div>
             <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", sitemapNodeType]</span>
         }
@@ -39,29 +38,31 @@
             @await DisplayAsync(Model.Content)
             <div class="related">
                 <a asp-action="Edit"
-                    asp-controller="Node"
-                    asp-route-id="@Model.SitemapSetId"
-                    asp-route-treeNodeId="@Model.SitemapNode.Id"
-                    class="btn btn-primary btn-sm">@T["Edit"]</a>
+                   asp-controller="Node"
+                   asp-route-id="@Model.SitemapSetId"
+                   asp-route-treeNodeId="@Model.SitemapNode.Id"
+                   class="btn btn-primary btn-sm">@T["Edit"]</a>
+                @* should see this through the defined route, not with a controller action, and as outside OC, i.e. xml _target=blank *@
+                <a href="@path" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
 
                 <div class="btn-group btn-group-sm">
                     <a asp-action="Delete"
-                        asp-controller="Node"
-                        asp-route-id="@Model.SitemapSetId"
-                        asp-route-treeNodeId="@Model.SitemapNode.Id"
-                        class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                       asp-controller="Node"
+                       asp-route-id="@Model.SitemapSetId"
+                       asp-route-treeNodeId="@Model.SitemapNode.Id"
+                       class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                     <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">@T["Toggle Dropdown"]</span>
                     </button>
                     <div class="dropdown-menu">
                         <a asp-controller="Node"
-                            asp-action="Toggle"
-                            asp-route-id="@Model.SitemapSetId"
-                            asp-route-treeNodeId="@Model.SitemapNode.Id"
-                            class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>                            
+                           asp-action="Toggle"
+                           asp-route-id="@Model.SitemapSetId"
+                           asp-route-treeNodeId="@Model.SitemapNode.Id"
+                           class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>
                     </div>
                 </div>
-            </div> 
+            </div>
         }
 
     </div>
@@ -70,7 +71,7 @@
         @if (children != null)
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
-            
+
             @foreach (var child in children)
             {
                 dynamic sitemapNodeShape = await SitemapNodeDisplayManager.BuildDisplayAsync(child, updater, "TreeSummary");

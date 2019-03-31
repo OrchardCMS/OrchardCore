@@ -10,4 +10,8 @@
     <ProjectReference Include="..\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Routing\" />
+  </ItemGroup>
+
 </Project>

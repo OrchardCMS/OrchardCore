@@ -8,25 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps
+namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapRouteConstraint : IRouteConstraint
     {
         public static string RouteKey = "sitemaps";
-        public ILogger Logger { get; set; }
 
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
-            Logger = httpContext.RequestServices.GetRequiredService<ILogger<SitemapRouteConstraint>>();
-
-            //match for xml first, saves building the route hashset until we need it
-            //TODO validation on path form for .xml
-            Logger.LogDebug($"Dumping routekey {routeKey}");
-            foreach (var value in values)
-            {
-                Logger.LogDebug($"Dumping RouteValueDictionary Key: {value.Key} Value: {value.Value}");
-            }
-
             var sitemapPath = values[routeKey]?.ToString();
             if (String.IsNullOrEmpty(sitemapPath))
                 return false;
@@ -34,16 +23,14 @@ namespace OrchardCore.Sitemaps
             //match end of path for .xml
             var match = new Regex(@".+\.xml$").Match(sitemapPath);
 
-            Logger.LogDebug($"Dumping match {match.Success}");
-
             if (!match.Success)
                 return false;
 
             //might be for us
-            var sitemapSetService = httpContext.RequestServices.GetService<ISitemapSetService>();
+            var sitemapRoute = httpContext.RequestServices.GetService<ISitemapRoute>();
 
             //hmm should this be an IRouter that supports async?
-            return sitemapSetService.MatchSitemapRouteAsync(sitemapPath).ConfigureAwait(false).GetAwaiter().GetResult();
+            return sitemapRoute.MatchSitemapRouteAsync(sitemapPath).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

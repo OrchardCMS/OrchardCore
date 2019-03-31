@@ -10,25 +10,10 @@ namespace OrchardCore.Sitemaps.Services
     /// </summary>
     public interface ISitemapSetService
     {
-        //TODO probably moves to manager?
-        /// <summary>
-        /// Get the sitemap node that matches path
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        Task<SitemapNode> GetSitemapNodeByPathAsync(string path);
-
-        /// <summary>
-        /// Matches a sitemap against a routevalue
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        Task<bool> MatchSitemapRouteAsync(string path);
-
         /// <summary>
         /// Returns all the sitemap sets
         /// </summary>
-        Task<List<Models.SitemapSet>> GetAsync();
+        Task<IList<Models.SitemapSet>> GetAsync();
 
         /// <summary>
         /// Persist a sitemap set
@@ -41,6 +26,13 @@ namespace OrchardCore.Sitemaps.Services
         /// Returns a sitemap set.
         /// </summary>
         Task<Models.SitemapSet> GetByIdAsync(string id);
+
+        /// <summary>
+        /// Get a sitemap node by id
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
+        Task<SitemapNode> GetSitemapNodeByIdAsync(string nodeId);
 
         /// <summary>
         /// Deletes a sitemap set

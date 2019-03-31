@@ -10,6 +10,7 @@ using OrchardCore.Sitemaps.Models;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using YesSql;
+using OrchardCore.Sitemaps.Routing;
 
 namespace OrchardCore.Sitemaps.Services
 {
@@ -18,54 +19,25 @@ namespace OrchardCore.Sitemaps.Services
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ISitemapRoute _sitemapRoute;
         private const string SitemapSetCacheKey = "SitemapSetService";
-        //keep in memory rather than in MemoryCache for performance
-        private Dictionary<string, string> _routes;
-
 
         public SitemapSetService(
             ISignal signal,
             IServiceProvider serviceProvider,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ISitemapRoute sitemapRoute)
         {
             _signal = signal;
             _serviceProvider = serviceProvider;
             _memoryCache = memoryCache;
+            _sitemapRoute = sitemapRoute;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(SitemapSetCacheKey);
 
-        public async Task<bool> MatchSitemapRouteAsync(string path)
-        {
-            //don't build until we get a request that might be sitemap related (i.e. .xml)
-            if (_routes == null)
-            {
-                await BuildSitemapRoutes();
-            }
-            return _routes.ContainsKey(path);
-        }
 
-        public async Task<SitemapNode> GetSitemapNodeByPathAsync(string path)
-        {
-            //don't build until we get a request that might be sitemap related (i.e. .xml)
-            if (_routes == null)
-            {
-                await BuildSitemapRoutes();
-            }
-            if (_routes.TryGetValue(path, out string nodeId))
-            {
-                var trees = (await GetSitemapSetList()).SitemapSets;
-                foreach(var tree in trees)
-                {
-                    var node = tree.GetSitemapNodeById(nodeId);
-                    if (node != null)
-                        return node;
-                }
-            }
-            return null;
-        }
-
-        public async Task<List<Models.SitemapSet>> GetAsync()
+        public async Task<IList<Models.SitemapSet>> GetAsync()
         {
             return (await GetSitemapSetList()).SitemapSets;
         }
@@ -89,7 +61,7 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             session.Save(sitemapSetList);
-            await BuildSitemapRoutes(sitemapSetList);
+            await _sitemapRoute.BuildSitemapRoutes(sitemapSetList.SitemapSets);
             _memoryCache.Set(SitemapSetCacheKey, sitemapSetList);
             _signal.SignalToken(SitemapSetCacheKey);
         }
@@ -102,6 +74,17 @@ namespace OrchardCore.Sitemaps.Services
                 .FirstOrDefault();
         }
 
+        public async Task<SitemapNode> GetSitemapNodeByIdAsync(string nodeId)
+        {
+            var trees = (await GetSitemapSetList()).SitemapSets;
+            foreach (var tree in trees)
+            {
+                var node = tree.GetSitemapNodeById(nodeId);
+                if (node != null)
+                    return node;
+            }
+            return null;
+        }
 
         public async Task<int> DeleteAsync(Models.SitemapSet tree)
         {
@@ -111,39 +94,14 @@ namespace OrchardCore.Sitemaps.Services
             var count = sitemapSetList.SitemapSets.RemoveAll(x => x.Id == tree.Id);
 
             session.Save(sitemapSetList);
-            await BuildSitemapRoutes(sitemapSetList);
+            await _sitemapRoute.BuildSitemapRoutes(sitemapSetList.SitemapSets);
             _memoryCache.Set(SitemapSetCacheKey, sitemapSetList);
             _signal.SignalToken(SitemapSetCacheKey);
 
             return count;
         }
 
-        private async Task BuildSitemapRoutes(SitemapSetList sitemapSetList = null)
-        {
-            if (sitemapSetList == null)
-            {
-                sitemapSetList = await GetSitemapSetList();
-            }
-            _routes = new Dictionary<string, string>();
-            foreach (var sitemapSet in sitemapSetList.SitemapSets.Where(x => x.Enabled))
-            {
-                var rootPath = sitemapSet.RootPath.TrimStart('/');
-                BuildNodeRoutes(sitemapSet.SitemapNodes, rootPath);
-            }
-        }
 
-        private void BuildNodeRoutes(IList<SitemapNode> sitemapNodes, string rootPath)
-        {
-            foreach(var sitemapNode in sitemapNodes)
-            {
-                var path = String.Concat(rootPath, sitemapNode.Path);
-                _routes.Add(path, sitemapNode.Id);
-                if (sitemapNode.ChildNodes != null)
-                {
-                    BuildNodeRoutes(sitemapNode.ChildNodes, rootPath);
-                }
-            }
-        }
 
         private async Task<SitemapSetList> GetSitemapSetList()
         {

@@ -27,8 +27,6 @@ namespace OrchardCore.Contents.SitemapNodes
                   siteService)
         { }
 
-
-
         protected async override Task<bool> BuildUrlsetMetadata(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
         {
             if (await base.BuildUrlsetMetadata(sitemapNode, context, homeRoute, contentItem, url))

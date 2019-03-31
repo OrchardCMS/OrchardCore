@@ -73,15 +73,15 @@ namespace OrchardCore.Contents.SitemapNodes
             }
             else
             {
-                var typesToList = _contentDefinitionManager.ListTypeDefinitions()
+                var typesToIndex = _contentDefinitionManager.ListTypeDefinitions()
                     .Where(ctd => sitemapNode.ContentTypes.ToList()
-                    .Any(s => String.Equals(ctd.Name, s.ContentTypeName, StringComparison.OrdinalIgnoreCase)))
+                    .Any(s => ctd.Name == s.ContentTypeName))
                     .Select(x => x.Name);
 
                 var contentTypes = sitemapNode.ContentTypes.Select(x => x.ContentTypeName);
                 //this doesn't use the takeall/skip option. should be ok tho its just an estimate date
                 var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => typesToList.Any(n => n == x.ContentType) && x.Published)
+                    .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
                     .OrderByDescending(x => x.ModifiedUtc);
                 mostRecentModifiedContentItem = await query.FirstOrDefaultAsync();
             }

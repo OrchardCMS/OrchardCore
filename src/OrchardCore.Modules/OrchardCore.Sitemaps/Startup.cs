@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
@@ -17,10 +12,10 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.SitemapNodes;
 
@@ -34,9 +29,10 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
+            services.AddSingleton<ISitemapRoute, SitemapRoute>();
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<ISitemapSetService, SitemapSetService>();
+            services.AddScoped<ISitemapSetService, SitemapSetService>();
             services.AddScoped<IDisplayManager<SitemapNode>, DisplayManager<SitemapNode>>();
             services.AddScoped<ISitemapBuilder, SitemapBuilder>();
 
