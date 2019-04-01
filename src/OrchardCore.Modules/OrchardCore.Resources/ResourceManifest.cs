@@ -149,7 +149,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("codemirror")
-                .SetUrl("~/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Styles/codemirror/codemirror.css")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.css")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.css")
                 .SetCdnIntegrity("sha384-T6md2jYuokZmxpt4u/OxutZZs2NFnA/5oVdjrDkapBl/HHH3NfxhUMbFxEv5NTlh", "sha384-rTt9i9SnVCkukyC4WSJmDVMachnmXt3NchukWtR1miRFWpcgnyeOFxq2FBzsKltl")
                 .SetVersion("5.42.0")
