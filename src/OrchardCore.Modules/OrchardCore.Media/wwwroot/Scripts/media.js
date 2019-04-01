@@ -1083,6 +1083,162 @@ Vue.component('sortIndicator', {
     }
 });
 
+// <upload> component
+Vue.component('upload', {
+    template: '\
+        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
+            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
+            <div> \
+               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
+               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
+            </div> \
+        </div> \
+        ',
+    props: {
+        model: Object
+    },
+    mounted: function () {
+        var self = this;
+        $('#fileupload').bind('fileuploadprogress', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }            
+            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
+        });
+
+        $('#fileupload').bind('fileuploaddone', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            if (data.result.files[0].error) {
+                self.handleFailure(data.files[0].name, data.result.files[0].error);
+            } else {  
+                bus.$emit('removalRequest', self.model);
+            }
+        });
+
+        $('#fileupload').bind('fileuploadfail', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            self.handleFailure(data.files[0].name , data.textStatus);            
+        });
+    },
+    methods: {
+        handleFailure: function (fileName, message) {
+            if (fileName !== this.model.name) {
+                return;
+            }
+            this.model.errorMessage = message;
+            bus.$emit('ErrorOnUpload', this.model);
+        },
+        dismissWarning: function () {
+            bus.$emit('removalRequest', this.model);
+        }
+    }
+});
+
+// <upload-list> component
+Vue.component('uploadList', {
+    template: '\
+        <div class="upload-list" v-show="files.length > 0"> \
+            <div class="header" @click="expanded = !expanded"> \
+                <span> {{ T.uploads }} </span> \
+                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
+                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
+                    <div class="toggle-button"> \
+                    <div v-show="expanded"> \
+                        <i class="fa fa-chevron-down"></i> \
+                    </div> \
+                    <div v-show="!expanded"> \
+                        <i class="fa fa-chevron-up"></i> \
+                    </div> \
+                </div> \
+            </div> \
+            <div class="card-body" v-show="expanded"> \
+                <div class="d-flex flex-wrap"> \
+                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
+                </div > \
+            </div> \
+        </div> \
+        ',
+    data: function () {
+        return {
+            files: [],
+            T: {},
+            expanded: false,
+            pendingCount: 0,
+            errorCount: 0
+        }
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.uploads = $('#t-uploads').val();
+        self.T.errors = $('#t-errors').val();
+        self.T.clearErrors = $('#t-clear-errors').val();
+    },
+    computed: {
+        fileCount: function () {
+            return this.files.length;
+        }
+    },
+    mounted: function () {
+        var self = this;
+
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            if (!data.files) { 
+                return;
+            }
+            data.files.forEach(function (newFile) {                
+                var alreadyInList = self.files.some(function (f) {
+                    return f.name == newFile.name;
+                });
+
+                if (!alreadyInList) {
+                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
+                } else {
+                    console.error('A file with the same name is already on the queue:' + newFile.name);
+                }         
+            });            
+        });
+
+        bus.$on('removalRequest', function (fileUpload) {
+            self.files.forEach(function (item, index, array) {
+                if (item.name == fileUpload.name) {
+                    array.splice(index, 1);
+                }
+            });
+        });
+
+        bus.$on('ErrorOnUpload', function (fileUpload) {
+            self.updateCount();
+        });
+    },
+    methods: {
+        updateCount: function () {
+            this.errorCount = this.files.filter(function (item) {
+                return item.errorMessage != '';
+            }).length;
+            this.pendingCount = this.files.length - this.errorCount;
+            if (this.files.length < 1) {
+                this.expanded = false;
+            }
+        },
+        clearErrors: function () {            
+            this.files = this.files.filter(function (item) {
+                return item.errorMessage == '';
+            });
+        }
+    },
+    watch: {
+        files: function () {
+            this.updateCount();
+        }
+    }
+});
+
 function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
     
     var target = $(document.getElementById($(el).data('for')));
@@ -1525,162 +1681,6 @@ Vue.component('mediaFieldThumbsContainer', {
             this.$parent.$emit('selectMediaRequested', media);
         }
 
-    }
-});
-
-// <upload> component
-Vue.component('upload', {
-    template: '\
-        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
-            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
-            <div> \
-               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
-               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
-            </div> \
-        </div> \
-        ',
-    props: {
-        model: Object
-    },
-    mounted: function () {
-        var self = this;
-        $('#fileupload').bind('fileuploadprogress', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }            
-            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
-        });
-
-        $('#fileupload').bind('fileuploaddone', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }
-            if (data.result.files[0].error) {
-                self.handleFailure(data.files[0].name, data.result.files[0].error);
-            } else {  
-                bus.$emit('removalRequest', self.model);
-            }
-        });
-
-        $('#fileupload').bind('fileuploadfail', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }
-            self.handleFailure(data.files[0].name , data.textStatus);            
-        });
-    },
-    methods: {
-        handleFailure: function (fileName, message) {
-            if (fileName !== this.model.name) {
-                return;
-            }
-            this.model.errorMessage = message;
-            bus.$emit('ErrorOnUpload', this.model);
-        },
-        dismissWarning: function () {
-            bus.$emit('removalRequest', this.model);
-        }
-    }
-});
-
-// <upload-list> component
-Vue.component('uploadList', {
-    template: '\
-        <div class="upload-list" v-show="files.length > 0"> \
-            <div class="header" @click="expanded = !expanded"> \
-                <span> {{ T.uploads }} </span> \
-                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
-                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
-                    <div class="toggle-button"> \
-                    <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down"></i> \
-                    </div> \
-                    <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up"></i> \
-                    </div> \
-                </div> \
-            </div> \
-            <div class="card-body" v-show="expanded"> \
-                <div class="d-flex flex-wrap"> \
-                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
-                </div > \
-            </div> \
-        </div> \
-        ',
-    data: function () {
-        return {
-            files: [],
-            T: {},
-            expanded: false,
-            pendingCount: 0,
-            errorCount: 0
-        }
-    },
-    created: function () {
-        var self = this;
-        // retrieving localized strings from view
-        self.T.uploads = $('#t-uploads').val();
-        self.T.errors = $('#t-errors').val();
-        self.T.clearErrors = $('#t-clear-errors').val();
-    },
-    computed: {
-        fileCount: function () {
-            return this.files.length;
-        }
-    },
-    mounted: function () {
-        var self = this;
-
-        $('#fileupload').bind('fileuploadadd', function (e, data) {
-            if (!data.files) { 
-                return;
-            }
-            data.files.forEach(function (newFile) {                
-                var alreadyInList = self.files.some(function (f) {
-                    return f.name == newFile.name;
-                });
-
-                if (!alreadyInList) {
-                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
-                } else {
-                    console.error('A file with the same name is already on the queue:' + newFile.name);
-                }         
-            });            
-        });
-
-        bus.$on('removalRequest', function (fileUpload) {
-            self.files.forEach(function (item, index, array) {
-                if (item.name == fileUpload.name) {
-                    array.splice(index, 1);
-                }
-            });
-        });
-
-        bus.$on('ErrorOnUpload', function (fileUpload) {
-            self.updateCount();
-        });
-    },
-    methods: {
-        updateCount: function () {
-            this.errorCount = this.files.filter(function (item) {
-                return item.errorMessage != '';
-            }).length;
-            this.pendingCount = this.files.length - this.errorCount;
-            if (this.files.length < 1) {
-                this.expanded = false;
-            }
-        },
-        clearErrors: function () {            
-            this.files = this.files.filter(function (item) {
-                return item.errorMessage == '';
-            });
-        }
-    },
-    watch: {
-        files: function () {
-            this.updateCount();
-        }
     }
 });
 
