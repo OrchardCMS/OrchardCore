@@ -10,7 +10,7 @@ The `Menu` shape is used to render a Menu.
 | --------- | ------------ |
 | `Model.ContentItemId` | If defined, contains the content item identifier of the menu to render. |
 | `Model.Items` | The list of menu items shapes for the menu. These are shapes of type `MenuItem`. |
-| `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
+| `Model.Differentiator` | If defined, contains the formatted alias name of the menu. For instance `MainMenu`. |
 
 #### Menu Alternates
 
@@ -19,6 +19,10 @@ The `Menu` shape is used to render a Menu.
 | `Menu__[Differentiator]` | `Menu__MainMenu` | `Menu-MainMenu.cshtml` |
 
 #### Menu Example
+
+```cshtml
+{% shape "menu", alias: "alias:menu-name", cache_id: "menu-name", cache_tag: "alias:menu-name" %}
+```
 
 ```liquid
 <nav>
