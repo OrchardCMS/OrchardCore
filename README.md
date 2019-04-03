@@ -27,7 +27,7 @@ Nightly (dev):
 
 ## Status
 
-### Beta
+### Beta 3
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
@@ -44,9 +44,9 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-### Visual Studio 2017
+### Visual Studio
 
-- Download Visual Studio 2017 (any edition) from https://www.visualstudio.com/downloads/
+- Download Visual Studio 2017 or 2019 (any edition) from https://www.visualstudio.com/downloads/
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it
 
@@ -55,10 +55,6 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at https://hub.docker.com/u/orchardproject/
-
-### Contributing
-
-We currently follow these [engineering guidelines](https://github.com/OrchardCMS/OrchardCore/wiki/Engineering-Guidelines).
 
 ### Documentation
 
