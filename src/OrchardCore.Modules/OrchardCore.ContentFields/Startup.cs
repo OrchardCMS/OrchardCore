@@ -107,12 +107,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ContentPicker",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentPicker",
+                pattern: "ContentPicker",
                 defaults: new { controller = "ContentPicker", action = "List" }
             );
         }

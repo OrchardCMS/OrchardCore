@@ -30,7 +30,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             foreach (var configure in _actions.ConfigureActions)
             {

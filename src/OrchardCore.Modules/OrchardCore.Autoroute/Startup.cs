@@ -15,7 +15,6 @@ using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
@@ -64,17 +63,14 @@ namespace OrchardCore.Autoroute
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
-
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
 
-            var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
-
-            routes.Routes.Insert(0, autorouteRoute);
+            app.UseMiddleware<AutorouteMiddleware>();
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -21,6 +22,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Routing;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -71,16 +73,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddWebEncoders();
 
-            // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouter() which requires the routing services to be
+            // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouting() which requires the routing services to be
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ShellEndpointSelectorPolicy>());
+            services.AddSingleton<ShellEndpointSelectorPolicyProvider>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-            services.AddTransient<IConfigureTenantPipeline, ConfigureTenantPipeline>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         }

@@ -18,7 +18,7 @@ namespace OrchardCore.ReverseProxy
         // we need this to start before other security related initialization logic
         public override int Order => -1;
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseForwardedHeaders();
         }

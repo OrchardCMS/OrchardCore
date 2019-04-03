@@ -25,7 +25,7 @@ namespace OrchardCore.Modules
         }
 
         /// <inheritdoc />
-        public virtual void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public virtual void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
         }
     }

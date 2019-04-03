@@ -15,7 +15,7 @@ namespace OrchardCore.Https
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var service = serviceProvider.GetRequiredService<IHttpsService>();
             var settings = service.GetSettingsAsync().GetAwaiter().GetResult();

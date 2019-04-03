@@ -70,33 +70,33 @@ namespace OrchardCore.Workflows
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
                 defaults: new { controller = "Activity", action = "Create" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
                 defaults: new { controller = "Activity", action = "Edit" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Workflows",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
+                pattern: "Admin/Workflows/Types/{workflowTypeId}/Instances/{action}",
                 defaults: new { controller = "Workflow", action = "Index" }
             );
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
-                template: "Admin/Workflows/Types/{action}/{id?}",
+                pattern: "Admin/Workflows/Types/{action}/{id?}",
                 defaults: new { controller = "WorkflowType", action = "Index" }
             );
         }

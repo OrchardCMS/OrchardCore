@@ -15,7 +15,7 @@ namespace OrchardCore.Diagnostics.Elm
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseElmCapture();
             app.UseElmPage();

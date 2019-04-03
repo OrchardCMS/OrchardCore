@@ -38,7 +38,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddTransient<INavigationProvider, AdminMenu>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var exposeExceptions = _configuration.GetValue(
                 $"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}",

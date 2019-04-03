@@ -34,6 +34,6 @@ namespace OrchardCore.Modules
         /// <param name="builder"></param>
         /// <param name="routes"></param>
         /// <param name="serviceProvider"></param>
-        void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider);
+        void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider);
     }
 }

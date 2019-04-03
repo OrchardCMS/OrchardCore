@@ -13,12 +13,12 @@ namespace OrchardCore.Setup
             services.AddSetup();
 		}
 
-		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+		public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Setup",
                 areaName: "OrchardCore.Setup",
-                template: "",
+                pattern: "",
                 defaults: new { controller = "Setup", action = "Index" }
             );
         }

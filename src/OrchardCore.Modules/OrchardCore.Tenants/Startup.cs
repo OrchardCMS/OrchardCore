@@ -35,7 +35,7 @@ namespace OrchardCore.Tenants
         // Run after other middlewares
         public override int Order => 10;
         
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();

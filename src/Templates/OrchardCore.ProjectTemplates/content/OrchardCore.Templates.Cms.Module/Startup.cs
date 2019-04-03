@@ -30,12 +30,12 @@ namespace OrchardCore.Templates.Cms.Module
 #endif
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Home",
                 areaName: "OrchardCore.Templates.Cms.Module",
-                template: "Home/Index",
+                pattern: "Home/Index",
                 defaults: new { controller = "Home", action = "Index" }
             );
         }

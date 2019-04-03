@@ -60,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
-        public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IRouteBuilder, IServiceProvider> configure, int order = 0)
+        public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider> configure, int order = 0)
         {
             if (!_actions.TryGetValue(order, out var actions))
             {
@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
-        public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IRouteBuilder> configure, int order = 0)
+        public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder> configure, int order = 0)
         {
             return Configure((app, routes, sp) => configure(app, routes), order);
         }

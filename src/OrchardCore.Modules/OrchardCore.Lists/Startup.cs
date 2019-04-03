@@ -54,12 +54,12 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ListFeed",
                 areaName: "OrchardCore.Feeds",
-                template: "Contents/Lists/{contentItemId}/rss",
+                pattern: "Contents/Lists/{contentItemId}/rss",
                 defaults: new { controller = "Feed", action = "Index", format = "rss"}
             );
         }

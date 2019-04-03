@@ -21,7 +21,7 @@ namespace OrchardCore.Nancy
             services.AddRouting();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
             var options = serviceProvider.GetService<IOptions<NancyOptions>>();

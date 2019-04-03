@@ -185,7 +185,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageResizeTagHelper>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();

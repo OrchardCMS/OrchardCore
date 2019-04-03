@@ -41,18 +41,18 @@ namespace OrchardCore.Users
             _tenantName = shellSettings.Name;
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
-                template: LoginPath,
+                pattern: LoginPath,
                 defaults: new { controller = "Account", action = "Login" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
-                template: ChangePasswordPath,
+                pattern: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
             );
         }
@@ -135,12 +135,12 @@ namespace OrchardCore.Users
             TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Register",
                 areaName: "OrchardCore.Users",
-                template: RegisterPath,
+                pattern: RegisterPath,
                 defaults: new { controller = "Registration", action = "Register" }
             );
         }
@@ -165,30 +165,30 @@ namespace OrchardCore.Users
             TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ForgotPassword",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordPath,
+                pattern: ForgotPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ForgotPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ForgotPasswordConfirmationPath,
+                pattern: ForgotPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPassword",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordPath,
+                pattern: ResetPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPassword" }
             );
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ResetPasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                template: ResetPasswordConfirmationPath,
+                pattern: ResetPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }
             );
         }

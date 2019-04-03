@@ -20,7 +20,7 @@ namespace OrchardCore.Diagnostics
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             if (!_hostingEnvironment.IsDevelopment())
             {
@@ -50,10 +50,10 @@ namespace OrchardCore.Diagnostics
                 return builder;
             });
 
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Diagnostics.Error",
                 areaName: "OrchardCore.Diagnostics",
-                template: "Error",
+                pattern: "Error",
                 defaults: new { controller = "Diagnostics", action = "Error" }
             );
         }
