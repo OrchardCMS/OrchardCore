@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -10,22 +8,19 @@ using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
+    /// <summary>
+    /// Provides Theming precompiled views when specific Layout and ViewStart files are seeked on the filesystem.
+    /// </summary>
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        public static string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
 
-        public ThemingViewsFeatureProvider(IHostingEnvironment hostingEnvironment)
+        public ThemingViewsFeatureProvider()
         {
-            _hostingEnvironment = hostingEnvironment;
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            if (!parts.Where(p => p.Name == _hostingEnvironment.ApplicationName).Any())
-            {
-                return;
-            }
-
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
@@ -37,8 +32,8 @@ namespace OrchardCore.DisplayManagement.Theming
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = ViewPath.NormalizePath("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension),
-                ViewAttribute = new RazorViewAttribute("/Views/Shared/_Layout" + RazorViewEngine.ViewExtension, typeof(ThemeLayout)),
+                RelativePath = ViewPath.NormalizePath(ThemeLayoutFileName),
+                ViewAttribute = new RazorViewAttribute(ThemeLayoutFileName, typeof(ThemeLayout)),
                 IsPrecompiled = true,
             });
         }

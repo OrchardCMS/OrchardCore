@@ -14,10 +14,11 @@ namespace OrchardCore.OpenId.Services.Managers
         IOpenIdAuthorizationManager where TAuthorization : class
     {
         public OpenIdAuthorizationManager(
+            IOpenIddictAuthorizationCache<TAuthorization> cache,
             IOpenIddictAuthorizationStoreResolver resolver,
             ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(resolver, logger, options)
+            : base(cache, resolver, logger, options)
         {
         }
 

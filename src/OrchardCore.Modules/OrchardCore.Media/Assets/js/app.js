@@ -44,7 +44,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     gridView: false,
                     mediaFilter: '',
                     sortBy: '',
-                    sortAsc: true
+                    sortAsc: true,
+                    itemsInPage: []
                 },
                 created: function () {
                     var self = this;
@@ -84,6 +85,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
+                    bus.$on('createFolderRequested', function (media) {
+                        self.createFolder();                        
+                    });
+
+                    bus.$on('deleteFolderRequested', function (media) {
+                        self.deleteFolder();
+                    });
+
                     // common handlers for actions in both grid and table view.
                     bus.$on('sortChangeRequested', function (newSort) {
                         self.changeSort(newSort);
@@ -106,7 +115,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
 
-                    
+                    // handler for pager events
+                    bus.$on('pagerEvent', function (itemsInPage) {
+                        self.itemsInPage = itemsInPage;
+                        self.selectedMedias = [];
+                    });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
@@ -160,7 +173,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 120 : 240 ;
+                        return this.smallThumbs ? 160 : 240 ;
                     },
                     currentPrefs: {
                         get: function () {
@@ -219,7 +232,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.sortAsc = true;
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                console.log('error loading folder:' + folder.path);                                
+                                self.selectRoot();                
                             }
                         });
                     },
@@ -429,7 +443,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
@@ -467,7 +482,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });

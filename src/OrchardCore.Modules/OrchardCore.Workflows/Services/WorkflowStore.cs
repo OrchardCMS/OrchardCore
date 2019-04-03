@@ -23,14 +23,15 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        public Task<int> CountAsync()
+        public Task<int> CountAsync(string workflowTypeId = null)
         {
-            return _session.Query<Workflow>().CountAsync();
+            return FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId).CountAsync();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(int? skip = null, int? take = null)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
         {
-            var query = (IQuery<Workflow>)_session.Query<Workflow, WorkflowIndex>().OrderByDescending(x => x.CreatedUtc);
+            var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
+                .OrderByDescending(x => x.CreatedUtc);
 
             if (skip != null)
             {
@@ -41,7 +42,7 @@ namespace OrchardCore.Workflows.Services
             {
                 query = query.Take(take.Value);
             }
-            
+
             return query.ListAsync();
         }
 
@@ -94,7 +95,7 @@ namespace OrchardCore.Workflows.Services
             return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null)
+        public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
         {
             var query = await _session
                 .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
@@ -132,6 +133,16 @@ namespace OrchardCore.Workflows.Services
 
             var context = new WorkflowDeletedContext(workflow);
             await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
+        }
+
+        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
+        {
+            if (workflowTypeId != null)
+            {
+                query = query.Where(x => x.WorkflowTypeId == workflowTypeId);
+            }
+
+            return query;
         }
     }
 }

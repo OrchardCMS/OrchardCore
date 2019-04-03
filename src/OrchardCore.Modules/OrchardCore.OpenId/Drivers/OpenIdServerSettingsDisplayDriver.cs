@@ -1,78 +1,44 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
-using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Settings;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdServerSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdServerSettings>
+    public class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
     {
-        private const string SettingsGroupId = "OrchardCore.OpenId.Server";
-
-        private readonly IAuthorizationService _authorizationService;
         private readonly IOpenIdServerService _serverService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<OpenIdServerSettingsDisplayDriver> T;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
-        public OpenIdServerSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IOpenIdServerService serverService,
-            IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
-            IHtmlLocalizer<OpenIdServerSettingsDisplayDriver> stringLocalizer,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
-        {
-            _authorizationService = authorizationService;
-            _serverService = serverService;
-            _notifier = notifier;
-            _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            T = stringLocalizer;
-        }
+        public OpenIdServerSettingsDisplayDriver(IOpenIdServerService serverService)
+            => _serverService = serverService;
 
-        public override async Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageServerSettings))
+        public override Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
+            => Task.FromResult<IDisplayResult>(Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
-                return null;
-            }
-
-            return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
-            {
-                model.TestingModeEnabled = settings.TestingModeEnabled;
                 model.AccessTokenFormat = settings.AccessTokenFormat;
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
+
                 model.CertificateStoreLocation = settings.CertificateStoreLocation;
                 model.CertificateStoreName = settings.CertificateStoreName;
                 model.CertificateThumbprint = settings.CertificateThumbprint;
-                model.EnableTokenEndpoint = settings.EnableTokenEndpoint;
-                model.EnableAuthorizationEndpoint = settings.EnableAuthorizationEndpoint;
-                model.EnableLogoutEndpoint = settings.EnableLogoutEndpoint;
-                model.EnableUserInfoEndpoint = settings.EnableUserInfoEndpoint;
-                model.AllowPasswordFlow = settings.AllowPasswordFlow;
-                model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
-                model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
-                model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
-                model.AllowImplicitFlow = settings.AllowImplicitFlow;
+
+                model.EnableAuthorizationEndpoint = settings.AuthorizationEndpointPath.HasValue;
+                model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
+                model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
+                model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
+
+                model.AllowPasswordFlow = settings.GrantTypes.Contains(GrantTypes.Password);
+                model.AllowClientCredentialsFlow = settings.GrantTypes.Contains(GrantTypes.ClientCredentials);
+                model.AllowAuthorizationCodeFlow = settings.GrantTypes.Contains(GrantTypes.AuthorizationCode);
+                model.AllowRefreshTokenFlow = settings.GrantTypes.Contains(GrantTypes.RefreshToken);
+                model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
+
                 model.UseRollingTokens = settings.UseRollingTokens;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
@@ -91,56 +57,77 @@ namespace OrchardCore.OpenId.Drivers
                         Archived = certificate.Archived
                     });
                 }
-            }).Location("Content:2").OnGroup(SettingsGroupId);
-        }
+            }).Location("Content:2"));
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, UpdateEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageServerSettings))
+            var model = new OpenIdServerSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.AccessTokenFormat = model.AccessTokenFormat;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+
+            settings.CertificateStoreLocation = model.CertificateStoreLocation;
+            settings.CertificateStoreName = model.CertificateStoreName;
+            settings.CertificateThumbprint = model.CertificateThumbprint;
+
+            settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
+                new PathString("/connect/authorize") : PathString.Empty;
+            settings.LogoutEndpointPath = model.EnableLogoutEndpoint ?
+                new PathString("/connect/logout") : PathString.Empty;
+            settings.TokenEndpointPath = model.EnableTokenEndpoint ?
+                new PathString("/connect/token") : PathString.Empty;
+            settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
+                new PathString("/connect/userinfo") : PathString.Empty;
+
+            if (model.AllowAuthorizationCodeFlow)
             {
-                return null;
+                settings.GrantTypes.Add(GrantTypes.AuthorizationCode);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.AuthorizationCode);
             }
 
-            if (groupId == SettingsGroupId)
+            if (model.AllowImplicitFlow)
             {
-                var model = new OpenIdServerSettingsViewModel();
-                await updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.TestingModeEnabled = model.TestingModeEnabled;
-                settings.AccessTokenFormat = model.AccessTokenFormat;
-                settings.Authority = model.Authority;
-                settings.CertificateStoreLocation = model.CertificateStoreLocation;
-                settings.CertificateStoreName = model.CertificateStoreName;
-                settings.CertificateThumbprint = model.CertificateThumbprint;
-                settings.EnableTokenEndpoint = model.EnableTokenEndpoint;
-                settings.EnableAuthorizationEndpoint = model.EnableAuthorizationEndpoint;
-                settings.EnableLogoutEndpoint = model.EnableLogoutEndpoint;
-                settings.EnableUserInfoEndpoint = model.EnableUserInfoEndpoint;
-                settings.AllowPasswordFlow = model.AllowPasswordFlow;
-                settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-                settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-                settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-                settings.AllowImplicitFlow = model.AllowImplicitFlow;
-                settings.UseRollingTokens = model.UseRollingTokens;
-
-                foreach (var result in await _serverService.ValidateSettingsAsync(settings))
-                {
-                    if (result != ValidationResult.Success)
-                    {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        updater.ModelState.AddModelError(key, result.ErrorMessage);
-                    }
-                }
-
-                // If the settings are valid, reload the current tenant.
-                if (updater.ModelState.IsValid)
-                {
-                    _shellHost.ReloadShellContext(_shellSettings);
-                }
+                settings.GrantTypes.Add(GrantTypes.Implicit);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.Implicit);
             }
 
-            return Edit(settings);
+            if (model.AllowClientCredentialsFlow)
+            {
+                settings.GrantTypes.Add(GrantTypes.ClientCredentials);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.ClientCredentials);
+            }
+
+            if (model.AllowPasswordFlow)
+            {
+                settings.GrantTypes.Add(GrantTypes.Password);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.Password);
+            }
+
+            if (model.AllowRefreshTokenFlow)
+            {
+                settings.GrantTypes.Add(GrantTypes.RefreshToken);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.RefreshToken);
+            }
+
+            settings.UseRollingTokens = model.UseRollingTokens;
+
+            return await EditAsync(settings, context);
         }
     }
 }

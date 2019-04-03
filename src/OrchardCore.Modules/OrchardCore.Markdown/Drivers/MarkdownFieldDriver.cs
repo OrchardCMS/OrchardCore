@@ -22,7 +22,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
         {
-            return Initialize<MarkdownFieldViewModel>("MarkdownField", async model =>
+            return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", field.ContentItem);
@@ -30,7 +30,7 @@ namespace OrchardCore.Markdown.Drivers
 
                 using (var writer = new StringWriter())
                 {
-                    await _liquidTemplatemanager.RenderAsync(field.Markdown, writer, NullEncoder.Default, templateContext);
+                    await _liquidTemplatemanager.RenderAsync(field.Markdown, writer, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
                     model.Markdown = writer.ToString();
                     model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
                 }
@@ -45,7 +45,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMarkdownFieldViewModel>("MarkdownField_Edit", model =>
+            return Initialize<EditMarkdownFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Markdown = field.Markdown;
                 model.Field = field;

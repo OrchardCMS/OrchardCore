@@ -67,7 +67,10 @@
                                 <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             </div>
 
-                            <input type="checkbox" asp-for="@Model.Workflows[i].IsChecked" />
+                            <div class="custom-control custom-checkbox float-left">
+                                <input type="checkbox" class="custom-control-input" asp-for="@Model.Workflows[i].IsChecked">
+                                <label class="custom-control-label" asp-for="@Model.Workflows[i].IsChecked">&nbsp;</label>
+                            </div>
                             <input type="hidden" asp-for="@Model.Workflows[i].Id" />
                             <a asp-action="Details" asp-route-id="@entry.Workflow.Id">@entry.Workflow.WorkflowId</a>
                             <div>

@@ -1,14 +1,15 @@
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/sql/sql.js" at="Foot"></script>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
-<fieldset class="form-check">
-    <label class="form-check-label">
-        <input asp-for="ReturnDocuments" type="checkbox" class="form-check-input" checked="@Model.ReturnDocuments" /> @T["Return Documents"]
-        <span class="hint">@T["Check to return the corresponding documents."]</span>
-    </label>
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
+        <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
+        <span class="hint">@T["— {0}", "Check to return the corresponding documents."]</span>
+    </div>
     <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
 </fieldset>
 

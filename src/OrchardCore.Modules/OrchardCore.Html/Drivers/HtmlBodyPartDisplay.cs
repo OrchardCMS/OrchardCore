@@ -1,14 +1,17 @@
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Model;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Drivers
@@ -26,19 +29,19 @@ namespace OrchardCore.Html.Drivers
             _liquidTemplatemanager = liquidTemplatemanager;
         }
 
-        public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart)
+        public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>("HtmlBodyPart", m => BuildViewModelAsync(m, HtmlBodyPart))
+            return Initialize<HtmlBodyPartViewModel>("HtmlBodyPart", m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10");
         }
 
-        public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart)
+        public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>("HtmlBodyPart_Edit", m => BuildViewModelAsync(m, HtmlBodyPart));
+            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var viewModel = new HtmlBodyPartViewModel();
 
@@ -46,10 +49,10 @@ namespace OrchardCore.Html.Drivers
 
             model.Html = viewModel.Source;
 
-            return Edit(model);
+            return Edit(model, context);
         }
 
-        private async Task BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart)
+        private async Task BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart, ContentTypePartDefinition definition)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(HtmlBodyPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.Name == nameof(HtmlBodyPart));
@@ -61,14 +64,14 @@ namespace OrchardCore.Html.Drivers
 
             using (var writer = new StringWriter())
             {
-                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, NullEncoder.Default, templateContext);
+                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, HtmlEncoder.Default, templateContext);
                 model.Html = writer.ToString();
             }
 
             model.ContentItem = HtmlBodyPart.ContentItem;
             model.Source = HtmlBodyPart.Html;
             model.HtmlBodyPart = HtmlBodyPart;
-            model.TypePartSettings = settings;
+            model.TypePartDefinition = definition;
         }
     }
 }

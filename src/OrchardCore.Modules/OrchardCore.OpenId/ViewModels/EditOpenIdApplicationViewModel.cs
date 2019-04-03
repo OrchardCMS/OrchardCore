@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.OpenId.Validators;
 
 namespace OrchardCore.OpenId.ViewModels
 {
-    public class EditOpenIdApplicationViewModel
+    public class EditOpenIdApplicationViewModel : IValidatableObject
     {
         [HiddenInput]
         public string Id { get; set; }
@@ -12,13 +14,10 @@ namespace OrchardCore.OpenId.ViewModels
         public string ClientId { get; set; }
         [Required]
         public string DisplayName { get; set; }
-        [Url]
         public string RedirectUris { get; set; }
-        [Url]
         public string PostLogoutRedirectUris { get; set; }
         public string Type { get; set; }
         public string ConsentType { get; set; }
-        public bool UpdateClientSecret { get; set; }
         public string ClientSecret { get; set; }
         public List<RoleEntry> RoleEntries { get; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }
@@ -26,6 +25,13 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
+        public bool AllowLogoutEndpoint { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
+                .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
+        }
 
         public class RoleEntry
         {

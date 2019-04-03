@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -16,24 +16,21 @@ namespace OrchardCore.OpenId.Services
 {
     public class OpenIdValidationService : IOpenIdValidationService
     {
-        private readonly IMemoryCache _cache;
+        private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
         private readonly IStringLocalizer<OpenIdValidationService> T;
 
         public OpenIdValidationService(
-            IMemoryCache cache,
+            ShellDescriptor shellDescriptor,
             ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager,
             IShellHost shellHost,
             ISiteService siteService,
             IStringLocalizer<OpenIdValidationService> stringLocalizer)
         {
-            _cache = cache;
+            _shellDescriptor = shellDescriptor;
             _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
             _shellHost = shellHost;
             _siteService = siteService;
             T = stringLocalizer;
@@ -42,7 +39,22 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdValidationSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<OpenIdValidationSettings>();
+            if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
+            {
+                return settings.ToObject<OpenIdValidationSettings>();
+            }
+
+            // If the OpenID validation settings haven't been populated yet, assume the validation
+            // feature will use the OpenID server registered in this tenant if it's been enabled.
+            if (_shellDescriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+            {
+                return new OpenIdValidationSettings
+                {
+                    Tenant = _shellSettings.Name
+                };
+            }
+
+            return new OpenIdValidationSettings();
         }
 
         public async Task UpdateSettingsAsync(OpenIdValidationSettings settings)
@@ -66,7 +78,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(string.IsNullOrEmpty(settings.Authority) ^ string.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(T["Either a tenant or an authority must be registered."], new[]
                 {
@@ -75,9 +87,9 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+                if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
                     results.Add(new ValidationResult(T["The specified authority is not valid."], new[]
                     {
@@ -85,7 +97,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -94,7 +106,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (string.IsNullOrEmpty(settings.Authority) && !string.IsNullOrEmpty(settings.Audience))
+            if (!string.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(T["No audience can be set when using another tenant."], new[]
                 {
@@ -102,7 +114,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority) && string.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(T["An audience must be set when configuring the authority."], new[]
                 {
@@ -124,14 +136,14 @@ namespace OrchardCore.OpenId.Services
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
-                if (!_shellSettingsManager.TryGetSettings(settings.Tenant, out var tenant))
+                IServiceScope scope;
+                if ((scope = await _shellHost.TryGetScopeAsync(settings.Tenant)) == null)
                 {
                     results.Add(new ValidationResult(T["The specified tenant is not valid."]));
                 }
                 else
                 {
-                    var context = _shellHost.GetOrCreateShellContext(tenant);
-                    using (var scope = context.EnterServiceScope())
+                    using (scope)
                     {
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)

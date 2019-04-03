@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Navigation;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Setup;
 
 namespace OrchardCore.Tenants
 {
@@ -16,6 +19,8 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddSetup();
         }
     }
 
@@ -46,7 +51,13 @@ namespace OrchardCore.Tenants
             {
                 FileProvider = new PhysicalFileProvider(contentRoot),
                 DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true
+                ServeUnknownFileTypes = true,
+
+                // Cache the tenant static files for 7 days
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public, max-age=2592000, s-max-age=31557600";
+                }
             });
         }
 

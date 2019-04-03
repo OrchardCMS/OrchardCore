@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.ViewModels
@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.ViewModels
             get { return Id; }
         }
 
+        public string DisplayText { get; set; }
         public string TypeDisplayName { get; set; }
         public int? Page { get; set; }
         public IList<Entry> Entries { get; set; }
@@ -54,7 +55,8 @@ namespace OrchardCore.Contents.ViewModels
     {
         Modified,
         Published,
-        Created
+        Created,
+        Title,
     }
 
     public enum ContentsStatus

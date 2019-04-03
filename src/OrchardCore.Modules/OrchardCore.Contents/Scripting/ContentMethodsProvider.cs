@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -56,7 +55,7 @@ namespace OrchardCore.Contents.Scripting
                     var props = JObject.FromObject(properties);
                     var content = (JObject)contentItem.ContentItem.Content;
 
-                    content.Merge(props);
+                    content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                 })
             };
         }

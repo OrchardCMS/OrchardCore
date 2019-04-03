@@ -6,11 +6,13 @@ namespace OrchardCore.ContentManagement
 {
     public static class ContentExtensions
     {
+        public const string WeldedPartSettingsName = "@WeldedPartSettings";
+
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
         private static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
-        
+
         /// <summary>
         /// Gets a content element by its name.
         /// </summary>
@@ -23,6 +25,15 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
+        /// Gets whether a content element has a specific element attached.
+        /// </summary>
+        /// <typeparam name="TElement">The expected type of the content element.</typeparam>
+        public static bool Has<TElement>(this ContentElement contentElement) where TElement : ContentElement
+        {
+            return contentElement.Has(typeof(TElement).Name);
+        }
+
+        /// <summary>
         /// Gets a content element by its name.
         /// </summary>
         /// <typeparam name="contentElementType">The expected type of the content element.</typeparam>
@@ -30,6 +41,11 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static ContentElement Get(this ContentElement contentElement, Type contentElementType, string name)
         {
+            if (contentElement.Elements.TryGetValue(name, out var element))
+            {
+                return element;
+            }
+
             var elementData = contentElement.Data[name] as JObject;
 
             if (elementData == null)
@@ -40,6 +56,8 @@ namespace OrchardCore.ContentManagement
             var result = (ContentElement)elementData.ToObject(contentElementType);
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
+
+            contentElement.Elements[name] = result;
 
             return result;
         }
@@ -56,10 +74,11 @@ namespace OrchardCore.ContentManagement
 
             if (existing == null)
             {
-                existing = new TElement();
-                existing.ContentItem = contentElement.ContentItem;
-                contentElement.Data[name] = existing.Data;
-                return existing;
+                var newElement = new TElement();
+                newElement.ContentItem = contentElement.ContentItem;
+                contentElement.Data[name] = newElement.Data;
+                contentElement.Elements[name] = newElement;
+                return newElement;
             }
 
             return existing;
@@ -73,14 +92,45 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Weld(this ContentElement contentElement, string name, ContentElement element)
         {
-            JToken result;
-            if (!contentElement.Data.TryGetValue(name, out result))
+            if (!contentElement.Data.ContainsKey(name))
             {
                 element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
+                contentElement.Elements[name] = element;
             }
+
+            return contentElement;
+        }
+
+        /// <summary>
+        /// Welds a new part to the content item. If a part of the same type is already welded nothing is done.
+        /// This part can be not defined in Content Definitions.
+        /// </summary>
+        /// <typeparam name="TPart">The type of the part to be welded.</typeparam>
+        public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null) where TElement : ContentElement, new()
+        {
+            var elementName = typeof(TElement).Name;
+            
+            var elementData = contentElement.Data[elementName] as JObject;
+
+            if (elementData == null)
+            {
+                // build and welded the part
+                var part = new TElement();
+                contentElement.Weld(elementName, part);
+            }
+
+            JToken result;
+            if (!contentElement.Data.TryGetValue(WeldedPartSettingsName, out result))
+            {
+                contentElement.Data[WeldedPartSettingsName] = result = new JObject();
+            }
+
+            var weldedPartSettings = (JObject)result;
+
+            weldedPartSettings[elementName] = settings == null ? new JObject() : JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
 
             return contentElement;
         }
@@ -101,9 +151,36 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                contentElement.Data[name] = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                elementData = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                contentElement.Data[name] = elementData;
             }
 
+            element.Data = elementData;
+            element.ContentItem = contentElement.ContentItem;
+
+            // Replace the existing content element with the new one
+            contentElement.Elements[name] = element;
+
+            return contentElement;
+        }
+
+        /// <summary>
+        /// Updates the whole content.
+        /// </summary>
+        /// <typeparam name="element">The content element instance to update.</typeparam>
+        /// <returns>The current <see cref="ContentItem"/> instance.</returns>
+        public static ContentElement Apply(this ContentElement contentElement, ContentElement element)
+        {
+            if (contentElement.Data != null)
+            {
+                contentElement.Data.Merge(JObject.FromObject(element.Data), JsonMergeSettings);
+            }
+            else
+            {
+                contentElement.Data = JObject.FromObject(element.Data, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            }
+
+            contentElement.Elements.Clear();
             return contentElement;
         }
 

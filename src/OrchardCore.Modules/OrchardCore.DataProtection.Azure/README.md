@@ -1,4 +1,4 @@
-# Data Protection (Azure Storage) (OrchardCore.DataPrtotection.Azure)
+# Data Protection (Azure Storage) (OrchardCore.DataProtection.Azure)
 
 ## Purpose
 
@@ -11,7 +11,7 @@ You'll need to specify a storage account connection string and a valid container
 
 These settings need to be available to the `IConfiguration` implementation. In the simplest case, this will mean updating your `appsettings.json` file:
 
-```
+```json
 {
     "Modules": {
         "OrchardCore.DataProtection.Azure": {

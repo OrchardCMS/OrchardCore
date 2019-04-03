@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Mvc;
 using OpenIddict.Server;
+using OpenIddict.Server.Internal;
 using OpenIddict.Validation;
+using OpenIddict.Validation.Internal;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -55,29 +57,20 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             // Register the OpenIddict handler in the authentication handlers collection.
-            options.AddScheme(OpenIddictServerDefaults.AuthenticationScheme, builder =>
-            {
-                builder.HandlerType = typeof(OpenIddictServerHandler);
-            });
+            options.AddScheme<OpenIddictServerHandler>(OpenIddictServerDefaults.AuthenticationScheme, displayName: null);
 
             // If the userinfo endpoint was enabled, register a private JWT or validation handler instance.
             // Unlike the instance registered by the validation feature, this one is only used for the
             // OpenID Connect userinfo endpoint and thus only supports local opaque/JWT token validation.
-            if (settings.EnableUserInfoEndpoint)
+            if (settings.UserinfoEndpointPath.HasValue)
             {
                 if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.Encrypted)
                 {
-                    options.AddScheme(OpenIdConstants.Schemes.Userinfo, builder =>
-                    {
-                        builder.HandlerType = typeof(OpenIddictValidationHandler);
-                    });
+                    options.AddScheme<OpenIddictValidationHandler>(OpenIdConstants.Schemes.Userinfo, displayName: null);
                 }
                 else if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
                 {
-                    options.AddScheme(OpenIdConstants.Schemes.Userinfo, builder =>
-                    {
-                        builder.HandlerType = typeof(JwtBearerHandler);
-                    });
+                    options.AddScheme<JwtBearerHandler>(OpenIdConstants.Schemes.Userinfo, displayName: null);
                 }
                 else
                 {
@@ -86,6 +79,9 @@ namespace OrchardCore.OpenId.Configuration
             }
         }
 
+        // Note: to ensure no exception is thrown while binding OpenID Connect primitives
+        // when the OpenID server settings are invalid, the binding exceptions that are
+        // thrown by OpenIddict to indicate the request cannot be extracted are turned off.
         public void Configure(OpenIddictMvcOptions options) => options.DisableBindingExceptions = true;
 
         public void Configure(string name, OpenIddictServerOptions options)
@@ -102,20 +98,20 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+            // To make configuration easier and avoid having to configure it in two different features,
+            // the transport security requirement enforced by OpenIddict by default is always turned off.
+            options.AllowInsecureHttp = true;
+
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
+            options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
-            options.AllowInsecureHttp = settings.TestingModeEnabled;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
-            }
-
-            if (!string.IsNullOrEmpty(settings.Authority))
-            {
-                options.Issuer = new Uri(settings.Authority, UriKind.Absolute);
             }
 
             if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
@@ -123,46 +119,17 @@ namespace OrchardCore.OpenId.Configuration
                 options.AccessTokenHandler = new JwtSecurityTokenHandler();
             }
 
-            if (settings.EnableAuthorizationEndpoint)
-            {
-                options.AuthorizationEndpointPath = "/OrchardCore.OpenId/Access/Authorize";
-            }
-            if (settings.EnableTokenEndpoint)
-            {
-                options.TokenEndpointPath = "/OrchardCore.OpenId/Access/Token";
-            }
-            if (settings.EnableLogoutEndpoint)
-            {
-                options.LogoutEndpointPath = "/OrchardCore.OpenId/Access/Logout";
-            }
-            if (settings.EnableUserInfoEndpoint)
-            {
-                options.UserinfoEndpointPath = "/OrchardCore.OpenId/UserInfo/Me";
-            }
-            if (settings.AllowAuthorizationCodeFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
-            }
-            if (settings.AllowClientCredentialsFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
-            }
-            if (settings.AllowImplicitFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
-            }
-            if (settings.AllowPasswordFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
-            }
-            if (settings.AllowRefreshTokenFlow)
-            {
-                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
-            }
+            options.AuthorizationEndpointPath = settings.AuthorizationEndpointPath;
+            options.LogoutEndpointPath = settings.LogoutEndpointPath;
+            options.TokenEndpointPath = settings.TokenEndpointPath;
+            options.UserinfoEndpointPath = settings.UserinfoEndpointPath;
 
-            options.Scopes.Add(OpenIdConnectConstants.Scopes.Email);
-            options.Scopes.Add(OpenIdConnectConstants.Scopes.Phone);
-            options.Scopes.Add(OpenIdConnectConstants.Scopes.Profile);
+            options.GrantTypes.Clear();
+            options.GrantTypes.UnionWith(settings.GrantTypes);
+
+            options.Scopes.Add(OpenIddictConstants.Scopes.Email);
+            options.Scopes.Add(OpenIddictConstants.Scopes.Phone);
+            options.Scopes.Add(OpenIddictConstants.Scopes.Profile);
             options.Scopes.Add(OpenIddictConstants.Claims.Roles);
         }
 
@@ -187,9 +154,9 @@ namespace OrchardCore.OpenId.Configuration
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.TokenValidationParameters.ValidIssuer = settings.Authority;
+                options.TokenValidationParameters.ValidIssuer = settings.Authority.AbsoluteUri;
             }
             else
             {

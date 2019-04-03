@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="{{ Culture.Name }}">
+<head>
+    <meta charset="utf-8">
+    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+    
+    {% resources type: "Meta" %}
+
+    <!-- INSERT REQUIRED RESOURCES HERE -->
+    
+    {% resources type: "HeadLink" %}
+    {% resources type: "Stylesheet" %}
+    {% resources type: "HeadScript" %}
+</head>
+<body dir="{{ Culture.Dir }}">
+
+    {% render_body %}
+    
+    <footer>
+    {% render_section "Footer", required: false %}
+    </footer>
+    
+    {% script name:"jquery", use_cdn:"true", at:"Foot" %}
+    
+    {% resources type: "FootScript" %}
+</body>
+</html>

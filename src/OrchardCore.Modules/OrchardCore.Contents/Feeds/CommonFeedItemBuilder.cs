@@ -44,9 +44,9 @@ namespace OrchardCore.Contents.Feeds.Builders
                         guid.Add(url);
                     });
 
-                    feedItem.Element.SetElementValue("title", contentItemMetadata.DisplayText);
+                    feedItem.Element.SetElementValue("title", contentItem.DisplayText);
                     feedItem.Element.Add(link);
-                    feedItem.Element.SetElementValue("description", bodyAspect.Body.ToString());
+                    feedItem.Element.SetElementValue("description", bodyAspect.Body?.ToString());
 
                     if (contentItem.PublishedUtc != null)
                     {
@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                         context.Builder.AddProperty(context, feedItem, "link", url);
                     });
 
-                    context.Builder.AddProperty(context, feedItem, "title", contentItemMetadata.DisplayText);
+                    context.Builder.AddProperty(context, feedItem, "title", contentItem.DisplayText);
                     context.Builder.AddProperty(context, feedItem, "description", bodyAspect.Body.ToString());
 
                     if (contentItem.PublishedUtc != null)

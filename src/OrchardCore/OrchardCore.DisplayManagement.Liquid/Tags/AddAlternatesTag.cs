@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class AddAlternatesTag : ExpressionArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
         {
             var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
 

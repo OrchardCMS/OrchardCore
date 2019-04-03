@@ -1,9 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
+  </ItemGroup>
 
   <!--
     You can inject nuget targets and props via nuget. 
@@ -12,10 +16,6 @@
     You can optionally leave out the $targetFramework subdirectory. 
     Caution: this will make NuGet treat your packages as compatible with “any” target framework.
   -->
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Modules.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="OrchardCore.Application.Targets.targets" Pack="true">

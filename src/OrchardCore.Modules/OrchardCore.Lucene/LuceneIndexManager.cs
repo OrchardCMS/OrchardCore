@@ -6,16 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
-using Lucene.Net.Util;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Services;
 using OrchardCore.Modules;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
@@ -36,35 +35,30 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-
-        private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private static object _synLock = new object();
 
         public LuceneIndexManager(
             IClock clock,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings,
-            ILogger<LuceneIndexManager> logger
+            ILogger<LuceneIndexManager> logger,
+            LuceneAnalyzerManager luceneAnalyzerManager
             )
         {
             _clock = clock;
             _logger = logger;
-            _rootPath = Path.Combine(
+            _rootPath = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
 
             _rootDirectory = Directory.CreateDirectory(_rootPath);
+            _luceneAnalyzerManager = luceneAnalyzerManager;
         }
 
         public void CreateIndex(string indexName)
         {
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            if (!path.Exists)
-            {
-                path.Create();
-            }
-
             Write(indexName, _ => { }, true);
         }
 
@@ -79,6 +73,7 @@ namespace OrchardCore.Lucene
                 if (_indexPools.TryRemove(indexName, out var pool))
                 {
                     pool.MakeDirty();
+                    pool.Release();
                 }
             });
         }
@@ -100,7 +95,7 @@ namespace OrchardCore.Lucene
 
                 _timestamps.TryRemove(indexName, out var timestamp);
                 
-                var indexFolder = Path.Combine(_rootPath, indexName);
+                var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
                 {
@@ -122,7 +117,7 @@ namespace OrchardCore.Lucene
                 return false;
             }
 
-            return Directory.Exists(Path.Combine(_rootPath, indexName));
+            return Directory.Exists(PathExtensions.Combine(_rootPath, indexName));
         }
 
         public IEnumerable<string> List()
@@ -146,6 +141,7 @@ namespace OrchardCore.Lucene
                 if (_indexPools.TryRemove(indexName, out var pool))
                 {
                     pool.MakeDirty();
+                    pool.Release();
                 }
             });
         }
@@ -189,49 +185,49 @@ namespace OrchardCore.Lucene
 
             foreach (var entry in documentIndex.Entries)
             {
-                var store = entry.Value.Options.HasFlag(DocumentIndexOptions.Store)
+                var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
                             ? Field.Store.YES
                             : Field.Store.NO;
 
-                if (entry.Value.Value == null)
+                if (entry.Value == null)
                 {
                     continue;
                 }
 
-                switch (entry.Value.Type)
+                switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
                         // store "true"/"false" for booleans
-                        doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value).ToLowerInvariant(), store));
+                        doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value.Value is DateTimeOffset)
+                        if (entry.Value is DateTimeOffset)
                         {
-                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTimeOffset)entry.Value.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTime)entry.Value.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
                         }
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        doc.Add(new Int32Field(entry.Key, Convert.ToInt32(entry.Value.Value), store));
+                        doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
                         break;
 
                     case DocumentIndex.Types.Number:
-                        doc.Add(new DoubleField(entry.Key, Convert.ToDouble(entry.Value.Value), store));
+                        doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value.Options.HasFlag(DocumentIndexOptions.Analyze))
+                        if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                         {
-                            doc.Add(new TextField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                            doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                            doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         break;
                 }
@@ -244,14 +240,18 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+                var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
 
                 if (!path.Exists)
                 {
                     path.Create();
                 }
 
-                return FSDirectory.Open(path);
+                // Lucene is not thread safe on this call
+                lock (_synLock)
+                {
+                    return FSDirectory.Open(path);
+                }
             }
         }
 
@@ -264,8 +264,8 @@ namespace OrchardCore.Lucene
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-
-                        var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
+                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                        var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND
                         };
@@ -302,8 +302,6 @@ namespace OrchardCore.Lucene
         {
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
-                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
                 var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(directory);
                 return new IndexReaderPool(reader);
@@ -314,7 +312,7 @@ namespace OrchardCore.Lucene
 
         private string GetFilename(string indexName, int documentId)
         {
-            return Path.Combine(_rootPath, indexName, documentId + ".json");
+            return PathExtensions.Combine(_rootPath, indexName, documentId + ".json");
         }
 
         /// <summary>
@@ -358,7 +356,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                if(_writers.TryGetValue(indexName, out var writer))
+                if (_writers.TryGetValue(indexName, out var writer))
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {

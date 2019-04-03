@@ -4,7 +4,7 @@ using OrchardCore.OpenId;
 [assembly: Module(
     Name = "OpenID",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -39,9 +39,7 @@ using OrchardCore.OpenId;
     Dependencies = new[]
     {
         OpenIdConstants.Features.Core,
-        OpenIdConstants.Features.Management,
-        "OrchardCore.Users",
-        "OrchardCore.Roles"
+        OpenIdConstants.Features.Management
     }
 )]
 

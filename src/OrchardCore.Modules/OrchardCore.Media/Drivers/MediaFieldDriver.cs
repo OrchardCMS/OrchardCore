@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -23,7 +24,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayMediaFieldViewModel>("MediaField", model =>
+            return Initialize<DisplayMediaFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -35,7 +36,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMediaFieldViewModel>("MediaField_Edit", model =>
+            return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Paths = JsonConvert.SerializeObject(field.Paths);
 
@@ -51,7 +52,10 @@ namespace OrchardCore.Media.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
-                field.Paths = JsonConvert.DeserializeObject<string[]>(model.Paths);
+                // Deserializing an empty string doesn't return an array
+                field.Paths = string.IsNullOrWhiteSpace(model.Paths)
+                    ? Array.Empty<string>()
+                    : JsonConvert.DeserializeObject<string[]>(model.Paths);
 
                 var settings = context.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
                 

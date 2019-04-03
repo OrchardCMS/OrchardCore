@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -30,7 +30,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<AdminController> TH;
 
@@ -43,14 +43,14 @@ namespace OrchardCore.Roles.Controllers
             ISiteService siteService,
             IShapeFactory shapeFactory,
             RoleManager<IRole> roleManager,
-            IRoleProvider roleProvider,
+            IRoleService roleService,
             INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
             )
         {
             TH = htmlLocalizer;
             _notifier = notifier;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
@@ -68,7 +68,7 @@ namespace OrchardCore.Roles.Controllers
                 return Unauthorized();
             }
 
-            var roles = await _roleProvider.GetRoleNamesAsync();
+            var roles = await _roleService.GetRoleNamesAsync();
 
             var model = new RolesViewModel
             {

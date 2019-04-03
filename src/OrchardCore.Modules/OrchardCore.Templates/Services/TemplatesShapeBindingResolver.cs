@@ -71,8 +71,8 @@ namespace OrchardCore.Templates.Services
                 BindingAsync = async displayContext =>
                 {
                     var context = new TemplateContext();
-                    context.Contextualize(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
+                    await context.ContextualizeAsync(displayContext);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, System.Text.Encodings.Web.HtmlEncoder.Default, context);
                     return new HtmlString(htmlContent);
                 }
             };

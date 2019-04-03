@@ -5,13 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
@@ -28,8 +25,6 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> T;
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -39,8 +34,6 @@ namespace OrchardCore.OpenId.Drivers
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
-            IHtmlLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
@@ -48,10 +41,8 @@ namespace OrchardCore.OpenId.Drivers
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
@@ -66,7 +57,7 @@ namespace OrchardCore.OpenId.Drivers
             {
                 model.DisplayName = settings.DisplayName;
                 model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;
                 model.ClientSecret = settings.ClientSecret;
@@ -103,7 +94,7 @@ namespace OrchardCore.OpenId.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, IUpdateModel updater, string groupId)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
@@ -111,17 +102,17 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (groupId == SettingsGroupId)
+            if (context.GroupId == SettingsGroupId)
             {
                 var previousClientSecret = settings.ClientSecret;
                 var model = new OpenIdClientSettingsViewModel();
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 model.Scopes = model.Scopes ?? string.Empty;
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                settings.Authority = model.Authority;
+                settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
@@ -184,18 +175,18 @@ namespace OrchardCore.OpenId.Drivers
                     if (result != ValidationResult.Success)
                     {
                         var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        updater.ModelState.AddModelError(key, result.ErrorMessage);
+                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }
 
                 // If the settings are valid, reload the current tenant.
-                if (updater.ModelState.IsValid)
+                if (context.Updater.ModelState.IsValid)
                 {
-                    _shellHost.ReloadShellContext(_shellSettings);
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
-            return Edit(settings);
+            return await EditAsync(settings, context);
         }
     }
 }

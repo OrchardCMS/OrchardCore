@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Entities\OrchardCore.Entities.csproj" />
-    <ProjectReference Include="..\OrchardCore.Security.Abstractions\OrchardCore.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
     <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
@@ -15,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
-    <PackageReference Include="YesSql.Core" />
+    <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
 </Project>

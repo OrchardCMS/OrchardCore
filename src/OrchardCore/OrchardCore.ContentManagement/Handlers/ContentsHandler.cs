@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement.Handlers
             return Task.CompletedTask;
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
+        public override Task PublishingAsync(PublishContentContext context)
         {
             var utcNow = _clock.UtcNow;
 

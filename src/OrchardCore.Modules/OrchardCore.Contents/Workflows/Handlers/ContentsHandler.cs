@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Workflows.Services;
@@ -7,6 +8,8 @@ namespace OrchardCore.Contents.Workflows.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
+        public const string ContentItemInputKey = "ContentItem";
+
         private readonly IWorkflowManager _workflowManager;
 
         public ContentsHandler(IWorkflowManager workflowManager)
@@ -14,19 +17,37 @@ namespace OrchardCore.Contents.Workflows.Handlers
             _workflowManager = workflowManager;
         }
 
-        public override async Task CreatedAsync(CreateContentContext context)
+        public override Task CreatedAsync(CreateContentContext context)
         {
-            await _workflowManager.TriggerEventAsync(nameof(ContentCreatedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            return TriggerWorkflowEventAsync(nameof(ContentCreatedEvent), context.ContentItem);
+        }
+
+        public override Task UpdatedAsync(UpdateContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
         }
 
         public override Task PublishedAsync(PublishContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentPublishedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            return TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);
+        }
+
+        public override Task UnpublishedAsync(PublishContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentUnpublishedEvent), context.ContentItem);
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            return _workflowManager.TriggerEventAsync(nameof(ContentDeletedEvent), new { Content = context.ContentItem }, context.ContentItem.ContentItemId);
+            return TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
+        }
+
+        private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
+        {
+            return _workflowManager.TriggerEventAsync(name,
+                input: new { ContentItem = contentItem },
+                correlationId: contentItem.ContentItemId
+            );
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
+using OrchardCore.Tests.Stubs;
 using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
@@ -145,6 +147,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            serviceCollection.AddSingleton<IHostingEnvironment>(new StubHostingEnvironment());
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
@@ -195,32 +198,22 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 _extensionManager = extensionManager;
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetEnabledFeaturesAsync()
+            public Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
             {
                 return Task.FromResult(_extensionManager.GetFeatures());
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            public Task<IEnumerable<IFeatureInfo>> GetAlwaysEnabledFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+            public Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetDisabledFeaturesAsync()
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+            public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
             {
                 throw new NotImplementedException();
             }

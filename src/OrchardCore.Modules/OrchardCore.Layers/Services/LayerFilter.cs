@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.ViewModels;
@@ -28,7 +28,9 @@ namespace OrchardCore.Layers.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
-		private readonly ILayerService _layerService;
+        private readonly IThemeManager _themeManager;
+        private readonly IAdminThemeService _adminThemeService;
+        private readonly ILayerService _layerService;
 
 		public LayerFilter(
 			ILayerService layerService,
@@ -38,7 +40,9 @@ namespace OrchardCore.Layers.Services
             IScriptingManager scriptingManager,
             IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
-            ISignal signal)
+            ISignal signal,
+            IThemeManager themeManager,
+            IAdminThemeService adminThemeService)
         {
 			_layerService = layerService;
 			_layoutAccessor = layoutAccessor;
@@ -48,6 +52,8 @@ namespace OrchardCore.Layers.Services
             _serviceProvider = serviceProvider;
             _memoryCache = memoryCache;
             _signal = signal;
+            _themeManager = themeManager;
+            _adminThemeService = adminThemeService;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -56,7 +62,17 @@ namespace OrchardCore.Layers.Services
 			if ((context.Result is ViewResult || context.Result is PageResult) &&
                 !AdminAttribute.IsApplied(context.HttpContext))
 			{
-				var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
+                // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
+                // In this case don't render Layers.
+                var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
+                var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
+                if (selectedTheme == adminTheme)
+                {
+                    await next.Invoke();
+                    return;
+                }
+
+                var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
                 {
                     entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
                     return _layerService.GetLayerWidgetsAsync(x => x.Published);

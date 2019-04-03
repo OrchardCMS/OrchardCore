@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
@@ -20,18 +21,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public ResourceType Type { get; set; }
 
         private readonly IResourceManager _resourceManager;
-        private readonly IRequireSettingsProvider _requireSettingsProvider;
 
-        public ResourcesTagHelper(IResourceManager resourceManager, IRequireSettingsProvider requireSettingsProvider)
+        public ResourcesTagHelper(IResourceManager resourceManager)
         {
-            _requireSettingsProvider = requireSettingsProvider;
             _resourceManager = resourceManager;
         }
 
         public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var defaultSettings = _requireSettingsProvider.GetDefault();
-
             switch (Type)
             {
                 case ResourceType.Meta:
@@ -43,15 +40,15 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     break;
 
                 case ResourceType.Stylesheet:
-                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
+                    _resourceManager.RenderStylesheet(output.Content);
                     break;
 
                 case ResourceType.HeadScript:
-                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
+                    _resourceManager.RenderHeadScript(output.Content);
                     break;
 
                 case ResourceType.FootScript:
-                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
+                    _resourceManager.RenderFootScript(output.Content);
                     break;
 
                 case ResourceType.Header:
@@ -59,12 +56,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     _resourceManager.RenderMeta(output.Content);
                     _resourceManager.RenderHeadLink(output.Content);
-                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
-                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
+                    _resourceManager.RenderStylesheet(output.Content);
+                    _resourceManager.RenderHeadScript(output.Content);
                     break;
 
                 case ResourceType.Footer:
-                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
+                    _resourceManager.RenderFootScript(output.Content);
                     break;
 
                 default:

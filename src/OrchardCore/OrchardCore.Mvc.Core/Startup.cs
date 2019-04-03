@@ -1,14 +1,11 @@
 using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,6 +18,8 @@ namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {
+        private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+
         public override int Order => -200;
 
         private readonly IServiceProvider _serviceProvider;
@@ -32,57 +31,42 @@ namespace OrchardCore.Mvc
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Register an isolated tenant part manager.
             services.AddSingleton(new ApplicationPartManager());
 
-            var builder = services.AddMvcCore(options =>
+            var builder = services.AddMvc(options =>
             {
-                // Do we need this?
-                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
+                // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
+                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAttribute));
+
+                // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
-            builder.AddAuthorization();
-            // builder.AddViews();
-            // builder.AddRazorViewEngine();
-            // the above is called here
-            builder.AddViewLocalization();
+            builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
+
+            services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
+            
+            // Adding localization
+            builder.AddViewLocalization();
+            builder.AddDataAnnotationsLocalization();
 
-            builder.Services.TryAddEnumerable(
+            services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-            builder.AddModularRazorPages();
-
-            // Use a custom IViewCompilerProvider so that all tenants reuse the same ICompilerCache instance
-            builder.Services.Replace(new ServiceDescriptor(typeof(IViewCompilerProvider), typeof(SharedViewCompilerProvider), ServiceLifetime.Singleton));
+            // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
+            services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
-            AddDefaultFrameworkParts(builder.PartManager);
-
-            // Order important
-            builder.AddJsonFormatters();
         }
 
         private void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
-        }
-        
-        private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
-        {
-            var mvcTagHelpersAssembly = typeof(InputTagHelper).Assembly;
-            if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcTagHelpersAssembly))
-            {
-                partManager.ApplicationParts.Add(new AssemblyPart(mvcTagHelpersAssembly));
-            }
-
-            var mvcRazorAssembly = typeof(UrlResolutionTagHelper).Assembly;
-            if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcRazorAssembly))
-            {
-                partManager.ApplicationParts.Add(new AssemblyPart(mvcRazorAssembly));
-            }
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.FeatureProviders.Add(new ShellViewFeatureProvider(httpContextAccessor));
         }
 
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
@@ -90,11 +74,15 @@ namespace OrchardCore.Mvc
             services.Replace(
                 ServiceDescriptor.Transient<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
 
-            services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
 
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
+                ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+        }
+
+        internal class RazorViewCompilationMemoryCacheProvider : IViewCompilationMemoryCacheProvider
+        {
+            public IMemoryCache CompilationMemoryCache { get; } = _cache;
         }
     }
 }

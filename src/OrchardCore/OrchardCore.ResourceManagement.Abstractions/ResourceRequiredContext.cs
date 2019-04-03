@@ -10,33 +10,31 @@ namespace OrchardCore.ResourceManagement
         public ResourceDefinition Resource { get; set; }
         public RequireSettings Settings { get; set; }
 
-        public IHtmlContent GetHtmlContent(RequireSettings baseSettings, string appPath)
+        public IHtmlContent GetHtmlContent(string appPath)
         {
-            var combinedSettings = baseSettings == null ? Settings : baseSettings.Combine(Settings);
+            var tagBuilder = Resource.GetTagBuilder(Settings, appPath);
 
-            var tagBuilder = Resource.GetTagBuilder(combinedSettings, appPath);
-
-            if (String.IsNullOrEmpty(combinedSettings.Condition))
+            if (String.IsNullOrEmpty(Settings.Condition))
             {
                 return tagBuilder;
             }
 
             var builder = new HtmlContentBuilder();
 
-            if (combinedSettings.Condition == NotIE)
+            if (Settings.Condition == NotIE)
             {
-                builder.AppendHtml("<!--[if " + combinedSettings.Condition + "]>-->");
+                builder.AppendHtml("<!--[if " + Settings.Condition + "]>-->");
             }
             else
             {
-                builder.AppendHtml("<!--[if " + combinedSettings.Condition + "]>");
+                builder.AppendHtml("<!--[if " + Settings.Condition + "]>");
             }
 
             builder.AppendHtml(tagBuilder);
 
-            if (!string.IsNullOrEmpty(combinedSettings.Condition))
+            if (!string.IsNullOrEmpty(Settings.Condition))
             {
-                if (combinedSettings.Condition == NotIE)
+                if (Settings.Condition == NotIE)
                 {
                     builder.AppendHtml("<!--<![endif]-->");
                 }

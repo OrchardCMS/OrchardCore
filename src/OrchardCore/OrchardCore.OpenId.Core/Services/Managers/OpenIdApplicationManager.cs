@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +18,11 @@ namespace OrchardCore.OpenId.Services.Managers
         IOpenIdApplicationManager where TApplication : class
     {
         public OpenIdApplicationManager(
+            IOpenIddictApplicationCache<TApplication> cache,
             IOpenIddictApplicationStoreResolver resolver,
             ILogger<OpenIdApplicationManager<TApplication>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(resolver, logger, options)
+            : base(cache, resolver, logger, options)
         {
         }
 
@@ -173,6 +175,25 @@ namespace OrchardCore.OpenId.Services.Managers
             }
 
             await base.PopulateAsync(descriptor, application, cancellationToken);
+        }
+
+        public override async Task<ImmutableArray<ValidationResult>> ValidateAsync(
+            TApplication application, CancellationToken cancellationToken = default)
+        {
+            var results = ImmutableArray.CreateBuilder<ValidationResult>();
+            results.AddRange(await base.ValidateAsync(application, cancellationToken));
+
+            foreach (var role in await Store.GetRolesAsync(application, cancellationToken))
+            {
+                if (string.IsNullOrEmpty(role))
+                {
+                    results.Add(new ValidationResult("Roles cannot be null or empty."));
+
+                    break;
+                }
+            }
+
+            return results.ToImmutable();
         }
 
         Task IOpenIdApplicationManager.AddToRoleAsync(object application, string role, CancellationToken cancellationToken)

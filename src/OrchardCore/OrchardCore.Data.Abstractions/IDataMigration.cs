@@ -1,9 +1,9 @@
-﻿using YesSql.Sql;
+using YesSql.Sql;
 
 namespace OrchardCore.Data.Migration
 {
     public interface IDataMigration
     {
-        SchemaBuilder SchemaBuilder { get; set; }
+        ISchemaBuilder SchemaBuilder { get; set; }
     }
 }

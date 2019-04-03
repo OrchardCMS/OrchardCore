@@ -17,19 +17,38 @@
         <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
         <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlPrefix" class="text-danger"></span>
-        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL is \"https://orchardproject.net/site1\""]</span>
     </div>
 
     <div class="form-group" asp-validation-class-for="RequestUrlHost">
         <label asp-for="RequestUrlHost">@T["Hostname"]</label>
         <input asp-for="RequestUrlHost" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlHost" class="text-danger"></span>
-        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\""]</span>
+        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant URL is \"https://orchardproject.net/\""]</span>
         <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
     </div>
 
     @if (Model.CanSetDatabasePresets)
     {
+        <h6>
+            @T["Recipe"]
+            <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+        </h6>
+        <fieldset class="row recipes" asp-validation-class-for="RecipeName">
+            <div class="form-group col-md-6">
+                <select asp-for="RecipeName" class="form-control">
+
+                    <option value=""></option>
+                    @foreach (var recipe in Model.Recipes)
+                    {
+                        <option value="@recipe.Name" selected="@(Model.RecipeName == recipe.Name)">
+                            @recipe.Name
+                        </option>
+                    }
+                </select>
+            </div>
+        </fieldset>
+
         <h6>
             @T["Database Presets"]
             <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
@@ -45,7 +64,7 @@
                     }
                 </select>
             </div>
-            <div class="form-group col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
+            <div class="form-group col-md-6" asp-validation-class-for="TablePrefix" >
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
                 <input asp-for="TablePrefix" class="form-control" />
@@ -70,4 +89,4 @@
     </fieldset>
 </form>
 
-<script at="Foot" type="text/javascript" asp-src="/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>
+<script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>

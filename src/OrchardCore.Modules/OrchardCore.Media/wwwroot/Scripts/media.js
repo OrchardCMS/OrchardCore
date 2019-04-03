@@ -49,7 +49,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     gridView: false,
                     mediaFilter: '',
                     sortBy: '',
-                    sortAsc: true
+                    sortAsc: true,
+                    itemsInPage: []
                 },
                 created: function () {
                     var self = this;
@@ -89,6 +90,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         media.name = newName;
                     });
 
+                    bus.$on('createFolderRequested', function (media) {
+                        self.createFolder();                        
+                    });
+
+                    bus.$on('deleteFolderRequested', function (media) {
+                        self.deleteFolder();
+                    });
+
                     // common handlers for actions in both grid and table view.
                     bus.$on('sortChangeRequested', function (newSort) {
                         self.changeSort(newSort);
@@ -111,7 +120,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
 
-                    
+                    // handler for pager events
+                    bus.$on('pagerEvent', function (itemsInPage) {
+                        self.itemsInPage = itemsInPage;
+                        self.selectedMedias = [];
+                    });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
@@ -165,7 +178,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 120 : 240 ;
+                        return this.smallThumbs ? 160 : 240 ;
                     },
                     currentPrefs: {
                         get: function () {
@@ -224,7 +237,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.sortAsc = true;
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                console.log('error loading folder:' + folder.path);                                
+                                self.selectRoot();                
                             }
                         });
                     },
@@ -434,7 +448,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#createFolderModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#createFolderModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
                     }
                 });
             });
@@ -472,7 +487,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();
-                        $('<div class="alert alert-danger" role="alert"></div>').text(error.responseText).appendTo($('#renameMediaModal-errors'));
+                        var errorMessage = JSON.parse(error.responseText).value;
+                        $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#renameMediaModal-errors'));
                     }
                 });
             });
@@ -525,10 +541,9 @@ $(document).bind('dragover', function (e) {
             dropZone.addClass('in');
         }
         var hoveredDropZone = $(e.target).closest(dropZone);
-        dropZone.toggleClass('hover', hoveredDropZone.length);
         window.dropZoneTimeout = setTimeout(function () {
             window.dropZoneTimeout = null;
-            dropZone.removeClass('in hover');
+            dropZone.removeClass('in');
         }, 100);
     }    
 });
@@ -539,32 +554,38 @@ Vue.component('folder', {
                 v-on:dragleave.prevent = "handleDragLeave($event);" \
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered}" >\
-                <a href="javascript:;" v-on:click="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-caret-right"></i></a>\
-                <a href="javascript:;" v-on:click="select" draggable="false" >\
-                    <i class="folder fa fa-folder"></i>\
-                    {{model.name}}\
+            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
+                <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
+                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
+                  <div class="folder-name">{{model.name}}</div>\
+                    <div class="btn-group folder-actions" >\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
+                    </div>\
                 </a>\
             </div>\
             <ol v-show="open">\
                 <folder v-for="folder in children"\
                         :key="folder.path"\
                         :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp">\
+                        :selected-in-media-app="selectedInMediaApp" \
+                        :level="level + 1">\
                 </folder>\
             </ol>\
         </li>\
         ',
     props: {
         model: Object,
-        selectedInMediaApp: Object
+        selectedInMediaApp: Object,
+        level: Number
     },
     data: function () {
         return {
             open: false,
             children: null, // not initialized state (for lazy-loading)
             parent: null,
-            isHovered : false
+            isHovered: false,
+            padding: 0
         }
     },
     computed: {
@@ -573,12 +594,17 @@ Vue.component('folder', {
         },
         isSelected: function () {
             return (this.selectedInMediaApp.name == this.model.name) && (this.selectedInMediaApp.path == this.model.path);
+        },
+        isRoot: function () {
+            return this.model.path === '';
         }
     },
     mounted: function () {
-        if ((this.isRoot() == false) && (this.isAncestorOfSelectedFolder())){
+        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())){
             this.toggle();
         }
+
+        this.padding = this.level < 3 ?  26 : 26 + (this.level * 8);
     },
     created: function () {
         var self = this;
@@ -605,9 +631,6 @@ Vue.component('folder', {
         });
     },
     methods: {
-        isRoot: function () {
-            return this.model.path === '';
-        },
         isAncestorOfSelectedFolder: function () {
             parentFolder = mediaApp.selectedFolder;
             while (parentFolder) {
@@ -628,6 +651,12 @@ Vue.component('folder', {
         select: function () {
             bus.$emit('folderSelected', this.model);
             this.loadChildren();
+        },
+        createFolder: function () {           
+            bus.$emit('createFolderRequested');
+        },
+        deleteFolder: function () {
+            bus.$emit('deleteFolderRequested');
         },
         loadChildren: function () {            
             var self = this;
@@ -2484,7 +2513,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                 return this.selectedMedia || this.mediaItems.length === 1;
             },
             thumbSize: function () {
-                return this.smallThumbs ? 120 : 240;
+                return this.smallThumbs ? 160 : 240;
             },
             currentPrefs: {
                 get: function () {
@@ -2567,7 +2596,7 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
 // <media-items-grid> component
 Vue.component('mediaItemsGrid', {
     template: '\
-        <ol class="row">\
+        <ol class="row media-items-grid">\
                 <li v-for="media in filteredMediaItems" \
                     :key="media.name" \
                     class="media-item media-container-main-list-item card" \
@@ -2576,9 +2605,13 @@ Vue.component('mediaItemsGrid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)" \
                     draggable="true" v-on:dragstart="dragStart(media, $event)"> \
                     <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
-                            <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" :style="{ maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\' }"/> \
+                        <img v-if="media.mime.startsWith(\'image\')" \
+                                :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                                :data-mime="media.mime" \
+                                :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
+                        <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                     </div> \
-                    <div class="media-container-main-item-title card-body"> \
+                <div class="media-container-main-item-title card-body"> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
                         <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
@@ -2632,7 +2665,7 @@ Vue.component('mediaItemsTable', {
         <table class="table media-items-table"> \
             <thead> \
                 <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column" style="padding-left:16px;">{{ T.imageHeader }}</th> \
+                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
                     <th scope="col" v-on:click="changeSort(\'name\')"> \
                        {{ T.nameHeader }} \
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
@@ -2657,15 +2690,16 @@ Vue.component('mediaItemsTable', {
                           :class="{selected: isMediaSelected(media)}" \
                           v-on:click.stop="toggleSelectionOfMedia(media)" \
                           draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name" style="height: 80px;"> \
+                          :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
                             <td> \
                                 <div class="media-name-cell"> \
-                                    {{ media.name }} \
+                                   <span class="break-word"> {{ media.name }} </span>\
                                     <div class="buttons-container"> \
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
@@ -2696,7 +2730,6 @@ Vue.component('mediaItemsTable', {
     },
     created: function () {
         var self = this;
-        // retrieving localized strings from view
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
         self.T.sizeHeader = $('#t-size-header').val();
@@ -2731,10 +2764,165 @@ Vue.component('mediaItemsTable', {
     }
 });
 
+// This component receives a list of all the items, unpaged.
+// As the user interacts with the pager, it raises events with the items in the current page.
+// It's the parent's responsibility to listen for these events and display the received items
+// <pager> component
+Vue.component('pager', {
+    template: '\
+        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">\
+            <ul class= "pagination  pagination-sm"> \
+                <li class="page-item media-first-button" :class="{disabled : !canDoFirst}"> \
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoPrev}"> \
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a> \
+                </li> \
+                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
+                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
+                        {{link}} \
+                        <span v-if="current == link -1" class="sr-only">(current)</span>\
+                    </a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoNext}"> \
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a> \
+                </li> \
+                <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a> \
+                </li> \
+                <li class="page-item ml-4 page-size-info">\
+                    <div style="display: flex;">\
+                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>\
+                        <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
+                            <option v-for="option in pageSizeOptions" v-bind:value="option"> \
+                                {{option}} \
+                            </option> \
+                        </select> \
+                    </div>\
+                </li> \
+                <li class="page-item ml-4 page-info"> \
+                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span> \
+                </li> \
+                <li class="page-item ml-4 total-info"> \
+                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span> \
+                </li> \
+            </ul> \
+        </nav>\
+        ',
+    props: {
+        sourceItems: Array
+    },
+    data: function () {
+        return {
+            pageSize: 5,
+            pageSizeOptions: [5, 10, 30, 50, 100],
+            current: 0,
+            T: {}
+        };
+    },
+    created: function () {
+        var self = this;
+
+        // retrieving localized strings from view
+        self.T.pagerFirstButton = $('#t-pager-first-button').val();
+        self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
+        self.T.pagerNextButton = $('#t-pager-next-button').val();
+        self.T.pagerLastButton = $('#t-pager-last-button').val();
+        self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
+        self.T.pagerPageLabel = $('#t-pager-page-label').val();
+        self.T.pagerTotalLabel = $('#t-pager-total-label').val();        
+    },
+    methods: {
+        next: function () {
+            this.current = this.current + 1;
+        },
+        previous: function () {
+            this.current = this.current - 1;
+        },
+        goFirst: function () {
+            this.current = 0;
+        },
+        goLast: function () {
+            this.current = this.totalPages - 1;
+        },
+        goTo: function (targetPage) {
+            this.current = targetPage;
+        }
+    },
+    computed: {
+        total: function () {
+            return this.sourceItems ? this.sourceItems.length : 0;
+        },
+        totalPages: function () {
+            var pages = Math.ceil(this.total / this.pageSize);
+            return pages > 0 ? pages : 1;
+        },
+        isLastPage: function () {
+            return this.current + 1 >= this.totalPages;
+        },
+        isFirstPage: function () {
+            return this.current === 0;
+        },
+        canDoNext: function () {
+            return !this.isLastPage;
+        },
+        canDoPrev: function () {
+            return !this.isFirstPage;
+        },
+        canDoFirst: function () {
+            return !this.isFirstPage;
+        },
+        canDoLast: function () {
+            return !this.isLastPage;
+        },
+        // this computed is only to have a central place where we detect changes and leverage Vue JS reactivity to raise our event.
+        // That event will be handled by the parent media app to display the items in the page.
+        // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
+        itemsInCurrentPage: function () {
+            var start = this.pageSize * this.current;
+            var end = start + this.pageSize;
+            var result = this.sourceItems.slice(start, end);
+            bus.$emit('pagerEvent', result);
+            return result;
+        },
+        pageLinks: function () {
+
+            var links = [];
+
+            links.push(this.current + 1);
+
+            // Add 2 items before current
+            var beforeCurrent = this.current > 0 ? this.current : -1;
+            links.unshift(beforeCurrent);
+
+            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
+            links.unshift(beforeBeforeCurrent);
+
+
+            // Add 2 items after current
+            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
+            links.push(afterCurrent);
+
+            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
+            links.push(afterAfterCurrent);
+
+            return links;
+        }
+    },
+    watch: {
+        sourceItems: function () {
+            this.current = 0; // resetting current page after receiving a new list of unpaged items
+        },
+        pageSize: function () {
+            this.current = 0;
+        }
+    }
+});
+
 // <sort-indicator> component
 Vue.component('sortIndicator', {
     template: '\
-        <div v-show="isActive" style="display: inline-block;"> \
+        <div v-show="isActive" class="sort-indicator"> \
             <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
             <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
         </div> \
@@ -2755,7 +2943,7 @@ Vue.component('sortIndicator', {
 Vue.component('upload', {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning" style=""><i class="fa fa-times"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \

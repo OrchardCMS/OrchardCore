@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using OrchardCore.Deployment.Remote.Models;
 using YesSql;
 
@@ -8,11 +10,17 @@ namespace OrchardCore.Deployment.Remote.Services
 {
     public class RemoteClientService
     {
+        private readonly IDataProtector _dataProtector;
         private readonly ISession _session;
+
         private RemoteClientList _remoteClientList;
 
-        public RemoteClientService(ISession session)
+        public RemoteClientService(
+            ISession session, 
+            IDataProtectionProvider dataProtectionProvider
+            )
         {
+            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
             _session = session;
         }
 
@@ -60,7 +68,7 @@ namespace OrchardCore.Deployment.Remote.Services
             {
                 Id = Guid.NewGuid().ToString("n"),
                 ClientName = clientName,
-                ApiKey = apiKey,
+                ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey)),
             };
 
             remoteClientList.RemoteClients.Add(remoteClient);
@@ -80,7 +88,7 @@ namespace OrchardCore.Deployment.Remote.Services
             }
 
             remoteClient.ClientName = clientName;
-            remoteClient.ApiKey = apiKey;
+            remoteClient.ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey));
 
             _session.Save(_remoteClientList);
 
