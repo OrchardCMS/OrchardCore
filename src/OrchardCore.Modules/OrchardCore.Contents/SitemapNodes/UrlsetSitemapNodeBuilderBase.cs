@@ -42,8 +42,8 @@ namespace OrchardCore.Contents.SitemapNodes
         public override async Task<XDocument> BuildNodeAsync(TSitemapNode sitemapNode, SitemapBuilderContext context)
         {
             //this does not need to recurse sitemapNode.ChildNodes. urlsets do not support children. they are end of level
-            var homeRoute = await GetHomeRoute();
-            var contentItems = await GetContentItemsToBuild(sitemapNode);
+            var homeRoute = await GetHomeRouteAsync();
+            var contentItems = await GetContentItemsToBuildAsync(sitemapNode);
 
             var root = new XElement(GetNamespace() + "urlset");
 
@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.SitemapNodes
             {
                 var url = new XElement(GetNamespace() + "url");
 
-                if (await BuildUrlsetMetadata(sitemapNode, context, homeRoute, contentItem, url))
+                if (await BuildUrlsetMetadataAsync(sitemapNode, context, homeRoute, contentItem, url))
                 {
                     root.Add(url);
                 }
@@ -88,12 +88,12 @@ namespace OrchardCore.Contents.SitemapNodes
             return mostRecentModifiedContentItem.ModifiedUtc;
         }
 
-        protected virtual async Task<bool> BuildUrlsetMetadata(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
+        protected virtual async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
         {
-            return await BuildUrl(context, contentItem, homeRoute, url);
+            return await BuildUrlAsync(context, contentItem, homeRoute, url);
         }
 
-        protected virtual async Task<IEnumerable<ContentItem>> GetContentItemsToBuild(TSitemapNode sitemapNode)
+        protected virtual async Task<IEnumerable<ContentItem>> GetContentItemsToBuildAsync(TSitemapNode sitemapNode)
         {
             List<ContentItem> contentItems = new List<ContentItem>();
             if (sitemapNode.IndexAll)
@@ -162,12 +162,7 @@ namespace OrchardCore.Contents.SitemapNodes
             return contentItems;
         }
 
-        protected virtual async Task<RouteValueDictionary> GetHomeRoute()
-        {
-            return (await _siteService.GetSiteSettingsAsync()).HomeRoute;
-        }
-
-        protected virtual async Task<bool> BuildUrl(SitemapBuilderContext context, ContentItem contentItem, RouteValueDictionary homeRoute, XElement url)
+        protected virtual async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, RouteValueDictionary homeRoute, XElement url)
         {
             //if we have no autoroute part we shouldn't include in index
             //this stops contained contentitems (and items like the footer) getting built.
@@ -210,6 +205,11 @@ namespace OrchardCore.Contents.SitemapNodes
         {
             XNamespace xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9";
             return xmlns;
+        }
+
+        protected virtual async Task<RouteValueDictionary> GetHomeRouteAsync()
+        {
+            return (await _siteService.GetSiteSettingsAsync()).HomeRoute;
         }
     }
 }

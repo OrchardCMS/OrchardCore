@@ -14,8 +14,8 @@ namespace OrchardCore.Sitemaps.Builders
         async Task<XDocument> ISitemapNodeBuilder.BuildAsync(SitemapNode sitemapNode, SitemapBuilderContext context)
         {
             var node = sitemapNode as TSitemapNode;
-
-            if (node == null || !node.Enabled)
+            //be exact type
+            if (node == null || node.GetType() != typeof(TSitemapNode) || !node.Enabled)
             {
                 return null;
             }

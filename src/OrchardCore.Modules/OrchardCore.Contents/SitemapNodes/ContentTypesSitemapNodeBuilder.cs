@@ -27,9 +27,9 @@ namespace OrchardCore.Contents.SitemapNodes
                   siteService)
         { }
 
-        protected async override Task<bool> BuildUrlsetMetadata(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
+        protected async override Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapNode sitemapNode, SitemapBuilderContext context, RouteValueDictionary homeRoute, ContentItem contentItem, XElement url)
         {
-            if (await base.BuildUrlsetMetadata(sitemapNode, context, homeRoute, contentItem, url))
+            if (await base.BuildUrlsetMetadataAsync(sitemapNode, context, homeRoute, contentItem, url))
             {
                 BuildLastMod(contentItem, url);
                 BuildChangeFrequencyPriority(sitemapNode, contentItem, url);
