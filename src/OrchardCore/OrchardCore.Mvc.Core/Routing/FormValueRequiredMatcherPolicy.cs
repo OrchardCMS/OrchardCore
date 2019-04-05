@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,14 +17,10 @@ namespace OrchardCore.Mvc.Routing
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
-            if (endpoints == null)
-            {
-                throw new ArgumentNullException(nameof(endpoints));
-            }
-
             for (var i = 0; i < endpoints.Count; i++)
             {
                 var action = endpoints[i].Metadata.GetMetadata<ActionDescriptor>();
+
                 if (action != null)
                 {
                     for (var n = 0; n < action.EndpointMetadata.Count; n++)

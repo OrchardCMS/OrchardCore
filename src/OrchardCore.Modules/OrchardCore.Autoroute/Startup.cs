@@ -61,6 +61,9 @@ namespace OrchardCore.Autoroute
                     partOptions.Collapse = true;
                 });
             });
+
+            services.AddScoped<AutorouteRoute>();
+            services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, AutorouteValuesAddressScheme>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

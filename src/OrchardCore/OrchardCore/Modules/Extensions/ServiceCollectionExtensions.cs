@@ -77,8 +77,12 @@ namespace Microsoft.Extensions.DependencyInjection
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
+            // Endpoint Selection
+            services.AddSingleton<ShellMatcherPolicyProvider>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ShellEndpointSelectorPolicy>());
-            services.AddSingleton<ShellEndpointSelectorPolicyProvider>();
+
+            // Link generation related services
+            services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();

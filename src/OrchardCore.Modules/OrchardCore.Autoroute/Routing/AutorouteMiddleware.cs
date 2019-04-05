@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Autoroute.Routing
 {
@@ -24,33 +23,16 @@ namespace OrchardCore.Autoroute.Routing
         {
             if (_entries.TryGetContentItemId(httpContext.Request.Path, out var contentItemId))
             {
-                var displayRoutes = await GetContentItemDisplayRoutes(httpContext, contentItemId);
+                var autorouteRoute = httpContext.RequestServices.GetRequiredService<AutorouteRoute>();
+                var routeValues = await autorouteRoute.GetValuesAsync(contentItemId);
 
-                if (displayRoutes != null)
+                if (routeValues != null)
                 {
-                    httpContext.Request.Path = _linkGenerator.GetPathByRouteValues(null, displayRoutes);
+                    httpContext.Request.Path = _linkGenerator.GetPathByRouteValues(null, routeValues);
                 }
             }
 
             await _next.Invoke(httpContext);
-        }
-
-        private async Task<RouteValueDictionary> GetContentItemDisplayRoutes(HttpContext context, string contentItemId)
-        {
-            if (string.IsNullOrEmpty(contentItemId))
-            {
-                return null;
-            }
-
-            var contentManager = context.RequestServices.GetService<IContentManager>();
-            var contentItem = await contentManager.GetAsync(contentItemId);
-
-            if (contentItem == null)
-            {
-                return null;
-            }
-
-            return (await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem))?.DisplayRouteValues;
         }
     }
 }

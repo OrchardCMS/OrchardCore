@@ -1,23 +1,19 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute.Routing
 {
     public class HomeRouteMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ISiteService _siteService;
+        private readonly HomePageRoute _homePageRoute;
         private readonly LinkGenerator _linkGenerator;
-        private RouteValueDictionary _homeRoute;
-        private IChangeToken _siteServicechangeToken;
 
-        public HomeRouteMiddleware(RequestDelegate next, ISiteService siteService, LinkGenerator linkGenerator)
+        public HomeRouteMiddleware(RequestDelegate next, HomePageRoute homePageRoute, LinkGenerator linkGenerator)
         {
             _next = next;
-            _siteService = siteService;
+            _homePageRoute = homePageRoute;
             _linkGenerator = linkGenerator;
         }
 
@@ -25,26 +21,15 @@ namespace OrchardCore.HomeRoute.Routing
         {
             if (httpContext.Request.Path == "/")
             {
-                var homeRoutes = GetHomeRouteValues(httpContext);
+                var routeValues = await _homePageRoute.GetValuesAsync();
 
-                if (homeRoutes != null)
+                if (routeValues != null)
                 {
-                    httpContext.Request.Path = _linkGenerator.GetPathByRouteValues(null, homeRoutes);
+                    httpContext.Request.Path = _linkGenerator.GetPathByRouteValues(null, routeValues);
                 }
             }
 
             await _next.Invoke(httpContext);
-        }
-
-        private RouteValueDictionary GetHomeRouteValues(HttpContext httpContext)
-        {
-            if (_siteServicechangeToken == null || _siteServicechangeToken.HasChanged)
-            {
-                _homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
-                _siteServicechangeToken = _siteService.ChangeToken;
-            }
-
-            return _homeRoute;
         }
     }
 }

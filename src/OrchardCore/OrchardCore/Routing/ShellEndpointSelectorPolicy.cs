@@ -11,7 +11,6 @@ namespace OrchardCore.Routing
     internal class ShellEndpointSelectorPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        //private readonly ShellEndpointSelectorPolicyProvider _policyProvider;
 
         public ShellEndpointSelectorPolicy(IHttpContextAccessor httpContextAccessor)
         {
@@ -28,13 +27,12 @@ namespace OrchardCore.Routing
             }
 
             var matchers = _httpContextAccessor.HttpContext?.RequestServices
-                .GetRequiredService<ShellEndpointSelectorPolicyProvider>()
+                .GetRequiredService<ShellMatcherPolicyProvider>()
                 .GetPolicies();
 
             foreach (var matcher in matchers)
             {
-                if (matcher is IEndpointSelectorPolicy policy &&
-                    policy.AppliesToEndpoints(endpoints))
+                if (matcher is IEndpointSelectorPolicy policy && policy.AppliesToEndpoints(endpoints))
                 {
                     return true;
                 }
@@ -46,7 +44,7 @@ namespace OrchardCore.Routing
         public Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
         {
             var matchers = _httpContextAccessor.HttpContext?.RequestServices
-                .GetRequiredService<ShellEndpointSelectorPolicyProvider>()
+                .GetRequiredService<ShellMatcherPolicyProvider>()
                 .GetPolicies();
 
             foreach (var matcher in matchers)

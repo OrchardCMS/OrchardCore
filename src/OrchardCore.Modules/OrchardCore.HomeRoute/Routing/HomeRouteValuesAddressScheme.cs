@@ -1,0 +1,57 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Patterns;
+
+namespace OrchardCore.HomeRoute.Routing
+{
+    internal sealed class HomeRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+    {
+        private readonly HomePageRoute _homePageRoute;
+
+        public HomeRouteValuesAddressScheme(HomePageRoute homePageRoute)
+        {
+            _homePageRoute = homePageRoute;
+        }
+
+        public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
+        {
+            if (address.AmbientValues == null || address.ExplicitValues == null)
+            {
+                return Enumerable.Empty<Endpoint>();
+            }
+
+            string contentItemId = address.ExplicitValues["contentItemId"]?.ToString();
+
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return Enumerable.Empty<Endpoint>();
+            }
+
+            var explicitValues = address.ExplicitValues;
+
+            var routeValues = _homePageRoute.GetValuesAsync().GetAwaiter().GetResult();
+
+            if (string.Equals(explicitValues["area"]?.ToString(), routeValues?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(explicitValues["controller"]?.ToString(), routeValues?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(explicitValues["action"]?.ToString(), routeValues?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(explicitValues["contentItemId"]?.ToString(), routeValues?["contentItemId"]?.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                var endpoint = new RouteEndpoint
+                (
+                    c => null,
+                    RoutePatternFactory.Parse("/", explicitValues, null),
+                    0,
+                    null,
+                    null
+                );
+
+                return new[] { endpoint };
+            }
+
+            return Enumerable.Empty<Endpoint>();
+        }
+    }
+}

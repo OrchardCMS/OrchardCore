@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
@@ -7,24 +6,27 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Routing
 {
-    internal class ShellEndpointSelectorPolicyProvider
+    internal class ShellMatcherPolicyProvider
     {
+        private readonly IEnumerable<MatcherPolicy> _hostMatcherPolicies;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<MatcherPolicy> _hostMatchers;
 
-        public ShellEndpointSelectorPolicyProvider(IHttpContextAccessor httpContextAccessor, IServiceProvider services)
+        public ShellMatcherPolicyProvider(
+            IEnumerable<MatcherPolicy> hostMatcherPolicies,
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-            _hostMatchers = services.GetServices<MatcherPolicy>().ToList();
+            _hostMatcherPolicies = hostMatcherPolicies;
         }
 
         public IEnumerable<MatcherPolicy> GetPolicies()
         {
+            // Retrieve all tenant level matcher policies.
             return (_httpContextAccessor.HttpContext?.RequestServices
                 .GetServices<MatcherPolicy>()
                 .OrderBy(m => m.Order)
                 ?? Enumerable.Empty<MatcherPolicy>())
-                .Except(_hostMatchers);
+                .Except(_hostMatcherPolicies);
         }
     }
 }

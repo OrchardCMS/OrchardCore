@@ -18,4 +18,11 @@
 
 {% shape_remove_item Model.Content "HtmlBodyPart" %}
 
+    {% a display_for:Model.ContentItem %}
+        <h2 class="post-title">
+            Test: {{ Model.ContentItem.DisplayText }}
+        </h2>
+    {% enda %}
+
+
 {{ Model.Content | shape_render }}
