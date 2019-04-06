@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentManagement;
+using YesSql.Indexes;
+
+namespace OrchardCore.ContentLocalization.Records
+{
+    public class LocalizedContentItemIndex : MapIndex
+    {
+        public string ContentItemId { get; set; }
+        public string LocalizationSet { get; set; }
+        public string Culture { get; set; }
+    }
+
+    public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>
+    {
+        public override void Describe(DescribeContext<ContentItem> context)
+        {
+            context.For<LocalizedContentItemIndex>()
+                .Map(contentItem =>
+                {
+                    var localizationPart = contentItem.As<LocalizationPart>();
+
+                    if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
+                    {
+                        return null;
+                    }
+
+                    return new LocalizedContentItemIndex
+                    {
+                        Culture = localizationPart.Culture.ToLowerInvariant(),
+                        LocalizationSet = localizationPart.LocalizationSet,
+                        ContentItemId = contentItem.ContentItemId,
+                    };
+                });
+        }
+    }
+}

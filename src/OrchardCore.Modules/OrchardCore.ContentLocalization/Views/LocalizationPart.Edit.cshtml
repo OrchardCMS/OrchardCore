@@ -1,0 +1,70 @@
+@using System.Globalization
+@using OrchardCore.ContentManagement;
+@using OrchardCore.ContentLocalization.Models;
+@model LocalizationPartViewModel
+@inject OrchardCore.Settings.ISiteService SiteService
+@inject OrchardCore.ContentLocalization.IContentLocalizationManager contentLocalization
+
+
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+    var translations = await contentLocalization.GetItemsForSet(Model.LocalizationSet);
+
+
+    // current culture or default site culture if not set.
+    //var currentCulture = @CultureInfo.GetCultureInfo(string.IsNullOrEmpty(Model.Culture) ? site.Culture : Model.Culture );
+
+}
+<input asp-for="LocalizationSet" type="hidden" />
+<fieldset class="form-group" asp-validation-class-for="Culture">
+    <label asp-for="Culture">@T["Content Culture"]</label>
+    <select asp-for="Culture" class="form-control">
+        @foreach (var culture in Model.SiteCultures)
+        {
+            // only show the unlocalized cultures and the current culture
+            if (string.IsNullOrEmpty(culture.ContentItemId) || culture.ContentItemId == Model.LocalizationPart.ContentItem.ContentItemId)
+            {
+                <option value="@culture.Culture.Name" selected="@String.Equals(Model.Culture, culture.Culture.Name, StringComparison.OrdinalIgnoreCase)">
+                    @culture.Culture.Name | @culture.Culture.DisplayName
+                </option>
+            }
+        }
+    </select>
+</fieldset>
+
+
+<div class="form-group">
+
+    <p>@T["Content Localization"]</p>
+    @if (!string.IsNullOrEmpty(Model.LocalizationSet))
+    {
+        <ul>
+            @foreach (var culture in Model.SiteCultures)
+            {
+                <li>
+                    @culture.Culture.Name | @culture.Culture.DisplayName -
+                    @if (culture.ContentItemId != null)
+                    {
+                        if (culture.ContentItemId == Model.LocalizationPart.ContentItem.ContentItemId)
+                        {
+                            @T["Current Culture"];
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Edit"]</a>
+                        }
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Create"]</a>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        @T["Please save your content item before creating localizations"]
+    }
+
+</div>
