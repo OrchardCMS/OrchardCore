@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -8,6 +8,8 @@ namespace OrchardCore.Contents
 
         // Note - in code you should demand PublishContent, EditContent, or DeleteContent
         // Do not demand the "Own" variations - those are applied automatically when you demand the main ones
+
+        // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController
 
         public static readonly Permission PublishContent = new Permission("PublishContent", "Publish or unpublish content for others");
         public static readonly Permission PublishOwnContent = new Permission("PublishOwnContent", "Publish or unpublish own content", new[] { PublishContent });

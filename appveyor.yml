@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Windows Server 2019
 
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
@@ -6,6 +6,13 @@ branches:
   only:
     - master
     - dev
+
+# Do not build if there are only documentation changes
+skip_commits:
+  files:
+    - '**/*.md'
+    - mkdocs.yml
+    - src/docs/**/*
 
 environment:
   global:

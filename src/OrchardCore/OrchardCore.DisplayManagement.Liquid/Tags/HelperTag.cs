@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class HelperTag : ArgumentsTag
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
             return new HelperStatement(new ArgumentsExpression(arguments)).WriteToAsync(writer, encoder, context);
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperBlock : ArgumentsBlock
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, List<Statement> statements)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, List<Statement> statements)
         {
             return new HelperStatement(new ArgumentsExpression(arguments), null, statements).WriteToAsync(writer, encoder, context);
         }
@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             _helper = helper;
         }
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
             {

@@ -25,6 +25,7 @@ afterAll(async () => {
 
     orchard.stop();
     orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
+    orchard.printLog();
 });
 
 describe('Nancy', () => {

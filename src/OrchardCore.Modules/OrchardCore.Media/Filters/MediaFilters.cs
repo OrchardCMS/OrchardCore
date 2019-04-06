@@ -15,18 +15,18 @@ namespace OrchardCore.Media.Filters
             _mediaFileStore = mediaFileStore;
         }
 
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
             var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
 
-            return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
+            return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }
     }
 
     public class ImageTagFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
@@ -39,13 +39,13 @@ namespace OrchardCore.Media.Filters
 
             imgTag += " />";
 
-            return Task.FromResult<FluidValue>(new StringValue(imgTag) { Encode = false });
+            return new ValueTask<FluidValue>(new StringValue(imgTag) { Encode = false });
         }
     }
 
     public class ResizeUrlFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Media.Filters
 
             var width = arguments["width"].Or(arguments.At(0));
             var height = arguments["height"].Or(arguments.At(1));
-            var mode = arguments["mode"];
+            var mode = arguments["mode"].Or(arguments.At(2));
 
             if (!width.IsNil())
             {
@@ -73,7 +73,7 @@ namespace OrchardCore.Media.Filters
                 url += "&rmode=" + mode.ToStringValue();
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(url));
+            return new ValueTask<FluidValue>(new StringValue(url));
         }
     }
 }

@@ -1,22 +1,59 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
+        private static string[] DefaultAllowedFileExtensions = new string[] {
+            // Images
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".ico",
+            ".svg",
+
+            // Documents
+            ".pdf", // (Portable Document Format; Adobe Acrobat)
+            ".doc", ".docx", // (Microsoft Word Document)
+            ".ppt", ".pptx", ".pps", ".ppsx", // (Microsoft PowerPoint Presentation)
+            ".odt", // (OpenDocument Text Document)
+            ".xls", ".xlsx", // (Microsoft Excel Document)
+            ".psd", // (Adobe Photoshop Document)
+
+            // Audio
+            ".mp3",
+            ".m4a",
+            ".ogg",
+            ".wav",
+
+            // Video
+            ".mp4", ".m4v", // (MPEG-4)
+            ".mov", // (QuickTime)
+            ".wmv", // (Windows Media Video)
+            ".avi",
+            ".mpg",
+            ".ogv", // (Ogg)
+            ".3gp", // (3GPP)
+        };
+
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
 
@@ -24,15 +61,16 @@ namespace OrchardCore.Media.Controllers
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
+            IShellConfiguration shellConfiguration,
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
+            _shellConfiguration = shellConfiguration;
             _logger = logger;
             T = stringLocalizer;
-            
         }
 
         public async Task<IActionResult> Index()
@@ -129,14 +167,48 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var result = new List<object>();
+            var section = _shellConfiguration.GetSection("OrchardCore.Media");
 
-            // TODO: Validate file extensions
+            // var maxUploadSize = section.GetValue("MaxRequestBodySize", 100_000_000);
+            var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
+            var allowedFileExtensions = section.GetValue("AllowedFileExtensions", DefaultAllowedFileExtensions);
+
+            var result = new List<object>();
 
             // Loop through each file in the request
             foreach (var file in files)
             {
                 // TODO: support clipboard
+
+                if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                {
+                    result.Add(new
+                    {
+                        name = file.FileName,
+                        size = file.Length,
+                        folder = path,
+                        error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
+                    });
+
+                    _logger.LogInformation($"File extension not allowed: '{file.FileName}'");
+
+                    continue;
+                }                
+
+                if (file.Length > maxFileSize)
+                {
+                    result.Add(new
+                    {
+                        name = file.FileName,
+                        size = file.Length,
+                        folder = path,
+                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
+                    });
+
+                    _logger.LogInformation($"File too big: '{file.FileName}' ({file.Length}B)");
+
+                    continue;
+                }
 
                 try
                 {

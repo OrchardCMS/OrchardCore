@@ -288,7 +288,7 @@ namespace OrchardCore.Tenants.Controllers
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public string GetTenantUrl(ShellSettings shellSettings, string token)
+        private string GetTenantUrl(ShellSettings shellSettings, string token)
         {
             var requestHostInfo = Request.Host;
 

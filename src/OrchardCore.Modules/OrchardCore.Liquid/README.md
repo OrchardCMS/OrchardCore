@@ -9,7 +9,7 @@ For more information about the Liquid syntax, please refer to this site: <https:
 
 All outputs are encoded into HTML by default.
 This means that any HTML reserved chars will be converted to the corresponding HTML entities.
-If you need to render some raw HTML chars you can use the `Raw` filter.
+If you need to render some raw HTML chars you can use the `raw` filter.
 
 ## Content Item Filters
 
@@ -213,6 +213,7 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
+| `Identity.Claims` |  | The claims of the authenticated user. |
 
 ### Site
 

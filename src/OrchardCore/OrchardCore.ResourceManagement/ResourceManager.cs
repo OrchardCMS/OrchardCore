@@ -432,7 +432,7 @@ namespace OrchardCore.ResourceManagement
                 _metas = new Dictionary<string, MetaEntry>();
             }
 
-            var index = meta.Name ?? meta.HttpEquiv ?? "charset";
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
             _metas[index] = meta;
         }
@@ -444,7 +444,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            var index = meta.Name ?? meta.HttpEquiv;
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv;
 
             if (String.IsNullOrEmpty(index))
             {

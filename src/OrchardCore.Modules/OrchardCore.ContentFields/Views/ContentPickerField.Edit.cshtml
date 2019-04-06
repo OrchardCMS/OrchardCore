@@ -33,10 +33,11 @@
     <ul class="list-group col-xl-6 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
         <draggable v-model="arrayOfItems" >
             <li v-for="(item, i) in arrayOfItems"
-            class="list-group-item content-picker-default__list-item" 
-            :key="item.contentItemId">{{ item.displayText }} <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span>
+            class="list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between" 
+            :key="item.contentItemId">
+                <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span> <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span></div>
 
-                <div class="btn-group btn-group-sm float-right" role="group">
+                <div class="btn-group btn-group-sm align-items-center" role="group">
                     <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete" ><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
                 </div>
             </li>
@@ -57,6 +58,7 @@
             <template slot="option" slot-scope="props">
                 <div  v-cloak><span>{{ props.option.displayText }}</span><span class="small ml-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
             </template>
+            <template slot="noResult">@T["No result found"]</template>
         </vue-multiselect>
         @if (!String.IsNullOrEmpty(settings.Hint))
         {

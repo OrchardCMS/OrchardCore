@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Services
             return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string activityName, string correlationId = null)
+        public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
         {
             var query = await _session
                 .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>

@@ -23,6 +23,6 @@ namespace OrchardCore.Liquid.Ast
             return new DelegateStatement((writer, encoder, ctx) => WriteToAsync(writer, encoder, ctx, expression, arguments));
         }
 
-        public abstract Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression term, FilterArgument[] arguments);
+        public abstract ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression term, FilterArgument[] arguments);
     }
 }
