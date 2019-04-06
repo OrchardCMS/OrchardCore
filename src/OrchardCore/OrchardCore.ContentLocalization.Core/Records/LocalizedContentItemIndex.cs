@@ -23,7 +23,7 @@ namespace OrchardCore.ContentLocalization.Records
                 {
                     var localizationPart = contentItem.As<LocalizationPart>();
 
-                    if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
+                    if (string.IsNullOrEmpty(localizationPart?.LocalizationSet))
                     {
                         return null;
                     }

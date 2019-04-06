@@ -19,6 +19,7 @@ namespace OrchardCore.ContentLocalization
         public override void ConfigureServices(IServiceCollection services)
         {      
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
+            services.AddScoped<IContentDisplayDriver, SummaryAdminDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
 
             services.AddContentLocalization();

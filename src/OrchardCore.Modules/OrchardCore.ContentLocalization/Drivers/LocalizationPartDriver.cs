@@ -38,14 +38,6 @@ namespace OrchardCore.ContentLocalization.Drivers
             T = localizer;
         }
 
-        //public override IDisplayResult Display(LocalizationPart localizationPart, BuildPartDisplayContext context)
-        //{
-        //    return Initialize<LocalizationPartViewModel>("LocalizationPart", m => BuildViewModel(m, localizationPart))
-        //        .Location("Detail", "Content:5")
-        //        .Location("Summary", "Content:10");
-        //}
-
-
         public override IDisplayResult Edit(LocalizationPart localizationPart)
         {
             
@@ -72,13 +64,37 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.Culture = localizationPart.Culture;
             model.LocalizationSet = localizationPart.LocalizationSet;
             model.LocalizationPart = localizationPart;
-            model.SiteCultures = settings.SupportedCultures.Select(culture =>
+
+
+            // todo: cleanup this code
+
+            var currentCultures = settings.SupportedCultures.Select(culture =>
             {
-                return new LocalizationLinksViewModel() {
+                return new LocalizationLinksViewModel()
+                {
+                    IsDeleted = false,
                     Culture = CultureInfo.GetCultureInfo(culture),
-                    // This code feels wrong
-                    ContentItemId = alreadyTranslated.FirstOrDefault(c=>c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId };
-            });
+                    ContentItem = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture),
+                };
+            }).ToList();
+
+            var deletedCultureTranslations = alreadyTranslated.Select(ci =>
+              {
+                  var culture = ci.As<LocalizationPart>()?.Culture;
+                  if (currentCultures.Any(c=>c.ContentItem.ContentItemId == ci.ContentItemId))
+                  {
+                      return null;
+                  }
+                  return new LocalizationLinksViewModel()
+                  {
+                      IsDeleted = true,
+                      Culture = CultureInfo.GetCultureInfo(ci.As<LocalizationPart>()?.Culture),
+                      ContentItem = ci
+                  };
+              }
+            ).OfType<LocalizationLinksViewModel>().ToList();
+
+            model.SiteCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
         }
     }
 }
