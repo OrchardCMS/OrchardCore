@@ -1,20 +1,7 @@
 @using System.Globalization
-@using OrchardCore.ContentManagement;
-@using OrchardCore.ContentLocalization.Models;
 @model LocalizationPartViewModel
-@inject OrchardCore.Settings.ISiteService SiteService
-@inject OrchardCore.ContentLocalization.IContentLocalizationManager contentLocalization
 
 
-@{
-    var site = await SiteService.GetSiteSettingsAsync();
-    var translations = await contentLocalization.GetItemsForSet(Model.LocalizationSet);
-
-
-    // current culture or default site culture if not set.
-    //var currentCulture = @CultureInfo.GetCultureInfo(string.IsNullOrEmpty(Model.Culture) ? site.Culture : Model.Culture );
-
-}
 <input asp-for="LocalizationSet" type="hidden" />
 
 @if (!Model.SiteCultures.Any())
