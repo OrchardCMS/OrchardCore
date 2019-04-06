@@ -48,6 +48,7 @@ namespace OrchardCore.Contents.Feeds.Builders
 
                     feedItem.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
                     feedItem.Element.Add(link);
+
                     feedItem.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
 
                     if (contentItem.PublishedUtc != null)
