@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Sitemaps.Services
 {
@@ -14,10 +15,13 @@ namespace OrchardCore.Sitemaps.Services
         private readonly IServiceProvider _serviceProvider;
         //keep in memory rather than in MemoryCache for performance?
         private Dictionary<string, string> _routes;
+        private string _tenantPrefix;
 
-        public SitemapRoute(IServiceProvider serviceProvider)
+        public SitemapRoute(IServiceProvider serviceProvider,
+            ShellSettings shellSettings)
         {
             _serviceProvider = serviceProvider;
+            _tenantPrefix = (shellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
         }
 
         public async Task<bool> MatchSitemapRouteAsync(string path)
@@ -27,6 +31,7 @@ namespace OrchardCore.Sitemaps.Services
             {
                 await BuildSitemapRoutes();
             }
+            path = !String.IsNullOrEmpty(_tenantPrefix) ? _tenantPrefix + '/' + path : path;
             return _routes.ContainsKey(path);
         }
 
@@ -37,6 +42,7 @@ namespace OrchardCore.Sitemaps.Services
             {
                 await BuildSitemapRoutes();
             }
+            path = !String.IsNullOrEmpty(_tenantPrefix) ? _tenantPrefix + '/' + path : path;
             if (_routes.TryGetValue(path, out string nodeId))
             {
                 return nodeId;
@@ -54,6 +60,7 @@ namespace OrchardCore.Sitemaps.Services
             foreach (var sitemapSet in sitemapSets.Where(x => x.Enabled))
             {
                 var rootPath = sitemapSet.RootPath.TrimStart('/');
+                rootPath = !String.IsNullOrEmpty(_tenantPrefix) ? _tenantPrefix + '/' + rootPath : rootPath;
                 BuildNodeRoutes(sitemapSet.SitemapNodes, rootPath);
             }
         }

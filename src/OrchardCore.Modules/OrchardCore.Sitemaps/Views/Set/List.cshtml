@@ -1,5 +1,8 @@
 @model SitemapSetListViewModel
-
+@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
+@{
+    var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
+}
 <style asp-src="~/OrchardCore.Sitemaps/Styles/sitemaps.min.css" debug-src="~/OrchardCore.Sitemaps/Styles/sitemaps.css" at="Head" depends-on="admin"></style>
 <script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemaps.js" at="Foot" depends-on="admin"></script>
 
@@ -45,7 +48,10 @@
                             </div>
                         </div>
                     </div>
-                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.SitemapSet.Id" class="tree-name-link">@entry.SitemapSet.Name</a>&nbsp;<code>@entry.SitemapSet.RootPath</code>
+                    @{
+                        var path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + entry.SitemapSet.RootPath : entry.SitemapSet.RootPath;
+                    }
+                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.SitemapSet.Id" class="tree-name-link">@entry.SitemapSet.Name</a>&nbsp;<code>@path</code>
                 </li>
             }
         </ul>

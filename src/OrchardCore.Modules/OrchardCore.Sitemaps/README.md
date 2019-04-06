@@ -5,7 +5,10 @@ The sitemaps module provides automatic generation of sitemaps.
 ## General Concepts
 
 Sitemaps are configured by creating a Sitemap Set.
+
 A Sitemap Set is a container for one, or many, Sitemap Nodes, and provides a base url that the Node(s) will be served under.
+
+Tenants are supported, and if used with a url prefix, this will be prepended to the Sitemap Set base url.
 
 ## How to create a Sitemap Set
 
@@ -17,7 +20,7 @@ A Sitemap Set is a container for one, or many, Sitemap Nodes, and provides a bas
 
 * Set the base path for the Sitemap Set. If serving of the site root specify '/', or specify a further path, i.e. /blogs/
 
-* As you create a Sitemap Node you will need to specify a path and filename, e.g. site.com/sitemap.xml.
+* As you create a Sitemap Node you will need to specify a path and filename, e.g. `http://site.com/sitemap.xml`
 
 * The sitemap can now be browsed to and will be served on that path.
 
@@ -32,43 +35,46 @@ It can only be created at the root of a Sitemap Set. You cannot contain indexes 
 ## Sitemap Content Types Node
 
 The Sitemap Content Types Node will provide a sitemap for your content items. The path will be based on the Sitemap Set's root path,
-and the filename you choose. It must end in .xml.
+and the filename you choose. It must end in `.xml`
 
 This will produce xml that matches the urlset schema `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"/>`
 
-You can choose to serve all Content Types on this Node, or you can limit the Content Types on this Node. 
+You can choose to serve all Content Types on this Node, or specifiy the Content Types indexed on this Node. 
 
 The latter configuration is generally used in combination with a Sitemap Index to limit the size of Sitemaps,
 and make maintaining the Sitemap easier. 
 
 Google limit the size of a sitemap to either 50,000 items, or 10MB whichever is reached first. 
-If you need to limit the quantity of Content Items in a Sitemap uncheck Index All Content Types, select the Content Type to Index, 
-uncheck Include All, and choose to Skip x number of Content Items and Take x number of Content Items. For the remaining Content Items,
-create another Sitemap Content Types Node, and repeat choosing different values for Skip and Take as appropriate.
-We strongly recommend if you need to do this to seperate the large quantity of Content Items into one Sitemap per large Content Type,
+If you need to limit the quantity of Content Items in a Sitemap 
+* Uncheck Index All Content Types, and select the Content Type to Index.
+* On the settings for the Content Type, uncheck Include All.
+* Choose to Skip `x` number of Content Items and Take `x` number of Content Items. 
+
+* For the remaining Content Items, create another Sitemap Content Types Node, and repeat choosing different values for Skip and Take as appropriate.
+
+We strongly recommend if you need to do this, seperate the large quantity of Content Items into multiple Sitemaps with a Sitemap Index,
 and serve the other Content Types from a different Sitemap Node.
 
-You may also select the default Priority, and Change Frequency, either for all Content Types, or individual Content Types. 
+You may also select the default Priority, and Change Frequency, either for all Content Types, or individual Content Types.
+
 To override this at an individual Content Item level you will need to attach the SitemapPart.
 
 Note: If the Homepage Content Item is provided in the selection of Content Types it will use the site root as it's url,
-rather than any other route that is assigned to it from the AutoroutePart. This is so that Google does not attempt to index the page,
-on it's 'other' url.
+rather than any other route that is assigned to it from the AutoroutePart. 
 
-//TODO ad tenant prefix to base root
+This is so that Google does not attempt to index the page, on it's 'other' url.
 
 ## SitemapPart
 
-Add the SitemapPart to a content item to provide sitemap configuration at a Content Item level.
+Add the SitemapPart to a Content Type to provide sitemap configuration at a Content Item level.
+
 Settings here will override any Sitemap Node configuration.
 
-Check to override the Sitemap Set configuration.
-You can choose to exclude just this Content Item from any Sitemap Node, or alter the Priority, or Change Frequency.
+* Check to override the Sitemap Set configuration.
+* Exclude the Content Item, or
+* Alter the Priority, or Change Frequency.
 
-//TODO remove part settings, they're unecesary'
-
-
-## Extending the Content Types Sitemap Node
+You do not have to add the SitemapPart to a Content Type for it to be part of a Sitemap Node.
 
 ## Developing Custom Sitemap Nodes
 
@@ -76,13 +82,13 @@ Any module can add it's own custom sitemap nodes so that they can be used by use
 
 Commonly the steps that you follow in order to do that are:
 
-* Add a class that inherits from `SitemapNode`. On this class add the specific properties that you want for your node type. This is the info that will go into the database.
+* Add a class that inherits from `SitemapNode`. On this class add the specific properties that you want for your Node. This is the info that will go into the database.
 
-* Add a Driver to handle the display and edit of your sitemap node on the Sitemap. This won't handle the actual rendering of the sitemap node. Drivers are only about the views required to create and edit the sitemap node.
+* Add a Driver to handle the display and edit of your sitemap node on the Sitemap. This won't handle the actual generation of the sitemap node. Drivers are only about the views required to create and edit the Sitemap Node.
 
 * Optionally, you could implement a ViewModel to move info between the edit views and the driver.
 
-* Create the views required to create and edit the sitemap nodes based on your node type.
+* Create the views required to create and edit the Sitemap Nodes based on your Node type.
 
 * Add a class that inherits from SitemapNodeBuilderBase<TCustomSitemapNode>. 
 
@@ -111,7 +117,7 @@ Most of the steps are similar to creating a Custom Sitemap Node with the followi
 
 * Override `GetContentItemsToBuildAsync()` to change how you are querying for Content Items
 
-* Override `BuildUrlAsync()` to include extra metadata from the ContentItem in the urlset
+* Override `BuildUrlAsync()` to include extra metadata from the Content Item in the urlset
 
 
 ## CREDITS

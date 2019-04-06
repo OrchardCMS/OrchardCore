@@ -13,9 +13,5 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         [BindNever]
         public SitemapPart SitemapPart { get; set; }
-        
-        [BindNever]
-        public SitemapPartSettings Settings { get; set; }
-
     }
 }

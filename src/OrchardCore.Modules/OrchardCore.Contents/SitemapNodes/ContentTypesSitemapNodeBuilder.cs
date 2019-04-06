@@ -86,7 +86,5 @@ namespace OrchardCore.Contents.SitemapNodes
             lastMod.Add(contentItem.ModifiedUtc.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
             url.Add(lastMod);
         }
-
-
     }
 }

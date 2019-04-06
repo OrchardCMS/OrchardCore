@@ -2,7 +2,7 @@
 
 @inject OrchardCore.DisplayManagement.IDisplayManager<SitemapNode> SitemapNodeDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-
+@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
     SitemapNode sitemapNode = Model.SitemapNode;
     var sitemapNodeType = sitemapNode.GetType();
@@ -15,7 +15,9 @@
     disabledClass = sitemapNode.Enabled ? "" : "disabled-sitemap-node";
     toggleButtonText = sitemapNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
 
-    var path = sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
+    var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
+    var path =  sitemapNode.SitemapSet.RootPath + sitemapNode.Path;
+    path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + '/' + path : path;
 }
 
 <li class="sitemap-node display-summary @(!sitemapNode.CanSupportChildNodes ? "cannot-support-child-node" : "") @(!sitemapNode.CanBeChildNode ? "cannot-be-child": "")" id="sitemap-node-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.SitemapNode.Id">

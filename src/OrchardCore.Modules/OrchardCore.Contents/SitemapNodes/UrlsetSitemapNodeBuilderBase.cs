@@ -18,6 +18,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.SitemapNodes
 {
+    //TODO not totally happy with this arrangement, but till we work on localization, and images, hard to say how it is best arranged.
     public abstract class UrlsetSitemapNodeBuilderBase<TSitemapNode> : SitemapNodeBuilderBase<TSitemapNode> where TSitemapNode : ContentTypesSitemapNode
     {
         protected readonly ISession _session;

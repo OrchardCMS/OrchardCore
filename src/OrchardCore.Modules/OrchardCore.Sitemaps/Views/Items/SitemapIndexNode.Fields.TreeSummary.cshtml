@@ -1,6 +1,9 @@
 @model ShapeViewModel<SitemapIndexNode>
+@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
+    var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
     var path = Model.Value.SitemapSet.RootPath + Model.Value.Path;
+    path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + path : path;
 }
 <div class="@(Model.Value.Enabled ? "" : "disabled")">
     <span>@Model.Value.Description <code>@path</code> <span class="text-muted">- @T["Sitemap Index"]</span></span>

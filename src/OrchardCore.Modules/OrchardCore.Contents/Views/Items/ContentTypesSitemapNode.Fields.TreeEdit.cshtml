@@ -1,6 +1,7 @@
 @using OrchardCore.Sitemaps.Models
 @model ContentTypesSitemapNodeViewModel
 @inject OrchardCore.Settings.ISiteService SiteService
+@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
     var site = await SiteService.GetSiteSettingsAsync();
 }
@@ -22,7 +23,8 @@
                 <label asp-for="Path">@T["Path"]</label>
                 <div class="input-group">
                     @{
-                        String prependPath = site.BaseUrl + Model.SitemapNode.SitemapSet.RootPath;
+                        var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
+                        var prependPath = !String.IsNullOrEmpty(tenantPrefix) ? site.BaseUrl + tenantPrefix + Model.SitemapNode.SitemapSet.RootPath : site.BaseUrl + Model.SitemapNode.SitemapSet.RootPath;
                     }
                     @if (!String.IsNullOrWhiteSpace(prependPath))
                     {
@@ -124,9 +126,9 @@
                             </div>
                             <div class="col-12 col-md-3">
                                 <div class="d-flex flex-column justify-content-center content-types-take-container">
-                                    <div class="form-group custom-control custom-checkbox d-flex mb-2 justify-content-center">
-                                        <label asp-for="ContentTypes[i].TakeAll" class="custom-control-label">@T["Include all"]</label>
+                                    <div class="form-group custom-control custom-checkbox d-flex mb-2">
                                         <input asp-for="ContentTypes[i].TakeAll" class="custom-control-input content-types-take-all-checkbox" disabled="@notChecked" />
+                                        <label asp-for="ContentTypes[i].TakeAll" class="custom-control-label">@T["Include all"]</label>
                                     </div>
                                     <div class="form-group form-inline" style="@(takeAll ? "display: none" : "")">
                                         <label asp-for="ContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>

@@ -3,15 +3,16 @@
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.Settings.ISiteService SiteService
+@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 @{
     var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
 
     var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
 
     var selectedDisplayNames = allContentTypes
-        .Where(x => isSelected(x, selectedContentTypes))
-        .Select(x => x.DisplayName)
-        .ToList();
+    .Where(x => isSelected(x, selectedContentTypes))
+    .Select(x => x.DisplayName)
+    .ToList();
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeSitemapEntry[] selectedList)
     {
@@ -20,10 +21,12 @@
     var site = await SiteService.GetSiteSettingsAsync();
 }
 
-<div class="@(Model.Value.Enabled ? "" : "disabled")">
+<div class="@(Model.Value.Enabled ? " " : " disabled")">
     <span>@Model.Value.Description</span>
-    @{ 
+    @{
+        var tenantPrefix = (ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
         var path = Model.Value.SitemapSet.RootPath + Model.Value.Path;
+        path = !String.IsNullOrEmpty(tenantPrefix) ? tenantPrefix + path : path;
     }
     <code>@path</code>
     @if (Model.Value.IndexAll)

@@ -32,7 +32,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapSetService = sitemapSetService;
         }
 
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; }
 
         public async Task<IActionResult> Index()
         {
@@ -55,7 +55,7 @@ namespace OrchardCore.Sitemaps.Controllers
             document.Declaration = new XDeclaration("1.0", "utf-8", null);
             StringWriter writer = new Utf8StringWriter();
             document.Save(writer, SaveOptions.None);
-            //TODO check size for > 10MB and log
+            //TODO check size for > 10MB and log or move these type of checks into a ValidateAsync as part of google ping
             return Content(writer.ToString(), "application/xml", Encoding.UTF8);
         }
 

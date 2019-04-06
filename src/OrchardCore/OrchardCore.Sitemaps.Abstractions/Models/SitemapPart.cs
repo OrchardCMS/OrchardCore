@@ -13,7 +13,5 @@ namespace OrchardCore.Sitemaps.Models
         public float Priority { get; set; } = 0.5f;
 
         public bool Exclude { get; set; }
-
-        public SitemapPartSettings Settings { get; set; }
     }
 }

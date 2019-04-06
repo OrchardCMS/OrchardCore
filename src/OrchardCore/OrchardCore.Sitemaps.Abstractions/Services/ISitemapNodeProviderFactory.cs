@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Sitemaps.Services
 {
