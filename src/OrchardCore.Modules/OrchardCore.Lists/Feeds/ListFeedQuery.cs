@@ -64,10 +64,7 @@ namespace OrchardCore.Lists.Feeds
                 context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
-                if (bodyAspect.Body != null)
-                {
-                    context.Response.Element.SetElementValue("description", bodyAspect.Body.ToString());
-                }
+                context.Response.Element.SetElementValue("description", bodyAspect.Body?.ToString());
 
                 context.Response.Contextualize(contextualize =>
                 {
@@ -81,10 +78,7 @@ namespace OrchardCore.Lists.Feeds
             {
                 context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
 
-                if (bodyAspect.Body != null)
-                {
-                    context.Builder.AddProperty(context, null, "description", bodyAspect.Body.ToString());
-                }
+                context.Builder.AddProperty(context, null, "description", bodyAspect.Body?.ToString());
 
                 context.Response.Contextualize(contextualize =>
                 {
