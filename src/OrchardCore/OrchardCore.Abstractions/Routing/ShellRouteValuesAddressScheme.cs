@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Routing
 {
-    internal sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+    public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 

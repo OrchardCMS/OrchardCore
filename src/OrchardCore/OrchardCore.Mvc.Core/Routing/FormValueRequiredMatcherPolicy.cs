@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing.Matching;
 
 namespace OrchardCore.Mvc.Routing
 {
-    internal class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
+    public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
         public FormValueRequiredMatcherPolicy()
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -26,13 +27,14 @@ namespace OrchardCore.Routing
                 throw new ArgumentNullException(nameof(endpoints));
             }
 
-            var matchers = _httpContextAccessor.HttpContext?.RequestServices
+            var policies = _httpContextAccessor.HttpContext?.RequestServices
                 .GetRequiredService<ShellMatcherPolicyProvider>()
-                .GetPolicies();
+                .GetEndpointSelectorPolicies()
+                ?? Enumerable.Empty<IEndpointSelectorPolicy>();
 
-            foreach (var matcher in matchers)
+            foreach (var policy in policies)
             {
-                if (matcher is IEndpointSelectorPolicy policy && policy.AppliesToEndpoints(endpoints))
+                if (policy.AppliesToEndpoints(endpoints))
                 {
                     return true;
                 }
@@ -41,21 +43,16 @@ namespace OrchardCore.Routing
             return false;
         }
 
-        public Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
+        public async Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
         {
-            var matchers = _httpContextAccessor.HttpContext?.RequestServices
+            var policies = httpContext.RequestServices
                 .GetRequiredService<ShellMatcherPolicyProvider>()
-                .GetPolicies();
+                .GetEndpointSelectorPolicies();
 
-            foreach (var matcher in matchers)
+            foreach (var policy in policies)
             {
-                if (matcher is IEndpointSelectorPolicy policy)
-                {
-                    policy.ApplyAsync(httpContext, context, candidates);
-                }
+                await policy.ApplyAsync(httpContext, context, candidates);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -16,7 +16,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.RazorPages;
-using OrchardCore.Mvc.Routing;
 
 namespace OrchardCore.Mvc
 {
@@ -37,7 +36,7 @@ namespace OrchardCore.Mvc
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // The default route is added to each tenant as a template route.
-            routes.MapControllerRoute("Default", "{area}/{controller}/{action}/{id?}");
+            routes.MapControllerRoute("Default", "{area:exists}/{controller}/{action}/{id?}");
             routes.MapRazorPages();
         }
 
@@ -58,8 +57,6 @@ namespace OrchardCore.Mvc
             // There are some issues when using the default formatters based on
             // System.Text.Json. Here, we manually add JSON.NET based formatters.
             builder.AddNewtonsoftJson();
-
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, FormValueRequiredMatcherPolicy>());
 
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
 

@@ -77,11 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
-            // Endpoint Selection
-            services.AddSingleton<ShellMatcherPolicyProvider>();
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, ShellEndpointSelectorPolicy>());
-
-            // Link generation related services
+            // Link generation: Allows a given tenant to register additional 'RouteValuesAddress' schemes.
             services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

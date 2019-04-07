@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Matching;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Routing
@@ -19,14 +20,16 @@ namespace OrchardCore.Routing
             _hostMatcherPolicies = hostMatcherPolicies;
         }
 
-        public IEnumerable<MatcherPolicy> GetPolicies()
+        public IEnumerable<IEndpointSelectorPolicy> GetEndpointSelectorPolicies()
         {
             // Retrieve all tenant level matcher policies.
             return (_httpContextAccessor.HttpContext?.RequestServices
                 .GetServices<MatcherPolicy>()
-                .OrderBy(m => m.Order)
-                ?? Enumerable.Empty<MatcherPolicy>())
-                .Except(_hostMatcherPolicies);
+                .Except(_hostMatcherPolicies)
+                .Where(matcher => matcher is IEndpointSelectorPolicy)
+                .OrderBy(matcher => matcher.Order)
+                .Select(matcher => matcher as IEndpointSelectorPolicy)
+                ?? Enumerable.Empty<IEndpointSelectorPolicy>());
         }
     }
 }
