@@ -606,6 +606,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [FormValueRequired("submit.Remove")]
         public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
