@@ -23,7 +23,7 @@ namespace OrchardCore.Routing
             {
                 if (!_order.HasValue)
                 {
-                    var order = Policy?.Order ?? 0;
+                    var order = Policy?.Order ?? int.MaxValue;
 
                     lock (this)
                     {
@@ -38,42 +38,22 @@ namespace OrchardCore.Routing
         private T Policy => _httpContextAccessor.HttpContext?.RequestServices
             .GetServices<MatcherPolicy>().OfType<T>().FirstOrDefault();
 
-        public IComparer<Endpoint> Comparer => throw new System.NotImplementedException();
+        public IComparer<Endpoint> Comparer => (Policy as IEndpointComparerPolicy)
+            ?.Comparer ?? new ZeroPolicyComparer();
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                return true;
-            }
-
-            return policy.AppliesToEndpoints(endpoints);
-        }
-
-        public PolicyJumpTable BuildJumpTable(int exitDestination, IReadOnlyList<PolicyJumpTableEdge> edges)
-        {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                //return true;
-            }
-
-            return policy.BuildJumpTable(exitDestination, edges);
+            return Policy?.AppliesToEndpoints(endpoints) ?? false;
         }
 
         public IReadOnlyList<PolicyNodeEdge> GetEdges(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
+            return Policy?.GetEdges(endpoints) ?? new List<PolicyNodeEdge>();
+        }
 
-            if (policy == null)
-            {
-                //return true;
-            }
-
-            return policy.GetEdges(endpoints);
+        public PolicyJumpTable BuildJumpTable(int exitDestination, IReadOnlyList<PolicyJumpTableEdge> edges)
+        {
+            return Policy?.BuildJumpTable(exitDestination, edges) ?? new ZeroPolicyJumpTable(exitDestination);
         }
     }
 }

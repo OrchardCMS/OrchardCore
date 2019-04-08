@@ -21,12 +21,7 @@ namespace OrchardCore.Routing
                 .OfType<T>()
                 .FirstOrDefault();
 
-            if (constraint == null)
-            {
-                return true;
-            }
-
-            return constraint.Match(httpContext, route, routeKey, values, routeDirection);
+            return constraint?.Match(httpContext, route, routeKey, values, routeDirection) ?? true;
         }
     }
 }

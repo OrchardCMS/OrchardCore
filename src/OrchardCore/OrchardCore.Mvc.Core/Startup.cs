@@ -21,8 +21,6 @@ namespace OrchardCore.Mvc
 {
     public class Startup : StartupBase
     {
-        //private readonly static IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
-
         public override int Order => -1000;
         public override int ConfigureOrder => 1000;
 

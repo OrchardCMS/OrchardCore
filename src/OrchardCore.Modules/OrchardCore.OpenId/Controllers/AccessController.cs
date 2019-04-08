@@ -18,11 +18,11 @@ using OpenIddict.Mvc.Internal;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Routing;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Filters;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Services;
 

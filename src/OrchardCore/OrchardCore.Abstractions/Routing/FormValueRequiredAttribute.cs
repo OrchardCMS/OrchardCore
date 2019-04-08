@@ -1,4 +1,4 @@
-namespace OrchardCore.Mvc.Routing
+namespace OrchardCore.Routing
 {
     public class FormValueRequiredAttribute : System.Attribute
     {

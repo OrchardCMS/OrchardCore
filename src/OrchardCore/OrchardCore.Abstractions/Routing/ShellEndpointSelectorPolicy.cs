@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace OrchardCore.Routing
             {
                 if (!_order.HasValue)
                 {
-                    var order = Policy?.Order ?? 0;
+                    var order = Policy?.Order ?? int.MaxValue;
 
                     lock (this)
                     {
@@ -39,33 +38,17 @@ namespace OrchardCore.Routing
             }
         }
 
-
-        private MatcherPolicy Policy =>
-            _httpContextAccessor.HttpContext?.RequestServices.GetServices<MatcherPolicy>()
+        private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices.GetServices<MatcherPolicy>()
             .Where(m => m.GetType().FullName == _typeFullName).FirstOrDefault();
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                return true;
-            }
-
-            return (policy as IEndpointSelectorPolicy).AppliesToEndpoints(endpoints);
+            return (Policy as IEndpointSelectorPolicy)?.AppliesToEndpoints(endpoints) ?? false;
         }
 
         public Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            return (policy as IEndpointSelectorPolicy).ApplyAsync(httpContext, context, candidates);
+            return (Policy as IEndpointSelectorPolicy)?.ApplyAsync(httpContext, context, candidates) ?? Task.CompletedTask;
         }
     }
 }

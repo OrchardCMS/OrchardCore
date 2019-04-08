@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
 
-namespace OrchardCore.Mvc.Routing
+namespace OrchardCore.Routing
 {
     public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {

@@ -25,14 +25,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<RouteOptions>(options =>
                 {
-                    // A constraint added at the tenant level is not taken into account.
-                    // So, we remove it just to prevent from failing on a duplicate key.
+                    // Prevents duplicate keys.
                     options.ConstraintMap.Remove(key);
                 });
             },
 
             // Before anybody.
-            order: -10000);
+            order: int.MinValue);
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds a global endpoint selector policy which can be applied in a tenant context.
+        /// Adds a global node builder policy which can be applied in a tenant context.
         /// </summary>
         public static OrchardCoreBuilder AddNodeBuilderPolicy<T>(this OrchardCoreBuilder builder) where T : MatcherPolicy, IEndpointComparerPolicy, INodeBuilderPolicy
         {
@@ -78,7 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds a global endpoint selector policy which can be applied in a tenant context.
+        /// Adds a global node builder policy which can be applied in a tenant context.
         /// </summary>
         public static OrchardCoreBuilder AddNodeBuilderPolicy(this OrchardCoreBuilder builder, string typeFullName)
         {

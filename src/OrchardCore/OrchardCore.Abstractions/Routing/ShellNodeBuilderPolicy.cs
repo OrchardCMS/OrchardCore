@@ -25,7 +25,7 @@ namespace OrchardCore.Routing
             {
                 if (!_order.HasValue)
                 {
-                    var order = Policy?.Order ?? 0;
+                    var order = Policy?.Order ?? int.MaxValue;
 
                     lock (this)
                     {
@@ -37,46 +37,39 @@ namespace OrchardCore.Routing
             }
         }
 
-        private MatcherPolicy Policy =>
-            _httpContextAccessor.HttpContext?.RequestServices.GetServices<MatcherPolicy>()
+        private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices.GetServices<MatcherPolicy>()
             .Where(m => m.GetType().FullName == _typeFullName).FirstOrDefault();
 
-        public IComparer<Endpoint> Comparer => (Policy as IEndpointComparerPolicy).Comparer;
+        public IComparer<Endpoint> Comparer => (Policy as IEndpointComparerPolicy)
+            ?.Comparer ?? new ZeroPolicyComparer();
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                //return true;
-            }
-
-            return (policy as INodeBuilderPolicy).AppliesToEndpoints(endpoints);
-        }
-
-        public PolicyJumpTable BuildJumpTable(int exitDestination, IReadOnlyList<PolicyJumpTableEdge> edges)
-        {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                //return true;
-            }
-
-            return (policy as INodeBuilderPolicy).BuildJumpTable(exitDestination, edges);
+            return (Policy as INodeBuilderPolicy)?.AppliesToEndpoints(endpoints) ?? false;
         }
 
         public IReadOnlyList<PolicyNodeEdge> GetEdges(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                //return true;
-            }
-
-            return (policy as INodeBuilderPolicy).GetEdges(endpoints);
+            return (Policy as INodeBuilderPolicy)?.GetEdges(endpoints) ?? new List<PolicyNodeEdge>();
         }
+
+        public PolicyJumpTable BuildJumpTable(int exitDestination, IReadOnlyList<PolicyJumpTableEdge> edges)
+        {
+            return (Policy as INodeBuilderPolicy)?.BuildJumpTable(exitDestination, edges) ?? new ZeroPolicyJumpTable(exitDestination);
+        }
+    }
+
+    internal class ZeroPolicyJumpTable : PolicyJumpTable
+    {
+        private readonly int _exitDestination;
+
+        public ZeroPolicyJumpTable(int exitDestination) => _exitDestination = exitDestination;
+
+        public override int GetDestination(HttpContext httpContext) => _exitDestination;
+    }
+
+    internal class ZeroPolicyComparer : IComparer<Endpoint>
+    {
+        public int Compare(Endpoint x, Endpoint y) => 0;
     }
 }

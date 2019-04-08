@@ -24,7 +24,7 @@ namespace OrchardCore.Routing
             {
                 if (!_order.HasValue)
                 {
-                    var order = Policy?.Order ?? 0;
+                    var order = Policy?.Order ?? int.MaxValue;
 
                     lock (this)
                     {
@@ -41,26 +41,12 @@ namespace OrchardCore.Routing
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                return true;
-            }
-
-            return policy.AppliesToEndpoints(endpoints);
+            return Policy?.AppliesToEndpoints(endpoints) ?? false;
         }
 
         public Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
         {
-            var policy = Policy;
-
-            if (policy == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            return policy.ApplyAsync(httpContext, context, candidates);
+            return Policy?.ApplyAsync(httpContext, context, candidates) ?? Task.CompletedTask;
         }
     }
 }

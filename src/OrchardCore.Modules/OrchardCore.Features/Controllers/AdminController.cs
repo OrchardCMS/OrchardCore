@@ -15,7 +15,7 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
-using OrchardCore.Mvc.Routing;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {

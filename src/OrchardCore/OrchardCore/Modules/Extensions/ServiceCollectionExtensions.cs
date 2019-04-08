@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -22,7 +21,6 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
-using OrchardCore.Routing;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -72,13 +70,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
 
             services.AddWebEncoders();
-
-            // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouting() which requires the routing services to be
-            // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
-            services.AddRouting();
-
-            // Link generation: Allows a given tenant to register additional 'RouteValuesAddress' schemes.
-            services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IClock, Clock>();

@@ -18,7 +18,6 @@ namespace OrchardCore.Nancy
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddRouting();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
