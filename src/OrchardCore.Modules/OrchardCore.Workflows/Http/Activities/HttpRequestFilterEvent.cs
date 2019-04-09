@@ -66,7 +66,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 return false;
 
             var routeValues = RouteValues;
-            var currentRouteValues = httpContext.GetRouteData().Values;
+            var currentRouteValues = httpContext.Request.RouteValues;
             var isRouteMatch = RouteMatches(routeValues, currentRouteValues);
 
             if (!isRouteMatch)

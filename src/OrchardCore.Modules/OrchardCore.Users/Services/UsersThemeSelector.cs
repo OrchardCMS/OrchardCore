@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Entities;
@@ -35,13 +34,13 @@ namespace OrchardCore.Users.Services
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            var routeData = _httpContextAccessor.HttpContext.GetRouteData().Values;
+            var routeValues = _httpContextAccessor.HttpContext.Request.RouteValues;
 
-            if (routeData["area"]?.ToString() == "OrchardCore.Users")
+            if (routeValues["area"]?.ToString() == "OrchardCore.Users")
             {
                 bool useSiteTheme = false;
 
-                switch (routeData["controller"]?.ToString())
+                switch (routeValues["controller"]?.ToString())
                 {
                     case "Account":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
