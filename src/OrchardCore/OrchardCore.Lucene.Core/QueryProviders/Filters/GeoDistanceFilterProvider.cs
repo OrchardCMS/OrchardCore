@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
@@ -16,10 +17,15 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             JObject queryObj, Query toFilter)
         {
             if (type != "geo_distance")
+            {
                 return null;
+            }
+
 
             if (queryObj.Properties().Count() != 2)
+            {
                 return null;
+            }
 
             var ctx = SpatialContext.GEO;
 
@@ -41,7 +47,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
             var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.Name);
 
-            var geoPointProperty = (JObject) geoProperty.Value;
+            var geoPointProperty = (JObject)geoProperty.Value;
 
             if (geoPointProperty == null)
                 return null;
@@ -49,10 +55,10 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var lon = geoPointProperty["lon"];
             var lat = geoPointProperty["lat"];
 
-            if (!TryParseDistance((string) distanceProperty.Value, out double distanceDegrees))
+            if (!TryParseDistance((string)distanceProperty.Value, out double distanceDegrees))
                 return null;
 
-            var circle = ctx.MakeCircle((double) lon, (double) lat, distanceDegrees);
+            var circle = ctx.MakeCircle((double)lon, (double)lat, distanceDegrees);
 
             var args = new SpatialArgs(SpatialOperation.Intersects, circle);
 
@@ -64,13 +70,60 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
         private static bool TryParseDistance(string distanceValue, out double distanceDegrees)
         {
             distanceDegrees = -1;
-            if (distanceValue.EndsWith("km"))
+
+            var distanceString = Regex.Match(distanceValue, @"^((\d+(\.\d*)?)|(\.\d+))").Value;
+
+            if (string.IsNullOrEmpty(distanceString))
             {
-                if (double.TryParse(distanceValue.Substring(0, distanceValue.Length - 2), out double km))
-                {
-                    distanceDegrees = DistanceUtils.Dist2Degrees(km, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                return false;
+            }
+
+            var distanceUnits = distanceValue.Substring(distanceString.Length, distanceValue.Length - distanceString.Length).ToLower();
+
+            if (!double.TryParse(distanceString, out double distance))
+            {
+                return false;
+            }
+
+            switch (distanceUnits)
+            {
+                case "mi":
+                case "miles":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EARTH_MEAN_RADIUS_MI);
                     return true;
-                }
+                case "km":
+                case "kilometers":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    return true;
+                case "ft":
+                case "feet":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 5280, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    return true;
+                case "yd":
+                case "yards":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1760, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    return true;
+                case "in":
+                case "inch":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 63360, DistanceUtils.EARTH_MEAN_RADIUS_MI);
+                    return true;
+                case "m":
+                case "meters":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    return true;
+                case "cm":
+                case "centimeters":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 100000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    return true;
+                case "mm":
+                case "millimeters":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance / 1000000, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    return true;
+                case "nm":
+                case "nmi":
+                case "nauticalmiles":
+                    distanceDegrees = DistanceUtils.Dist2Degrees(distance * 1.852, DistanceUtils.EARTH_MEAN_RADIUS_KM);
+                    return true;
             }
 
             return false;
