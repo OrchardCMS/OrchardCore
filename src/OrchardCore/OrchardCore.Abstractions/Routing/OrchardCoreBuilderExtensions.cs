@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
@@ -8,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds a global route constraint which can be applied in a tenant context.
+        /// Adds a bridge between the global routing system and a tenant route constraint.
         /// </summary>
         public static OrchardCoreBuilder AddRouteConstraint<T>(this OrchardCoreBuilder builder, string key) where T : class, IRouteConstraint
         {
@@ -35,56 +36,44 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds a global endpoint selector policy which can be applied in a tenant context.
+        /// Adds a bridge between the global routing system and a tenant endpoint selector policy.
         /// </summary>
         public static OrchardCoreBuilder AddEndpointSelectorPolicy<T>(this OrchardCoreBuilder builder) where T : MatcherPolicy, IEndpointSelectorPolicy
         {
-            builder.ApplicationServices.AddSingleton<MatcherPolicy>(sp =>
-            {
-                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                return new ShellEndpointSelectorPolicy<T>(httpContextAccessor);
-            });
-
-            return builder;
+            return builder.AddEndpointSelectorPolicy(typeof(T));
         }
 
         /// <summary>
-        /// Adds a global endpoint selector policy which can be applied in a tenant context.
-        /// </summary>
-        public static OrchardCoreBuilder AddEndpointSelectorPolicy(this OrchardCoreBuilder builder, string typeFullName)
-        {
-            builder.ApplicationServices.AddSingleton<MatcherPolicy>(sp =>
-            {
-                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                return new ShellEndpointSelectorPolicy(httpContextAccessor, typeFullName);
-            });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a global node builder policy which can be applied in a tenant context.
+        /// Adds a bridge between the global routing system and a tenant node builder policy.
         /// </summary>
         public static OrchardCoreBuilder AddNodeBuilderPolicy<T>(this OrchardCoreBuilder builder) where T : MatcherPolicy, IEndpointComparerPolicy, INodeBuilderPolicy
         {
+            return builder.AddNodeBuilderPolicy(typeof(T));
+        }
+
+        /// <summary>
+        /// Adds a bridge between the global routing system and a tenant endpoint selector policy.
+        /// </summary>
+        public static OrchardCoreBuilder AddEndpointSelectorPolicy(this OrchardCoreBuilder builder, Type type)
+        {
             builder.ApplicationServices.AddSingleton<MatcherPolicy>(sp =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                return new ShellNodeBuilderPolicy<T>(httpContextAccessor);
+                return new ShellEndpointSelectorPolicy(httpContextAccessor, type);
             });
 
             return builder;
         }
 
         /// <summary>
-        /// Adds a global node builder policy which can be applied in a tenant context.
+        /// Adds a bridge between the global routing system and a tenant node builder policy.
         /// </summary>
-        public static OrchardCoreBuilder AddNodeBuilderPolicy(this OrchardCoreBuilder builder, string typeFullName)
+        public static OrchardCoreBuilder AddNodeBuilderPolicy(this OrchardCoreBuilder builder, Type type)
         {
             builder.ApplicationServices.AddSingleton<MatcherPolicy>(sp =>
             {
                 var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-                return new ShellNodeBuilderPolicy(httpContextAccessor, typeFullName);
+                return new ShellNodeBuilderPolicy(httpContextAccessor, type);
             });
 
             return builder;

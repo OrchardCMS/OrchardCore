@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,16 +9,20 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Routing
 {
+    /// <summary>
+    /// Makes the bridge between the global routing system and a tenant endpoint selector policy.
+    /// So that the policy is exposed to the host but it is still instantiated in a tenant scope.
+    /// </summary>
     public class ShellEndpointSelectorPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _typeFullName;
+        private readonly Type _type;
         private int? _order;
 
-        public ShellEndpointSelectorPolicy(IHttpContextAccessor httpContextAccessor, string typeFullName)
+        public ShellEndpointSelectorPolicy(IHttpContextAccessor httpContextAccessor, Type type)
         {
             _httpContextAccessor = httpContextAccessor;
-            _typeFullName = typeFullName;
+            _type = type;
         }
 
         public override int Order
@@ -38,8 +43,8 @@ namespace OrchardCore.Routing
             }
         }
 
-        private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices.GetServices<MatcherPolicy>()
-            .Where(m => m.GetType().FullName == _typeFullName).FirstOrDefault();
+        private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices
+            .GetServices<MatcherPolicy>().Where(m => m.GetType() == _type).FirstOrDefault();
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {

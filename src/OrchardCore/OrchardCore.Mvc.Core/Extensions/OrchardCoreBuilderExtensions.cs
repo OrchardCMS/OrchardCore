@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Matching;
 using OrchardCore.Mvc;
 using OrchardCore.Routing;
 
@@ -12,22 +16,43 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddMvc(this OrchardCoreBuilder builder)
         {
-            // Host level routing policy.
+            // Host level route endpoint selector policy.
             builder.ApplicationServices.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
 
-            // Host level scheme allowing a given tenant to add its own schemes for link generation.
+            // Host level endpoint scheme allowing a tenant to add its own schemes for link generation.
             builder.ApplicationServices.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
 
-            // The global endpoint routing system is not aware of tenant level constraints and policies.
-            // So, we need wrappers so that there are found and then still executed in a tenant context.
+            // The global routing system is not aware of tenant level constraints and policies.
+            // So, we need bridges to expose them but still instantiate them in a tenant scope.
 
             builder.AddRouteConstraint<KnownRouteValueConstraint>("exists");
-            builder.AddEndpointSelectorPolicy("Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageLoaderMatcherPolicy");
-            builder.AddEndpointSelectorPolicy("Microsoft.AspNetCore.Mvc.Routing.ActionConstraintMatcherPolicy");
-            builder.AddEndpointSelectorPolicy("Microsoft.AspNetCore.Mvc.Routing.DynamicControllerEndpointMatcherPolicy");
-            builder.AddNodeBuilderPolicy("Microsoft.AspNetCore.Mvc.Routing.ConsumesMatcherPolicy");
+
+            // Auto discover internal mvc policies.
+            var policyTypes = builder.GetMvcPolicyTypes();
+
+            // Add tenant mvc policy bridges.
+            foreach (var type in policyTypes)
+            {
+                if (typeof(IEndpointSelectorPolicy).IsAssignableFrom(type))
+                {
+                    builder.AddEndpointSelectorPolicy(type);
+                }
+
+                else if (typeof(INodeBuilderPolicy).IsAssignableFrom(type))
+                {
+                    builder.AddNodeBuilderPolicy(type);
+                }
+            }
 
             return builder.RegisterStartup<Startup>();
         }
+
+        internal static IEnumerable<Type> GetMvcPolicyTypes(this OrchardCoreBuilder builder) =>
+            new ServiceCollection().AddMvcCore().AddRazorPages().Services.GetPolicyTypes()
+                .Except(builder.ApplicationServices.GetPolicyTypes());
+
+        internal static IEnumerable<Type> GetPolicyTypes(this IServiceCollection services) =>
+            services.Where(sd => sd.ServiceType == typeof(MatcherPolicy))
+                .Select(sd => sd.ImplementationType);
     }
 }

@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Routing
 {
+    /// <summary>
+    /// Host level scheme allowing a tenant to add its own schemes for link generation.
+    /// </summary>
     public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
