@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddRouteConstraint<KnownRouteValueConstraint>("exists");
 
             // Auto discover internal mvc policies.
-            var policyTypes = builder.GetMvcPolicyTypes();
+            var policyTypes = GetMvcPolicyTypes();
 
             // Add tenant mvc policy bridges.
             foreach (var type in policyTypes)
@@ -47,12 +48,18 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.RegisterStartup<Startup>();
         }
 
-        internal static IEnumerable<Type> GetMvcPolicyTypes(this OrchardCoreBuilder builder) =>
-            new ServiceCollection().AddMvcCore().AddRazorPages().Services.GetPolicyTypes()
-                .Except(builder.ApplicationServices.GetPolicyTypes());
+        private static IEnumerable<Type> GetMvcPolicyTypes()
+        {
+            var services = new ServiceCollection()
+                .AddSingleton(new ApplicationPartManager())
+                .AddRouting();
 
-        internal static IEnumerable<Type> GetPolicyTypes(this IServiceCollection services) =>
-            services.Where(sd => sd.ServiceType == typeof(MatcherPolicy))
+            var hostRoutingServicesCount = services.Count;
+
+            return services.AddMvcCore().AddRazorPages()
+                .Services.Skip(hostRoutingServicesCount)
+                .Where(sd => sd.ServiceType == typeof(MatcherPolicy))
                 .Select(sd => sd.ImplementationType);
+        }
     }
 }

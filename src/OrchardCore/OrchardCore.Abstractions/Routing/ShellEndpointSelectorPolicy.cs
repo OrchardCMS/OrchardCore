@@ -44,7 +44,9 @@ namespace OrchardCore.Routing
         }
 
         private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices
-            .GetServices<MatcherPolicy>().Where(m => m.GetType() == _type).FirstOrDefault();
+            .GetServices<MatcherPolicy>()
+            .Where(m => m.GetType() == _type)
+            .FirstOrDefault();
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {

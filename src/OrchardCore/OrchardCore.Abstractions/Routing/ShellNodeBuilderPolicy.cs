@@ -43,7 +43,9 @@ namespace OrchardCore.Routing
         }
 
         private MatcherPolicy Policy => _httpContextAccessor.HttpContext?.RequestServices
-            .GetServices<MatcherPolicy>().Where(m => m.GetType() == _type).FirstOrDefault();
+            .GetServices<MatcherPolicy>()
+            .Where(m => m.GetType() == _type)
+            .FirstOrDefault();
 
         public IComparer<Endpoint> Comparer => (Policy as IEndpointComparerPolicy)
             ?.Comparer ?? new ZeroPolicyComparer();

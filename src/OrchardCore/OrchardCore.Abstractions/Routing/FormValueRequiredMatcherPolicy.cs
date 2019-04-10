@@ -50,9 +50,7 @@ namespace OrchardCore.Routing
                     continue;
                 }
 
-                var endpoint = candidates[i].Endpoint;
-
-                var required = endpoint.Metadata.GetMetadata<FormValueRequiredAttribute>();
+                var required = candidates[i].Endpoint.Metadata.GetMetadata<FormValueRequiredAttribute>();
 
                 if (required == null)
                 {
