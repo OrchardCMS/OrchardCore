@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Lucene.Net.Queries.Function;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
+using Lucene.Net.Spatial.Util;
 using Newtonsoft.Json.Linq;
 using Spatial4n.Core.Context;
 using Spatial4n.Core.Distance;
@@ -21,6 +23,10 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
                 return null;
             }
 
+            if (!(toFilter is BooleanQuery booleanQuery))
+            {
+                return null;
+            }
 
             if (queryObj.Properties().Count() != 2)
             {
@@ -40,9 +46,18 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             foreach (var jProperty in queryObj.Properties())
             {
                 if (jProperty.Name.Equals("distance", StringComparison.Ordinal))
+                {
                     distanceProperty = jProperty;
+                }
                 else
+                {
                     geoProperty = jProperty;
+                }
+            }
+
+            if (distanceProperty == null || geoProperty == null)
+            {
+                return null;
             }
 
             var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.Name);
@@ -50,21 +65,29 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             var geoPointProperty = (JObject)geoProperty.Value;
 
             if (geoPointProperty == null)
+            {
                 return null;
+            }
 
             var lon = geoPointProperty["lon"];
             var lat = geoPointProperty["lat"];
 
             if (!TryParseDistance((string)distanceProperty.Value, out double distanceDegrees))
+            {
                 return null;
+            }
 
             var circle = ctx.MakeCircle((double)lon, (double)lat, distanceDegrees);
 
             var args = new SpatialArgs(SpatialOperation.Intersects, circle);
 
-            var filter = strategy.MakeFilter(args);
+            var spatialQuery = strategy.MakeQuery(args);
+            var valueSource = strategy.MakeRecipDistanceValueSource(circle);
+            var valueSourceFilter = new ValueSourceFilter(new QueryWrapperFilter(spatialQuery), valueSource, 0, 1);
 
-            return new FilteredQuery(toFilter, filter);
+            booleanQuery.Add(new FunctionQuery(valueSource), Occur.MUST);
+
+            return new FilteredQuery(booleanQuery, valueSourceFilter);
         }
 
         private static bool TryParseDistance(string distanceValue, out double distanceDegrees)
