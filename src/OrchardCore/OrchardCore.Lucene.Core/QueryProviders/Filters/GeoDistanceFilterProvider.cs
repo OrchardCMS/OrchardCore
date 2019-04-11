@@ -10,6 +10,9 @@ using Lucene.Net.Spatial.Util;
 using Newtonsoft.Json.Linq;
 using Spatial4n.Core.Context;
 using Spatial4n.Core.Distance;
+using Spatial4n.Core.Shapes;
+using Spatial4n.Core.Shapes.Impl;
+using Spatial4n.Core.Util;
 
 namespace OrchardCore.Lucene.QueryProviders.Filters
 {
@@ -62,22 +65,17 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
             var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.Name);
 
-            var geoPointProperty = (JObject)geoProperty.Value;
-
-            if (geoPointProperty == null)
-            {
-                return null;
-            }
-
-            var lon = geoPointProperty["lon"];
-            var lat = geoPointProperty["lat"];
-
             if (!TryParseDistance((string)distanceProperty.Value, out double distanceDegrees))
             {
                 return null;
             }
 
-            var circle = ctx.MakeCircle((double)lon, (double)lat, distanceDegrees);
+            if (!TryGetPointFromJToken(geoProperty.Value, out var point))
+            {
+                return null;
+            }
+
+            var circle = ctx.MakeCircle(point.X, point.Y, distanceDegrees);
 
             var args = new SpatialArgs(SpatialOperation.Intersects, circle);
 
@@ -150,6 +148,62 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             }
 
             return false;
+        }
+
+        private static bool TryGetPointFromJToken(JToken geoToken, out IPoint point)
+        {
+            point = null;
+
+            var ctx = SpatialContext.GEO;
+
+            switch (geoToken.Type)
+            {
+                case JTokenType.String:
+                    var geoStringValue = geoToken.ToString();
+
+                    var geoStringSplit = geoStringValue.Split(',');
+
+                    if (geoStringSplit.Length == 2)
+                    {
+                        if (!double.TryParse(geoStringSplit[0], out var lat))
+                        {
+                            return false;
+                        }
+
+                        if (!double.TryParse(geoStringSplit[1], out var lon))
+                        {
+                            return false;
+                        }
+
+                        point = new Point(lon, lat, ctx);
+                        return true;
+                    }
+
+                    point = GeohashUtils.Decode(geoStringValue, ctx);
+                    return true;
+                case JTokenType.Object:
+                    var geoPointValue = (JObject)geoToken;
+
+                    if (!geoPointValue.ContainsKey("lon") || !geoPointValue.ContainsKey("lat"))
+                    {
+                        return false;
+                    }
+
+                    point = new Point(geoPointValue["lon"].Value<double>(), geoPointValue["lat"].Value<double>(), ctx);
+                    return true;
+                case JTokenType.Array:
+                    var geoArrayValue = (JArray)geoToken;
+
+                    if (geoArrayValue.Count != 2)
+                    {
+                        return false;
+                    }
+
+                    point = new Point(geoArrayValue[0].Value<double>(), geoArrayValue[1].Value<double>(), ctx);
+
+                    return true;
+                default: throw new ArgumentException("Invalid geo point representation");
+            }
         }
     }
 }
