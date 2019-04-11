@@ -1,9 +1,10 @@
-@using Microsoft.AspNetCore.Identity
-@using OrchardCore.Users
 @using OrchardCore.Users.Models
-@inject UserManager<IUser> UserManager
+@using OrchardCore.Users.Services
+
+@inject IUserService UserService
+
 @{ 
-    var loggedInUser = await UserManager.FindByNameAsync(User.Identity.Name) as User;
+    var loggedInUser = await UserService.GetUserAsync(User.Identity.Name) as User;
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -39,13 +40,12 @@
                 <ul class="nav navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><img id="imgAvatar" class="rounded-circle" /><span> @loggedInUser.UserName</span></a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="EditPassword" asp-route-id="@loggedInUser.Id">@T["Change Password"]</a>
-                                <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="Edit" asp-route-id="@loggedInUser.Id">@T["Profile"]</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" onclick="document.getElementById('logOff').submit();">@T["Log off"]</a>
-                            </div>
-                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="EditPassword" asp-route-id="@loggedInUser.Id">@T["Change Password"]</a>
+                            <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="Edit" asp-route-id="@loggedInUser.Id">@T["Profile"]</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="document.getElementById('logOff').submit();">@T["Log off"]</a>
+                        </div>
                     </li>
                 </ul>
                 <form id="logOff" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
