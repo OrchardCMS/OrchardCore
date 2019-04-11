@@ -19,13 +19,13 @@ namespace OrchardCore.ContentLocalization.Handlers
             this.siteService = siteService;
         }
 
-        //public override async Task InitializingAsync(InitializingContentContext context, LocalizationPart instance)
-        //{
-        //    var setting = await siteService.GetSiteSettingsAsync();
-        //    instance.Culture = setting.Culture;
-        //    instance.Apply();
-        //    await base.InitializingAsync(context, instance);
-        //}
+        public override async Task InitializingAsync(InitializingContentContext context, LocalizationPart instance)
+        {
+            var setting = await siteService.GetSiteSettingsAsync();
+            instance.Culture = setting.Culture;
+            instance.Apply();
+            await base.InitializingAsync(context, instance);
+        }
 
         public override Task CreatingAsync(CreateContentContext context, LocalizationPart instance)
         {
@@ -47,6 +47,10 @@ namespace OrchardCore.ContentLocalization.Handlers
             }
             instance.Apply();
             await base.UpdatingAsync(context, instance);
+        }
+        public override Task RemovingAsync(RemoveContentContext context, LocalizationPart instance)
+        {
+            return base.RemovingAsync(context, instance);
         }
     }
 }

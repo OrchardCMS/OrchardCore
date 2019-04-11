@@ -21,6 +21,10 @@ namespace OrchardCore.ContentLocalization.Records
             context.For<LocalizedContentItemIndex>()
                 .Map(contentItem =>
                 {
+                    if (!contentItem.Latest)
+                    {
+                        return null;
+                    }
                     var localizationPart = contentItem.As<LocalizationPart>();
 
                     if (string.IsNullOrEmpty(localizationPart?.LocalizationSet))
