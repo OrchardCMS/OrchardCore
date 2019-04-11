@@ -19,6 +19,7 @@ var fs = require("file-system"),
     header = require("gulp-header"),
     eol = require("gulp-eol");
     util = require('gulp-util');
+    rtlcss = require('gulp-rtlcss');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -29,6 +30,14 @@ require("events").EventEmitter.prototype._maxListeners = 100;
 /*
 ** GULP TASKS
 */
+
+gulp.task("rtl", function() {
+    var styleFolder = "./src/OrchardCore.Themes/TheAdmin/wwwroot/Styles";
+    return gulp.src(styleFolder + "/TheAdmin.css")
+        .pipe(rtlcss())
+        .pipe(rename({ suffix: "-rtl" }))
+        .pipe(gulp.dest(styleFolder))
+});
 
 // Incremental build (each asset group is built only if one or more inputs are newer than the output).
 gulp.task("build", function () {

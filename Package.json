@@ -27,6 +27,7 @@
     "typescript": "3.2.2"
   },
   "dependencies": {
+    "gulp-rtlcss": "^1.3.0",
     "orchardcore.apis.graphql": "file:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL",
     "orchardcore.resources": "file:src/OrchardCore.Modules/OrchardCore.Resources",
     "orchardcore.setup": "file:src/OrchardCore.Modules/OrchardCore.Setup",
