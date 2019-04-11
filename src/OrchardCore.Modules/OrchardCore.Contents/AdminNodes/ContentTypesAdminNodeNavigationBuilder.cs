@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
+using OrchardCore.Contents.Security;
 
 namespace OrchardCore.Contents.AdminNodes
 {
@@ -54,7 +55,8 @@ namespace OrchardCore.Contents.AdminNodes
                     cTypeMenu.Url(_contentItemlistUrl + ctd.Name);
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
-                    cTypeMenu.Permission(Permissions.EditOwnContent);
+                    cTypeMenu.Permission(
+                        ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name] , ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
