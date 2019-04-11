@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -113,8 +111,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
                     var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
-                    var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
-                    message.To.Add(email);
+                    var message = new MailMessage() { To = email, Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)
