@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Facebook.Settings
+namespace OrchardCore.Facebook.Login.Settings
 {
     public class FacebookLoginSettings
     {

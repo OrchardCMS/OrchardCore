@@ -12,29 +12,29 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Services
 {
-    public class FacebookCoreService : IFacebookCoreService
+    public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<FacebookCoreService> T;
+        private readonly IStringLocalizer<FacebookService> T;
         private readonly ShellSettings _shellSettings;
 
-        public FacebookCoreService(
+        public FacebookService(
             ISiteService siteService,
             ShellSettings shellSettings,
-            IStringLocalizer<FacebookCoreService> stringLocalizer)
+            IStringLocalizer<FacebookService> stringLocalizer)
         {
             _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
 
-        public async Task<FacebookCoreSettings> GetSettingsAsync()
+        public async Task<FacebookSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<FacebookCoreSettings>();
+            return container.As<FacebookSettings>();
         }
 
-        public async Task UpdateSettingsAsync(FacebookCoreSettings settings)
+        public async Task UpdateSettingsAsync(FacebookSettings settings)
         {
             if (settings == null)
             {
@@ -42,11 +42,11 @@ namespace OrchardCore.Facebook.Services
             }
 
             var container = await _siteService.GetSiteSettingsAsync();
-            container.Properties[nameof(FacebookCoreSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookCoreSettings settings)
+        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookSettings settings)
         {
             if (settings == null)
             {

@@ -4,11 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
-using OrchardCore.Facebook.Configuration;
 using OrchardCore.Facebook.Drivers;
+using OrchardCore.Facebook.Login.Configuration;
+using OrchardCore.Facebook.Login.Drivers;
+using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -21,8 +23,8 @@ namespace OrchardCore.Facebook
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<IFacebookCoreService, FacebookCoreService>();
-            services.AddScoped<IDisplayDriver<ISite>, FacebookCoreSettingsDisplayDriver>();
+            services.AddSingleton<IFacebookService, FacebookService>();
+            services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
         }
     }
 

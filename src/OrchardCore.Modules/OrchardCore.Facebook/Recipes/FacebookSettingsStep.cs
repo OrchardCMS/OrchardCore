@@ -4,40 +4,41 @@ using System.Threading.Tasks;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OrchardCore.Facebook.Settings.FacebookCoreSettings;
 
 namespace OrchardCore.Facebook.Recipes
 {
     /// <summary>
     /// This recipe step sets general OpenID Connect Client settings.
     /// </summary>
-    public class FacebookLoginSettingsStep : IRecipeStepHandler
+    public class FacebookSettingsStep : IRecipeStepHandler
     {
-        private readonly IFacebookLoginService _loginService;
+        private readonly IFacebookService _loginService;
 
-        public FacebookLoginSettingsStep(IFacebookLoginService loginService)
+        public FacebookSettingsStep(IFacebookService loginService)
         {
             _loginService = loginService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "FacebookLoginSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var model = context.Step.ToObject<FacebookLoginSettingsStepModel>();
+            var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
 
             var settings = await _loginService.GetSettingsAsync();
-            settings.CallbackPath = model.CallbackPath;
+            settings.AppId = model.AppId;
+            settings.AppSecret= model.AppSecret;
 
             await _loginService.UpdateSettingsAsync(settings);
         }
     }
 
-    public class FacebookLoginSettingsStepModel
+    public class FacebookCoreSettingsStepModel
     {
-        public string CallbackPath { get; set; }
+        public string AppId { get; set; }
+        public string AppSecret { get; set; }
     }
 }

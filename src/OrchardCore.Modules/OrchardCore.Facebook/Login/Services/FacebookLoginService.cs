@@ -7,10 +7,10 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Settings;
+using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Services
+namespace OrchardCore.Facebook.Login.Services
 {
     public class FacebookLoginService : IFacebookLoginService
     {

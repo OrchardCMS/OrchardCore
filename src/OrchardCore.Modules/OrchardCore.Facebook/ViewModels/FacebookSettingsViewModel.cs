@@ -2,12 +2,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Facebook.ViewModels
 {
-    public class FacebookCoreSettingsViewModel
+    public class FacebookSettingsViewModel
     {
         [Required]
         public string AppId { get; set; }
 
         [Required]
         public string AppSecret { get; set; }
+
+        public bool FBInit { get; set; }
+
+        public string Version { get; set; }
+
+        public string FBInitParams { get; set; }
     }
 }

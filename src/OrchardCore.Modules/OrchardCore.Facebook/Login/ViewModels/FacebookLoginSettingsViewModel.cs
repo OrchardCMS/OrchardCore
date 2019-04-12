@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Facebook.ViewModels
+namespace OrchardCore.Facebook.Login.ViewModels
 {
     public class FacebookLoginSettingsViewModel
     {

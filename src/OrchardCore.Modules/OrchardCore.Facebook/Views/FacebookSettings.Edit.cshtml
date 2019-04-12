@@ -1,5 +1,5 @@
 @using OrchardCore.Facebook.ViewModels;
-@model FacebookCoreSettingsViewModel;
+@model FacebookSettingsViewModel;
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
@@ -7,14 +7,21 @@
 
 <fieldset class="form-group" asp-validation-class-for="AppId">
     <label>@T["Application Identifier"]</label>
-    <input asp-for="AppId" class="form-control"/>
+    <input asp-for="AppId" class="form-control" />
     <span asp-validation-for="AppId"></span>
     <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="AppSecret">
     <label>@T["Secret Key"]</label>
-    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret"/>
+    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" />
     <span asp-validation-for="AppSecret"></span>
     <span class="hint">@T["The Application secret key found on the Facebook developer portal parameters."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="FBInit">
+    <label>@T["Init FB SDK on every page"]</label>
+    <input asp-for="FBInit" class="form-control" type="checkbox" value="@Model.FBInit" />
+    <span asp-validation-for="FBInit"></span>
+    <span class="hint">@T["If you enable this setting, the FB SDK will be loaded on every page"]</span>
 </fieldset>
