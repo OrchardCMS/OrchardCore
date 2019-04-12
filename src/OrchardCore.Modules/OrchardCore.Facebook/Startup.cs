@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
+using OrchardCore.Facebook.Filters;
 using OrchardCore.Facebook.Login.Configuration;
 using OrchardCore.Facebook.Login.Drivers;
 using OrchardCore.Facebook.Login.Services;
@@ -25,6 +27,12 @@ namespace OrchardCore.Facebook
 
             services.AddSingleton<IFacebookService, FacebookService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
+
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(FBInitFilter));
+            });
+
         }
     }
 

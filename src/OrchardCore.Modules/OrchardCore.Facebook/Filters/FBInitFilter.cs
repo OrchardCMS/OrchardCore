@@ -36,25 +36,23 @@ namespace OrchardCore.Facebook.Filters
                 {
                     if (settings.FBInit)
                     {
-                        var version = string.IsNullOrWhiteSpace(settings.Version) ? FacebookSettings.DEFAULT_VERSION : settings.Version;
-
-                        var options = $"{{ appId:{settings.AppId},version=\"{version}\"";
-                        if (string.IsNullOrWhiteSpace(settings.InitParams))
+                        var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
+                        if (string.IsNullOrWhiteSpace(settings.FBInitParams))
                         {
                             options = string.Concat(options, "}");
                         }
                         else
                         {
-                            options = string.Concat(options, settings.InitParams, "}");
+                            options = string.Concat(options, ",", settings.FBInitParams, "}");
                         }
                         _resourceManager.RegisterHeadScript(new HtmlString($"<script>window.fbAsyncInit = function(){{ FB.init({options});}};</script>"));
                     }
-                    var locale = site.Culture.Replace("-", "_");
+                    var locale = string.IsNullOrWhiteSpace(site.Culture) ? "en_US" : site.Culture.Replace("-", "_");
                     _resourceManager.RegisterHeadScript(new HtmlString($"<script async defer src=\"https://connect.facebook.net/{locale}/sdk.js\"></script>"));
 
                 }
-                await next.Invoke();
             }
+            await next.Invoke();
         }
     }
 }

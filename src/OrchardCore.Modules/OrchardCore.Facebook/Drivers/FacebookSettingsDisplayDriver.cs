@@ -57,6 +57,9 @@ namespace OrchardCore.Facebook.Drivers
                 var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
 
                 model.AppId = settings.AppId;
+                model.FBInit = settings.FBInit;
+                model.FBInitParams = settings.FBInitParams;
+                model.Version = settings.Version;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
@@ -84,6 +87,11 @@ namespace OrchardCore.Facebook.Drivers
                     var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
                     settings.AppId = model.AppId;
                     settings.AppSecret = protector.Protect(model.AppSecret);
+                    settings.FBInit = model.FBInit;
+                    if (!string.IsNullOrWhiteSpace(model.FBInitParams))
+                        settings.FBInitParams = model.FBInitParams;
+                    if (!string.IsNullOrWhiteSpace(model.Version))
+                        settings.Version = model.Version;
 
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }

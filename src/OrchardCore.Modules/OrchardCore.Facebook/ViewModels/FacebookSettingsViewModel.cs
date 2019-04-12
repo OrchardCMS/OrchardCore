@@ -6,14 +6,11 @@ namespace OrchardCore.Facebook.ViewModels
     {
         [Required]
         public string AppId { get; set; }
-
         [Required]
         public string AppSecret { get; set; }
-
         public bool FBInit { get; set; }
-
-        public string Version { get; set; }
-
         public string FBInitParams { get; set; }
+        [RegularExpression(@"(v)\d+\.\d+")]
+        public string Version { get; set; }
     }
 }
