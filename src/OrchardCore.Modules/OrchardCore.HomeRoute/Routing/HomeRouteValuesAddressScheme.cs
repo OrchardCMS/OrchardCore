@@ -42,7 +42,7 @@ namespace OrchardCore.HomeRoute.Routing
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse("/", explicitValues, null),
+                    RoutePatternFactory.Parse(String.Empty, explicitValues, null),
                     0,
                     null,
                     null

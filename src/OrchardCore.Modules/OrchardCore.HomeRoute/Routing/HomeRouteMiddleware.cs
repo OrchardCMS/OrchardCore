@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -19,7 +20,7 @@ namespace OrchardCore.HomeRoute.Routing
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Request.Path == "/")
+            if (httpContext.Request.Path.ToString().TrimEnd('/') == String.Empty)
             {
                 var routeValues = await _homePageRoute.GetValuesAsync();
 

@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Matching;
@@ -28,10 +27,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.AddRouteConstraint<KnownRouteValueConstraint>("exists");
 
-            // Auto discover internal mvc policies.
-            var policyTypes = GetMvcPolicyTypes();
+            // Discover internal mvc matcher policies.
+            var policyTypes = typeof(MvcOptions).Assembly.DefinedTypes
+                .Concat(typeof(RazorPagesOptions).Assembly.DefinedTypes)
+                .Where(type => typeof(MatcherPolicy).IsAssignableFrom(type));
 
-            // Add tenant mvc policy bridges.
+            // Add a bridge for each policy.
             foreach (var type in policyTypes)
             {
                 if (typeof(IEndpointSelectorPolicy).IsAssignableFrom(type))
@@ -46,20 +47,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return builder.RegisterStartup<Startup>();
-        }
-
-        private static IEnumerable<Type> GetMvcPolicyTypes()
-        {
-            var services = new ServiceCollection()
-                .AddSingleton(new ApplicationPartManager())
-                .AddRouting();
-
-            var hostRoutingServicesCount = services.Count;
-
-            return services.AddMvcCore().AddRazorPages()
-                .Services.Skip(hostRoutingServicesCount)
-                .Where(sd => sd.ServiceType == typeof(MatcherPolicy))
-                .Select(sd => sd.ImplementationType);
         }
     }
 }

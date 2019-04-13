@@ -21,7 +21,7 @@ namespace OrchardCore.Autoroute.Routing
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (_entries.TryGetContentItemId(httpContext.Request.Path, out var contentItemId))
+            if (_entries.TryGetContentItemId(httpContext.Request.Path.ToString().TrimEnd('/'), out var contentItemId))
             {
                 var autorouteRoute = httpContext.RequestServices.GetRequiredService<AutorouteRoute>();
                 var routeValues = await autorouteRoute.GetValuesAsync(contentItemId);
