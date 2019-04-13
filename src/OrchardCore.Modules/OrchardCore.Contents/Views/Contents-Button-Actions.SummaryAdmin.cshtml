@@ -37,6 +37,7 @@
             <a remove-for="@contentItem" class="dropdown-item btn-sm" asp-route-returnUrl="@FullRequestPath" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
 
+        <div class="dropdown-divider"></div>
+        <a asp-action="Create" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-id="@contentItem.ContentType" asp-route-clonedItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn-sm">@T["Copy"]</a>
     </div>
 </div>
-

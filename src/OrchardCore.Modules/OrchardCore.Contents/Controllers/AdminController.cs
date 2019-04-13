@@ -311,14 +311,23 @@ namespace OrchardCore.Contents.Controllers
         //    return View("ListableTypeList", viewModel);
         //}
 
-        public async Task<IActionResult> Create(string id)
+        public async Task<IActionResult> Create(string id, string clonedItemId)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
 
-            var contentItem = await _contentManager.NewAsync(id);
+            ContentItem contentItem = null;
+
+            if (clonedItemId == null)
+            {
+                contentItem = await _contentManager.NewAsync(id);
+            }
+            else
+            {
+                contentItem = await _contentManager.GetAsync(clonedItemId, VersionOptions.Latest);
+            }
 
             // Set the current user as the owner to check for ownership permissions on creation
             contentItem.Owner = User.Identity.Name;
