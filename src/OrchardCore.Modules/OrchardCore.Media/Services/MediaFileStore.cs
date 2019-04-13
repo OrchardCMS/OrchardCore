@@ -10,11 +10,13 @@ namespace OrchardCore.Media.Services
     {
         private readonly IFileStore _fileStore;
         private readonly string _publicUrlBase;
+        private readonly string _cdnUrl;
 
-        public MediaFileStore(IFileStore fileStore, string publicUrlBase)
+        public MediaFileStore(IFileStore fileStore, string publicUrlBase, string cdnUrl = "")
         {
             _fileStore = fileStore;
             _publicUrlBase = publicUrlBase;
+            _cdnUrl = cdnUrl;
         }
 
         public MediaFileStore(IFileStore fileStore)
@@ -79,7 +81,7 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            return _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
+            return _cdnUrl + _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
