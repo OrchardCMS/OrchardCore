@@ -10,18 +10,21 @@ namespace OrchardCore.Environment.Shell.Configuration
     public class ShellConfigurationSources : IShellConfigurationSources
     {
         private readonly string _container;
+        private readonly string _environment;
 
         public ShellConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
             Directory.CreateDirectory(_container);
+            _environment = hostingEnvironment.EnvironmentName;
         }
 
         public void AddSources(string tenant, IConfigurationBuilder builder)
         {
             builder
-                .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
+                .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true)
+                .AddJsonFile(Path.Combine(_container, tenant, $"appsettings.{_environment}.json"), optional: true);
         }
 
         public void Save(string tenant, IDictionary<string, string> data)

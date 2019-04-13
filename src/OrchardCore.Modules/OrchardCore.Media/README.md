@@ -157,6 +157,9 @@ The following configuration values are used by default and can be customized:
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
 
+      // A cdn url that will be prefixed to the /media path when serving images from the Local MediaFileStore
+      "CdnUrl": "https://a-cdn.com",
+
       // The list of allowed file extensions
       "AllowedFileExtensions": [
 

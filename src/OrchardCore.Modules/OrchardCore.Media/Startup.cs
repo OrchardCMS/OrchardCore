@@ -74,7 +74,7 @@ namespace OrchardCore.Media
             _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
             _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
             _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
-            _cdnUrl = configurationSection.GetValue("CdnUrl", String.Empty);
+            _cdnUrl = configurationSection.GetValue("CdnUrl".TrimEnd('/'), String.Empty);
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -83,16 +83,13 @@ namespace OrchardCore.Media
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var hostingEnvironment = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var cdnUrlPrefix = hostingEnvironment.IsDevelopment() ? String.Empty : _cdnUrl.TrimEnd('/');
-
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
 
-                return new MediaFileStore(fileStore, mediaUrlBase, cdnUrlPrefix);
+                return new MediaFileStore(fileStore, mediaUrlBase, _cdnUrl);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
