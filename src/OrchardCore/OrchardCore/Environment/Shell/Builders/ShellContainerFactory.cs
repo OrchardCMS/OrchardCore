@@ -127,17 +127,11 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
-                    if (serviceDescriptor.ImplementationType != null)
+                    var type = GetImplementationType(serviceDescriptor);
+
+                    if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationType, featureServiceCollection.Key);
-                    }
-                    else if (serviceDescriptor.ImplementationInstance != null)
-                    {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationInstance.GetType(), featureServiceCollection.Key);
-                    }
-                    else
-                    {
-                        // Factory, we can't know which type will be returned
+                        typeFeatureProvider.TryAdd(type, featureServiceCollection.Key);
                     }
                 }
             }
@@ -158,6 +152,24 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
+        }
+
+        internal Type GetImplementationType(ServiceDescriptor descriptor)
+        {
+            if (descriptor.ImplementationType != null)
+            {
+                return descriptor.ImplementationType;
+            }
+            else if (descriptor.ImplementationInstance != null)
+            {
+                return descriptor.ImplementationInstance.GetType();
+            }
+            else if (descriptor.ImplementationFactory != null)
+            {
+                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+            }
+
+            return null;
         }
     }
 }
