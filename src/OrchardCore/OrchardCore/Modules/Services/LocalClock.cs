@@ -9,12 +9,14 @@ namespace OrchardCore.Modules
     {
         private readonly IEnumerable<ITimeZoneSelector> _timeZoneSelectors;
         private readonly IClock _clock;
+        private readonly ICalendarManager _calendarManager;
         private ITimeZone _timeZone;
 
-        public LocalClock(IEnumerable<ITimeZoneSelector> timeZoneSelectors, IClock clock)
+        public LocalClock(IEnumerable<ITimeZoneSelector> timeZoneSelectors, IClock clock, ICalendarManager calendarManager)
         {
             _timeZoneSelectors = timeZoneSelectors;
             _clock = clock;
+            _calendarManager = calendarManager;
         }
 
         public Task<DateTimeOffset> LocalNowAsync
@@ -46,7 +48,9 @@ namespace OrchardCore.Modules
             var localTimeZone = await GetLocalTimeZoneAsync();
             var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
             var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
-            return offsetDateTime.InZone(dateTimeZone).ToDateTimeOffset();
+            var currentCalendar = await _calendarManager.GetCurrentCalendar();
+
+            return offsetDateTime.InZone(dateTimeZone).WithCalendar(currentCalendar).ToDateTimeOffset();
         }
 
         public async Task<DateTime> ConvertToUtcAsync(DateTime dateTime)

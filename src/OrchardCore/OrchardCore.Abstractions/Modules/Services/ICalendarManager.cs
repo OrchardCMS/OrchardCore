@@ -1,11 +1,13 @@
 using System.Collections.Generic;
-using System.Globalization;
+using System.Threading.Tasks;
+using NodaTime;
 
 namespace OrchardCore.Modules
 {
     public interface ICalendarManager
     {
         IEnumerable<string> GetCalendars();
-        Calendar GetCalendarByName(string calendarName);
+        Task<CalendarSystem> GetCurrentCalendar();
+        CalendarSystem GetCalendarByName(string calendarName);
     }
 }

@@ -40,7 +40,6 @@ namespace OrchardCore.Settings
             services.AddScoped<ILiquidTemplateEventHandler, SiteLiquidTemplateEventHandler>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
-            services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
