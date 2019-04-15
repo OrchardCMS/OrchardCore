@@ -3,11 +3,11 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Settings.Services
 {
-    public class DefaultCalednarSelector : ICalendarSelector
+    public class DefaultCalendarSelector : ICalendarSelector
     {
         private readonly ISiteService _siteService;
 
-        public DefaultCalednarSelector(ISiteService siteService)
+        public DefaultCalendarSelector(ISiteService siteService)
         {
             _siteService = siteService;
         }
