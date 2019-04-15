@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
 using OrchardCore.Facebook.Filters;
@@ -11,6 +15,11 @@ using OrchardCore.Facebook.Login.Configuration;
 using OrchardCore.Facebook.Login.Drivers;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Services;
+using OrchardCore.Facebook.Widgets;
+using OrchardCore.Facebook.Widgets.Drivers;
+using OrchardCore.Facebook.Widgets.Handlers;
+using OrchardCore.Facebook.Widgets.Models;
+using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -57,4 +66,21 @@ namespace OrchardCore.Facebook
             });
         }
     }
+
+    [Feature(FacebookConstants.Features.Widgets)]
+    public class WidgetsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
+            services.AddSingleton<ContentPart, FacebookPluginPart>();
+            services.AddScoped<FacebookPluginPartHandler, FacebookPluginPartHandler>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
+
+            //services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+            services.AddScoped<IDataMigration, WidgetMigrations>();
+
+        }
+    }
+
 }
