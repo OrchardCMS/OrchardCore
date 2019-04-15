@@ -21,4 +21,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Widgets\NewFolder\" />
+  </ItemGroup>
+
 </Project>
