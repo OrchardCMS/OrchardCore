@@ -4,11 +4,11 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    public class AutorouteRoute
+    public class AutoRoute
     {
         private readonly IContentManager _contentManager;
 
-        public AutorouteRoute(IContentManager contentManager)
+        public AutoRoute(IContentManager contentManager)
         {
             _contentManager = contentManager;
         }

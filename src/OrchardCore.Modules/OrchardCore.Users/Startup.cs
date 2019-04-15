@@ -55,6 +55,8 @@ namespace OrchardCore.Users
                 pattern: ChangePasswordPath,
                 defaults: new { controller = "Account", action = "ChangePassword" }
             );
+
+            builder.UseAuthorization();
         }
 
         public override void ConfigureServices(IServiceCollection services)

@@ -107,6 +107,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IUserClaimsPrincipalFactory<TUser>>(),
                 null,
                 null,
+                null,
                 null)
             { CallBase = true };
         }

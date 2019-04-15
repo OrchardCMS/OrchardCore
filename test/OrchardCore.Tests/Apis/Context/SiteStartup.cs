@@ -33,7 +33,8 @@ namespace OrchardCore.Tests.Apis.Context
                     {
                         options.AddScheme<AlwaysLoggedInApiAuthenticationHandler>("Api", null);
                     });
-                }));
+                })
+                .Configure(appBuilder => appBuilder.UseAuthorization()));
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }

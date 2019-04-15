@@ -1,18 +1,18 @@
 <Project>
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.5.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview4-19172-03" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="3.0.0-preview4.19175.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.6.0-preview-18571-0011" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview5-19214-01" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="3.0.0-preview5.19214.1" />
   </ItemGroup>
 </Project>

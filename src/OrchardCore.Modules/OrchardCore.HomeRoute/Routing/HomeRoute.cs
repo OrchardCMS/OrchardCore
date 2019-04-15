@@ -5,13 +5,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute
 {
-    public class HomePageRoute
+    public class HomeRoute
     {
         private RouteValueDictionary _routeValues;
         private readonly ISiteService _siteService;
         private IChangeToken _siteServicechangeToken;
 
-        public HomePageRoute(ISiteService siteService)
+        public HomeRoute(ISiteService siteService)
         {
             _siteService = siteService;
         }

@@ -3,36 +3,33 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    public class AutorouteMiddleware
+    public class AutoRouteRoutingFilter : IShellRoutingFilter
     {
-        private readonly RequestDelegate _next;
         private readonly IAutorouteEntries _entries;
         private readonly LinkGenerator _linkGenerator;
 
-        public AutorouteMiddleware(RequestDelegate next, IAutorouteEntries entries, LinkGenerator linkGenerator)
+        public AutoRouteRoutingFilter(IAutorouteEntries entries, LinkGenerator linkGenerator)
         {
-            _next = next;
             _entries = entries;
             _linkGenerator = linkGenerator;
         }
 
-        public async Task Invoke(HttpContext httpContext)
+        public async Task OnRoutingAsync(HttpContext httpContext)
         {
             if (_entries.TryGetContentItemId(httpContext.Request.Path.ToString().TrimEnd('/'), out var contentItemId))
             {
-                var autorouteRoute = httpContext.RequestServices.GetRequiredService<AutorouteRoute>();
-                var routeValues = await autorouteRoute.GetValuesAsync(contentItemId);
+                var autoRoute = httpContext.RequestServices.GetRequiredService<AutoRoute>();
+                var routeValues = await autoRoute.GetValuesAsync(contentItemId);
 
                 if (routeValues != null)
                 {
                     httpContext.Request.Path = _linkGenerator.GetPathByRouteValues(null, routeValues);
                 }
             }
-
-            await _next.Invoke(httpContext);
         }
     }
 }

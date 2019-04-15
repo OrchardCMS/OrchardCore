@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

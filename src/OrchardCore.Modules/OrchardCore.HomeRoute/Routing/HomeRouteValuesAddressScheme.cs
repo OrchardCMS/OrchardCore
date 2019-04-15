@@ -9,11 +9,11 @@ namespace OrchardCore.HomeRoute.Routing
 {
     internal sealed class HomeRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
     {
-        private readonly HomePageRoute _homePageRoute;
+        private readonly HomeRoute _homeRoute;
 
-        public HomeRouteValuesAddressScheme(HomePageRoute homePageRoute)
+        public HomeRouteValuesAddressScheme(HomeRoute homeRoute)
         {
-            _homePageRoute = homePageRoute;
+            _homeRoute = homeRoute;
         }
 
         public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
@@ -32,7 +32,7 @@ namespace OrchardCore.HomeRoute.Routing
 
             var explicitValues = address.ExplicitValues;
 
-            var routeValues = _homePageRoute.GetValuesAsync().GetAwaiter().GetResult();
+            var routeValues = _homeRoute.GetValuesAsync().GetAwaiter().GetResult();
 
             if (string.Equals(explicitValues["area"]?.ToString(), routeValues?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(explicitValues["controller"]?.ToString(), routeValues?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&

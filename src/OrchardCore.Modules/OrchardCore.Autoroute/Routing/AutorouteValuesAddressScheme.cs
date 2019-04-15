@@ -9,12 +9,12 @@ using OrchardCore.Autoroute.Services;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    internal sealed class AutorouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+    internal sealed class AutoRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
     {
         private readonly IAutorouteEntries _entries;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AutorouteValuesAddressScheme(IAutorouteEntries entries, IHttpContextAccessor httpContextAccessor)
+        public AutoRouteValuesAddressScheme(IAutorouteEntries entries, IHttpContextAccessor httpContextAccessor)
         {
             _entries = entries;
             _httpContextAccessor = httpContextAccessor;
@@ -36,8 +36,8 @@ namespace OrchardCore.Autoroute.Routing
 
             var explicitValues = address.ExplicitValues;
 
-            var autorouteRoute = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<AutorouteRoute>();
-            var routeValues = autorouteRoute.GetValuesAsync(contentItemId).GetAwaiter().GetResult();
+            var autoRoute = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<AutoRoute>();
+            var routeValues = autoRoute.GetValuesAsync(contentItemId).GetAwaiter().GetResult();
 
             if (string.Equals(explicitValues["area"]?.ToString(), routeValues?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(explicitValues["controller"]?.ToString(), routeValues?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&

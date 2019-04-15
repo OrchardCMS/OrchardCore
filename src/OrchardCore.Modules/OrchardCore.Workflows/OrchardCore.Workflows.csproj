@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
