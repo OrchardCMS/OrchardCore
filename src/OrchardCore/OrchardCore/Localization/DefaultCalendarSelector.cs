@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Localization
 {
     public class DefaultCalendarSelector : ICalendarSelector
     {

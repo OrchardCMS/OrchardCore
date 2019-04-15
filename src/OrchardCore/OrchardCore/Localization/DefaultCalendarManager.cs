@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NodaTime;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Localization
 {
     public class DefaultCalendarManager : ICalendarManager
     {

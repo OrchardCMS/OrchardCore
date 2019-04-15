@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NodaTime;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Localization
 {
     public interface ICalendarManager
     {

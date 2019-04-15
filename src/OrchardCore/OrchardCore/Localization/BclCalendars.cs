@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using NodaTime;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Localization
 {
     internal static class BclCalendars
     {
