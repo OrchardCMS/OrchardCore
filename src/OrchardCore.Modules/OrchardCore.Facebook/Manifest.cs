@@ -29,5 +29,5 @@ using OrchardCore.Facebook;
     Name = "Facebook Social Plugins Widgets",
     Category = "Facebook",
     Description = "Adds Social Plugins as Widgets.",
-    Dependencies = new[] { FacebookConstants.Features.Core, "OrchardCore.Liquid","OrchardCore.Widgets" }
+    Dependencies = new[] { FacebookConstants.Features.Core, "OrchardCore.Templates","OrchardCore.Widgets" }
 )]

@@ -45,11 +45,14 @@ namespace OrchardCore.Facebook.Filters
                         {
                             options = string.Concat(options, ",", settings.FBInitParams, "}");
                         }
-                        _resourceManager.RegisterHeadScript(new HtmlString($"<script>window.fbAsyncInit = function(){{ FB.init({options});}};</script>"));
-                    }
-                    var locale = string.IsNullOrWhiteSpace(site.Culture) ? "en_US" : site.Culture.Replace("-", "_");
-                    _resourceManager.RegisterHeadScript(new HtmlString($"<script async defer src=\"https://connect.facebook.net/{locale}/sdk.js\"></script>"));
+                        var require = new RequireSettings() { Name = "fb", Type = "script", };
+                        var resource=_resourceManager.FindResource(require);
 
+                        _resourceManager.RegisterResource("script", "fb");
+
+                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fb.js"" type=""text/javascript""></script>"));
+                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fbsdk.js"" type=""text/javascript""></script>"));
+                    }
                 }
             }
             await next.Invoke();

@@ -25,6 +25,11 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using System;
+using OrchardCore.ResourceManagement;
+using ResourceManifest = OrchardCore.Facebook.Widgets.ResourceManifest;
 
 namespace OrchardCore.Facebook
 {
@@ -71,6 +76,11 @@ namespace OrchardCore.Facebook
     [Feature(FacebookConstants.Features.Widgets)]
     public class WidgetsStartup : StartupBase
     {
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            builder.UseMiddleware<ScriptsMiddleware>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
@@ -78,7 +88,7 @@ namespace OrchardCore.Facebook
             services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
 
-            //services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
             services.AddScoped<IDataMigration, WidgetMigrations>();
 
         }
