@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
@@ -74,7 +75,7 @@ namespace OrchardCore.Facebook
         {
             services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
             services.AddSingleton<ContentPart, FacebookPluginPart>();
-            services.AddScoped<FacebookPluginPartHandler, FacebookPluginPartHandler>();
+            services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
 
             //services.AddScoped<IResourceManifestProvider, ResourceManifest>();
