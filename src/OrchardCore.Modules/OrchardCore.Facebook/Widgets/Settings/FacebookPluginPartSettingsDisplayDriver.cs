@@ -22,7 +22,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(FacebookPluginPartSettings), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }

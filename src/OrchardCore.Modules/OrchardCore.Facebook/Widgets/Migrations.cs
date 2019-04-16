@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Recipes.Services;
 using System.Threading.Tasks;
+using OrchardCore.Facebook.Widgets.Settings;
 
 namespace OrchardCore.Facebook.Widgets
 {

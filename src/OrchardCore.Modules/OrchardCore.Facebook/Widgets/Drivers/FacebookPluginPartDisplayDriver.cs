@@ -40,15 +40,27 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             T = localizer;
         }
 
-        public override IDisplayResult Display(FacebookPluginPart part, BuildPartDisplayContext context)
+        public override IDisplayResult Display(FacebookPluginPart part)
         {
-            return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m =>
+            return Combine(
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
+                    .Location("Detail", "Content:10"),
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
+                    .Location("Summary", "Content:10")
+            );
+        }
+
+        private void BuildViewModel(FacebookPluginPartViewModel model, FacebookPluginPart part)
+        {
+            if (model == null)
             {
-                m.FacebookPluginPart = part;
-                m.Settings = GetFacebookPluginPartSettings(part);
-                m.Liquid = part.Liquid;
-            })
-            .Location("Detail", "Content:5");
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
+            model.Settings = GetFacebookPluginPartSettings(part);
+            model.Liquid = part.Liquid;
+            model.ContentItem = part.ContentItem;
         }
 
         public override IDisplayResult Edit(FacebookPluginPart part)
@@ -57,12 +69,17 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             {
                 model.Settings = GetFacebookPluginPartSettings(part);
                 model.FacebookPluginPart = part;
-                model.Liquid = part.Liquid;
+                model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
             });
         }
 
         private FacebookPluginPartSettings GetFacebookPluginPartSettings(FacebookPluginPart part)
         {
+            if (part == null)
+            {
+                throw new ArgumentNullException(nameof(part));
+            }
+
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();

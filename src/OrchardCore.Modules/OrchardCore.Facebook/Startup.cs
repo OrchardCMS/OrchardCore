@@ -30,6 +30,8 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using OrchardCore.ResourceManagement;
 using ResourceManifest = OrchardCore.Facebook.Widgets.ResourceManifest;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Facebook.Widgets.Services;
 
 namespace OrchardCore.Facebook
 {
@@ -84,13 +86,12 @@ namespace OrchardCore.Facebook
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
+            services.AddScoped<IShapeTableProvider, LiquidShapes>();
             services.AddSingleton<ContentPart, FacebookPluginPart>();
-            services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
-
             services.AddScoped<IResourceManifestProvider, ResourceManifest>();
             services.AddScoped<IDataMigration, WidgetMigrations>();
-
+            services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
         }
     }
 
