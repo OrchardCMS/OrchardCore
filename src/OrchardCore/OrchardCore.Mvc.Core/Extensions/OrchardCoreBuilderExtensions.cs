@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(collection =>
             {
-                // Allows a tenant to add its own endpoint schemes for link generation.
+                // Allows a tenant to add its own route endpoint schemes for link generation.
                 collection.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
             },
             // Need to be registered last.

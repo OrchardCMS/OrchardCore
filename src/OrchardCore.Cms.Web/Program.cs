@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.Logging;
 
 namespace OrchardCore.Cms.Web
@@ -7,14 +7,16 @@ namespace OrchardCore.Cms.Web
     public class Program
     {
         public static void Main(string[] args)
-            => BuildWebHost(args).Run();
+            => BuildHost(args).Run();
 
-        public static IWebHost BuildWebHost(string[] args)
-            => CreateWebHostBuilder(args)
+        public static IHost BuildHost(string[] args)
+            => CreateHostBuilder(args)
                 .Build();
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder<Startup>(args)
-                .UseNLogWeb();
+        public static IHostBuilder CreateHostBuilder(string[] args)
+            => Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                    webBuilder.UseStartup<Startup>()
+                        .UseNLogWeb());
     }
 }

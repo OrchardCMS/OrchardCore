@@ -53,7 +53,7 @@ namespace OrchardCore.Mvc
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
-            // Route endpoint selector policy.
+            // Add a route endpoint selector policy.
             services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
 
             // There are some issues when using the default formatters based on

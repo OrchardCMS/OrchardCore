@@ -45,11 +45,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                AddDefaultServices(builder);
+                AddDefaultServices(services);
                 AddShellServices(services);
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
+                AddRouting(builder);
                 AddAntiForgery(builder);
                 AddAuthentication(builder);
                 AddDataProtection(builder);
@@ -61,10 +62,8 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void AddDefaultServices(OrchardCoreBuilder builder)
+        private static void AddDefaultServices(IServiceCollection services)
         {
-            var services = builder.ApplicationServices;
-
             services.AddLogging();
             services.AddOptions();
 
@@ -73,26 +72,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
-
-            // The global routing system is not aware of some tenant level routing singletons. Routing services
-            // also use a global collection of endpoint data sources that is setup through the default config
-            // of 'RouteOptions' and mutated by 'UseEndPoints()'. This is not tenant aware and not thread safe,
-            // and the collection would grow up each time we build a tenant pipeline. So, we need to remove the
-            // routing singletons and the default config of 'RouteOptions' and re-add them at the tenant level.
-
-            // 1. Retrieve routing implementation types to remove.
-            var routingTypesToRemove = new ServiceCollection().AddRouting()
-                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                .Select(sd => GetImplementationType(sd));
-
-            // 2. Remove routing singletons and the default config of 'RouteOptions'.
-            foreach (var sd in services.Where(sd => routingTypesToRemove.Contains(GetImplementationType(sd))).ToArray())
-            {
-                services.Remove(sd);
-            }
-
-            // 3. Re-add these routing services early but at the tenant level.
-            builder.ConfigureServices(s => s.AddRouting(), order: int.MinValue + 100);
 
             services.AddWebEncoders();
 
@@ -171,6 +150,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 app.UseStaticFiles(options);
             });
+        }
+
+        /// <summary>
+        /// Adds isolated tenant level routing services.
+        /// </summary>
+        private static void AddRouting(OrchardCoreBuilder builder)
+        {
+            var services = builder.ApplicationServices;
+
+            // The routing system is not tenant aware and uses a global list of endpoint data sources which is
+            // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
+            // So, we need isolated routing singletons (and a default configuration) per tenant.
+
+            // Host implementation types to remove.
+            var types = new ServiceCollection().AddRouting()
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                .Select(sd => GetImplementationType(sd));
+
+            // Host service descriptors to remove.
+            var descriptors = services.Where(sd => types.Contains(GetImplementationType(sd))).ToArray();
+
+            // Remove host services to isolate.
+            foreach (var descriptor in descriptors)
+            {
+                services.Remove(descriptor);
+            }
+
+            // Re-add routing services early but at the tenant level.
+            builder.ConfigureServices(collection => collection.AddRouting(), order: int.MinValue + 100);
         }
 
         /// <summary>
