@@ -2,12 +2,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Widgets
+namespace OrchardCore.Facebook
 {
     public class ScriptsMiddleware
     {
@@ -26,19 +25,19 @@ namespace OrchardCore.Facebook.Widgets
             if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk"))
             {
                 var site = (await _siteService.GetSiteSettingsAsync());
+                var settings = site.As<FacebookSettings>();
                 if (httpContext.Request.Path.Value.EndsWith("fbsdk.js"))
                 {
                     var locale = string.IsNullOrWhiteSpace(site.Culture) ? "en_US" : site.Culture.Replace("-", "_");
                     script = $@"(function(d){{
                         var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                         js = d.createElement('script'); js.id = id; js.async = true;
-                        js.src = ""https://connect.facebook.net/{locale}/all.js"";
+                        js.src = ""https://connect.facebook.net/{locale}/{settings.SdkJs}"";
                         d.getElementsByTagName('head')[0].appendChild(js);
                     }} (document));";
                 }
                 if (httpContext.Request.Path.Value.EndsWith("fb.js"))
                 {
-                    var settings = site.As<FacebookSettings>();
                     if (!string.IsNullOrWhiteSpace(settings?.AppId))
                     {
                         var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";

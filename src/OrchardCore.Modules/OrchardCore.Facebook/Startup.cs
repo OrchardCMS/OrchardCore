@@ -37,6 +37,11 @@ namespace OrchardCore.Facebook
 {
     public class Startup : StartupBase
     {
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            builder.UseMiddleware<ScriptsMiddleware>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -78,11 +83,6 @@ namespace OrchardCore.Facebook
     [Feature(FacebookConstants.Features.Widgets)]
     public class WidgetsStartup : StartupBase
     {
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            builder.UseMiddleware<ScriptsMiddleware>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();

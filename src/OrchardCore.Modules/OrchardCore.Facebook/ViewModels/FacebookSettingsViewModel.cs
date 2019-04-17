@@ -8,6 +8,8 @@ namespace OrchardCore.Facebook.ViewModels
         public string AppId { get; set; }
         [Required]
         public string AppSecret { get; set; }
+        [Required]
+        public string SdkJs { get; set; }
         public bool FBInit { get; set; }
         public string FBInitParams { get; set; }
         [RegularExpression(@"(v)\d+\.\d+")]

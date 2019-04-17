@@ -25,16 +25,8 @@ namespace OrchardCore.Facebook.Widgets
                 .Attachable()
                 .WithDescription("Provides a facebook plugin part to create facebook social plugin widgets."));
 
-            //await _recipeMigrator.ExecuteAsync("migration.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync("Widgets/migration.recipe.json", this);
             return await Task.FromResult(1);
         }
-
-        //public async Task<int> UpdateFrom1Async()
-        //{
-        //    _contentDefinitionManager.AlterPartDefinition(nameof(cssMapPart), builder => builder
-        //        .Attachable()
-        //        .WithDescription("Provides a cssmap part to create map widgets."));
-        //    return await Task.FromResult(2);
-        //}
     }
 }

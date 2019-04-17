@@ -31,6 +31,10 @@ namespace OrchardCore.Facebook.Recipes
             var settings = await _loginService.GetSettingsAsync();
             settings.AppId = model.AppId;
             settings.AppSecret= model.AppSecret;
+            settings.SdkJs = model.SdkJs ?? "sdk.js";
+            settings.FBInit = model.FBInit;
+            settings.FBInitParams = model.FBInitParams;
+            settings.Version = model.Version ?? "3.2";
 
             await _loginService.UpdateSettingsAsync(settings);
         }
@@ -40,5 +44,9 @@ namespace OrchardCore.Facebook.Recipes
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
+        public string SdkJs { get; set; }
+        public bool FBInit { get; set; }
+        public string FBInitParams { get; set; }
+        public string Version { get; set; }
     }
 }

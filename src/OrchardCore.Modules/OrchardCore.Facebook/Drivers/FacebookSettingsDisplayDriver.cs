@@ -60,6 +60,7 @@ namespace OrchardCore.Facebook.Drivers
                 model.FBInit = settings.FBInit;
                 model.FBInitParams = settings.FBInitParams;
                 model.Version = settings.Version;
+                model.SdkJs = settings.SdkJs;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
@@ -88,10 +89,10 @@ namespace OrchardCore.Facebook.Drivers
                     settings.AppId = model.AppId;
                     settings.AppSecret = protector.Protect(model.AppSecret);
                     settings.FBInit = model.FBInit;
+                    settings.SdkJs = model.SdkJs;
                     if (!string.IsNullOrWhiteSpace(model.FBInitParams))
                         settings.FBInitParams = model.FBInitParams;
-                    if (!string.IsNullOrWhiteSpace(model.Version))
-                        settings.Version = model.Version;
+                    settings.Version = model.Version;
 
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
