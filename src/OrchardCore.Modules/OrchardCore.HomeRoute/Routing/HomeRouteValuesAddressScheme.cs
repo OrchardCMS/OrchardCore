@@ -30,19 +30,14 @@ namespace OrchardCore.HomeRoute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            var explicitValues = address.ExplicitValues;
-
             var routeValues = _homeRoute.GetValuesAsync().GetAwaiter().GetResult();
 
-            if (string.Equals(explicitValues["area"]?.ToString(), routeValues?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(explicitValues["controller"]?.ToString(), routeValues?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(explicitValues["action"]?.ToString(), routeValues?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(explicitValues["contentItemId"]?.ToString(), routeValues?["contentItemId"]?.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (Match(address.ExplicitValues, routeValues))
             {
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(String.Empty, explicitValues, null),
+                    RoutePatternFactory.Parse(String.Empty, address.ExplicitValues, null),
                     0,
                     null,
                     null
@@ -52,6 +47,15 @@ namespace OrchardCore.HomeRoute.Routing
             }
 
             return Enumerable.Empty<Endpoint>();
+        }
+
+        private bool Match(RouteValueDictionary explicitValues, RouteValueDictionary routeValues)
+        {
+            return
+                String.Equals(explicitValues["area"]?.ToString(), routeValues["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(explicitValues["controller"]?.ToString(), routeValues["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(explicitValues["action"]?.ToString(), routeValues["action"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(explicitValues["contentItemId"]?.ToString(), routeValues["contentItemId"]?.ToString(), StringComparison.OrdinalIgnoreCase);
         }
     }
 }

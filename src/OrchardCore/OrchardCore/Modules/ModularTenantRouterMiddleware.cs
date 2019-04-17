@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Hosting.ShellBuilders;
-using OrchardCore.Routing;
 
 namespace OrchardCore.Modules
 {
@@ -117,23 +116,13 @@ namespace OrchardCore.Modules
             // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            appBuilder.UseMiddleware<ShellRoutingMiddleware>();
-
-            appBuilder.UseRouting();
-
-            appBuilder.UseEndpoints(routes =>
+            appBuilder.UseRouting().UseEndpoints(routes =>
             {
                 foreach (var startup in startups)
                 {
                     startup.Configure(appBuilder, routes, scopeServiceProvider);
                 }
             });
-
-            //var test = appBuilder.Properties["__EndpointRouteBuilder"];
-
-            //var test2 = appBuilder.ApplicationServices.GetService<IOptions<RouteOptions>>();
-
-            ;
         }
     }
 }

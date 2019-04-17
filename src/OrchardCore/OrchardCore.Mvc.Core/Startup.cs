@@ -16,6 +16,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.RazorPages;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Mvc
 {
@@ -51,6 +52,9 @@ namespace OrchardCore.Mvc
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
+
+            // Route endpoint selector policy.
+            services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
 
             // There are some issues when using the default formatters based on
             // System.Text.Json. Here, we manually add JSON.NET based formatters.

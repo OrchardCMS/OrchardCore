@@ -29,25 +29,20 @@ namespace OrchardCore.Autoroute.Routing
 
             string contentItemId = address.ExplicitValues["contentItemId"]?.ToString();
 
-            if (string.IsNullOrEmpty(contentItemId))
+            if (string.IsNullOrEmpty(contentItemId) || !_entries.TryGetPath(contentItemId, out var path))
             {
                 return Enumerable.Empty<Endpoint>();
             }
 
-            var explicitValues = address.ExplicitValues;
-
             var autoRoute = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<AutoRoute>();
             var routeValues = autoRoute.GetValuesAsync(contentItemId).GetAwaiter().GetResult();
 
-            if (string.Equals(explicitValues["area"]?.ToString(), routeValues?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(explicitValues["controller"]?.ToString(), routeValues?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                string.Equals(explicitValues["action"]?.ToString(), routeValues?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                _entries.TryGetPath(explicitValues["contentItemId"].ToString(), out var path))
+            if (Match(address.ExplicitValues, routeValues))
             {
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(path, explicitValues, null),
+                    RoutePatternFactory.Parse(path, address.ExplicitValues, null),
                     0,
                     null,
                     null
@@ -57,6 +52,14 @@ namespace OrchardCore.Autoroute.Routing
             }
 
             return Enumerable.Empty<Endpoint>();
+        }
+
+        private bool Match(RouteValueDictionary explicitValues, RouteValueDictionary routeValues)
+        {
+            return
+                String.Equals(explicitValues["area"]?.ToString(), routeValues["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(explicitValues["controller"]?.ToString(), routeValues["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                String.Equals(explicitValues["action"]?.ToString(), routeValues["action"]?.ToString(), StringComparison.OrdinalIgnoreCase);
         }
     }
 }

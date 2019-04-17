@@ -23,7 +23,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using YesSql;
 using YesSql.Indexes;
@@ -65,15 +64,17 @@ namespace OrchardCore.Autoroute
 
             services.AddScoped<AutoRoute>();
             services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, AutoRouteValuesAddressScheme>();
-            services.AddSingleton<IShellRoutingFilter, AutoRouteRoutingFilter>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
+
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
+
+            app.UseMiddleware<AutoRouteMiddleware>();
         }
     }
 }

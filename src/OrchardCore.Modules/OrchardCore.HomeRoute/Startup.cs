@@ -1,8 +1,9 @@
+using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.HomeRoute.Routing;
 using OrchardCore.Modules;
-using OrchardCore.Routing;
 
 namespace OrchardCore.HomeRoute
 {
@@ -12,7 +13,11 @@ namespace OrchardCore.HomeRoute
         {
             services.AddSingleton<HomeRoute>();
             services.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, HomeRouteValuesAddressScheme>();
-            services.AddSingleton<IShellRoutingFilter, HomeRouteRoutingFilter>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseMiddleware<HomeRouteMiddleware>();
         }
     }
 }

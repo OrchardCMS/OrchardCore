@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -42,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                AddDefaultServices(services);
+                AddDefaultServices(builder);
                 AddShellServices(services);
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
@@ -58,8 +61,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static void AddDefaultServices(IServiceCollection services)
+        private static void AddDefaultServices(OrchardCoreBuilder builder)
         {
+            var services = builder.ApplicationServices;
+
             services.AddLogging();
             services.AddOptions();
 
@@ -68,6 +73,26 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+
+            // The global routing system is not aware of some tenant level routing singletons. Routing services
+            // also use a global collection of endpoint data sources that is setup through the default config
+            // of 'RouteOptions' and mutated by 'UseEndPoints()'. This is not tenant aware and not thread safe,
+            // and the collection would grow up each time we build a tenant pipeline. So, we need to remove the
+            // routing singletons and the default config of 'RouteOptions' and re-add them at the tenant level.
+
+            // 1. Retrieve routing implementation types to remove.
+            var routingTypesToRemove = new ServiceCollection().AddRouting()
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                .Select(sd => GetImplementationType(sd));
+
+            // 2. Remove routing singletons and the default config of 'RouteOptions'.
+            foreach (var sd in services.Where(sd => routingTypesToRemove.Contains(GetImplementationType(sd))).ToArray())
+            {
+                services.Remove(sd);
+            }
+
+            // 3. Re-add these routing services early but at the tenant level.
+            builder.ConfigureServices(s => s.AddRouting(), order: int.MinValue + 100);
 
             services.AddWebEncoders();
 
@@ -247,6 +272,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
+        }
+
+        internal static Type GetImplementationType(ServiceDescriptor descriptor)
+        {
+            if (descriptor.ImplementationType != null)
+            {
+                return descriptor.ImplementationType;
+            }
+            else if (descriptor.ImplementationInstance != null)
+            {
+                return descriptor.ImplementationInstance.GetType();
+            }
+            else if (descriptor.ImplementationFactory != null)
+            {
+                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+            }
+
+            return null;
         }
     }
 }
