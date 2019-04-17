@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using System;
 using OrchardCore.ResourceManagement;
-using ResourceManifest = OrchardCore.Facebook.Widgets.ResourceManifest;
+using ResourceManifest = OrchardCore.Facebook.ResourceManifest;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Facebook.Widgets.Services;
 
