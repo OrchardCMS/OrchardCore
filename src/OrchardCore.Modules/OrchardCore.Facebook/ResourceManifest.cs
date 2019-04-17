@@ -1,6 +1,6 @@
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Facebook.Widgets
+namespace OrchardCore.Facebook
 {
     public class ResourceManifest : IResourceManifestProvider
     {
