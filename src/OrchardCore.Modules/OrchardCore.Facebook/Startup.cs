@@ -50,6 +50,8 @@ namespace OrchardCore.Facebook
             services.AddSingleton<IFacebookService, FacebookService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
 
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(FBInitFilter));
@@ -88,7 +90,6 @@ namespace OrchardCore.Facebook
             services.AddScoped<IContentPartDisplayDriver, FacebookPluginPartDisplayDriver>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
             services.AddSingleton<ContentPart, FacebookPluginPart>();
-            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
             services.AddScoped<IDataMigration, WidgetMigrations>();
             services.AddScoped<IContentPartHandler, FacebookPluginPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
