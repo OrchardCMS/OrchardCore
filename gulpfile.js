@@ -31,14 +31,6 @@ require("events").EventEmitter.prototype._maxListeners = 100;
 ** GULP TASKS
 */
 
-gulp.task("rtl", function() {
-    var styleFolder = "./src/OrchardCore.Themes/TheAdmin/wwwroot/Styles";
-    return gulp.src(styleFolder + "/TheAdmin.css")
-        .pipe(rtlcss())
-        .pipe(rename({ suffix: "-rtl" }))
-        .pipe(gulp.dest(styleFolder))
-});
-
 // Incremental build (each asset group is built only if one or more inputs are newer than the output).
 gulp.task("build", function () {
     var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
@@ -231,6 +223,13 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir))
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
+
+    // Adds TheAdmin RTL
+    if (assetGroup.outputFileName == 'TheAdmin.css') {
+        var stylePath = assetGroup.outputDir + '/' + assetGroup.outputFileName;
+        rtl(stylePath, assetGroup.outputDir);
+    }
+
     return merge([minifiedStream, devStream]);
 }
 
@@ -304,4 +303,23 @@ function buildCopyPipeline(assetGroup, doRebuild) {
     //.pipe(gulp.dest(assetGroup.webroot));
 
     return stream;
+}
+
+function rtl(input, outputDir) {
+    gulp.src(input)
+        .pipe(rtlcss())
+        .pipe(rename({ suffix: "-rtl" }))
+        .pipe(gulp.dest(outputDir))
+        .pipe(cssnano({
+            autoprefixer: { browsers: ["last 2 versions"] },
+            discardComments: { removeAll: true },
+            discardUnused: false,
+            mergeIdents: false,
+            reduceIdents: false,
+            zindex: false
+        }))
+        .pipe(rename({
+            suffix: ".min"
+        }))
+        .pipe(gulp.dest(outputDir));
 }
