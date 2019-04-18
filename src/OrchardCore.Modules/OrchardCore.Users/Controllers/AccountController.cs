@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -22,7 +25,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseEmailController
     {
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
@@ -30,15 +33,20 @@ namespace OrchardCore.Users.Controllers
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+        private readonly IEnumerable<IRegistrationFormEvents> _registrationEvents;
 
         public AccountController(
             IUserService userService,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
+            ISmtpService smtpService,
+            IShapeFactory shapeFactory,
+            IHtmlDisplay displayManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
             IStringLocalizer<AccountController> stringLocalizer,
-            IEnumerable<ILoginFormEvent> accountEvents)
+            IEnumerable<ILoginFormEvent> accountEvents,
+            IEnumerable<IRegistrationFormEvents> registrationEvents) : base(smtpService, shapeFactory, displayManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -46,6 +54,7 @@ namespace OrchardCore.Users.Controllers
             _logger = logger;
             _siteService = siteService;
             _accountEvents = accountEvents;
+            _registrationEvents = registrationEvents;
 
             T = stringLocalizer;
         }
@@ -90,7 +99,7 @@ namespace OrchardCore.Users.Controllers
 
         async Task<VerifyLoginResult> VerifyLogin(LoginViewModel model, ExternalLoginInfo info, string returnUrl = null)
         {
-            SignInResult signInResult = new SignInResult();
+            var signInResult = new SignInResult();
 
             bool external = info is object;
 
@@ -204,18 +213,6 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
-        }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -295,7 +292,9 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string returnUrl = null, string loginProvider = null)
         {
-            if ((!model.IsExistingUser && !(await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister))
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+
+            if (!model.IsExistingUser && !settings.UsersCanRegister)
             {
                 _logger.LogInformation("Site does not allow user registration.");
                 return NotFound();
@@ -303,6 +302,8 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = loginProvider;
+
+            await _registrationEvents.InvokeAsync(i => i.RegistrationValidationAsync((key, message) => ModelState.AddModelError(key, message)), _logger);
 
             if (ModelState.IsValid)
             {
@@ -317,6 +318,25 @@ namespace OrchardCore.Users.Controllers
                 {
                     user = new User() { UserName = model.UserName, Email = model.Email };
                     user = await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                    if (user != null)
+                    {
+                        if (settings.UsersMustValidateEmail)
+                        {
+                            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
+                            // Send an email with this link
+                            await SendEmailConfirmationTokenAsync(user as User);
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
+                        _logger.LogInformation(3, "User created a new account with password.");
+                        _registrationEvents.Invoke(i => i.RegisteredAsync(), _logger);
+
+                        return RedirectToLocal(returnUrl);
+                    }
+
                 }
                 else
                 {
@@ -440,6 +460,15 @@ namespace OrchardCore.Users.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
             //StatusMessage = "The external login was removed.";
             return RedirectToAction(nameof(ExternalLogins));
+        }
+
+        private async Task<string> SendEmailConfirmationTokenAsync(User user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+            await SendEmailAsync(user.Email, T["Confirm your account"], new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
+
+            return callbackUrl;
         }
 
     }
