@@ -19,6 +19,7 @@ namespace OrchardCore.Users.Drivers
                 model.UsersCanRegister = section.UsersCanRegister;
                 model.UsersMustValidateEmail = section.UsersMustValidateEmail;
                 model.UseSiteTheme = section.UseSiteTheme;
+                model.NoPasswordForExternalUsers = section.NoPasswordForExternalUsers;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

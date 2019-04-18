@@ -8,6 +8,14 @@
         <span class="hint">@T["— {0}", "Display a link to allow the users to register on the site."]</span>
     </div>
 </fieldset>
+<fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
+        <span asp-validation-for="NoPasswordForExternalUsers"></span>
+        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["No local password for external users"]</label>
+        <span class="hint">@T["— {0}", "When a new user logins with an external provider, he is not required to provide a local password."]</span>
+    </div>
+</fieldset>
 <fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UsersMustValidateEmail" data-toggle="collapse" data-target="#warnEmailValidation" />
@@ -25,3 +33,26 @@
         <span class="hint">@T["— {0}", "Requires an active site theme."]</span>
     </div>
 </fieldset>
+
+<script at="Foot" type="text/javascript">
+////<![CDATA[
+    window.onload = function () {
+        refresh();
+
+        $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {
+            refresh();
+        });
+
+        function refresh(e) {
+            var usersCanRegisterElement = $("#@Html.IdFor(m => m.UsersCanRegister)");
+            var noPasswordForExternalUsers = $("#@Html.IdFor(m => m.NoPasswordForExternalUsers)");
+
+            if (usersCanRegisterElement.prop("checked")) {
+                noPasswordForExternalUsers.removeAttr("disabled");
+            } else {
+                noPasswordForExternalUsers.prop('checked',false).prop("disabled", 'disabled');
+            }
+        }
+    };
+//]]>
+</script>
