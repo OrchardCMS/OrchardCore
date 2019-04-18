@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    internal sealed class AutoRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+    internal sealed class AutoRouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly IAutorouteEntries _entries;
         private readonly IHttpContextAccessor _httpContextAccessor;

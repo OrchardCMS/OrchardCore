@@ -157,28 +157,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddRouting(OrchardCoreBuilder builder)
         {
-            var services = builder.ApplicationServices;
+            // 'AddRouting()' is called by the host.
 
             // The routing system is not tenant aware and uses a global list of endpoint data sources which is
             // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
             // So, we need isolated routing singletons (and a default configuration) per tenant.
 
-            // Host implementation types to remove.
-            var types = new ServiceCollection().AddRouting()
-                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                .Select(sd => GetImplementationType(sd));
-
-            // Host service descriptors to remove.
-            var descriptors = services.Where(sd => types.Contains(GetImplementationType(sd))).ToArray();
-
-            // Remove host services to isolate.
-            foreach (var descriptor in descriptors)
+            builder.ConfigureServices(collection =>
             {
-                services.Remove(descriptor);
-            }
-
-            // Re-add routing services early but at the tenant level.
-            builder.ConfigureServices(collection => collection.AddRouting(), order: int.MinValue + 100);
+                collection.Add(new ServiceCollection().AddRouting());
+            },
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -280,24 +269,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
-        }
-
-        internal static Type GetImplementationType(ServiceDescriptor descriptor)
-        {
-            if (descriptor.ImplementationType != null)
-            {
-                return descriptor.ImplementationType;
-            }
-            else if (descriptor.ImplementationInstance != null)
-            {
-                return descriptor.ImplementationInstance.GetType();
-            }
-            else if (descriptor.ImplementationFactory != null)
-            {
-                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
-            }
-
-            return null;
         }
     }
 }

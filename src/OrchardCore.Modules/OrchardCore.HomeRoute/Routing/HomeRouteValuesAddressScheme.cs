@@ -4,10 +4,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
+using OrchardCore.Routing;
 
 namespace OrchardCore.HomeRoute.Routing
 {
-    internal sealed class HomeRouteValuesAddressScheme : IEndpointAddressScheme<RouteValuesAddress>
+    internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly HomeRoute _homeRoute;
 
