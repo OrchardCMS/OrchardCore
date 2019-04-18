@@ -6,6 +6,7 @@ namespace OrchardCore.Users.ViewModels
 {
     public class ExternalLoginViewModel : IValidatableObject
     {
+        public bool NoPassword { get; set; }
         public bool IsExistingUser { get; set; }
 
         [Required]
@@ -15,7 +16,6 @@ namespace OrchardCore.Users.ViewModels
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -26,6 +26,11 @@ namespace OrchardCore.Users.ViewModels
         {
             if (!IsExistingUser)
             {
+                if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
+                {
+                    yield return new ValidationResult("Password is required!", new[] { "Password" });
+                }
+
                 if (Password != ConfirmPassword)
                 {
                     yield return new ValidationResult("Confirm Password do not match", new[] { "ConfirmPassword" });
