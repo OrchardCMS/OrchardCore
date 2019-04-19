@@ -24,22 +24,19 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!IsExistingUser)
+            if (string.IsNullOrWhiteSpace(Password) && (!NoPassword || IsExistingUser))
             {
-                if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
-                {
-                    yield return new ValidationResult("Password is required!", new[] { "Password" });
-                }
+                yield return new ValidationResult("Password is required!", new[] { "Password" });
+            }
 
-                if (Password != ConfirmPassword)
-                {
-                    yield return new ValidationResult("Confirm Password do not match", new[] { "ConfirmPassword" });
-                }
+            if (!IsExistingUser && Password != ConfirmPassword)
+            {
+                yield return new ValidationResult("Confirm Password do not match", new[] { "ConfirmPassword" });
+            }
 
-                if (Password != null && (Password.Length < 6 || Password.Length > 100))
-                {
-                    yield return new ValidationResult(string.Format("Password must be between {0} and {1} characters", 6, 100), new[] { "Password" });
-                }
+            if (Password != null && (Password.Length < 6 || Password.Length > 100))
+            {
+                yield return new ValidationResult(string.Format("Password must be between {0} and {1} characters", 6, 100), new[] { "Password" });
             }
         }
     }

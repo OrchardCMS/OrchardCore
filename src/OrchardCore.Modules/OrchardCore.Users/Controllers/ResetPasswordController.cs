@@ -20,7 +20,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.ResetPassword")]
-    public class ResetPasswordController : BaseEmailController
+    public class ResetPasswordController : Controller
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
@@ -36,7 +36,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) : base(smtpService, displayHelper)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents) 
         {
             _userService = userService;
             _userManager = userManager;
@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Controllers
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                 var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
-                await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
+                await this.SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
 
@@ -151,5 +151,18 @@ namespace OrchardCore.Users.Controllers
         {
             return View();
         }
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return Redirect("~/");
+            }
+        }
+
     }
 }

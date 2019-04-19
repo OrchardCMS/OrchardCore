@@ -12,7 +12,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
         <span asp-validation-for="NoPasswordForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["No local password for external users"]</label>
+        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create password for external users"]</label>
         <span class="hint">@T["— {0}", "When a new user logins with an external provider, he is not required to provide a local password."]</span>
     </div>
 </fieldset>
