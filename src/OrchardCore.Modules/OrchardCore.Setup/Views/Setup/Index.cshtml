@@ -173,7 +173,7 @@
                 </div>
 
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
-                <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
+                <span id="connectionStringHint" class="text-muted form-text small"></span>
             </div>
         </fieldset>
     }
@@ -217,7 +217,6 @@
 </form>
 <script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-    //<![CDATA[
     $(function(){
         $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
@@ -245,6 +244,22 @@
                 $pwd.focus();
             }
         });
+        $("#DatabaseProvider").change(function () {
+            var dataProvider = $("#DatabaseProvider option:selected").text();
+            var connectionString = "";
+            switch (dataProvider) {
+                case "Sql Server":
+                    connectionString = "Server=<em>localhost</em>;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>";
+                    break;
+                case "MySql":
+                    connectionString = "Server=<em>localhost</em>;Database=<em>Orchard</em>;Uid=<em>username</em>;Pwd=<em>password</em>";
+                    break;
+                case "Postgres":
+                    connectionString = "Server=<em>localhost</em>;Port=5432;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>";
+                    break;
+                default:
+            }
+            $("#connectionStringHint").html('@T["The connection string to your database instance. e.g., "]' + connectionString);
+        });
     })
-    //]]>
 </script>
