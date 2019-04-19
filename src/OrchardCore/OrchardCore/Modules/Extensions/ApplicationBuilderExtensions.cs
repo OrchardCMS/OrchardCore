@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,10 @@ namespace Microsoft.AspNetCore.Builder
             env.ContentRootFileProvider = new CompositeFileProvider(
                 new ModuleEmbeddedFileProvider(appContext),
                 env.ContentRootFileProvider);
+
+            // Init also the web host 'ContentRootFileProvider'.
+            app.ApplicationServices.GetRequiredService<IWebHostEnvironment>()
+                .ContentRootFileProvider = env.ContentRootFileProvider;
 
             app.UseMiddleware<PoweredByMiddleware>();
 

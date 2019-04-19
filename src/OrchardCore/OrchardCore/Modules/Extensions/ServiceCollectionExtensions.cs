@@ -159,13 +159,32 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // 'AddRouting()' is called by the host.
 
-            // The routing system is not tenant aware and uses a global list of endpoint data sources which is
-            // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
-            // So, we need isolated routing singletons (and a default configuration) per tenant.
-
             builder.ConfigureServices(collection =>
             {
-                collection.Add(new ServiceCollection().AddRouting());
+                // The routing system is not tenant aware and uses a global list of endpoint data sources which is
+                // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
+                // So, we need isolated routing singletons (and a default configuration) per tenant.
+
+                var implementationTypesToRemove = new ServiceCollection().AddRouting()
+                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                    .Select(sd => GetImplementationType(sd))
+                    .ToArray();
+
+                // Note: The resolved implementation type of an host singleton registered with a factory, whose
+                // return type is the service type, is not the same of the shared instance passed to the tenant.
+                // That's why below we also check the 'ServiceType'.
+
+                var descriptorsToRemove = collection
+                    .Where(sd => implementationTypesToRemove.Contains(sd.ServiceType) ||
+                        implementationTypesToRemove.Contains(GetImplementationType(sd)))
+                    .ToArray();
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
+
+                collection.AddRouting();
             },
             order: int.MinValue + 100);
         }
@@ -269,6 +288,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
+        }
+
+        internal static Type GetImplementationType(ServiceDescriptor descriptor)
+        {
+            if (descriptor.ImplementationType is object)
+            {
+                return descriptor.ImplementationType;
+            }
+            else if (descriptor.ImplementationInstance is object)
+            {
+                return descriptor.ImplementationInstance.GetType();
+            }
+            else if (descriptor.ImplementationFactory is object)
+            {
+                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+            }
+
+            return null;
         }
     }
 }
