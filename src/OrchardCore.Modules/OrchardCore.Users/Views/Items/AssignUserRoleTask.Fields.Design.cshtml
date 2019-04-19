@@ -1,0 +1,7 @@
+@using OrchardCore.Users.Workflows.Activities;
+@using OrchardCore.Workflows.ViewModels;
+@model ActivityViewModel<AssignUserRoleTask>
+<header>
+    <h4><i class="fa fa-user"></i>@Model.Activity.GetTitleOrDefault(() => T["Assign user to role"])</h4>
+</header>
+<em>@Model.Activity.UserName to @Model.Activity.RoleName</em>
