@@ -30,7 +30,15 @@ namespace OrchardCore.Media.Processing
         public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
         /// <inheritdoc/>
-        public bool IsValidRequest(HttpContext context) => _formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) != null;
+        public bool IsValidRequest(HttpContext context)
+        {
+            if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
+            {
+                return false;
+            }
+
+            return context.Request.Query.ContainsKey("width") || context.Request.Query.ContainsKey("height");
+        }
 
         /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(HttpContext context)
