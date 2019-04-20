@@ -6,7 +6,6 @@
   -->
 
   <PropertyGroup>
-    <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>

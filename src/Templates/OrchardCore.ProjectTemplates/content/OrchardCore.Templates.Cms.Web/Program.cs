@@ -23,6 +23,7 @@ namespace OrchardCore.Templates.Cms.Web
                 .UseSerilogWeb()
 #endif
                 .UseStartup<Startup>()
+                .UseWebRoot("wwwroot")
                 .Build();
     }
 }
