@@ -63,7 +63,7 @@ namespace OrchardCore.Modules
                 ModuleInfo.Features.AddRange(features);
 
                 // The 'ModuleInfo.Id' allows a module project to change its 'AssemblyName'
-                // without changing the code. If not provided, the assembly name is used.
+                // without to update the code. If not provided, the assembly name is used.
 
                 var logicalName = ModuleInfo.Id ?? name;
 
