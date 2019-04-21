@@ -16,7 +16,6 @@ namespace OrchardCore.Cms.Web
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder<Startup>(args)
-                .UseWebRoot("wwwroot")
                 .UseNLogWeb();
     }
 }

@@ -12,7 +12,6 @@ namespace OrchardCore.Application.Pages
         public static IWebHost BuildWebHost(string[] args)
             => WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseWebRoot("wwwroot")
                 .Build();
     }
 }
