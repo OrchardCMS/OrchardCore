@@ -19,42 +19,49 @@ namespace OrchardCore.Environment.Shell.Builders
 
             foreach (var services in servicesByType)
             {
+                var firstService = services.First();
+
                 // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
-                if (services.First().ServiceType == typeof(IStartupFilter))
+                if (firstService.ServiceType == typeof(IStartupFilter))
                 {
                     continue;
                 }
 
-                // Fast path if only one service of a given type
-                if (services.Count() == 1)
+                // A generic type definition is rather used to create other constructed
+                // generic types. So, we just need to pass the descriptor.
+                if (firstService.ServiceType.IsGenericTypeDefinition)
                 {
-                    var service = services.First();
-
-                    if (service.Lifetime != ServiceLifetime.Singleton || service.ServiceType.IsGenericTypeDefinition)
+                    foreach (var service in services)
                     {
-                        // This is not a singleton or a generic type definition which is rather used to create other
-                        // constructed generic types. So, we just need to pass the descriptor.
                         clonedCollection.Add(service);
                     }
-                    else
+                }
+
+                // Fast path if only one service of a given type.
+                else if (services.Count() == 1)
+                {
+                    if (firstService.Lifetime == ServiceLifetime.Singleton)
                     {
-                        // This is a singleton, a non generic or a constructed generic type.
-                        var instance = serviceProvider.GetService(service.ServiceType);
+                        var instance = serviceProvider.GetService(firstService.ServiceType);
 
                         // When a service from the main container is resolved, just add its instance to the container.
                         // It will be shared by all tenant service providers.
-                        clonedCollection.AddSingleton(service.ServiceType, instance);
+                        clonedCollection.AddSingleton(firstService.ServiceType, instance);
 
                         // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
                         // and this would fail reusability of the instance across tenants' containers.
+                    }
+                    else
+                    {
+                        clonedCollection.Add(firstService);
                     }
                 }
 
                 // If multiple services of the same type
                 else
                 {
-                    // If all services of the same type are not singletons or if it is a generic type definition.
-                    if (services.All(s => s.Lifetime != ServiceLifetime.Singleton || s.ServiceType.IsGenericTypeDefinition))
+                    // If all services of the same type are not singletons.
+                    if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
                     {
                         // We don't need to resolve them.
                         foreach (var service in services)
