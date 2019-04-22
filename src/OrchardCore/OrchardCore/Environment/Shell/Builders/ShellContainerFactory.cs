@@ -156,15 +156,15 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal Type GetImplementationType(ServiceDescriptor descriptor)
         {
-            if (descriptor.ImplementationType != null)
+            if (descriptor.ImplementationType is object)
             {
                 return descriptor.ImplementationType;
             }
-            else if (descriptor.ImplementationInstance != null)
+            else if (descriptor.ImplementationInstance is object)
             {
                 return descriptor.ImplementationInstance.GetType();
             }
-            else if (descriptor.ImplementationFactory != null)
+            else if (descriptor.ImplementationFactory is object)
             {
                 return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
             }

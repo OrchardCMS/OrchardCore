@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,46 +15,88 @@ namespace OrchardCore.Environment.Shell.Builders
         public static IServiceCollection CreateChildContainer(this IServiceProvider serviceProvider, IServiceCollection serviceCollection)
         {
             IServiceCollection clonedCollection = new ServiceCollection();
-            var singletons = new Dictionary<Type, (int Index, IEnumerable<object> Instances)>();
+            var servicesByType = serviceCollection.GroupBy(s => s.ServiceType);
 
-            foreach (var service in serviceCollection)
+            foreach (var services in servicesByType)
             {
                 // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
-                if (service.ServiceType == typeof(IStartupFilter))
+                if (services.First().ServiceType == typeof(IStartupFilter))
                 {
                     continue;
                 }
 
-                if (service.Lifetime != ServiceLifetime.Singleton || service.ServiceType.IsGenericTypeDefinition)
+                // Fast path if only one service of a given type
+                if (services.Count() == 1)
                 {
-                    // This is not a singleton or a generic type definition which is rather used to create other
-                    // constructed generic types. So, we just need to pass the descriptor.
-                    clonedCollection.Add(service);
+                    var service = services.First();
+
+                    if (service.Lifetime != ServiceLifetime.Singleton || service.ServiceType.IsGenericTypeDefinition)
+                    {
+                        // This is not a singleton or a generic type definition which is rather used to create other
+                        // constructed generic types. So, we just need to pass the descriptor.
+                        clonedCollection.Add(service);
+                    }
+                    else
+                    {
+                        // This is a singleton, a non generic or a constructed generic type.
+                        var instance = serviceProvider.GetService(service.ServiceType);
+
+                        // When a service from the main container is resolved, just add its instance to the container.
+                        // It will be shared by all tenant service providers.
+                        clonedCollection.AddSingleton(service.ServiceType, instance);
+
+                        // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
+                        // and this would fail reusability of the instance across tenants' containers.
+                    }
                 }
+
+                // If multiple services of the same type
                 else
                 {
-                    // This is a singleton, a non generic or a constructed generic type.
-                    if (!singletons.TryGetValue(service.ServiceType, out var singleton))
+                    // If all services of the same type are not singletons or if it is a generic type definition.
+                    if (services.All(s => s.Lifetime != ServiceLifetime.Singleton || s.ServiceType.IsGenericTypeDefinition))
                     {
-                        // Resolve once all singletons of this type.
-                        singleton = (0, serviceProvider.GetServices(service.ServiceType));
-
-                        if (singleton.Instances.Count() > 1)
+                        // We don't need to resolve them.
+                        foreach (var service in services)
                         {
-                            // Cache if multiple instances.
-                            singletons[service.ServiceType] = singleton;
+                            clonedCollection.Add(service);
                         }
                     }
 
-                    // Retrieve the indexed singleton instance to clone.
-                    var instance = singleton.Instances.ElementAt(singleton.Index++);
+                    // If all services of the same type are singletons.
+                    else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
+                    {
+                        // We can resolve them from the main container.
+                        var instances = serviceProvider.GetServices(services.Key);
 
-                    // When a service from the main container is resolved, just add its instance to the container.
-                    // It will be shared by all tenant service providers.
-                    clonedCollection.AddSingleton(service.ServiceType, instance);
+                        foreach (var instance in instances)
+                        {
+                            clonedCollection.AddSingleton(services.Key, instance);
+                        }
+                    }
 
-                    // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
-                    // and this would fail reusability of the instance across tenants' containers.
+                    // If singletons and scoped services are mixed.
+                    else
+                    {
+                        // We need a service scope to resolve them.
+                        using (var scope = serviceProvider.CreateScope())
+                        {
+                            var instances = scope.ServiceProvider.GetServices(services.Key);
+
+                            // Then we only keep singleton instances.
+                            for (var i = 0; i < services.Count(); i++)
+                            {
+                                if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
+                                {
+                                    clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
+                                }
+                                else
+                                {
+                                    clonedCollection.Add(services.ElementAt(i));
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
