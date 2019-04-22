@@ -5,12 +5,12 @@ namespace OrchardCore.Github
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageGithubSignin
-            = new Permission(nameof(ManageGithubSignin), "Manage Sign in with Github settings");
+        public static readonly Permission ManageGithubAuthentication
+            = new Permission(nameof(ManageGithubAuthentication), "Manage Github Authentication settings");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            yield return ManageGithubSignin;
+            yield return ManageGithubAuthentication;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,7 +20,7 @@ namespace OrchardCore.Github
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageGithubSignin
+                    ManageGithubAuthentication
                 }
             };
         }

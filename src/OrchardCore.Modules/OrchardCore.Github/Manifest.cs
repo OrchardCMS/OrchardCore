@@ -11,7 +11,7 @@ using OrchardCore.Github;
 
 [assembly: Feature(
     Id = GithubConstants.Features.GithubAuthentication,
-    Name = "Sign in with Github",
+    Name = "Github Authentication",
     Category = "Github",
     Description = "Authenticates users with their Github Account."
 )]

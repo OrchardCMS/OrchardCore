@@ -37,7 +37,7 @@ namespace OrchardCore.Github.Drivers
         public override async Task<IDisplayResult> EditAsync(GithubAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubSignin))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubAuthentication))
             {
                 return null;
             }
@@ -66,7 +66,7 @@ namespace OrchardCore.Github.Drivers
             if (context.GroupId == GithubConstants.Features.GithubAuthentication)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubSignin))
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubAuthentication))
                 {
                     return null;
                 }

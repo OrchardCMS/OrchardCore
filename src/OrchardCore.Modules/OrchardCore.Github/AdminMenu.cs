@@ -29,9 +29,9 @@ namespace OrchardCore.Github
             {
                 builder.Add(T["Github"], "15", settings => settings
                         .AddClass("github").Id("github")
-                        .Add(T["Sign in with Github"], "10", client => client
+                        .Add(T["Github Authentication"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GithubConstants.Features.GithubAuthentication })
-                            .Permission(Permissions.ManageGithubSignin)
+                            .Permission(Permissions.ManageGithubAuthentication)
                             .LocalNav())
                     );
             }
