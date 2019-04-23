@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +33,7 @@ namespace OrchardCore.OpenId.Recipes
 
             var settings = await _serverService.GetSettingsAsync();
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
@@ -92,6 +93,7 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdServerSettingsStepModel
     {
         public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.Encrypted;
+        [Url]
         public string Authority { get; set; }
         public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
         public StoreName CertificateStoreName { get; set; } = StoreName.My;

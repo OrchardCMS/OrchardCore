@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Title.Model

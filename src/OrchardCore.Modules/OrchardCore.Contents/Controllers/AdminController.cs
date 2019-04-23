@@ -320,6 +320,9 @@ namespace OrchardCore.Contents.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
                 return Unauthorized();
@@ -376,6 +379,9 @@ namespace OrchardCore.Contents.Controllers
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.NewAsync(id);
+
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {

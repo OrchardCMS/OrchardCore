@@ -52,7 +52,7 @@ namespace OrchardCore.Alias.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
+                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
                 part.Apply();
             }
         }

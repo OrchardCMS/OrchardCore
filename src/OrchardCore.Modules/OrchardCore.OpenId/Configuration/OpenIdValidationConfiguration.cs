@@ -56,7 +56,7 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
                 options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
 
@@ -115,11 +115,11 @@ namespace OrchardCore.OpenId.Configuration
             // Otherwise, set the authority to allow the JWT handler to retrieve the endpoint URLs/signing keys
             // from the remote server's metadata by sending an OpenID Connect/OAuth2 discovery request.
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+                options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
                 options.Audience = settings.Audience;
-                options.Authority = settings.Authority;
+                options.Authority = settings.Authority.AbsoluteUri;
 
                 return;
             }
@@ -148,9 +148,9 @@ namespace OrchardCore.OpenId.Configuration
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
-                if (!string.IsNullOrEmpty(configuration.Authority))
+                if (configuration.Authority != null)
                 {
-                    options.TokenValidationParameters.ValidIssuer = configuration.Authority;
+                    options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
                 }
                 else
                 {

@@ -13,6 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
             services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
+            services.AddSingleton<ContentItemInterface>();
 
             services.AddTransient<ContentItemType>();
 
@@ -23,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
-
+            
             return services;
         }
 

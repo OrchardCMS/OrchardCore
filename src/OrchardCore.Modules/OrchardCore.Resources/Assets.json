@@ -21,6 +21,10 @@
     "output": "wwwroot/Scripts/codemirror/codemirror.js"
   },
   {
+    "inputs": [ "../../../node_modules/codemirror/addon/display/autorefresh.js" ],
+    "output": "wwwroot/Scripts/codemirror/addon/display/autorefresh.js"
+  },
+  {
     "inputs": [ "../../../node_modules/codemirror/addon/mode/multiplex.js" ],
     "output": "wwwroot/Scripts/codemirror/addon/mode/multiplex.js"
   },

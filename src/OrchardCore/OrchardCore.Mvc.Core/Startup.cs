@@ -1,10 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -37,15 +37,15 @@ namespace OrchardCore.Mvc
             var builder = services.AddMvc(options =>
             {
                 // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
-                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
+                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAttribute));
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
-            builder.SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Latest);
+            builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddMvcCore().AddModularRazorPages();
+            services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
             
@@ -53,11 +53,11 @@ namespace OrchardCore.Mvc
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();
 
-            builder.Services.TryAddEnumerable(
+            services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
             // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
-            builder.Services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
+            services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             AddMvcModuleCoreServices(services);
         }

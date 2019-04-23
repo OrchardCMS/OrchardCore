@@ -11,9 +11,9 @@
 
 <div class="field field-type-textfield field-name-@name">
     @{
-        if (!string.IsNullOrEmpty(Model.Field.EmbeddedAddress))
+        if (!string.IsNullOrEmpty(Model.EmbeddedAddress))
         {
-            <iframe width="@width" height="@height" src="@Model.Field.EmbeddedAddress" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <iframe width="@width" height="@height" src="@Model.EmbeddedAddress" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         }
     }
 </div>

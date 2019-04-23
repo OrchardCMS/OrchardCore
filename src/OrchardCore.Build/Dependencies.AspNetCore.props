@@ -1,27 +1,27 @@
 <Project>
   <ItemGroup>
     <PackageManagement Include="Libuv" Version="1.10.0" />
-    <PackageManagement Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
+    <PackageManagement Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageManagement Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.AspNetCore.All" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.ApplicationInsights.HostingStartup" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Core" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authorization" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServices.HostingStartup" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServicesIntegration" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServices.HostingStartup" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.AspNetCore.AzureAppServicesIntegration" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.AzureAppServices.SiteExtension" Version="2.1.1" />
     <PackageManagement Include="Microsoft.AspNetCore.Buffering" Version="0.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.0" />
@@ -49,17 +49,17 @@
     <PackageManagement Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Http" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.JsonPatch" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Localization" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Localization.Routing" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.MiddlewareAnalysis" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.ApiExplorer" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Cors" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.2.0" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
@@ -108,17 +108,17 @@
     <PackageManagement Include="Microsoft.CodeAnalysis.Razor" Version="2.2.0" />
     <PackageManagement Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.10.0" />
     <PackageManagement Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.Data.Sqlite" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.Data.Sqlite.Core" Version="2.2.2" />
     <PackageManagement Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.2" />
     <PackageManagement Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
-    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.1" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.2" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="2.2.0" />
@@ -167,15 +167,24 @@
     <PackageManagement Include="Microsoft.Net.Http.Headers" Version="2.2.0" />
     <PackageManagement Include="Microsoft.Owin.Security.Interop" Version="2.1.2" />
     <PackageManagement Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Contracts" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Core" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.2.0" />
-    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.2.0" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Contracts" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Core" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Templating" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="2.2.2" />
+    <PackageManagement Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="2.2.2" />
     <PackageManagement Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageManagement Include="System.Security.Cryptography.Cng" Version="4.5.0" />
+
+    <!-- These definitions are are used in projects that incur package downgrades. -->
+    <PackageManagement Include="System.Collections" Version="4.3.0" />
+    <PackageManagement Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageManagement Include="System.Globalization" Version="4.3.0" />
+    <PackageManagement Include="System.IO" Version="4.3.0" />
+    <PackageManagement Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageManagement Include="System.Net.Primitives" Version="4.3.0" />
+    <PackageManagement Include="System.Resources.ResourceManager" Version="4.3.0" />
   </ItemGroup>
 </Project>

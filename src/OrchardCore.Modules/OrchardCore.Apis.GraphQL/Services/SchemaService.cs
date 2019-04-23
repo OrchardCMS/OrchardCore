@@ -4,11 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {

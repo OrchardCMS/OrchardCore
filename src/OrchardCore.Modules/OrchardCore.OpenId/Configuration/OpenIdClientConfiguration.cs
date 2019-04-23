@@ -60,11 +60,11 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            options.Authority = settings.Authority;
+            options.Authority = settings.Authority.AbsoluteUri;
             options.ClientId = settings.ClientId;
             options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
             options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
-            options.RequireHttpsMetadata = settings.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+            options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
             options.GetClaimsFromUserInfoEndpoint = true;
             options.ResponseMode = settings.ResponseMode;
             options.ResponseType = settings.ResponseType;

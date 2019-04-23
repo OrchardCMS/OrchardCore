@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,13 +14,16 @@ namespace OrchardCore.ResourceManagement
             _builder.TagRenderMode = TagRenderMode.SelfClosing;
         }
 
-        public MetaEntry(string name = null, string content = null, string httpEquiv = null, string charset = null)
+        public MetaEntry(string name = null, string property = null, string content = null, string httpEquiv = null, string charset = null) : this()
         {
             if (!String.IsNullOrEmpty(name))
             {
                 Name = name;
             }
-
+            if (!String.IsNullOrEmpty(property))
+            {
+                Property = property;
+            }
             if (!String.IsNullOrEmpty(content))
             {
                 Content = content;
@@ -35,7 +38,6 @@ namespace OrchardCore.ResourceManagement
             {
                 Charset = charset;
             }
-
         }
 
         public static MetaEntry Combine(MetaEntry meta1, MetaEntry meta2, string contentSeparator)
@@ -80,6 +82,17 @@ namespace OrchardCore.ResourceManagement
                 return value;
             }
             set { SetAttribute("name", value); }
+        }
+
+        public string Property
+        {
+            get
+            {
+                string value;
+                _builder.Attributes.TryGetValue("property", out value);
+                return value;
+            }
+            set { SetAttribute("property", value); }
         }
 
         public string Content

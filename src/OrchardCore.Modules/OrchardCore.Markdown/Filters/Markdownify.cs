@@ -7,9 +7,9 @@ namespace OrchardCore.Markdown.Filters
 {
     public class Markdownify : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            return Task.FromResult<FluidValue>(new StringValue(Markdig.Markdown.ToHtml(input.ToStringValue())));
+            return new ValueTask<FluidValue>(new StringValue(Markdig.Markdown.ToHtml(input.ToStringValue())));
         }
     }
 }

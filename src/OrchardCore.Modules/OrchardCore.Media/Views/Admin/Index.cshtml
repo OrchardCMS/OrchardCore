@@ -6,6 +6,41 @@
 
 <script at="Foot">
     initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+
+    @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
+    $(function () {
+        if (!$('.message').length) { return; };
+        var mediaAppInitialTop = 0;
+        var mediaAppLoaded = false;
+
+        var repositionMediaApp = function () {
+
+            var messagesHeight = 0;
+            $('.message').each(function () {
+                messagesHeight += $(this).outerHeight(true);
+            });
+
+            var newTop = mediaAppInitialTop + messagesHeight;
+
+            $('#mediaApp').css('top', newTop + 'px');
+        }
+
+        $(window).on('resize', function () {
+            if (mediaAppLoaded) {
+                repositionMediaApp();
+            }
+        });
+
+        // before moving we need to wait until the vuejs mediaapp is loaded.
+        var checkMediaAppIsLoaded = setInterval(function () {
+            if ($('#mediaApp').length) {
+                mediaAppInitialTop = $('#mediaApp').offset().top;
+                clearInterval(checkMediaAppIsLoaded);
+                mediaAppLoaded = true;
+                repositionMediaApp();
+            }
+        }, 100);
+    });
 </script>
 
 <h1>@RenderTitleSegments(T["Assets"])</h1>

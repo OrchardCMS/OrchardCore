@@ -34,7 +34,7 @@
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="related">
-                                <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
@@ -46,7 +46,7 @@
         }
     </fieldset>
     <fieldset class="form-group">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </fieldset>
 
     <fieldset class="form-group">
