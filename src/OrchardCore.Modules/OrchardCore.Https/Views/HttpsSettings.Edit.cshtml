@@ -32,5 +32,5 @@
     <label asp-for="SslPort">@T["SSL Port"]</label>
     <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)" />
     <span asp-validation-for="SslPort"></span>
-    <span class="hint">@T["The SSL Port Number"]</span>
+    <span class="hint">@T["The SSL Port Number, leave empty to let the middlware try to determinate it."]</span>
 </fieldset>

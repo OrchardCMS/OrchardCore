@@ -13,7 +13,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheExpiresSlidingTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
             if (arguments.Length < 1)
             {
@@ -41,7 +41,7 @@ namespace OrchardCore.DynamicCache.Liquid
             if (input.Type == FluidValues.String)
             {
                 var stringValue = input.ToStringValue();
-                if (TimeSpan.TryParse(stringValue, out value))
+                if (!TimeSpan.TryParse(stringValue, out value))
                 {
                     return Completion.Normal;
                 }

@@ -97,9 +97,9 @@ namespace OrchardCore.OpenId.Services
                 results.Add(new ValidationResult(T["At least one OpenID Connect flow must be enabled."]));
             }
 
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                if (!Uri.TryCreate(settings.Authority, UriKind.Absolute, out Uri uri) || !uri.IsWellFormedOriginalString())
+                if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
                     results.Add(new ValidationResult(T["The authority must be a valid absolute URL."], new[]
                     {
@@ -107,7 +107,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(T["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -488,20 +488,8 @@ namespace OrchardCore.OpenId.Services
             {
                 try
                 {
-                    // Extract the certificate password from the separate .pwd file.
-                    var password = await GetPasswordAsync(Path.ChangeExtension(file.FullName, ".pwd"));
-
-                    var flags =
-#if SUPPORTS_EPHEMERAL_KEY_SETS
-                            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                                X509KeyStorageFlags.EphemeralKeySet :
-                                X509KeyStorageFlags.MachineKeySet;
-#else
-                                X509KeyStorageFlags.MachineKeySet;
-#endif
-
                     // Only add the certificate if it's still valid.
-                    var certificate = new X509Certificate2(file.FullName, password, flags);
+                    var certificate = await GetCertificateAsync(file.FullName);
                     if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
                     {
                         certificates.Add((file.FullName, certificate));
@@ -524,6 +512,43 @@ namespace OrchardCore.OpenId.Services
                 {
                     return _dataProtector.Unprotect(await reader.ReadToEndAsync());
                 }
+            }
+
+            async Task<X509Certificate2> GetCertificateAsync(string path)
+            {
+                // Extract the certificate password from the separate .pwd file.
+                var password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd"));
+
+                try
+                {
+                    // Note: ephemeral key sets are not supported on non-Windows platforms.
+                    var flags =
+#if SUPPORTS_EPHEMERAL_KEY_SETS
+                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+                            X509KeyStorageFlags.EphemeralKeySet :
+                            X509KeyStorageFlags.MachineKeySet;
+#else
+                            X509KeyStorageFlags.MachineKeySet;
+#endif
+
+                    return new X509Certificate2(path, password, flags);
+                }
+                // Some cloud platforms (e.g Azure App Service/Antares) are known to fail to import .pfx files if the
+                // private key is not persisted or marked as exportable. To ensure X.509 certificates can be correctly
+                // read on these platforms, a second pass is made by specifying the PersistKeySet and Exportable flags.
+                // For more information, visit https://github.com/OrchardCMS/OrchardCore/issues/3222.
+                catch (CryptographicException exception)
+                {
+                    _logger.LogDebug(exception, "A first-chance exception occurred while trying to extract " +
+                                                "a X.509 certificate with the default key storage options.");
+
+                    return new X509Certificate2(path, password,
+                        X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.PersistKeySet |
+                        X509KeyStorageFlags.Exportable);
+                }
+                // Don't swallow exceptions thrown from the catch handler to ensure unrecoverable exceptions
+                // (e.g caused by malformed X.509 certificates or invalid password) are correctly logged.
             }
         }
     }

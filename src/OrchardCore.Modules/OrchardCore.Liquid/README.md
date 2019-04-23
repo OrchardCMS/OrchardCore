@@ -9,7 +9,7 @@ For more information about the Liquid syntax, please refer to this site: <https:
 
 All outputs are encoded into HTML by default.
 This means that any HTML reserved chars will be converted to the corresponding HTML entities.
-If you need to render some raw HTML chars you can use the `Raw` filter.
+If you need to render some raw HTML chars you can use the `raw` filter.
 
 ## Content Item Filters
 
@@ -213,6 +213,7 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
+| `Identity.Claims` |  | The claims of the authenticated user. |
 
 ### Site
 
@@ -520,7 +521,7 @@ Input
 
 ### `shape`
 
-Renders a specific named tag with its properties
+Creates and renders a new shape, with optional caching arguments.
 
 Input
 
@@ -533,6 +534,18 @@ When using the shape tag a specific wrapper and / or alternate can be specified.
 ```liquid
 {% shape "menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
 ```
+
+### `shape_cache`
+
+Sets the caching parameters of a shape.
+
+Input
+
+```liquid
+{% shape_cache my_shape cache_id: "my-shape", cache_expires_after: "00:05:00" %}
+```
+
+For more information about the available caching paramters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
 
 ### `zone`
 

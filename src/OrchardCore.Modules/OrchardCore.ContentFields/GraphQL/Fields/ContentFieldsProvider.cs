@@ -38,7 +38,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 new FieldTypeDescriptor
                 {
                     Description = "Date & time field",
-                    FieldType = typeof(DateGraphType),
+                    FieldType = typeof(DateTimeGraphType),
                     FieldAccessor = field => (DateTime?)field.Content.Value
                 }
             },

@@ -12,20 +12,32 @@
 }
 else
 {
-    <p>
-        <div class="dropdown">
-            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Create"]
+    if (Model.ContainedContentTypeDefinitions.Count() == 1)
+    {
+        var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
+        <p>
+            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">
+                @T["Create {0}", contentTypeDefinition.DisplayName]
             </a>
+        </p>
+    }
+    else
+    {
+        <p>
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Create"]
+                </a>
 
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
-                {
-                    <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
-                }
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                    {
+                        <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
+                    }
+                </div>
             </div>
-        </div>
-    </p>
+        </p>
+    }
     @if (Model.ContentItems.Any())
     {
         <ul class="list-group">

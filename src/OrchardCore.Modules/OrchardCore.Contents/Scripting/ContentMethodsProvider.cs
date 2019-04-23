@@ -52,7 +52,7 @@ namespace OrchardCore.Contents.Scripting
                     var props = JObject.FromObject(properties);
                     var content = (JObject)contentItem.ContentItem.Content;
 
-                    content.Merge(props);
+                    content.Merge(props, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                 })
             };
         }

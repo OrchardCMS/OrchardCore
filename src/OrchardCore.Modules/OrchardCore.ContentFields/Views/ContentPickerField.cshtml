@@ -2,18 +2,21 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
 
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
+
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
 }
 
 <div class="field field-type-contentpickerfield field-name-@name">
     <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
-    @if (Model.ContentItems.Any())
+    @if (contentItems.Any())
     {
-        foreach (var contentItem in Model.ContentItems)
+        foreach (var contentItem in contentItems)
         {
             <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
-            if (contentItem != Model.ContentItems.Last())
+            if (contentItem != contentItems.Last())
             {
                 <span>,</span>
             }

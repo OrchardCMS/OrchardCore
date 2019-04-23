@@ -187,3 +187,23 @@ The following example demonstrates how to inject a custom script in the footer s
     document.write('<!-- some script -->');
 </script>
 ```
+
+#### Meta tags
+
+```liquid
+{% meta name:"description", content:"This is a website" %}
+```
+
+```razor
+<meta asp-name="description" content="This is a website" />
+```
+
+These properties are available:
+
+| Name | Description |
+| ---- | ---- | 
+| `name` (`asp-name` in Razor)| The `name` attribute of the tag |
+| `content` | The `content` attribute of the tag |
+| `httpequiv` | The `http-equiv` attribute of the tag |
+| `charset` | The `charset` attribute of the tag |
+| `separator` | The separator to use when multiple tags are defined for the same name |

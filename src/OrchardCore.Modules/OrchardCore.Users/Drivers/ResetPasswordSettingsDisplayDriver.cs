@@ -17,6 +17,7 @@ namespace OrchardCore.Users.Drivers
         {
             return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model => {
                 model.AllowResetPassword = section.AllowResetPassword;
+                model.UseSiteTheme = section.UseSiteTheme;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

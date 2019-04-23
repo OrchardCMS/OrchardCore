@@ -9,13 +9,13 @@ namespace OrchardCore.Liquid.Filters
 {
     public class AbsoluteUrlFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var relativePath = input.ToStringValue();
 
             if (string.IsNullOrWhiteSpace(relativePath))
             {
-                return Task.FromResult(input);
+                return new ValueTask<FluidValue>(input);
             }
 
             if (!context.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
@@ -24,7 +24,7 @@ namespace OrchardCore.Liquid.Filters
             }
 
             var result = new StringValue(((IUrlHelper)urlHelper).ToAbsoluteUrl(relativePath));
-            return Task.FromResult<FluidValue>(result);
+            return new ValueTask<FluidValue>(result);
         }
     }
 }

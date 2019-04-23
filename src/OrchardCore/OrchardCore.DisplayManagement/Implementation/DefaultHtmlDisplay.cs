@@ -102,16 +102,16 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 if (shape.Metadata.ChildContent == null)
                 {
+                    // There might be no shape binding for the main shape, and only for its alternates.
+                    if (shapeBinding != null)
+                    {
+                        await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                    }
+
                     // now find the actual binding to render, taking alternates into account
                     ShapeBinding actualBinding;
                     if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
                     {
-                        // There might be no shape binding for the main shape, and only for its alternates.
-                        if (shapeBinding != null)
-                        {
-                            await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
-                        }
-
                         // invoking ShapeMetadata processing events, this includes the Drivers results
                         await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
 

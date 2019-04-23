@@ -38,6 +38,11 @@ namespace OrchardCore.Indexing.Services
             Logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
+
+            if (!String.IsNullOrEmpty(_tablePrefix))
+            {
+                _tablePrefix += '_';
+            }
         }
 
         public ILogger Logger { get; set; }
@@ -86,6 +91,11 @@ namespace OrchardCore.Indexing.Services
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
             var tablePrefix = shellSettings["TablePrefix"];
+
+            if (!String.IsNullOrEmpty(tablePrefix))
+            {
+                tablePrefix += '_';
+            }
 
             var contentItemIds = new HashSet<string>();
 

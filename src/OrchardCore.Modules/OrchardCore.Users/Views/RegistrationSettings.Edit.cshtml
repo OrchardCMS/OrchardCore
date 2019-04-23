@@ -17,3 +17,11 @@
     </div>
 </fieldset>
 <div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login."]</div>
+<fieldset class="form-group" asp-validation-class-for="UseSiteTheme">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
+        <span asp-validation-for="UseSiteTheme"></span>
+        <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for registration page"]</label>
+        <span class="hint">@T["— {0}", "Requires an active site theme."]</span>
+    </div>
+</fieldset>

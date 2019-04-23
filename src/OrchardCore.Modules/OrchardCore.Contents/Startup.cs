@@ -1,11 +1,14 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
@@ -14,6 +17,7 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Contents.Liquid;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.Recipes;
+using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.TagHelpers;
 using OrchardCore.ContentTypes.Editors;
@@ -22,16 +26,14 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Navigation;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.AdminMenu.Services;
-using OrchardCore.Contents.AdminNodes;
 
 namespace OrchardCore.Contents
 {
@@ -42,6 +44,8 @@ namespace OrchardCore.Contents
             services.AddContentManagement();
             services.AddContentManagementDisplay();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IPermissionProvider, ContentTypePermissions>();
+            services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
             services.AddScoped<IShapeTableProvider, Shapes>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDisplayDriver, ContentsDriver>();
