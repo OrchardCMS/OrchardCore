@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -107,7 +108,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
                     uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
-                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, code);
+                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, HtmlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 
 
