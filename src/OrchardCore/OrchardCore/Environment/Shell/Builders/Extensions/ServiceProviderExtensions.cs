@@ -24,20 +24,19 @@ namespace OrchardCore.Environment.Shell.Builders
                 // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
                 if (firstService.ServiceType == typeof(IStartupFilter))
                 {
-                    continue;
                 }
 
-                // A generic type definition is rather used to create other constructed
-                // generic types. So, we just need to pass the descriptor.
-                if (firstService.ServiceType.IsGenericTypeDefinition)
+                // A generic type definition is rather used to create other constructed generic types.
+                else if (firstService.ServiceType.IsGenericTypeDefinition)
                 {
+                    // So, we just need to pass the descriptor.
                     foreach (var service in services)
                     {
                         clonedCollection.Add(service);
                     }
                 }
 
-                // Fast path if only one service of a given type.
+                // Fast path if only one service.
                 else if (services.Count() == 1)
                 {
                     if (firstService.Lifetime == ServiceLifetime.Singleton)
@@ -57,50 +56,46 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                // If multiple services of the same type
+                // If all services of the same type are not singletons.
+                else if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
+                {
+                    // We don't need to resolve them.
+                    foreach (var service in services)
+                    {
+                        clonedCollection.Add(service);
+                    }
+                }
+
+                // If all services of the same type are singletons.
+                else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
+                {
+                    // We can resolve them from the main container.
+                    var instances = serviceProvider.GetServices(services.Key);
+
+                    foreach (var instance in instances)
+                    {
+                        clonedCollection.AddSingleton(services.Key, instance);
+                    }
+                }
+
+                // If singletons and scoped services are mixed.
                 else
                 {
-                    // If all services of the same type are not singletons.
-                    if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
+                    // We need a service scope to resolve them.
+                    using (var scope = serviceProvider.CreateScope())
                     {
-                        // We don't need to resolve them.
-                        foreach (var service in services)
+                        var instances = scope.ServiceProvider.GetServices(services.Key);
+
+                        // Then we only keep singleton instances.
+                        for (var i = 0; i < services.Count(); i++)
                         {
-                            clonedCollection.Add(service);
-                        }
-                    }
-
-                    // If all services of the same type are singletons.
-                    else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
-                    {
-                        // We can resolve them from the main container.
-                        var instances = serviceProvider.GetServices(services.Key);
-
-                        foreach (var instance in instances)
-                        {
-                            clonedCollection.AddSingleton(services.Key, instance);
-                        }
-                    }
-
-                    // If singletons and scoped services are mixed.
-                    else
-                    {
-                        // We need a service scope to resolve them.
-                        using (var scope = serviceProvider.CreateScope())
-                        {
-                            var instances = scope.ServiceProvider.GetServices(services.Key);
-
-                            // Then we only keep singleton instances.
-                            for (var i = 0; i < services.Count(); i++)
+                            if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                             {
-                                if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
-                                {
-                                    clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
-                                }
-                                else
-                                {
-                                    clonedCollection.Add(services.ElementAt(i));
-                                }
+                                clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
+                            }
+                            else
+                            {
+                                clonedCollection.Add(services.ElementAt(i));
                             }
                         }
                     }
