@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -114,7 +115,8 @@ namespace OrchardCore.Users.Workflows.Activities
                     var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
-                    uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
+
+                    uriBuilder.Path = string.Concat(request.PathBase, "/OrchardCore.Users/Registration/ConfirmEmail");
                     uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 
