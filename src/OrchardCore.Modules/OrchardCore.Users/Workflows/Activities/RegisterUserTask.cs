@@ -52,6 +52,13 @@ namespace OrchardCore.Users.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> ConfirmationEmailSubject
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
         {
@@ -108,13 +115,23 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
                     uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
-                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, HtmlEncoder.Default.Encode(code));
+                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 
 
+                    var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext);
+                    var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
+
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
-                    var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
-                    var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
+                    var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
+                    var message = new MailMessage()
+                    {
+                        Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
+                        SubjectEncoding = Encoding.UTF8,
+                        Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
+                        IsBodyHtml = true,
+                        BodyEncoding = Encoding.UTF8
+                    };
                     message.To.Add(email);
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 

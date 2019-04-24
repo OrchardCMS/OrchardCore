@@ -576,7 +576,11 @@
                 "SendConfirmationEmail": true,
                 "ConfirmationEmailTemplate": {
                   "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl | raw }}\">click here</a> to confirm your email."
+                },
+                "ConfirmationEmailSubject": {
+                  "Expression": "Welcome to {{Site.SiteName}}"
                 }
+
               }
             },
             {
