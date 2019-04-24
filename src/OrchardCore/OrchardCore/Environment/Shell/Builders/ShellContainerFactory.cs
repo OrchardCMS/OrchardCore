@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
-                    var type = GetImplementationType(serviceDescriptor);
+                    var type = serviceDescriptor.GetImplementationType();
 
                     if (type != null)
                     {
@@ -152,24 +152,6 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-        }
-
-        internal Type GetImplementationType(ServiceDescriptor descriptor)
-        {
-            if (descriptor.ImplementationType is object)
-            {
-                return descriptor.ImplementationType;
-            }
-            else if (descriptor.ImplementationInstance is object)
-            {
-                return descriptor.ImplementationInstance.GetType();
-            }
-            else if (descriptor.ImplementationFactory is object)
-            {
-                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
-            }
-
-            return null;
         }
     }
 }

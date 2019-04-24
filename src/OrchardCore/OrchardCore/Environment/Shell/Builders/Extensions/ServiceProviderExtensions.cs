@@ -19,15 +19,13 @@ namespace OrchardCore.Environment.Shell.Builders
 
             foreach (var services in servicesByType)
             {
-                var firstService = services.First();
-
                 // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
-                if (firstService.ServiceType == typeof(IStartupFilter))
+                if (services.Key == typeof(IStartupFilter))
                 {
                 }
 
                 // A generic type definition is rather used to create other constructed generic types.
-                else if (firstService.ServiceType.IsGenericTypeDefinition)
+                else if (services.Key.IsGenericTypeDefinition)
                 {
                     // So, we just need to pass the descriptor.
                     foreach (var service in services)
@@ -36,23 +34,33 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                // Fast path if only one service.
+                // If only one service of a given type.
                 else if (services.Count() == 1)
                 {
-                    if (firstService.Lifetime == ServiceLifetime.Singleton)
+                    var service = services.First();
+
+                    if (service.Lifetime == ServiceLifetime.Singleton)
                     {
-                        var instance = serviceProvider.GetService(firstService.ServiceType);
+                        // An host singleton is shared accross tenant containers but only registered instances are not disposed
+                        // by the DI, so we check if it is disposable or if it uses a factory which may return a different type.
 
-                        // When a service from the main container is resolved, just add its instance to the container.
-                        // It will be shared by all tenant service providers.
-                        clonedCollection.AddSingleton(firstService.ServiceType, instance);
+                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.ImplementationFactory != null)
+                        {
+                            // If disposable, register an instance that we resolve immediately from the main container.
+                            clonedCollection.AddHostSingleton(service, serviceProvider.GetService(service.ServiceType));
+                        }
+                        else
+                        {
+                            // If not disposable, the singleton can be resolved through a factory when first requested.
+                            clonedCollection.AddHostSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
 
-                        // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
-                        // and this would fail reusability of the instance across tenants' containers.
+                            // Note: Most of the time a singleton of a given type is unique and not disposable. So,
+                            // most of the time it will be resolved when first requested through a tenant container.
+                        }
                     }
                     else
                     {
-                        clonedCollection.Add(firstService);
+                        clonedCollection.Add(service);
                     }
                 }
 
@@ -72,9 +80,9 @@ namespace OrchardCore.Environment.Shell.Builders
                     // We can resolve them from the main container.
                     var instances = serviceProvider.GetServices(services.Key);
 
-                    foreach (var instance in instances)
+                    for (var i = 0; i < services.Count(); i++)
                     {
-                        clonedCollection.AddSingleton(services.Key, instance);
+                        clonedCollection.AddHostSingleton(services.ElementAt(i), instances.ElementAt(i));
                     }
                 }
 
@@ -91,7 +99,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                             {
-                                clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
+                                clonedCollection.AddHostSingleton(services.ElementAt(i), instances.ElementAt(i));
                             }
                             else
                             {

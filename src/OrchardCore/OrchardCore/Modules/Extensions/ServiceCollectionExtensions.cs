@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
@@ -230,14 +231,13 @@ namespace Microsoft.Extensions.DependencyInjection
                     .Services;
 
                 // Retrieve the implementation type of the newly startup filter registered as a singleton
-                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
+                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.GetImplementationType();
 
                 if (startupFilterType != null)
                 {
                     // Remove any previously registered data protection startup filters.
                     var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
-                        (s.ImplementationInstance?.GetType() == startupFilterType ||
-                        s.ImplementationType == startupFilterType)).ToArray();
+                        (s.GetImplementationType() == startupFilterType)).ToArray();
 
                     foreach (var descriptor in descriptors)
                     {
