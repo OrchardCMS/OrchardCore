@@ -15,8 +15,7 @@
     "workflowTypeId": "[js:uuid()]",
     "workflowActivityId": "[js:uuid()]",
     "now": "[js: new Date().toISOString()]",
-    "year": "[js: new Date().getYear()]",
-    "month": "[js: new Date().toLocaleString('en-us', { month: 'long' })]"
+    "readyDate": "[js: const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];var date = new Date();date.setMonth(date.getMonth() + 1);return '<strong>' + monthNames[date.getMonth()] + ' ' + date.getFullYear()+'</strong>';]"
   },
 
   "steps": [
@@ -221,7 +220,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Html": "[js: `<p class=\"mb-5\">We're working hard to finish the development of this site. Our target launch date is\r\n                <strong>${variables('month')} ${variables('year')}</strong>! Sign up for updates using the form below!</p>`]"
+                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up for updates using the form below!</p>']"
                 },
                 "FlowMetadata": {
                   "Alignment": 3,
