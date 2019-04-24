@@ -38,6 +38,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.Memory;
 
@@ -164,7 +165,17 @@ namespace OrchardCore.Media
 
             .SetRequestParser<QueryCollectionRequestParser>()
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-            .SetCache<PhysicalFileSystemCache>()
+            .SetCache(serviceProvider =>
+            {
+                var cache = new MediaFileCache(
+                    serviceProvider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>(),
+                    serviceProvider.GetRequiredService<IOptions<ShellOptions>>(),
+                    serviceProvider.GetRequiredService<ShellSettings>());
+                //TODO get this from OC settings - going to be a merge conflict there.
+                cache.Settings[MediaFileCache.Folder] = MediaFileCache.DefaultCacheFolder;
+
+                return cache;
+            })
             .SetCacheHash<CacheHash>()
             .AddProvider<MediaFileProvider>()
             .AddProcessor<ResizeWebProcessor>()
