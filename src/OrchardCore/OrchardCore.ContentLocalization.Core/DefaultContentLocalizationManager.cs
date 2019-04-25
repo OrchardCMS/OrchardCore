@@ -1,16 +1,15 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
-using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
-using YesSql;
-using OrchardCore.Settings;
 using OrchardCore.Modules;
-using Microsoft.Extensions.Logging;
+using OrchardCore.Settings;
+using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
