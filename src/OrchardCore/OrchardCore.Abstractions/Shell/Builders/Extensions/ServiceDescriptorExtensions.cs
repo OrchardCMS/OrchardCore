@@ -9,8 +9,8 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (descriptor is ClonedSingletonDescriptor clonedSingleton)
             {
-                // Use the descriptor as it was before being cloned from the host.
-                return clonedSingleton.HostDescriptor.GetImplementationType();
+                // Use the parent descriptor as it was before being cloned.
+                return clonedSingleton.Parent.GetImplementationType();
             }
 
             if (descriptor.ImplementationType is object)

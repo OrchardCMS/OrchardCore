@@ -5,18 +5,18 @@ namespace OrchardCore.Environment.Shell.Builders
 {
     public class ClonedSingletonDescriptor : ServiceDescriptor
     {
-        public ClonedSingletonDescriptor(ServiceDescriptor hostDescriptor, object implementationInstance)
-            : base(hostDescriptor.ServiceType, implementationInstance)
+        public ClonedSingletonDescriptor(ServiceDescriptor parent, object implementationInstance)
+            : base(parent.ServiceType, implementationInstance)
         {
-            HostDescriptor = hostDescriptor;
+            Parent = parent;
         }
 
-        public ClonedSingletonDescriptor(ServiceDescriptor hostDescriptor, Func<IServiceProvider, object> implementationFactory)
-            : base(hostDescriptor.ServiceType, implementationFactory, ServiceLifetime.Singleton)
+        public ClonedSingletonDescriptor(ServiceDescriptor parent, Func<IServiceProvider, object> implementationFactory)
+            : base(parent.ServiceType, implementationFactory, ServiceLifetime.Singleton)
         {
-            HostDescriptor = hostDescriptor;
+            Parent = parent;
         }
 
-        public ServiceDescriptor HostDescriptor { get; }
+        public ServiceDescriptor Parent { get; }
     }
 }
