@@ -9,6 +9,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (descriptor is HostSingleton hostSingleton)
             {
+                // Use the host descriptor as it was before cloning.
                 return hostSingleton.HostDescriptor.GetImplementationType();
             }
 
