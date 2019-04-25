@@ -165,17 +165,7 @@ namespace OrchardCore.Media
 
             .SetRequestParser<QueryCollectionRequestParser>()
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-            .SetCache(serviceProvider =>
-            {
-                var cache = new MediaFileCache(
-                    serviceProvider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>(),
-                    serviceProvider.GetRequiredService<IOptions<ShellOptions>>(),
-                    serviceProvider.GetRequiredService<ShellSettings>());
-                //TODO get this from OC settings - going to be a merge conflict there.
-                cache.Settings[MediaFileCache.Folder] = MediaFileCache.DefaultCacheFolder;
-
-                return cache;
-            })
+            .SetCache<MediaFileCache>()
             .SetCacheHash<CacheHash>()
             .AddProvider<MediaFileProvider>()
             .AddProcessor<ResizeWebProcessor>()

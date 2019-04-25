@@ -153,6 +153,12 @@ The following configuration values are used by default and can be customized:
       // The number of days to store images in the image cache
       "MaxCacheDays": 365,
 
+      // The maximum number of entries to store in the image cache. Cache Eviction is disabled by default, when MaxCacheEntries is 0
+      "MaxCacheEntries": 0,
+
+      // The Media Cache Path, App_Data/Sites/tenant_name/MediaCache by default
+      "MediaCachePath": "MediaCache",
+
       // The maximum size of an uploaded file in bytes. 
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
