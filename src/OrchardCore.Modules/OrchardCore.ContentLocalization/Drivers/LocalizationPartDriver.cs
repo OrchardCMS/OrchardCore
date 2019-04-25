@@ -7,33 +7,25 @@ using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
     public class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
     {
         private readonly IContentLocalizationManager _contentLocalizationManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
-        private readonly ISession _session;
         private readonly IStringLocalizer<LocalizationPartDisplayDriver> T;
 
         public LocalizationPartDisplayDriver(
             IContentLocalizationManager contentLocalizationManager,
-            IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
-            ISession session,
             IStringLocalizer<LocalizationPartDisplayDriver> localizer)
         {
             _contentLocalizationManager = contentLocalizationManager;
-            _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
-            _session = session;
             T = localizer;
         }
 
