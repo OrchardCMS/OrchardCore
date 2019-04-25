@@ -7,21 +7,21 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         public static IServiceCollection CloneSingleton(
             this IServiceCollection services,
-            ServiceDescriptor hostDescriptor,
+            ServiceDescriptor parent,
             object implementationInstance)
         {
-            var descriptor = new ClonedSingletonDescriptor(hostDescriptor, implementationInstance);
-            services.Add(descriptor);
+            var cloned = new ClonedSingletonDescriptor(parent, implementationInstance);
+            services.Add(cloned);
             return services;
         }
 
         public static IServiceCollection CloneSingleton(
             this IServiceCollection collection,
-            ServiceDescriptor hostDescriptor,
+            ServiceDescriptor parent,
             Func<IServiceProvider, object> implementationFactory)
         {
-            var descriptor = new ClonedSingletonDescriptor(hostDescriptor, implementationFactory);
-            collection.Add(descriptor);
+            var cloned = new ClonedSingletonDescriptor(parent, implementationFactory);
+            collection.Add(cloned);
             return collection;
         }
     }
