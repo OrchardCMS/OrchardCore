@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,27 @@ namespace OrchardCore.Localization
                 ;
 
             app.UseRequestLocalization(options);
+        }
+
+        private async Task<ISite> GetSiteSettingsAsync(IServiceProvider serviceProvider)
+        {
+            var shellHost = serviceProvider.GetRequiredService<IShellHost>();
+            var currentShellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+            ISite siteSettings = null;
+
+            if (!currentShellSettings.Name.Equals(ShellHelper.DefaultShellName) && currentShellSettings.State == TenantState.Uninitialized)
+            {
+                using (var serviceScope = await shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                {
+                    siteSettings = await serviceScope.ServiceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+                }
+            }
+            else
+            {
+                siteSettings = await serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+            }
+
+            return siteSettings;
         }
     }
 }

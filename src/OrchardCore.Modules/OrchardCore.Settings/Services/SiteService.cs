@@ -44,8 +44,10 @@ namespace OrchardCore.Settings.Services
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
                 var session = GetSession();
-
-                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+                if (session != null)
+                {
+                    site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+                }
 
                 if (site == null)
                 {
@@ -63,7 +65,7 @@ namespace OrchardCore.Settings.Services
                                 TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
                             };
 
-                            session.Save(site);
+                            session?.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
                             _signal.SignalToken(SiteCacheKey);
                         }
