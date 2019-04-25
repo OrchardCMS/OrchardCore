@@ -47,12 +47,12 @@ namespace OrchardCore.Environment.Shell.Builders
                         if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.ImplementationFactory != null)
                         {
                             // If disposable, register an instance that we resolve immediately from the main container.
-                            clonedCollection.AddHostSingleton(service, serviceProvider.GetService(service.ServiceType));
+                            clonedCollection.CloneSingleton(service, serviceProvider.GetService(service.ServiceType));
                         }
                         else
                         {
                             // If not disposable, the singleton can be resolved through a factory when first requested.
-                            clonedCollection.AddHostSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
+                            clonedCollection.CloneSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
 
                             // Note: Most of the time a singleton of a given type is unique and not disposable. So,
                             // most of the time it will be resolved when first requested through a tenant container.
@@ -82,7 +82,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     for (var i = 0; i < services.Count(); i++)
                     {
-                        clonedCollection.AddHostSingleton(services.ElementAt(i), instances.ElementAt(i));
+                        clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
                     }
                 }
 
@@ -99,7 +99,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                             {
-                                clonedCollection.AddHostSingleton(services.ElementAt(i), instances.ElementAt(i));
+                                clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
                             }
                             else
                             {

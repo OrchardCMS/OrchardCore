@@ -7,10 +7,10 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         public static Type GetImplementationType(this ServiceDescriptor descriptor)
         {
-            if (descriptor is HostSingleton hostSingleton)
+            if (descriptor is ClonedSingletonDescriptor clonedSingleton)
             {
-                // Use the host descriptor as it was before cloning.
-                return hostSingleton.HostDescriptor.GetImplementationType();
+                // Use the descriptor as it was before being cloned from the host.
+                return clonedSingleton.HostDescriptor.GetImplementationType();
             }
 
             if (descriptor.ImplementationType is object)
@@ -30,22 +30,5 @@ namespace OrchardCore.Environment.Shell.Builders
 
             return null;
         }
-    }
-
-    public class HostSingleton : ServiceDescriptor
-    {
-        public HostSingleton(ServiceDescriptor hostDescriptor, object implementationInstance)
-            : base(hostDescriptor.ServiceType, implementationInstance)
-        {
-            HostDescriptor = hostDescriptor;
-        }
-
-        public HostSingleton(ServiceDescriptor hostDescriptor, Func<IServiceProvider, object> implementationFactory)
-            : base(hostDescriptor.ServiceType, implementationFactory, ServiceLifetime.Singleton)
-        {
-            HostDescriptor = hostDescriptor;
-        }
-
-        public ServiceDescriptor HostDescriptor { get; }
     }
 }
