@@ -72,6 +72,7 @@ namespace OrchardCore.ContentLocalization
             var cloned = await _contentManager.CloneAsync(content);
             var clonedPart = cloned.As<LocalizationPart>();
             clonedPart.Culture = targetCulture;
+            clonedPart.LocalizationSet = localizationPart.LocalizationSet;
             clonedPart.Apply();
 
             var context = new LocalizationContentContext(content, localizationPart.LocalizationSet, targetCulture);
