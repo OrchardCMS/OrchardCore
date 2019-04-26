@@ -64,7 +64,7 @@
             }
         </select>
         <span asp-validation-for="Culture"></span>
-        <span class="hint">@T["Determines the default culture used"]</span>
+        <span class="hint">@T["Determines the default culture used. It is recommended to assign a default culture manually since the system culture can differ from a system to an other."]</span>
         <p>@Html.ActionLink(T["Add or remove supported cultures for the site"].Value, "Culture")</p>
     </fieldset>
 </div>

@@ -48,9 +48,6 @@
                         <fieldset class="form-group">
                             <label asp-for="Culture">@T["Current Culture"]</label>
                             <select asp-for="Culture" class="form-control">
-                                <option value="@CultureInfo.InvariantCulture.Name" selected="@String.Equals(Model.Culture, CultureInfo.InvariantCulture.Name, StringComparison.OrdinalIgnoreCase)">
-                                    @CultureInfo.InvariantCulture.DisplayName
-                                </option>
                                 @foreach (var culture in Model.SiteCultures)
                                 {
                                     // only show the unlocalized cultures and the current culture
@@ -85,7 +82,7 @@
                         }
                         else
                         {
-                            @T["Please save your content item before creating localizations"]
+                            @T["Please resave your content item before creating localizations"]
                         }
                     }
                     </div>

@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -29,8 +30,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (instance.Culture == null)
             {
-                var setting = await siteService.GetSiteSettingsAsync();
-                instance.Culture = setting.Culture;
+                instance.Culture = await GetDefaultCulture();
                 instance.Apply();
             }
 
@@ -46,7 +46,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override async Task LoadingAsync(LoadContentContext context, LocalizationPart instance)
         {
             if (instance.Culture == null) {
-                instance.Culture = CultureInfo.InvariantCulture.Name;
+                instance.Culture = await GetDefaultCulture();
                 instance.Apply();
             }
 
@@ -68,11 +68,23 @@ namespace OrchardCore.ContentLocalization.Handlers
 
             if (instance.Culture == null)
             {
-                instance.Culture = CultureInfo.InvariantCulture.Name;
+                instance.Culture = await GetDefaultCulture();
             }
 
             instance.Apply();
             await base.UpdatingAsync(context, instance);
+        }
+
+        private async Task<string> GetDefaultCulture() {
+            var defaultCulture = Thread.CurrentThread.CurrentCulture.Name;
+
+            var setting = await siteService.GetSiteSettingsAsync();
+
+            if (setting.Culture != null) {
+                defaultCulture = setting.Culture;
+            }
+
+            return defaultCulture;
         }
 
     }
