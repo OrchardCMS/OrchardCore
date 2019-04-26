@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -20,6 +22,17 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
+        }
+
+        public IConfiguration Configuration { get; }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
@@ -50,25 +63,38 @@ namespace OrchardCore.Localization
             app.UseRequestLocalization(options);
         }
 
-        private async Task<ISite> GetSiteSettingsAsync(IServiceProvider serviceProvider)
+        private async Task<(string defaultCulture, string[] supportedCultures)> GetSiteCultureAndSupportedCulturesAsync(IServiceProvider serviceProvider)
         {
             var shellHost = serviceProvider.GetRequiredService<IShellHost>();
             var currentShellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             ISite siteSettings = null;
+            (string, string[]) cultures;
 
-            if (!currentShellSettings.Name.Equals(ShellHelper.DefaultShellName) && currentShellSettings.State == TenantState.Uninitialized)
+            if (currentShellSettings.State == TenantState.Uninitialized)
             {
-                using (var serviceScope = await shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                if (currentShellSettings.Name.Equals(ShellHelper.DefaultShellName))
                 {
-                    siteSettings = await serviceScope.ServiceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+                    // localize the default tenant
+                    cultures = (Configuration["OrchardCore:DefaultCulture"], Configuration.GetSection("OrchardCore:SupportedCultures").Get<string[]>());
+                }
+                else
+                {
+                    // localize the non default tenant(s) using the default tenant's supported cultures 
+                    using (var serviceScope = await shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
+                    {
+                        siteSettings = await serviceScope.ServiceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+                        cultures = (siteSettings.Culture, siteSettings.SupportedCultures);
+                    }
                 }
             }
             else
             {
+                // localize the tenant using it's own supported cultures
                 siteSettings = await serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
+                cultures = (siteSettings.Culture, siteSettings.SupportedCultures);
             }
 
-            return siteSettings;
+            return cultures;
         }
     }
 }
