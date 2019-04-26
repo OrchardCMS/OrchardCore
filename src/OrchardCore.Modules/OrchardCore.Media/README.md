@@ -95,6 +95,10 @@ Resizes the image until the shortest side reaches the given dimension. Upscaling
 
 Stretches the resized image to fit the bounds of its container.
 
+##### `crop`
+
+Resizes the image using the same functionality as `max` then removes any image area falling outside the bounds of its container.
+
 ### Input
 
 `{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop' }}`
@@ -162,7 +166,8 @@ The following configuration values are used by default and can be customized:
             ".png",
             ".gif",
             ".ico",
-
+            ".svg",
+            
             // Documents
             ".pdf", // Portable Document Format; Adobe Acrobat
             ".doc", // Microsoft Word Document

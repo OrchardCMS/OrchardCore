@@ -7,6 +7,13 @@ branches:
     - master
     - dev
 
+# Do not build if there are only documentation changes
+skip_commits:
+  files:
+    - '**/*.md'
+    - mkdocs.yml
+    - src/docs/**/*
+
 environment:
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

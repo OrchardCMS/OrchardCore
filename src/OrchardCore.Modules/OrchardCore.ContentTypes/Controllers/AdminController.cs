@@ -486,7 +486,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("ListParts");
         }
 
-        public async Task<ActionResult> AddFieldTo(string id)
+        public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
@@ -504,11 +504,12 @@ namespace OrchardCore.ContentTypes.Controllers
                 Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
             };
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
         }
 
         [HttpPost, ActionName("AddFieldTo")]
-        public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id)
+        public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
@@ -563,6 +564,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
                 _session.Cancel();
 
+                ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
             }
 
@@ -570,10 +572,17 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(T["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
-            return RedirectToAction("EditField", new { id, viewModel.Name });
+            if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("EditField", new { id, viewModel.Name });
+            }            
         }
 
-        public async Task<ActionResult> EditField(string id, string name)
+        public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
@@ -602,12 +611,13 @@ namespace OrchardCore.ContentTypes.Controllers
                 Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
             };
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
         }
 
         [HttpPost, ActionName("EditField")]
         [FormValueRequired("submit.Save")]
-        public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel)
+        public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
@@ -633,6 +643,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
+
             if (field.DisplayName() != viewModel.DisplayName)
             {
                 // prevent null reference exception in validation
@@ -651,6 +662,8 @@ namespace OrchardCore.ContentTypes.Controllers
                 if (!ModelState.IsValid)
                 {
                     _session.Cancel();
+
+                    ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
                 }
 
@@ -667,6 +680,8 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+
+                ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
             }
             else
@@ -674,14 +689,22 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(T["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
-            // Redirect to the type editor if a type exists with this name
-            var typeViewModel = _contentDefinitionService.GetType(id);
-            if (typeViewModel != null)
-            {
-                return RedirectToAction("Edit", new { id });
-            }
 
-            return RedirectToAction("EditPart", new { id });
+            if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                // Redirect to the type editor if a type exists with this name
+                var typeViewModel = _contentDefinitionService.GetType(id);
+                if (typeViewModel != null)
+                {
+                    return RedirectToAction("Edit", new { id });
+                }
+
+                return RedirectToAction("EditPart", new { id });
+            }
         }
 
         [HttpPost, ActionName("RemoveFieldFrom")]

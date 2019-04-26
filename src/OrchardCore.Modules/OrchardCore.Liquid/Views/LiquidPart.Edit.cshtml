@@ -3,6 +3,7 @@
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
@@ -23,6 +24,7 @@ $(function () {
     }
 
     var editor = CodeMirror.fromTextArea(textArea, {
+        autoRefresh: true,
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
