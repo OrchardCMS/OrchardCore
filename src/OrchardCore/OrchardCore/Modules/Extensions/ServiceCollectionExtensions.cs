@@ -20,6 +20,7 @@ using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
@@ -167,16 +168,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var implementationTypesToRemove = new ServiceCollection().AddRouting()
                     .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                    .Select(sd => GetImplementationType(sd))
+                    .Select(sd => sd.GetImplementationType())
                     .ToArray();
 
-                // Note: The resolved implementation type of an host singleton registered with a factory, whose
-                // return type is the service type, is not the same of the shared instance passed to the tenant.
-                // That's why below we also check the 'ServiceType'.
-
                 var descriptorsToRemove = collection
-                    .Where(sd => implementationTypesToRemove.Contains(sd.ServiceType) ||
-                        implementationTypesToRemove.Contains(GetImplementationType(sd)))
+                    .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
+                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
                     .ToArray();
 
                 foreach (var descriptor in descriptorsToRemove)
@@ -288,24 +285,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
-        }
-
-        internal static Type GetImplementationType(ServiceDescriptor descriptor)
-        {
-            if (descriptor.ImplementationType is object)
-            {
-                return descriptor.ImplementationType;
-            }
-            else if (descriptor.ImplementationInstance is object)
-            {
-                return descriptor.ImplementationInstance.GetType();
-            }
-            else if (descriptor.ImplementationFactory is object)
-            {
-                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
-            }
-
-            return null;
         }
     }
 }
