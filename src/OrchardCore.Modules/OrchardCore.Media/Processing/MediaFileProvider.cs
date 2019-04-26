@@ -11,6 +11,7 @@ using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
+using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.ImageSharp.Web.Resolvers;
 
@@ -50,12 +51,13 @@ namespace OrchardCore.Media.Processing
                 return false;
             }
 
-            if (!context.Request.Query.ContainsKey("width") && !context.Request.Query.ContainsKey("height"))
+            if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
+                !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
             {
                 return false;
             }
 
-            if (context.Request.Query.TryGetValue("width", out var widthString))
+            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Width, out var widthString))
             {
                 var width = CommandParser.Instance.ParseValue<int>(widthString);
 
@@ -65,7 +67,7 @@ namespace OrchardCore.Media.Processing
                 }
             }
 
-            if (context.Request.Query.TryGetValue("height", out var heightString))
+            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Height, out var heightString))
             {
                 var height = CommandParser.Instance.ParseValue<int>(heightString);
 
