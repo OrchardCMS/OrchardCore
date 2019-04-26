@@ -6,6 +6,7 @@ namespace OrchardCore.Media.Processing
 {
     public class CacheEntry
     {
+        //unused, but could be required to AsyncLock
         public string FileKey { get; }
 
         public string[] FilePaths { get; }
