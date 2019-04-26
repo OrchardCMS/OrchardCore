@@ -129,7 +129,7 @@ describe('Create Tenants', () => {
         await expect(await page.content()).toMatch('Agency');
 
         // Go to Setup page
-        await Promise.all([
+         await Promise.all([
             page.waitForNavigation(),
             page.click('#btn-setup-Agency')
         ]);
