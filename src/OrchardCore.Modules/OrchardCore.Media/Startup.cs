@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Deployment;
@@ -80,7 +80,11 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+
+                // 'PathBase' includes the 'RequestUrlPrefix' and may start by a virtual folder.
+                var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
