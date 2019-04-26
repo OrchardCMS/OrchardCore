@@ -6,23 +6,23 @@ namespace OrchardCore.Modules
     {
         public string TimeZoneId { get; set; }
 
-        public Offset Offset { get; set; }
+        public Offset StandardOffset { get; set; }
 
-        public Offset DSTOffset { get; set; }
+        public Offset WallOffset { get; set; }
 
         public DateTimeZone DateTimeZone { get; set; }
 
-        public TimeZone(string timeZoneId, Offset offset, Offset dstOffset, DateTimeZone dateTimeZone)
+        public TimeZone(string timeZoneId, Offset standardOffset, Offset wallOffset, DateTimeZone dateTimeZone)
         {
             TimeZoneId = timeZoneId;
-            Offset = offset;
-            DSTOffset = dstOffset;
+            StandardOffset = standardOffset;
+            WallOffset = wallOffset;
             DateTimeZone = dateTimeZone;
         }
 
         public override string ToString()
         {
-            return $"(GMT{Offset}) {TimeZoneId} ({DSTOffset:+HH:mm})";
+            return $"(GMT{StandardOffset}) {TimeZoneId} ({WallOffset:+HH:mm})";
         }
     }
 }

@@ -27,10 +27,9 @@ namespace OrchardCore.Modules
                 from location in TzdbDateTimeZoneSource.Default.ZoneLocations
                 let zoneId = location.ZoneId
                 let tz = DateTimeZoneProviders.Tzdb[zoneId]
-                let offset = tz.GetZoneInterval(CurrentInstant).StandardOffset
-                let dst = tz.GetZoneInterval(CurrentInstant).WallOffset
-                orderby offset, zoneId
-                select new TimeZone(zoneId, offset, dst, tz);
+                let interval = tz.GetZoneInterval(CurrentInstant)
+                orderby interval.StandardOffset, zoneId
+                select new TimeZone(zoneId, interval.StandardOffset, interval.WallOffset, tz);
 
             return list.ToArray();
         }
@@ -76,10 +75,9 @@ namespace OrchardCore.Modules
                 throw new ArgumentException(nameof(DateTimeZone));
             }
 
-            var offset = dateTimeZone.GetZoneInterval(CurrentInstant).StandardOffset;
-            var dstOffset = dateTimeZone.GetZoneInterval(CurrentInstant).WallOffset;
+            var interval = dateTimeZone.GetZoneInterval(CurrentInstant);
 
-            return new TimeZone(dateTimeZone.Id, offset, dstOffset, dateTimeZone);
+            return new TimeZone(dateTimeZone.Id, interval.StandardOffset, interval.WallOffset, dateTimeZone);
         }
 
         private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
