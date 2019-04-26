@@ -1,3 +1,6 @@
+@{
+    var languageDirection = Orchard.CultureDir();
+}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
@@ -8,7 +11,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css">
+    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin@(languageDirection == "rtl" ? "-rtl" : "").css">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
@@ -19,14 +22,14 @@
 <body class="preload">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
-        
+
         <div class="auth-wrapper">
-        @await RenderBodyAsync()
+            @await RenderBodyAsync()
         </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>
