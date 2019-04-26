@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
@@ -8,16 +7,11 @@ using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Environment.Shell.Models;
-using YamlDotNet.Serialization;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        // TODO: Can be removed when going to RC.
-        private readonly string _tenantsContainerPath;
-
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<string> _configuredTenants;
         private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
@@ -31,10 +25,6 @@ namespace OrchardCore.Environment.Shell
             IShellsSettingsSources settingsSources,
             IOptions<ShellOptions> options)
         {
-            // TODO: Can be removed when going to RC.
-            var appDataPath = options.Value.ShellsApplicationDataPath;
-            _tenantsContainerPath = Path.Combine(appDataPath, options.Value.ShellsContainerName);
-
             _tenantConfigSources = tenantConfigSources;
             _settingsSources = settingsSources;
 
@@ -89,17 +79,7 @@ namespace OrchardCore.Environment.Shell
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
-
-            // TODO: Can be removed when going to RC.
-            if (!tenants.Any() && File.Exists(Path.Combine(_tenantsContainerPath,
-                ShellHelper.DefaultShellName, "Settings.txt")))
-            {
-                // If no tenants and an old 'Settings.txt', try to update from Beta2.
-                UpgradeFromBeta2();
-                tenantsSettings.Reload();
-                tenants = tenantsSettings.GetChildren().Select(section => section.Key);
-            }
-
+            
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
             var allSettings = new List<ShellSettings>();
@@ -188,49 +168,6 @@ namespace OrchardCore.Environment.Shell
             tenantConfig.Remove("Name");
 
             _tenantConfigSources.Save(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
-        }
-
-        // TODO: Can be removed when going to RC.
-        private void UpgradeFromBeta2()
-        {
-            var tenantFolders = Directory.GetDirectories(_tenantsContainerPath);
-
-            foreach (var tenantFolder in tenantFolders)
-            {
-                var oldSettingsPath = Path.Combine(tenantFolder, "Settings.txt");
-                var localConfigPath = Path.Combine(tenantFolder, "appsettings.json");
-
-                if (!File.Exists(oldSettingsPath) || File.Exists(localConfigPath))
-                {
-                    continue;
-                }
-
-                var tenant = Path.GetFileName(tenantFolder);
-                var defaultSettings = CreateDefaultSettings();
-
-                using (var reader = new StreamReader(oldSettingsPath))
-                {
-                    var yamlObject = new Deserializer().Deserialize(reader);
-                    var settingsObject = JObject.FromObject(yamlObject)[tenant];
-
-                    var shellSettings = new ShellSettings(defaultSettings)
-                    {
-                        Name = tenant,
-                        RequestUrlHost = settingsObject.Value<string>("RequestUrlHost"),
-                        RequestUrlPrefix = settingsObject.Value<string>("RequestUrlPrefix"),
-                        State = Enum.TryParse<TenantState>(settingsObject.Value<string>("State"),
-                            out var tenantState) ? tenantState : TenantState.Invalid
-                    };
-
-                    shellSettings["TablePrefix"] = settingsObject.Value<string>("TablePrefix");
-                    shellSettings["DatabaseProvider"] = settingsObject.Value<string>("DatabaseProvider");
-                    shellSettings["ConnectionString"] = settingsObject.Value<string>("ConnectionString");
-                    shellSettings["RecipeName"] = settingsObject.Value<string>("RecipeName");
-                    shellSettings["Secret"] = settingsObject.Value<string>("Secret");
-
-                    SaveSettings(shellSettings);
-                }
-            }
         }
     }
 }
