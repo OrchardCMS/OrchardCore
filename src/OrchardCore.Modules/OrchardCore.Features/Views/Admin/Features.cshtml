@@ -3,50 +3,41 @@
 @model FeaturesViewModel
 
 @{
-    //var lifecycleStatusClassDictionary = new Dictionary<LifecycleStatus, string> {
-    //    { LifecycleStatus.Production, "fa-check" },
-    //    { LifecycleStatus.Preview, "fa-info-circle" },
-    //    { LifecycleStatus.Deprecated, "fa-exclamation-circle" }
-    //};
+    List<SelectListItem> featuresActions = new List<SelectListItem>() {
+    new SelectListItem() { Text = T["Enable"].Value, Value = FeaturesBulkAction.Enable.ToString() },
+    new SelectListItem() { Text = T["Disable"].Value, Value = FeaturesBulkAction.Disable.ToString() },
+    new SelectListItem() { Text = T["Toggle"].Value, Value = FeaturesBulkAction.Toggle.ToString() }
+    };
 }
 <h1>@RenderTitleSegments(T["Features"])</h1>
 
-<nav class="admin-toolbar">
-    <div class="nav justify-content-end">
-        @*
-            <fieldset class="form-group">
-                @Html.Hidden("force", true)
-                @Html.Hidden("featureIds")
-                <input id="bulkActions" name="bulkAction" type="hidden" value="@FeaturesBulkAction.None" />
-                <button name="submit.BulkExecute" type="submit" class="hidden" value="yes">@T["Execute"]</button>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bolt"></i> @T["Bulk Actions"] <span class="caret"></span>
-                    </button>&nbsp;
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" data-bulk-action-confirm="@T["Are you sure you want to enable these items?"]" data-bulk-action="@FeaturesBulkAction.Enable">@T["Enable"]</a></li>
-                        <li><a href="#" data-bulk-action-confirm="@T["Are you sure you want to disable these items? "]" data -bulk-action="@FeaturesBulkAction.Disable">@T["Disable"]</a></li>
-                        <li><a href="#" data-bulk-action-confirm="@T["Are you sure you want to update these items? "]" data -bulk-action="@FeaturesBulkAction.Update">@T["Update"]</a></li>
-                        <li><a href="#" data-bulk-action-confirm="@T["Are you sure you want to toggle these items? "]" data -bulk-action="@FeaturesBulkAction.Toggle">@T["Toggle"]</a></li>
-                    </ul>
-                </div>
-                <select id="publishActions" name="bulkAction">
-                    <option value="@FeaturesBulkAction.None">@T["Choose action..."]</option>
-                    <option value="@FeaturesBulkAction.Enable">@T["Enable"]</option>
-                    <option value="@FeaturesBulkAction.Disable">@T["Disable"]</option>
-                    <option value="@FeaturesBulkAction.Toggle">@T["Toggle"]</option>
-                </select>
-                <button type="submit" name="submit.BulkExecute" value="yes" class="btn-primary">@T["Execute"]</button>
-            </fieldset>
-        *@
+<fieldset class="admin-toolbar container-fluid">
+    <form asp-action="Index" method="get">
+        <div class="row">
+            <div class="col-md-1 col-xl-1 form-group">
+                <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            </div>
+        </div>
+    </form>
+</fieldset>
 
-        <form class="form-inline float-right" autocomplete="off" method="get">
-            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        </form>
-    </div>
-</nav>
-
-<form asp-action="Features">
+<form asp-action="Features" method="post">
+    <fieldset class="admin-toolbar container-fluid">
+        <div class="row">
+            <div class="col-md-2 col-xl-1 form-group">
+                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <select class="form-control" name="bulkAction" asp-items="@featuresActions"></select>
+            </div>
+            <div class="col-md-2 col-xl-1 form-group">
+                <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+            </div>
+        </div>
+    </fieldset>
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
         foreach (var featureGroup in featureGroups)
