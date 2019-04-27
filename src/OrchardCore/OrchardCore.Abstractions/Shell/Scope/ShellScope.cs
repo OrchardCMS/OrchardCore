@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,10 +16,9 @@ namespace OrchardCore.Environment.Shell.Scope
     /// </summary>
     public class ShellScope : IServiceScope
     {
-        private static AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
+        private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
 
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores =
-            new ConcurrentDictionary<string, SemaphoreSlim>();
+        private static readonly Dictionary<string, SemaphoreSlim> _semaphores = new Dictionary<string, SemaphoreSlim>();
 
         private readonly IServiceScope _serviceScope;
 
@@ -114,7 +112,15 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            var semaphore = _semaphores.GetOrAdd(ShellContext.Settings.Name, (name) => new SemaphoreSlim(1));
+            SemaphoreSlim semaphore;
+
+            lock (_semaphores)
+            {
+                if (!_semaphores.TryGetValue(ShellContext.Settings.Name, out semaphore))
+                {
+                    _semaphores[ShellContext.Settings.Name] = semaphore = new SemaphoreSlim(1);
+                }
+            }
 
             await semaphore.WaitAsync();
 
@@ -154,7 +160,14 @@ namespace OrchardCore.Environment.Shell.Scope
             finally
             {
                 semaphore.Release();
-                _semaphores.TryRemove(ShellContext.Settings.Name, out semaphore);
+
+                lock (_semaphores)
+                {
+                    if (_semaphores.ContainsKey(ShellContext.Settings.Name))
+                    {
+                        _semaphores.Remove(ShellContext.Settings.Name);
+                    }
+                }
             }
         }
 
@@ -287,6 +300,14 @@ namespace OrchardCore.Environment.Shell.Scope
             _disposed = true;
         }
 
-        public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            DisposeAsync().GetAwaiter().GetResult();
+        }
     }
 }
