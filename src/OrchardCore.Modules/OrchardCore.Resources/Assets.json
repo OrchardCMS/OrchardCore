@@ -1,7 +1,7 @@
 [
   {
     "generateSourceMaps": false,
-    "inputs": [ "../../../node_modules/bootstrap-scss/bootstrap.scss" ],
+    "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
