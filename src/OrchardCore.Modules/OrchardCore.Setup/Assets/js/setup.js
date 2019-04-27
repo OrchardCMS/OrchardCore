@@ -27,6 +27,10 @@ function toggleConnectionStringAndPrefix() {
         $(this).data("connection-string").toLowerCase() === "true"
             ? $(".pwd").attr('required', 'required')
             : $(".pwd").removeAttr('required');
+
+        var dataProvider = $(this).text().replace(/\s/g, '').toLowerCase();
+        var connectionStringHint = $("#connectionStringHint").data(dataProvider + "-connectionstring");
+        $("#connectionStringHint").html(connectionStringHint);
     });
 }
 
