@@ -19,9 +19,10 @@ namespace OrchardCore.Modules.Manifest
         public new bool Exists => Id != null;
 
         /// <Summary>
-        /// This identifier is overridden at runtime by the assembly name
+        /// Logical id allowing a module project to change its 'AssemblyName' without
+        /// having to update the code. If not provided, the assembly name will be used.
         /// </Summary>
-        public new string Id { get; internal set; }
+        public new string Id { get; set; }
 
         /// <Summary>The name of the developer.</Summary>
         public string Author { get; set; } = String.Empty;
