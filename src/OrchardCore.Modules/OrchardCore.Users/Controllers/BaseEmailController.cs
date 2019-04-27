@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -59,12 +58,11 @@ namespace OrchardCore.Users.Controllers
 
             var message = new MailMessage()
             {
+                To = email,
+                Subject = subject,
                 Body = body,
-                IsBodyHtml = true,
-                Subject = subject
+                IsBodyHtml = true
             };
-
-            message.To.Add(email);
 
             var result = await _smtpService.SendAsync(message);
 
