@@ -6,7 +6,6 @@
   -->
 
   <PropertyGroup>
-    <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ModuleAssetExcludes>Assets.*;Assets\**;**\*.props;**\*.targets</ModuleAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleAssetExcludes);**\node_modules\**;node_modules\**</ModuleDefaultAssetExcludes>
     <ModuleDefaultAssetExcludes>$(ModuleDefaultAssetExcludes);**\jspm_packages\**;jspm_packages\**</ModuleDefaultAssetExcludes>
@@ -30,7 +29,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
+      <PackagePath>build\$(TargetFramework)\$(AssemblyName).props</PackagePath>
     </None>
   </ItemGroup>
 

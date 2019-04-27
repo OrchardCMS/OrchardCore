@@ -11,9 +11,6 @@
   <ItemGroup>
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
-    
-    <!-- Remove this dependency in RC -->
-    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
   <ItemGroup>
