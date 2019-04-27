@@ -10,6 +10,8 @@ using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 using YesSql;
 using System.Threading.Tasks;
+using OrchardCore.Contents.Security;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Lists.AdminNodes
 {
@@ -20,6 +22,8 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly ISession _session;
         private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
         private ListsAdminNode _node;
+        private ContentTypeDefinition _contentType;
+
         private const int MaxItemsInNode = 100; // security check
 
         public ListsAdminNodeNavigationBuilder(
@@ -45,18 +49,21 @@ namespace OrchardCore.Lists.AdminNodes
                 return;
             }
 
+            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+
             if (_node.AddContentTypeAsParent)
             {
-                var contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
-                if (contentType == null)
+                
+                if (_contentType == null)
                 {
                     _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
                 }
 
-                builder.Add(new LocalizedString(contentType.DisplayName, contentType.DisplayName), listTypeMenu =>
+                builder.Add(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), listTypeMenu =>
                 {
                     AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
-
+                    listTypeMenu.Permission(ContentTypePermissions.CreateDynamicPermission(
+                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
                     AddContentItems(listTypeMenu);
                 });
             }
@@ -84,6 +91,7 @@ namespace OrchardCore.Lists.AdminNodes
 
         private async void AddContentItems(NavigationBuilder listTypeMenu)
         {
+            
             foreach (var ci in await getContentItems())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
@@ -92,13 +100,15 @@ namespace OrchardCore.Lists.AdminNodes
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {
-                        m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
-                        m.Permission(Contents.Permissions.EditOwnContent);
+                        m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);                        
                         m.Resource(ci);
                         m.Priority(_node.Priority);
                         m.Position(_node.Position);
                         m.LocalNav();
-                        AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));                     
+                        AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));
+
+                        m.Permission(ContentTypePermissions.CreateDynamicPermission(
+                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
                     });
                 }
             }
