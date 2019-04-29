@@ -131,7 +131,7 @@ Add the **Validate Form Field** activity. Enter a title of `"Validate Name"` for
 Enter the appropriate field name for the **Field Name** field ("Name", "Email" and "Message", respectively).
 In the **Error Message** field, enter `"<field name here> is required"`.
 
-> The **Validate Form Field** activity in the Beta 2 version of the Forms module only supports checking if the form field is empty or not. The RC version will have support for other kinds of validation, including the ability to provide custom vlidation.
+> The **Validate Form Field** activity in the Beta 2 version of the Forms module only supports checking if the form field is empty or not. The RC version will have support for other kinds of validation, including the ability to provide custom validation.
 
 ### Adding NoCaptcha
 

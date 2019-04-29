@@ -1,7 +1,7 @@
 [
   {
     "generateSourceMaps": false,
-    "inputs": [ "../../../node_modules/bootstrap-scss/bootstrap.scss" ],
+    "inputs": [ "../../../node_modules/bootstrap/scss/bootstrap.scss" ],
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
@@ -19,6 +19,10 @@
   {
     "inputs": [ "../../../node_modules/codemirror/lib/codemirror.js" ],
     "output": "wwwroot/Scripts/codemirror/codemirror.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/codemirror/addon/display/autorefresh.js" ],
+    "output": "wwwroot/Scripts/codemirror/addon/display/autorefresh.js"
   },
   {
     "inputs": [ "../../../node_modules/codemirror/addon/mode/multiplex.js" ],
