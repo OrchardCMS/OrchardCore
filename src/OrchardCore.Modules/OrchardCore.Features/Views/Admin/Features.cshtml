@@ -3,11 +3,6 @@
 @model FeaturesViewModel
 
 @{
-    List<SelectListItem> featuresActions = new List<SelectListItem>() {
-    new SelectListItem() { Text = T["Enable"].Value, Value = FeaturesBulkAction.Enable.ToString() },
-    new SelectListItem() { Text = T["Disable"].Value, Value = FeaturesBulkAction.Disable.ToString() },
-    new SelectListItem() { Text = T["Toggle"].Value, Value = FeaturesBulkAction.Toggle.ToString() }
-    };
 }
 <h1>@RenderTitleSegments(T["Features"])</h1>
 
@@ -31,7 +26,11 @@
                 <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" name="bulkAction" asp-items="@featuresActions"></select>
+                <select class="form-control" name="bulkAction">
+                    <option value="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</option>
+                    <option value="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</option>
+                    <option value="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</option>
+                </select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
