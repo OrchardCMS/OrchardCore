@@ -58,7 +58,7 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
+    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok="@T["Ok"]" data-cancel="@T["Cancel"]"></div>
 
     <resources type="Footer" />
 </body>
