@@ -82,12 +82,12 @@ namespace OrchardCore.Media
                 var fileStore = new FileSystemStore(mediaPath);
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
-                if (httpContextAccessor.HttpContext.Items.TryGetValue("OriginalPathBase", out var originalPathBase)
-                    && originalPathBase is PathString pathBase && pathBase.HasValue)
+                if (httpContext != null && httpContext.Items.TryGetValue("OriginalPathBase", out var value)
+                    && value is PathString originalPathBase && originalPathBase.HasValue)
                 {
-                    mediaUrlBase = fileStore.Combine(pathBase.ToString(), mediaUrlBase);
+                    mediaUrlBase = fileStore.Combine(originalPathBase.ToString(), mediaUrlBase);
                 }
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
