@@ -17,6 +17,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Deployment;
@@ -80,11 +81,14 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
                 var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
 
-                // 'PathBase' includes the 'RequestUrlPrefix' and may start by a virtual folder.
-                var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
+                if (httpContextAccessor.HttpContext.Items.TryGetValue("OriginalPathBase", out var originalPathBase)
+                    && originalPathBase is PathString pathBase && pathBase.HasValue)
+                {
+                    mediaUrlBase = fileStore.Combine(pathBase.ToString(), mediaUrlBase);
+                }
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
