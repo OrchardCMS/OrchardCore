@@ -57,10 +57,12 @@ namespace OrchardCore.Modules
                 using (scope)
                 {
                     // Register the shell context as a custom feature
-                    httpContext.Features.Set(shellContext);
-
-                    // Needed to build some components if e.g under a virtual folder.
-                    httpContext.Items["OriginalPathBase"] = httpContext.Request.PathBase;
+                    httpContext.Features.Set(new ShellContextFeature
+                    {
+                        ShellContext = shellContext,
+                        OriginalPath = httpContext.Request.Path,
+                        OriginalPathBase = httpContext.Request.PathBase
+                    });
 
                     if (!shellContext.IsActivated)
                     {
