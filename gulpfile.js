@@ -160,6 +160,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
     var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var generateRTL = assetGroup.hasOwnProperty("generateRTL") ? assetGroup.generateRTL : false;
     var containsLessOrScss = assetGroup.inputPaths.some(function (inputPath) {
         var ext = path.extname(inputPath).toLowerCase();
         return ext === ".less" || ext === ".scss";
@@ -195,7 +196,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             suffix: ".min"
         }))
         .pipe(eol())
-        .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
@@ -220,14 +221,17 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             "*/\n\n"))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(eol())
-        .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
 
-    // Adds TheAdmin RTL
-    if (assetGroup.outputFileName == 'TheAdmin.css') {
-        var stylePath = assetGroup.outputDir + '/' + assetGroup.outputFileName;
-        rtl(stylePath, assetGroup.outputDir);
+    if (generateRTL) {
+        var inputPath = assetGroup.outputDir + '/' + assetGroup.outputFileName;
+        var minifiedStream_rtl = rtl(minifiedStream, assetGroup.outputDir);
+        var devStream_rtl = rtl(devStream, assetGroup.outputDir);
+        console.log("Asset file '" + inputPath + "' was converted to RTL.");
+
+        return merge([minifiedStream, devStream, minifiedStream_rtl, devStream_rtl]);
     }
 
     return merge([minifiedStream, devStream]);
@@ -305,21 +309,12 @@ function buildCopyPipeline(assetGroup, doRebuild) {
     return stream;
 }
 
-function rtl(input, outputDir) {
-    gulp.src(input)
-        .pipe(rtlcss())
-        .pipe(rename({ suffix: "-rtl" }))
-        .pipe(gulp.dest(outputDir))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
+function rtl(stream, outputDir) {
+    return stream.pipe(rtlcss())
+        .pipe(rename(function (path) {
+            path.basename = path.basename.indexOf('.min') != -1
+                ? path.basename = path.basename.replace('.min', '-rtl.min')
+                : path.basename + '-rtl';
         }))
         .pipe(gulp.dest(outputDir));
 }

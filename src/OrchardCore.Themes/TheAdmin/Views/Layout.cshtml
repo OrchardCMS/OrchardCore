@@ -1,6 +1,3 @@
-@{
-    var cultureDirection = Orchard.CultureDir();
-}
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
@@ -11,7 +8,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin@(cultureDirection == "rtl" ? "-rtl" : "").css">
+    <link rel="stylesheet" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" support-rtl="true" />
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -26,7 +23,7 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload" dir="@cultureDirection">
+<body class="preload" dir="@Orchard.CultureDir()">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
