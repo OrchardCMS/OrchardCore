@@ -89,6 +89,8 @@ namespace OrchardCore.Media
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
+            services.AddSingleton<IMediaFileStoreVersionProvider, MediaFileStoreVersionProvider>();
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 

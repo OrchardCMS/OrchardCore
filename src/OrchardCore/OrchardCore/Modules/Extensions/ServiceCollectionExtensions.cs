@@ -14,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore;
+using OrchardCore.Abstractions.Modules;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -115,6 +116,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IFileVersionHashProvider, DefaultFileVersionHashProvider>();
+            });
+
             builder.Configure((app, routes, serviceProvider) =>
             {
                 var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
