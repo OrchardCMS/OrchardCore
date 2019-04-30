@@ -24,4 +24,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Styles\" />
+  </ItemGroup>
+
 </Project>
