@@ -22,7 +22,6 @@ namespace OrchardCore.ContentLocalization
             var localizationPart = model.As<LocalizationPart>();
             if (localizationPart != null)
             {
-                // This injects a button on the SummaryAdmin view for the Hackathon ContentType
                 return Shape("LocalizationPart_SummaryAdmin", new ContentItemViewModel(model)).Location("SummaryAdmin", "Content:after");
             }
             return null;
