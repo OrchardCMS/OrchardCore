@@ -227,7 +227,6 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
         //.pipe(gulp.dest(assetGroup.webroot));
-
     return merge([minifiedStream, devStream]);
 }
 

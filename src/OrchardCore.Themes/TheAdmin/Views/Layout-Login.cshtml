@@ -19,14 +19,14 @@
 <body class="preload">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
-
+        
         <div class="auth-wrapper">
-            @await RenderBodyAsync()
+        @await RenderBodyAsync()
         </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <resources type="Footer" />
+    <resources type="Footer" />    
 </body>
 </html>
