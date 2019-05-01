@@ -7,22 +7,17 @@
 
   <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
     <MSBuild
-      Targets="GetModuleProject"
+      Targets="GetModuleProjectName"
       BuildInParallel="$(BuildInParallel)"
       Projects="@(_MSBuildProjectReferenceExistent)"
       Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
       SkipNonexistentTargets="true"
       ContinueOnError="true">
 
-      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
+      <Output ItemName="ModuleProjectNames" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <ItemGroup>
-      <ModuleProjectReferences Include="@(ModuleProjects)" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
       <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
 
