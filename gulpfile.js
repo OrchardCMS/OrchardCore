@@ -302,22 +302,3 @@ function buildCopyPipeline(assetGroup, doRebuild) {
 
     return stream;
 }
-
-function rtl(input, outputDir) {
-    gulp.src(input)
-        .pipe(rtlcss())
-        .pipe(rename({ suffix: "-rtl" }))
-        .pipe(gulp.dest(outputDir))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
-        }))
-        .pipe(gulp.dest(outputDir));
-}
