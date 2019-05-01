@@ -21,8 +21,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public string Condition { get; set; }
 
-        public bool SupportRTL { get; set; } = false;
-
         private readonly IResourceManager _resourceManager;
 
         public LinkTagHelper(IResourceManager resourceManager)
@@ -36,16 +34,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (!string.IsNullOrEmpty(Src))
             {
-                if (SupportRTL && CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft)
-                {
-                    const string rtlSuffix = "-rtl";
-                    var minifiedIndex = Src.IndexOf(".min.css");
-
-                    Src = minifiedIndex != -1
-                        ? Src.Insert(minifiedIndex, rtlSuffix)
-                        : Src.Insert(Src.Length - 4, rtlSuffix);
-                }
-
                 linkEntry.Href = Src;
             }
 
