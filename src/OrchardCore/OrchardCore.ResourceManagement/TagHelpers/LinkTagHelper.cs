@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
