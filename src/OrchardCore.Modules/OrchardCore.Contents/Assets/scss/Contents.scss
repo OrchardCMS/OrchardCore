@@ -1,7 +1,7 @@
 .edit-container {
     display: table;
     border-collapse: separate;
-    border-spacing: 8px; 
+    border-spacing: 8px;
     width: 100%;
 }
 
@@ -12,12 +12,12 @@
 
 .edit-sidebar-handler {
     display: table-cell;
-    border:0;
+    border: 0;
     border-left: 1px solid lightgray;
     border-right: 1px solid lightgray;
     cursor: col-resize;
     padding-left: 1px;
-    padding-right:1px;
+    padding-right: 1px;
     width: 3px;
 }
 
@@ -32,6 +32,6 @@
     min-height: 64px;
 }
 
-.list-group-item.disabled .icon-toolbar {
+.list-group-item.disabled-content-type .icon-toolbar {
     display: none;
 }
