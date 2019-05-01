@@ -12,6 +12,7 @@ namespace OrchardCore.Environment.Shell
         /// The current shell context.
         /// </summary>
         public ShellContext ShellContext { get; set; }
+
         /// <summary>
         /// The original path base.
         /// </summary>
