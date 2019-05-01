@@ -1,8 +1,5 @@
-@{
-    var cultureDirection = Orchard.CultureDir();
-}
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -11,7 +8,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin@(cultureDirection == "rtl" ? "-rtl" : "").css">
+    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
@@ -19,7 +16,7 @@
     <resources type="Header" />
 
 </head>
-<body class="preload" dir="@cultureDirection">
+<body class="preload">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
         
