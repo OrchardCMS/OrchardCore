@@ -24,12 +24,12 @@
 
         @if (hasDraft && hasPublished)
         {
-            <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-message=@T["Are you sure you want to discard this draft?"] class="dropdown-item btn-sm">@T["Discard Draft"]</a>
+            <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-title=@T["Discard Draft"] data-message=@T["Are you sure you want to discard this draft?"] class="dropdown-item btn-sm">@T["Discard Draft"]</a>
         }
 
         @if (hasPublished)
         {
-            <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-message=@T["Are you sure you want to unpublish this item?"] class="dropdown-item btn-sm">@T["Unpublish"]</a>
+            <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"] class="dropdown-item btn-sm">@T["Unpublish"]</a>
         }
 
         @if (hasDraft || hasPublished)
