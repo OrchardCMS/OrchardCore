@@ -8,10 +8,8 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentLocalization.Handlers
-{
-    class ContentLocalizationPartHandlerCoordinator: ContentLocalizationHandlerBase
-    {
+namespace OrchardCore.ContentLocalization.Handlers {
+    class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
         private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
@@ -25,8 +23,7 @@ namespace OrchardCore.ContentLocalization.Handlers
             ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentLocalizationPartHandlerCoordinator> logger
-            )
-        {
+        ) {
             _contentPartFactory = contentPartFactory;
             _partHandlers = partHandlers;
             _contentFieldFactory = contentFieldFactory;
@@ -34,42 +31,37 @@ namespace OrchardCore.ContentLocalization.Handlers
             _logger = logger;
         }
 
-        public override async Task LocalizedAsync(LocalizationContentContext context)
-        {
+        public override async Task LocalizingAsync(LocalizationContentContext context) {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
+            foreach (var typePartDefinition in contentTypeDefinition.Parts) {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
-                {
+                if (part != null) {
+                    await _partHandlers.InvokeAsync(async handler => await handler.LocalizingAsync(context, part), _logger);
+                }
+            }
+        }
+
+        public override async Task LocalizedAsync(LocalizationContentContext context) {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts) {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null) {
                     await _partHandlers.InvokeAsync(async handler => await handler.LocalizedAsync(context, part), _logger);
                 }
             }
         }
 
-        public override async Task LocalizingAsync(LocalizationContentContext context)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
-                {
-                    await _partHandlers.InvokeAsync(async handler => await handler.LocalizingAsync(context, part), _logger);
-                }
-            }
-        }
     }
 }
