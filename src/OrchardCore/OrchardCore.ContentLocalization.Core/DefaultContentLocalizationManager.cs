@@ -82,7 +82,6 @@ namespace OrchardCore.ContentLocalization
 
             _session.Save(cloned);
             return cloned;
-
         }
     }
 }
