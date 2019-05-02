@@ -5,13 +5,6 @@ namespace OrchardCore.Localization
 {
     public class DefaultCalendarSelector : ICalendarSelector
     {
-        private readonly IOrchardHelper _orchardHelper;
-
-        public DefaultCalendarSelector(IOrchardHelper orchardHelper)
-        {
-            _orchardHelper = orchardHelper;
-        }
-
         public Task<CalendarSelectorResult> GetCalendar()
         {
             return Task.FromResult(new CalendarSelectorResult
