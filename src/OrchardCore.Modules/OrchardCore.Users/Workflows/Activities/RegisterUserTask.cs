@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -127,12 +128,9 @@ namespace OrchardCore.Users.Workflows.Activities
                     {
                         To = email,
                         Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
-                        SubjectEncoding = Encoding.UTF8,
                         Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
-                        IsBodyHtml = true,
-                        BodyEncoding = Encoding.UTF8
+                        IsBodyHtml = true
                     };
-                    message.To.Add(email);
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)
