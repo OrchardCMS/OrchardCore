@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -50,14 +51,11 @@ namespace OrchardCore.Media
         /// </summary>
         private const string AssetsUrlPrefix = "/media";
 
-        public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
-
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
         /// </summary>
         private const string AssetsPath = "Media";
 
-        private readonly int[] _supportedSizes;
         private readonly int _maxBrowserCacheDays;
         private readonly int _maxCacheDays;
         static Startup()
@@ -69,7 +67,6 @@ namespace OrchardCore.Media
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
 
-            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
             _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
             _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
         }
@@ -85,6 +82,14 @@ namespace OrchardCore.Media
                 var fileStore = new FileSystemStore(mediaPath);
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                if (originalPathBase.HasValue)
+                {
+                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                }
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
@@ -125,36 +130,6 @@ namespace OrchardCore.Media
                         if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
                         {
                             validation.Commands[ResizeWebProcessor.Mode] = "max";
-                        }
-
-                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
-                        {
-                            if (Int32.TryParse(width, out var parsedWidth))
-                            {
-                                if (Array.BinarySearch<int>(_supportedSizes, parsedWidth) < 0)
-                                {
-                                    validation.Commands.Clear();
-                                }
-                            }
-                            else
-                            {
-                                validation.Commands.Remove(ResizeWebProcessor.Width);
-                            }
-                        }
-
-                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
-                        {
-                            if (Int32.TryParse(height, out var parsedHeight))
-                            {
-                                if (Array.BinarySearch<int>(_supportedSizes, parsedHeight) < 0)
-                                {
-                                    validation.Commands.Clear();
-                                }
-                            }
-                            else
-                            {
-                                validation.Commands.Remove(ResizeWebProcessor.Height);
-                            }
                         }
                     }
                 };

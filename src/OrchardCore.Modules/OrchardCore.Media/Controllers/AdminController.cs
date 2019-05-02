@@ -171,7 +171,7 @@ namespace OrchardCore.Media.Controllers
 
             // var maxUploadSize = section.GetValue("MaxRequestBodySize", 100_000_000);
             var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
-            var allowedFileExtensions = section.GetValue("AllowedFileExtensions", DefaultAllowedFileExtensions);
+            var allowedFileExtensions = section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions;
 
             var result = new List<object>();
 
