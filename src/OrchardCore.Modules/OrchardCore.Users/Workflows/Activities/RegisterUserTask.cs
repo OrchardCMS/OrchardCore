@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -128,6 +125,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
                     var message = new MailMessage()
                     {
+                        To = email,
                         Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
                         SubjectEncoding = Encoding.UTF8,
                         Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
