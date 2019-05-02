@@ -37,7 +37,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
         public override string Name => nameof(UpdateTwitterStatusTask);
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => T["Content"];
+        public override LocalizedString Category => T["Social"];
 
         // The message to display.
         public WorkflowExpression<string> StatusTemplate
@@ -61,6 +61,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
             var result = await _twitterClient.UpdateStatus(status);
             if (!result.IsSuccessStatusCode)
             {
+                workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
                 outcome = "Invalid";
             }
 

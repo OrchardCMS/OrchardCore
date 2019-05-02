@@ -11,26 +11,31 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
+using OrchardCore.Twitter.Signin.Services;
+using OrchardCore.Twitter.Signin.Settings;
 
-namespace OrchardCore.Twitter.Configuration
+namespace OrchardCore.Twitter.Signin.Configuration
 {
     public class TwitterOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<TwitterOptions>
     {
-        private readonly ITwitterSigninService _twitterLoginService;
+        private readonly ITwitterService _twitterService;
+        private readonly ITwitterSigninService _twitterSigninService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<TwitterOptionsConfiguration> _logger;
         private readonly string _tenantPrefix;
 
 
         public TwitterOptionsConfiguration(
-            ITwitterSigninService twitterLoginService,
+            ITwitterService twitterService,
+            ITwitterSigninService twitterSigninService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<TwitterOptionsConfiguration> logger,
             ShellSettings shellSettings)
         {
-            _twitterLoginService = twitterLoginService;
+            _twitterService = twitterService;
+            _twitterSigninService = twitterSigninService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
@@ -38,14 +43,11 @@ namespace OrchardCore.Twitter.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetTwitterLoginSettingsAsync().GetAwaiter().GetResult();
+            var settings = GetSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
             {
                 return;
             }
-
-            if (_twitterLoginService.ValidateSettings(settings).Any())
-                return;
 
             options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
             {
@@ -60,20 +62,20 @@ namespace OrchardCore.Twitter.Configuration
             {
                 return;
             }
-            var settings = GetTwitterLoginSettingsAsync().GetAwaiter().GetResult();
-            options.ConsumerKey = settings?.ConsumerKey ?? string.Empty;
+            var settings = GetSettingsAsync().GetAwaiter().GetResult();
+            options.ConsumerKey = settings.Item1?.ConsumerKey ?? string.Empty;
             try
             {
-                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin).Unprotect(settings.ConsumerSecret);
+                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin).Unprotect(settings.Item1.ConsumerSecret);
             }
             catch
             {
                 _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (settings.CallbackPath.HasValue)
+            if (settings.Item2.CallbackPath.HasValue)
             {
-                options.CallbackPath = settings.CallbackPath;
+                options.CallbackPath = settings.Item2.CallbackPath;
             }
             options.RetrieveUserDetails = true;
             options.SignInScheme = "Identity.External";
@@ -82,15 +84,16 @@ namespace OrchardCore.Twitter.Configuration
 
         public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<TwitterSigninSettings> GetTwitterLoginSettingsAsync()
+        private async Task<Tuple<TwitterSettings,TwitterSigninSettings>> GetSettingsAsync()
         {
-            var settings = await _twitterLoginService.GetSettingsAsync();
-            if ((_twitterLoginService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+            var settings = await _twitterService.GetSettingsAsync();
+            if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("Sign in with Twitter is not correctly configured.");
+                _logger.LogWarning("Integration with Twitter is not correctly configured.");
                 return null;
             }
-            return settings;
+            var signInSettings = await _twitterSigninService.GetSettingsAsync();
+            return new Tuple<TwitterSettings, TwitterSigninSettings>(settings, signInSettings);
         }
     }
 }

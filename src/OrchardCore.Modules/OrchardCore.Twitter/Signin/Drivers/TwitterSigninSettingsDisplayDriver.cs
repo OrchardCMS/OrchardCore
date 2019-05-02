@@ -9,8 +9,10 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
 using OrchardCore.Settings;
+using OrchardCore.Twitter.Signin.Settings;
+using OrchardCore.Twitter.Signin.ViewModels;
 
-namespace OrchardCore.Twitter.Drivers
+namespace OrchardCore.Twitter.Signin.Drivers
 {
     public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
     {
@@ -44,26 +46,16 @@ namespace OrchardCore.Twitter.Drivers
 
             return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
             {
-                model.APIKey = settings.ConsumerKey;
-                if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
-                    model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                }
-                else
-                {
-                    model.APISecretKey = string.Empty;
-                }
                 if (settings.CallbackPath.HasValue)
                 {
                     model.CallbackPath = settings.CallbackPath;
                 }
-            }).Location("Content:5").OnGroup(TwitterConstants.Features.TwitterSignin);
+            }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == TwitterConstants.Features.TwitterSignin)
+            if (context.GroupId == TwitterConstants.Features.Signin)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
                 if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
@@ -76,10 +68,7 @@ namespace OrchardCore.Twitter.Drivers
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.TwitterSignin);
-
-                    settings.ConsumerKey = model.APIKey;
-                    settings.ConsumerSecret = protector.Protect(model.APISecretKey);
+                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
                     settings.CallbackPath = model.CallbackPath;
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }

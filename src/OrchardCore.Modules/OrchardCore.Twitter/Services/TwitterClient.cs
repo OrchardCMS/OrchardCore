@@ -13,30 +13,32 @@ using System.Linq;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
+using OrchardCore.Twitter.Settings;
+using Microsoft.AspNetCore.DataProtection;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Twitter.Services
 {
     public class TwitterClient
     {
-        internal HttpClient _client;
-        internal ILogger<TwitterClient> _logger;
-        internal IOptionsMonitor<TwitterClientOptions> _clientOptionsMonitor;
-        internal IOptionsMonitor<TwitterOptions> _optionsMonitor;
-        internal IClock _clock;
+        private readonly HttpClient _client;
+        private readonly ILogger<TwitterClient> _logger;
+        private readonly IClock _clock;
+        private readonly ISiteService _siteService;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public TwitterClient(HttpClient client, IClock clock, ILogger<TwitterClient> logger, IOptionsMonitor<TwitterOptions> optionsMonitor, IOptionsMonitor<TwitterClientOptions> clientOptionsMonitor)
+
+        public TwitterClient(HttpClient client, IClock clock, ILogger<TwitterClient> logger, ISiteService siteService, IDataProtectionProvider dataProtectionProvider)
         {
             _client = client;
             _client.BaseAddress = new Uri($"https://api.twitter.com");
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
             _clock = clock;
-
-            _optionsMonitor = optionsMonitor;
-            _clientOptionsMonitor = clientOptionsMonitor;
-
+            _siteService = siteService;
             _logger = logger;
+            _dataProtectionProvider = dataProtectionProvider;
         }
 
         public async Task<HttpResponseMessage> UpdateStatus(string status, params string[] optionalParameters)
@@ -56,8 +58,8 @@ namespace OrchardCore.Twitter.Services
                 var content = new FormUrlEncodedContent(parameters);
                 var uri = new Uri($"/1.1/statuses/update.json", UriKind.Relative);
 
-                content.Headers.Add("Authentication", await GetOauthHeader("POST", uri, parameters));
-
+                var oauthHeader = await GetOauthHeader("POST", uri, parameters);
+                content.Headers.Add("Authentication", oauthHeader);
                 var response = await _client.PostAsync(uri, content);
                 return response;
             }
@@ -73,21 +75,26 @@ namespace OrchardCore.Twitter.Services
             return Convert.ToBase64String(new ASCIIEncoding().GetBytes(_clock.UtcNow.Ticks.ToString()));
         }
 
-        public Task<string> GetOauthHeader(string method, Uri uri, IEnumerable<KeyValuePair<string, string>> parameters)
+        public async Task<string> GetOauthHeader(string method, Uri uri, IEnumerable<KeyValuePair<string, string>> parameters)
         {
-            var options = _optionsMonitor.CurrentValue;
-            var clientOptions = _clientOptionsMonitor.CurrentValue;
+            var container = await _siteService.GetSiteSettingsAsync();
+            var settings = container.As<TwitterSettings>();
+            var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+
+            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
+            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                settings.AccessTokenSecret= protrector.Unprotect(settings.AccessTokenSecret);
 
             var nonce = GetNonce();
             var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
-
             var sortedParameters = new SortedDictionary<string, string>();
 
-            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(options.ConsumerKey));
+            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(settings.ConsumerKey));
             sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
             sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
             sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(clientOptions.AccessToken));
+            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(settings.AccessToken));
             sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
 
             foreach (var item in parameters)
@@ -99,7 +106,7 @@ namespace OrchardCore.Twitter.Services
                 Uri.EscapeDataString(new Uri(_client.BaseAddress, uri).ToString()), "&",
                 Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = string.Concat(options.ConsumerSecret, "&", clientOptions.AccessTokenSecret);
+            var secret = string.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
             string signature;
             using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
             {
@@ -107,15 +114,15 @@ namespace OrchardCore.Twitter.Services
             }
 
             var sb = new StringBuilder("OAuth ");
-            sb.Append($"oauth_consumer_key=\"{Uri.EscapeDataString(options.ConsumerKey)}\", ");
+            sb.Append($"oauth_consumer_key=\"{Uri.EscapeDataString(settings.ConsumerKey)}\", ");
             sb.Append($"oauth_nonce=\"{Uri.EscapeDataString(nonce)}\", ");
             sb.Append($"oauth_signature=\"{Uri.EscapeDataString(signature)}\", ");
             sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
             sb.Append($"oauth_timestamp=\"{Uri.EscapeDataString(timeStamp)}\", ");
-            sb.Append($"oauth_token=\"{Uri.EscapeDataString(clientOptions.AccessToken)}\", ");
+            sb.Append($"oauth_token=\"{Uri.EscapeDataString(settings.AccessToken)}\", ");
             sb.Append($"oauth_version=\"{Uri.EscapeDataString("1.0")}\"");
 
-            return Task.FromResult(sb.ToString());
+            return sb.ToString();
         }
 
     }

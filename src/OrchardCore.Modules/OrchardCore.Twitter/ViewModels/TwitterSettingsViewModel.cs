@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Twitter.ViewModels
 {
-    public class TwitterSigninSettingsViewModel
+    public class TwitterSettingsViewModel
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "API key is required")]
         public string APIKey { get; set; }
@@ -10,7 +10,11 @@ namespace OrchardCore.Twitter.ViewModels
         [Required(AllowEmptyStrings = false, ErrorMessage = "API secret key is required")]
         public string APISecretKey { get; set; }
 
-        [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
-        public string CallbackPath { get; set; }
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Access token is required")]
+        public string AccessToken { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Access token secret is required")]
+        public string AccessTokenSecret { get; set; }
+
     }
 }

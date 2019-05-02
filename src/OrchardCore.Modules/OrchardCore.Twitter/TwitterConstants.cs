@@ -4,7 +4,8 @@ namespace OrchardCore.Twitter
     {
         public static class Features
         {
-            public const string TwitterSignin = "OrchardCore.Twitter.TwitterSignin";
+            public const string Twitter = "OrchardCore.Twitter";
+            public const string Signin = "OrchardCore.Twitter.Signin";
         }
     }
 }
