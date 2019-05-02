@@ -54,17 +54,16 @@ namespace OrchardCore.Facebook
                 }
             }
 
-            if (script is object)
+            if (script == null)
+            {
+                await _next.Invoke(httpContext);
+            }
+            else
             {
                 var bytes = Encoding.UTF8.GetBytes(script);
                 var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
                 await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script), 0, bytes.Length, cancellationToken);
             }
-            else
-            {
-                await _next.Invoke(httpContext);
-            }
-
         }
     }
 }

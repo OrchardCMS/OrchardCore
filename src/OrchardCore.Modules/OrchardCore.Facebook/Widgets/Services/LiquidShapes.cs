@@ -19,16 +19,14 @@ namespace OrchardCore.Facebook.Widgets.Services
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var part = model.FacebookPluginPart;
 
+            
+            
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", part.ContentItem);
             templateContext.MemberAccessStrategy.Register<FacebookPluginPartViewModel>();
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
 
-            using (var writer = new StringWriter())
-            {
-                await liquidTemplateManager.RenderAsync(part.Liquid, writer, HtmlEncoder.Default, templateContext);
-                model.Html = writer.ToString();
-            }
+            model.Html = await liquidTemplateManager.RenderAsync(part.Liquid, templateContext);
 
             model.Liquid = part.Liquid;
             model.FacebookPluginPart = part;
