@@ -68,6 +68,5 @@ namespace OrchardCore.ContentLocalization.Handlers
                 }
             }
         }
-
     }
 }
