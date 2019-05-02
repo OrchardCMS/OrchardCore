@@ -50,22 +50,22 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent,CloneContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent,CloneContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent,EditOwnContent,DeleteOwnContent,PreviewOwnContent,CloneOwnContent}
+                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent,PreviewOwnContent,CloneOwnContent}
+                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",
