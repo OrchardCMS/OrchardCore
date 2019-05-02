@@ -8,13 +8,17 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentLocalization {
-    public class Startup : StartupBase {
-        static Startup() {
+namespace OrchardCore.ContentLocalization
+{
+    public class Startup : StartupBase
+    {
+        static Startup()
+        {
             TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
         }
 
-        public override void ConfigureServices(IServiceCollection services) {
+        public override void ConfigureServices(IServiceCollection services)
+        {
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentDisplayDriver, SummaryAdminDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();

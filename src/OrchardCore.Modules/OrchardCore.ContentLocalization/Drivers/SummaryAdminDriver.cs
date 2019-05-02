@@ -5,24 +5,28 @@ using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentLocalization {
-    public class SummaryAdminDriver : ContentDisplayDriver {
+namespace OrchardCore.ContentLocalization
+{
+    public class SummaryAdminDriver : ContentDisplayDriver
+    {
 
         private readonly ILocalizationPartViewModelBuilder _viewModelBuilder;
 
         public SummaryAdminDriver(
             ILocalizationPartViewModelBuilder viewModelBuilder
-        ) {
+        )
+        {
             _viewModelBuilder = viewModelBuilder;
-
         }
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, IUpdateModel updater) {
+
+        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, IUpdateModel updater)
+        {
             var localizationPart = model.As<LocalizationPart>();
-            if (localizationPart != null) {
+            if (localizationPart != null)
+            {
                 var vm = new LocalizationPartViewModel();
                 await _viewModelBuilder.BuildViewModelAsync(vm, localizationPart);
 

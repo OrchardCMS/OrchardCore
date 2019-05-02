@@ -3,12 +3,12 @@ using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentLocalization.ViewModels {
-    public class LocalizationPartViewModel : ShapeViewModel {
-
+namespace OrchardCore.ContentLocalization.ViewModels
+{
+    public class LocalizationPartViewModel : ShapeViewModel
+    {
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }
 
@@ -23,7 +23,8 @@ namespace OrchardCore.ContentLocalization.ViewModels {
 
     }
 
-    public class LocalizationLinksViewModel {
+    public class LocalizationLinksViewModel
+    {
         public bool IsDeleted { get; set; }
         public ContentItem ContentItem { get; set; }
         public CultureInfo Culture { get; set; }
