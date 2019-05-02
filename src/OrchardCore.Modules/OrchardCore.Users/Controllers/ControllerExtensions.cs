@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -58,12 +55,11 @@ namespace OrchardCore.Users.Controllers
 
             var message = new MailMessage()
             {
+                To = email,
+                Subject = subject,
                 Body = body,
-                IsBodyHtml = true,
-                Subject = subject
+                IsBodyHtml = true
             };
-
-            message.To.Add(email);
 
             var result = await smtpService.SendAsync(message);
 
