@@ -19,7 +19,7 @@
                             {
                                 @culture.Name <text> | </text>
                             }
-                            @culture.DisplayName
+                            @culture.NativeName
                         </option>
                     }
                 </select>
@@ -48,7 +48,6 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
             {
                 @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")

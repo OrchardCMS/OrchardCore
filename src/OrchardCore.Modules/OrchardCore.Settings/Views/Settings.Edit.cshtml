@@ -61,7 +61,7 @@
             }
             else
             {
-                <option value="">@T["System ({0})", CultureInfo.InstalledUICulture.DisplayName]</option>
+                <option value="">@T["System ({0})", CultureInfo.InstalledUICulture.NativeName]</option>
             }
 
             @foreach (var culture in Model.SiteCultures)
@@ -71,7 +71,7 @@
                     {
                         @culture.Name <text> | </text>
                     }
-                    @culture.DisplayName
+                    @culture.NativeName
                 </option>
             }
         </select>
