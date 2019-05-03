@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Fluid;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -24,6 +26,7 @@ using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
+using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -95,6 +98,7 @@ namespace OrchardCore.Media
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImageMediaPart>();
@@ -150,6 +154,9 @@ namespace OrchardCore.Media
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+            services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
+            services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
+            services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 

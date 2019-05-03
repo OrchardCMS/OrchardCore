@@ -4,23 +4,23 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
-    var modalMediaId = "Modal" + Html.IdFor(m => m);
+    var mediaFieldId = Html.IdFor(m => m);
 }
 
 <partial name="Shared/MediaFieldEditResources.cshtml" />
 
-
 <script at="Foot">
-    initializeMediaApplication(false,  $('#mediaApplicationUrl').val());
-    initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m)'),
-        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
-        $('#GetMediaItemUrl').val(),
-        @(settings.Multiple ? "true" : "false"));
+
+    initializeAttachedMediaField(
+        document.getElementById($('#MediaFieldId').val()),
+         $('#MediaFieldId').val() + '-field-file-upload',
+         $('#UploadUrl').val(),
+         $('#GetMediaItemUrl').val(),
+         $('#SettingsMultiple').val(),
+         $('#TempUploadFolder').val());
 </script>
 
-
-<div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
+<div class="mediafield-editor" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
         <fieldset class="form-group">
             <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
@@ -37,15 +37,19 @@
                         <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
                         <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
                     </button>
-                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
+                    <label class="btn btn-sm btn-secondary fileinput-button">
+                        <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
+                        <i class="fa fa-upload"></i>
+                    </label>
                     <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
                 </div>
-                <div  class="selected-media-name">
+                <div class="selected-media-name">
                     <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
                 </div>
             </nav>
 
         </fieldset>
+        <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
         <fieldset class="form-group">
             <media-field-thumbs-container :media-items="mediaItems"
                                           :thumb-size="thumbSize"
@@ -55,26 +59,12 @@
     </div>
 </div>
 
-<div class="modal" id="@Html.IdFor(m => m)-ModalBody">
-    <div class="modal-dialog modal-lg media-modal" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Select Media"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <partial name="Shared/MediaFieldEditLocalization.cshtml" />
 
-<input type="hidden" id="mediaApplicationUrl" value="@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="MediaFieldId" value="@mediaFieldId" />
+<input type="hidden" id="SettingsMultiple" value="@(settings.Multiple ? "true" : "false")" />
+<input type="hidden" id="TempUploadFolder" value="@Model.TempUploadFolder" />
+<input type="hidden" id="UploadUrl" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="GetMediaItemUrl" value="@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })" />
+
