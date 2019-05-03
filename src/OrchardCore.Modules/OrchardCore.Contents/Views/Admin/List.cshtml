@@ -35,7 +35,6 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
     contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
-
 @using (Html.BeginForm("list", "Admin", FormMethod.Post, new { id = "items-form" }))
 {
     @*<fieldset class="bulk-actions">
@@ -93,9 +92,9 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                     </select>
                 </div>
                 }*@
-            @*<div class="col-md-2 col-xl-1 form-group">
+            <div class="col-md-2 col-xl-1 form-group">
                 <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>*@
+            </div>
             <div class="col-md-4 col-xl-2 form-group">
                 <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
             </div>
@@ -105,9 +104,9 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
             <div class="col-md-4 col-xl-2 form-group">
                 <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
             </div>
-            <div class="col-md-2 col-xl-1 form-group">
+            @*<div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>
+            </div>*@
         </div>
     </fieldset>
 
@@ -142,5 +141,9 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
             $('#items-form').attr('action', newAction);
         });
     })
+    $(function () {
+        $(".filter-options select, .filter-options input").on("change", function () {
+            this.form.submit();
+        });
+    })
 </script>
-
