@@ -15,8 +15,8 @@ namespace OrchardCore.Media.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly IMediaFileStore _fileStore;
-        private readonly string _pathSeparator;
-        private readonly string _mediaFieldsFolder;
+        private string _pathSeparator;
+        private string _mediaFieldsFolder;
 
         public AttachedMediaFieldsFolderAuthorizationHandler(IServiceProvider serviceProvider,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -25,11 +25,6 @@ namespace OrchardCore.Media.Services
             _serviceProvider = serviceProvider;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
             _fileStore = fileStore;
-            _pathSeparator = _fileStore.Combine("a", "b").Contains("/") ? "/" : "\\";
-
-            // ensure end trailing slash
-            _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
-                                .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
         }
 
 
@@ -50,6 +45,13 @@ namespace OrchardCore.Media.Services
             {
                 return;
             }
+
+            _pathSeparator = _fileStore.Combine("a", "b").Contains("/") ? "/" : "\\";
+
+            // ensure end trailing slash
+            _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
+                                .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
+
 
             var path = context.Resource as string;
 
