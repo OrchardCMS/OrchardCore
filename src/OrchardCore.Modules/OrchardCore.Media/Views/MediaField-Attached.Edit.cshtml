@@ -12,12 +12,12 @@
 <script at="Foot">
 
     initializeAttachedMediaField(
-        document.getElementById('@mediaFieldId'),
-        '@mediaFieldId-field-file-upload',
-        '@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" }) ',
-        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-        @(settings.Multiple ? "true" : "false"),
-        '@Model.TempUploadFolder');
+        document.getElementById($('#MediaFieldId').val()),
+         $('#MediaFieldId').val() + '-field-file-upload',
+         $('#UploadUrl').val(),
+         $('#GetMediaItemUrl').val(),
+         $('#SettingsMultiple').val(),
+         $('#TempUploadFolder').val());
 </script>
 
 <div class="mediafield-editor" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
@@ -61,3 +61,10 @@
 
 
 <partial name="Shared/MediaFieldEditLocalization.cshtml" />
+
+<input type="hidden" id="MediaFieldId" value="@mediaFieldId" />
+<input type="hidden" id="SettingsMultiple" value="@(settings.Multiple ? "true" : "false")" />
+<input type="hidden" id="TempUploadFolder" value="@Model.TempUploadFolder" />
+<input type="hidden" id="UploadUrl" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="GetMediaItemUrl" value="@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })" />
+
