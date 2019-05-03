@@ -110,11 +110,11 @@ namespace OrchardCore.Email.Services
             var body = new BodyBuilder();
             if (message.IsBodyHtml)
             {
-                body.TextBody = message.Body;
+                body.HtmlBody = message.Body;
             }
             else
             {
-                body.HtmlBody = message.Body;
+                body.TextBody = message.Body;
             }
             mimeMessage.Body = body.ToMessageBody();
 
