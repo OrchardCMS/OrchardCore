@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class UserCreatedHandler : IUserCreatedEventDisplay
+    public class UserCreatedHandler : IUserCreatedEventHandler
     {
         private readonly IWorkflowManager _workflowManager;
 

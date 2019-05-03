@@ -4,10 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
@@ -20,26 +17,19 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly ILogger _logger;
         private readonly IStringLocalizer<UserService> T;
 
         public UserService(
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
-            IEnumerable<IUserCreatedEventDisplay> handlers,
-            ILogger<UserService> logger,
             IStringLocalizer<UserService> stringLocalizer)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions;
-            Handlers = handlers;
-            _logger = logger;
             T = stringLocalizer;
         }
-
-        public IEnumerable<IUserCreatedEventDisplay> Handlers { get; private set; }
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
@@ -98,10 +88,7 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-
-            var context = new CreateUserContext(user);
-            await Handlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
-
+            
             return user;
         }
 
