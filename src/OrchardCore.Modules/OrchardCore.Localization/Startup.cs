@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using System.Linq;
 
 namespace OrchardCore.Localization
 {
@@ -36,10 +37,16 @@ namespace OrchardCore.Localization
 
             if (siteSettings.SupportedCultures.Length > 0)
             {
+                var supportedCulture = siteSettings.SupportedCultures;
+                if (!String.IsNullOrWhiteSpace(options.DefaultRequestCulture.Culture.Name))
+                {
+                    supportedCulture.Concat(new[] { siteSettings.Culture });
+                    supportedCulture = supportedCulture.Distinct().ToArray();
+                }
+
                 options
-                    .AddSupportedCultures(siteSettings.SupportedCultures)
-                    .AddSupportedUICultures(siteSettings.SupportedCultures)
-                    ;
+                    .AddSupportedCultures(supportedCulture)
+                    .AddSupportedUICultures(supportedCulture);
             }
 
             app.UseRequestLocalization(options);
