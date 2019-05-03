@@ -210,7 +210,7 @@ namespace OrchardCore.Media.Controllers
                         error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
                     });
 
-                    _logger.LogInformation($"File extension not allowed: '{file.FileName}'");
+                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
                 }                
@@ -225,7 +225,7 @@ namespace OrchardCore.Media.Controllers
                         error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
                     });
 
-                    _logger.LogInformation($"File too big: '{file.FileName}' ({file.Length}B)");
+                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
 
                     continue;
                 }
@@ -240,7 +240,7 @@ namespace OrchardCore.Media.Controllers
                         error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
                     });
 
-                    _logger.LogInformation($"File extension not allowed: '{file.FileName}'");
+                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
                 }                
@@ -255,7 +255,7 @@ namespace OrchardCore.Media.Controllers
                         error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
                     });
 
-                    _logger.LogInformation($"File too big: '{file.FileName}' ({file.Length}B)");
+                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
 
                     continue;
                 }
