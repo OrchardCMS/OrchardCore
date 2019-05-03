@@ -36,15 +36,16 @@ namespace OrchardCore.Localization
                 options.SetDefaultCulture(siteSettings.Culture);
             }
 
-            var supportedCulture = siteSettings.SupportedCultures.ToList();
-            supportedCulture.Add(CultureInfo.InstalledUICulture.Name);
-            supportedCulture = supportedCulture.Distinct().ToList();
+            var supportedCulture = new[] { options.DefaultRequestCulture.Culture.Name }
+                .Concat(siteSettings.SupportedCultures)
+                .Distinct()
+                .ToArray();
 
             if (siteSettings.SupportedCultures.Length > 0)
             {
                 options
-                    .AddSupportedCultures(supportedCulture.ToArray())
-                    .AddSupportedUICultures(supportedCulture.ToArray());
+                    .AddSupportedCultures(supportedCulture)
+                    .AddSupportedUICultures(supportedCulture);
             }
 
             app.UseRequestLocalization(options);
