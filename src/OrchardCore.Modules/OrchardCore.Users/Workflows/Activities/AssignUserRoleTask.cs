@@ -59,15 +59,7 @@ namespace OrchardCore.Users.Workflows.Activities
             {
                 if (!user.RoleNames.Contains(roleName))
                 {
-                    if (user.RoleNames is List<string>)
-                    {
-                        user.RoleNames.Add(roleName);
-                    }
-                    else
-                    {
-                        user.RoleNames = ((string[])user.RoleNames).Concat(new string[] { roleName }).ToArray();
-                    }
-                    await _userManager.UpdateAsync(user);
+                    await _userManager.AddToRoleAsync(user, roleName);
                 }
 
                 return Outcomes("Done");
