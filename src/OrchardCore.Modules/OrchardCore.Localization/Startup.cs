@@ -35,13 +35,13 @@ namespace OrchardCore.Localization
                 options.SetDefaultCulture(siteSettings.Culture);
             }
 
-            var supportedCulture = new[] { options.DefaultRequestCulture.Culture.Name }
-                .Concat(siteSettings.SupportedCultures)
-                .Distinct()
-                .ToArray();
-
             if (siteSettings.SupportedCultures.Length > 0)
             {
+                var supportedCulture = new[] { options.DefaultRequestCulture.Culture.Name }
+                    .Concat(siteSettings.SupportedCultures)
+                    .Distinct()
+                    .ToArray();
+
                 options
                     .AddSupportedCultures(supportedCulture)
                     .AddSupportedUICultures(supportedCulture);

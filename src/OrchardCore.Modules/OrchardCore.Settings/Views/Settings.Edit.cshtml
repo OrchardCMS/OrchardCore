@@ -66,7 +66,7 @@
 
             @foreach (var culture in Model.SiteCultures)
             {
-                <option value="@culture" selected="@String.Equals(Model.Culture, culture.Name, StringComparison.OrdinalIgnoreCase)">
+                <option value="@if (!String.IsNullOrEmpty(culture.Name)) { @culture.Name } else { @culture.LCID }" selected="@String.Equals(Model.Culture, culture.Name, StringComparison.OrdinalIgnoreCase)">
                     @if (!String.IsNullOrWhiteSpace(culture.Name))
                     {
                         @culture.Name <text> | </text>

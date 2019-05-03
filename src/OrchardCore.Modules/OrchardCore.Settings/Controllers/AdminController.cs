@@ -84,6 +84,11 @@ namespace OrchardCore.Settings.Controllers
 
             if (ModelState.IsValid)
             {
+                if (site.Culture == CultureInfo.InvariantCulture.LCID.ToString())
+                {
+                    site.Culture = "";
+                }
+
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 _notifier.Success(H["Site settings updated successfully."]);
