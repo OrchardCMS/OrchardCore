@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Handlers
 {
-    public interface IUserHandler
+    public interface IUserCreatedEventDisplay
     {
         Task CreatedAsync(CreateUserContext context);
     }

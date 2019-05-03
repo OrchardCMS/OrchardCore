@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Services
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
-            IEnumerable<IUserHandler> handlers,
+            IEnumerable<IUserCreatedEventDisplay> handlers,
             ILogger<UserService> logger,
             IStringLocalizer<UserService> stringLocalizer)
         {
@@ -39,7 +39,7 @@ namespace OrchardCore.Users.Services
             T = stringLocalizer;
         }
 
-        public IEnumerable<IUserHandler> Handlers { get; private set; }
+        public IEnumerable<IUserCreatedEventDisplay> Handlers { get; private set; }
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
