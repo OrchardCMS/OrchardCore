@@ -30,6 +30,8 @@ namespace OrchardCore.Localization
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
+            siteSettings.Culture = String.Empty;
+
             if (!String.IsNullOrEmpty(siteSettings.Culture))
             {
                 options.SetDefaultCulture(siteSettings.Culture);
@@ -37,16 +39,13 @@ namespace OrchardCore.Localization
 
             if (siteSettings.SupportedCultures.Length > 0)
             {
-                var supportedCulture = siteSettings.SupportedCultures;
-                if (!String.IsNullOrWhiteSpace(options.DefaultRequestCulture.Culture.Name))
-                {
-                    supportedCulture.Concat(new[] { siteSettings.Culture });
-                    supportedCulture = supportedCulture.Distinct().ToArray();
-                }
+                var supportedCulture = siteSettings.SupportedCultures.ToList();
+                supportedCulture.Add(siteSettings.Culture);
+                supportedCulture = supportedCulture.Distinct().ToList();
 
                 options
-                    .AddSupportedCultures(supportedCulture)
-                    .AddSupportedUICultures(supportedCulture);
+                    .AddSupportedCultures(supportedCulture.ToArray())
+                    .AddSupportedUICultures(supportedCulture.ToArray());
             }
 
             app.UseRequestLocalization(options);
