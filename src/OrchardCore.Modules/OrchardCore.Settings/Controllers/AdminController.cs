@@ -142,7 +142,8 @@ namespace OrchardCore.Settings.Controllers
 
                 _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
             }
-            else {
+            else
+            {
                 ModelState.AddModelError(nameof(cultureName), S["Invalid culture name"]);
             }
 
