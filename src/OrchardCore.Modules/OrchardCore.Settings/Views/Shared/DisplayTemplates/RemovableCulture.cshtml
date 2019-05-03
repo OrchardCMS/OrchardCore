@@ -1,6 +1,6 @@
 @using System.Globalization
 @{ 
-    var culture = @CultureInfo.GetCultureInfo(Model);
+    var culture = Model != null ? CultureInfo.GetCultureInfo(Model) : CultureInfo.InvariantCulture;
 }
 <tr>
     <form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">

@@ -109,7 +109,7 @@ namespace OrchardCore.Settings.Controllers
                 SiteCultures = siteSettings.SupportedCultures
             };
 
-            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != String.Empty)
+            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Select(ci => CultureInfo.GetCultureInfo(ci.Name))
                 .Where(s => !model.SiteCultures.Contains(s.Name));
 
@@ -124,18 +124,25 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
+            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName ?? String.Empty : cultureName;
 
             if (!String.IsNullOrWhiteSpace(cultureName) && Regex.IsMatch(cultureName, "^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
             {
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
-                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
                 _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
             }
-            else
+            else if (String.IsNullOrWhiteSpace(cultureName))
             {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
+                await _siteService.UpdateSiteSettingsAsync(siteSettings);
+
+                _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
+            }
+            else {
                 ModelState.AddModelError(nameof(cultureName), S["Invalid culture name"]);
             }
 
@@ -151,7 +158,7 @@ namespace OrchardCore.Settings.Controllers
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName ?? String.Empty }, StringComparer.OrdinalIgnoreCase).ToArray();
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using System.Linq;
+using System.Globalization;
 
 namespace OrchardCore.Localization
 {
@@ -30,19 +31,18 @@ namespace OrchardCore.Localization
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
-            siteSettings.Culture = String.Empty;
-
+            // TODO change with ILocalCulture.GetDefaultCulture service or something like it.
             if (!String.IsNullOrEmpty(siteSettings.Culture))
             {
                 options.SetDefaultCulture(siteSettings.Culture);
             }
 
+            var supportedCulture = siteSettings.SupportedCultures.ToList();
+            supportedCulture.Add(CultureInfo.InstalledUICulture.Name); // TODO needs to be changed with service call
+            supportedCulture = supportedCulture.Distinct().ToList();
+
             if (siteSettings.SupportedCultures.Length > 0)
             {
-                var supportedCulture = siteSettings.SupportedCultures.ToList();
-                supportedCulture.Add(siteSettings.Culture);
-                supportedCulture = supportedCulture.Distinct().ToList();
-
                 options
                     .AddSupportedCultures(supportedCulture.ToArray())
                     .AddSupportedUICultures(supportedCulture.ToArray());
