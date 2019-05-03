@@ -31,14 +31,13 @@ namespace OrchardCore.Localization
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
-            // TODO change with ILocalCulture.GetDefaultCulture service or something like it.
             if (!String.IsNullOrEmpty(siteSettings.Culture))
             {
                 options.SetDefaultCulture(siteSettings.Culture);
             }
 
             var supportedCulture = siteSettings.SupportedCultures.ToList();
-            supportedCulture.Add(CultureInfo.InstalledUICulture.Name); // TODO needs to be changed with service call
+            supportedCulture.Add(CultureInfo.InstalledUICulture.Name);
             supportedCulture = supportedCulture.Distinct().ToList();
 
             if (siteSettings.SupportedCultures.Length > 0)
