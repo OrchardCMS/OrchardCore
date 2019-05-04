@@ -16,6 +16,7 @@ namespace OrchardCore.Tests.Localization
     {
         private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
         private static PluralizationRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
+        private static PluralizationRuleDelegate _arPluralRule = n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
@@ -249,7 +250,8 @@ namespace OrchardCore.Tests.Localization
         public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentCulture, string resourceKey, string expected)
         {
             SetupDictionary("ar", new CultureDictionaryRecord[] {
-                new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })});
+                new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })
+            }, _arPluralRule);
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, fallBackToParentCulture, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("ar-Ye");
             var translation = localizer[resourceKey];
