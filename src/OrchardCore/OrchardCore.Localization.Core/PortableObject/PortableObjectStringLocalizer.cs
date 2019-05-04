@@ -2,21 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
         private string _context;
 
-        public PortableObjectStringLocalizer(string context, ILocalizationManager localizationManager, ILogger logger)
+        public PortableObjectStringLocalizer(
+            string context,
+            ILocalizationManager localizationManager,
+            bool fallBackToParentCulture,
+            ILogger logger)
         {
             _context = context;
             _localizationManager = localizationManager;
+            _fallBackToParentCulture = fallBackToParentCulture;
             _logger = logger;
         }
 
@@ -136,13 +144,16 @@ namespace OrchardCore.Localization.PortableObject
 
                 var translation = dictionary[key, count];
 
-                if (translation == null && culture.Parent != null && culture.Parent != culture)
+                if (_fallBackToParentCulture)
                 {
-                    dictionary = _localizationManager.GetDictionary(culture.Parent);
-
-                    if (dictionary != null)
+                    if (translation == null && culture.Parent != null && culture.Parent != culture)
                     {
-                        translation = dictionary[key, count]; // fallback to the parent culture
+                        dictionary = _localizationManager.GetDictionary(culture.Parent);
+
+                        if (dictionary != null)
+                        {
+                            translation = dictionary[key, count]; // fallback to the parent culture
+                        }
                     }
                 }
 
