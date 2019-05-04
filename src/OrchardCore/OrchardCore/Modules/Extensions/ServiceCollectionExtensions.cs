@@ -119,21 +119,20 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton<IFileVersionHashProvider, DefaultFileVersionHashProvider>();
-            });
 
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<IFileProvider>(serviceProvider => {
+                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider => {
                     var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
                     var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
-                    
-                    IFileProvider fileProvider;
+
+                    IModuleStaticFileProvider fileProvider;
                     if (env.IsDevelopment())
                     {
-                        var fileProviders = new List<IFileProvider>();
-                        fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
-                        fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
-                        fileProvider = new CompositeFileProvider(fileProviders);
+                        var fileProviders = new List<IFileProvider>
+                        {
+                            new ModuleProjectStaticFileProvider(appContext),
+                            new ModuleEmbeddedStaticFileProvider(appContext)
+                        };
+                        fileProvider = new ModuleCompositeFileProvider(fileProviders);
                     }
                     else
                     {
@@ -141,11 +140,16 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
                     return fileProvider;
                 });
+
+                services.AddSingleton<IFileProvider>(serviceProvider =>
+                {
+                    return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
+                });
             });
 
             builder.Configure((app, routes, serviceProvider) =>
             {
-                var fileProvider = serviceProvider.GetRequiredService<IFileProvider>();
+                var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
 
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
 
