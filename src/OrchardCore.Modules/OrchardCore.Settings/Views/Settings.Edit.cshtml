@@ -61,7 +61,7 @@
             }
             else
             {
-                <option value="">@T["System ({0})", CultureInfo.InstalledUICulture.NativeName]</option>
+                <option value="">@T["System ({0})", !String.IsNullOrEmpty(CultureInfo.InstalledUICulture.DisplayName) ? CultureInfo.InstalledUICulture.DisplayName : CultureInfo.InstalledUICulture.NativeName]</option>
             }
 
             @foreach (var culture in Model.SiteCultures)
@@ -71,7 +71,14 @@
                     {
                         @culture.Name <text> | </text>
                     }
-                    @culture.NativeName
+                    @if (!String.IsNullOrWhiteSpace(culture.DisplayName))
+                    {
+                        @culture.DisplayName
+                    }
+                    else
+                    {
+                        @culture.NativeName
+                    }
                 </option>
             }
         </select>

@@ -19,7 +19,14 @@
                             {
                                 @culture.Name <text> | </text>
                             }
-                            @culture.NativeName
+                            @if (!String.IsNullOrWhiteSpace(culture.DisplayName))
+                            {
+                                @culture.DisplayName
+                            }
+                            else
+                            {
+                                @culture.NativeName
+                            }
                         </option>
                     }
                 </select>
@@ -56,4 +63,4 @@
     </table>
 </fieldset>
 
-@Html.ActionLink(T["Close"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" }, new { @class="btn btn-primary" })
+@Html.ActionLink(T["Close"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" }, new { @class = "btn btn-primary" })
