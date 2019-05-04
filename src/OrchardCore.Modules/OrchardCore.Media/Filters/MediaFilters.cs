@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Media.Filters
@@ -74,6 +76,34 @@ namespace OrchardCore.Media.Filters
             }
 
             return new ValueTask<FluidValue>(new StringValue(url));
+        }
+    }
+
+    public class MediaAppendVersionFilter : ILiquidFilter
+    {
+        private readonly IFileVersionProvider _fileVersionProvider;
+        private string _pathBase;
+
+        public MediaAppendVersionFilter(IFileVersionProvider fileVersionProvider)
+        {
+            _fileVersionProvider = fileVersionProvider;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var url = input.ToStringValue();
+
+            if (String.IsNullOrEmpty(_pathBase))
+            {
+                if (!ctx.AmbientValues.TryGetValue("ViewContext", out var viewContext))
+                {
+                    throw new ArgumentException("ViewContext missing while invoking 'append_version'");
+                }
+                _pathBase = String.Concat(((ViewContext)viewContext).HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
+            }
+            var imageUrl = _fileVersionProvider.AddFileVersionToPath(_pathBase, url);
+
+            return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }
     }
 }
