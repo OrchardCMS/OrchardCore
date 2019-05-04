@@ -66,9 +66,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                if (AppendVersion == true)
+                if (AppendVersion.HasValue == true)
                 {
-                    setting.SetAppendVersion(true);
+                    setting.SetAppendVersion(AppendVersion);
                 }
 
                 if (Debug != null)

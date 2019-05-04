@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Antiforgery.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Caching.Memory;
+//using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 
 
@@ -20,24 +20,20 @@ namespace OrchardCore.ResourceManagement
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
 
-        private readonly IEnumerable<IFileProvider> _fileProviders;
+        private readonly IEnumerable<IFileProvider> _registeredFileProviders;
+        private readonly IFileProvider _webRootfileProvider;
 
-        //private readonly IMemoryCache _tagHelperCache;
+        private IList<IFileProvider> _combinedFileProviders;
         //private readonly IMemoryCache _tenantCache;
         public FileVersionProvider(
-            IEnumerable<IFileProvider> fileProviders
+            IEnumerable<IFileProvider> registeredFileProviders,
+            IHostingEnvironment environment
             //,
-            //TagHelperMemoryCacheProvider cacheProvider,
             //IMemoryCache tenantCache
             )
         {
-
-            //if (cacheProvider == null)
-            //{
-            //    throw new ArgumentNullException(nameof(cacheProvider));
-            //}
-
-            _fileProviders = fileProviders;
+            _registeredFileProviders = registeredFileProviders;
+            _webRootfileProvider = environment.WebRootFileProvider;
             //_tagHelperCache = cacheProvider.Cache;
             //_tenantCache = tenantCache;
         }
@@ -46,6 +42,17 @@ namespace OrchardCore.ResourceManagement
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
+            //build _combinedFileProviders as required
+            //we could register env.WebRoot as well, but this allows someone to mutate env.WebRoot 
+            if (_combinedFileProviders == null)
+            {
+                _combinedFileProviders = _registeredFileProviders.ToList();
+                if (_webRootfileProvider != null)
+                {
+                    _combinedFileProviders.Add(_webRootfileProvider);
+                }
+            }
+
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -71,9 +78,9 @@ namespace OrchardCore.ResourceManagement
             //    return value;
             //}
             string value = path;
-            var cacheEntryOptions = new MemoryCacheEntryOptions();
+            //var cacheEntryOptions = new MemoryCacheEntryOptions();
             //cacheEntryOptions.AddExpirationToken(FileProvider.Watch(resolvedPath));
-            foreach (var fileProvider in _fileProviders)
+            foreach (var fileProvider in _registeredFileProviders)
             {
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
@@ -82,7 +89,7 @@ namespace OrchardCore.ResourceManagement
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     var requestPathBaseRelativePath = resolvedPath.Substring(requestPathBase.Value.Length);
-                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
+                    //cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
                     fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
                 }
 
