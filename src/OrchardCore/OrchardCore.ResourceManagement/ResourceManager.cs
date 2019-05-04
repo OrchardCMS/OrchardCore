@@ -128,7 +128,7 @@ namespace OrchardCore.ResourceManagement
                 resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
             }
 
-            return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            return RegisterResource(resourceType, GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
         }
 
         public void RegisterHeadScript(IHtmlContent script)
@@ -644,6 +644,18 @@ namespace OrchardCore.ResourceManagement
                 sb.Append(Name);
                 sb.Append(")");
                 return sb.ToString();
+            }
+        }
+
+        private string GetResourceKey(string releasePath, string debugPath)
+        {
+            if (_options.Value.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            {
+                return debugPath;
+            }
+            else
+            {
+                return releasePath;
             }
         }
     }
