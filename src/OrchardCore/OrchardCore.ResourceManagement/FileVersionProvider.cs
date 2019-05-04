@@ -34,7 +34,6 @@ namespace OrchardCore.ResourceManagement
         {
             _registeredFileProviders = registeredFileProviders;
             _webRootfileProvider = environment.WebRootFileProvider;
-            //_tagHelperCache = cacheProvider.Cache;
             //_tenantCache = tenantCache;
         }
 
@@ -42,8 +41,7 @@ namespace OrchardCore.ResourceManagement
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
-            //build _combinedFileProviders as required
-            //we could register env.WebRoot as well, but this allows someone to mutate env.WebRoot 
+            //build _combinedFileProviders if required
             if (_combinedFileProviders == null)
             {
                 _combinedFileProviders = _registeredFileProviders.ToList();
@@ -80,7 +78,7 @@ namespace OrchardCore.ResourceManagement
             string value = path;
             //var cacheEntryOptions = new MemoryCacheEntryOptions();
             //cacheEntryOptions.AddExpirationToken(FileProvider.Watch(resolvedPath));
-            foreach (var fileProvider in _registeredFileProviders)
+            foreach (var fileProvider in _combinedFileProviders)
             {
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
@@ -92,24 +90,20 @@ namespace OrchardCore.ResourceManagement
                     //cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
                     fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
                 }
-
                 if (fileInfo.Exists)
                 {
                     value = QueryHelpers.AddQueryString(path, VersionKey, GetHashForFile(fileInfo));
+                    //cacheEntryOptions.SetSize(value.Length * sizeof(char));
+                    //value = _tagHelperCache.Set(path, value, cacheEntryOptions);
+                    return value;
                 }
-                break;
-               
-
-                //cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                //value = _tagHelperCache.Set(path, value, cacheEntryOptions);
-                //return value;
             }
 
-            //else
-            //{
-            //    // if the file is not in the current server.
-            //    value = path;
-            //}
+                // if the file is not in the current server, set cache so no further checks are done.
+                value = path;
+                //cacheEntryOptions.SetSize(value.Length * sizeof(char));
+                //value = _tagHelperCache.Set(path, value, cacheEntryOptions);
+         
             return value;
         }
 

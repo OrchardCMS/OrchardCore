@@ -52,7 +52,7 @@ namespace OrchardCore.Media
         /// <summary>
         /// The url prefix used to route asset files
         /// </summary>
-        private const string AssetsUrlPrefix = "/media";
+        public const string AssetsUrlPrefix = "/media";
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
@@ -76,6 +76,25 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IMediaFileProvider>(serviceProvider =>
+            {
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+
+                if (!Directory.Exists(mediaPath))
+                {
+                    Directory.CreateDirectory(mediaPath);
+                }
+                return new MediaFileProvider(mediaPath);
+            });
+
+            services.AddSingleton<IFileProvider>(serviceProvider =>
+            {
+                return serviceProvider.GetRequiredService<IMediaFileProvider>();
+            });
+
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -96,8 +115,6 @@ namespace OrchardCore.Media
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
-
-            services.AddSingleton<IMediaFileStoreVersionProvider, MediaFileStoreVersionProvider>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
@@ -147,7 +164,7 @@ namespace OrchardCore.Media
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
             .SetCache<PhysicalFileSystemCache>()
             .SetCacheHash<CacheHash>()
-            .AddProvider<MediaFileProvider>()
+            .AddProvider<MediaFileImageProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
@@ -171,15 +188,7 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
-
-            if (!Directory.Exists(mediaPath))
-            {
-                Directory.CreateDirectory(mediaPath);
-            }
+            var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
 
             // ImageSharp before the static file provider
             app.UseImageSharp();
@@ -188,7 +197,7 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsUrlPrefix,
-                FileProvider = new PhysicalFileProvider(mediaPath),
+                FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
             });
         }
