@@ -40,15 +40,17 @@
 .trumbowyg-editor {
   display: block;
   position: relative;
-  border: 1px solid #DDD;
   width: 100%;
-  min-height: 300px;
+  min-height: 300px; }
+
+[dir] .trumbowyg-box, [dir] .trumbowyg-editor {
+  border: 1px solid #DDD;
   margin: 17px auto; }
 
-.trumbowyg-box .trumbowyg-editor {
+[dir] .trumbowyg-box .trumbowyg-editor {
   margin: 0 auto; }
 
-.trumbowyg-box.trumbowyg-fullscreen {
+[dir] .trumbowyg-box.trumbowyg-fullscreen {
   background: #FEFEFE;
   border: none !important; }
 
@@ -56,19 +58,23 @@
 .trumbowyg-textarea {
   position: relative;
   box-sizing: border-box;
-  padding: 20px;
   min-height: 300px;
   width: 100%;
-  border-style: none;
   resize: none;
   outline: none;
   overflow: auto; }
+
+[dir] .trumbowyg-editor, [dir] .trumbowyg-textarea {
+  padding: 20px;
+  border-style: none; }
   .trumbowyg-editor.trumbowyg-autogrow-on-enter,
   .trumbowyg-textarea.trumbowyg-autogrow-on-enter {
     transition: height 300ms ease-out; }
 
 .trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
-  color: transparent !important;
+  color: transparent !important; }
+
+[dir] .trumbowyg-box-blur .trumbowyg-editor *, [dir] .trumbowyg-box-blur .trumbowyg-editor::before {
   text-shadow: 0 0 7px #333; }
   @media screen and (min-width: 0 \0) {
     .trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
@@ -85,18 +91,22 @@
   position: relative;
   display: block;
   overflow: auto;
-  border: none;
   font-size: 14px;
   font-family: "Inconsolata", "Consolas", "Courier", "Courier New", sans-serif;
   line-height: 18px; }
+
+[dir] .trumbowyg-textarea {
+  border: none; }
 
 .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
   height: 1px !important;
   width: 25%;
   min-height: 0 !important;
-  padding: 0 !important;
-  background: none;
   opacity: 0 !important; }
+
+[dir] .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
+  padding: 0 !important;
+  background: none; }
 
 .trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
   display: block; }
@@ -105,7 +115,9 @@
   display: none; }
 
 .trumbowyg-box.trumbowyg-disabled .trumbowyg-textarea {
-  opacity: 0.8;
+  opacity: 0.8; }
+
+[dir] .trumbowyg-box.trumbowyg-disabled .trumbowyg-textarea {
   background: none; }
 
 .trumbowyg-editor[contenteditable=true]:empty:not(:focus)::before {
@@ -116,25 +128,32 @@
 .trumbowyg-button-pane {
   width: 100%;
   min-height: 36px;
-  background: #ecf0f1;
-  border-bottom: 1px solid #d7e0e2;
-  margin: 0;
-  padding: 0 5px;
   position: relative;
   list-style-type: none;
   line-height: 10px;
   backface-visibility: hidden;
   z-index: 11; }
+
+[dir] .trumbowyg-button-pane {
+  background: #ecf0f1;
+  border-bottom: 1px solid #d7e0e2;
+  margin: 0;
+  padding: 0 5px; }
   .trumbowyg-button-pane::after {
     content: " ";
     display: block;
     position: absolute;
     top: 36px;
-    left: 0;
-    right: 0;
     width: 100%;
-    height: 1px;
+    height: 1px; }
+  [dir] .trumbowyg-button-pane::after {
     background: #d7e0e2; }
+  [dir=ltr] .trumbowyg-button-pane::after {
+  left: 0;
+  right: 0; }
+  [dir=rtl] .trumbowyg-button-pane::after {
+    right: 0;
+    left: 0; }
   .trumbowyg-button-pane .trumbowyg-button-group {
     display: inline-block; }
     .trumbowyg-button-pane .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
@@ -143,10 +162,11 @@
       content: " ";
       display: inline-block;
       width: 1px;
-      background: #d7e0e2;
-      margin: 0 5px;
       height: 35px;
       vertical-align: top; }
+    [dir] .trumbowyg-button-pane .trumbowyg-button-group::after {
+      background: #d7e0e2;
+      margin: 0 5px; }
     .trumbowyg-button-pane .trumbowyg-button-group:last-child::after {
       content: none; }
   .trumbowyg-button-pane button {
@@ -154,14 +174,15 @@
     position: relative;
     width: 35px;
     height: 35px;
-    padding: 1px 6px !important;
-    margin-bottom: 1px;
     overflow: hidden;
-    border: none;
-    cursor: pointer;
-    background: none;
     vertical-align: middle;
     transition: background-color 150ms, opacity 150ms; }
+  [dir] .trumbowyg-button-pane button {
+    padding: 1px 6px !important;
+    margin-bottom: 1px;
+    border: none;
+    cursor: pointer;
+    background: none; }
     .trumbowyg-button-pane button.trumbowyg-textual-button {
       width: auto;
       line-height: 35px;
@@ -169,99 +190,139 @@
   .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
   .trumbowyg-button-pane button.trumbowyg-disable,
   .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
-    opacity: 0.2;
+    opacity: 0.2; }
+  [dir] .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active), [dir] .trumbowyg-button-pane button.trumbowyg-disable, [dir] .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
     cursor: default; }
-  .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::before,
-  .trumbowyg-disabled .trumbowyg-button-pane .trumbowyg-button-group::before {
+  [dir] .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::before, [dir] .trumbowyg-disabled .trumbowyg-button-pane .trumbowyg-button-group::before {
     background: #e3e9eb; }
   .trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
   .trumbowyg-button-pane button:not(.trumbowyg-disable):focus,
   .trumbowyg-button-pane button.trumbowyg-active {
-    background-color: #FFF;
     outline: none; }
+  [dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):hover, [dir] .trumbowyg-button-pane button:not(.trumbowyg-disable):focus, [dir] .trumbowyg-button-pane button.trumbowyg-active {
+    background-color: #FFF; }
   .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     display: block;
     content: " ";
     position: absolute;
     top: 25px;
-    right: 3px;
     height: 0;
-    width: 0;
+    width: 0; }
+  [dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     border: 3px solid transparent;
     border-top-color: #555; }
-  .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button {
-    padding-left: 10px !important;
-    padding-right: 18px !important; }
+  [dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  right: 3px; }
+  [dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+    left: 3px; }
+  [dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button {
+  padding-left: 10px !important;
+  padding-right: 18px !important; }
+  [dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button {
+    padding-right: 10px !important;
+    padding-left: 18px !important; }
     .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
-      top: 17px;
-      right: 7px; }
-  .trumbowyg-button-pane .trumbowyg-right {
-    float: right; }
+      top: 17px; }
+    [dir=ltr] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
+  right: 7px; }
+    [dir=rtl] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-textual-button::after {
+      left: 7px; }
+  [dir=ltr] .trumbowyg-button-pane .trumbowyg-right {
+  float: right; }
+  [dir=rtl] .trumbowyg-button-pane .trumbowyg-right {
+    float: left; }
 
 .trumbowyg-dropdown {
   width: 200px;
+  z-index: 12; }
+
+[dir] .trumbowyg-dropdown {
   border: 1px solid #ecf0f1;
   padding: 5px 0;
   border-top: none;
   background: #FFF;
-  margin-left: -1px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
-  z-index: 12; }
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px; }
+
+[dir=ltr] .trumbowyg-dropdown {
+  margin-left: -1px; }
+
+[dir=rtl] .trumbowyg-dropdown {
+  margin-right: -1px; }
   .trumbowyg-dropdown button {
     display: block;
     width: 100%;
     height: 35px;
     line-height: 35px;
     text-decoration: none;
-    background: #FFF;
-    padding: 0 10px;
     color: #333 !important;
-    border: none;
-    cursor: pointer;
-    text-align: left;
     font-size: 15px;
     transition: all 150ms; }
-    .trumbowyg-dropdown button:hover, .trumbowyg-dropdown button:focus {
+  [dir] .trumbowyg-dropdown button {
+    background: #FFF;
+    padding: 0 10px;
+    border: none;
+    cursor: pointer; }
+  [dir=ltr] .trumbowyg-dropdown button {
+  text-align: left; }
+  [dir=rtl] .trumbowyg-dropdown button {
+    text-align: right; }
+    [dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
       background: #ecf0f1; }
-    .trumbowyg-dropdown button svg {
-      float: left;
-      margin-right: 14px; }
+    [dir=ltr] .trumbowyg-dropdown button svg {
+  float: left;
+  margin-right: 14px; }
+    [dir=rtl] .trumbowyg-dropdown button svg {
+      float: right;
+      margin-left: 14px; }
 
 /* Modal box */
 .trumbowyg-modal {
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   max-width: 520px;
   width: 100%;
   height: 350px;
   z-index: 12;
   overflow: hidden;
   backface-visibility: hidden; }
+[dir=ltr] .trumbowyg-modal {
+  left: 50%;
+  transform: translateX(-50%); }
+[dir=rtl] .trumbowyg-modal {
+  right: 50%;
+  transform: translateX(50%); }
 
 .trumbowyg-modal-box {
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
   max-width: 500px;
   width: calc(100% - 20px);
-  padding-bottom: 45px;
   z-index: 1;
+  font-size: 14px;
+  backface-visibility: hidden; }
+
+[dir] .trumbowyg-modal-box {
+  padding-bottom: 45px;
   background-color: #FFF;
   text-align: center;
-  font-size: 14px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
-  backface-visibility: hidden; }
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px; }
+
+[dir=ltr] .trumbowyg-modal-box {
+  left: 50%;
+  transform: translateX(-50%); }
+
+[dir=rtl] .trumbowyg-modal-box {
+  right: 50%;
+  transform: translateX(50%); }
   .trumbowyg-modal-box .trumbowyg-modal-title {
     font-size: 24px;
     font-weight: bold;
+    display: block;
+    color: #333; }
+  [dir] .trumbowyg-modal-box .trumbowyg-modal-title {
     margin: 0 0 20px;
     padding: 15px 0 13px;
-    display: block;
     border-bottom: 1px solid #EEE;
-    color: #333;
     background: #fbfcfc; }
   .trumbowyg-modal-box .trumbowyg-progress {
     width: 100%;
@@ -269,109 +330,144 @@
     position: absolute;
     top: 58px; }
     .trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
-      background: #2BC06A;
       width: 0;
       height: 100%;
       transition: width 150ms linear; }
+    [dir] .trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
+      background: #2BC06A; }
   .trumbowyg-modal-box label {
     display: block;
     position: relative;
-    margin: 15px 12px;
     height: 29px;
     line-height: 29px;
     overflow: hidden; }
+  [dir] .trumbowyg-modal-box label {
+    margin: 15px 12px; }
     .trumbowyg-modal-box label .trumbowyg-input-infos {
       display: block;
-      text-align: left;
       height: 25px;
       line-height: 25px;
       transition: all 150ms; }
+    [dir=ltr] .trumbowyg-modal-box label .trumbowyg-input-infos {
+  text-align: left; }
+    [dir=rtl] .trumbowyg-modal-box label .trumbowyg-input-infos {
+      text-align: right; }
       .trumbowyg-modal-box label .trumbowyg-input-infos span {
         display: block;
         color: #69878f;
+        width: 150px; }
+      [dir] .trumbowyg-modal-box label .trumbowyg-input-infos span {
         background-color: #fbfcfc;
         border: 1px solid #DEDEDE;
-        padding: 0 7px;
-        width: 150px; }
+        padding: 0 7px; }
       .trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
         color: #e74c3c; }
-    .trumbowyg-modal-box label.trumbowyg-input-error input,
-    .trumbowyg-modal-box label.trumbowyg-input-error textarea {
+    [dir] .trumbowyg-modal-box label.trumbowyg-input-error input, [dir] .trumbowyg-modal-box label.trumbowyg-input-error textarea {
       border: 1px solid #e74c3c; }
-    .trumbowyg-modal-box label.trumbowyg-input-error .trumbowyg-input-infos {
+    [dir] .trumbowyg-modal-box label.trumbowyg-input-error .trumbowyg-input-infos {
       margin-top: -27px; }
     .trumbowyg-modal-box label input {
       position: absolute;
       top: 0;
-      right: 0;
       height: 27px;
       line-height: 27px;
-      border: 1px solid #DEDEDE;
-      background: #fff;
       font-size: 14px;
       max-width: 330px;
       width: 70%;
-      padding: 0 7px;
       transition: all 150ms; }
+    [dir] .trumbowyg-modal-box label input {
+      border: 1px solid #DEDEDE;
+      background: #fff;
+      padding: 0 7px; }
+    [dir=ltr] .trumbowyg-modal-box label input {
+  right: 0; }
+    [dir=rtl] .trumbowyg-modal-box label input {
+      left: 0; }
       .trumbowyg-modal-box label input:hover, .trumbowyg-modal-box label input:focus {
-        outline: none;
+        outline: none; }
+      [dir] .trumbowyg-modal-box label input:hover, [dir] .trumbowyg-modal-box label input:focus {
         border: 1px solid #95a5a6; }
-      .trumbowyg-modal-box label input:focus {
+      [dir] .trumbowyg-modal-box label input:focus {
         background: #fbfcfc; }
     .trumbowyg-modal-box label input[type="checkbox"] {
-      left: 5px;
-      top: 5px;
-      right: auto; }
+      top: 5px; }
+    [dir=ltr] .trumbowyg-modal-box label input[type="checkbox"] {
+  left: 5px;
+  right: auto; }
+    [dir=rtl] .trumbowyg-modal-box label input[type="checkbox"] {
+      right: 5px;
+      left: auto; }
       .trumbowyg-modal-box label input[type="checkbox"] + .trumbowyg-input-infos span {
-        width: auto;
-        padding-left: 25px; }
+        width: auto; }
+      [dir=ltr] .trumbowyg-modal-box label input[type="checkbox"] + .trumbowyg-input-infos span {
+  padding-left: 25px; }
+      [dir=rtl] .trumbowyg-modal-box label input[type="checkbox"] + .trumbowyg-input-infos span {
+        padding-right: 25px; }
   .trumbowyg-modal-box .error {
-    margin-top: 25px;
     display: block;
     color: red; }
+  [dir] .trumbowyg-modal-box .error {
+    margin-top: 25px; }
   .trumbowyg-modal-box .trumbowyg-modal-button {
     position: absolute;
     bottom: 10px;
-    right: 0;
     text-decoration: none;
     color: #FFF;
     display: block;
     width: 100px;
     height: 35px;
     line-height: 33px;
-    margin: 0 10px;
-    background-color: #333;
-    border: none;
-    cursor: pointer;
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
     font-size: 16px;
     transition: all 150ms; }
-    .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
-      right: 110px;
+  [dir] .trumbowyg-modal-box .trumbowyg-modal-button {
+    margin: 0 10px;
+    background-color: #333;
+    border: none;
+    cursor: pointer; }
+  [dir=ltr] .trumbowyg-modal-box .trumbowyg-modal-button {
+  right: 0; }
+  [dir=rtl] .trumbowyg-modal-box .trumbowyg-modal-button {
+    left: 0; }
+    [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
       background: #2bc06a; }
+    [dir=ltr] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  right: 110px; }
+    [dir=rtl] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+      left: 110px; }
       .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
-        background: #40d47e;
         outline: none; }
-      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
+      [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+        background: #40d47e; }
+      [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
         background: #25a25a; }
     .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
-      color: #555;
+      color: #555; }
+    [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
       background: #e6e6e6; }
       .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
-        background: #fbfbfb;
         outline: none; }
-      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
+      [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+        background: #fbfbfb; }
+      [dir] .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
         background: #d5d4d4; }
 
 .trumbowyg-overlay {
   position: absolute;
-  background-color: rgba(255, 255, 255, 0.5);
   height: 100%;
   width: 100%;
-  left: 0;
   display: none;
   top: 0;
   z-index: 10; }
+
+[dir] .trumbowyg-overlay {
+  background-color: rgba(255, 255, 255, 0.5); }
+
+[dir=ltr] .trumbowyg-overlay {
+  left: 0; }
+
+[dir=rtl] .trumbowyg-overlay {
+  right: 0; }
 
 /**
  * Fullscreen
@@ -382,14 +478,20 @@ body.trumbowyg-body-fullscreen {
 .trumbowyg-fullscreen {
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
   z-index: 99999; }
-  .trumbowyg-fullscreen.trumbowyg-box,
-  .trumbowyg-fullscreen .trumbowyg-editor {
+
+[dir] .trumbowyg-fullscreen {
+  margin: 0;
+  padding: 0; }
+
+[dir=ltr] .trumbowyg-fullscreen {
+  left: 0; }
+
+[dir=rtl] .trumbowyg-fullscreen {
+  right: 0; }
+  [dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor {
     border: none; }
   .trumbowyg-fullscreen .trumbowyg-editor,
   .trumbowyg-fullscreen .trumbowyg-textarea {
@@ -413,14 +515,15 @@ body.trumbowyg-body-fullscreen {
   .trumbowyg-editor video,
   .trumbowyg-editor img {
     height: auto; }
-  .trumbowyg-editor img {
+  [dir] .trumbowyg-editor img {
     cursor: move; }
   .trumbowyg-editor.trumbowyg-reset-css {
-    background: #FEFEFE !important;
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
     font-size: 14px !important;
     line-height: 1.45em !important;
     color: #333; }
+  [dir] .trumbowyg-editor.trumbowyg-reset-css {
+    background: #FEFEFE !important; }
     .trumbowyg-editor.trumbowyg-reset-css a {
       color: #15c !important;
       text-decoration: underline !important; }
@@ -429,38 +532,42 @@ body.trumbowyg-body-fullscreen {
     .trumbowyg-editor.trumbowyg-reset-css ul,
     .trumbowyg-editor.trumbowyg-reset-css ol,
     .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      line-height: 1.4em !important;
+      font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+      font-size: 14px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css div, [dir] .trumbowyg-editor.trumbowyg-reset-css p, [dir] .trumbowyg-editor.trumbowyg-reset-css ul, [dir] .trumbowyg-editor.trumbowyg-reset-css ol, [dir] .trumbowyg-editor.trumbowyg-reset-css blockquote {
       box-shadow: none !important;
       background: none !important;
       margin: 0 !important;
       margin-bottom: 15px !important;
-      line-height: 1.4em !important;
-      font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
-      font-size: 14px !important;
       border: none; }
-    .trumbowyg-editor.trumbowyg-reset-css iframe,
-    .trumbowyg-editor.trumbowyg-reset-css object,
-    .trumbowyg-editor.trumbowyg-reset-css hr {
+    [dir] .trumbowyg-editor.trumbowyg-reset-css iframe, [dir] .trumbowyg-editor.trumbowyg-reset-css object, [dir] .trumbowyg-editor.trumbowyg-reset-css hr {
       margin-bottom: 15px !important; }
     .trumbowyg-editor.trumbowyg-reset-css blockquote {
-      margin-left: 32px !important;
       font-style: italic !important;
       color: #555; }
+    [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css blockquote {
+  margin-left: 32px !important; }
+    [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      margin-right: 32px !important; }
     .trumbowyg-editor.trumbowyg-reset-css ul {
       list-style: disc; }
-    .trumbowyg-editor.trumbowyg-reset-css ul,
-    .trumbowyg-editor.trumbowyg-reset-css ol {
-      padding-left: 20px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css ul ul,
-    .trumbowyg-editor.trumbowyg-reset-css ol ol,
-    .trumbowyg-editor.trumbowyg-reset-css ul ol,
-    .trumbowyg-editor.trumbowyg-reset-css ol ul {
+    [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol {
+  padding-left: 20px !important; }
+    [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol {
+      padding-right: 20px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ul {
       border: none;
       margin: 2px !important;
-      padding: 0 !important;
-      padding-left: 24px !important; }
+      padding: 0 !important; }
+    [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol ul {
+  padding-left: 24px !important; }
+    [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir=rtl] .trumbowyg-editor.trumbowyg-reset-css ol ul {
+      padding-right: 24px !important; }
     .trumbowyg-editor.trumbowyg-reset-css hr {
       display: block;
-      height: 1px;
+      height: 1px; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css hr {
       border: none;
       border-top: 1px solid #CCC; }
     .trumbowyg-editor.trumbowyg-reset-css h1,
@@ -468,39 +575,45 @@ body.trumbowyg-body-fullscreen {
     .trumbowyg-editor.trumbowyg-reset-css h3,
     .trumbowyg-editor.trumbowyg-reset-css h4 {
       color: #111;
+      font-weight: bold; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css h1, [dir] .trumbowyg-editor.trumbowyg-reset-css h2, [dir] .trumbowyg-editor.trumbowyg-reset-css h3, [dir] .trumbowyg-editor.trumbowyg-reset-css h4 {
       background: none;
       margin: 0 !important;
-      padding: 0 !important;
-      font-weight: bold; }
+      padding: 0 !important; }
     .trumbowyg-editor.trumbowyg-reset-css h1 {
       font-size: 32px !important;
-      line-height: 38px !important;
+      line-height: 38px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css h1 {
       margin-bottom: 20px !important; }
     .trumbowyg-editor.trumbowyg-reset-css h2 {
       font-size: 26px !important;
-      line-height: 34px !important;
+      line-height: 34px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css h2 {
       margin-bottom: 15px !important; }
     .trumbowyg-editor.trumbowyg-reset-css h3 {
       font-size: 22px !important;
-      line-height: 28px !important;
+      line-height: 28px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css h3 {
       margin-bottom: 7px !important; }
     .trumbowyg-editor.trumbowyg-reset-css h4 {
       font-size: 16px !important;
-      line-height: 22px !important;
+      line-height: 22px !important; }
+    [dir] .trumbowyg-editor.trumbowyg-reset-css h4 {
       margin-bottom: 7px !important; }
 
 /*
  * Dark theme
  */
 .trumbowyg-dark .trumbowyg-textarea {
-  background: #111;
   color: #ddd; }
+[dir] .trumbowyg-dark .trumbowyg-textarea {
+  background: #111; }
 
-.trumbowyg-dark .trumbowyg-box {
+[dir] .trumbowyg-dark .trumbowyg-box {
   border: 1px solid #343434; }
-  .trumbowyg-dark .trumbowyg-box.trumbowyg-fullscreen {
+  [dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-fullscreen {
     background: #111; }
-  .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
+  [dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, [dir] .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
     text-shadow: 0 0 7px #ccc; }
     @media screen and (min-width: 0 \0 ) {
       .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-dark .trumbowyg-box.trumbowyg-box-blur .trumbowyg-editor::before {
@@ -512,88 +625,93 @@ body.trumbowyg-body-fullscreen {
     fill: #ecf0f1;
     color: #ecf0f1; }
 
-.trumbowyg-dark .trumbowyg-button-pane {
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
   background-color: #222;
   border-bottom-color: #343434; }
-  .trumbowyg-dark .trumbowyg-button-pane::after {
+  [dir] .trumbowyg-dark .trumbowyg-button-pane::after {
     background: #343434; }
-  .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {
+  [dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {
     background-color: #343434; }
   .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
     color: transparent; }
-  .trumbowyg-dark .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::after {
+  [dir] .trumbowyg-dark .trumbowyg-button-pane.trumbowyg-disable .trumbowyg-button-group::after {
     background-color: #2a2a2a; }
-  .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
-  .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):focus,
-  .trumbowyg-dark .trumbowyg-button-pane button.trumbowyg-active {
+  [dir] .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):hover, [dir] .trumbowyg-dark .trumbowyg-button-pane button:not(.trumbowyg-disable):focus, [dir] .trumbowyg-dark .trumbowyg-button-pane button.trumbowyg-active {
     background-color: #333; }
-  .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  [dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     border-top-color: #fff; }
 
 .trumbowyg-dark .trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
   color: #ecf0f1;
   fill: transparent; }
 
-.trumbowyg-dark .trumbowyg-dropdown {
+[dir] .trumbowyg-dark .trumbowyg-dropdown {
   border-color: #222;
   background: #333;
   box-shadow: rgba(0, 0, 0, 0.3) 0 2px 3px; }
   .trumbowyg-dark .trumbowyg-dropdown button {
-    background: #333;
     color: #fff !important; }
-    .trumbowyg-dark .trumbowyg-dropdown button:hover, .trumbowyg-dark .trumbowyg-dropdown button:focus {
+  [dir] .trumbowyg-dark .trumbowyg-dropdown button {
+    background: #333; }
+    [dir] .trumbowyg-dark .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dark .trumbowyg-dropdown button:focus {
       background: #222; }
 
-.trumbowyg-dark .trumbowyg-modal-box {
+[dir] .trumbowyg-dark .trumbowyg-modal-box {
   background-color: #222; }
   .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-title {
+    color: #fff; }
+  [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-title {
     border-bottom: 1px solid #555;
-    color: #fff;
     background: #3c3b3b; }
   .trumbowyg-dark .trumbowyg-modal-box label {
     display: block;
     position: relative;
-    margin: 15px 12px;
     height: 27px;
     line-height: 27px;
     overflow: hidden; }
+  [dir] .trumbowyg-dark .trumbowyg-modal-box label {
+    margin: 15px 12px; }
     .trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span {
-      color: #eee;
+      color: #eee; }
+    [dir] .trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span {
       background-color: #2f2f2f;
       border-color: #222; }
     .trumbowyg-dark .trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
       color: #e74c3c; }
-    .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error input,
-    .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error textarea {
+    [dir] .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error input, [dir] .trumbowyg-dark .trumbowyg-modal-box label.trumbowyg-input-error textarea {
       border-color: #e74c3c; }
     .trumbowyg-dark .trumbowyg-modal-box label input {
+      color: #eee; }
+    [dir] .trumbowyg-dark .trumbowyg-modal-box label input {
       border-color: #222;
-      color: #eee;
       background: #333; }
-      .trumbowyg-dark .trumbowyg-modal-box label input:hover, .trumbowyg-dark .trumbowyg-modal-box label input:focus {
+      [dir] .trumbowyg-dark .trumbowyg-modal-box label input:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box label input:focus {
         border-color: #626262; }
-      .trumbowyg-dark .trumbowyg-modal-box label input:focus {
+      [dir] .trumbowyg-dark .trumbowyg-modal-box label input:focus {
         background-color: #2f2f2f; }
-  .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+  [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
     background: #1b7943; }
-    .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+    [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
       background: #25a25a; }
-    .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
+    [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
       background: #176437; }
   .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
-    background: #333;
     color: #ccc; }
-    .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+  [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+    background: #333; }
+    [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
       background: #444; }
-    .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
+    [dir] .trumbowyg-dark .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
       background: #111; }
 
-.trumbowyg-dark .trumbowyg-overlay {
+[dir] .trumbowyg-dark .trumbowyg-overlay {
   background-color: rgba(15, 15, 15, 0.6); }
 
 .trumbowyg-dropdown-foreColor,
 .trumbowyg-dropdown-backColor {
-  width: 276px;
+  width: 276px; }
+
+[dir] .trumbowyg-dropdown-foreColor, [dir] .trumbowyg-dropdown-backColor {
   padding: 7px 5px; }
   .trumbowyg-dropdown-foreColor svg,
   .trumbowyg-dropdown-backColor svg {
@@ -602,13 +720,17 @@ body.trumbowyg-body-fullscreen {
   .trumbowyg-dropdown-backColor button {
     display: block;
     position: relative;
-    float: left;
     text-indent: -9999px;
     height: 20px;
-    width: 20px;
+    width: 20px; }
+  [dir] .trumbowyg-dropdown-foreColor button, [dir] .trumbowyg-dropdown-backColor button {
     border: 1px solid #333;
     padding: 0;
     margin: 2px; }
+  [dir=ltr] .trumbowyg-dropdown-foreColor button, [dir=ltr] .trumbowyg-dropdown-backColor button {
+  float: left; }
+  [dir=rtl] .trumbowyg-dropdown-foreColor button, [dir=rtl] .trumbowyg-dropdown-backColor button {
+    float: right; }
     .trumbowyg-dropdown-foreColor button:hover::after, .trumbowyg-dropdown-foreColor button:focus::after,
     .trumbowyg-dropdown-backColor button:hover::after,
     .trumbowyg-dropdown-backColor button:focus::after {
@@ -616,20 +738,29 @@ body.trumbowyg-body-fullscreen {
       display: block;
       position: absolute;
       top: -5px;
-      left: -5px;
       height: 27px;
       width: 27px;
+      z-index: 10; }
+    [dir] .trumbowyg-dropdown-foreColor button:hover::after, [dir] .trumbowyg-dropdown-foreColor button:focus::after, [dir] .trumbowyg-dropdown-backColor button:hover::after, [dir] .trumbowyg-dropdown-backColor button:focus::after {
       background: inherit;
       border: 1px solid #FFF;
-      box-shadow: #000 0 0 2px;
-      z-index: 10; }
+      box-shadow: #000 0 0 2px; }
+    [dir=ltr] .trumbowyg-dropdown-foreColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-foreColor button:focus::after, [dir=ltr] .trumbowyg-dropdown-backColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-backColor button:focus::after {
+  left: -5px; }
+    [dir=rtl] .trumbowyg-dropdown-foreColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor button:focus::after {
+      right: -5px; }
 
 .trumbowyg-dropdown-emoji {
   width: 265px;
-  padding: 7px 0 7px 5px;
   height: 200px;
   overflow-y: scroll;
   overflow-x: hidden; }
+
+[dir=ltr] .trumbowyg-dropdown-emoji {
+  padding: 7px 0 7px 5px; }
+
+[dir=rtl] .trumbowyg-dropdown-emoji {
+  padding: 7px 5px 7px 0; }
 
 .trumbowyg-dropdown-emoji svg {
   display: none !important; }
@@ -637,36 +768,48 @@ body.trumbowyg-body-fullscreen {
 .trumbowyg-dropdown-emoji button {
   display: block;
   position: relative;
-  float: left;
   height: 26px;
   width: 26px;
+  line-height: 24px; }
+
+[dir] .trumbowyg-dropdown-emoji button {
   padding: 0;
   margin: 2px;
-  line-height: 24px;
   text-align: center; }
+
+[dir=ltr] .trumbowyg-dropdown-emoji button {
+  float: left; }
+
+[dir=rtl] .trumbowyg-dropdown-emoji button {
+  float: right; }
   .trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
     display: block;
     position: absolute;
     top: -5px;
-    left: -5px;
     height: 27px;
     width: 27px;
+    z-index: 10; }
+  [dir] .trumbowyg-dropdown-emoji button:hover::after, [dir] .trumbowyg-dropdown-emoji button:focus::after {
     background: inherit;
     box-shadow: #000 0 0 2px;
-    z-index: 10;
     background-color: transparent; }
+  [dir=ltr] .trumbowyg-dropdown-emoji button:hover::after, [dir=ltr] .trumbowyg-dropdown-emoji button:focus::after {
+  left: -5px; }
+  [dir=rtl] .trumbowyg-dropdown-emoji button:hover::after, [dir=rtl] .trumbowyg-dropdown-emoji button:focus::after {
+    right: -5px; }
 
 .trumbowyg .emoji {
   width: 22px;
   height: 22px;
   display: inline-block; }
 
-.trumbowyg-highlight-form-group {
+[dir] .trumbowyg-highlight-form-group {
   margin: 15px 10px; }
   .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
     width: 100%;
+    font-size: 14px; }
+  [dir] .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
     border: 1px solid #DEDEDE;
-    font-size: 14px;
     padding: 7px; }
     .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
       height: 200px; }
@@ -682,13 +825,18 @@ body.trumbowyg-body-fullscreen {
       content: '\270E';
       pointer-events: auto;
       position: absolute;
-      left: 0px;
       top: 0px;
+      bottom: 0px; }
+    [dir] .mathMlContainer:hover:after {
       background-color: #ffffffd4;
       cursor: pointer;
-      bottom: 0px;
-      right: 0px;
       box-shadow: 0 0 5px 5px #ffffffd4; }
+    [dir=ltr] .mathMlContainer:hover:after {
+  left: 0px;
+  right: 0px; }
+    [dir=rtl] .mathMlContainer:hover:after {
+      right: 0px;
+      left: 0px; }
 
 .trumbowyg-dropdown-mention {
   height: calc(75%);
@@ -705,32 +853,41 @@ body.trumbowyg-body-fullscreen {
       content: "";
       position: absolute;
       top: 0;
-      right: 0;
       width: 15%;
       height: 100%;
-      background-size: 100%;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
       pointer-events: none; }
+    [dir] .trumbowyg-dropdown-mention button:after {
+      background-size: 100%; }
+    [dir=ltr] .trumbowyg-dropdown-mention button:after {
+  right: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
+    [dir=rtl] .trumbowyg-dropdown-mention button:after {
+      left: 0;
+      background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
 
 .trumbowyg-editor table {
   width: 100%; }
-  .trumbowyg-editor table td {
+  [dir] .trumbowyg-editor table td {
     border: 1px dotted #e7eaec;
     padding: 8px; }
 
 .trumbowyg-dropdown-table table {
-  margin: 10px;
   display: inline-block; }
+
+[dir] .trumbowyg-dropdown-table table {
+  margin: 10px; }
 
 .trumbowyg-dropdown-table table td {
   display: inline-block;
   height: 20px;
-  width: 20px;
+  width: 20px; }
+
+[dir] .trumbowyg-dropdown-table table td {
   margin: 1px;
   padding: 0;
   background-color: #fff;
   box-shadow: 0 0 0 1px #cecece inset; }
-  .trumbowyg-dropdown-table table td.active {
+  [dir] .trumbowyg-dropdown-table table td.active {
     background-color: #00b393;
     box-shadow: none;
     cursor: pointer; }
