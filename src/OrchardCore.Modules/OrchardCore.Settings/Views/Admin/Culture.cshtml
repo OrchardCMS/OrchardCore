@@ -3,7 +3,7 @@
 
 <h1>@RenderTitleSegments(T["Settings"])</h1>
 
-<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })&nbsp;@T["&#62;"]&nbsp;@T["Supported Cultures"]</p>
+<p class="breadcrumb"><a href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })">@T["Manage Settings"]</a>&nbsp;@T["&#62;"]&nbsp;@T["Supported Cultures"]</p>
 <h3>@T["Available Cultures"]</h3>
 
 <form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
