@@ -121,23 +121,31 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IFileVersionHashProvider, DefaultFileVersionHashProvider>();
             });
 
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IFileProvider>(serviceProvider => {
+                    var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
+                    var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+                    
+                    IFileProvider fileProvider;
+                    if (env.IsDevelopment())
+                    {
+                        var fileProviders = new List<IFileProvider>();
+                        fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
+                        fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
+                        fileProvider = new CompositeFileProvider(fileProviders);
+                    }
+                    else
+                    {
+                        fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
+                    }
+                    return fileProvider;
+                });
+            });
+
             builder.Configure((app, routes, serviceProvider) =>
             {
-                var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
-                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
-
-                IFileProvider fileProvider;
-                if (env.IsDevelopment())
-                {
-                    var fileProviders = new List<IFileProvider>();
-                    fileProviders.Add(new ModuleProjectStaticFileProvider(appContext));
-                    fileProviders.Add(new ModuleEmbeddedStaticFileProvider(appContext));
-                    fileProvider = new CompositeFileProvider(fileProviders);
-                }
-                else
-                {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
-                }
+                var fileProvider = serviceProvider.GetRequiredService<IFileProvider>();
 
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -17,6 +18,7 @@ namespace OrchardCore.ResourceManagement
         public ResourceLocation Location { get; set; }
         public string Condition { get; set; }
         public string Version { get; set; }
+        public bool? AppendVersion { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
         public Dictionary<string, string> Attributes
         {
@@ -121,6 +123,12 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public RequireSettings SetAppendVersion(bool? appendVersion)
+        {
+            AppendVersion = appendVersion;
+            return this;
+        }
+
         public RequireSettings Define(Action<ResourceDefinition> resourceDefinition)
         {
             if (resourceDefinition != null)
@@ -177,7 +185,7 @@ namespace OrchardCore.ResourceManagement
             var settings = (new RequireSettings
             {
                 Name = Name,
-                Type = Type
+                Type = Type,
             }).AtLocation(Location).AtLocation(other.Location)
                 .WithBasePath(BasePath).WithBasePath(other.BasePath)
                 .UseCdn(CdnMode).UseCdn(other.CdnMode)
@@ -185,6 +193,7 @@ namespace OrchardCore.ResourceManagement
                 .UseCulture(Culture).UseCulture(other.Culture)
                 .UseCondition(Condition).UseCondition(other.Condition)
                 .UseVersion(Version).UseVersion(other.Version)
+                .SetAppendVersion(AppendVersion).SetAppendVersion(other.AppendVersion)
                 .Define(InlineDefinition).Define(other.InlineDefinition);
             settings._attributes = MergeAttributes(other);
             return settings;
