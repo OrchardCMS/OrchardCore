@@ -63,4 +63,5 @@
     </table>
 </fieldset>
 
-@Html.ActionLink(T["Close"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" }, new { @class = "btn btn-primary" })
+<a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })">@T["Close"]</a>
+
