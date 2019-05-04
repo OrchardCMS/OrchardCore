@@ -102,7 +102,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             });
 
-            return Task.FromResult<dynamic>(contentTypeDefinitionShape);
+            return contentTypeDefinitionShape;
         }
 
         public async Task<dynamic> BuildPartEditorAsync(ContentPartDefinition contentPartDefinition, IUpdateModel updater, string groupId)
@@ -225,7 +225,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             });
 
-            return Task.FromResult<dynamic>(typePartDefinitionShape);
+            return typePartDefinitionShape;
         }
 
         public async Task<dynamic> BuildPartFieldEditorAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater, string groupId = "")
@@ -289,7 +289,7 @@ namespace OrchardCore.ContentTypes.Editors
                 });
             });
 
-            return Task.FromResult<dynamic>(partFieldDefinitionShape);
+            return partFieldDefinitionShape;
         }
     }
 }

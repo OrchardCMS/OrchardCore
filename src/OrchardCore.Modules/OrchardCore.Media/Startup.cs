@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Fluid;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,17 +13,20 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
+using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -80,11 +84,15 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
 
-                // 'PathBase' includes the 'RequestUrlPrefix' and may start by a virtual folder.
-                var mediaUrlBase = pathBase.Add(AssetsUrlPrefix);
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                if (originalPathBase.HasValue)
+                {
+                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                }
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
@@ -92,6 +100,7 @@ namespace OrchardCore.Media
             services.AddSingleton<IMediaFileStoreVersionProvider, MediaFileStoreVersionProvider>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImageMediaPart>();
@@ -147,6 +156,9 @@ namespace OrchardCore.Media
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+            services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
+            services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
+            services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 

@@ -55,11 +55,30 @@
     <fieldset class="form-group col-xl-6" asp-validation-class-for="Culture">
         <label asp-for="Culture">@T["Default Culture"]</label>
         <select asp-for="Culture" class="form-control">
-            <option value="">@T["System ({0} | {1})", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</option>
+            @if (!String.IsNullOrWhiteSpace(CultureInfo.InstalledUICulture.Name))
+            {
+                <option value="">@T["System ({0} | {1})", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</option>
+            }
+            else
+            {
+                <option value="">@T["System ({0})", !String.IsNullOrEmpty(CultureInfo.InstalledUICulture.DisplayName) ? CultureInfo.InstalledUICulture.DisplayName : CultureInfo.InstalledUICulture.NativeName]</option>
+            }
+
             @foreach (var culture in Model.SiteCultures)
             {
-                <option value="@culture" selected="@String.Equals(Model.Culture, culture.Name, StringComparison.OrdinalIgnoreCase)">
-                    @culture.Name | @culture.DisplayName
+                <option value="@if (!String.IsNullOrEmpty(culture.Name)) { @culture.Name } else { @culture.LCID }" selected="@String.Equals(Model.Culture, culture.Name, StringComparison.OrdinalIgnoreCase)">
+                    @if (!String.IsNullOrWhiteSpace(culture.Name))
+                    {
+                        @culture.Name <text> | </text>
+                    }
+                    @if (!String.IsNullOrWhiteSpace(culture.DisplayName))
+                    {
+                        @culture.DisplayName
+                    }
+                    else
+                    {
+                        @culture.NativeName
+                    }
                 </option>
             }
         </select>
