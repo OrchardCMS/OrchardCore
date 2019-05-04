@@ -84,6 +84,11 @@ namespace OrchardCore.Settings.Controllers
 
             if (ModelState.IsValid)
             {
+                if (site.Culture == CultureInfo.InvariantCulture.LCID.ToString())
+                {
+                    site.Culture = "";
+                }
+
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 _notifier.Success(H["Site settings updated successfully."]);
@@ -109,7 +114,7 @@ namespace OrchardCore.Settings.Controllers
                 SiteCultures = siteSettings.SupportedCultures
             };
 
-            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(c => c.Name != String.Empty)
+            model.AvailableSystemCultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Select(ci => CultureInfo.GetCultureInfo(ci.Name))
                 .Where(s => !model.SiteCultures.Contains(s.Name));
 
@@ -124,12 +129,20 @@ namespace OrchardCore.Settings.Controllers
                 return Unauthorized();
             }
 
-            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName : cultureName;
+            cultureName = String.IsNullOrWhiteSpace(cultureName) ? systemCultureName ?? String.Empty : cultureName;
 
             if (!String.IsNullOrWhiteSpace(cultureName) && Regex.IsMatch(cultureName, "^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$"))
             {
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
-                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
+                await _siteService.UpdateSiteSettingsAsync(siteSettings);
+
+                _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
+            }
+            else if (String.IsNullOrWhiteSpace(cultureName))
+            {
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                siteSettings.SupportedCultures = siteSettings.SupportedCultures.Union(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).Distinct().ToArray();
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
                 _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);
@@ -151,7 +164,7 @@ namespace OrchardCore.Settings.Controllers
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName }, StringComparer.OrdinalIgnoreCase).ToArray();
+            siteSettings.SupportedCultures = siteSettings.SupportedCultures.Except(new[] { cultureName ?? String.Empty }, StringComparer.OrdinalIgnoreCase).ToArray();
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             _notifier.Warning(H["The site needs to be restarted for the settings to take effect"]);

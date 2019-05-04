@@ -4,7 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -22,15 +25,21 @@ namespace OrchardCore.Users.Services
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
+        private readonly ILogger _logger;
 
         public UserStore(ISession session,
             IRoleService roleService,
-            ILookupNormalizer keyNormalizer)
+            ILookupNormalizer keyNormalizer,
+            ILogger<UserStore> logger,
+            IEnumerable<IUserCreatedEventHandler> handlers)
         {
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
+            _logger = logger;
+            Handlers = handlers;
         }
+        public IEnumerable<IUserCreatedEventHandler> Handlers { get; private set; }
 
         public void Dispose()
         {
@@ -54,6 +63,9 @@ namespace OrchardCore.Users.Services
             try
             {
                 await _session.CommitAsync();
+
+                var context = new CreateUserContext(user);
+                await Handlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
             }
             catch
             {
@@ -315,7 +327,7 @@ namespace OrchardCore.Users.Services
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
-            
+
             ((User)user).RoleNames.Add(roleName);
         }
 
@@ -387,7 +399,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(login));
             }
 
-            if (((User)user).LoginInfos.Any(i=>i.LoginProvider == login.LoginProvider))
+            if (((User)user).LoginInfos.Any(i => i.LoginProvider == login.LoginProvider))
                 throw new InvalidOperationException($"Provider {login.LoginProvider} is already linked for {user.UserName}");
 
             ((User)user).LoginInfos.Add(login);

@@ -88,7 +88,7 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-
+            
             return user;
         }
 

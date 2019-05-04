@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules
 {
@@ -43,7 +43,7 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("Begin Routing Request");
             }
 
-            var shellContext = httpContext.Features.Get<ShellContext>();
+            var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.

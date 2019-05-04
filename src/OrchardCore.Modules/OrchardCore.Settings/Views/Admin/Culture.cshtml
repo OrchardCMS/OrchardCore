@@ -3,7 +3,7 @@
 
 <h1>@RenderTitleSegments(T["Settings"])</h1>
 
-<p class="breadcrumb">@Html.ActionLink(T["Manage Settings"].Value, "Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })&nbsp;@T["&#62;"]&nbsp;@T["Supported Cultures"]</p>
+<p class="breadcrumb"><a href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })">@T["Manage Settings"]</a>&nbsp;@T["&#62;"]&nbsp;@T["Supported Cultures"]</p>
 <h3>@T["Available Cultures"]</h3>
 
 <form asp-action="AddCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
@@ -15,7 +15,18 @@
                     @foreach (var culture in Model.AvailableSystemCultures.OrderBy(s => s.Name))
                     {
                         <option value="@culture.Name" selected="@String.Equals(Model.CurrentCulture, culture.Name, StringComparison.OrdinalIgnoreCase)">
-                            @culture.Name | @culture.DisplayName
+                            @if (!String.IsNullOrWhiteSpace(culture.Name))
+                            {
+                                @culture.Name <text> | </text>
+                            }
+                            @if (!String.IsNullOrWhiteSpace(culture.DisplayName))
+                            {
+                                @culture.DisplayName
+                            }
+                            else
+                            {
+                                @culture.NativeName
+                            }
                         </option>
                     }
                 </select>
@@ -44,7 +55,6 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach (var contentItem in Model.SiteCultures.OrderBy(s => s))
             {
                 @Html.DisplayFor(scvm => contentItem, contentItem == Model.CurrentCulture ? "CurrentCulture" : "RemovableCulture", "")
@@ -52,4 +62,6 @@
         </tbody>
     </table>
 </fieldset>
+
+<a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })">@T["Close"]</a>
 
