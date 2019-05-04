@@ -80,14 +80,14 @@ namespace OrchardCore.Media.Filters
         }
     }
 
-    public class MediaAppendVersionFilter : ILiquidFilter
+    public class AppendVersionFilter : ILiquidFilter
     {
         private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private string _pathBase;
 
-        public MediaAppendVersionFilter(
+        public AppendVersionFilter(
             IFileVersionProvider fileVersionProvider,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -101,6 +101,7 @@ namespace OrchardCore.Media.Filters
 
             if (String.IsNullOrEmpty(_pathBase))
             {
+                //for media we must append Startup.AssetsUrlPrefix to pathBase or IFileVersionProvider will not find it
                 _pathBase = String.Concat(_httpContextAccessor.HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
             }
 

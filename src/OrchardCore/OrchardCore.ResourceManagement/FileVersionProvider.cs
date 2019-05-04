@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
-//using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 
 
@@ -24,24 +24,28 @@ namespace OrchardCore.ResourceManagement
         private readonly IFileProvider _webRootfileProvider;
 
         private IList<IFileProvider> _combinedFileProviders;
-        //private readonly IMemoryCache _tenantCache;
+        private readonly IMemoryCache _cache;
         public FileVersionProvider(
             IEnumerable<IFileProvider> registeredFileProviders,
-            IHostingEnvironment environment
-            //,
-            //IMemoryCache tenantCache
+            IHostingEnvironment environment,
+            IMemoryCache cache
             )
         {
             _registeredFileProviders = registeredFileProviders;
             _webRootfileProvider = environment.WebRootFileProvider;
-            //_tenantCache = tenantCache;
+            _cache = cache;
         }
 
 
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
-            //build _combinedFileProviders if required
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            //build _combinedFileProviders if has not been built
             if (_combinedFileProviders == null)
             {
                 _combinedFileProviders = _registeredFileProviders.ToList();
@@ -49,11 +53,6 @@ namespace OrchardCore.ResourceManagement
                 {
                     _combinedFileProviders.Add(_webRootfileProvider);
                 }
-            }
-
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
             }
 
             var resolvedPath = path;
@@ -71,15 +70,15 @@ namespace OrchardCore.ResourceManagement
                 return path;
             }
 
-            //if (Cache.TryGetValue(path, out string value))
-            //{
-            //    return value;
-            //}
-            string value = path;
-            //var cacheEntryOptions = new MemoryCacheEntryOptions();
-            //cacheEntryOptions.AddExpirationToken(FileProvider.Watch(resolvedPath));
+            if (_cache.TryGetValue(path, out string value))
+            {
+                return value;
+            }
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions();
             foreach (var fileProvider in _combinedFileProviders)
             {
+                cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
                 if (!fileInfo.Exists &&
@@ -87,23 +86,23 @@ namespace OrchardCore.ResourceManagement
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     var requestPathBaseRelativePath = resolvedPath.Substring(requestPathBase.Value.Length);
-                    //cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
+                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
                     fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
                 }
                 if (fileInfo.Exists)
                 {
                     value = QueryHelpers.AddQueryString(path, VersionKey, GetHashForFile(fileInfo));
-                    //cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                    //value = _tagHelperCache.Set(path, value, cacheEntryOptions);
+                    cacheEntryOptions.SetSize(value.Length * sizeof(char));
+                    value = _cache.Set(path, value, cacheEntryOptions);
                     return value;
                 }
             }
 
-                // if the file is not in the current server, set cache so no further checks are done.
-                value = path;
-                //cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                //value = _tagHelperCache.Set(path, value, cacheEntryOptions);
-         
+            // if the file is not in the current server, set cache so no further checks are done.
+            value = path;
+            cacheEntryOptions.SetSize(value.Length * sizeof(char));
+            value = _cache.Set(path, value, cacheEntryOptions);
+
             return value;
         }
 

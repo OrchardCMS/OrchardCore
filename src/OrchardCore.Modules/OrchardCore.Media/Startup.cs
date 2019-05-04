@@ -126,7 +126,7 @@ namespace OrchardCore.Media
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
             services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
             services.AddLiquidFilter<ImageTagFilter>("img_tag");
-            services.AddLiquidFilter<MediaAppendVersionFilter>("append_version");
+            services.AddLiquidFilter<AppendVersionFilter>("append_version");
 
             // ImageSharp
 
