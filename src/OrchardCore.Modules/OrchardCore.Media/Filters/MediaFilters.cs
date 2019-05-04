@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.Liquid;
@@ -82,11 +83,16 @@ namespace OrchardCore.Media.Filters
     public class MediaAppendVersionFilter : ILiquidFilter
     {
         private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         private string _pathBase;
 
-        public MediaAppendVersionFilter(IFileVersionProvider fileVersionProvider)
+        public MediaAppendVersionFilter(
+            IFileVersionProvider fileVersionProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _fileVersionProvider = fileVersionProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
@@ -95,12 +101,9 @@ namespace OrchardCore.Media.Filters
 
             if (String.IsNullOrEmpty(_pathBase))
             {
-                if (!ctx.AmbientValues.TryGetValue("ViewContext", out var viewContext))
-                {
-                    throw new ArgumentException("ViewContext missing while invoking 'append_version'");
-                }
-                _pathBase = String.Concat(((ViewContext)viewContext).HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
+                _pathBase = String.Concat(_httpContextAccessor.HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
             }
+
             var imageUrl = _fileVersionProvider.AddFileVersionToPath(_pathBase, url);
 
             return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
