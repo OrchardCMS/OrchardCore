@@ -167,6 +167,7 @@ namespace OrchardCore.Media
             .AddProvider<MediaFileImageProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
+            .AddProcessor<ImageVersionProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
