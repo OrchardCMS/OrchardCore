@@ -20,7 +20,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<TwitterOptions>
     {
-        private readonly ITwitterService _twitterService;
+        private readonly ITwitterSettingsService _twitterService;
         private readonly ITwitterSigninService _twitterSigninService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<TwitterOptionsConfiguration> _logger;
@@ -28,7 +28,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
 
 
         public TwitterOptionsConfiguration(
-            ITwitterService twitterService,
+            ITwitterSettingsService twitterService,
             ITwitterSigninService twitterSigninService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<TwitterOptionsConfiguration> logger,

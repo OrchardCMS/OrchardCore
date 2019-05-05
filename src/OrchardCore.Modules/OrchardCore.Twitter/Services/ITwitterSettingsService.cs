@@ -5,7 +5,7 @@ using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
-    public interface ITwitterService
+    public interface ITwitterSettingsService
     {
         Task<TwitterSettings> GetSettingsAsync();
         Task UpdateSettingsAsync(TwitterSettings settings);

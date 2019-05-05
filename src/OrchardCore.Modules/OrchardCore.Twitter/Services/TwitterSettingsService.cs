@@ -13,16 +13,16 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
-    public class TwitterService : ITwitterService
+    public class TwitterSettingsService : ITwitterSettingsService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<TwitterService> T;
+        private readonly IStringLocalizer<TwitterSettingsService> T;
         private readonly ShellSettings _shellSettings;
 
-        public TwitterService(
+        public TwitterSettingsService(
             ISiteService siteService,
             ShellSettings shellSettings,
-            IStringLocalizer<TwitterService> stringLocalizer)
+            IStringLocalizer<TwitterSettingsService> stringLocalizer)
         {
             _shellSettings = shellSettings;
             _siteService = siteService;

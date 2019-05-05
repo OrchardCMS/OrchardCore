@@ -22,7 +22,7 @@ namespace OrchardCore.Twitter.Drivers
         private readonly ShellSettings _shellSettings;
 
         public TwitterSettingsDisplayDriver(
-            ITwitterService twitterService,
+            ITwitterSettingsService twitterService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,

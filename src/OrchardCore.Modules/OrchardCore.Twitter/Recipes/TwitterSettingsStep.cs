@@ -12,9 +12,9 @@ namespace OrchardCore.Twitter.Recipes
     /// </summary>
     public class TwitterSettingsStep : IRecipeStepHandler
     {
-        private readonly ITwitterService _twitterService;
+        private readonly ITwitterSettingsService _twitterService;
 
-        public TwitterSettingsStep(ITwitterService twitterService)
+        public TwitterSettingsStep(ITwitterSettingsService twitterService)
         {
             _twitterService = twitterService;
         }
