@@ -156,7 +156,7 @@ Alternatively the Asset Url can be resolved independently and the `src` attribut
 
 When using the MVC tag helpers and image is resolved from static assets, i.e. wwwroot
 
-`<img src="favicon.ico" asp-append-version="true"/>`
+`<img src="/favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
