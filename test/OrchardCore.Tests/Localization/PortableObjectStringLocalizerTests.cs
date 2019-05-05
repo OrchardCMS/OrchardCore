@@ -252,8 +252,9 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("ar", new CultureDictionaryRecord[] {
                 new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })
             }, _arPluralRule);
+            SetupDictionary("ar-YE", new CultureDictionaryRecord[] { }, _arPluralRule);
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, fallBackToParentCulture, _logger.Object);
-            CultureInfo.CurrentUICulture = new CultureInfo("ar-Ye");
+            CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
             var translation = localizer[resourceKey];
 
             Assert.Equal(expected, translation);
