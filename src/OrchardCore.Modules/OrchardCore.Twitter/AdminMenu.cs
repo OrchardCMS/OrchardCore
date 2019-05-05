@@ -8,6 +8,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter
 {
+    [Feature(TwitterConstants.Features.Twitter)]
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
@@ -60,7 +61,7 @@ namespace OrchardCore.Twitter
             {
                 builder.Add(T["Twitter"], "15", settings => settings
                         .AddClass("twitter").Id("twitter")                        
-                        .Add(T["Sign in with Twitter"], "10", client => client
+                        .Add(T["Sign in with Twitter"], "15", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
                             .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav())

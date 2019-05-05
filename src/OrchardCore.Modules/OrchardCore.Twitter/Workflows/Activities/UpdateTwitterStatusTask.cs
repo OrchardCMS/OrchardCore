@@ -49,7 +49,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(T["Done"], T["Failed"]);
         }
 
         // This is the heart of the activity and actually performs the work to be done.
@@ -59,13 +59,14 @@ namespace OrchardCore.Twitter.Workflows.Activities
             var outcome = string.IsNullOrWhiteSpace(status) ? "Invalid" : "Valid";
 
             var result = await _twitterClient.UpdateStatus(status);
+            workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
+
             if (!result.IsSuccessStatusCode)
             {
-                workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
-                outcome = "Invalid";
+                return Outcomes("Failed");
             }
 
-            return Outcomes("Done", outcome);
+            return Outcomes("Done");
         }
     }
 }

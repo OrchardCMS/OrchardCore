@@ -24,21 +24,14 @@ namespace OrchardCore.Twitter.Services
     {
         private readonly HttpClient _client;
         private readonly ILogger<TwitterClient> _logger;
-        private readonly IClock _clock;
-        private readonly ISiteService _siteService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
 
-
-        public TwitterClient(HttpClient client, IClock clock, ILogger<TwitterClient> logger, ISiteService siteService, IDataProtectionProvider dataProtectionProvider)
+        public TwitterClient(HttpClient client, ILogger<TwitterClient> logger)
         {
             _client = client;
             _client.BaseAddress = new Uri($"https://api.twitter.com");
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _clock = clock;
-            _siteService = siteService;
             _logger = logger;
-            _dataProtectionProvider = dataProtectionProvider;
         }
 
         public async Task<HttpResponseMessage> UpdateStatus(string status, params string[] optionalParameters)
@@ -49,17 +42,21 @@ namespace OrchardCore.Twitter.Services
                 parameters.Add("status", status);
                 if (optionalParameters is object)
                 {
-                    for (int i = 0; i < optionalParameters.Length; i += 2)
+                    for (int i = 0; i < optionalParameters.Length; i++)
                     {
-                        parameters.Add(optionalParameters[i], optionalParameters[i + 1]);
+                        var optionalParameter = optionalParameters[i];
+                        var parts = optionalParameter.Split('=');
+                        if (parts.Length != 2)
+                        {
+                            _logger.LogWarning("Parameter {optionalParameter} ignored, has wrong format", optionalParameter);
+                            continue;
+                        }
+                        parameters.Add(parts[0], parts[1]);
                     }
                 }
 
                 var content = new FormUrlEncodedContent(parameters);
                 var uri = new Uri($"/1.1/statuses/update.json", UriKind.Relative);
-
-                var oauthHeader = await GetOauthHeader("POST", uri, parameters);
-                content.Headers.Add("Authentication", oauthHeader);
                 var response = await _client.PostAsync(uri, content);
                 return response;
             }
@@ -70,60 +67,60 @@ namespace OrchardCore.Twitter.Services
             }
         }
 
-        public virtual string GetNonce()
-        {
-            return Convert.ToBase64String(new ASCIIEncoding().GetBytes(_clock.UtcNow.Ticks.ToString()));
-        }
+        //public virtual string GetNonce()
+        //{
+        //    return Convert.ToBase64String(new ASCIIEncoding().GetBytes(_clock.UtcNow.Ticks.ToString()));
+        //}
 
-        public async Task<string> GetOauthHeader(string method, Uri uri, IEnumerable<KeyValuePair<string, string>> parameters)
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            var settings = container.As<TwitterSettings>();
-            var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+        //public async Task<string> GetOauthHeader(string method, Uri uri, IEnumerable<KeyValuePair<string, string>> parameters)
+        //{
+        //    var container = await _siteService.GetSiteSettingsAsync();
+        //    var settings = container.As<TwitterSettings>();
+        //    var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-                settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-                settings.AccessTokenSecret= protrector.Unprotect(settings.AccessTokenSecret);
+        //    if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+        //        settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
+        //    if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+        //        settings.AccessTokenSecret= protrector.Unprotect(settings.AccessTokenSecret);
 
-            var nonce = GetNonce();
-            var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
-            var sortedParameters = new SortedDictionary<string, string>();
+        //    var nonce = GetNonce();
+        //    var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
+        //    var sortedParameters = new SortedDictionary<string, string>();
 
-            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(settings.ConsumerKey));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(settings.AccessToken));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(settings.ConsumerKey));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(settings.AccessToken));
+        //    sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
 
-            foreach (var item in parameters)
-            {
-                sortedParameters.Add(Uri.EscapeDataString(item.Key), Uri.EscapeDataString(item.Value));
-            }
+        //    foreach (var item in parameters)
+        //    {
+        //        sortedParameters.Add(Uri.EscapeDataString(item.Key), Uri.EscapeDataString(item.Value));
+        //    }
 
-            var baseString = string.Concat(method.ToUpperInvariant(), "&",
-                Uri.EscapeDataString(new Uri(_client.BaseAddress, uri).ToString()), "&",
-                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
+        //    var baseString = string.Concat(method.ToUpperInvariant(), "&",
+        //        Uri.EscapeDataString(new Uri(_client.BaseAddress, uri).ToString()), "&",
+        //        Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = string.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
-            string signature;
-            using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
-            {
-                signature = Convert.ToBase64String(hasher.ComputeHash(ASCIIEncoding.ASCII.GetBytes(baseString)));
-            }
+        //    var secret = string.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
+        //    string signature;
+        //    using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
+        //    {
+        //        signature = Convert.ToBase64String(hasher.ComputeHash(ASCIIEncoding.ASCII.GetBytes(baseString)));
+        //    }
 
-            var sb = new StringBuilder("OAuth ");
-            sb.Append($"oauth_consumer_key=\"{Uri.EscapeDataString(settings.ConsumerKey)}\", ");
-            sb.Append($"oauth_nonce=\"{Uri.EscapeDataString(nonce)}\", ");
-            sb.Append($"oauth_signature=\"{Uri.EscapeDataString(signature)}\", ");
-            sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
-            sb.Append($"oauth_timestamp=\"{Uri.EscapeDataString(timeStamp)}\", ");
-            sb.Append($"oauth_token=\"{Uri.EscapeDataString(settings.AccessToken)}\", ");
-            sb.Append($"oauth_version=\"{Uri.EscapeDataString("1.0")}\"");
+        //    var sb = new StringBuilder("OAuth ");
+        //    sb.Append($"oauth_consumer_key=\"{Uri.EscapeDataString(settings.ConsumerKey)}\", ");
+        //    sb.Append($"oauth_nonce=\"{Uri.EscapeDataString(nonce)}\", ");
+        //    sb.Append($"oauth_signature=\"{Uri.EscapeDataString(signature)}\", ");
+        //    sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
+        //    sb.Append($"oauth_timestamp=\"{Uri.EscapeDataString(timeStamp)}\", ");
+        //    sb.Append($"oauth_token=\"{Uri.EscapeDataString(settings.AccessToken)}\", ");
+        //    sb.Append($"oauth_version=\"{Uri.EscapeDataString("1.0")}\"");
 
-            return sb.ToString();
-        }
+        //    return sb.ToString();
+        //}
 
     }
 }

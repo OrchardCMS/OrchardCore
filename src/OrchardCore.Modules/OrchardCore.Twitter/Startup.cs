@@ -20,15 +20,27 @@ using Polly;
 
 namespace OrchardCore.Twitter
 {
-    public class Startup : StartupBase
+    public class ModuleStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
+        }
+    }
+
+    [Feature(TwitterConstants.Features.Twitter)]
+    public class TwitterStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterService, TwitterService>();
+
+            services.AddTransient<TwitterClientMessageHandler>();
+
             services.AddHttpClient<TwitterClient>()
+                .AddHttpMessageHandler<TwitterClientMessageHandler>()
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
         }
 
@@ -39,10 +51,11 @@ namespace OrchardCore.Twitter
     }
 
     [Feature(TwitterConstants.Features.Signin)]
-    public class TwitterLoginStartup : StartupBase
+    public class TwitterSigninStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INavigationProvider, AdminMenuSignin>();
             services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
             services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
             // Register the options initializers required by the Twitter Handler.
