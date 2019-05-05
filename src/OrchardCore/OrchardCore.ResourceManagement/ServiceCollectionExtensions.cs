@@ -12,12 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddResourceManagement(this IServiceCollection services)
         {
-            var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IFileVersionProvider));
-            if (serviceDescriptor != null)
-            {
-                services.Remove(serviceDescriptor);
-            }
-            services.TryAddScoped<IFileVersionProvider, FileVersionProvider>();
+            services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, FileVersionProvider>());
             services.TryAddScoped<IResourceManager, ResourceManager>();
             services.TryAddSingleton<IResourceManifestState, ResourceManifestState>();
 
