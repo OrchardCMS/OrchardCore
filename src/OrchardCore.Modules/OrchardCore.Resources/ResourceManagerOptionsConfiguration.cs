@@ -36,6 +36,8 @@ namespace OrchardCore.Resources
             }
 
             options.UseCdn = settings.UseCdn;
+
+            options.CdnBaseUrl = settings.CdnBaseUrl;
         }
     }
 }

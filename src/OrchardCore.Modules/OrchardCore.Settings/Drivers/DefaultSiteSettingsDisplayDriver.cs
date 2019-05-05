@@ -42,6 +42,7 @@ namespace OrchardCore.Settings.Drivers
                         model.Culture = site.Culture;
                         model.SiteCultures = site.SupportedCultures.Select(x => CultureInfo.GetCultureInfo(x));
                         model.UseCdn = site.UseCdn;
+                        model.CdnBaseUrl = site.CdnBaseUrl;
                         model.ResourceDebugMode = site.ResourceDebugMode;
                     }).Location("Content:1").OnGroup(GroupId)
             );
@@ -60,6 +61,7 @@ namespace OrchardCore.Settings.Drivers
                     site.TimeZoneId = model.TimeZone;
                     site.Culture = model.Culture;
                     site.UseCdn = model.UseCdn;
+                    site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
                 }
 

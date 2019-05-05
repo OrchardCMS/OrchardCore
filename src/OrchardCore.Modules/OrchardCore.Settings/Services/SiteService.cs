@@ -102,6 +102,7 @@ namespace OrchardCore.Settings.Services
             existing.SuperUser = site.SuperUser;
             existing.TimeZoneId = site.TimeZoneId;
             existing.UseCdn = site.UseCdn;
+            existing.CdnBaseUrl = site.CdnBaseUrl;
 
             session.Save(existing);
 

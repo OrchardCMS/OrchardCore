@@ -24,6 +24,13 @@
     </div>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="CdnBaseUrl">
+        <label asp-for="CdnBaseUrl">@T["CDN Base url"]</label>
+        <input asp-for="CdnBaseUrl" class="form-control" />
+        <span asp-validation-for="CdnBaseUrl"></span>
+        <span class="hint">@T["A CDN Base url applied to locally hosted scripts and stylesheets, if empty no CDN Base url is applied, and is disabled in Resource Debug Mode"]</span>
+</fieldset>
+
 <div class="row">
     <fieldset class="from-group col-xl-6" asp-validation-class-for="ResourceDebugMode">
         <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
