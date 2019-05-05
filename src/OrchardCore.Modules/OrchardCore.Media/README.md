@@ -139,7 +139,9 @@ or with resizing options as well, noting that the version hash is based on the s
 
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. 
+
+`asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
 
 `<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
@@ -154,7 +156,7 @@ Alternatively the Asset Url can be resolved independently and the `src` attribut
 
 When using the MVC tag helpers and image is resolved from static assets, i.e. wwwroot
 
-`<img src="favicon.ico asp-append-version="true"/>`
+`<img src="favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
