@@ -75,7 +75,7 @@ namespace OrchardCore.Twitter.Services
                 }
             }
 
-            var contentString = WebUtility.UrlDecode(await request.Content.ReadAsStringAsync());
+            var contentString = await request.Content.ReadAsStringAsync();
 
             if (!string.IsNullOrEmpty(contentString))
             {
@@ -83,8 +83,8 @@ namespace OrchardCore.Twitter.Services
                 {
                     var parts = item.Split('=');
 
-                    var key = Uri.EscapeDataString(parts[0]);
-                    var value = Uri.EscapeDataString(parts[1]);
+                    var key = Uri.EscapeDataString(WebUtility.UrlDecode(parts[0]));
+                    var value = Uri.EscapeDataString(WebUtility.UrlDecode(parts[1]));
                     sortedParameters.Add(key, value);
                 }
             }

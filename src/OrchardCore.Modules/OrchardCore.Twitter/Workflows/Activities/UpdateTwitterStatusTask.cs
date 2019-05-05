@@ -56,7 +56,6 @@ namespace OrchardCore.Twitter.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext);
-            var outcome = string.IsNullOrWhiteSpace(status) ? "Invalid" : "Valid";
 
             var result = await _twitterClient.UpdateStatus(status);
             workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
