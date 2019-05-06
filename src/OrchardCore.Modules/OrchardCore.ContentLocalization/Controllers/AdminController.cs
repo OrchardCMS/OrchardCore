@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 
@@ -15,14 +17,21 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<AdminController> _localizer;
+        private readonly IAuthorizationService _authorizationService;
 
         public IHtmlLocalizer T { get; }
 
-        public AdminController(IContentManager contentManager, INotifier notifier, IContentLocalizationManager localizationManager, IHtmlLocalizer<AdminController> localizer)
+        public AdminController(
+            IContentManager contentManager,
+            INotifier notifier,
+            IContentLocalizationManager localizationManager,
+            IHtmlLocalizer<AdminController> localizer,
+            IAuthorizationService authorizationService)
         {
             _contentManager = contentManager;
             _notifier = notifier;
             _localizer = localizer;
+            _authorizationService = authorizationService;
             _contentLocalizationManager = localizationManager;
             T = localizer;
         }
@@ -36,25 +45,37 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 return NotFound();
             }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditLocalizedContent, contentItem))
+            {
+                return Unauthorized();
+            }
+
+            var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
+
+            // Set the current user as the owner to check for ownership permissions on creation
+            checkContentItem.Owner = User.Identity.Name;
+
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
+            {
+                return Unauthorized();
+            }
+
             var part = contentItem.As<LocalizationPart>();
+
             if (part == null)
             {
                 return NotFound();
             }
+
             var alreadyLocalizedContent = await _contentLocalizationManager.GetContentItem(part.LocalizationSet, targetCulture);
 
             if (alreadyLocalizedContent != null)
             {
-                _notifier.Warning(T["A Localization already exists for #{0} ", targetCulture]);
+                _notifier.Warning(T["A localization already exist for '{0}'", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
 
             }
-
-            // todo: verify if this is required
-            //if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreateContent, contentItem))
-            //{
-            //    return Unauthorized();
-            //}
 
             try
             {
