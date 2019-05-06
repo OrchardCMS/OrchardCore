@@ -16,7 +16,7 @@
                 }
                 else
                 {
-                    <a class="dropdown-item btn-sm" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                    <a class="dropdown-item btn-sm" itemprop="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                 }
             }
         </div>

@@ -27,6 +27,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             T = localizer;
         }
 
+        [HttpPost]
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);

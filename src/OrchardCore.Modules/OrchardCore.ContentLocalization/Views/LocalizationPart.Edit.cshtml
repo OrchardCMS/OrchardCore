@@ -23,21 +23,7 @@
                 else
                 {
                     <input asp-for="Culture" type="hidden" />
-                    <!-- <fieldset class="form-group">
-                        <label asp-for="Culture">@T["Current Culture"]</label>
-                        <select asp-for="Culture" class="form-control">
-                            @foreach (var culture in Model.ContentItemCultures)
-                            {
-                                // only show the unlocalized cultures and the current culture
-                                if (string.IsNullOrEmpty(culture.ContentItem?.ContentItemId) || culture.ContentItem?.ContentItemId == Model.LocalizationPart.ContentItem.ContentItemId)
-                                {
-                                    <option value="@culture.Culture.Name" selected="@String.Equals(Model.Culture, culture.Culture.Name, StringComparison.OrdinalIgnoreCase)">
-                                        @culture.Culture.Name | @culture.Culture.DisplayName
-                                    </option>
-                                }
-                            }
-                        </select>
-                    </fieldset> -->
+
                     @if (!string.IsNullOrEmpty(Model.LocalizationSet))
                     {
                         <div class="list-group">
@@ -52,7 +38,7 @@
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" itemprop="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>
