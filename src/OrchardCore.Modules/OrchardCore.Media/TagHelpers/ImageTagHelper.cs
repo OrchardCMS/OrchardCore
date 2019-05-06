@@ -1,11 +1,6 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Media.TagHelpers
 {
@@ -22,7 +17,7 @@ namespace OrchardCore.Media.TagHelpers
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private string _pathBase;
+        //private string _pathBase;
 
         public override int Order => -10;
 
@@ -61,12 +56,7 @@ namespace OrchardCore.Media.TagHelpers
 
             if (AppendVersion && _fileVersionProvider != null)
             {
-                //for media we must append Startup.AssetsUrlPrefix to pathBase or IFileVersionProvider will not find it
-                if (String.IsNullOrEmpty(_pathBase))
-                {
-                    _pathBase = String.Concat(_httpContextAccessor.HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
-                }
-                output.Attributes.SetAttribute("src", _fileVersionProvider.AddFileVersionToPath(_pathBase, resolvedSrc));
+                output.Attributes.SetAttribute("src", _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, resolvedSrc));
             }
         }
     }

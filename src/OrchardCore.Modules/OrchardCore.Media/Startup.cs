@@ -52,7 +52,7 @@ namespace OrchardCore.Media
         /// <summary>
         /// The url prefix used to route asset files
         /// </summary>
-        public const string AssetsUrlPrefix = "/media";
+        private const string AssetsUrlPrefix = "/media";
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
@@ -87,7 +87,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(mediaPath);
+                return new MediaFileProvider(AssetsUrlPrefix, mediaPath);
             });
 
             services.AddSingleton<IFileProvider>(serviceProvider =>

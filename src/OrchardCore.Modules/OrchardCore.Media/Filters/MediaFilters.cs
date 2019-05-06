@@ -1,9 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.Liquid;
 
@@ -85,8 +83,6 @@ namespace OrchardCore.Media.Filters
         private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private string _pathBase;
-
         public AppendVersionFilter(
             IFileVersionProvider fileVersionProvider,
             IHttpContextAccessor httpContextAccessor)
@@ -99,13 +95,7 @@ namespace OrchardCore.Media.Filters
         {
             var url = input.ToStringValue();
 
-            if (String.IsNullOrEmpty(_pathBase))
-            {
-                //for media we must append Startup.AssetsUrlPrefix to pathBase or IFileVersionProvider will not find it
-                _pathBase = String.Concat(_httpContextAccessor.HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
-            }
-
-            var imageUrl = _fileVersionProvider.AddFileVersionToPath(_pathBase, url);
+            var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
 
             return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }

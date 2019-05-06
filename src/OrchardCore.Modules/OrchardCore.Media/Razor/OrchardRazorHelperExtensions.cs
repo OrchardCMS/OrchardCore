@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -26,10 +25,8 @@ public static class OrchardRazorHelperExtensions
         if (appendVersion)
         {
             var fileVersionProvider = orchardHelper.HttpContext.RequestServices.GetService<IFileVersionProvider>();
-    
-            var pathBase = String.Concat(orchardHelper.HttpContext.Request.PathBase.ToString(), Startup.AssetsUrlPrefix);
 
-            resizedUrl = fileVersionProvider.AddFileVersionToPath(pathBase, resizedUrl);
+            resizedUrl = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resizedUrl);
         }
         return resizedUrl;
     }

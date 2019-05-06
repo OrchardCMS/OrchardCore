@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-
+using OrchardCore.Abstractions.Modules.FileProviders;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -36,8 +36,6 @@ namespace OrchardCore.ResourceManagement
             _cache = cache;
         }
 
-
-
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
             if (path == null)
@@ -45,7 +43,7 @@ namespace OrchardCore.ResourceManagement
                 throw new ArgumentNullException(nameof(path));
             }
 
-            //build _combinedFileProviders if has not been built
+            // Build _combinedFileProviders if it has not been built
             if (_combinedFileProviders == null)
             {
                 _combinedFileProviders = _registeredFileProviders.ToList();
@@ -81,6 +79,7 @@ namespace OrchardCore.ResourceManagement
                 cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
+                // Perform check against requestPathBase
                 if (!fileInfo.Exists &&
                     requestPathBase.HasValue &&
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
@@ -88,7 +87,29 @@ namespace OrchardCore.ResourceManagement
                     var requestPathBaseRelativePath = resolvedPath.Substring(requestPathBase.Value.Length);
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
                     fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
+                    // Perform check against VirtualPathBase when using requestPathBase
+                    if (!fileInfo.Exists &&
+                        fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
+                        !String.IsNullOrEmpty(virtualPathBaseProvider.VirtualPathBase) &&
+                        requestPathBaseRelativePath.StartsWith(virtualPathBaseProvider.VirtualPathBase, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var requestVirtualPathBaseRelativePath = requestPathBaseRelativePath.Substring(virtualPathBaseProvider.VirtualPathBase.Length);
+                        cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestVirtualPathBaseRelativePath));
+                        fileInfo = fileProvider.GetFileInfo(requestVirtualPathBaseRelativePath);
+                    }
                 }
+                // Perform check against VirtualPathBase when not using requestPathBase
+                else if (!fileInfo.Exists &&
+                        !requestPathBase.HasValue &&
+                        fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
+                        !String.IsNullOrEmpty(virtualPathBaseProvider.VirtualPathBase) &&
+                        resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase, StringComparison.OrdinalIgnoreCase))
+                {
+                    var requestVirtualPathBaseRelativePath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Length);
+                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestVirtualPathBaseRelativePath));
+                    fileInfo = fileProvider.GetFileInfo(requestVirtualPathBaseRelativePath);
+                }
+
                 if (fileInfo.Exists)
                 {
                     value = QueryHelpers.AddQueryString(path, VersionKey, GetHashForFile(fileInfo));
@@ -98,7 +119,7 @@ namespace OrchardCore.ResourceManagement
                 }
             }
 
-            // if the file is not in the current server, set cache so no further checks are done.
+            // If the file is not in the current server, set cache so no further checks are done.
             value = path;
             cacheEntryOptions.SetSize(value.Length * sizeof(char));
             value = _cache.Set(path, value, cacheEntryOptions);
@@ -106,6 +127,10 @@ namespace OrchardCore.ResourceManagement
             return value;
         }
 
+        //private static string ResolveFile(string path, IFileProvider fileProvider, string resolvedPath, string requestPathBase)
+        //{
+
+        //}
         private static string GetHashForFile(IFileInfo fileInfo)
         {
             using (var sha256 = CryptographyAlgorithms.CreateSHA256())

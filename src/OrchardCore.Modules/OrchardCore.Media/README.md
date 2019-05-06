@@ -154,7 +154,11 @@ Alternatively the Asset Url can be resolved independently and the `src` attribut
 
 `<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
 
-When using the MVC tag helpers and image is resolved from static assets, i.e. wwwroot
+Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+
+`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." asp-append-version="true" />`
+
+Or when using the MVC tag helpers and the image is resolved from static assets, i.e. wwwroot
 
 `<img src="/favicon.ico" asp-append-version="true"/>`
 
