@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = "The Orchard Team",
     Website = "http://orchardproject.net",
     Version = "1.0.0",
-    Description = "The Content Localization module provides a part that allows you to easily localize content",
+    Description = "Provides a part that allows to localize content items.",
     Dependencies = new[] { "OrchardCore.ContentTypes" },
     Category = "Internationalization"
 )]
