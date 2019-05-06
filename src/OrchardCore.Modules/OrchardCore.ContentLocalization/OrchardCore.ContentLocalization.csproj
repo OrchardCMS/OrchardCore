@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentLocalization.Core\OrchardCore.ContentLocalization.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
