@@ -116,6 +116,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
 
+                if (AppendVersion.HasValue == true)
+                {
+                    setting.SetAppendVersion(AppendVersion);
+                }
+
                 if (!String.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);

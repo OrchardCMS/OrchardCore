@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace OrchardCore.ResourceManagement
 {
