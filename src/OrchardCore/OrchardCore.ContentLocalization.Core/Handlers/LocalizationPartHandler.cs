@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
@@ -29,9 +30,10 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (instance.Culture == null)
             {
-                instance.Culture = await GetDefaultCulture();
+                instance.Culture = await GetDefaultCultureNameAsync();
                 instance.Apply();
             }
+
             await base.InitializingAsync(context, instance);
         }
         /// <summary>
@@ -41,9 +43,10 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (instance.Culture == null)
             {
-                instance.Culture = await GetDefaultCulture();
+                instance.Culture = await GetDefaultCultureNameAsync();
                 instance.Apply();
             }
+
             await base.LoadingAsync(context, instance);
         }
 
@@ -60,25 +63,23 @@ namespace OrchardCore.ContentLocalization.Handlers
 
             if (instance.Culture == null)
             {
-                instance.Culture = await GetDefaultCulture();
+                instance.Culture = await GetDefaultCultureNameAsync();
             }
+
             instance.Apply();
             await base.UpdatingAsync(context, instance);
         }
 
-        private async Task<string> GetDefaultCulture()
+        private async Task<string> GetDefaultCultureNameAsync()
         {
-            // TODO: change this to the correct default culture if we choose to do so
-            string defaultCulture = CultureInfo.InstalledUICulture.Name;
-
             var setting = await siteService.GetSiteSettingsAsync();
 
-            if (setting.Culture != null)
+            if (!String.IsNullOrEmpty(setting.Culture))
             {
-                defaultCulture = setting.Culture;
+                return CultureInfo.GetCultureInfo(setting.Culture).Name;
             }
-            return defaultCulture;
-        }
 
+            return CultureInfo.InstalledUICulture.Name;
+        }
     }
 }

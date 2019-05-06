@@ -47,7 +47,6 @@ namespace OrchardCore.ContentLocalization
         public Task<IEnumerable<ContentItem>> GetItemsForSet(string localizationSet)
         {
             return _session.Query<ContentItem, LocalizedContentItemIndex>(o => o.LocalizationSet == localizationSet).ListAsync();
-
         }
 
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
@@ -56,12 +55,13 @@ namespace OrchardCore.ContentLocalization
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // not sure if this is redundant or not. The check is also done in the Admin controller
-            if (!siteSettings.SupportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.InvariantCultureIgnoreCase)))
+            if (!siteSettings.SupportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new NotSupportedException("Cannot localize an unsupported culture");
             }
-            // not sure if this is redundant or not. The check is also done in the Admin controller
+
             var existingContent = await GetContentItem(localizationPart.LocalizationSet, targetCulture);
+
             if (existingContent != null)
             {
                 // already localized
@@ -71,7 +71,6 @@ namespace OrchardCore.ContentLocalization
             var cloned = await _contentManager.CloneAsync(content);
             var clonedPart = cloned.As<LocalizationPart>();
             clonedPart.Culture = targetCulture;
-            //TODO: Remove next line. This is nessesary because of a bug with "Flushing" the cloned data to the parts
             clonedPart.LocalizationSet = localizationPart.LocalizationSet;
             clonedPart.Apply();
 
