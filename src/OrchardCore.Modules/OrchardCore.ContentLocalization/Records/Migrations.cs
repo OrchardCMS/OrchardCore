@@ -1,7 +1,7 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data.Migration;
 using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Data.Migration;
 
 namespace OrchardCore.ContentLocalization.Records
 {
@@ -22,12 +22,16 @@ namespace OrchardCore.ContentLocalization.Records
 
             SchemaBuilder.CreateMapIndexTable(nameof(LocalizedContentItemIndex), table => table
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
-                .Column<string>("Culture", col => col.WithLength(4))
+                .Column<string>("Culture", col => col.WithLength(16))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
             SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
-              .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_LocalizationPartIndex_LocalizationSet_Culture", new[] { "LocalizationSet", "Culture" })
+            );
+
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
             );
 
             return 1;
