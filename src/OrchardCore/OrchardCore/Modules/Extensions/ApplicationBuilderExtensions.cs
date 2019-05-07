@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Builder
 
             configure?.Invoke(app);
 
-            app.UseMiddleware<ModularTenantRouterMiddleware>();
+            app.UseMiddleware<ModularTenantRouterMiddleware>(app.ServerFeatures);
 
             return app;
         }

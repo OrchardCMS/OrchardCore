@@ -25,20 +25,21 @@ namespace OrchardCore.Apis.GraphQL.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<ISchema> GetSchema()
+        public Task<ISchema> GetSchema()
         {
-            return await _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
+            return _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
-                var schema = new Schema();
+                ISchema schema = new Schema
+                {
+                    Query = new ObjectGraphType { Name = "Query" },
+                    Mutation = new ObjectGraphType { Name = "Mutation" },
+                    Subscription = new ObjectGraphType { Name = "Subscription" },
+                    FieldNameConverter = new OrchardFieldNameConverter(),
 
-                schema.Query = new ObjectGraphType { Name = "Query" };
-                schema.Mutation = new ObjectGraphType { Name = "Mutation" };
-                schema.Subscription = new ObjectGraphType { Name = "Subscription" };
-                schema.FieldNameConverter = new OrchardFieldNameConverter();
-
-                schema.DependencyResolver = _serviceProvider.GetService<IDependencyResolver>();
+                    DependencyResolver = _serviceProvider.GetService<IDependencyResolver>()
+                };
 
                 foreach (var builder in _schemaBuilders)
                 {

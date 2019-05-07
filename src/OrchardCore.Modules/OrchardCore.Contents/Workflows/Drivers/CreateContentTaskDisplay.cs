@@ -20,7 +20,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
         protected override void EditActivity(CreateContentTask activity, CreateContentTaskViewModel model)
         {
             model.AvailableContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(x => x.Settings.ToObject<ContentTypeSettings>().Creatable)
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
                 .ToList();
 

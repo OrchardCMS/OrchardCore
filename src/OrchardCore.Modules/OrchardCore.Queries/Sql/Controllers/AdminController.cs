@@ -77,7 +77,7 @@ namespace OrchardCore.Queries.Sql.Controllers
                 templateContext.SetValue(parameter.Key, parameter.Value);
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default, templateContext);
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 

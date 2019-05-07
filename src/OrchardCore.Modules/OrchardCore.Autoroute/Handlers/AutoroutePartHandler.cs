@@ -108,7 +108,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var templateContext = new TemplateContext();
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
-                part.Path = await _liquidTemplateManager.RenderAsync(pattern, templateContext);
+                part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
 
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {

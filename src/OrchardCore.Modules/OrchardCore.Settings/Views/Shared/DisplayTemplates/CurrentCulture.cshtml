@@ -1,6 +1,6 @@
 @using System.Globalization
 @{
-    var culture = @CultureInfo.GetCultureInfo(Model);
+    var culture = Model != null ? @CultureInfo.GetCultureInfo(Model) : CultureInfo.InvariantCulture;
 }
 <tr class="table-success">
     <td class="align-middle">

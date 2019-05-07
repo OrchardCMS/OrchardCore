@@ -35,7 +35,6 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
     contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
-
 @using (Html.BeginForm("list", "Admin", FormMethod.Post, new { id = "items-form" }))
 {
     @*<fieldset class="bulk-actions">
@@ -61,9 +60,15 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
     <fieldset class="filter-options container-fluid">
         <div class="row">
             <div class="col-md-2 col-xl-1 form-group">
+                <label for="DisplayText" class="label col-form-label">@T["Title"]</label>
+            </div>
+            <div class="col-md-4 col-xl-2 form-group">
+                <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
+            </div>
+            <div class="col-md-2 col-xl-1 form-group">
                 <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
+            <div class="col-md-4 col-xl-2 form-group">
                 <select id="contentResults" class="form-control" name="Id">
                     <option value="">@T["All content types"]</option>
                     @foreach (var option in Model.Options.FilterOptions)
@@ -96,12 +101,12 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
             <div class="col-md-2 col-xl-1 form-group">
                 <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
             </div>
-            <div class="col-md-4 col-xl-3 form-group">
+            <div class="col-md-4 col-xl-2 form-group">
                 <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
             </div>
-            <div class="col-md-2 col-xl-1 form-group">
+            @*<div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>
+            </div>*@
         </div>
     </fieldset>
 
@@ -134,6 +139,11 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
             console.log(value);
             var newAction = '@formActionWithoutTypeName' + '/' + value;
             $('#items-form').attr('action', newAction);
+        });
+    })
+    $(function () {
+        $(".filter-options select, .filter-options input").on("change", function () {
+            this.form.submit();
         });
     })
 </script>

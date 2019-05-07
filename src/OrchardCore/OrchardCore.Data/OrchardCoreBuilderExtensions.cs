@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -48,20 +49,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    if (shellSettings.DatabaseProvider == null)
+                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }
 
-                    var storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration();
 
-                    // Disabling query gating as it's failing to improve performance right now
-                    //storeConfiguration.DisableQueryGating();
-
-                    switch (shellSettings.DatabaseProvider)
+                    switch (shellSettings["DatabaseProvider"])
                     {
                         case "SqlConnection":
-                            storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
@@ -69,24 +70,30 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                             var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                             Directory.CreateDirectory(databaseFolder);
-                            storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
+                                .UseDefaultIdGenerator();
                             break;
                         case "MySql":
-                            storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Postgres":
-                            storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         default:
-                            throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                            throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
+                        storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = new Store(storeConfiguration);
+                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
@@ -118,6 +125,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     return session;
                 });
+
+                services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;
@@ -142,14 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (session != null)
             {
-                try
-                {
-                    await session.CommitAsync();
-                }
-                catch (ObjectDisposedException)
-                {
-                    // The session might already be disposed by the ServiceScope
-                }
+                await session.CommitAsync();
             }
         }
     }

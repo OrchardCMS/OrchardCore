@@ -57,7 +57,7 @@ namespace OrchardCore.OpenId.Controllers
             var claims = new JObject();
 
             // Note: the "sub" claim is a mandatory claim and must be included in the JSON response.
-            claims[OpenIdConnectConstants.Claims.Subject] = principal.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value;
+            claims[OpenIdConnectConstants.Claims.Subject] = principal.GetUserIdentifier();
 
             if (principal.HasClaim(OpenIdConnectConstants.Claims.Scope, OpenIdConnectConstants.Scopes.Email))
             {

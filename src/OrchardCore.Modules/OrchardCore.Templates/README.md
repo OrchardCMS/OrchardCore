@@ -123,7 +123,7 @@ This template is called when a content part type is rendered for a given content
 | `Blog_Summary__HtmlBodyPart` | `Blog-HtmlBodyPart.Summary.cshtml` |
 | `LandingPage_Summary__BagPart` | `LandingPage-BagPart.Summary.cshtml` |
 
-### `[ContentType]``_[DisplayType]__[PartName]`
+### `[ContentType]_[DisplayType]__[PartName]`
 
 This template is called when a content part name is rendered for a given content type, with or without a given display type.
 
@@ -155,6 +155,11 @@ This template is called when a shape type is rendered in a given content part na
 | --------- | ------------ |
 | `LandingPage__Services__CustomShape` | `LandingPage-Services-CustomShape.cshtml` |
 | `LandingPage_Summary__Services__CustomShape` | `LandingPage-Services-CustomShape.Summary.cshtml` |
+
+### Widget parts
+
+All the previous alternates can be used by replacing `[ContentType]` with `Widget` whenever a content type has the stereotype `Widget`. This also applies
+to any stereotype other than `Content`.
 
 ## Content Field templates
 

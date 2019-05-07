@@ -40,7 +40,7 @@ namespace OrchardCore.ResourceManagement
         {
             get { return _attributes != null && _attributes.Any(a => a.Value != null); }
         }
-
+        
         /// <summary>
         /// The resource will be displayed in the head of the page
         /// </summary>

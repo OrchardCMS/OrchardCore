@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Lists.Indexes;
 
 namespace OrchardCore.Lists.GraphQL

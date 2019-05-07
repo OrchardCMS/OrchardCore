@@ -1,0 +1,34 @@
+@using OrchardCore.Twitter.ViewModels;
+@model TwitterSigninSettingsViewModel;
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<h3>@T["Sign in with Twitter Settings"]</h3>
+
+
+<div class="form-group row" asp-validation-class-for="APIKey">
+    <div class="col-lg">
+        <label asp-for="APIKey">@T["API key"]</label>
+        <input asp-for="APIKey" class="form-control" />
+        <span asp-validation-for="APIKey"></span>
+        <span class="hint">@T["The API key defined in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="form-group row" asp-validation-class-for="APISecretKey">
+    <div class="col-lg">
+        <label asp-for="APISecretKey">@T["API secret key"]</label>
+        <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" />
+        <span asp-validation-for="APISecretKey"></span>
+        <span class="hint">@T["The API secret defined in the Keys and tokens tab of twitter app dashboard."]</span>
+    </div>
+</div>
+
+<div class="form-group row" asp-validation-class-for="CallbackPath">
+    <div class="col-lg">
+        <label asp-for="CallbackPath">@T["CallbackPath"]</label>
+        <input asp-for="CallbackPath" class="form-control" placeholder="/signin-twitter" />
+        <span asp-validation-for="CallbackPath"></span>
+        <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+    </div>
+</div>

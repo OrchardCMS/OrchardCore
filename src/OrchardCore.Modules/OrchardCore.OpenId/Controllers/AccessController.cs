@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
+using OpenIddict.Mvc.Internal;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -52,7 +53,7 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Authorize(OpenIdConnectRequest request)
+        public async Task<IActionResult> Authorize([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
@@ -81,7 +82,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(result.Principal),
+                subject: result.Principal.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -124,7 +125,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> AuthorizeAccept(OpenIdConnectRequest request)
+        public async Task<IActionResult> AuthorizeAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Authorize method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject authorization requests
@@ -142,7 +143,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(User),
+                subject: User.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -173,7 +174,7 @@ namespace OrchardCore.OpenId.Controllers
         public IActionResult AuthorizeDeny() => Forbid(OpenIddictServerDefaults.AuthenticationScheme);
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Logout(OpenIdConnectRequest request)
+        public async Task<IActionResult> Logout([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
             {
@@ -194,7 +195,7 @@ namespace OrchardCore.OpenId.Controllers
 
         [ActionName(nameof(Logout)), AllowAnonymous]
         [FormValueRequired("submit.Accept"), HttpPost]
-        public async Task<IActionResult> LogoutAccept(OpenIdConnectRequest request)
+        public async Task<IActionResult> LogoutAccept([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: unlike the main Logout method, this method MUST NOT be decorated with
             // [IgnoreAntiforgeryToken] as we must be able to reject end session requests
@@ -220,7 +221,7 @@ namespace OrchardCore.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token(OpenIdConnectRequest request)
+        public async Task<IActionResult> Token([ModelBinder(typeof(OpenIddictMvcBinder))] OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by the MVC modules stack,
@@ -277,18 +278,19 @@ namespace OrchardCore.OpenId.Controllers
                 OpenIddictConstants.Destinations.AccessToken,
                 OpenIddictConstants.Destinations.IdentityToken);
 
+            // If the role service is available, add all the role claims
+            // associated with the application roles in the database.
+            var roleService = HttpContext.RequestServices.GetService<IRoleService>();
+
             foreach (var role in await _applicationManager.GetRolesAsync(application))
             {
                 identity.AddClaim(identity.RoleClaimType, role,
                     OpenIddictConstants.Destinations.AccessToken,
                     OpenIddictConstants.Destinations.IdentityToken);
 
-                // If the role provider is available, add all the role claims
-                // associated with the application roles in the database.
-                var provider = HttpContext.RequestServices.GetService<IRoleProvider>();
-                if (provider != null)
+                if (roleService != null)
                 {
-                    foreach (var claim in await provider.GetRoleClaimsAsync(role))
+                    foreach (var claim in await roleService.GetRoleClaimsAsync(role))
                     {
                         identity.AddClaim(claim.SetDestinations(
                             OpenIdConnectConstants.Destinations.AccessToken,
@@ -346,7 +348,7 @@ namespace OrchardCore.OpenId.Controllers
             Debug.Assert(principal != null, "The user principal shouldn't be null.");
 
             var authorizations = await _authorizationManager.FindAsync(
-                subject: GetUserIdentifier(principal),
+                subject: principal.GetUserIdentifier(),
                 client : await _applicationManager.GetIdAsync(application),
                 status : OpenIddictConstants.Statuses.Valid,
                 type   : OpenIddictConstants.AuthorizationTypes.Permanent,
@@ -399,9 +401,24 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
+            // By default, re-use the principal stored in the authorization code/refresh token.
+            var principal = info.Principal;
+
+            // If the user service is available, try to refresh the principal by retrieving
+            // the user object from the database and creating a new claims-based principal.
+            var service = HttpContext.RequestServices.GetService<IUserService>();
+            if (service != null)
+            {
+                var user = await service.GetUserByUniqueIdAsync(principal.GetUserIdentifier());
+                if (user != null)
+                {
+                    principal = await service.CreatePrincipalAsync(user);
+                }
+            }
+
             // Create a new authentication ticket, but reuse the properties stored in the
             // authorization code/refresh token, including the scopes originally granted.
-            var ticket = await CreateUserTicketAsync(info.Principal, application, null, request, info.Properties);
+            var ticket = await CreateUserTicketAsync(principal, application, null, request, info.Properties);
 
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
@@ -415,16 +432,21 @@ namespace OrchardCore.OpenId.Controllers
 
             var identity = (ClaimsIdentity) principal.Identity;
 
-            identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
-                OpenIddictConstants.Destinations.AccessToken,
-                OpenIddictConstants.Destinations.IdentityToken);
+            // Note: make sure this claim is not added multiple times (which may happen when the principal
+            // was extracted from an authorization code or from a refresh token ticket is re-used as-is).
+            if (string.IsNullOrEmpty(principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value))
+            {
+                identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
+                    OpenIddictConstants.Destinations.AccessToken,
+                    OpenIddictConstants.Destinations.IdentityToken);
+            }
 
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
             if (string.IsNullOrEmpty(principal.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value))
             {
-                identity.AddClaim(new Claim(OpenIdConnectConstants.Claims.Subject, GetUserIdentifier(principal)));
+                identity.AddClaim(new Claim(OpenIdConnectConstants.Claims.Subject, principal.GetUserIdentifier()));
             }
 
             // Create a new authentication ticket holding the user identity.
@@ -447,7 +469,7 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     authorization = await _authorizationManager.CreateAsync(
                         principal : ticket.Principal,
-                        subject   : GetUserIdentifier(principal),
+                        subject   : principal.GetUserIdentifier(),
                         client    : await _applicationManager.GetIdAsync(application),
                         type      : OpenIddictConstants.AuthorizationTypes.Permanent,
                         scopes    : ImmutableArray.CreateRange(ticket.GetScopes()),
@@ -457,8 +479,7 @@ namespace OrchardCore.OpenId.Controllers
                 if (authorization != null)
                 {
                     // Attach the authorization identifier to the authentication ticket.
-                    ticket.SetProperty(OpenIddictConstants.Properties.InternalAuthorizationId,
-                        await _authorizationManager.GetIdAsync(authorization));
+                    ticket.SetInternalAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
                 }
             }
 
@@ -483,7 +504,8 @@ namespace OrchardCore.OpenId.Controllers
                 // The other claims will only be added to the access_token, which is encrypted when using the default format.
                 if ((claim.Type == OpenIddictConstants.Claims.Name && ticket.HasScope(OpenIddictConstants.Scopes.Profile)) ||
                     (claim.Type == OpenIddictConstants.Claims.Email && ticket.HasScope(OpenIddictConstants.Scopes.Email)) ||
-                    (claim.Type == OpenIddictConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)))
+                    (claim.Type == OpenIddictConstants.Claims.Role && ticket.HasScope(OpenIddictConstants.Claims.Roles)) ||
+                    (claim.Type == OpenIdConstants.Claims.EntityType))
                 {
                     destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
                 }
@@ -545,11 +567,5 @@ namespace OrchardCore.OpenId.Controllers
                 RedirectUri = GetRedirectUrl()
             });
         }
-
-        private static string GetUserIdentifier(ClaimsPrincipal principal)
-            => principal.FindFirst(OpenIdConnectConstants.Claims.Subject)?.Value ??
-               principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-               principal.FindFirst(ClaimTypes.Upn)?.Value ??
-               throw new InvalidOperationException("No suitable user identifier can be found in the principal.");
     }
 }

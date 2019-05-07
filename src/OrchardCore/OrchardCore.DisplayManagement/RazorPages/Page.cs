@@ -190,28 +190,6 @@ namespace OrchardCore.DisplayManagement.RazorPages
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        /// <summary>
-        /// Renders a zone from the layout.
-        /// </summary>
-        /// <param name="name">The name of the zone to render.</param>
-        /// <param name="required">Whether the zone is required or not.</param>
-        public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            var zone = ThemeLayout[name];
-
-            if (required && zone != null && zone.Items.Count == 0)
-            {
-                throw new InvalidOperationException("Zone not found: " + name);
-            }
-
-            return DisplayAsync(zone);
-        }
-
         public object OrDefault(object text, object other)
         {
             if (text == null || Convert.ToString(text) == "")

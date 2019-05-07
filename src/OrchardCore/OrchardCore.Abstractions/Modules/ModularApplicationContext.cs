@@ -1,6 +1,7 @@
-using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
 namespace OrchardCore.Modules
@@ -48,13 +49,18 @@ namespace OrchardCore.Modules
 
         private IEnumerable<Module> GetModules()
         {
-            var modules = new List<Module>();
+            var modules = new ConcurrentBag<Module>();
             modules.Add(new Module(_environment.ApplicationName, true));
 
-            foreach (var provider in _moduleNamesProviders)
+            var names = _moduleNamesProviders
+                .SelectMany(p => p.GetModuleNames())
+                .Where(n => n != _environment.ApplicationName)
+                .Distinct();
+
+            Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
             {
-                modules.AddRange(provider.GetModuleNames().Select(name => new Module(name, name == _environment.ApplicationName)));
-            }
+                modules.Add(new Module(name, false));
+            });
 
             return modules;
         }

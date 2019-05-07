@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -21,29 +23,25 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly IApplicationLifetime _applicationLifetime;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
-        private readonly IRecipeResultStore _recipeResultStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
-        public RecipeExecutor(
-            IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            IRecipeResultStore recipeResultStore,
-            IApplicationLifetime applicationLifetime,
-            ShellSettings shellSettings,
-            IShellHost orchardHost,
-            ILogger<RecipeExecutor> logger,
-            IStringLocalizer<RecipeExecutor> localizer)
+        public RecipeExecutor(IHttpContextAccessor httpContextAccessor,
+                              IEnumerable<IRecipeEventHandler> recipeEventHandlers,
+                              ShellSettings shellSettings,
+                              IShellHost shellHost,
+                              ILogger<RecipeExecutor> logger,
+                              IStringLocalizer<RecipeExecutor> localizer)
         {
-            _orchardHost = orchardHost;
+            _httpContextAccessor = httpContextAccessor;
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _applicationLifetime = applicationLifetime;
             _recipeEventHandlers = recipeEventHandlers;
-            _recipeResultStore = recipeResultStore;
             Logger = logger;
             T = localizer;
         }
@@ -51,7 +49,7 @@ namespace OrchardCore.Recipes.Services
         public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
-        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
         {
             await _recipeEventHandlers.InvokeAsync(x => x.RecipeExecutingAsync(executionId, recipeDescriptor), Logger);
 
@@ -60,8 +58,6 @@ namespace OrchardCore.Recipes.Services
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
 
                 var result = new RecipeResult { ExecutionId = executionId };
-
-                await _recipeResultStore.CreateAsync(result);
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
@@ -97,9 +93,14 @@ namespace OrchardCore.Recipes.Services
                                                 RecipeDescriptor = recipeDescriptor
                                             };
 
+                                            if (cancellationToken.IsCancellationRequested)
+                                            {
+                                                Logger.LogError("Recipe interrupted by cancellation token.");
+                                                return null;
+                                            }
+
                                             var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
                                             result.Steps.Add(stepResult);
-                                            await _recipeResultStore.UpdateAsync(result);
 
                                             ExceptionDispatchInfo capturedException = null;
                                             try
@@ -119,7 +120,6 @@ namespace OrchardCore.Recipes.Services
                                             }
 
                                             stepResult.IsCompleted = true;
-                                            await _recipeResultStore.UpdateAsync(result);
 
                                             if (stepResult.IsSuccessful == false)
                                             {
@@ -131,7 +131,7 @@ namespace OrchardCore.Recipes.Services
                                                 foreach (var descriptor in recipeStep.InnerRecipes)
                                                 {
                                                     var innerExecutionId = Guid.NewGuid().ToString();
-                                                    await ExecuteAsync(innerExecutionId, descriptor, environment);
+                                                    await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                                 }
 
                                             }
@@ -157,7 +157,20 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            (var scope, var shellContext) = await _orchardHost.GetScopeAndContextAsync(_shellSettings);
+            IServiceScope scope;
+            ShellContext shellContext;
+            IServiceProvider serviceProvider;
+
+            if (recipeStep.RecipeDescriptor.RequireNewScope)
+            {
+                (scope, shellContext) = await _shellHost.GetScopeAndContextAsync(_shellSettings);
+                serviceProvider = scope.ServiceProvider;
+            }
+            else
+            {
+                (scope, shellContext) = (null, null);
+                serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+            }
 
             using (scope)
             {
@@ -181,8 +194,8 @@ namespace OrchardCore.Recipes.Services
                     shellContext.IsActivated = true;
                 }
 
-                var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
-                var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+                var recipeStepHandlers = serviceProvider.GetServices<IRecipeStepHandler>();
+                var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
                 // Substitutes the script elements by their actual values
@@ -208,9 +221,15 @@ namespace OrchardCore.Recipes.Services
                 }
             }
 
+            // E.g if we run migrations defined in a recipe.
+            if (!recipeStep.RecipeDescriptor.RequireNewScope)
+            {
+                return;
+            }
+
             // The recipe execution might have invalidated the shell by enabling new features,
             // so the deferred tasks need to run on an updated shell context if necessary.
-            using (var localScope = await _orchardHost.GetScopeAsync(_shellSettings))
+            using (var localScope = await _shellHost.GetScopeAsync(_shellSettings))
             {
                 var deferredTaskEngine = localScope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
@@ -232,11 +251,6 @@ namespace OrchardCore.Recipes.Services
             {
                 _variablesMethodProvider.ScriptingManager = scriptingManager;
                 scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
-            }
-
-            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
-            {
-                throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
             EvaluateJsonTree(scriptingManager, context, context.Step);

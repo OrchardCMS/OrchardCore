@@ -6,42 +6,41 @@ namespace OrchardCore.Apis.GraphQL.Queries
 {
     public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
     {
-
     }
 
     public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
     {
         // Applies to all types
-        public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string> 
-        { 
-            { "", "is equal to" }, 
-            { "_not", "is not equal to" } 
+        public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string>
+        {
+            { "", "is equal to" },
+            { "_not", "is not equal to" }
         };
 
         // Applies to all types
-        public static Dictionary<string, string> MultiValueComparisonOperators = new Dictionary<string, string> 
+        public static Dictionary<string, string> MultiValueComparisonOperators = new Dictionary<string, string>
         {
-            { "_in", "is in collection" }, 
+            { "_in", "is in collection" },
             { "_not_in", "is not in collection" }
         };
 
         // Applies to non strings
-        public static Dictionary<string, string> NonStringValueComparisonOperators = new Dictionary<string, string> 
-        { 
-            { "_gt", "is greater than" }, 
-            { "_gte", "is greater than or equal" }, 
-            { "_lt", "is less than" }, 
-            { "_lte", "is less than or equal" } 
+        public static Dictionary<string, string> NonStringValueComparisonOperators = new Dictionary<string, string>
+        {
+            { "_gt", "is greater than" },
+            { "_gte", "is greater than or equal" },
+            { "_lt", "is less than" },
+            { "_lte", "is less than or equal" }
         };
 
         // Applies to strings
-        public static Dictionary<string, string> StringComparisonOperators = new Dictionary<string, string> 
-        { 
-            {"_contains", "contains the string"}, 
-            {"_not_contains", "does not contain the string"}, 
-            {"_starts_with", "starts with the string"}, 
-            {"_not_starts_with", "does not start with the string"}, 
-            {"_ends_with", "ends with the string"}, 
+        public static Dictionary<string, string> StringComparisonOperators = new Dictionary<string, string>
+        {
+            {"_contains", "contains the string"},
+            {"_not_contains", "does not contain the string"},
+            {"_starts_with", "starts with the string"},
+            {"_not_starts_with", "does not start with the string"},
+            {"_ends_with", "ends with the string"},
             {"_not_ends_with", "does not end with the string"}
         };
 

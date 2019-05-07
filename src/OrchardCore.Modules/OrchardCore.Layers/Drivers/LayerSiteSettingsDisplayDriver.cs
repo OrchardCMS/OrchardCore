@@ -13,7 +13,7 @@ namespace OrchardCore.Layers.Drivers
 {
     public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {
-        public const string GroupId = "layers";
+        public const string GroupId = "zones";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 

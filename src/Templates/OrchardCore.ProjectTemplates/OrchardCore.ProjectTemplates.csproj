@@ -8,7 +8,7 @@
     <EnableDefaultItems>False</EnableDefaultItems>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <PackageType>Template</PackageType>
-    <NoWarn>CS8021</NoWarn>
+    <NoWarn>CS8021,CS2008</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

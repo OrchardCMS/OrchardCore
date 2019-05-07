@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -19,29 +22,38 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     public class ContentTypeQuery : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
 
-        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor)
+        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
+            IOptions<GraphQLContentOptions> optionsAccessor,
+            IStringLocalizer<ContentTypeQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
+            _optionsAccessor = optionsAccessor;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
-            var contentTypeBuilders = serviceProvider.GetService<IEnumerable<IContentTypeBuilder>>().ToList();
+            var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
-                var typeType = new ContentItemType
+                var typeType = new ContentItemType(_optionsAccessor)
                 {
-                    Name = typeDefinition.Name
+                    Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName]
                 };
 
                 var query = new ContentItemsFieldType(typeDefinition.Name, schema)
                 {
                     Name = typeDefinition.Name,
+                    Description = T["Represents a {0}.", typeDefinition.DisplayName],
                     ResolvedType = new ListGraphType(typeType)
                 };
 

@@ -1,4 +1,4 @@
-///<reference path="../../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
+///<reference path="../../../../../../node_modules/@types/jquery/index.d.ts" />
 declare var jsPlumb: jsPlumbInstance;
 
 interface jsPlumbInstance {

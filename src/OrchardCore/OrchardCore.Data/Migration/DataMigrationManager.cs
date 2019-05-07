@@ -148,7 +148,7 @@ namespace OrchardCore.Data.Migration
 
             // proceed with dependent features first, whatever the module it's in
             var dependencies = _extensionManager
-                .GetDependentFeatures(
+                .GetFeatureDependencies(
                     featureId)
                 .Where(x => x.Id != featureId)
                 .Select(x => x.Id);
@@ -160,7 +160,7 @@ namespace OrchardCore.Data.Migration
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
             {
-                var schemaBuilder = new SchemaBuilder(_session);
+                var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.DemandAsync());
                 migration.SchemaBuilder = schemaBuilder;
 
                 // copy the object for the Linq query

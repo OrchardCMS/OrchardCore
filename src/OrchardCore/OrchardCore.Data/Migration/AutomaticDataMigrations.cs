@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
     /// Registers to OrchardShell.Activated in order to run migrations automatically
     /// </summary>
-    public class AutomaticDataMigrations : IModularTenantEvents
+    public class AutomaticDataMigrations : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
@@ -26,29 +26,16 @@ namespace OrchardCore.Data.Migration
             _logger = logger;
         }
 
-        public Task ActivatedAsync()
+        public override Task ActivatingAsync()
         {
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
             {
+                _logger.LogDebug("Executing data migrations");
+
                 var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
                 return dataMigrationManager.UpdateAllFeaturesAsync();
             }
 
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
             return Task.CompletedTask;
         }
     }

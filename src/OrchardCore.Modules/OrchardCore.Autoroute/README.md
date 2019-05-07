@@ -16,7 +16,7 @@ For example, for a content with a `TitlePart` that will use it to generate the s
 {{ ContentItem | display_text | slugify }}
 ```
 
-For example, for a content type with a `ListPart` and a `TitlePart` (e.g.: `BlogPost` nested in a `Blog`) that will use the container and the title to generate the slug:
+For instance, for a content type with a `ListPart` and a `TitlePart` (e.g.: `BlogPost` nested in a `Blog`) that will use the container and the title to generate the slug:
 
 ```liquid
 {{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}
@@ -24,6 +24,15 @@ For example, for a content type with a `ListPart` and a `TitlePart` (e.g.: `Blog
 
 - If you want to be able to enter a custom path when you edit a content item, check 'Allow custom path'.
 - If you want to be able to set a content item as the homepage, check 'Show homepage options'.
+
+### Using fields in patterns
+
+Fiels can also be used as part of the pattern. The following example uses a __Text field__ named `Color`, on a `Product` content type. The text is _slugified_ such that
+it is compatible with a URL.
+
+```liquid
+{{ ContentItem.Content.Product.Color.Text | slugify }}
+```
 
 ## Autoroute Alias
 

@@ -1,13 +1,15 @@
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Markdown.Model;
 
 namespace OrchardCore.Markdown.GraphQL
 {
     public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
     {
-        public MarkdownBodyQueryObjectType()
+        public MarkdownBodyQueryObjectType(IStringLocalizer<MarkdownBodyQueryObjectType> T)
         {
             Name = nameof(MarkdownBodyPart);
+            Description = T["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description("the markdown value")

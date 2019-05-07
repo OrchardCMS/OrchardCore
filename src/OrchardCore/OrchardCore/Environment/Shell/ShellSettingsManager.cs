@@ -2,55 +2,108 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        private readonly IEnumerable<IShellSettingsConfigurationProvider> _configurationProviders;
+        private readonly IConfiguration _configuration;
+        private readonly IEnumerable<string> _configuredTenants;
+        private readonly Func<string, IConfigurationBuilder> _configBuilderFactory;
+        private readonly IShellConfigurationSources _tenantConfigSources;
+        private readonly IShellsSettingsSources _settingsSources;
 
-        public ShellSettingsManager(IEnumerable<IShellSettingsConfigurationProvider> configurationProviders)
+        public ShellSettingsManager(
+            IConfiguration applicationConfiguration,
+            IShellsConfigurationSources configurationSources,
+            IShellConfigurationSources tenantConfigSources,
+            IShellsSettingsSources settingsSources,
+            IOptions<ShellOptions> options)
         {
-            _configurationProviders = configurationProviders.OrderBy(x => x.Order);
+            _tenantConfigSources = tenantConfigSources;
+            _settingsSources = settingsSources;
+
+            var lastProviders = (applicationConfiguration as IConfigurationRoot)?.Providers
+                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
+                            p is CommandLineConfigurationProvider)
+                .ToArray();
+
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddConfiguration(applicationConfiguration)
+                .AddSources(configurationSources);
+
+            if (lastProviders.Count() > 0)
+            {
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
+            }
+
+            _configuration = configurationBuilder.Build().GetSection("OrchardCore");
+
+            _configuredTenants = _configuration.GetChildren()
+                .Where(section => section["State"] != null)
+                .Select(section => section.Key)
+                .Distinct()
+                .ToArray();
+
+            _configBuilderFactory = (tenant) =>
+            {
+                var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
+
+                if (_configuredTenants.Contains(tenant))
+                {
+                    builder.AddConfiguration(_configuration.GetSection(tenant));
+                }
+
+                return builder.AddSources(tenant, _tenantConfigSources);
+            };
+        }
+
+        public ShellSettings CreateDefaultSettings()
+        {
+            return new ShellSettings
+            (
+                new ShellConfiguration(_configuration),
+                new ShellConfiguration(_configuration)
+            );
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var configurationBuilder = new ConfigurationBuilder();
+            var tenantsSettings = new ConfigurationBuilder()
+                .AddSources(_settingsSources)
+                .Build();
 
-            foreach (var provider in _configurationProviders)
+            var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+            
+            var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
+
+            var allSettings = new List<ShellSettings>();
+
+            foreach (var tenant in allTenants)
             {
-                provider.AddSource(configurationBuilder);
-            }
+                var tenantSettings = new ConfigurationBuilder()
+                    .AddConfiguration(_configuration)
+                    .AddConfiguration(_configuration.GetSection(tenant))
+                    .AddConfiguration(tenantsSettings.GetSection(tenant))
+                    .Build();
 
-            var configurationRoot = configurationBuilder.Build();
+                var settings = new ShellConfiguration(tenantSettings);
+                var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
 
-            // All Tenant configuration files.
-            // All tenants are keyed such 
-            /*
-            {
-                Default: {
-                    Foo: blah    
-                }
-            }
-            Default:
-                Foo: blah
+                var shellSettings = new ShellSettings(settings, configuration)
+                {
+                    Name = tenant,
+                };
 
-            Key: Default:Foo
-             */
-            foreach (var tenant in configurationRoot.GetChildren())
-            {
-                var values = tenant
-                    .AsEnumerable()
-                    .ToDictionary(k => k.Key.Replace((tenant.Key + ":"), string.Empty), v => v.Value);
+                allSettings.Add(shellSettings);
+            };
 
-                // More a replace.
-                values.Remove(tenant.Key);
-                values.Add("Name", tenant.Key);
-
-                // What goes in to here is everything but with tenant name removed.
-                yield return new ShellSettings(values);
-            }
+            return allSettings;
         }
 
         public void SaveSettings(ShellSettings settings)
@@ -60,21 +113,61 @@ namespace OrchardCore.Environment.Shell
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var configuration = new Dictionary<string, string> { { settings.Name, null } };
+            var configuration = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(settings.Name))
+                .Build();
 
-            var settingsconfiguration = settings.Configuration;
-
-            foreach (var item in settingsconfiguration)
+            var shellSettings = new ShellSettings()
             {
-                configuration.Add($"{settings.Name}:{item.Key}", item.Value);
+                Name = settings.Name
+            };
+
+            configuration.Bind(shellSettings);
+
+            var configSettings = JObject.FromObject(shellSettings);
+            var tenantSettings = JObject.FromObject(settings);
+
+            foreach (var property in configSettings)
+            {
+                var tenantValue = tenantSettings.Value<string>(property.Key);
+                var configValue = configSettings.Value<string>(property.Key);
+
+                if (tenantValue != configValue)
+                {
+                    tenantSettings[property.Key] = tenantValue;
+                }
+                else
+                {
+                    tenantSettings[property.Key] = null;
+                }
             }
 
-            configuration.Remove($"{settings.Name}:Name");
+            tenantSettings.Remove("Name");
 
-            foreach (var provider in _configurationProviders)
+            _settingsSources.Save(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
+
+            var tenantConfig = new JObject();
+
+            var sections = settings.ShellConfiguration.GetChildren()
+                .Where(s => !s.GetChildren().Any())
+                .ToArray();
+
+            foreach (var section in sections)
             {
-                provider.SaveToSource(settings.Name, configuration);
+                if (settings[section.Key] != configuration[section.Key])
+                {
+                    tenantConfig[section.Key] = settings[section.Key];
+                }
+                else
+                {
+                    tenantConfig[section.Key] = null;
+                }
             }
+
+            tenantConfig.Remove("Name");
+
+            _tenantConfigSources.Save(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
         }
     }
 }

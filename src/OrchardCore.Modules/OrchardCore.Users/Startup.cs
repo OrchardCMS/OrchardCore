@@ -1,18 +1,21 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -22,10 +25,8 @@ using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using YesSql.Indexes;
 using OrchardCore.Users.ViewModels;
-using Fluid;
-using Microsoft.Extensions.Options;
+using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -35,12 +36,10 @@ namespace OrchardCore.Users
         private const string ChangePasswordPath = "ChangePassword";
 
         private readonly string _tenantName;
-        private readonly string _tenantPrefix;
 
         public Startup(ShellSettings shellSettings)
         {
             _tenantName = shellSettings.Name;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -72,6 +71,9 @@ namespace OrchardCore.Users
             // and change telephone number operations, and for two factor authentication token generation.
             services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
 
+            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
             services.TryAddScoped<UserStore>();
             services.TryAddScoped<IUserStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
@@ -84,7 +86,11 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + _tenantName;
-                options.Cookie.Path = _tenantPrefix;
+
+                // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+                // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                // tenant prefix but may also start by a path related e.g to a virtual folder.
+
                 options.LoginPath = "/" + LoginPath;
                 options.AccessDeniedPath = options.LoginPath;
 
@@ -110,11 +116,15 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+            services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
     }
 

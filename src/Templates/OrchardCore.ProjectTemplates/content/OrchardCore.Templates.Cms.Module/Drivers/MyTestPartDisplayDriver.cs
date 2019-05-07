@@ -4,9 +4,9 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Templates.Module.Models;
-using OrchardCore.Templates.Module.Settings;
-using OrchardCore.Templates.Module.ViewModels;
+using OrchardCore.Templates.Cms.Module.Models;
+using OrchardCore.Templates.Cms.Module.Settings;
+using OrchardCore.Templates.Cms.Module.ViewModels;
 
 namespace OrchardCore.Templates.Cms.Module.Drivers
 {

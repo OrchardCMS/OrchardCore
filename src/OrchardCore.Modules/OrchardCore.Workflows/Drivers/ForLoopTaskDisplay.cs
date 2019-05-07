@@ -12,12 +12,14 @@ namespace OrchardCore.Workflows.Drivers
             model.FromExpression = activity.From.Expression;
             model.ToExpression = activity.To.Expression;
             model.LoopVariableName = activity.LoopVariableName;
+            model.StepExpression = activity.Step.Expression;
         }
 
         protected override void UpdateActivity(ForLoopTaskViewModel model, ForLoopTask activity)
         {
             activity.From = new WorkflowExpression<double>(model.FromExpression);
             activity.To = new WorkflowExpression<double>(model.ToExpression);
+            activity.Step = new WorkflowExpression<double>(model.StepExpression);
             activity.LoopVariableName = model.LoopVariableName;
         }
     }
