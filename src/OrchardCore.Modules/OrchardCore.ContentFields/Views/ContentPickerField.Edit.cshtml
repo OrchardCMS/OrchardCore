@@ -27,7 +27,7 @@
 
 <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="content-picker-default">
+<div id="@vueElementId" class="content-picker-default" data-part="@partName" data-field="@fieldName">
 
     <fieldset class="form-group">
         <ul class="list-group col-xl-6 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
