@@ -26,7 +26,7 @@ namespace OrchardCore.ContentLocalization.ViewModels
     public class LocalizationLinksViewModel
     {
         public bool IsDeleted { get; set; }
-        public ContentItem ContentItem { get; set; }
+        public string ContentItemId { get; set; }
         public CultureInfo Culture { get; set; }
     }
 }

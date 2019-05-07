@@ -49,6 +49,11 @@ namespace OrchardCore.ContentLocalization.Drivers
             var viewModel = new LocalizationPartViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
             model.Culture = viewModel.Culture;
+            // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
+            if (String.IsNullOrEmpty(model.LocalizationSet))
+            {
+                model.LocalizationSet = _iidGenerator.GenerateUniqueId();
+            }
             return Edit(model, context);
         }
 
@@ -66,26 +71,21 @@ namespace OrchardCore.ContentLocalization.Drivers
                 model.Culture = await GetDefaultCultureNameAsync();
             }
 
-            if (String.IsNullOrEmpty(model.LocalizationSet))
-            {
-                model.LocalizationSet = _iidGenerator.GenerateUniqueId();
-            }
-
-            var currentCultures = settings.SupportedCultures.Select(culture =>
+            var currentCultures = settings.SupportedCultures.Where(c=>c != model.Culture).Select(culture =>
             {
                 return new LocalizationLinksViewModel()
                 {
                     IsDeleted = false,
                     Culture = CultureInfo.GetCultureInfo(culture),
-                    ContentItem = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture),
+                    ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
                 };
             }).ToList();
 
             // Content items that have been translated but the culture was removed from the settings page
-            var deletedCultureTranslations = alreadyTranslated.Select(ci =>
+            var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
             {
                 var culture = ci.As<LocalizationPart>()?.Culture;
-                if (currentCultures.Any(c => c.ContentItem?.ContentItemId == ci.ContentItemId) || culture == null)
+                if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
                 {
                     return null;
                 }
@@ -93,7 +93,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                 {
                     IsDeleted = true,
                     Culture = CultureInfo.GetCultureInfo(culture),
-                    ContentItem = ci
+                    ContentItemId = ci?.ContentItemId
                 };
             }).OfType<LocalizationLinksViewModel>().ToList();
 

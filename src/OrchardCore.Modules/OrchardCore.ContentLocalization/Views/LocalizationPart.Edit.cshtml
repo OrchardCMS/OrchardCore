@@ -4,6 +4,7 @@
 <style asp-src="~/OrchardCore.ContentLocalization/Styles/contentLocalization.min.css" debug-src="~/OrchardCore.ContentLocalization/Styles/contentLocalization.css"></style>
 
 <input asp-for="LocalizationSet" type="hidden" />
+<input asp-for="Culture" type="hidden" />
 <div class="form-group content-localization" id="localizationPartEdit">
     <div class="card">
         <div class="card-header" id="contentLocalizationToggle">
@@ -22,23 +23,18 @@
                 }
                 else
                 {
-                    <input asp-for="Culture" type="hidden" />
-
                     @if (!string.IsNullOrEmpty(Model.LocalizationSet))
                     {
                         <div class="list-group">
                             @foreach (var culture in Model.ContentItemCultures)
                             {
-                                if (!string.IsNullOrEmpty(culture.ContentItem?.ContentItemId))
+                                if (!string.IsNullOrEmpty(culture.ContentItemId))
                                 {
-                                    if (culture.ContentItem?.ContentItemId != Model.LocalizationPart.ContentItem.ContentItemId)
-                                    {
-                                        <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItem.ContentItemId" itemprop="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
-                                    }
+                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" itemprop="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" itemprop="UnsafeUrl" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" itemprop="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>
