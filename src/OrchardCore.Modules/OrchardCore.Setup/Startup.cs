@@ -1,27 +1,27 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Setup
 {
     public class Startup : StartupBase
     {
-        public Startup(IHostingEnvironment env)
+        private readonly string _defaultCulture;
+        private readonly string[] _supportedCultures;
+
+        public Startup(IShellConfiguration shellConfiguration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json");
+            var configurationSection = shellConfiguration.GetSection("OrchardCore.Setup");
 
-            Configuration = builder.Build();
+            _defaultCulture = configurationSection["DefaultCulture"];
+            _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<string[]>();
         }
-
-        public IConfiguration Configuration { get; }
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -32,24 +32,22 @@ namespace OrchardCore.Setup
 		public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var defaultCulture = Configuration["OrchardCore:OrchardCore.Setup:DefaultCulture"];
-            var supportedCultures = Configuration.GetSection("OrchardCore:OrchardCore.Setup:SupportedCultures").Get<string[]>();
 
-            if (!string.IsNullOrEmpty(defaultCulture))
+            if (!String.IsNullOrEmpty(_defaultCulture))
             {
-                options.SetDefaultCulture(defaultCulture);
+                options.SetDefaultCulture(_defaultCulture);
             }
 
-            if (supportedCultures.Length > 0)
+            if (_supportedCultures.Length > 0)
             {
                 var supportedCulture = new[] { options.DefaultRequestCulture.Culture.Name }
-                    .Concat(supportedCultures)
+                    .Concat(_supportedCultures)
                     .Distinct()
                     .ToArray();
 
                 options
-                    .AddSupportedCultures(supportedCultures)
-                    .AddSupportedUICultures(supportedCultures)
+                    .AddSupportedCultures(_supportedCultures)
+                    .AddSupportedUICultures(_supportedCultures)
                     ;
             }
 
