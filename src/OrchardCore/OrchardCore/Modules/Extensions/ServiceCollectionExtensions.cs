@@ -130,7 +130,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             new ModuleProjectStaticFileProvider(appContext),
                             new ModuleEmbeddedStaticFileProvider(appContext)
                         };
-                        fileProvider = new CompositeStaticFileProvider(fileProviders);
+                        fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
                     }
                     else
                     {

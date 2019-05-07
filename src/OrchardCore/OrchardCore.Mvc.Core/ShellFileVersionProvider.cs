@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Modules.FileProviders;
 
-namespace OrchardCore.Mvc.FileProviders
+namespace OrchardCore.Mvc
 {
     /// <summary>
     /// Provides version hash for a specified file.
