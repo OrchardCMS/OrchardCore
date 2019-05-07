@@ -18,7 +18,7 @@ namespace OrchardCore.ContentLocalization
             services.AddSingleton<IIndexProvider, LocalizedContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
+            //services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddSingleton<ContentPart, LocalizationPart>();
             return services;
         }

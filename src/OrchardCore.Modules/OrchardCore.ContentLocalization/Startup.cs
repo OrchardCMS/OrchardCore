@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Security;
-using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Indexing;
@@ -23,9 +22,7 @@ namespace OrchardCore.ContentLocalization
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
-            services.AddScoped<IContentDisplayDriver, SummaryAdminDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
-            services.AddScoped<ILocalizationPartViewModelBuilder, LocalizationPartViewModelBuilder>();
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();

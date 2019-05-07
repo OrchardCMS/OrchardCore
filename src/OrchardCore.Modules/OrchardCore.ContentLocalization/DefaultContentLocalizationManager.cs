@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -19,16 +20,24 @@ namespace OrchardCore.ContentLocalization
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly ILogger<DefaultContentLocalizationManager> _logger;
+        private readonly Entities.IIdGenerator _iidGenerator;
 
         public IEnumerable<IContentLocalizationHandler> Handlers { get; private set; }
         public IEnumerable<IContentLocalizationHandler> ReversedHandlers { get; private set; }
 
-        public DefaultContentLocalizationManager(IContentManager contentManager, ISession session, ISiteService siteService, ILogger<DefaultContentLocalizationManager> logger, IEnumerable<IContentLocalizationHandler> handlers)
+        public DefaultContentLocalizationManager(
+            IContentManager contentManager,
+            ISession session,
+            ISiteService siteService,
+            ILogger<DefaultContentLocalizationManager> logger,
+            IEnumerable<IContentLocalizationHandler> handlers,
+            Entities.IIdGenerator iidGenerator)
         {
             _contentManager = contentManager;
             _session = session;
             _siteService = siteService;
             Handlers = handlers;
+            _iidGenerator = iidGenerator;
             ReversedHandlers = handlers.Reverse().ToArray();
             _logger = logger;
         }
@@ -60,14 +69,26 @@ namespace OrchardCore.ContentLocalization
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
 
-            var existingContent = await GetContentItem(localizationPart.LocalizationSet, targetCulture);
-
-            if (existingContent != null)
+            if (String.IsNullOrEmpty(localizationPart.LocalizationSet))
             {
-                // already localized
-                return existingContent;
+                // If the source content item is not yet localized, define its defaults
+
+                localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
+                localizationPart.Culture = await GetDefaultCultureNameAsync();
+                _session.Save(content);
+            }
+            else
+            {
+                var existingContent = await GetContentItem(localizationPart.LocalizationSet, targetCulture);
+
+                if (existingContent != null)
+                {
+                    // already localized
+                    return existingContent;
+                }
             }
 
+            // Cloning the content item
             var cloned = await _contentManager.CloneAsync(content);
             var clonedPart = cloned.As<LocalizationPart>();
             clonedPart.Culture = targetCulture;
@@ -81,6 +102,18 @@ namespace OrchardCore.ContentLocalization
 
             _session.Save(cloned);
             return cloned;
+        }
+
+        private async Task<string> GetDefaultCultureNameAsync()
+        {
+            var setting = await _siteService.GetSiteSettingsAsync();
+
+            if (!String.IsNullOrEmpty(setting.Culture))
+            {
+                return CultureInfo.GetCultureInfo(setting.Culture).Name;
+            }
+
+            return CultureInfo.InstalledUICulture.Name;
         }
     }
 }
