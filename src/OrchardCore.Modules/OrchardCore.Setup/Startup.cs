@@ -25,8 +25,9 @@ namespace OrchardCore.Setup
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.AddSetup();
-		}
+        }
 
 		public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
