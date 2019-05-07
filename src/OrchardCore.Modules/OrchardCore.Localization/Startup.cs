@@ -62,39 +62,5 @@ namespace OrchardCore.Localization
 
             app.UseRequestLocalization(options);
         }
-
-        private async Task<(string defaultCulture, string[] supportedCultures)> GetSiteCultureAndSupportedCulturesAsync(IServiceProvider serviceProvider)
-        {
-            var shellHost = serviceProvider.GetRequiredService<IShellHost>();
-            var currentShellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-            ISite siteSettings = null;
-            (string, string[]) cultures;
-
-            if (currentShellSettings.State == TenantState.Uninitialized)
-            {
-                if (currentShellSettings.Name.Equals(ShellHelper.DefaultShellName))
-                {
-                    // localize the default tenant
-                    cultures = (Configuration["OrchardCore:DefaultCulture"], Configuration.GetSection("OrchardCore:SupportedCultures").Get<string[]>());
-                }
-                else
-                {
-                    // localize the non default tenant(s) using the default tenant's supported cultures 
-                    using (var serviceScope = await shellHost.GetScopeAsync(ShellHelper.DefaultShellName))
-                    {
-                        siteSettings = await serviceScope.ServiceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-                        cultures = (siteSettings.Culture, siteSettings.SupportedCultures);
-                    }
-                }
-            }
-            else
-            {
-                // localize the tenant using it's own supported cultures
-                siteSettings = await serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-                cultures = (siteSettings.Culture, siteSettings.SupportedCultures);
-            }
-
-            return cultures;
-        }
     }
 }

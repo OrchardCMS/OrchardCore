@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCommands()
 
                 .AddMvc()
-                .AddSetupFeatures("OrchardCore.Settings", "OrchardCore.Localization", "OrchardCore.Setup")
+                .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()
                 .AddDataStorage()
