@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,8 +20,6 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
-        public IConfiguration Configuration { get; }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
