@@ -7,8 +7,7 @@ namespace OrchardCore.Localization
     public class DefaultCalendarSelector : ICalendarSelector
     {
         private static readonly Func<Task<CalendarName>> GetCalendarName = () => {
-                    var calendar = BclCalendars.ConvertToCalendarSystem(CultureInfo.CurrentUICulture.Calendar);
-                    var calendarName = BclCalendars.GetCalendarName(calendar);
+                    var calendarName = BclCalendars.GetCalendarName(CultureInfo.CurrentUICulture.Calendar);
 
                     return Task.FromResult(calendarName);
          };

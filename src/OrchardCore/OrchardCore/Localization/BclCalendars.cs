@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using NodaTime;
 
@@ -7,9 +6,6 @@ namespace OrchardCore.Localization
 {
     internal static class BclCalendars
     {
-        public static IEnumerable<Calendar> MappedCalendars =>
-            new[] { Hebrew, Hijri, Gregorian, Julian, Persian, UmAlQura };
-
         public readonly static Calendar Hebrew = new HebrewCalendar();
         public readonly static Calendar Hijri = new HijriCalendar();
         public readonly static Calendar Gregorian = new GregorianCalendar();
@@ -40,36 +36,40 @@ namespace OrchardCore.Localization
             }
         }
 
-        public static CalendarName GetCalendarName(CalendarSystem calendar)
+        public static CalendarName GetCalendarName(Calendar calendar)
         {
-            if (calendar == CalendarSystem.HebrewCivil)
+            if (calendar == null)
             {
-                return CalendarName.Hebrew;
+                throw new ArgumentNullException(nameof(calendar));
             }
-            else if (calendar == CalendarSystem.IslamicBcl)
-            {
-                return CalendarName.Hijri;
-            }
-            else if (calendar == CalendarSystem.Iso)
+
+            var calendarType = calendar.GetType();
+            if (calendarType == typeof(GregorianCalendar))
             {
                 return CalendarName.Gregorian;
             }
-            else if (calendar == CalendarSystem.Julian)
+            else if (calendarType == typeof(HebrewCalendar))
+            {
+                return CalendarName.Hebrew;
+            }
+            else if (calendarType == typeof(HijriCalendar))
+            {
+                return CalendarName.Hijri;
+            }
+            else if (calendarType == typeof(JulianCalendar))
             {
                 return CalendarName.Julian;
             }
-            else if (calendar == CalendarSystem.PersianSimple || calendar == CalendarSystem.PersianAstronomical)
+            else if (calendarType == typeof(PersianCalendar))
             {
                 return CalendarName.Persian;
             }
-            else if (calendar == CalendarSystem.UmAlQura)
+            else if (calendarType == typeof(UmAlQuraCalendar))
             {
                 return CalendarName.UmAlQura;
             }
             else
-            {
                 return CalendarName.Unknown;
-            }
         }
 
         public static CalendarSystem ConvertToCalendarSystem(Calendar calendar)
