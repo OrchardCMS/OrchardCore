@@ -46,8 +46,8 @@ namespace OrchardCore.Setup
                     .ToArray();
 
                 options
-                    .AddSupportedCultures(_supportedCultures)
-                    .AddSupportedUICultures(_supportedCultures)
+                    .AddSupportedCultures(supportedCulture)
+                    .AddSupportedUICultures(supportedCulture)
                     ;
             }
 
