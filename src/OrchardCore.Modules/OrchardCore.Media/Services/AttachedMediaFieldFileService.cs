@@ -80,7 +80,7 @@ namespace OrchardCore.Media.Services
         // Newly added files
         private void MoveNewFilesToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            items.Where(x => !x.IsRemoved).ToList()
+            items.Where(x => !x.IsRemoved && !string.IsNullOrEmpty(x.Path)).ToList()
                 .ForEach(async x =>
                 {
                     var targetDir = GetContentItemFolder(contentItem);
