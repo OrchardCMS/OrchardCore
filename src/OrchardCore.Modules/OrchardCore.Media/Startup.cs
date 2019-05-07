@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -35,6 +34,7 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -90,7 +90,7 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(AssetsUrlPrefix, mediaPath);
             });
 
-            services.AddSingleton<IFileProvider>(serviceProvider =>
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
             {
                 return serviceProvider.GetRequiredService<IMediaFileProvider>();
             });
@@ -126,7 +126,6 @@ namespace OrchardCore.Media
             services.AddLiquidFilter<MediaUrlFilter>("asset_url");
             services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
             services.AddLiquidFilter<ImageTagFilter>("img_tag");
-            services.AddLiquidFilter<AppendVersionFilter>("append_version");
 
             // ImageSharp
 

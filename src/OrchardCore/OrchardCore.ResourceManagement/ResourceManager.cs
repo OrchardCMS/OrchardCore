@@ -480,7 +480,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -497,7 +497,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -516,7 +516,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -535,7 +535,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -547,7 +547,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -566,7 +566,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -578,7 +578,7 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
@@ -599,7 +599,7 @@ namespace OrchardCore.ResourceManagement
                 {
                     if (!first)
                     {
-                        builder.AppendHtml(System.Environment.NewLine);
+                        builder.AppendHtml(Environment.NewLine);
                     }
 
                     first = false;

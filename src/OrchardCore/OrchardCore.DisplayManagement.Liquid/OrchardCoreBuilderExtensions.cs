@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.Internal;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Razor;
@@ -35,6 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
                 services.AddScoped<ILiquidTemplateEventHandler, CultureLiquidTemplateEventHandler>();
+
+                services.AddLiquidFilter<AppendVersionFilter>("append_version");
             });
 
             return builder;

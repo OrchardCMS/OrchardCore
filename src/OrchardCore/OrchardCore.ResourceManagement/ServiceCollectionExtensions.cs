@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ResourceManagement;
 
@@ -11,7 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddResourceManagement(this IServiceCollection services)
         {
-            services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, FileVersionProvider>());
             services.TryAddScoped<IResourceManager, ResourceManager>();
             services.TryAddSingleton<IResourceManifestState, ResourceManifestState>();
 

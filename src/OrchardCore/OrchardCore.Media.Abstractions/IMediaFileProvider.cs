@@ -1,9 +1,8 @@
-using Microsoft.Extensions.FileProviders;
-using OrchardCore.Abstractions.Modules.FileProviders;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media
 {
-    public interface IMediaFileProvider : IFileProvider, IVirtualPathBaseProvider
+    public interface IMediaFileProvider : IStaticFileProvider, IVirtualPathBaseProvider
     {
     }
 }

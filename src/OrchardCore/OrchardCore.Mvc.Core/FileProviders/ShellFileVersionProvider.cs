@@ -8,31 +8,29 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Abstractions.Modules.FileProviders;
+using OrchardCore.Modules.FileProviders;
 
-namespace OrchardCore.ResourceManagement
+namespace OrchardCore.Mvc.FileProviders
 {
     /// <summary>
     /// Provides version hash for a specified file.
     /// </summary>
-    public class FileVersionProvider : IFileVersionProvider
+    public class ShellFileVersionProvider : IFileVersionProvider
     {
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
 
         private readonly IEnumerable<IFileProvider> _registeredFileProviders;
-        private readonly IFileProvider _webRootfileProvider;
-
-        private IList<IFileProvider> _combinedFileProviders;
         private readonly IMemoryCache _cache;
-        public FileVersionProvider(
-            IEnumerable<IFileProvider> registeredFileProviders,
+
+        public ShellFileVersionProvider(
+            IEnumerable<IStaticFileProvider> registeredFileProviders,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
         {
-            _registeredFileProviders = registeredFileProviders;
-            _webRootfileProvider = environment.WebRootFileProvider;
+            _registeredFileProviders = registeredFileProviders
+                .Concat(new[] { environment.WebRootFileProvider });
             _cache = cache;
         }
 
@@ -43,16 +41,6 @@ namespace OrchardCore.ResourceManagement
                 throw new ArgumentNullException(nameof(path));
             }
 
-            // Build _combinedFileProviders if it has not been built
-            if (_combinedFileProviders == null)
-            {
-                _combinedFileProviders = _registeredFileProviders.ToList();
-                if (_webRootfileProvider != null)
-                {
-                    _combinedFileProviders.Add(_webRootfileProvider);
-                }
-            }
-
             var resolvedPath = path;
 
             var queryStringOrFragmentStartIndex = path.IndexOfAny(QueryStringAndFragmentTokens);
@@ -60,7 +48,6 @@ namespace OrchardCore.ResourceManagement
             {
                 resolvedPath = path.Substring(0, queryStringOrFragmentStartIndex);
             }
-            resolvedPath = resolvedPath.TrimStart('~');
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
@@ -74,7 +61,7 @@ namespace OrchardCore.ResourceManagement
             }
 
             var cacheEntryOptions = new MemoryCacheEntryOptions();
-            foreach (var fileProvider in _combinedFileProviders)
+            foreach (var fileProvider in _registeredFileProviders)
             {
                 cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
@@ -87,6 +74,7 @@ namespace OrchardCore.ResourceManagement
                     var requestPathBaseRelativePath = resolvedPath.Substring(requestPathBase.Value.Length);
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
                     fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
+
                     // Perform check against VirtualPathBase when using requestPathBase
                     if (!fileInfo.Exists &&
                         fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
@@ -98,6 +86,7 @@ namespace OrchardCore.ResourceManagement
                         fileInfo = fileProvider.GetFileInfo(requestVirtualPathBaseRelativePath);
                     }
                 }
+
                 // Perform check against VirtualPathBase when not using requestPathBase
                 else if (!fileInfo.Exists &&
                         !requestPathBase.HasValue &&
@@ -127,10 +116,6 @@ namespace OrchardCore.ResourceManagement
             return value;
         }
 
-        //private static string ResolveFile(string path, IFileProvider fileProvider, string resolvedPath, string requestPathBase)
-        //{
-
-        //}
         private static string GetHashForFile(IFileInfo fileInfo)
         {
             using (var sha256 = CryptographyAlgorithms.CreateSHA256())

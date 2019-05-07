@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -20,6 +19,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -117,19 +117,20 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider => {
+                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
+                {
                     var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
                     var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
 
                     IModuleStaticFileProvider fileProvider;
                     if (env.IsDevelopment())
                     {
-                        var fileProviders = new List<IFileProvider>
+                        var fileProviders = new List<IStaticFileProvider>
                         {
                             new ModuleProjectStaticFileProvider(appContext),
                             new ModuleEmbeddedStaticFileProvider(appContext)
                         };
-                        fileProvider = new ModuleCompositeFileProvider(fileProviders);
+                        fileProvider = new CompositeStaticFileProvider(fileProviders);
                     }
                     else
                     {
@@ -138,7 +139,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return fileProvider;
                 });
 
-                services.AddSingleton<IFileProvider>(serviceProvider =>
+                services.AddSingleton<IStaticFileProvider>(serviceProvider =>
                 {
                     return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
                 });

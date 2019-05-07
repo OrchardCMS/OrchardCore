@@ -3,11 +3,11 @@ using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
@@ -52,7 +52,7 @@ namespace OrchardCore.Tenants
                 return new TenantFileProvider(contentRoot);
             });
 
-            services.AddSingleton<IFileProvider>(serviceProvider =>
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
             {
                 return serviceProvider.GetRequiredService<ITenantFileProvider>();
             });

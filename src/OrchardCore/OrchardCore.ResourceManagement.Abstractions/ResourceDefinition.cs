@@ -208,15 +208,6 @@ namespace OrchardCore.ResourceManagement
                     : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
             }
 
-            //if settings has value, it can override resource definition, otherwise use resource definition
-            if (settings.AppendVersion.HasValue && settings.AppendVersion == true)
-            {
-                url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
-            }
-            else if (!settings.AppendVersion.HasValue && AppendVersion == true)
-            {
-                url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
-            }
             if (String.IsNullOrEmpty(url))
             {
                 url = null;
@@ -240,6 +231,13 @@ namespace OrchardCore.ResourceManagement
                 {
                     url = applicationPath + url.Substring(1);
                 }
+            }
+
+            // If settings has value, it can override resource definition, otherwise use resource definition
+            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
+                (!settings.AppendVersion.HasValue && AppendVersion == true)))
+            {
+                url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
             // Don't prefix cdn if the path is absolute, or is in debug mode.
