@@ -10,12 +10,67 @@ namespace OrchardCore.Localization
         public static IEnumerable<Calendar> MappedCalendars =>
             new[] { Hebrew, Hijri, Gregorian, Julian, Persian, UmAlQura };
 
-        public static Calendar Hebrew => new HebrewCalendar();
-        public static Calendar Hijri => new HijriCalendar();
-        public static Calendar Gregorian => new GregorianCalendar();
-        public static Calendar Julian => new JulianCalendar();
-        public static Calendar Persian => new PersianCalendar();
-        public static Calendar UmAlQura => new UmAlQuraCalendar();
+        public readonly static Calendar Hebrew = new HebrewCalendar();
+        public readonly static Calendar Hijri = new HijriCalendar();
+        public readonly static Calendar Gregorian = new GregorianCalendar();
+        public readonly static Calendar Julian = new JulianCalendar();
+        public readonly static Calendar Persian = new PersianCalendar();
+        public readonly static Calendar UmAlQura = new UmAlQuraCalendar();
+
+        public static CalendarSystem GetCalendarByName(CalendarName calendarName)
+        {
+            switch (calendarName)
+            {
+                case CalendarName.Hebrew:
+                    return CalendarSystem.HebrewCivil;
+                case CalendarName.Hijri:
+                    return CalendarSystem.IslamicBcl;
+                case CalendarName.Gregorian:
+                    return CalendarSystem.Iso;
+                case CalendarName.Julian:
+                    return CalendarSystem.Julian;
+                case CalendarName.Persian:
+                    return CultureInfo.CurrentUICulture.Calendar.IsLeapYear(1)
+                        ? CalendarSystem.PersianSimple
+                        : CalendarSystem.PersianAstronomical;
+                case CalendarName.UmAlQura:
+                    return CalendarSystem.UmAlQura;
+                default:
+                    throw new NotSupportedException($"The calendar is not supported.");
+            }
+        }
+
+        public static CalendarName GetCalendarName(CalendarSystem calendar)
+        {
+            if (calendar == CalendarSystem.HebrewCivil)
+            {
+                return CalendarName.Hebrew;
+            }
+            else if (calendar == CalendarSystem.IslamicBcl)
+            {
+                return CalendarName.Hijri;
+            }
+            else if (calendar == CalendarSystem.Iso)
+            {
+                return CalendarName.Gregorian;
+            }
+            else if (calendar == CalendarSystem.Julian)
+            {
+                return CalendarName.Julian;
+            }
+            else if (calendar == CalendarSystem.PersianSimple || calendar == CalendarSystem.PersianAstronomical)
+            {
+                return CalendarName.Persian;
+            }
+            else if (calendar == CalendarSystem.UmAlQura)
+            {
+                return CalendarName.UmAlQura;
+            }
+            else
+            {
+                return CalendarName.Unknown;
+            }
+        }
 
         public static CalendarSystem ConvertToCalendarSystem(Calendar calendar)
         {

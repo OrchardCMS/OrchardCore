@@ -4,6 +4,6 @@ namespace OrchardCore.Localization
 {
     public interface ICalendarSelector
     {
-        Task<CalendarSelectorResult> GetCalendar();
+        Task<CalendarSelectorResult> GetCalendarAsync();
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,40 +7,46 @@ namespace OrchardCore.Localization
 {
     public class DefaultCalendarManager : ICalendarManager
     {
-        private readonly ICalendarSelector _calendarSelector;
+        private readonly IEnumerable<ICalendarSelector> _calendarSelectors;
 
-        private static IDictionary<string, CalendarSystem> CalendarsList = CalendarSystem.Ids
-            .ToLookup(c => CalendarSystem.ForId(c).Name)
-            .ToDictionary(c => c.Key, c => CalendarSystem.ForId(c.First()));
-
-        public DefaultCalendarManager(ICalendarSelector calendarSelector)
+        public DefaultCalendarManager(IEnumerable<ICalendarSelector> calendarSelectors)
         {
-            _calendarSelector = calendarSelector;
-        }
-
-        public IEnumerable<string> GetCalendars() => CalendarsList.Keys;
-
-        public CalendarSystem GetCalendarByName(string calendarName)
-        {
-            if (String.IsNullOrEmpty(calendarName))
-            {
-                throw new ArgumentNullException(nameof(calendarName));
-            }
-
-            if (!CalendarsList.ContainsKey(calendarName))
-            {
-                throw new ArgumentException($"The calendar name '{calendarName}' is not a recognized System.Globalization calendar name.", nameof(calendarName));
-            }
-
-            return CalendarsList[calendarName];
+            _calendarSelectors = calendarSelectors;
         }
 
         public async Task<CalendarSystem> GetCurrentCalendar()
         {
-            var calendarResult = await _calendarSelector.GetCalendar();
-            var calendarName = await calendarResult.CalendarName();
+            var calendarName = await GetCalendarAsync();
 
-            return CalendarsList[calendarName];
+            return BclCalendars.GetCalendarByName(calendarName);
+        }
+
+        private async Task<CalendarName> GetCalendarAsync()
+        {
+            var calendarResults = new List<CalendarSelectorResult>();
+
+            foreach (var calendarSelector in _calendarSelectors)
+            {
+                var calendarResult = await calendarSelector.GetCalendarAsync();
+
+                if (calendarResult != null)
+                {
+                    calendarResults.Add(calendarResult);
+                }
+            }
+
+            if (calendarResults.Count == 0)
+            {
+                return CalendarName.Unknown;
+            }
+            else if (calendarResults.Count > 1)
+            {
+                calendarResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
+            }
+
+            var calendarName = await calendarResults.First().CalendarName();
+
+            return calendarName;
         }
     }
 }
