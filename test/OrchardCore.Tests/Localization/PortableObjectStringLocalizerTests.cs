@@ -16,6 +16,7 @@ namespace OrchardCore.Tests.Localization
     {
         private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
         private static PluralizationRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
+        private static PluralizationRuleDelegate _arPluralRule = n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" })
             });
 
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -48,7 +49,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" })
             });
 
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -62,7 +63,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new CultureDictionaryRecord[] { });
 
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -81,7 +82,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("car", null, new[] { "auto", "auta", "aut" })
             });
 
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs-cz");
 
@@ -99,7 +100,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs-CZ", new[] {
                 new CultureDictionaryRecord("ball", null, new[] { "balón", "balóny", "balónů" })
             });
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs-CZ");
 
@@ -115,7 +116,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" }),
                 new CultureDictionaryRecord("ball", "small", new[] { "míček", "míčky", "míčků" })
             });
-            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -131,7 +132,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" }),
                 new CultureDictionaryRecord("ball", "big", new[] { "míček", "míčky", "míčků" })
             });
-            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -146,7 +147,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("The page (ID:{0}) was deleted.", null, new[] { "Stránka (ID:{0}) byla smazána." })
             });
-            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -161,7 +162,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("The page (ID:{0}) was deleted.", null, new[] { "Stránka (ID:{0}) byla smazána." })
             });
-            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
             var htmlLocalizer = new PortableObjectHtmlLocalizer(localizer);
             var unformatted = htmlLocalizer["The page (ID:{0}) was deleted.", "{1}"];
@@ -191,7 +192,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" }),
             });
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
             var translation = localizer.Plural(count, "car", "cars");
 
@@ -207,7 +208,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", null, new[] { "míč", "{0} míče", "{0} míčů" }),
             });
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
             var translation = localizer.Plural(count, "ball", "{0} balls", count);
 
@@ -221,7 +222,7 @@ namespace OrchardCore.Tests.Localization
         public void LocalizerReturnsOriginalValuesIfTranslationDoesntExistAndMultiplePluraflFormsAreSpecified(string expected, int count)
         {
             SetupDictionary("en", new CultureDictionaryRecord[] { });
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("en");
             var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
 
@@ -236,9 +237,25 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("en", new CultureDictionaryRecord[] {
                 new CultureDictionaryRecord("míč", null, new[] { "ball", "{0} balls" })
             }, _enPluralRule);
-            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, _logger.Object);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("en");
             var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
+        [InlineData(false, "hello", "hello")]
+        [InlineData(true, "hello", "مرحبا")]
+        public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentCulture, string resourceKey, string expected)
+        {
+            SetupDictionary("ar", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })
+            }, _arPluralRule);
+            SetupDictionary("ar-YE", new CultureDictionaryRecord[] { }, _arPluralRule);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, fallBackToParentCulture, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
+            var translation = localizer[resourceKey];
 
             Assert.Equal(expected, translation);
         }
