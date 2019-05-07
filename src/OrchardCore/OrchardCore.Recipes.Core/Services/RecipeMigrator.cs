@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using OrchardCore.Data.Migration;
@@ -37,7 +38,7 @@ namespace OrchardCore.Recipes.Services
             recipeDescriptor.RequireNewScope = false;
 
             var executionId = Guid.NewGuid().ToString("n");
-            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());
+            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
         }
     }
 }

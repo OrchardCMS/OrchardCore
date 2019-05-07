@@ -167,11 +167,14 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var part = context.ContentItem.Get<ContentPart>(typePartDefinition.Name);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                // If no existing part was not found in the content item, create a new one
                 if (part == null)
                 {
-                    part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
+                    part = activator.CreateInstance();
                     context.ContentItem.Weld(typePartDefinition.Name, part);
                 }
 
@@ -183,8 +186,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
                     if (!part.Has(fieldName))
                     {
-                        var activator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
-                        context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, activator.CreateInstance());
+                        var fieldActivator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
+                        context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, fieldActivator.CreateInstance());
                     }
                 }
             }

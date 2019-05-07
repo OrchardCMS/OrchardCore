@@ -1,7 +1,8 @@
+var leftMenuPS;
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
-    ps = new PerfectScrollbar('#left-nav');
+    leftMenuPS = new PerfectScrollbar('#left-nav', { suppressScrollX: true });
 
     // We set leftbar to compact if :
     // 1. That preference was stored by the user the last time he was on the page
@@ -11,6 +12,7 @@ $(function () {
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
+
 });
 
 
@@ -32,6 +34,7 @@ $(document).on("click", function (event) {
 
 
 var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
+var subMenuArray = new Array();
 
 function setCompactStatus(explicit) {
     // This if is to avoid that when sliding from expanded to compact the 
@@ -52,14 +55,33 @@ function setCompactStatus(explicit) {
     $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', '');
-    $('#left-nav').removeClass('ps');
-    $('#left-nav').removeClass('ps--active-y'); // need this too because of Edge IE11
     $('#left-nav li.has-items').removeClass("visible");
+
+    //after menu has collapsed we set the transitions to none so that we don't do any transition
+    //animation when open a sub-menu
+    setTimeout(function () {
+        $('#left-nav > ul > li').css("transition", "none");
+    }, 200); 
+    
+    //$('#left-nav').scrollTop = 0;
+    //leftMenuPS.update();
+
+    if (leftMenuPS) {
+        leftMenuPS.destroy();
+        leftMenuPS = null; // to make sure garbages are collected
+    }
+
+    //set PerfectScrollBar on sub-menu items.
+    var submenus = $('#left-nav > ul > li > [id^="m"]');
+    submenus.each(function (index) {
+        subMenuArray[index] = new PerfectScrollbar(this, { suppressScrollX: true });
+    });
 
     if (explicit == true) {
         isCompactExplicit = explicit;
     }
     persistAdminPreferences();
+    
 }
 
 
@@ -70,8 +92,23 @@ function unSetCompactStatus() {
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
     $('#left-nav ul.menu-admin > li > label').attr('data-toggle', 'collapse');
-    $('#left-nav').addClass('ps');
     $('#left-nav li.has-items').removeClass("visible");
+    $('#left-nav > ul > li').css("transition", "");
+
+    if (leftMenuPS == null) {
+        leftMenuPS = new PerfectScrollbar('#left-nav', { suppressScrollX: true });
+    }
+    else {
+        leftMenuPS.destroy();
+        leftMenuPS = null; // to make sure garbages are collected
+        leftMenuPS = new PerfectScrollbar('#left-nav', { suppressScrollX: true });
+    }
+
+    //remove PerfectScrollBar on sub-menu items
+    subMenuArray.forEach(function (ps) {
+        ps.destroy();
+        ps = null; // to make sure garbages are collected
+    });
 
     isCompactExplicit = false;
     persistAdminPreferences();

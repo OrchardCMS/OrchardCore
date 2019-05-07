@@ -32,6 +32,13 @@ nav:
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
+    - Guides:
+        - Index: docs/guides/README.md
+        - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
+        - Running Code on Startup: docs/guides/run-code-on-startup/index.md
+        - Creating an Orchard Core CMS website: docs/guides/create-cms-application/index.md
+        - Adding a Menu Item to the Admin Navigation: docs/guides/add-admin-menu/index.md
+        - Installing Localization Files: docs/guides/install-localization-files/index.md
     - Code Generation Templates: docs/templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
@@ -59,10 +66,12 @@ nav:
         - Widgets: OrchardCore.Modules/OrchardCore.Widgets/README.md
         - Flows: OrchardCore.Modules/OrchardCore.Flows/README.md
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
-        - Admin Trees: OrchardCore.Modules/OrchardCore.AdminTrees/README.md
+        - Admin Menu: OrchardCore.Modules/OrchardCore.AdminMenu/README.md
     - Core Modules:
+        - Data: OrchardCore/OrchardCore.Data/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
+        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md 
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
@@ -79,3 +88,5 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
+        - Github: OrchardCore.Modules/OrchardCore.Github/README.md
+        - Google: OrchardCore.Modules/OrchardCore.Google/README.md

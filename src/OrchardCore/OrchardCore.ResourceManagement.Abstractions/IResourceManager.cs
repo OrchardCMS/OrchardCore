@@ -110,5 +110,10 @@ namespace OrchardCore.ResourceManagement
         /// Renders the registered footer script tags.
         /// </summary>
         void RenderFootScript(IHtmlContentBuilder builder);
+
+        /// <summary>
+        /// Renders the registered local script tags.
+        /// </summary>
+        void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder);
     }
 }

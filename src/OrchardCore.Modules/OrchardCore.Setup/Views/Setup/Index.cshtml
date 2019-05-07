@@ -123,10 +123,9 @@
         <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-control">
-                <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
                 @foreach (var timezone in Clock.GetTimeZones())
                 {
-                    <option value="@timezone.TimeZoneId" selected="@(Model.SiteTimeZone == timezone.TimeZoneId)">
+                    <option value="@timezone.TimeZoneId" selected="@(timezone.TimeZoneId == localTimeZone.TimeZoneId)">
                         @timezone
                     </option>
                 }
@@ -146,23 +145,12 @@
         <div class="row">
             <div class="form-group col-md-6">
                 <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
-                @if (Model.DatabaseConfigurationPreset)
-                {
-                    var provider = Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider);
-
-                    <select asp-for="DatabaseProvider" class="form-control" required readonly>
+                <select asp-for="DatabaseProvider" class="form-control" required>
+                    @foreach (var provider in Model.DatabaseProviders)
+                    {
                         <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
-                    </select>
-                }
-                else
-                {
-                    <select asp-for="DatabaseProvider" class="form-control" required>
-                        @foreach (var provider in Model.DatabaseProviders)
-                        {
-                            <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
-                        }
-                    </select>
-                }
+                    }
+                </select>
                 <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
             </div>
 
@@ -227,7 +215,7 @@
         </div>
     </fieldset>
 </form>
-<script src="/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
+<script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     //<![CDATA[
     $(function(){

@@ -41,6 +41,15 @@ namespace OrchardCore.Workflows.Activities
         }
 
         /// <summary>
+        /// An expression evaluating to the end value.
+        /// </summary>
+        public WorkflowExpression<double> Step
+        {
+            get => GetProperty(() => new WorkflowExpression<double>("1"));
+            set => SetProperty(value);
+        }
+
+        /// <summary>
         /// The property name to store the current iteration number in.
         /// </summary>
         public string LoopVariableName
@@ -75,7 +84,12 @@ namespace OrchardCore.Workflows.Activities
                 to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if(Index < from)
+            if (!double.TryParse(Step.Expression, out var step))
+            {
+                step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
+            }
+
+            if (Index < from)
             {
                 Index = from;
             }
@@ -84,7 +98,7 @@ namespace OrchardCore.Workflows.Activities
             {
                 workflowContext.LastResult = Index;
                 workflowContext.Properties[LoopVariableName] = Index;
-                Index++;
+                Index += step;
                 return Outcomes("Iterate");
             }
             else

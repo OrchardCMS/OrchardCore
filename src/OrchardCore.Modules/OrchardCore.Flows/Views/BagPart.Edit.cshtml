@@ -64,8 +64,8 @@
         Context.Items["BagPart.Edit"] = new object();
         <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
 
-        <script asp-src="/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@

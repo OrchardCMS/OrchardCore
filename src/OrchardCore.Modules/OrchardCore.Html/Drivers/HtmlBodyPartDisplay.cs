@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -63,7 +64,7 @@ namespace OrchardCore.Html.Drivers
 
             using (var writer = new StringWriter())
             {
-                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, NullEncoder.Default, templateContext);
+                await _liquidTemplatemanager.RenderAsync(HtmlBodyPart.Html, writer, HtmlEncoder.Default, templateContext);
                 model.Html = writer.ToString();
             }
 

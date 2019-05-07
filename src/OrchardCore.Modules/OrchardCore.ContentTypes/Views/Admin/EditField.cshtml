@@ -13,11 +13,12 @@
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
     var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
 <h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1>
 
-<form asp-action="EditField">
+<form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <fieldset class="form-group">
         <div class="row col-md">
@@ -82,7 +83,10 @@
        
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <a asp-route-action="Edit" asp-route-id="@Model.PartFieldDefinition.PartDefinition.Name" class="btn btn-secondary">@T["Cancel"]</a>
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+        }
     </fieldset>
 </form>
 

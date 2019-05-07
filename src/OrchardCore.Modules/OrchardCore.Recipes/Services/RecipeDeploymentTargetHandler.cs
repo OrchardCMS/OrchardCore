@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment;
@@ -25,7 +26,7 @@ namespace OrchardCore.Recipes.Services
                 RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
             };
 
-            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object());
+            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
         }
     }
 }

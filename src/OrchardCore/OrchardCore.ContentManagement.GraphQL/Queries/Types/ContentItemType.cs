@@ -1,11 +1,17 @@
 using GraphQL.Types;
+using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement.GraphQL.Options;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public class ContentItemType : ObjectGraphType<ContentItem>
     {
-        public ContentItemType()
+        private readonly GraphQLContentOptions _options;
+
+        public ContentItemType(IOptions<GraphQLContentOptions> optionsAccessor)
         {
+            _options = optionsAccessor.Value;
+
             Name = "ContentItemType";
 
             Field(ci => ci.ContentItemId).Description("Content item id");
@@ -19,7 +25,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc, description: "The date and time of creation");
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
-
+            
             Interface<ContentItemInterface>();
 
             IsTypeOf = IsContentType;
@@ -28,6 +34,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         private bool IsContentType(object obj)
         {
             return obj is ContentItem item && item.ContentType == Name;
+        }
+
+        public override FieldType AddField(FieldType fieldType)
+        {
+            if (!_options.ShouldSkip(this.GetType(), fieldType.Name))
+            {
+                return base.AddField(fieldType);
+            }
+
+            return null;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return filters;
         }
 
-        public static Task<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ViewLocalizer", out var localizer))
             {
@@ -36,16 +36,16 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 parameters.Add(arguments.At(i).ToStringValue());
             }
 
-            return Task.FromResult<FluidValue>(new StringValue(((IViewLocalizer)localizer)
+            return new ValueTask<FluidValue>(new StringValue(((IViewLocalizer)localizer)
                 .GetString(input.ToStringValue(), parameters.ToArray())));
         }
 
-        public static Task<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            return Task.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
+            return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }
 
-        public static async Task<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out dynamic shapeFactory))
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
         }
 
-        public static async Task<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return NilValue.Instance;
         }
 
-        public static async Task<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static async ValueTask<FluidValue> ShapeRender(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
@@ -93,14 +93,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return NilValue.Instance;
         }
 
-        public static Task<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (input.ToObjectValue() is IShape shape)
             {
                 shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
             }
 
-            return Task.FromResult(input);
+            return new ValueTask<FluidValue>(input);
         }
 
         public static string LowerKebabToPascalCase(string attribute)

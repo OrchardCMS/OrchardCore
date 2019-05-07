@@ -1,9 +1,5 @@
 (function($) {
   "use strict"; // Start of use strict
-  if (!$(".masthead")[0]) {
-     $(".navbar").addClass("bg-dark");
-     $("#main").css('padding-top', '150px');
-  }
 
   // Smooth scrolling using jQuery easing
   $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
@@ -45,10 +41,10 @@
 
   // Hide navbar when modals trigger
   $('.portfolio-modal').on('show.bs.modal', function(e) {
-    $(".navbar").addClass("d-none");
+    $('.navbar').addClass('d-none');
   })
   $('.portfolio-modal').on('hidden.bs.modal', function(e) {
-    $(".navbar").removeClass("d-none");
+    $('.navbar').removeClass('d-none');
   })
 
 })(jQuery); // End of use strict

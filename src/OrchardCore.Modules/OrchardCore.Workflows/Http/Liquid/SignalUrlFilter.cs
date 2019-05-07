@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Http.Liquid
 {
     public class SignalUrlFilter : ILiquidFilter
     {
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("UrlHelper", out var urlHelperObj))
             {
@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Http.Liquid
                 throw new ArgumentException("SignalService missing while invoking 'signal_url'");
             }
 
-            var workflowContextValue = context.GetValue(nameof(WorkflowExecutionContext));
+            var workflowContextValue = context.GetValue("Workflow");
 
             if (workflowContextValue.IsNil())
             {
@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Http.Liquid
             var signalService = (ISecurityTokenService)signalServiceObj;
             var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
             var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
-            return Task.FromResult<FluidValue>(urlValue);
+            return new ValueTask<FluidValue>(urlValue);
         }
     }
 }

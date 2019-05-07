@@ -63,7 +63,7 @@ namespace OrchardCore.Markdown.Drivers
 
             using (var writer = new StringWriter())
             {
-                await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, writer, NullEncoder.Default, templateContext);
+                await _liquidTemplatemanager.RenderAsync(MarkdownBodyPart.Markdown, writer, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
                 model.Html = Markdig.Markdown.ToHtml(writer.ToString() ?? "");
             }
 

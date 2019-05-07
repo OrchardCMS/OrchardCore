@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email
@@ -38,8 +37,6 @@ namespace OrchardCore.Email
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
                     }
-                    break;
-                case SmtpDeliveryMethod.PickupDirectoryFromIis:
                     break;
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                     if (String.IsNullOrEmpty(PickupDirectoryLocation))

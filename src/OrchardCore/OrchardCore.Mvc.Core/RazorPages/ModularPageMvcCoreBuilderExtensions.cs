@@ -11,14 +11,19 @@ namespace OrchardCore.Mvc.RazorPages
         public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder)
         {
             builder.AddRazorPages();
+            builder.Services.AddModularRazorPages();
+            return builder;
+        }
 
-            builder.Services.TryAddEnumerable(
+        internal static IServiceCollection AddModularRazorPages(this IServiceCollection services)
+        {
+            services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorPagesOptions>, ModularPageRazorPagesOptionsSetup>());
 
-            builder.Services.TryAddEnumerable(
+            services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
 
-            return builder;
+            return services;
         }
     }
 }

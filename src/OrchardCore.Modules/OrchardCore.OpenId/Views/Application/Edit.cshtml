@@ -87,7 +87,9 @@
             <input asp-for="RedirectUris" class="form-control" autofocus />
             <span asp-validation-for="RedirectUris" class="text-danger"></span>
         </div>
-
+        <div class="hint">
+            @T["Space delimited list of redirect URIs."]
+        </div>
 
         <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
             <fieldset class="form-group">
@@ -101,6 +103,9 @@
                     <label asp-for="PostLogoutRedirectUris">@T["Post Logout Redirect Uris"]</label>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
+                </div>
+                <div class="hint">
+                    @T["Space delimited list of logout redirect URIs."]
                 </div>
             </div>
         </fieldset>

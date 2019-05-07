@@ -4,7 +4,7 @@ using OrchardCore.Facebook;
 [assembly: Module(
     Name = "Facebook",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0",
     Category = "Facebook"
 )]
@@ -20,6 +20,6 @@ using OrchardCore.Facebook;
     Id = FacebookConstants.Features.Login,
     Name = "Facebook Login",
     Category = "Facebook",
-    Description = "Auhenticates users from facebook.",
+    Description = "Authenticates users from facebook.",
     Dependencies = new[] { FacebookConstants.Features.Core }
 )]

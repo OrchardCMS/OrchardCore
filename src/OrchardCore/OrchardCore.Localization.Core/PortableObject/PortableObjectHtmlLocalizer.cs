@@ -36,7 +36,7 @@ namespace OrchardCore.Localization.PortableObject
 
                 // Otherwise an already formatted string containing curly braces will be wrongly reformatted.
 
-                if (_localizer is IPluralStringLocalizer pluralLocalizer)
+                if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
                 {
                     // Get an unformatted string and all non plural arguments (1st one is the plural count).
                     var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
