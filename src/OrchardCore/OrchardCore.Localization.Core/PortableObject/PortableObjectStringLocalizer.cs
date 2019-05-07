@@ -144,22 +144,21 @@ namespace OrchardCore.Localization.PortableObject
 
                 var translation = dictionary[key, count];
 
-                if (_fallBackToParentCulture)
+                // Should we search in the parent culture?
+                if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
                 {
-                    if (translation == null && culture.Parent != null && culture.Parent != culture)
-                    {
-                        dictionary = _localizationManager.GetDictionary(culture.Parent);
+                    dictionary = _localizationManager.GetDictionary(culture.Parent);
 
-                        if (dictionary != null)
-                        {
-                            translation = dictionary[key, count]; // fallback to the parent culture
-                        }
+                    if (dictionary != null)
+                    {
+                        translation = dictionary[key, count]; // fallback to the parent culture
                     }
                 }
 
+                // No exact translation found, search without context
                 if (translation == null && context != null)
                 {
-                    translation = GetTranslation(name, null, culture, count); // fallback to the translation without context
+                    translation = GetTranslation(name, null, culture, count);
                 }
 
                 return translation;
