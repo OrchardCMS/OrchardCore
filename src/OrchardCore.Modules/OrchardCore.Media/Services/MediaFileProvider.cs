@@ -16,6 +16,6 @@ namespace OrchardCore.Media.Services
             VirtualPathBase = virtualPathBase;
         }
 
-        public PathString VirtualPathBase { get; set; }
+        public PathString VirtualPathBase { get; }
     }
 }

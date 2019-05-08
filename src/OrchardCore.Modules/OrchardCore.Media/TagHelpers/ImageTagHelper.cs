@@ -9,15 +9,13 @@ namespace OrchardCore.Media.TagHelpers
     {
         private const string AssetSrcAttributeName = "asset-src";
 
-        private const string AppendVersionAttributeName = "append-version";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         private readonly IMediaFileStore _mediaFileStore;
 
         private readonly IFileVersionProvider _fileVersionProvider;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        //private string _pathBase;
 
         public override int Order => -10;
 

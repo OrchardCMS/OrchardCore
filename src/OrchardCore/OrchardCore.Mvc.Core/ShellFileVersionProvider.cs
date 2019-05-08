@@ -20,16 +20,16 @@ namespace OrchardCore.Mvc
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
 
-        private readonly IEnumerable<IFileProvider> _registeredFileProviders;
+        private readonly IEnumerable<IFileProvider> _fileProviders;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
-            IEnumerable<IStaticFileProvider> registeredFileProviders,
+            IEnumerable<IStaticFileProvider> staticFileProviders,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
         {
-            _registeredFileProviders = registeredFileProviders
+            _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
             _cache = cache;
         }
@@ -61,7 +61,7 @@ namespace OrchardCore.Mvc
             }
 
             var cacheEntryOptions = new MemoryCacheEntryOptions();
-            foreach (var fileProvider in _registeredFileProviders)
+            foreach (var fileProvider in _fileProviders)
             {
                 cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);

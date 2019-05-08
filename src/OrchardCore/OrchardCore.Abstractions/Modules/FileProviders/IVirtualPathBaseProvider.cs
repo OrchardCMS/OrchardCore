@@ -4,6 +4,6 @@ namespace OrchardCore.Modules.FileProviders
 {
     public interface IVirtualPathBaseProvider
     {
-        PathString VirtualPathBase { get; set; }
+        PathString VirtualPathBase { get; }
     }
 }
