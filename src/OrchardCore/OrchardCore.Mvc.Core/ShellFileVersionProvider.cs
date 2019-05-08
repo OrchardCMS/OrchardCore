@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Mvc
@@ -19,6 +20,8 @@ namespace OrchardCore.Mvc
     {
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
+
+        private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
         private readonly IMemoryCache _cache;
@@ -55,10 +58,27 @@ namespace OrchardCore.Mvc
                 return path;
             }
 
-            if (_cache.TryGetValue(path, out string value))
+            // Try to get the hash from the tenant level cache.
+            if (_cache.TryGetValue(resolvedPath, out string value))
             {
-                return value;
+                if (value.Length > 0)
+                {
+                    return QueryHelpers.AddQueryString(path, VersionKey, value);
+                }
+
+                return path;
             }
+
+            // Try to get the hash from the cache shared accross tenants.
+            if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))
+                {
+                    return QueryHelpers.AddQueryString(path, VersionKey, value);
+                }
+            }
+
+            var cacheKey = resolvedPath;
 
             var cacheEntryOptions = new MemoryCacheEntryOptions();
             foreach (var fileProvider in _fileProviders)
@@ -89,17 +109,27 @@ namespace OrchardCore.Mvc
 
                 if (fileInfo.Exists)
                 {
-                    value = QueryHelpers.AddQueryString(path, VersionKey, GetHashForFile(fileInfo));
+                    value = GetHashForFile(fileInfo);
                     cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                    value = _cache.Set(path, value, cacheEntryOptions);
-                    return value;
+
+                    if (fileProvider is IModuleStaticFileProvider)
+                    {
+                        _sharedCache.Set(resolvedPath, value, cacheEntryOptions);
+                    }
+                    else
+                    {
+                        _cache.Set(cacheKey, value, cacheEntryOptions);
+
+                    }
+
+                    return QueryHelpers.AddQueryString(path, VersionKey, value);
                 }
             }
 
             // If the file is not in the current server, set cache so no further checks are done.
-            cacheEntryOptions.SetSize(path.Length * sizeof(char));
-            value = _cache.Set(path, path, cacheEntryOptions);
-            return value;
+            cacheEntryOptions.SetSize(0);
+            _cache.Set(cacheKey, String.Empty, cacheEntryOptions);
+            return path;
         }
 
         private static string GetHashForFile(IFileInfo fileInfo)
