@@ -53,7 +53,8 @@ namespace OrchardCore.Email.Drivers
                     model.PickupDirectoryLocation = section.PickupDirectoryLocation;
                     model.Host = section.Host;
                     model.Port = section.Port;
-                    model.EnableSsl = section.EnableSsl;
+                    model.EncryptionMethod = section.EncryptionMethod;
+                    model.AutoEncryptionMethod = section.AutoEncryptionMethod;
                     model.RequireCredentials = section.RequireCredentials;
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;
