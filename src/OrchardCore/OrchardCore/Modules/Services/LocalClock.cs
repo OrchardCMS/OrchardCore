@@ -49,7 +49,7 @@ namespace OrchardCore.Modules
             var localTimeZone = await GetLocalTimeZoneAsync();
             var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
             var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
-            var currentCalendar = await _calendarManager.GetCurrentCalendar();
+            var currentCalendar = BclCalendars.GetCalendarByName(await _calendarManager.GetCurrentCalendar());
 
             return offsetDateTime.InZone(dateTimeZone).WithCalendar(currentCalendar).ToDateTimeOffset();
         }

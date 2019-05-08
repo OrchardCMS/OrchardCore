@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NodaTime;
 
 namespace OrchardCore.Localization
 {
@@ -14,14 +13,7 @@ namespace OrchardCore.Localization
             _calendarSelectors = calendarSelectors;
         }
 
-        public async Task<CalendarSystem> GetCurrentCalendar()
-        {
-            var calendarName = await GetCalendarAsync();
-
-            return BclCalendars.GetCalendarByName(calendarName);
-        }
-
-        private async Task<CalendarName> GetCalendarAsync()
+        public async Task<CalendarName> GetCurrentCalendar()
         {
             var calendarResults = new List<CalendarSelectorResult>();
 
