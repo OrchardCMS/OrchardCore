@@ -66,37 +66,25 @@ namespace OrchardCore.Mvc
                 cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
-                // Perform check against requestPathBase
+                // Perform check against requestPathBase.
                 if (!fileInfo.Exists &&
                     requestPathBase.HasValue &&
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    var requestPathBaseRelativePath = resolvedPath.Substring(requestPathBase.Value.Length);
-                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestPathBaseRelativePath));
-                    fileInfo = fileProvider.GetFileInfo(requestPathBaseRelativePath);
-
-                    // Perform check against VirtualPathBase when using requestPathBase
-                    if (!fileInfo.Exists &&
-                        fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
-                        !String.IsNullOrEmpty(virtualPathBaseProvider.VirtualPathBase) &&
-                        requestPathBaseRelativePath.StartsWith(virtualPathBaseProvider.VirtualPathBase, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var requestVirtualPathBaseRelativePath = requestPathBaseRelativePath.Substring(virtualPathBaseProvider.VirtualPathBase.Length);
-                        cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestVirtualPathBaseRelativePath));
-                        fileInfo = fileProvider.GetFileInfo(requestVirtualPathBaseRelativePath);
-                    }
+                    resolvedPath = resolvedPath.Substring(requestPathBase.Value.Length);
+                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
+                    fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
 
-                // Perform check against VirtualPathBase when not using requestPathBase
-                else if (!fileInfo.Exists &&
-                        !requestPathBase.HasValue &&
-                        fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
-                        !String.IsNullOrEmpty(virtualPathBaseProvider.VirtualPathBase) &&
-                        resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase, StringComparison.OrdinalIgnoreCase))
+                // Perform check against VirtualPathBase.
+                if (!fileInfo.Exists &&
+                    fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
+                    virtualPathBaseProvider.VirtualPathBase.HasValue &&
+                    resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    var requestVirtualPathBaseRelativePath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Length);
-                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(requestVirtualPathBaseRelativePath));
-                    fileInfo = fileProvider.GetFileInfo(requestVirtualPathBaseRelativePath);
+                    resolvedPath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Value.Length);
+                    cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
+                    fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
 
                 if (fileInfo.Exists)
@@ -109,10 +97,8 @@ namespace OrchardCore.Mvc
             }
 
             // If the file is not in the current server, set cache so no further checks are done.
-            value = path;
-            cacheEntryOptions.SetSize(value.Length * sizeof(char));
-            value = _cache.Set(path, value, cacheEntryOptions);
-
+            cacheEntryOptions.SetSize(path.Length * sizeof(char));
+            value = _cache.Set(path, path, cacheEntryOptions);
             return value;
         }
 

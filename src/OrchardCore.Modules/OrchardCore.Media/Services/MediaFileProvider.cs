@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 
@@ -5,16 +6,16 @@ namespace OrchardCore.Media.Services
 {
     public class MediaFileProvider : PhysicalFileProvider, IMediaFileProvider
     {
-        public MediaFileProvider(string virtualPathBase, string root) : base(root)
+        public MediaFileProvider(PathString virtualPathBase, string root) : base(root)
         {
             VirtualPathBase = virtualPathBase;
         }
 
-        public MediaFileProvider(string virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        public MediaFileProvider(PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
         {
             VirtualPathBase = virtualPathBase;
         }
 
-        public string VirtualPathBase { get; set; }
+        public PathString VirtualPathBase { get; set; }
     }
 }

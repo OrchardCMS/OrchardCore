@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Http;
+
 namespace OrchardCore.Modules.FileProviders
 {
     public interface IVirtualPathBaseProvider
     {
-        string VirtualPathBase { get; set; }
+        PathString VirtualPathBase { get; set; }
     }
 }
