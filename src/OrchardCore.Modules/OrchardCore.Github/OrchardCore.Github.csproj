@@ -21,8 +21,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
   </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" />
-    </ItemGroup>
-
   </Project>
