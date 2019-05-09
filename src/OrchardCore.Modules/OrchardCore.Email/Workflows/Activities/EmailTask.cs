@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -82,16 +81,15 @@ namespace OrchardCore.Email.Workflows.Activities
 
             var message = new MailMessage
             {
+                To = recipientsTask.Result.Trim(),
                 Subject = subjectTask.Result.Trim(),
                 Body = bodyTask.Result?.Trim(),
                 IsBodyHtml = IsBodyHtml
             };
 
-            message.To.Add(recipientsTask.Result.Trim());
-
             if(!string.IsNullOrWhiteSpace(senderTask.Result))
             {
-                message.From = new MailAddress(senderTask.Result.Trim());
+                message.From = senderTask.Result.Trim();
             }
 
             var result = await _smtpService.SendAsync(message);

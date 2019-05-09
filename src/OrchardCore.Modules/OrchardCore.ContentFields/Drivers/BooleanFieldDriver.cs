@@ -26,7 +26,10 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Value = field.Value;
+                model.Value = (context.IsNew == false) ?
+                    field.Value :
+                    (bool)(context.PartFieldDefinition.Settings["DefaultValue"] ?? false);
+
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

@@ -2,21 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
         private string _context;
 
-        public PortableObjectStringLocalizer(string context, ILocalizationManager localizationManager, ILogger logger)
+        public PortableObjectStringLocalizer(
+            string context,
+            ILocalizationManager localizationManager,
+            bool fallBackToParentCulture,
+            ILogger logger)
         {
             _context = context;
             _localizationManager = localizationManager;
+            _fallBackToParentCulture = fallBackToParentCulture;
             _logger = logger;
         }
 
@@ -136,7 +144,8 @@ namespace OrchardCore.Localization.PortableObject
 
                 var translation = dictionary[key, count];
 
-                if (translation == null && culture.Parent != null && culture.Parent != culture)
+                // Should we search in the parent culture?
+                if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
                 {
                     dictionary = _localizationManager.GetDictionary(culture.Parent);
 
@@ -146,9 +155,10 @@ namespace OrchardCore.Localization.PortableObject
                     }
                 }
 
+                // No exact translation found, search without context
                 if (translation == null && context != null)
                 {
-                    translation = GetTranslation(name, null, culture, count); // fallback to the translation without context
+                    translation = GetTranslation(name, null, culture, count);
                 }
 
                 return translation;
