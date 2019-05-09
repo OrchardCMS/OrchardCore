@@ -174,9 +174,6 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 _session.Cancel();
 
-                HackModelState(nameof(EditTypeViewModel.OrderedFieldNames));
-                HackModelState(nameof(EditTypeViewModel.OrderedPartNames));
-
                 return View(viewModel);
             }
             else
@@ -642,7 +639,8 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 return NotFound();
             }
-
+            viewModel.PartFieldDefinition = field;
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (field.DisplayName() != viewModel.DisplayName)
             {
@@ -846,14 +844,5 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         #endregion
-
-        private void HackModelState(string key)
-        {
-            // TODO: Remove this once https://github.com/aspnet/Mvc/issues/4989 has shipped
-            var modelStateEntry = ModelState[key];
-            var nodeType = modelStateEntry.GetType();
-            nodeType.GetMethod("GetNode").Invoke(modelStateEntry, new object[] { new Microsoft.Extensions.Primitives.StringSegment("--!!f-a-k-e"), true });
-            ((System.Collections.IList)nodeType.GetProperty("ChildNodes").GetValue(modelStateEntry)).Clear();
-        }
     }
 }
