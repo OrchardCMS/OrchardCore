@@ -215,6 +215,25 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+
+#### User Filters
+##### authorize filter
+checks if the User has permission clearance, optionally on a resource 
+```liquid
+{{ User | authorize:"EditContent",Model.ContentItem }}
+```
+##### is_in_role filter
+checks if the user is in role
+```liquid
+{{ User | authorize:"EditContent",Model.ContentItem }}
+```
+##### has_claim filter
+checks if the user has a claim of the specified type
+```liquid
+{{ User | has_claim:"email_verified","true" }}
+```
+
+
 ### Site
 
 Gives access to the current site settings, e.g `Site.SiteName`.
