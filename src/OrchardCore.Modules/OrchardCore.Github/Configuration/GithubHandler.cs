@@ -2,13 +2,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Github.Configuration
 {
@@ -29,7 +28,7 @@ namespace OrchardCore.Github.Configuration
                 throw new HttpRequestException($"An error occurred when retrieving Github user information ({response.StatusCode}). Please check if the authentication information is correct in the corresponding Github Application.");
             }
 
-            var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var payload = (await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync())).RootElement;
 
             var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
             context.RunClaimActions();
