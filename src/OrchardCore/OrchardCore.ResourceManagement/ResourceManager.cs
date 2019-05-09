@@ -424,6 +424,11 @@ namespace OrchardCore.ResourceManagement
                 link.Href = _pathBase + href.Substring(1);
             }
 
+            if (link.AppendVersion)
+            {
+                link.Href = _fileVersionProvider.AddFileVersionToPath(_pathBase, link.Href);
+            }
+
             _links.Add(link);
         }
 
