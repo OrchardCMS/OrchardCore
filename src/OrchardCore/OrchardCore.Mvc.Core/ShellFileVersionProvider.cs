@@ -112,6 +112,7 @@ namespace OrchardCore.Mvc
                     value = GetHashForFile(fileInfo);
                     cacheEntryOptions.SetSize(value.Length * sizeof(char));
 
+                    // Cache module static files to the shared cache.
                     if (fileProvider is IModuleStaticFileProvider)
                     {
                         _sharedCache.Set(resolvedPath, value, cacheEntryOptions);
