@@ -9,8 +9,7 @@
 
 @if (!Model.ContentItemCultures.Any())
 {
-    <p>@T["Your site does not have any cultures. Current System culture is {1} | {0}", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</p>
-    <p>@Html.ActionLink(T["Add or remove supported cultures for the site"].Value, "Culture", "Admin", new { area = "OrchardCore.Settings" })</p>
+    <p class="alert alert-warning">@T["Seems your site does not have any cultures yet!!, so you add new culture from the "] <a asp-action="Culture" asp-controller="Admin" asp-route-area="OrchardCore.Settings" class="alert-link">@T["settings"]</a> @T["or the content will be localized by default to the system culture <em>{0}</em>.", CultureInfo.InstalledUICulture.Name]</p>
 }
 else
 {
@@ -19,7 +18,7 @@ else
         foreach (var culture in siteSettings.SupportedCultures)
         {
             var currentCulture = Model.ContentItemCultures.SingleOrDefault(c => c.Culture.Name == culture);
-            if(currentCulture != null)
+            if (currentCulture != null)
             {
                 if (!string.IsNullOrEmpty(currentCulture.ContentItemId))
                 {
@@ -35,9 +34,5 @@ else
                 <span class="badge badge-info" style="opacity:0.5"><i class=" fa fa-globe"></i> @culture</span>
             }
         }
-    }
-    else
-    {
-        <div class="alert alert-info"> @T["Please save your content item before creating localizations"]</div>
     }
 }
