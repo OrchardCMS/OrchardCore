@@ -16,7 +16,7 @@
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="PartSelections[i].IsSelected">
                         <label class="custom-control-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
-                        <span class="hint">@T["— {0}", @partSelection.PartDescription]</span>
+                        <span class="hint">— @partSelection.PartDescription</span>
                     </div>
                     <input asp-for="PartSelections[i].IsSelected" type="hidden" />
                     <input asp-for="PartSelections[i].PartName" type="hidden" />

@@ -1,6 +1,5 @@
-var mediaFieldApps = [];
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
 
-function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMultiple) {
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
@@ -27,27 +26,27 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push(x.mediaPath);
+                        mediaPaths.push({ Path: x.mediaPath });
                     });
-                    return JSON.stringify(mediaPaths);
+                    return JSON.stringify(mediaPaths);                    
                 },
                 set: function (values) {
                     var self = this;
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
                     mediaPaths.forEach(function (x, i) {
-                        self.mediaItems.push({ name: ' ' + x, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
-
+                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x),
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
                                 method: 'GET',
                                 success: function (data) {
+                                    data.vuekey = data.name + i.toString();
                                     self.mediaItems.splice( i, 1, data);
                                 },
                                 error: function (error) {
-                                    console.log(JSON.stringify(error));
-                                    self.mediaItems.splice(i, 1, { name: x, mime: '', mediaPath: 'not-found' });
+                                    console.log(error);
+                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
                                 }
                             });
                         });
@@ -62,17 +61,14 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
             canAddMedia: function () {
                 return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
             },
-            canRemoveMedia: function () {
-                return this.selectedMedia || this.mediaItems.length === 1;
-            },
             thumbSize: function () {
-                return this.smallThumbs ? 160 : 240;
+                return this.smallThumbs ? 120 : 240;
             },
             currentPrefs: {
                 get: function () {
                     return {
-                        smallThumbs: this.smallThumbs                        
-                    }
+                        smallThumbs: this.smallThumbs
+                    };
                 },
                 set: function (newPrefs) {
                     if (!newPrefs) {
@@ -84,30 +80,49 @@ function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMul
 
         },
         mounted: function () {
-            this.paths = initialPaths;
+            var self = this;
+
+            self.paths = initialPaths;
+
+            self.$on('selectAndDeleteMediaRequested', function (media) {
+                self.selectAndDeleteMedia(media);
+            });
+
+            self.$on('selectMediaRequested', function (media) {
+                self.selectMedia(media);
+            });
+
+            self.$on('filesUploaded', function (files) {                
+                self.addMediaFiles(files);                
+            });
         },
         methods: {
             selectMedia: function (media) {
                 this.selectedMedia = media;
             },
             showModal: function (event) {
-                if (this.canAddMedia) {
+                var self = this;
+                if (self.canAddMedia) {
                     $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
                     $("#mediaApp").show();
                     var modal = $(modalBodyElement).modal();
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
-                            alert($('#onlyOneItemMessage').val());
-                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
-                        } else {
-                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
-                        }
+                        self.addMediaFiles(mediaApp.selectedMedias);
+
                         // we don't want the included medias to be still selected the next time we open the modal.
                         mediaApp.selectedMedias = [];
 
                         modal.modal('hide');
                         return true;
                     });
+                }
+            },
+            addMediaFiles: function (files) {
+                if ((files.length > 1) && (allowMultiple === false)) {
+                    alert($('#onlyOneItemMessage').val());
+                    mediaFieldApp.mediaItems.push(files[0]);
+                } else {
+                    mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
                 }
             },
             removeSelected: function (event) {

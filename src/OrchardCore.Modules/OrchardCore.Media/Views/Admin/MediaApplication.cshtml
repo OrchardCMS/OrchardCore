@@ -108,7 +108,7 @@
 
 
             </div>
-            <div class="media-container-footer pt-2">
+            <div v-show="filteredMediaItems.length > 0" class="media-container-footer pt-2">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
 
