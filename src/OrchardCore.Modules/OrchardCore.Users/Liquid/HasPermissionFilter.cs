@@ -12,7 +12,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Users.Liquid
 {
-    public class AuthorizeFilter : ILiquidFilter
+    public class HasPermissionFilter : ILiquidFilter
     {
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
@@ -30,12 +30,19 @@ namespace OrchardCore.Users.Liquid
             var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
             var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
 
-            var permission = permissionProviders.SelectMany(pp => pp.GetPermissions().Where(p => p.Name == permissionName))
-                                .Where(c => c != null).FirstOrDefault();
+            Permission permission = null;
+
+            var providers = permissionProviders.GetEnumerator();
+            while (providers.MoveNext())
+            {
+                permission = providers.Current.GetPermissions().FirstOrDefault(c => c.Name == permissionName);
+                if (permission != null)
+                    break;
+            }
 
             if (permission is Permission && input.ToObjectValue() is ClaimsPrincipal principal)
             {
-                clearance = await auth.AuthorizeAsync(principal, permission,resource);
+                clearance = await auth.AuthorizeAsync(principal, permission, resource);
             }
 
             return clearance ? BooleanValue.True : BooleanValue.False;

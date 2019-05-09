@@ -217,20 +217,21 @@ The following properties are available on the `User` object.
 
 
 #### User Filters
-##### authorize filter
+##### has_permission filter
 checks if the User has permission clearance, optionally on a resource 
 ```liquid
-{{ User | authorize:"EditContent",Model.ContentItem }}
+{{ User | has_permission:"EditContent",Model.ContentItem }}
 ```
 ##### is_in_role filter
 checks if the user is in role
 ```liquid
-{{ User | authorize:"EditContent",Model.ContentItem }}
+{{ User | is_in_role:"Administrator" }}
 ```
 ##### has_claim filter
 checks if the user has a claim of the specified type
 ```liquid
 {{ User | has_claim:"email_verified","true" }}
+{{ User | has_claim:"Permission","ManageSettings" }}
 ```
 
 

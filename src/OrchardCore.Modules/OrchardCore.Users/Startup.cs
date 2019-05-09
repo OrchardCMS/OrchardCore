@@ -132,7 +132,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<AuthorizeFilter>("authorize");
+            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
         }
