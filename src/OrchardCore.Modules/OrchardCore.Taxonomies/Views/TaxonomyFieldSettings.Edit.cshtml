@@ -35,7 +35,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint">@T["— Whether at least one element is selected."]</span>
+        <span class="hint">— @T["Whether at least one element is selected."]</span>
     </div>
 </fieldset>
 
@@ -43,7 +43,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Unique" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="Unique">@T["Unique"]</label>
-        <span class="hint">@T["— Whether only one element is selected."]</span>
+        <span class="hint">— @T["Whether only one element is selected."]</span>
     </div>
 </fieldset>
 
@@ -51,6 +51,6 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="LeavesOnly" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="LeavesOnly">@T["Leaves only"]</label>
-        <span class="hint">@T["— Whether leaves are the only items that can be selected."]</span>
+        <span class="hint">— @T["Whether leaves are the only items that can be selected."]</span>
     </div>
 </fieldset>
