@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
+    <PackageReference Include="Microsoft.Data.SQLite" />
   </ItemGroup>
 
 </Project>
