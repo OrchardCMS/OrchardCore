@@ -46,7 +46,7 @@
                         <span class="hint">@T["The SMTP server port, usually 25."]</span>
                     </div>
 
-                    <div id="EncryptionMethod" class="form-group flex-fill @(Model.AutoEncryptionMethod ? "collapse" : "show")" asp-validation-class-for="EncryptionMethod">
+                    <div id="@Html.Id("SelectEncryptionMethod")" class="form-group flex-fill @(Model.AutoSelectEncryption ? "collapse" : "show")" asp-validation-class-for="EncryptionMethod">
                         <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
                         <select asp-for="EncryptionMethod" class="form-control">
                             <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
@@ -64,11 +64,11 @@
                     </div>
                 </div>
 
-                <div class="form-group" asp-validation-class-for="AutoEncryptionMethod">
+                <div class="form-group" asp-validation-class-for="AutoSelectEncryption">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" asp-for="AutoEncryptionMethod">
-                        <span asp-validation-for="AutoEncryptionMethod"></span>
-                        <label class="custom-control-label" asp-for="AutoEncryptionMethod">@T["Auto Select Encryption method"]</label>
+                        <input type="checkbox" class="custom-control-input" asp-for="AutoSelectEncryption">
+                        <span asp-validation-for="AutoSelectEncryption"></span>
+                        <label class="custom-control-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
                         <span class="hint">@T["- Check to let the system select the encryption method based on port."]</span>
                     </div>
                 </div>
@@ -129,11 +129,7 @@
 </div>
 
 <script at="Foot">
-
-    window.onload = $(function () {
-
-        showEncryptionMethod();
-
+    $(function () {
         function showSelectedCollapse() {
             var val = $(this).val();
             var option = $("option", this).filter(function (i, el) { return $(el).val() == val; });
@@ -144,7 +140,7 @@
         }
 
         function showEncryptionMethod() {
-            var target = $("#EncryptionMethod");
+            var target = $(@Html.Id("SelectEncryptionMethod"));
             if (target) {
                 $(target).collapse(this.checked ? "hide" : "show");
             }
@@ -154,8 +150,7 @@
             .change(showSelectedCollapse)
             .each(showSelectedCollapse);
 
-        $("#@Html.IdFor(m => m.AutoEncryptionMethod)")
+        $("#@Html.IdFor(m => m.AutoSelectEncryption)")
             .change(showEncryptionMethod)
-
     });
 </script>

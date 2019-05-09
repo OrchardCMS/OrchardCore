@@ -19,7 +19,7 @@ namespace OrchardCore.Email
         public string Host { get; set; }
         [Range(0, 65535)]
         public int Port { get; set; } = 25;
-        public bool AutoEncryptionMethod { get; set; }
+        public bool AutoSelectEncryption { get; set; }
         public bool RequireCredentials { get; set; }
         public bool UseDefaultCredentials { get; set; }
         public SmtpEncryptionMethod EncryptionMethod { get; set; }

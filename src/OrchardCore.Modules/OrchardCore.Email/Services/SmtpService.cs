@@ -126,7 +126,7 @@ namespace OrchardCore.Email.Services
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
-            if (!_options.AutoEncryptionMethod)
+            if (!_options.AutoSelectEncryption)
             {
                 switch (_options.EncryptionMethod)
                 {

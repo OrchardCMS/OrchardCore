@@ -54,7 +54,7 @@ namespace OrchardCore.Email.Drivers
                     model.Host = section.Host;
                     model.Port = section.Port;
                     model.EncryptionMethod = section.EncryptionMethod;
-                    model.AutoEncryptionMethod = section.AutoEncryptionMethod;
+                    model.AutoSelectEncryption = section.AutoSelectEncryption;
                     model.RequireCredentials = section.RequireCredentials;
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;

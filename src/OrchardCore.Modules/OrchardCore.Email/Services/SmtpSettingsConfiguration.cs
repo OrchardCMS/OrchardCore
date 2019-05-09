@@ -35,7 +35,7 @@ namespace OrchardCore.Email.Services
             options.Host = settings.Host;
             options.Port = settings.Port;
             options.EncryptionMethod = settings.EncryptionMethod;
-            options.AutoEncryptionMethod = settings.AutoEncryptionMethod;
+            options.AutoSelectEncryption = settings.AutoSelectEncryption;
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
