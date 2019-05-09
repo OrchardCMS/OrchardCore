@@ -15,6 +15,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview5-19227-01" />
     <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="3.0.0-preview5.19227.9" />
 
-    <PackageManagement Inlcude="Microsoft.Data.SQLite" Version="3.0.0-preview5.19227.1" />
+    <PackageManagement Include="Microsoft.Data.SQLite" Version="3.0.0-preview5.19227.1" />
   </ItemGroup>
 </Project>
