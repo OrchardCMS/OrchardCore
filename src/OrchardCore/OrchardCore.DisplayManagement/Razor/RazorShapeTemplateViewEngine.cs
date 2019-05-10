@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -148,10 +148,10 @@ namespace OrchardCore.DisplayManagement.Razor
         private ActionContext GetActionContext()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContext>();
+            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
 
             var routeData = new RouteData();
-            routeData.Routers.Add(shellContext.Router ?? new RouteCollection());
+            routeData.Routers.Add(shellContext?.Router ?? new RouteCollection());
 
             return new ActionContext(httpContext, routeData, new ActionDescriptor());
         }

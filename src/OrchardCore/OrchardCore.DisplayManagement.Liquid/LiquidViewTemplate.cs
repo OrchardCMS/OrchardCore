@@ -28,7 +28,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DynamicCache.Liquid;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -278,7 +278,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             var httpContext = httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContext>();
+            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
 
             var routeData = new RouteData();
             routeData.Routers.Add(shellContext?.Router ?? new RouteCollection());

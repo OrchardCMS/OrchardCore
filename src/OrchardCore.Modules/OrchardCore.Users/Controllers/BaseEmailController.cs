@@ -1,16 +1,13 @@
 using System.IO;
-using System.Net.Mail;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Admin]
-    public class BaseEmailController : Controller
+    public abstract class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;
         private readonly IDisplayHelper _displayHelper;
@@ -36,12 +33,11 @@ namespace OrchardCore.Users.Controllers
 
             var message = new MailMessage()
             {
+                To = email,
+                Subject = subject,
                 Body = body,
-                IsBodyHtml = true,
-                Subject = subject
+                IsBodyHtml = true
             };
-
-            message.To.Add(email);
 
             var result = await _smtpService.SendAsync(message);
 
