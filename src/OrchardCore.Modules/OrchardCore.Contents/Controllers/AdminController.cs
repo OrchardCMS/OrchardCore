@@ -187,7 +187,13 @@ namespace OrchardCore.Contents.Controllers
                 .TypeDisplayName(model.TypeDisplayName ?? "")
                 .DisplayText(model.DisplayText ?? "");
 
-            return View(viewModel);
+            if (Request.Method == "POST")
+            {
+                return RedirectToAction("List");
+            }
+            else {
+                return View(viewModel);
+            }
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
