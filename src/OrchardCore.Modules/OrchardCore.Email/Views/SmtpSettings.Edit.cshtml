@@ -51,9 +51,9 @@
                     </div>
                     <div class="col-lg-9">
                         <div class="d-flex flex-wrap align-items-center justify-content-stretch">
-                            <div id="@Html.Id("SelectEncryptionMethod")" class="form-group flex-fill @(Model.AutoSelectEncryption ? "collapse" : "show")" asp-validation-class-for="EncryptionMethod">
+                            <div id="@Html.Id("SelectEncryptionMethod")" class="form-group flex-fill" asp-validation-class-for="EncryptionMethod">
                                 <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
-                                <select asp-for="EncryptionMethod" class="form-control">
+                                <select asp-for="EncryptionMethod" class="form-control" disabled="@Model.AutoSelectEncryption">
                                     <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
                                         @T["None"] - @T["Connect to server using insecure connection."]
                                     </option>
@@ -146,9 +146,9 @@
         }
 
         function showEncryptionMethod() {
-            var target = $(@Html.Id("SelectEncryptionMethod"));
+            var target = $(@Html.Id("EncryptionMethod"));
             if (target) {
-                $(target).collapse(this.checked ? "hide" : "show");
+                $(target).prop('disabled', this.checked);
             }
         }
 
