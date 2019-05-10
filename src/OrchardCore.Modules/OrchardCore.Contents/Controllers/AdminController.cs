@@ -82,7 +82,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
             }
-            
+
             switch (model.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
@@ -170,7 +170,7 @@ namespace OrchardCore.Contents.Controllers
 
             var routeData = new RouteData();
             routeData.Values.Add("DisplayText", model.DisplayText);
-            
+
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
@@ -191,7 +191,8 @@ namespace OrchardCore.Contents.Controllers
             {
                 return RedirectToAction("List");
             }
-            else {
+            else
+            {
                 return View(viewModel);
             }
         }
@@ -476,7 +477,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix ="submit.Publish")] string submitPublish, string returnUrl)
+        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
         {
             var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
 
@@ -539,7 +540,7 @@ namespace OrchardCore.Contents.Controllers
             // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            
             _session.Save(contentItem);
 
-            await conditionallyPublish(contentItem);           
+            await conditionallyPublish(contentItem);
 
             if (returnUrl == null)
             {
