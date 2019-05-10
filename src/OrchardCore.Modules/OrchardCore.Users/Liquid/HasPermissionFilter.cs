@@ -32,10 +32,9 @@ namespace OrchardCore.Users.Liquid
 
             Permission permission = null;
 
-            var providers = permissionProviders.GetEnumerator();
-            while (providers.MoveNext())
+            foreach (var item in permissionProviders)
             {
-                permission = providers.Current.GetPermissions().FirstOrDefault(c => c.Name == permissionName);
+                permission = item.GetPermissions().FirstOrDefault(c => c.Name == permissionName);
                 if (permission != null)
                     break;
             }
