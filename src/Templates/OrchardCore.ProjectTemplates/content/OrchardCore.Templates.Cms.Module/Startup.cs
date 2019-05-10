@@ -8,10 +8,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.Templates.Module.Drivers;
-using OrchardCore.Templates.Module.Handlers;
-using OrchardCore.Templates.Module.Models;
-using OrchardCore.Templates.Module.Settings;
+using OrchardCore.Templates.Cms.Module.Drivers;
+using OrchardCore.Templates.Cms.Module.Handlers;
+using OrchardCore.Templates.Cms.Module.Models;
+using OrchardCore.Templates.Cms.Module.Settings;
 #endif
 using OrchardCore.Modules;
 

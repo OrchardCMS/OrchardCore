@@ -59,6 +59,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
+                    services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
+
                     services.TryAddEnumerable(
                         ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
                     services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
@@ -78,7 +80,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<INotifier, Notifier>();
 
-                    services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
                     services.AddShapeAttributes<DateTimeShapes>();
 
                     services.AddTagHelpers<AddAlternateTagHelper>();

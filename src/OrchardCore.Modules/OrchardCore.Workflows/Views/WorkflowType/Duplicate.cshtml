@@ -7,8 +7,8 @@
 
     <fieldset class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <span asp-validation-for="Name" class="text-danger"></span>
         <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger"></span>
         <div class="hint">@T["The name of the workflow type."]</div>
     </fieldset>
 

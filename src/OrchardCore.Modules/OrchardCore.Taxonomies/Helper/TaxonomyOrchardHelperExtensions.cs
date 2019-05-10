@@ -47,7 +47,7 @@ public static class TaxonomyOrchardHelperExtensions
 
         var terms = new List<ContentItem>();
 
-        FindTermHierarchy(taxonomy.Content.Terms as JArray, termContentItemId, terms);
+        FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId, terms);
 
         return terms;
     }

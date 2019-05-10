@@ -78,6 +78,11 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
+            if (!string.IsNullOrEmpty(model.DisplayText))
+            {
+                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+            }
+            
             switch (model.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
@@ -163,7 +168,10 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            var routeData = new RouteData();
+            routeData.Values.Add("DisplayText", model.DisplayText);
+            
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var contentItemSummaries = new List<dynamic>();
@@ -176,7 +184,8 @@ namespace OrchardCore.Contents.Controllers
                 .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
                 .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+                .TypeDisplayName(model.TypeDisplayName ?? "")
+                .DisplayText(model.DisplayText ?? "");
 
             return View(viewModel);
         }
@@ -311,6 +320,9 @@ namespace OrchardCore.Contents.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
                 return Unauthorized();
@@ -367,6 +379,9 @@ namespace OrchardCore.Contents.Controllers
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.NewAsync(id);
+
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -534,31 +549,33 @@ namespace OrchardCore.Contents.Controllers
             }
         }
 
-        //[HttpPost]
-        //public ActionResult Clone(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.GetLatest(id);
+        [HttpPost]
+        public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-        //    if (contentItem == null)
-        //        return NotFound();
+            if (contentItem == null)
+                return NotFound();
 
-        //    if (!await _authorizationService.Authorize(User, Permissions.EditContent, contentItem, T("Couldn't clone content")))
-        //        return Unauthorized();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
+            {
+                return Unauthorized();
+            }
 
-        //    try
-        //    {
-        //        Services.ContentManager.Clone(contentItem);
-        //    }
-        //    catch (InvalidOperationException)
-        //    {
-        //        Services.Notifier.Warning(T("Could not clone the content item."));
-        //        return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //    }
+            try
+            {
+                await _contentManager.CloneAsync(contentItem);
+            }
+            catch (InvalidOperationException)
+            {
+                _notifier.Warning(T["Could not clone the content item."]);
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            }
 
-        //    Services.Notifier.Information(T("Successfully cloned. The clone was saved as a draft."));
+            _notifier.Information(T["Successfully cloned. The clone was saved as a draft."]);
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
 
         [HttpPost]

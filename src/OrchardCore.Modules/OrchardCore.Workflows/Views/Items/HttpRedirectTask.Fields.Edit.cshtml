@@ -2,8 +2,9 @@
 @model HttpRedirectTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="Location">
-    <label asp-for="Location">@T["Location"] <span asp-validation-for="Location"></span></label>
+    <label asp-for="Location">@T["Location"]</label>
     <input type="text" asp-for="Location" class="form-control code" />
+    <span asp-validation-for="Location"></span>
     <span class="hint">@T["The URL to redirect to. With Liquid support."]</span>
 </fieldset>
 

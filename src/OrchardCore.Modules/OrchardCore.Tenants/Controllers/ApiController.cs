@@ -15,7 +15,6 @@ using OrchardCore.Data;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -73,7 +72,7 @@ namespace OrchardCore.Tenants.Controllers
         public IHtmlLocalizer H { get; set; }
 
         [HttpPost]
-        [Route("create")]        
+        [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
             if (!IsDefaultShell())
@@ -86,21 +85,33 @@ namespace OrchardCore.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var allShells = await GetShellsAsync();
-
             if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            // Creates a default shell settings based on the configuration.
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
+            shellSettings.Name = model.Name;
+            shellSettings.RequestUrlHost = model.RequestUrlHost;
+            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+            shellSettings.State = TenantState.Uninitialized;
+
+            shellSettings["ConnectionString"] = model.ConnectionString;
+            shellSettings["TablePrefix"] = model.TablePrefix;
+            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+            shellSettings["Secret"] = Guid.NewGuid().ToString();
+            shellSettings["RecipeName"] = model.RecipeName;
+
+            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
-                if (model.RequestUrlPrefix.Contains('/'))
+                if (shellSettings.RequestUrlPrefix.Contains('/'))
                 {
                     ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
                 }
@@ -108,29 +119,16 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var shellSettings))
+                if (_shellHost.TryGetSettings(model.Name, out var settings))
                 {
                     // Site already exists, return 200 for indempotency purpose
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(settings);
 
-                    return StatusCode(201, GetTenantUrl(shellSettings, token));
+                    return StatusCode(201, GetTenantUrl(settings, token));
                 }
                 else
                 {
-                    shellSettings = new ShellSettings
-                    {
-                        Name = model.Name,
-                        RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
-                        RequestUrlHost = model.RequestUrlHost,
-                        ConnectionString = model.ConnectionString,
-                        TablePrefix = model.TablePrefix,
-                        DatabaseProvider = model.DatabaseProvider,
-                        State = TenantState.Uninitialized,
-                        Secret = Guid.NewGuid().ToString(),
-                        RecipeName = model.RecipeName
-                    };
-
                     _shellSettingsManager.SaveSettings(shellSettings);
                     var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
 
@@ -177,21 +175,28 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The tenant can't be setup."]);
             }
 
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, model.DatabaseProvider, StringComparison.OrdinalIgnoreCase));
+            var databaseProvider = shellSettings["DatabaseProvider"];
+
+            if (String.IsNullOrEmpty(databaseProvider))
+            {
+                databaseProvider = model.DatabaseProvider;
+            }
+
+            var selectedProvider = _databaseProviders.FirstOrDefault(x => String.Equals(x.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
 
             if (selectedProvider == null)
             {
                 return BadRequest(S["The database provider is not defined."]);
             }
 
-            var tablePrefix = shellSettings.TablePrefix;
+            var tablePrefix = shellSettings["TablePrefix"];
 
             if (String.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
             }
 
-            var connectionString = shellSettings.ConnectionString;
+            var connectionString = shellSettings["connectionString"];
 
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -203,7 +208,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["The connection string is required for this database provider."]);
             }
 
-            var recipeName = shellSettings.RecipeName;
+            var recipeName = shellSettings["RecipeName"];
 
             if (String.IsNullOrEmpty(recipeName))
             {
@@ -278,27 +283,34 @@ namespace OrchardCore.Tenants.Controllers
             return Ok(executionId);
         }
 
-        private async Task<IEnumerable<ShellContext>> GetShellsAsync()
-        {
-            return (await _shellHost.ListShellContextsAsync()).OrderBy(x => x.Settings.Name);
-        }
-
         private bool IsDefaultShell()
         {
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public string GetTenantUrl(ShellSettings shellSettings, string token)
+        private string GetTenantUrl(ShellSettings shellSettings, string token)
         {
             var requestHostInfo = Request.Host;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
+            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
             if (requestHostInfo.Port.HasValue)
             {
                 tenantUrlHost += ":" + requestHostInfo.Port;
             }
 
-            var result = $"{Request.Scheme}://{tenantUrlHost}";
+            var pathBase = Request.PathBase.Value ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(_currentShellSettings.RequestUrlPrefix))
+            {
+                var prefix = "/" + _currentShellSettings.RequestUrlPrefix;
+
+                if (pathBase.EndsWith(prefix))
+                {
+                    pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+                }
+            }
+
+            var result = $"{Request.Scheme}://{tenantUrlHost}{pathBase}";
 
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
@@ -317,7 +329,7 @@ namespace OrchardCore.Tenants.Controllers
         {
             // Create a public url to setup the new tenant
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-            var token = dataProtector.Protect(shellSettings.Secret, _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
             return token;
         }
     }

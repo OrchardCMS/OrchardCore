@@ -77,3 +77,15 @@ Next, within `Startup.cs`, modify the method `ConfigureServices` to look like th
 NancyFx is now part of your pipeline. What this means is that Nancy modules will be automatically discovered.
 
 You can find an sample application here: [`OrchardCore.Nancy.Web`](../../../OrchardCore.Nancy.Web/Startup.cs)
+
+## Configuration
+
+The following configuration values are used by default and can be customized:
+
+```json
+    "StaticFileOptions": {
+      
+      // The CacheControl header sent with any static file served by modules
+      "CacheControl": "public, max-age=2592000, s-max-age=31557600"
+    }
+```

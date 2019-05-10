@@ -6,9 +6,9 @@
 }
 
 <div class="field field-type-taxonomyfield field-name-@name">
-    @foreach (var contentItemId in Model.Field.TermContentItemIds)
+    @foreach (var contentItemId in Model.TermContentItemIds)
     {
-        var term = await Orchard.GetTaxonomyTermAsync(Model.Field.TaxonomyContentItemId, contentItemId);
+        var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
         <span class="taxonomy-term">@term</span>
     }
 </div>

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
@@ -21,7 +20,6 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers
 {
     [Feature("OrchardCore.Users.Registration")]
-    [Admin]
     public class RegistrationController : BaseEmailController
     {
         private readonly IUserService _userService;
@@ -95,7 +93,7 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, RoleNames = new string[0] }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
+                var user = await _userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail }, model.Password, (key, message) => ModelState.AddModelError(key, message)) as User;
                 
                 if (user != null)
                 {

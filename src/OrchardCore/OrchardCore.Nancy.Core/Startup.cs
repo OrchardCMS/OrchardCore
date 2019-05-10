@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Nancy;
 using Nancy.Owin;
 using OrchardCore.Modules;
@@ -22,13 +23,20 @@ namespace OrchardCore.Nancy
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var options = serviceProvider.GetService<IOptions<NancyOptions>>();
 
             app.UseOwin(x => x.UseNancy(no =>
+            {
                 no.Bootstrapper = new ModularNancyBootstrapper(
-                    new[] {
+                    new[]
+                    {
                         (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
                         (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
-                    })));
+                    });
+
+                no.PerformPassThrough = options.Value.PerformPassThrough;
+                no.EnableClientCertificates = options.Value.EnableClientCertificates;
+            }));
         }
     }
 }

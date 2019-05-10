@@ -5,3 +5,11 @@
         }
     }
 }
+
+.content-picker-default .multiselect--active {
+    z-index: 1000; // bootstrap's default for dropdowns
+}
+
+[v-cloak] {
+    display: none;
+}

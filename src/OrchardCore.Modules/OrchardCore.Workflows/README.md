@@ -168,7 +168,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
 
-Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you cal also use dot notation, e.g.:
+Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
 ```liquid
 {{ Workflow.Input.ContentItem }}
@@ -177,7 +177,7 @@ Instead of using the indexer syntax on the three workflow dictionaries `Input`, 
 ### Liquid Expressions and ContentItem Events
 
 When handling content related events using a workflow, the content item in question is made available to the workflow via the `Input` dictionary.
-For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request whereand reference the content item from liquid-ebabled fields as follows:
+For example, if you have a workflow that starts with the **Content Created Event** activity, you can send an email or make an HTTP request and reference the content item from liquid-enabled fields as follows:
 
 ```liquid
 {{ Workflow.Input.ContentItem | display_url }}
@@ -185,7 +185,7 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see the documention on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
+For more examples of supported content item filters, see the documentation on [Liquid ](https://orchardcore.readthedocs.io/en/latest/OrchardCore.Modules/OrchardCore.Liquid/README/).
 
 ## Activities out of the box
 
@@ -219,6 +219,7 @@ The following activities are available with any default Orchard installation:
 | Content Created | Event | Executes when content is created. | [link] |
 | Content Deleted | Event | Executes when content is deleted. | [link] |
 | Content Published | Event | Executes when content is published. | [link] |
+| Content Unpublished | Event | Executes when content is unpublished. | [link] |
 | Content Updated | Event | Executes when content is updated. | [link] |
 | Content Versioned| Event | Executes when content is versioned. | [link] |
 | Create Content | Task | Create a content item. | [link] |

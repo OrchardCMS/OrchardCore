@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class RenderSectionTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {

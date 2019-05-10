@@ -95,16 +95,19 @@
                 {
                     <li class="list-group-item">
                         <div class="properties">
-                            <div class="related">
-                                <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
-                                <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <div class="d-flex flex-wrap">
+                                <div class="custom-control custom-checkbox mr-auto flex-grow-1">
+                                    <input type="checkbox" class="custom-control-input layer-check" id="@layer.Name" value="@layer.Name">
+                                    <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
+                                </div>
+                                <div>
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                </div>
                             </div>
-
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input layer-check" id="@layer.Name" value="@layer.Name">
-                                <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
+                            <div>
+                                <span class="hint">@layer.Description</span>
                             </div>
-                            <span class="hint">@layer.Description</span>
                         </div>
                     </li>
                 }

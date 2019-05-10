@@ -9,7 +9,7 @@ For more information about the Liquid syntax, please refer to this site: <https:
 
 All outputs are encoded into HTML by default.
 This means that any HTML reserved chars will be converted to the corresponding HTML entities.
-If you need to render some raw HTML chars you can use the `Raw` filter.
+If you need to render some raw HTML chars you can use the `raw` filter.
 
 ## Content Item Filters
 
@@ -213,6 +213,27 @@ The following properties are available on the `User` object.
 | Property | Example | Description |
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
+| `Identity.Claims` |  | The claims of the authenticated user. |
+
+
+#### User Filters
+##### has_permission filter
+checks if the User has permission clearance, optionally on a resource 
+```liquid
+{{ User | has_permission:"EditContent",Model.ContentItem }}
+```
+##### is_in_role filter
+checks if the user is in role
+```liquid
+{{ User | is_in_role:"Administrator" }}
+```
+##### has_claim filter
+checks if the user has a claim of the specified type
+```liquid
+{{ User | has_claim:"email_verified","true" }}
+{{ User | has_claim:"Permission","ManageSettings" }}
+```
+
 
 ### Site
 
@@ -243,8 +264,8 @@ The following properties are available on the `Request` object.
 | `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header. |
 | `ContentLength` | `600` | The `Content-Length` header. |
 | `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request. |
-| `Headers` | Usage: `Request.Headers.accept` | The request headers. |
-| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. |
+| `Headers` | Usage: `Request.Headers.accept` | The request headers. Each property value is an array of values.|
+| `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. Each property value is an array of values. |
 | `Form` | Usage: `Request.Form.value` | The collection of form values. |
 | `Protocol` | `https` | The protocol of this request. |
 | `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped. |
@@ -520,7 +541,7 @@ Input
 
 ### `shape`
 
-Renders a specific named tag with its properties
+Creates and renders a new shape, with optional caching arguments.
 
 Input
 
@@ -533,6 +554,18 @@ When using the shape tag a specific wrapper and / or alternate can be specified.
 ```liquid
 {% shape "menu", alias: "alias:main-menu", alternate: "Menu_Footer" %}
 ```
+
+### `shape_cache`
+
+Sets the caching parameters of a shape.
+
+Input
+
+```liquid
+{% shape_cache my_shape cache_id: "my-shape", cache_expires_after: "00:05:00" %}
+```
+
+For more information about the available caching paramters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
 
 ### `zone`
 

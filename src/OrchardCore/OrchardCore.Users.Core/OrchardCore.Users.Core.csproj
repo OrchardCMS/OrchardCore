@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
-    <PackageReference Include="YesSql.Core" />
+    <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 
 </Project>

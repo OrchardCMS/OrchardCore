@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,6 +12,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Remove these references once Microsoft.AspNetCore.Mvc.Core doesn't depend on Microsoft.Extensions.DependencyModel 2.1.0 -->
+    <PackageReference Include="System.Collections" />
+    <PackageReference Include="System.Diagnostics.Debug" />
+    <PackageReference Include="System.Globalization" />
+    <PackageReference Include="System.IO" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" />
+    <PackageReference Include="System.Net.Primitives" />
+    <PackageReference Include="System.Resources.ResourceManager" />
   </ItemGroup>
 
 </Project>

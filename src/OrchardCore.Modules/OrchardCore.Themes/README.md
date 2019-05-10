@@ -183,13 +183,13 @@ To create a link for this field we can create these templates:
 #### `Project-Url.cshtml`
 
 ```razor
-<a href="@Model.Field.Text">External url</a>
+<a href="@Model.Text">External url</a>
 ```
 
 #### `Project-Url.liquid`
 
 ```liquid
-<a href="{{ Model.Field.Text }}">External url</a>
+<a href="{{ Model.Text }}">External url</a>
 ```
 
 ### Display types

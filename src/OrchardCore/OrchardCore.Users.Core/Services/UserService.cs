@@ -88,7 +88,7 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-
+            
             return user;
         }
 
@@ -191,25 +191,12 @@ namespace OrchardCore.Users.Services
         /// </summary>
         /// <param name="userIdentification">The username or email address to refer to</param>
         private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
-        {
-            userIdentifier = userIdentifier.Normalize();
+            => await _userManager.FindByNameAsync(userIdentifier) ??
+               await _userManager.FindByEmailAsync(userIdentifier);
 
-            var user = await _userManager.FindByNameAsync(userIdentifier);
+        public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
 
-            if (user == null)
-            {
-                user = await _userManager.FindByEmailAsync(userIdentifier);
-            }
-
-            return user;
-        }
-
-        public Task<IUser> GetUserAsync(string userName)
-        {
-            userName = userName.Normalize();
-
-            return _userManager.FindByNameAsync(userName);
-        }
+        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
@@ -219,13 +206,13 @@ namespace OrchardCore.Users.Services
                 {
                     // Password
                     case "PasswordRequiresDigit":
-                        reportError("Password", T["Passwords must have at least one digit ('0'-'9')."]);
+                        reportError("Password", T["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
                     case "PasswordRequiresLower":
-                        reportError("Password", T["Passwords must have at least one lowercase ('a'-'z')."]);
+                        reportError("Password", T["Passwords must have at least one lowercase character ('a'-'z')."]);
                         break;
                     case "PasswordRequiresUpper":
-                        reportError("Password", T["Passwords must have at least one uppercase('A'-'Z')."]);
+                        reportError("Password", T["Passwords must have at least one uppercase character ('A'-'Z')."]);
                         break;
                     case "PasswordRequiresNonAlphanumeric":
                         reportError("Password", T["Passwords must have at least one non letter or digit character."]);

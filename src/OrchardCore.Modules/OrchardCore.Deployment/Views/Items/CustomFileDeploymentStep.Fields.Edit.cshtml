@@ -11,8 +11,9 @@
 </fieldset>
 
 <div class="form-group" asp-validation-class-for="FileName">
-    <label asp-for="FileName">@T["File Name"] <span asp-validation-for="FileName"></span></label>
+    <label asp-for="FileName">@T["File Name"]</label>
     <input asp-for="FileName" class="form-control" />
+    <span asp-validation-for="FileName"></span>
     <span class="hint">@T["The filename as it will be added in the archive."]</span>
 </div>
 

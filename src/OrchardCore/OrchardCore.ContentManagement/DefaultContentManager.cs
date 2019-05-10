@@ -315,8 +315,6 @@ namespace OrchardCore.ContentManagement
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
-            var buildingContentItem = await NewAsync(existingContentItem.ContentType);
-
             ContentItem latestVersion;
 
             if (existingContentItem.Latest)
@@ -342,6 +340,11 @@ namespace OrchardCore.ContentManagement
                 latestVersion.Latest = false;
             }
 
+            // We are not invoking NewAsync as we are cloning an existing item
+            // This will also prevent the Elements (parts) from being allocated unnecessarily
+            var buildingContentItem = new ContentItem();
+
+            buildingContentItem.ContentType = existingContentItem.ContentType;
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
             buildingContentItem.DisplayText = existingContentItem.DisplayText;
@@ -424,7 +427,7 @@ namespace OrchardCore.ContentManagement
                     x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).ListAsync();
 
-            var context = new RemoveContentContext(contentItem);
+            var context = new RemoveContentContext(contentItem, true);
 
             await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
@@ -445,7 +448,9 @@ namespace OrchardCore.ContentManagement
                 throw new InvalidOperationException("Not a draft version.");
             }
 
-            var context = new RemoveContentContext(contentItem);
+            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            var context = new RemoveContentContext(contentItem, publishedItem == null);
 
             await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
 
@@ -454,13 +459,29 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
 
-            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
-
+            
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
                 _session.Save(publishedItem);
             }
+        }
+
+        public async Task<ContentItem> CloneAsync(ContentItem contentItem)
+        {
+            var cloneContentItem = await NewAsync(contentItem.ContentType);
+            await CreateAsync(cloneContentItem, VersionOptions.Draft);
+
+            var context = new CloneContentContext(contentItem, cloneContentItem);
+
+            context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+            context.CloneContentItem.DisplayText = contentItem.DisplayText;
+
+            await Handlers.InvokeAsync(async handler => await handler.CloningAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(async handler => await handler.ClonedAsync(context), _logger);
+
+            _session.Save(context.CloneContentItem);
+            return context.CloneContentItem;
         }
     }
 }

@@ -1,53 +1,118 @@
 @model AdminIndexViewModel
+@inject ShellSettings ShellSettings
+@using Microsoft.AspNetCore.Http;
+@using OrchardCore.Data;
 @using OrchardCore.Environment.Shell.Models
 @using OrchardCore.Environment.Shell
+@using System.Collections.Generic
 @using System.Net
 
-@functions {
-    public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
-    {
-        ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
-        var requestHostInfo = Context.Request.Host;
+@{
+    List<SelectListItem> tenantStates = new List<SelectListItem>() {
+new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
+new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
+new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
+new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
+};
 
-        var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
-        if (requestHostInfo.Port.HasValue)
-        {
-            tenantUrlHost += ":" + requestHostInfo.Port;
-        }
+    List<SelectListItem> tenantSorts = new List<SelectListItem>() {
+new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
+new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
+};
 
-        var result = $"{Context.Request.Scheme}://{tenantUrlHost}";
-
-        if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
-        {
-            result += "/" + tenantShellSettings.RequestUrlPrefix;
-        }
-
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
-        {
-            result +=  "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
-        }
-
-        return result;
-    }
+    List<SelectListItem> tenantActions = new List<SelectListItem>() {
+new SelectListItem() { Text = T["Disable"].Value, Value = BulkAction.Disable.ToString() },
+new SelectListItem() { Text = T["Enable"].Value, Value = BulkAction.Enable.ToString() }
+};
 }
 
+@functions {
+public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
+{
+    ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
+    var requestHostInfo = Context.Request.Host;
+
+    var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
+    if (requestHostInfo.Port.HasValue)
+    {
+        tenantUrlHost += ":" + requestHostInfo.Port;
+    }
+
+    var pathBase = Context.Request.PathBase.Value ?? string.Empty;
+
+    if (!string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix))
+    {
+        var prefix = "/" + ShellSettings.RequestUrlPrefix;
+
+        if (pathBase.EndsWith(prefix))
+        {
+            pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+        }
+    }
+
+    var result = $"{Context.Request.Scheme}://{tenantUrlHost}{pathBase}";
+
+    if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+    {
+        result += "/" + tenantShellSettings.RequestUrlPrefix;
+    }
+
+    if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+    {
+        result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
+    }
+
+    return result;
+}
+}
+<a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Tenant"]</a>
 <h1>@RenderTitleSegments(T["Tenants"])</h1>
+<fieldset class="admin-toolbar container-fluid">
+    <form asp-action="Index" method="get">
+        <div class="row">
+            <div class="col-md-1 col-xl-1 form-group">
+                <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <select id="filterResults" class="form-control" asp-for="Options.Filter" asp-items="@tenantStates"></select>
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2 my-2 my-lg-0" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <select id="orderResults" class="form-control" asp-for="Options.OrderBy" asp-items="@tenantSorts"></select>
+            </div>
+            <div class="col-md-2 col-xl-1 form-group">
+                <button type="submit" class="btn btn-secondary">@T["Search"]</button>
+            </div>
+        </div>
+    </form>
+</fieldset>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto"></ul>
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Tenant"]</a>
-        </li>
-    </ul>
-</nav>
+<form asp-action="Index" method="post">
+    <fieldset class="admin-toolbar container-fluid">
+        <div class="row">
+            <div class="col-md-2 col-xl-1 form-group">
+                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
+            </div>
+            <div class="col-md-3 col-xl-2 form-group">
+                <select class="form-control" name="bulkAction" asp-items="@tenantActions"></select>
+            </div>
+            <div class="col-md-2 col-xl-1 form-group">
+                <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+            </div>
+        </div>
+    </fieldset>
 
-<form asp-action="Index">
     @* the form is necessary to generate and antiforgery token for the delete action *@
     <ul class="list-group">
         @foreach (var entry in Model.ShellSettingsEntries)
         {
             <li class="list-group-item">
+                <div class="custom-control custom-checkbox float-left">
+                    <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                    <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
+                </div>
                 <div class="properties">
                     <div class="related">
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
@@ -92,3 +157,5 @@
         }
     </ul>
 </form>
+
+@await DisplayAsync(Model.Pager)

@@ -1,7 +1,7 @@
-  <Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.2</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +10,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
@@ -24,6 +23,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="OpenIddict" />
+    <PackageReference Include="System.Security.Cryptography.Cng" />
   </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
+    <DefineConstants>$(DefineConstants);SUPPORTS_CERTIFICATE_GENERATION</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_EPHEMERAL_KEY_SETS</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_DIRECT_KEY_CREATION_WITH_SPECIFIED_SIZE</DefineConstants>
+  </PropertyGroup>
 
 </Project>

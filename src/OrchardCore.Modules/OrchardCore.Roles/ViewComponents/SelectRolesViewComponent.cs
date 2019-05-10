@@ -8,11 +8,11 @@ namespace OrchardCore.Roles.ViewComponents
 {
     public class SelectRolesViewComponent : ViewComponent
     {
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
 
-        public SelectRolesViewComponent(IRoleProvider roleProvider)
+        public SelectRolesViewComponent(IRoleService roleService)
         {
-            _roleProvider = roleProvider;
+            _roleService = roleService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedRoles, string htmlName)
@@ -35,7 +35,7 @@ namespace OrchardCore.Roles.ViewComponents
 
         private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles)
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync();
             var selections = roleNames.Select(x => new Selection<string>
             {
                 IsSelected = selectedRoles.Contains(x),

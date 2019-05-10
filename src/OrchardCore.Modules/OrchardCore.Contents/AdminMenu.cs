@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
@@ -26,11 +27,11 @@ namespace OrchardCore.Contents
 
         public IStringLocalizer T { get; set; }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
@@ -46,7 +47,7 @@ namespace OrchardCore.Contents
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             if (contentTypes.Any())
             {
-                builder.Add(T["New"], "-1", async newMenu =>
+                await builder.AddAsync(T["New"], "-1", async newMenu =>
                 {
                     newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
                     foreach (var contentTypeDefinition in contentTypes)
@@ -57,18 +58,11 @@ namespace OrchardCore.Contents
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                                .Permission(Permissions.EditOwnContent)
-                                // Apply "PublishOwn" permission for the content type
-                                //.Permission(DynamicPermissions.CreateDynamicPermission(DynamicPermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition)
+                                .Permission(ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition))
                                 );
                     }
                 });
-
-
-
             }
-
-            return Task.CompletedTask;
         }
     }
 }

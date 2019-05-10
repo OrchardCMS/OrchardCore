@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public Expression Shape { get; }
 
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var services))
             {
@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             HtmlEncoder.Default.Encode(writer, tokenSet.RequestToken);
             writer.Write("\" />");
 
-            return Task.FromResult(Completion.Normal);
+            return new ValueTask<Completion>(Completion.Normal);
         }
     }
 }
