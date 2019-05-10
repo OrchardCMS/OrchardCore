@@ -54,7 +54,7 @@
 
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
-        <_Parameter1>$(MSBuildProjectName)</_Parameter1>
+        <_Parameter1>$(AssemblyName)</_Parameter1>
         <_Parameter2>$(ModuleType)</_Parameter2>
       </AssemblyAttribute>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
@@ -72,9 +72,9 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="GetModuleProject" Returns="@(ModuleProject)">
+  <Target Name="GetModuleProjectName" Returns="@(ModuleProjectName)">
     <ItemGroup>
-      <ModuleProject Include="$(MSBuildProjectFullPath)" />
+      <ModuleProjectName Include="$(AssemblyName)" />
     </ItemGroup>
   </Target>
 

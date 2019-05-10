@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
     <Compile Remove="App_Data\**" />
@@ -12,5 +12,9 @@
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
+
+  <Target Name="MakeWebRootFolder" BeforeTargets="Build" Condition="!Exists('wwwroot/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  </Target>
 
 </Project>

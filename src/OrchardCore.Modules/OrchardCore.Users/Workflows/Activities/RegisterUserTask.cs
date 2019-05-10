@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -50,6 +50,13 @@ namespace OrchardCore.Users.Workflows.Activities
             get => GetProperty(() => true);
             set => SetProperty(value);
         }
+
+        public WorkflowExpression<string> ConfirmationEmailSubject
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
 
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
@@ -106,15 +113,24 @@ namespace OrchardCore.Users.Workflows.Activities
                     var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
                     if (request.Host.Port.HasValue)
                         uriBuilder.Port = request.Host.Port.Value;
-                    uriBuilder.Path = "OrchardCore.Users/Registration/ConfirmEmail";
-                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, code);
+
+                    uriBuilder.Path = string.Concat(request.PathBase, "/OrchardCore.Users/Registration/ConfirmEmail");
+                    uriBuilder.Query = string.Format("userId={0}&code={1}", user.Id, UrlEncoder.Default.Encode(code));
                     workflowContext.Properties["EmailConfirmationUrl"] = uriBuilder.Uri.ToString();
 
 
+                    var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext);
+                    var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
+
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
-                    var localized = new LocalizedHtmlString(nameof(RegisterUserTask), body);
-                    var message = new MailMessage() { Body = localized.IsResourceNotFound ? body : localized.Value, IsBodyHtml = true, BodyEncoding = Encoding.UTF8 };
-                    message.To.Add(email);
+                    var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
+                    var message = new MailMessage()
+                    {
+                        To = email,
+                        Subject = localizedSubject.ResourceNotFound ? subject : localizedSubject.Value,
+                        Body = localizedBody.IsResourceNotFound ? body : localizedBody.Value,
+                        IsBodyHtml = true
+                    };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)

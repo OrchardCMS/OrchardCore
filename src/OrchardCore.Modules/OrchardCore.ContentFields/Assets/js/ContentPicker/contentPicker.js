@@ -1,8 +1,10 @@
+var contentPickers = [];
+
 function initializeContentPickerFieldEditor(elementId, selectedItems, tenantPath, partName, fieldName, multiple) {
 
     var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect.default);
 
-    new Vue({
+    var vm = new Vue({
         el: '#' + elementId,
         components: { 'vue-multiselect': vueMultiselect },
         data: {
@@ -60,4 +62,6 @@ function initializeContentPickerFieldEditor(elementId, selectedItems, tenantPath
             }
         }
     })
+
+    return vm;
 }

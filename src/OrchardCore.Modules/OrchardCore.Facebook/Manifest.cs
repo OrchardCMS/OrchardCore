@@ -20,6 +20,6 @@ using OrchardCore.Facebook;
     Id = FacebookConstants.Features.Login,
     Name = "Facebook Login",
     Category = "Facebook",
-    Description = "Auhenticates users from facebook.",
+    Description = "Authenticates users from facebook.",
     Dependencies = new[] { FacebookConstants.Features.Core }
 )]

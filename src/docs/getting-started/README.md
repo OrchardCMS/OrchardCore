@@ -36,6 +36,8 @@ with this line:
 app.UseOrchardCore();
 ```
 
+Add a `wwwroot` folder to your project
+
 ## Setup your application
 
 Launch your application (Ctrl+F5). The setup page is displayed.

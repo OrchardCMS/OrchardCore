@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
@@ -57,9 +58,7 @@ namespace OrchardCore.Contents
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                                .Permission(Permissions.EditOwnContent)
-                                // Apply "PublishOwn" permission for the content type
-                                //.Permission(DynamicPermissions.CreateDynamicPermission(DynamicPermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition)
+                                .Permission(ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition))
                                 );
                     }
                 });

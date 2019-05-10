@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell.Configuration;
 using SixLabors.ImageSharp.Web;
+using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
+using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.ImageSharp.Web.Resolvers;
 
@@ -14,13 +19,22 @@ namespace OrchardCore.Media.Processing
 {
     public class MediaFileProvider : IImageProvider
     {
+        public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+
         private readonly IMediaFileStore _mediaStore;
         private readonly FormatUtilities _formatUtilities;
+        private readonly int[] _supportedSizes;
 
-        public MediaFileProvider(IMediaFileStore mediaStore, IOptions<ImageSharpMiddlewareOptions> options)
+        public MediaFileProvider(
+            IMediaFileStore mediaStore,
+            IOptions<ImageSharpMiddlewareOptions> options,
+            IShellConfiguration shellConfiguration)
         {
             _mediaStore = mediaStore;
             _formatUtilities = new FormatUtilities(options.Value.Configuration);
+
+            var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
+            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
         }
 
         /// <inheritdoc/>
@@ -30,7 +44,41 @@ namespace OrchardCore.Media.Processing
         public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
         /// <inheritdoc/>
-        public bool IsValidRequest(HttpContext context) => _formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) != null;
+        public bool IsValidRequest(HttpContext context)
+        {
+            if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
+            {
+                return false;
+            }
+
+            if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
+                !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
+            {
+                return false;
+            }
+
+            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Width, out var widthString))
+            {
+                var width = CommandParser.Instance.ParseValue<int>(widthString);
+
+                if (Array.BinarySearch<int>(_supportedSizes, width) < 0)
+                {
+                    return false;
+                }
+            }
+
+            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Height, out var heightString))
+            {
+                var height = CommandParser.Instance.ParseValue<int>(heightString);
+
+                if (Array.BinarySearch<int>(_supportedSizes, height) < 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(HttpContext context)

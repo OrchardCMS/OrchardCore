@@ -44,13 +44,13 @@ else
                                         @if (themeEntry.Enabled)
                                         {
                                             <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post">
-                                                <button type="submit" class="btn btn-sm btn-default">@T["Disable"]</button>
+                                                <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
                                             </form>
                                         }
                                         else
                                         {
                                             <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post">
-                                                <button type="submit" class="btn btn-sm btn-default">@T["Enable"]</button>
+                                                <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
                                             </form>
                                         }
                                     </div>
