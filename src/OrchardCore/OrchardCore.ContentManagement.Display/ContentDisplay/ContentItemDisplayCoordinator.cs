@@ -156,9 +156,10 @@ namespace OrchardCore.ContentManagement.Display
                 return;
 
             dynamic contentShape = context.Shape;
-            dynamic partsShape = await context.ShapeFactory.CreateAsync("Zone", Arguments.Empty);
+            dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone", Arguments.Empty);
+            
             contentShape.Zones["Parts"] = partsShape;
-
+            
             foreach (var displayDriver in _displayDrivers)
             {
                 try

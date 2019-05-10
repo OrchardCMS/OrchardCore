@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,5 +64,32 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
+
+        public static IEnumerable<string> HarvestAndSortTabs(IEnumerable<dynamic> shapes)
+        {
+            var tabs = new List<string>();
+
+            foreach (var shape in shapes)
+            {
+                var tab = (string)shape.Metadata.Tab;
+
+                if (String.IsNullOrEmpty(tab))
+                    continue;
+
+                if (!tabs.Contains(tab))
+                    tabs.Add(tab);
+            }
+
+            // If we have any tabs, make sure we have at least the Content tab and that it is the first one,
+            // since that's where we will put anything else not part of a tab.
+            if (tabs.Any())
+            {
+                tabs.Remove("Content");
+                tabs.Insert(0, "Content");
+            }
+
+            return tabs;
+        }
+
     }
 }
