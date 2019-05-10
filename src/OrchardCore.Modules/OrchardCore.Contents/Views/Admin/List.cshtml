@@ -24,7 +24,7 @@ new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Publi
 new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
 };
-    contentStatuses.Where( s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
+    contentStatuses.Where(s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
 
     List<SelectListItem> contentSorts = new List<SelectListItem>() {
 new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
@@ -57,56 +57,70 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                     }
                 </select>
         </fieldset>*@
-    <fieldset class="filter-options container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="DisplayText" class="label col-form-label">@T["Title"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="contentResults" class="form-control" name="Id">
-                    <option value="">@T["All content types"]</option>
-                    @foreach (var option in Model.Options.FilterOptions)
-                    {
-                        string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="@option.Key">@option.Value</!option>
-                    }
-                </select>
-            </div>
-            @*@if (cultures.Count() > 1) {
-                <div class="col-md-2 col-xl-1 form-group">
-                    <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
-                </div>
-                <div class="col-md-4 col-xl-3 form-group">
-                    <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                        <option value="">@T["All cultures"]</option>
-                        @foreach (string culture in cultures) {
-                            string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                            <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                        }
-                    </select>
-                </div>
-                }*@
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Show"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
-            </div>
-            @*<div class="col-md-2 col-xl-1 form-group">
+    <fieldset class="filter-options">
+        <div class="card mb-3">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Title"]</span>
+                            </div>
+                            <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                            </div>
+                            <select id="contentResults" class="form-control" name="Id">
+                                <option value="">@T["All content types"]</option>
+                                @foreach (var option in Model.Options.FilterOptions)
+                                {
+                                    string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
+                                    <!option @isSelected value="@option.Key">@option.Value</!option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                        @*@if (cultures.Count() > 1) {
+        <div class="col-md-2 col-xl-1 form-group">
+            <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
+        </div>
+        <div class="col-md-4 col-xl-3 form-group">
+            <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
+                <option value="">@T["All cultures"]</option>
+                @foreach (string culture in cultures) {
+                    string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
+                    <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
+                }
+            </select>
+        </div>
+        }*@
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
+                            </div>
+                            <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-n1">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
+                            </div>
+                            <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
+                        </div>
+                    </div>
+                            @*<div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
             </div>*@
+
+                        </div>
+                    </div>
         </div>
     </fieldset>
 
