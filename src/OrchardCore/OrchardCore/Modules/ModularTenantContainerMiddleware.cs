@@ -49,7 +49,12 @@ namespace OrchardCore.Modules
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
                 // Holds the 'ShellContext' for the full request.
-                httpContext.Features.Set(shellScope.ShellContext);
+                httpContext.Features.Set(new ShellContextFeature
+                {
+                    ShellContext = shellScope.ShellContext,
+                    OriginalPath = httpContext.Request.Path,
+                    OriginalPathBase = httpContext.Request.PathBase
+                });
 
                 await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
             }
