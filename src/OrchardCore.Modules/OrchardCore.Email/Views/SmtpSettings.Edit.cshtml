@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-3">
                         <div class="d-flex flex-wrap align-items-center justify-content-stretch">
                             <div class="form-group flex-fill" asp-validation-class-for="Port">
                                 <label asp-for="Port">@T["Port number"]</label>
@@ -49,7 +49,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-9">
                         <div class="d-flex flex-wrap align-items-center justify-content-stretch">
                             <div id="@Html.Id("SelectEncryptionMethod")" class="form-group flex-fill @(Model.AutoSelectEncryption ? "collapse" : "show")" asp-validation-class-for="EncryptionMethod">
                                 <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
