@@ -78,6 +78,21 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
+            if (!String.IsNullOrEmpty(Request.Query["DisplayText"]))
+            {
+                model.DisplayText = Request.Query["DisplayText"];
+            }
+
+            if (!String.IsNullOrEmpty(Request.Query["ContentsStatus"]))
+            {
+                model.Options.ContentsStatus = (ContentsStatus)Enum.Parse(typeof(ContentsStatus), Request.Query["ContentsStatus"]);
+            }
+
+            if (!String.IsNullOrEmpty(Request.Query["OrderBy"]))
+            {
+                model.Options.OrderBy = (ContentsOrder)Enum.Parse(typeof(ContentsOrder), Request.Query["OrderBy"]);
+            }
+
             if (!string.IsNullOrEmpty(model.DisplayText))
             {
                 query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
@@ -189,7 +204,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (Request.Method == "POST")
             {
-                return RedirectToAction("List");
+                return RedirectToAction("List", new RouteValueDictionary { { "DisplayText", model.DisplayText ?? String.Empty }, { "ContentsStatus", model.Options.ContentsStatus }, { "OrderBy", model.Options.OrderBy } });
             }
             else
             {
