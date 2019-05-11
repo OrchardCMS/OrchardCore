@@ -78,6 +78,7 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
+            //We bind values manually from querystring since binding of complex models doesn't work with RouteValueDictionary
             if (!String.IsNullOrEmpty(Request.Query["DisplayText"]))
             {
                 model.DisplayText = Request.Query["DisplayText"];
