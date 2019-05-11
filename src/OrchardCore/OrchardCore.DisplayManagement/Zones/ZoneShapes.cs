@@ -35,18 +35,26 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (tabbed.Count > 1)
             {
+                var tabIndex = 0;
+                var tabContentBuilder = new TagBuilder("div");
+                tabContentBuilder.AddCssClass("tab-content");//id d="pills-tabContent"
                 foreach (var tab in tabbed)
                 {
                     var tabName = String.IsNullOrWhiteSpace(tab.Key) ? "Content" : tab.Key;
-                    var tabBuilder = new TagBuilder("div");
-                    tabBuilder.Attributes["id"] = "tab-" + tabName.HtmlClassify();
-                    tabBuilder.Attributes["data-tab"] = tabName;
+                    var tabItemBuilder = new TagBuilder("div");
+                    tabItemBuilder.Attributes["id"] = "tab-" + tabName.HtmlClassify();
+                    tabItemBuilder.Attributes["data-tab"] = tabName;
+                    var tabItemClasses = tabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
+                    tabItemBuilder.AddCssClass(tabItemClasses);
                     foreach (var item in tab)
                     {
-                        tabBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
+                        tabItemBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
                     }
-                    htmlContents.Add(tabBuilder);
+                    tabContentBuilder.InnerHtml.AppendHtml(tabItemBuilder);
+                    tabIndex++;
+                    //htmlContents.Add(tabItemBuilder);
                 }
+                htmlContents.Add(tabContentBuilder);
             }
             else if (tabbed.Count > 0)
             {

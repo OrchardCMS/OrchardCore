@@ -1,23 +1,49 @@
-
+@using OrchardCore.Mvc.Utilities;
 @{
     var tabs = ((IEnumerable<dynamic>)Model.Tabs).ToArray();
 
-    if (tabs.Any()) {
+    if (tabs.Any())
+    {
         //Script.Require("LocalNavigation");
     }
 }
-@if (tabs.Any()) {
+@if (tabs.Any())
+{
     var tabIndex = 0;
-    <div id="local-navigation">
-        <ul class="localmenu group">
-            @foreach (var tab in tabs) {
+    //<div class="nav nav-tabs" id="nav-tab" role="tablist">
+    @*<div id="local-navigation" class="nav-tab">*@
+    <ul class="nav nav-tabs" id="pills-tab" role="tablist">
+        @foreach (var tab in tabs)
+        {
+            var tabText = tab is string ? (string)tab : (string)(tab.Text);// is LocalizedString ? tab.Text.ToString() : tab.Text);
+            var defaultTabId = string.Format("tab-{0}", tabText).HtmlClassify();
+            var tabId = tab is string ? defaultTabId : (string)(tab.TabName ?? defaultTabId);
+            var tabCssClass = tabIndex == 0 ? "nav-link active" : "nav-link btn-secondary";
+            <li class="nav-item">
+                <a class="@tabCssClass" href="#@tabId" data-toggle="pill" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
+            </li>
+            @*<li class="@tabCssClass">
+                    <a href="#@tabId">@tabText</a>
+                </li>*@
+            tabIndex++;
+        }
+    </ul>
+    @*</div>*@
+
+    @*<div id="local-navigation" class="nav-tab">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            >
+            @foreach (var tab in tabs)
+            {
                 var tabText = tab is string ? (string)tab : (string)(tab.Text);// is LocalizedString ? tab.Text.ToString() : tab.Text);
                 var defaultTabId = string.Format("tab-{0}", tabText);//.HtmlClassify());
                 var tabId = tab is string ? defaultTabId : (string)(tab.TabName ?? defaultTabId);
                 var tabCssClass = tabIndex == 0 ? "first selected" : tabIndex <= tabs.Count() - 1 ? "last" : "middle";
-                <li class="@tabCssClass"><a href="#@tabId">@tabText</a></li>
+                <li class="@tabCssClass">
+                    <a href="#@tabId">@tabText</a>
+                </li>
                 tabIndex++;
             }
         </ul>
-    </div>
+        </div>*@
 }
