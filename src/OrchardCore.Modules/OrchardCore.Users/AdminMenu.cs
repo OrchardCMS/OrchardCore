@@ -45,7 +45,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        public RegistrationAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             T = localizer;
         }
@@ -75,7 +75,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        public ResetPasswordAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {
             T = localizer;
         }
