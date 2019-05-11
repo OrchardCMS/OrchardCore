@@ -1,11 +1,6 @@
 @using OrchardCore.Mvc.Utilities;
 @{
     var tabs = ((IEnumerable<dynamic>)Model.Tabs).ToArray();
-
-    if (tabs.Any())
-    {
-        //Script.Require("LocalNavigation");
-    }
 }
 @if (tabs.Any())
 {
@@ -18,13 +13,22 @@
             var tabText = tab is string ? (string)tab : (string)(tab.Text);// is LocalizedString ? tab.Text.ToString() : tab.Text);
             var defaultTabId = string.Format("tab-{0}", tabText).HtmlClassify();
             var tabId = tab is string ? defaultTabId : (string)(tab.TabName ?? defaultTabId);
-            var tabCssClass = tabIndex == 0 ? "nav-link active" : "nav-link btn-secondary";
-            <li class="nav-item">
+            var tabCssClass = tabIndex == 0 ? "nav-item nav-link active" : "nav-item nav-link";
+            <li class="nav-item pr-2">
                 <a class="@tabCssClass" href="#@tabId" data-toggle="pill" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
             </li>
+            <li class="nav-item pr-2">
+                <a class="nav-item nav-link" href="#@tabId" data-toggle="pill" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
+            </li>
+            <li class="nav-item pr-2">
+                <a class="nav-item nav-link" href="#@tabId" data-toggle="pill" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
+            </li>
+            <li class="nav-item pr-2">
+                <a class="nav-item nav-link" href="#@tabId" data-toggle="pill" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
+            </li>
             @*<li class="@tabCssClass">
-                    <a href="#@tabId">@tabText</a>
-                </li>*@
+                <a href="#@tabId">@tabText</a>
+            </li>*@
             tabIndex++;
         }
     </ul>
