@@ -117,6 +117,8 @@ namespace OrchardCore.DisplayManagement.Razor
                     output,
                     new HtmlHelperOptions());
 
+                _viewContextAccessor.ViewContext = viewContext;
+
                 await view.RenderAsync(viewContext);
 
                 return output.ToString();
