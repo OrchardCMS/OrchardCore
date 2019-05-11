@@ -190,7 +190,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 liquidPage.RenderAsync = output =>
                 {
-                    return template.RenderAsync(output, HtmlEncoder.Default, context);
+                    return template.RenderAsync(output, encoder, context);
                 };
 
                 viewContext.Writer = writer;
