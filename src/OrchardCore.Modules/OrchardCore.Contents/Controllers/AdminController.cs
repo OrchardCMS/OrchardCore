@@ -86,12 +86,23 @@ namespace OrchardCore.Contents.Controllers
 
             if (!String.IsNullOrEmpty(Request.Query["ContentsStatus"]))
             {
-                model.Options.ContentsStatus = (ContentsStatus)Enum.Parse(typeof(ContentsStatus), Request.Query["ContentsStatus"]);
+                if (Enum.TryParse(Request.Query["ContentsStatus"], true, out ContentsStatus result))
+                {
+                    if (Enum.IsDefined(typeof(ContentsStatus), result)){
+                        model.Options.ContentsStatus = result;
+                    }
+                }
             }
 
             if (!String.IsNullOrEmpty(Request.Query["OrderBy"]))
             {
-                model.Options.OrderBy = (ContentsOrder)Enum.Parse(typeof(ContentsOrder), Request.Query["OrderBy"]);
+                if (Enum.TryParse(Request.Query["OrderBy"], true, out ContentsOrder result))
+                {
+                    if (Enum.IsDefined(typeof(ContentsOrder), result))
+                    {
+                        model.Options.OrderBy = result;
+                    }
+                }
             }
 
             if (!string.IsNullOrEmpty(model.DisplayText))
