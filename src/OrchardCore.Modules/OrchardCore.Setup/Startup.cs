@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +36,25 @@ namespace OrchardCore.Setup
 		public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            app.UsePortableObjectLocalization(localizationOptions, _defaultCulture, _supportedCultures);
+
+            if (!String.IsNullOrEmpty(_defaultCulture))
+            {
+                localizationOptions.SetDefaultCulture(_defaultCulture);
+            }
+
+            if (_supportedCultures?.Length > 0)
+            {
+                var supportedCultures =_supportedCultures
+                    .Concat(new[] { localizationOptions.DefaultRequestCulture.Culture.Name })
+                    .Distinct()
+                    .ToArray();
+
+                localizationOptions
+                    .AddSupportedCultures(supportedCultures)
+                    .AddSupportedUICultures(supportedCultures);
+            }
+
+            app.UseRequestLocalization(localizationOptions);
 
             routes.MapAreaRoute(
                 name: "Setup",
