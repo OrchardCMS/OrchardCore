@@ -1,4 +1,3 @@
-@*<zone name="Content" position="0">*@
-    @await DisplayAsync(await New.AdminTabs(Tabs: Model.Tabs))
-@*</zone>*@
+@await DisplayAsync(await New.AdminTabs(ContentItem: Model.ContentItem, Tabs: Model.Tabs))
+
 

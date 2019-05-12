@@ -1059,6 +1059,10 @@ ul.pager li a {
     }
     .nav-item{
         margin-bottom: 0px;
+
+    }        
+    .nav-item:not(.last){
+        @extend .pr-2;
     }
 }
 

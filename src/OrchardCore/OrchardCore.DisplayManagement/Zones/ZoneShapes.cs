@@ -36,14 +36,14 @@ namespace OrchardCore.DisplayManagement.Zones
             if (tabbed.Count > 1)
             {
                 var tabIndex = 0;
+                var tabId = Shape.ContentItem != null ? (string)Shape.ContentItem.ContentItemId : "";
                 var tabContentBuilder = new TagBuilder("div");
-                tabContentBuilder.AddCssClass("tab-content");//id d="pills-tabContent"
+                tabContentBuilder.AddCssClass("tab-content");
                 foreach (var tab in tabbed)
                 {
                     var tabName = String.IsNullOrWhiteSpace(tab.Key) ? "Content" : tab.Key;
                     var tabItemBuilder = new TagBuilder("div");
-                    tabItemBuilder.Attributes["id"] = "tab-" + tabName.HtmlClassify();
-                    tabItemBuilder.Attributes["data-tab"] = tabName;
+                    tabItemBuilder.Attributes["id"] = $"tab-{tabId}-{tabName}".HtmlClassify();
                     var tabItemClasses = tabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
                     tabItemBuilder.AddCssClass(tabItemClasses);
                     foreach (var item in tab)
@@ -52,7 +52,6 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
                     tabContentBuilder.InnerHtml.AppendHtml(tabItemBuilder);
                     tabIndex++;
-                    //htmlContents.Add(tabItemBuilder);
                 }
                 htmlContents.Add(tabContentBuilder);
             }
@@ -62,6 +61,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     htmlContents.Add(await DisplayAsync(item));
                 }
+
             }
 
             var htmlContentBuilder = new HtmlContentBuilder();

@@ -4,50 +4,6 @@
 }
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
-@* so this produces the tab listing 
-    what we need to figure out is how the Model.Parts is Placed
-    *@
-
-<style>
-    /*.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link{
-        background-color:cadetblue !important;
-    }*/
-
-    /*.tab-pane {
- 
-border-left:solid 1px #dee2e6;
-border-right:solid 1px #dee2e6;
-border-bottom:solid 1px #dee2e6;
- 
- border-bottom-left-radius: 0.25rem;
- border-bottom-right-radius: 0.25rem;
- border-top-right-radius: 0.25rem;
-margin-bottom: 15px; 
- 
-padding-left:15px;
-padding-right:15px;
-padding-top:15px;
-
-}*/
-
-    .editor-toolbar{
-        
-border-top:solid 1px #dee2e6;
-border-left:solid 1px #dee2e6;
-border-right:solid 1px #dee2e6;
-    }
-
-    .CodeMirror{
-        
-border:solid 1px #dee2e6 !important;
-    }
-    .nav-tabs > .active > a, .nav-tabs > .active > a:hover {
-    background-color: chartreuse;
-}
-    .nav-tabs > .active > a, .nav-tabs > .active > a:hover {
-    background-color: red !important;
-}
-</style>
 
 <div class="edit-container">
     <div class="edit-body">
@@ -59,9 +15,11 @@ border:solid 1px #dee2e6 !important;
                 </div>
             }
         </div>
-
-        @await DisplayAsync(await New.LocalNavigation(Tabs: tabs))
         <div class="edit-item-parts">
+            @if (tabs.Any())
+            {
+                @await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: tabs))
+            }
             @if (Model.Parts != null)
             {
                 @await DisplayAsync(Model.Parts)

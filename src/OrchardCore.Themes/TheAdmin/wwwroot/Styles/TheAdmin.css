@@ -7105,10 +7105,10 @@ a.close.disabled {
 [dir] .pt-2, [dir] .py-2 {
   padding-top: 0.5rem !important; }
 
-[dir=ltr] .pr-2, [dir=ltr] .px-2 {
+[dir=ltr] .pr-2, [dir=ltr] .nav-tabs .nav-item:not(.last), [dir=ltr] .px-2 {
   padding-right: 0.5rem !important; }
 
-[dir=rtl] .pr-2, [dir=rtl] .px-2 {
+[dir=rtl] .pr-2, [dir=rtl] .nav-tabs .nav-item:not(.last), [dir=rtl] .px-2 {
   padding-left: 0.5rem !important; }
 
 [dir] .pb-2, [dir] .py-2 {
@@ -8783,7 +8783,7 @@ a.text-dark:hover, a.text-dark:focus {
   color: black;
   font-size: 1rem; }
 [dir] .CodeMirror {
-  border: #dee2e6; }
+  border: 1px solid #dee2e6; }
 
 /* PADDING */
 .CodeMirror-lines {
