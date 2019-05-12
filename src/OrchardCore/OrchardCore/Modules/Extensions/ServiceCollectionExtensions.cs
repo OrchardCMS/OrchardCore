@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -166,13 +167,22 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                var tenantName = settings.Name;
+                var cookieName = "orchantiforgery_" + settings.Name;
+
+                // If the tenant is uninitialized, we still use the host level antiforgery services.
+                if (settings.State == OrchardCore.Environment.Shell.Models.TenantState.Uninitialized)
+                {
+                    // Here, setting a tenant cookie name has no effect, but this allows to retrieve
+                    // it on setup to delete a cookie that may have been created by another instance.
+                    services.Configure<AntiforgeryOptions>(o => o.Cookie.Name = cookieName);
+                    return;
+                }
 
                 // Re-register the antiforgery  services to be tenant-aware.
                 var collection = new ServiceCollection()
                     .AddAntiforgery(options =>
                     {
-                        options.Cookie.Name = "orchantiforgery_" + tenantName;
+                        options.Cookie.Name = cookieName;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                         // set by the pipeline and comming from the request 'PathBase' which already ends with the

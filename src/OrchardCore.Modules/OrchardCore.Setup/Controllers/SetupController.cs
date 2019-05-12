@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -24,6 +27,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
         private readonly ILogger<SetupController> _logger;
+        private readonly AntiforgeryOptions _antiforgeryOptions;
 
         public SetupController(
             ILogger<SetupController> logger,
@@ -32,7 +36,8 @@ namespace OrchardCore.Setup.Controllers
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
-            IStringLocalizer<SetupController> t)
+            IStringLocalizer<SetupController> t,
+            IOptions<AntiforgeryOptions> optionsAccessor)
         {
             _logger = logger;
             _clock = clock;
@@ -40,6 +45,7 @@ namespace OrchardCore.Setup.Controllers
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
+            _antiforgeryOptions = optionsAccessor.Value;
 
             T = t;
         }
@@ -75,6 +81,9 @@ namespace OrchardCore.Setup.Controllers
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
             }
+
+            // Delete a cookie that may have been created by another instance.
+            HttpContext.Response.Cookies.Delete(_antiforgeryOptions.Cookie.Name);
 
             return View(model);
         }
