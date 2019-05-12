@@ -172,8 +172,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 // If the tenant is uninitialized, we still use the host level antiforgery services.
                 if (settings.State == OrchardCore.Environment.Shell.Models.TenantState.Uninitialized)
                 {
-                    // Here, setting a tenant cookie name has no effect, but this allows to retrieve
-                    // it on setup to delete a cookie that may have been created by another instance.
+                    // Here, setting a tenant level cookie name has no effect, but then we can retrieve
+                    // it on setup and delete a cookie that may have been created by another instance.
                     services.Configure<AntiforgeryOptions>(o => o.Cookie.Name = cookieName);
                     return;
                 }
