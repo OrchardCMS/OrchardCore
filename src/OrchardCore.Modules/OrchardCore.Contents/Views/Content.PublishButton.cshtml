@@ -1,8 +1,3 @@
-@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
-@{
-    var returnUrl = Context.Request.Query["returnUrl"];
-}
-
 <div class="btn-group">
     <button class="publish-button btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
     <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -13,6 +8,4 @@
         <button class="dropdown-item" type="submit" name="submit.Publish" value="submit.PublishAndCreateNew">@T["and create new"]</button>
     </div>
 </div>
-
-@* } *@
 
