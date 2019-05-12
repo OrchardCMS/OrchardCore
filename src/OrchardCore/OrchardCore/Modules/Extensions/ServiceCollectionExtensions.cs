@@ -19,6 +19,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 
@@ -169,11 +170,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var cookieName = "orchantiforgery_" + settings.Name;
 
-                // If the tenant is uninitialized, we still use the host level antiforgery services.
-                if (settings.State == OrchardCore.Environment.Shell.Models.TenantState.Uninitialized)
+                // If uninitialized, we use the host services.
+                if (settings.State == TenantState.Uninitialized)
                 {
-                    // Here, setting a tenant level cookie name has no effect, but then we can retrieve
-                    // it on setup and delete a cookie that may have been created by another instance.
+                    // And configure the tenant cookie name just to be retrieved on setup.
                     services.Configure<AntiforgeryOptions>(o => o.Cookie.Name = cookieName);
                     return;
                 }
