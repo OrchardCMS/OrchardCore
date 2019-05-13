@@ -404,14 +404,17 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            if ((!String.IsNullOrEmpty(returnUrl)) && (!stayOnSamePage || !createNewAfterCreate))
-            {
-                return LocalRedirect(returnUrl);
-            }
-
             if (createNewAfterCreate)
             {
                 return RedirectToAction("Create", new RouteValueDictionary { { "id", id }, { "returnUrl", returnUrl } });
+
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(returnUrl) && !stayOnSamePage)
+                {
+                    return LocalRedirect(returnUrl);
+                }
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
