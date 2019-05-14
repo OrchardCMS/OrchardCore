@@ -76,21 +76,6 @@ namespace OrchardCore.Navigation
             // Keep only menu items with an Href, or that have child items with an Href
             menuItems = Reduce(menuItems);
 
-            // Add returnUrl to all create menu content items
-            var contentItemsMenu = menuItems?.Find(mi => mi.Text == T["Content"].Value)?.Items?.Find(mi => mi.Text == T["Content Items"].Value);
-            if (contentItemsMenu != null)
-            {
-                var createMenuItems = menuItems?.Find(mi => mi.Text == T["New"].Value)?.Items;
-                if (createMenuItems != null)
-                {
-                    foreach (var menuItem in createMenuItems)
-                    {
-                        menuItem.Href = menuItem.Href + "?returnUrl=" + contentItemsMenu.Href;
-                        menuItem.RouteValues.Add("returnUrl", contentItemsMenu.Href);
-                    }
-                }
-            }
-
             return menuItems;
         }
 
@@ -184,7 +169,15 @@ namespace OrchardCore.Navigation
         {
             foreach (var menuItem in menuItems)
             {
-                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                if (menuItem.ReturnUrlRouteValues != null)
+                {
+                    var returnUrl = GetUrl(menuItem.Url, menuItem.ReturnUrlRouteValues, actionContext);
+                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext) + "?returnUrl=" + returnUrl;
+                }
+                else {
+                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                }
+                
                 menuItem.Items = ComputeHref(menuItem.Items, actionContext);
             }
 
