@@ -1,9 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -58,9 +55,6 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-
-                        //We add a returnUrl to the contents list for these menu items
-                        createRouteValues.Add("returnUrl", "/Admin/Contents/ContentItems");
 
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item

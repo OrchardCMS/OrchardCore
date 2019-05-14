@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 
@@ -29,7 +30,8 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IStringLocalizer<NavigationManager> localizer
             )
         {
             _navigationProviders = navigationProviders;
@@ -37,7 +39,10 @@ namespace OrchardCore.Navigation
             _shellSettings = shellSettings;
             _urlHelperFactory = urlHelperFactory;
             _authorizationService = authorizationService;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
         {
@@ -70,6 +75,21 @@ namespace OrchardCore.Navigation
 
             // Keep only menu items with an Href, or that have child items with an Href
             menuItems = Reduce(menuItems);
+
+            // Add returnUrl to all create menu content items
+            var contentItemsMenu = menuItems?.Find(mi => mi.Text == T["Content"].Value)?.Items?.Find(mi => mi.Text == T["Content Items"].Value);
+            if (contentItemsMenu != null)
+            {
+                var createMenuItems = menuItems?.Find(mi => mi.Text == T["New"].Value)?.Items;
+                if (createMenuItems != null)
+                {
+                    foreach (var menuItem in createMenuItems)
+                    {
+                        menuItem.Href = menuItem.Href + "?returnUrl=" + contentItemsMenu.Href;
+                        menuItem.RouteValues.Add("returnUrl", contentItemsMenu.Href);
+                    }
+                }
+            }
 
             return menuItems;
         }
