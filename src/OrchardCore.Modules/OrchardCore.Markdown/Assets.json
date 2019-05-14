@@ -1,7 +1,15 @@
 [
   {
+    "generateSourceMaps": false,
     "inputs": [
-      "Assets/simplemde.media.js"
+      "Assets/Styles/simplemde.css"
+    ],
+    "output": "wwwroot/Styles/simplemde.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/Scripts/simplemde.media.js"
     ],
     "output": "wwwroot/Scripts/simplemde.media.js"
   }
