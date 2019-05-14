@@ -28,7 +28,7 @@ namespace OrchardCore.ContentFields.Fields
             {
                 model.Value = (context.IsNew == false) ?
                     field.Value :
-                    (bool)context.PartFieldDefinition.Settings["DefaultValue"];
+                    (bool)(context.PartFieldDefinition.Settings["DefaultValue"] ?? false);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

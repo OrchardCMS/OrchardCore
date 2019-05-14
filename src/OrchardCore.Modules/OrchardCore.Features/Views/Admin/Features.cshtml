@@ -6,37 +6,31 @@
 }
 <h1>@RenderTitleSegments(T["Features"])</h1>
 
-<fieldset class="admin-toolbar container-fluid">
-    <form asp-action="Index" method="get">
-        <div class="row">
-            <div class="col-md-1 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
+<form asp-action="Features" method="post">
+    <div class="card">
+        <div class="card-body bg-light">
+            <div class="input-group mb-3 w-xl-50">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Filter:"]</span>
+                </div>
                 <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
             </div>
-        </div>
-    </form>
-</fieldset>
 
-<form asp-action="Features" method="post">
-    <fieldset class="admin-toolbar container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
+            <div class="input-group w-xl-50">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Actions:"]</span>
+                </div>
                 <select class="form-control" name="bulkAction">
                     <option value="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</option>
                     <option value="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</option>
                     <option value="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</option>
                 </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+                </div>
             </div>
         </div>
-    </fieldset>
+    </div>
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
         foreach (var featureGroup in featureGroups)

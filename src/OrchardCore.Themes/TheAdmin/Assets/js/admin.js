@@ -98,7 +98,7 @@ $(function () {
                     }
                 });
 
-                return false
+                return false;
             }
 
             if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
@@ -111,8 +111,11 @@ $(function () {
                     }
                 });
 
-                return false
+                return false;
             }
+
+            form.submit();
+            return false;
         });
     }
 });

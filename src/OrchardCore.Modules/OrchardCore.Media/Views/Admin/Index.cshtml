@@ -5,6 +5,7 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
+    
     initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
 
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
@@ -44,3 +45,4 @@
 </script>
 
 <h1>@RenderTitleSegments(T["Assets"])</h1>
+

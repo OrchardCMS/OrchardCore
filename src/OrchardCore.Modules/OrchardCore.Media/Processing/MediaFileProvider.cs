@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -34,7 +35,7 @@ namespace OrchardCore.Media.Processing
             _formatUtilities = new FormatUtilities(options.Value.Configuration);
 
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
-            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
+            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSizes;
         }
 
         /// <inheritdoc/>

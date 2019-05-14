@@ -21,7 +21,7 @@ PO files are found at these locations:
     - `/App_Data/Localization/[ModuleId]-[CultureName].po`
     - `/App_Data/Localization/[CultureName]/[ModuleId].po`
 
-`[CultureName]` can is either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
+`[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
 ### Examples
 

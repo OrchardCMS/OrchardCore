@@ -4,7 +4,7 @@ using Fluid;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Users.Services
+namespace OrchardCore.Users.Liquid
 {
     public class UserLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {
