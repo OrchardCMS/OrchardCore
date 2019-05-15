@@ -410,16 +410,16 @@ namespace OrchardCore.Contents.Controllers
                 {
                     return LocalRedirect(returnUrl);
                 }
+
+                var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
+
+                if (!String.IsNullOrEmpty(returnUrl))
+                {
+                    adminRouteValues.Add("returnUrl", returnUrl);
+                }
+
+                return RedirectToRoute(adminRouteValues);
             }
-
-            var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
-
-            if (!String.IsNullOrEmpty(returnUrl))
-            {
-                adminRouteValues.Add("returnUrl", returnUrl);
-            }
-
-            return RedirectToRoute(adminRouteValues);
         }
 
         public async Task<IActionResult> Display(string contentItemId)
