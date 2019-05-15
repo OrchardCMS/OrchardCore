@@ -171,7 +171,7 @@ namespace OrchardCore.Navigation
             {
                 if (menuItem.ReturnUrlRouteValues != null)
                 {
-                    var returnUrl = GetUrl(menuItem.Url, menuItem.ReturnUrlRouteValues, actionContext);
+                    var returnUrl = GetUrl(null, menuItem.ReturnUrlRouteValues, actionContext);
                     menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext) + "?returnUrl=" + returnUrl;
                 }
                 else {
