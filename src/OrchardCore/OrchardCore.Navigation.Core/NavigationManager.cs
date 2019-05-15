@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 
@@ -29,7 +30,8 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IStringLocalizer<NavigationManager> localizer
             )
         {
             _navigationProviders = navigationProviders;
@@ -37,7 +39,10 @@ namespace OrchardCore.Navigation
             _shellSettings = shellSettings;
             _urlHelperFactory = urlHelperFactory;
             _authorizationService = authorizationService;
+            T = localizer;
         }
+
+        public IStringLocalizer T { get; set; }
 
         public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
         {
@@ -164,7 +169,14 @@ namespace OrchardCore.Navigation
         {
             foreach (var menuItem in menuItems)
             {
-                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                if (menuItem.ReturnUrlRouteValues != null)
+                {
+                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext) + "?returnUrl=" + GetUrl(null, menuItem.ReturnUrlRouteValues, actionContext);
+                }
+                else {
+                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                }
+                
                 menuItem.Items = ComputeHref(menuItem.Items, actionContext);
             }
 

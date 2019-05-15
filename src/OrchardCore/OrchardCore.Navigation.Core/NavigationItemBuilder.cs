@@ -143,6 +143,19 @@ namespace OrchardCore.Navigation
             return Action(actionName, controllerName, areaName, new RouteValueDictionary());
         }
 
+        public NavigationItemBuilder ReturnUrl(string actionName, string controllerName, string areaName)
+        {
+            _item.ReturnUrlRouteValues = new RouteValueDictionary();
+            if (!string.IsNullOrEmpty(actionName))
+                _item.ReturnUrlRouteValues["action"] = actionName;
+            if (!string.IsNullOrEmpty(controllerName))
+                _item.ReturnUrlRouteValues["controller"] = controllerName;
+            if (!string.IsNullOrEmpty(areaName))
+                _item.ReturnUrlRouteValues["area"] = areaName;
+
+            return this;
+        }
+
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName, RouteValueDictionary values)
         {
             _item.RouteValues = new RouteValueDictionary(values);

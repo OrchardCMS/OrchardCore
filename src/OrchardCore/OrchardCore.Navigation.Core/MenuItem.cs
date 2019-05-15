@@ -81,6 +81,11 @@ namespace OrchardCore.Navigation
         public RouteValueDictionary RouteValues { get; set; }
 
         /// <summary>
+        /// The optional route values for this menu item Return Url.
+        /// </summary>
+        public RouteValueDictionary ReturnUrlRouteValues { get; set; }
+
+        /// <summary>
         /// The list of <see cref="Permission"/> objects the user must have in order to see this menu item.
         /// </summary>
         public List<Permission> Permissions { get; }
