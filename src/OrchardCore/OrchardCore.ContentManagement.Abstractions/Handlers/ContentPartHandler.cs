@@ -136,6 +136,21 @@ namespace OrchardCore.ContentManagement.Handlers
                 ? GetContentItemAspectAsync(context, tpart)
                 : Task.CompletedTask;
         }
+        async Task IContentPartHandler.CloningAsync(CloneContentContext context, ContentPart part)
+        {
+            if (part is TPart tpart)
+            {
+                await CloningAsync(context, tpart);
+            }
+        }
+
+        async Task IContentPartHandler.ClonedAsync(CloneContentContext context, ContentPart part)
+        {
+            if (part is TPart tpart)
+            {
+                await ClonedAsync(context, tpart);
+            }
+        }
 
         public virtual Task ActivatedAsync(ActivatedContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task ActivatingAsync(ActivatingContentContext context, TPart instance) => Task.CompletedTask;
@@ -156,5 +171,9 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task RemovingAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task RemovedAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TPart part) => Task.CompletedTask;
+        public virtual Task CloningAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ClonedAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
+
+
     }
 }

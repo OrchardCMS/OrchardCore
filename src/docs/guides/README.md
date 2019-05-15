@@ -15,6 +15,7 @@ These guides are specific to Orchard Core CMS
 
 - [Creating an Orchard Core CMS website](create-cms-application/index.md)
 - [Adding a Menu Item to the Admin Navigation](add-admin-menu/index.md)
+- [Installing Localization Files](install-localization-files/index.md)
 
 ## Tutorials
 

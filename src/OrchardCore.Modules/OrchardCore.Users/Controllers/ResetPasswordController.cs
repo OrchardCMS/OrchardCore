@@ -89,7 +89,8 @@ namespace OrchardCore.Users.Controllers
                 await SendEmailAsync(user.Email, T["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 await _passwordRecoveryFormEvents.InvokeAsync(i => i.PasswordRecoveredAsync(), _logger);
-                
+
+                return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
             }
 
             // If we got this far, something failed, redisplay form

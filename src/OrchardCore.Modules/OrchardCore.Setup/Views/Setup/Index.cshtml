@@ -123,10 +123,9 @@
         <fieldset class="form-group col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-control">
-                <option value="@localTimeZone.TimeZoneId">@localTimeZone</option>
                 @foreach (var timezone in Clock.GetTimeZones())
                 {
-                    <option value="@timezone.TimeZoneId" selected="@(Model.SiteTimeZone == timezone.TimeZoneId)">
+                    <option value="@timezone.TimeZoneId" selected="@(timezone.TimeZoneId == localTimeZone.TimeZoneId)">
                         @timezone
                     </option>
                 }
