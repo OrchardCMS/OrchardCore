@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 
@@ -30,8 +29,7 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService,
-            IStringLocalizer<NavigationManager> localizer
+            IAuthorizationService authorizationService
             )
         {
             _navigationProviders = navigationProviders;
@@ -39,10 +37,7 @@ namespace OrchardCore.Navigation
             _shellSettings = shellSettings;
             _urlHelperFactory = urlHelperFactory;
             _authorizationService = authorizationService;
-            T = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
         {
