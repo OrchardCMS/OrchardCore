@@ -408,7 +408,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 if (!String.IsNullOrEmpty(returnUrl) && !stayOnSamePage)
                 {
-                    return Redirect(returnUrl);
+                    return LocalRedirect(returnUrl);
                 }
 
                 var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
@@ -557,7 +557,7 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                return Redirect(returnUrl);
+                return LocalRedirect(returnUrl);
             }
         }
 

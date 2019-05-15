@@ -8,11 +8,21 @@
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
+    Uri returnUrl = null;
+    string refererUrl = Context.Request.Headers["Referer"].ToString();
+
+    if (!String.IsNullOrEmpty(refererUrl)) {
+        if (!refererUrl.Contains("://"))
+        {
+            refererUrl = Context.Request.Scheme + "://" + refererUrl;
+        }
+        returnUrl = new Uri(refererUrl);
+    }
 }
 
 <h1>@RenderTitleSegments(T["New {0}", Html.Raw(typeDisplayName)])</h1>
-<form asp-action="Create" asp-route-returnUrl="@Context.Request.Headers["Referer"].ToString()" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="returnUrl" value="@Context.Request.Headers["Referer"].ToString()" />
+<form asp-action="Create" asp-route-returnUrl="@returnUrl?.PathAndQuery" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="returnUrl" value="@returnUrl?.PathAndQuery" />
     @Html.ValidationSummary()
     @await DisplayAsync(Model)
 </form>
