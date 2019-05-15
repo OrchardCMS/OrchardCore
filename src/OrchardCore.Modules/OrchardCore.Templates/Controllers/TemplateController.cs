@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -24,7 +25,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly TemplatesManager _templatesManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        
+
         public TemplateController(
             IAuthorizationService authorizationService,
             TemplatesManager templatesManager,
@@ -69,7 +70,7 @@ namespace OrchardCore.Templates.Controllers
 
             var model = new TemplateIndexViewModel
             {
-                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template =x.Value }).ToList(),
+                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
                 Pager = pagerShape
             };
 
@@ -109,9 +110,17 @@ namespace OrchardCore.Templates.Controllers
                 var template = new Template { Content = model.Content, Description = model.Description };
 
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
-                if (submit != "SaveAndContinue")
+
+                if (submit == "SaveAndCreateNew")
                 {
-                    return RedirectToReturnUrlOrIndex(returnUrl);
+                    return RedirectToAction("Create");
+                }
+                else
+                {
+                    if (submit != "SaveAndContinue")
+                    {
+                        return RedirectToReturnUrlOrIndex(returnUrl);
+                    }
                 }
             }
 
@@ -176,10 +185,17 @@ namespace OrchardCore.Templates.Controllers
 
                 await _templatesManager.RemoveTemplateAsync(sourceName);
                 await _templatesManager.UpdateTemplateAsync(model.Name, template);
-                if (submit != "SaveAndContinue")
+                if (submit == "SaveAndCreateNew")
                 {
-                    return RedirectToReturnUrlOrIndex(returnUrl);
-                }                
+                    return RedirectToAction("Create");
+                }
+                else
+                {
+                    if (submit != "SaveAndContinue")
+                    {
+                        return RedirectToReturnUrlOrIndex(returnUrl);
+                    }
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -205,13 +221,13 @@ namespace OrchardCore.Templates.Controllers
             await _templatesManager.RemoveTemplateAsync(name);
 
             _notifier.Success(H["Template deleted successfully"]);
-            
+
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
