@@ -169,14 +169,8 @@ namespace OrchardCore.Navigation
         {
             foreach (var menuItem in menuItems)
             {
-                if (menuItem.ReturnUrlRouteValues != null)
-                {
-                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext) + "?returnUrl=" + GetUrl(null, menuItem.ReturnUrlRouteValues, actionContext);
-                }
-                else {
-                    menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
-                }
-                
+                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+
                 menuItem.Items = ComputeHref(menuItem.Items, actionContext);
             }
 

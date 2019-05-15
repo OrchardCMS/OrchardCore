@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
-using System.Collections.Generic;
 
 namespace OrchardCore.Navigation
 {
@@ -79,11 +79,6 @@ namespace OrchardCore.Navigation
         /// The optional route values for this menu item.
         /// </summary>
         public RouteValueDictionary RouteValues { get; set; }
-
-        /// <summary>
-        /// The optional route values for this menu item Return Url.
-        /// </summary>
-        public RouteValueDictionary ReturnUrlRouteValues { get; set; }
 
         /// <summary>
         /// The list of <see cref="Permission"/> objects the user must have in order to see this menu item.
