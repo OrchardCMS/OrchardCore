@@ -55,7 +55,6 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
