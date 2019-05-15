@@ -403,7 +403,6 @@ namespace OrchardCore.Contents.Controllers
             if (createNew)
             {
                 return RedirectToAction("Create", new RouteValueDictionary { { "id", id }, { "returnUrl", returnUrl } });
-
             }
             else
             {
