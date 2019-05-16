@@ -6,7 +6,7 @@ namespace OrchardCore.Settings
     {
         public static string[] GetManageableCultures(this ISite site)
         {
-            return new[] { site.Culture }.Concat(site.SupportedCultures).Distinct().ToArray();
+            return new[] { site.Culture }.Union(site.SupportedCultures).ToArray();
         }
     }
 }
