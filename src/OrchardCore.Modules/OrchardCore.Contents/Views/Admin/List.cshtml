@@ -106,7 +106,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
                             </div>
-                            <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
+                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@contentStatuses"></select>
                         </div>
                     </div>
                     <div class="form-group col-xl-3 mb-n1">
@@ -114,7 +114,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
                             </div>
-                            <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
+                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@contentSorts"></select>
                         </div>
                     </div>
                             @*<div class="col-md-2 col-xl-1 form-group">

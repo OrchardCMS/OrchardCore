@@ -73,6 +73,7 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
         {
+            var test = TempData["request"];
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -184,7 +185,7 @@ namespace OrchardCore.Contents.Controllers
             model.Options.SelectedFilter = model.TypeName;
             model.Options.FilterOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
+                .OrderBy(kvp => kvp.Value).ToList();
 
             //model.Options.Cultures = _cultureManager.ListCultures();
 
@@ -207,16 +208,28 @@ namespace OrchardCore.Contents.Controllers
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
-            var viewModel = (await New.ViewModel())
-                .ContentItems(contentItemSummaries)
-                .Pager(pagerShape)
-                .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "")
-                .DisplayText(model.DisplayText ?? "");
+            //var viewModel = (await New.ViewModel())
+            //    .ContentItems(contentItemSummaries)
+            //    .Pager(pagerShape)
+            //    .Options(model.Options)
+            //    .TypeDisplayName(model.TypeDisplayName ?? "")
+            //    .DisplayText(model.DisplayText ?? "");
+
+            var viewModel = new ListContentsViewModel
+            {
+                ContentItems = contentItemSummaries,
+                Pager = pagerShape,
+                Options = model.Options,
+                Id = model.Id,
+                TypeDisplayName = model.TypeDisplayName ?? "",
+                DisplayText = model.DisplayText ?? ""
+            };
+
+            //TempData["request"] = viewModel.Options;
 
             if (Request.Method == "POST")
             {
-                return RedirectToAction("List", viewModel as ListContentsViewModel);
+                return RedirectToAction("List", viewModel);
             }
             else
             {

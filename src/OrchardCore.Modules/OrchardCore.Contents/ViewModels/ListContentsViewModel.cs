@@ -27,7 +27,9 @@ namespace OrchardCore.Contents.ViewModels
         public ContentOptions Options { get; set; }
 
         [BindNever]
-        public List<ContentItem> ContentItems { get; set; }
+        public List<dynamic> ContentItems { get; set; }
+
+        public dynamic Pager { get; set; }
 
         #region Nested type: Entry
 
