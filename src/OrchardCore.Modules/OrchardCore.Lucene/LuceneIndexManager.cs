@@ -275,6 +275,7 @@ namespace OrchardCore.Lucene
 
                         if (close)
                         {
+                            action?.Invoke(writer);
                             writer.Dispose();
                             _timestamps[indexName] = _clock.UtcNow;
                             return;
