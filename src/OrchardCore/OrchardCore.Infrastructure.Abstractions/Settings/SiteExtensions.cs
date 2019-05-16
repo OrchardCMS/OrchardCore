@@ -4,7 +4,7 @@ namespace OrchardCore.Settings
 {
     public static class SiteExtensions
     {
-        public static string[] GetManagableCultures(this ISite site) {
+        public static string[] GetManageableCultures(this ISite site) {
             return new[] { site.Culture }.Concat(site.SupportedCultures).Distinct().ToArray();
         }
     }
