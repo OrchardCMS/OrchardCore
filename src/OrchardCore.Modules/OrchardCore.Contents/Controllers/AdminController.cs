@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -73,11 +74,246 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
         {
-            var test = TempData["request"];
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
             var query = _session.Query<ContentItem, ContentItemIndex>();
+
+            var viewModel = new ListContentsViewModel();
+            if (TempData["request"] is string s)
+            {
+                viewModel = JsonConvert.DeserializeObject<ListContentsViewModel>(s);
+
+                if (!string.IsNullOrEmpty(viewModel.DisplayText))
+                {
+                    query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(viewModel.DisplayText));
+                }
+
+                switch (viewModel.Options.ContentsStatus)
+                {
+                    case ContentsStatus.Published:
+                        query = query.With<ContentItemIndex>(x => x.Published);
+                        break;
+                    case ContentsStatus.Draft:
+                        query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+                        break;
+                    case ContentsStatus.AllVersions:
+                        query = query.With<ContentItemIndex>(x => x.Latest);
+                        break;
+                    default:
+                        query = query.With<ContentItemIndex>(x => x.Latest);
+                        break;
+                }
+
+                if (typeId != "")
+                {
+                    viewModel.Id = typeId;
+                }
+
+                if (!string.IsNullOrEmpty(viewModel.TypeName))
+                {
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(viewModel.TypeName);
+                    if (contentTypeDefinition == null)
+                        return NotFound();
+
+                    viewModel.TypeDisplayName = contentTypeDefinition.ToString();
+
+                    // We display a specific type even if it's not listable so that admin pages
+                    // can reuse the Content list page for specific types.
+                    query = query.With<ContentItemIndex>(x => x.ContentType == viewModel.TypeName);
+                }
+                else
+                {
+                    var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
+                    if (listableTypes.Any())
+                    {
+                        query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
+                    }
+                }
+
+                switch (viewModel.Options.OrderBy)
+                {
+                    case ContentsOrder.Modified:
+                        query = query.OrderByDescending(x => x.ModifiedUtc);
+                        break;
+                    case ContentsOrder.Published:
+                        query = query.OrderByDescending(cr => cr.PublishedUtc);
+                        break;
+                    case ContentsOrder.Created:
+                        query = query.OrderByDescending(cr => cr.CreatedUtc);
+                        break;
+                    case ContentsOrder.Title:
+                        query = query.OrderBy(cr => cr.DisplayText);
+                        break;
+                    default:
+                        query = query.OrderByDescending(cr => cr.ModifiedUtc);
+                        break;
+                }
+
+                //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
+                //{
+                //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
+                //}
+
+                //if (model.Options.ContentsStatus == ContentsStatus.Owner)
+                //{
+                //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
+                //}
+
+                viewModel.Options.SelectedFilter = viewModel.TypeName;
+                viewModel.Options.FilterOptions = (await GetListableTypesAsync())
+                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                    .OrderBy(kvp => kvp.Value).ToList();
+
+                //model.Options.Cultures = _cultureManager.ListCultures();
+
+                // Invoke any service that could alter the query
+                await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, viewModel, pagerParameters, this), Logger);
+
+                var maxPagedCount = siteSettings.MaxPagedCount;
+                if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+                    pager.PageSize = maxPagedCount;
+
+                var routeData = new RouteData();
+                routeData.Values.Add("DisplayText", viewModel.DisplayText);
+
+                var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
+                var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+                var contentItemSummaries = new List<dynamic>();
+                foreach (var contentItem in pageOfContentItems)
+                {
+                    contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+                }
+
+                viewModel = new ListContentsViewModel
+                {
+                    ContentItems = contentItemSummaries,
+                    Pager = pagerShape,
+                    Options = viewModel.Options,
+                    Id = viewModel.Id,
+                    TypeDisplayName = viewModel.TypeDisplayName ?? "",
+                    DisplayText = viewModel.DisplayText ?? ""
+                };
+
+            }
+            else {
+
+
+                if (!string.IsNullOrEmpty(model.DisplayText))
+                {
+                    query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+                }
+
+                switch (model.Options.ContentsStatus)
+                {
+                    case ContentsStatus.Published:
+                        query = query.With<ContentItemIndex>(x => x.Published);
+                        break;
+                    case ContentsStatus.Draft:
+                        query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+                        break;
+                    case ContentsStatus.AllVersions:
+                        query = query.With<ContentItemIndex>(x => x.Latest);
+                        break;
+                    default:
+                        query = query.With<ContentItemIndex>(x => x.Latest);
+                        break;
+                }
+
+                if (typeId != "")
+                {
+                    model.Id = typeId;
+                }
+
+                if (!string.IsNullOrEmpty(model.TypeName))
+                {
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
+                    if (contentTypeDefinition == null)
+                        return NotFound();
+
+                    model.TypeDisplayName = contentTypeDefinition.ToString();
+
+                    // We display a specific type even if it's not listable so that admin pages
+                    // can reuse the Content list page for specific types.
+                    query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
+                }
+                else
+                {
+                    var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
+                    if (listableTypes.Any())
+                    {
+                        query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
+                    }
+                }
+
+                switch (model.Options.OrderBy)
+                {
+                    case ContentsOrder.Modified:
+                        query = query.OrderByDescending(x => x.ModifiedUtc);
+                        break;
+                    case ContentsOrder.Published:
+                        query = query.OrderByDescending(cr => cr.PublishedUtc);
+                        break;
+                    case ContentsOrder.Created:
+                        query = query.OrderByDescending(cr => cr.CreatedUtc);
+                        break;
+                    case ContentsOrder.Title:
+                        query = query.OrderBy(cr => cr.DisplayText);
+                        break;
+                    default:
+                        query = query.OrderByDescending(cr => cr.ModifiedUtc);
+                        break;
+                }
+
+                //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
+                //{
+                //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
+                //}
+
+                //if (model.Options.ContentsStatus == ContentsStatus.Owner)
+                //{
+                //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
+                //}
+
+                model.Options.SelectedFilter = model.TypeName;
+                model.Options.FilterOptions = (await GetListableTypesAsync())
+                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                    .OrderBy(kvp => kvp.Value).ToList();
+
+                //model.Options.Cultures = _cultureManager.ListCultures();
+
+                // Invoke any service that could alter the query
+                await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
+
+                var maxPagedCount = siteSettings.MaxPagedCount;
+                if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+                    pager.PageSize = maxPagedCount;
+
+                var routeData = new RouteData();
+                routeData.Values.Add("DisplayText", model.DisplayText);
+
+                var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
+                var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+                var contentItemSummaries = new List<dynamic>();
+                foreach (var contentItem in pageOfContentItems)
+                {
+                    contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+                }
+
+                viewModel = new ListContentsViewModel
+                {
+                    ContentItems = contentItemSummaries,
+                    Pager = pagerShape,
+                    Options = model.Options,
+                    Id = model.Id,
+                    TypeDisplayName = model.TypeDisplayName ?? "",
+                    DisplayText = model.DisplayText ?? ""
+                };
+            }
+
+
+
 
             //We bind values manually from querystring since binding of complex models doesn't work with RouteValueDictionary
             //if (!String.IsNullOrEmpty(Request.Query["DisplayText"]))
@@ -106,107 +342,7 @@ namespace OrchardCore.Contents.Controllers
             //    }
             //}
 
-            if (!string.IsNullOrEmpty(model.DisplayText))
-            {
-                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
-            }
-
-            switch (model.Options.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query = query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
-
-            if (typeId != "")
-            {
-                model.Id = typeId;
-            }
-
-            if (!string.IsNullOrEmpty(model.TypeName))
-            {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
-                if (contentTypeDefinition == null)
-                    return NotFound();
-
-                model.TypeDisplayName = contentTypeDefinition.ToString();
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
-            }
-            else
-            {
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
-                }
-            }
-
-            switch (model.Options.OrderBy)
-            {
-                case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
-                    break;
-                case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
-                    break;
-                case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
-                    break;
-                case ContentsOrder.Title:
-                    query = query.OrderBy(cr => cr.DisplayText);
-                    break;
-                default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
-                    break;
-            }
-
-            //if (!String.IsNullOrWhiteSpace(model.Options.SelectedCulture))
-            //{
-            //    query = _cultureFilter.FilterCulture(query, model.Options.SelectedCulture);
-            //}
-
-            //if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            //{
-            //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
-            //}
-
-            model.Options.SelectedFilter = model.TypeName;
-            model.Options.FilterOptions = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .OrderBy(kvp => kvp.Value).ToList();
-
-            //model.Options.Cultures = _cultureManager.ListCultures();
-
-            // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
-
-            var maxPagedCount = siteSettings.MaxPagedCount;
-            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
-                pager.PageSize = maxPagedCount;
-
-            var routeData = new RouteData();
-            routeData.Values.Add("DisplayText", model.DisplayText);
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
-            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
-
-            var contentItemSummaries = new List<dynamic>();
-            foreach (var contentItem in pageOfContentItems)
-            {
-                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
-            }
+ 
 
             //var viewModel = (await New.ViewModel())
             //    .ContentItems(contentItemSummaries)
@@ -215,17 +351,10 @@ namespace OrchardCore.Contents.Controllers
             //    .TypeDisplayName(model.TypeDisplayName ?? "")
             //    .DisplayText(model.DisplayText ?? "");
 
-            var viewModel = new ListContentsViewModel
-            {
-                ContentItems = contentItemSummaries,
-                Pager = pagerShape,
-                Options = model.Options,
-                Id = model.Id,
-                TypeDisplayName = model.TypeDisplayName ?? "",
-                DisplayText = model.DisplayText ?? ""
-            };
 
-            //TempData["request"] = viewModel.Options;
+
+            var jsonViewModel = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+            TempData["request"] = jsonViewModel;
 
             if (Request.Method == "POST")
             {
