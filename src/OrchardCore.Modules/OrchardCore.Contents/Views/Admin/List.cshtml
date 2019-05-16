@@ -1,9 +1,11 @@
+@model  ListContentsViewModel
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
 @inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 
 @{
+    dynamic contentItemModel = Model;
     var typeDisplayName = Model.TypeDisplayName;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
@@ -66,7 +68,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Title"]</span>
                             </div>
-                            <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
+                            <input asp-for="DisplayText" id="DisplayText" class="form-control" name="DisplayText" />
                         </div>
                     </div>
                     <div class="form-group col-xl-3 mb-xl-n1">
@@ -124,10 +126,10 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
         </div>
     </fieldset>
 
-    @if (Model.ContentItems.Count > 0)
+    @if (contentItemModel.ContentItems.Count > 0)
     {
         <ul class="list-group">
-            @foreach (var contentItemSummary in Model.ContentItems)
+            @foreach (var contentItemSummary in contentItemModel.ContentItems)
             {
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
@@ -142,7 +144,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
         </div>
     }
 
-    @await DisplayAsync(Model.Pager)
+    @await DisplayAsync(contentItemModel.Pager)
 }
 
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@

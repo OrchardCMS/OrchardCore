@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.ViewModels
@@ -20,8 +21,13 @@ namespace OrchardCore.Contents.ViewModels
         public string DisplayText { get; set; }
         public string TypeDisplayName { get; set; }
         public int? Page { get; set; }
+
+        [BindNever]
         public IList<Entry> Entries { get; set; }
         public ContentOptions Options { get; set; }
+
+        [BindNever]
+        public List<ContentItem> ContentItems { get; set; }
 
         #region Nested type: Entry
 

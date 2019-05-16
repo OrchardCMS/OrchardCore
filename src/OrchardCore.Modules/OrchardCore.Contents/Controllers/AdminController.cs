@@ -79,31 +79,31 @@ namespace OrchardCore.Contents.Controllers
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
             //We bind values manually from querystring since binding of complex models doesn't work with RouteValueDictionary
-            if (!String.IsNullOrEmpty(Request.Query["DisplayText"]))
-            {
-                model.DisplayText = Request.Query["DisplayText"];
-            }
+            //if (!String.IsNullOrEmpty(Request.Query["DisplayText"]))
+            //{
+            //    model.DisplayText = Request.Query["DisplayText"];
+            //}
 
-            if (!String.IsNullOrEmpty(Request.Query["ContentsStatus"]))
-            {
-                if (Enum.TryParse(Request.Query["ContentsStatus"], true, out ContentsStatus result))
-                {
-                    if (Enum.IsDefined(typeof(ContentsStatus), result)){
-                        model.Options.ContentsStatus = result;
-                    }
-                }
-            }
+            //if (!String.IsNullOrEmpty(Request.Query["ContentsStatus"]))
+            //{
+            //    if (Enum.TryParse(Request.Query["ContentsStatus"], true, out ContentsStatus result))
+            //    {
+            //        if (Enum.IsDefined(typeof(ContentsStatus), result)){
+            //            model.Options.ContentsStatus = result;
+            //        }
+            //    }
+            //}
 
-            if (!String.IsNullOrEmpty(Request.Query["OrderBy"]))
-            {
-                if (Enum.TryParse(Request.Query["OrderBy"], true, out ContentsOrder result))
-                {
-                    if (Enum.IsDefined(typeof(ContentsOrder), result))
-                    {
-                        model.Options.OrderBy = result;
-                    }
-                }
-            }
+            //if (!String.IsNullOrEmpty(Request.Query["OrderBy"]))
+            //{
+            //    if (Enum.TryParse(Request.Query["OrderBy"], true, out ContentsOrder result))
+            //    {
+            //        if (Enum.IsDefined(typeof(ContentsOrder), result))
+            //        {
+            //            model.Options.OrderBy = result;
+            //        }
+            //    }
+            //}
 
             if (!string.IsNullOrEmpty(model.DisplayText))
             {
@@ -216,7 +216,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (Request.Method == "POST")
             {
-                return RedirectToAction("List", new RouteValueDictionary { { "DisplayText", model.DisplayText ?? String.Empty }, { "ContentsStatus", model.Options.ContentsStatus }, { "OrderBy", model.Options.OrderBy } });
+                return RedirectToAction("List", viewModel as ListContentsViewModel);
             }
             else
             {
