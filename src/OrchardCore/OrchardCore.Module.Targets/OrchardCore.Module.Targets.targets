@@ -26,6 +26,12 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
+  <Target Name="EnsureRazorSdk" BeforeTargets="BeforeBuild">
+    <Error
+      Condition="'@(RazorGenerate)' != '' and '$(ResolvedRazorCompileToolset)' != 'RazorSdk'"
+      Text="Please, use the 'RazorSdk' so that the Theme / Module razor files will be precompiled." />
+  </Target>
+
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
