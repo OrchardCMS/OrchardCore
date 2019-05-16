@@ -1,0 +1,9 @@
+@using OrchardCore.Localization.ViewModels
+@model CulturePickerViewModel
+
+<select class="form-control" onchange="setLocalizationCookie(this.value)">
+    @foreach (var culture in Model.SupportedUICultures)
+    {
+        <option @(culture.Name == Model.SelectedCulture ? "selected" : String.Empty) value="@culture.Name">@culture.DisplayName</option>
+    }
+</select>
