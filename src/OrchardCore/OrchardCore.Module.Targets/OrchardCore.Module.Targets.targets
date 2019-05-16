@@ -29,7 +29,7 @@
   <Target Name="EnsureRazorSdk" BeforeTargets="BeforeBuild">
     <Error
       Condition="'@(RazorGenerate)' != '' and '$(ResolvedRazorCompileToolset)' != 'RazorSdk'"
-      Text="Please, use the 'RazorSdk' so that the Theme / Module razor files will be precompiled." />
+      Text="The 'Microsoft.NET.Sdk.Razor' is required on Themes and Moduls fore Razor files to be precompiled." />
   </Target>
 
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
