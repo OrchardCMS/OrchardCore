@@ -1,16 +1,17 @@
 [
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
-      "Assets/Styles/simplemde.css"
+      "Assets/Styles/simplemde.scss"
     ],
     "output": "wwwroot/Styles/simplemde.css"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/Scripts/simplemde.media.js"
+      "Assets/Scripts/simplemde.mediatoolbar.js"
     ],
-    "output": "wwwroot/Scripts/simplemde.media.js"
+    "output": "wwwroot/Scripts/simplemde.mediatoolbar.js"
   }
 ]
