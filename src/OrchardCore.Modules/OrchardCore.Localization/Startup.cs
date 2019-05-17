@@ -38,8 +38,7 @@ namespace OrchardCore.Localization
             if (siteSettings.SupportedCultures.Length > 0)
             {
                 var supportedCulture = new[] { options.DefaultRequestCulture.Culture.Name }
-                    .Concat(siteSettings.SupportedCultures)
-                    .Distinct()
+                    .Union(siteSettings.SupportedCultures)
                     .ToArray();
 
                 options

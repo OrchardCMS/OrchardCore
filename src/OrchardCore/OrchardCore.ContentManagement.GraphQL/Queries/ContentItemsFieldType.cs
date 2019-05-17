@@ -78,7 +78,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
-            var query = session.Query<ContentItem, ContentItemIndex>();
+            var preQuery = session.Query<ContentItem>();
+
+            var filters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
+
+            foreach (var filter in filters)
+            {
+                preQuery = filter.PreQuery(preQuery, context);
+            }
+
+            var query = preQuery.With<ContentItemIndex>();
 
             query = FilterVersion(query, versionOption);
             query = FilterContentType(query, context);
@@ -87,7 +96,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
-            return await contentItemsQuery.ListAsync();
+            var contentItems = await contentItemsQuery.ListAsync();
+
+            foreach (var filter in filters)
+            {
+                contentItems = filter.PostQuery(contentItems, context);
+            }
+
+            return contentItems;
         }
 
         private async Task<IQuery<ContentItem>> FilterWhereArguments(

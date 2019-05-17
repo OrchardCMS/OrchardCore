@@ -462,12 +462,6 @@ ol.media-items-grid {
   padding: 12px 12px 12px 6px; }
   [dir=rtl] #folder-tree .expand {
     padding: 12px 6px 12px 12px; }
-  [dir=ltr] #folder-tree .opened svg {
-  transform: rotate(90deg);
-  -webkit-transform: rotate(90deg); }
-  [dir=rtl] #folder-tree .opened svg {
-    transform: rotate(-90deg);
-    -webkit-transform: rotate(-90deg); }
   #folder-tree .empty {
     visibility: hidden; }
   [dir] #folder-tree .empty {
@@ -489,6 +483,9 @@ ol.media-items-grid {
         align-items: center; }
       [dir] #folder-tree .folder-menu-item .folder-actions a.btn {
         background-color: #e6f2ff; }
+#folder-tree .opened svg {
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg); }
 
 #customdropzone {
   align-items: center;
