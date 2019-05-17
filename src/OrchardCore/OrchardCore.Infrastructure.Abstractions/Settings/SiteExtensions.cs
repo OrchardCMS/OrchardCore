@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 
 namespace OrchardCore.Settings
@@ -6,7 +7,7 @@ namespace OrchardCore.Settings
     {
         public static string[] GetConfiguredCultures(this ISite site)
         {
-            return new[] { site.Culture }.Union(site.SupportedCultures).ToArray();
+            return new[] { CultureInfo.InstalledUICulture.Name }.Union(site.SupportedCultures).ToArray();
         }
     }
 }
