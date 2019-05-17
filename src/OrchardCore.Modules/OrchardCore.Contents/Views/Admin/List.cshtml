@@ -1,4 +1,4 @@
-@model  ListContentsViewModel
+@model ListContentsViewModel
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
@@ -20,48 +20,50 @@
 
     IEnumerable<string> cultures = Model.Options.Cultures;
     List<SelectListItem> contentStatuses = new List<SelectListItem>() {
-new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
-};
+        new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
+        new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+        new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
+        new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
+        new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+    };
     contentStatuses.Where(s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
 
     List<SelectListItem> contentSorts = new List<SelectListItem>() {
-new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
-};
+        new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
+        new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
+        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
+        new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
+    };
     contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
+
+    List<SelectListItem> contentsBulkAction = new List<SelectListItem>() {
+        new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
+        new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
+        new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
+        new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
+    };
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
-@using (Html.BeginForm("list", "Admin", FormMethod.Post, new { id = "items-form" }))
+@using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form" }))
 {
-    @*<fieldset class="bulk-actions">
-                <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
-                <label for="publishActions">@T["Actions:"]</label>
-                <select id="publishActions" name="Options.BulkAction">
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.None, T("Choose action...").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.PublishNow, T("Publish Now").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Unpublish, T("Unpublish").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Remove, T("Delete").ToString())
-                </select>
-                <button type="submit" name="submit.BulkEdit" value="yes">@T["Apply")</button>
-            </fieldset>
-        <fieldset class="bulk-actions container-fluid">
-            <label for="filterResults" class="bulk-filter">@T["Show"]</label>
-                <select id="filterResults" name="Options.SelectedFilter">
-                    @Html.SelectOption((string)Model.Options.SelectedFilter, "", T["any (show all)"])
-                    @foreach (var filterOption in Model.Options.FilterOptions) {
-                        @Html.SelectOption((string)Model.Options.SelectedFilter, (string)filterOption.Key, (string)filterOption.Value)
-                    }
-                </select>
-        </fieldset>*@
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+
     <fieldset class="filter-options">
         <div class="card mb-3">
             <div class="card-body bg-light">
+                <div class="row">
+                    <div class="form-group col-xl-4">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Actions"]</span>
+                            </div>
+                            <select asp-for="Options.BulkAction" class="form-control" asp-items="@contentsBulkAction"></select>
+                            <div class="input-group-append">
+                                <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="form-group col-xl-3 mb-xl-n1">
                         <div class="input-group">
@@ -76,7 +78,7 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                             </div>
-                            <select id="contentResults" class="form-control" name="Id">
+                            <select asp-for="Options.SelectedFilter" class="form-control">
                                 <option value="">@T["All content types"]</option>
                                 @foreach (var option in Model.Options.FilterOptions)
                                 {
@@ -87,20 +89,20 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                         </div>
                     </div>
 
-                        @*@if (cultures.Count() > 1) {
-        <div class="col-md-2 col-xl-1 form-group">
-            <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
-        </div>
-        <div class="col-md-4 col-xl-3 form-group">
-            <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                <option value="">@T["All cultures"]</option>
-                @foreach (string culture in cultures) {
-                    string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                    <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                }
-            </select>
-        </div>
-        }*@
+                    @*@if (cultures.Count() > 1) {
+                        <div class="col-md-2 col-xl-1 form-group">
+                            <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
+                        </div>
+                        <div class="col-md-4 col-xl-3 form-group">
+                            <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
+                                <option value="">@T["All cultures"]</option>
+                                @foreach (string culture in cultures) {
+                                    string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
+                                    <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
+                                }
+                            </select>
+                        </div>
+                        }*@
                     <div class="form-group col-xl-3 mb-xl-n1">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -117,14 +119,12 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
                             <select asp-for="Options.OrderBy" class="form-control" asp-items="@contentSorts"></select>
                         </div>
                     </div>
-                            @*<div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>*@
 
-                        </div>
-                    </div>
+                </div>
+            </div>
         </div>
     </fieldset>
+    <input type="checkbox" class="check-all" />@T["Select all"]
 
     @if (contentItemModel.ContentItems.Count > 0)
     {
@@ -159,7 +159,8 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
     })
     $(function () {
         $(".filter-options select, .filter-options input").on("change", function () {
-            this.form.submit();
+            //this.form.submit();
+            $("#submitFilter").click();
         });
     })
 </script>
