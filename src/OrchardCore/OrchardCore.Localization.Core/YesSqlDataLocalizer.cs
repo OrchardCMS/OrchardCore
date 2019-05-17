@@ -78,7 +78,8 @@ namespace OrchardCore.Localization
                 translation = _data.Translations[name].First();
             }
 
-            //TODO: Log the fetched resource
+            //TODO: Log the content type definition name for the resource that we looking for
+            _logger.LogDebug($"{nameof(YesSqlDataLocalizer)} searched for '{name}' in the database with culture '{CultureInfo.CurrentUICulture.Name}'.");
 
             return translation;
         }
