@@ -5,7 +5,6 @@
 @inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 
 @{
-    dynamic contentItemModel = Model;
     var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
@@ -105,10 +104,10 @@
             </div>
         </div>
     </div>*@
-    @if (contentItemModel.ContentItems.Count > 0)
+    @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group">
-            @foreach (var contentItemSummary in contentItemModel.ContentItems)
+            @foreach (var contentItemSummary in Model.ContentItems)
             {
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
@@ -123,7 +122,7 @@
         </div>
     }
 
-    @await DisplayAsync(contentItemModel.Pager)
+    @await DisplayAsync(Model.Pager)
 }
 
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
