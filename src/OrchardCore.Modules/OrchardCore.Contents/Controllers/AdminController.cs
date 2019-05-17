@@ -194,7 +194,6 @@ namespace OrchardCore.Contents.Controllers
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
                 new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
                 new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
                 new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
@@ -235,7 +234,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost, ActionName("List")]
-        [FormValueRequired("submit.BulkEdit")]
+        [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds != null)
