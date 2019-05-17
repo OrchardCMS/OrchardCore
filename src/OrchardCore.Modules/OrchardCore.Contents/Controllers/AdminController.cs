@@ -237,7 +237,7 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
-            if (itemIds.Count() > 0)
+            if (itemIds?.Count() > 0)
             {
                 var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ListAsync();
                 switch (options.BulkAction)
