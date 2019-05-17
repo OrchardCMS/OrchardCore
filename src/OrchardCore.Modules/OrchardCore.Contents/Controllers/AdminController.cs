@@ -223,20 +223,20 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ContentOptions model)
+        public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
             return RedirectToAction("List", new RouteValueDictionary {
-                { "Options.SelectedCulture", model.SelectedCulture },
-                { "Options.OrderBy", model.OrderBy },
-                { "Options.ContentsStatus", model.ContentsStatus },
-                { "Options.SelectedContentType", model.SelectedContentType },
-                { "Options.DisplayText", model.DisplayText }
+                { "Options.SelectedCulture", model.Options.SelectedCulture },
+                { "Options.OrderBy", model.Options.OrderBy },
+                { "Options.ContentsStatus", model.Options.ContentsStatus },
+                { "Options.SelectedContentType", model.Options.SelectedContentType },
+                { "Options.DisplayText", model.Options.DisplayText }
             });
         }
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.BulkEdit")]
-        public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds, string returnUrl)
+        public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds != null)
             {
