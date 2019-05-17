@@ -81,7 +81,7 @@
             </div>
         </div>
     </fieldset>
-    <div class="row">
+    @*<div class="row">
         <div class="form-group col-xl-8">
             <div class="input-group">
                 <div class="input-group-text">
@@ -104,7 +104,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>*@
     @if (contentItemModel.ContentItems.Count > 0)
     {
         <ul class="list-group">
@@ -129,8 +129,8 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        $("#contentResults").change(function (e) {
-            var value = $('#contentResults option:selected').val();
+        $("#Options_SelectedContentType").change(function (e) {
+            var value = $('#Options_SelectedContentType option:selected').val();
             console.log(value);
             var newAction = '@formActionWithoutTypeName' + '/' + value;
             $('#items-form').attr('action', newAction);
