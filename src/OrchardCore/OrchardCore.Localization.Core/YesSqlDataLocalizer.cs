@@ -56,7 +56,6 @@ namespace OrchardCore.Localization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            //TODO: Include parent cultures resources
             foreach (var translation in _data.Translations)
             {
                 yield return new LocalizedString(translation.Key, translation.Value.First());
