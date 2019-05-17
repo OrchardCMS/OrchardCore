@@ -8,7 +8,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-
         /// <summary>
         /// Registers the services to enable localization using Portable Object files.
         /// </summary>
@@ -30,13 +29,22 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ILocalizationFileLocationProvider, ContentRootPoFileLocationProvider>();
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
             services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
-
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
+
+            services.AddDataLocalization();
 
             if (setupAction != null)
             {
                 services.Configure(setupAction);
             }
+
+            return services;
+        }
+
+        private static IServiceCollection AddDataLocalization(this IServiceCollection services)
+        {
+            services.AddSingleton<IDataLocalizerFactory, YesSqlDataLocalizerFactory>();
+            services.AddTransient<IDataLocalizer, DataLocalizer>();
 
             return services;
         }

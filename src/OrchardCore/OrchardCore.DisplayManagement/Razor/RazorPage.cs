@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -25,6 +26,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
+        private IDataLocalizer _d;
 
         private void EnsureDisplayHelper()
         {
@@ -190,6 +192,19 @@ namespace OrchardCore.DisplayManagement.Razor
                 }
 
                 return _t;
+            }
+        }
+
+        public IDataLocalizer D
+        {
+            get
+            {
+                if (_d == null)
+                {
+                    _d = Context.RequestServices.GetRequiredService<IDataLocalizer>();
+                }
+
+                return _d;
             }
         }
 
