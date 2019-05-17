@@ -6,7 +6,7 @@
 
 @{
     dynamic contentItemModel = Model;
-    var contentTypeDisplayName = Model.ContentTypeDisplayName;
+    var contentTypeDisplayName = Model.ContentTypesOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
     if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
@@ -19,6 +19,10 @@
     var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
 
     IEnumerable<string> cultures = Model.Options.Cultures;
+
+    var selectedContentType = Model.Options.SelectedContentType != null ? Model.Options.SelectedContentType.ToString() : String.Empty;
+    selectedContentType = Context.Request.Query["Options.SelectedContentType"].Count > 0 ? Context.Request.Query["Options.SelectedContentType"].First() : selectedContentType;
+    Model.ContentTypesOptions.Where(s => s.Value == selectedContentType).FirstOrDefault().Selected = true;
 }
 
 <h1>@RenderTitleSegments(pageTitle)</h1>
@@ -44,7 +48,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                             </div>
-                            <select asp-for="Options.SelectedContentTypeFilter" class="form-control" asp-items="Model.ContentTypesFilterOptions"></select>
+                            <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.ContentTypesOptions"></select>
                         </div>
                     </div>
 

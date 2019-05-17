@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.ViewModels
 {
@@ -14,11 +14,11 @@ namespace OrchardCore.Contents.ViewModels
 
         public string ContentTypeName
         {
-            get { return Options.SelectedContentTypeFilter; }
+            get { return Options.SelectedContentType; }
         }
 
         public string DisplayText { get; set; }
-        public string ContentTypeDisplayName { get; set; }
+
         public int? Page { get; set; }
 
         public ContentOptions Options { get; set; }
@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.ViewModels
 
         public List<SelectListItem> ContentsBulkAction { get; set; }
 
-        public List<SelectListItem> ContentTypesFilterOptions { get; set; }
+        public List<SelectListItem> ContentTypesOptions { get; set; }
 
         //[BindNever]
         //public IList<Entry> Entries { get; set; }
@@ -58,13 +58,14 @@ namespace OrchardCore.Contents.ViewModels
             BulkAction = ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
-        public string SelectedContentTypeFilter { get; set; }
+
+        public string SelectedContentType { get; set; }
         public string SelectedCulture { get; set; }
-        public IEnumerable<KeyValuePair<string, string>> FilterOptions { get; set; }
         public ContentsOrder OrderBy { get; set; }
         public ContentsStatus ContentsStatus { get; set; }
         public ContentsBulkAction BulkAction { get; set; }
         public IEnumerable<string> Cultures { get; set; }
+        public IEnumerable<KeyValuePair<string, string>> FilterOptions { get; set; }
     }
 
     public enum ContentsOrder

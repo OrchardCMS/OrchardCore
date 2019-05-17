@@ -103,7 +103,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentTypeName != "")
             {
-                model.Options.SelectedContentTypeFilter = contentTypeName;
+                model.Options.SelectedContentType = contentTypeName;
             }
 
             if (!string.IsNullOrEmpty(model.ContentTypeName))
@@ -111,8 +111,6 @@ namespace OrchardCore.Contents.Controllers
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentTypeName);
                 if (contentTypeDefinition == null)
                     return NotFound();
-
-                model.ContentTypeDisplayName = contentTypeDefinition.ToString();
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
@@ -193,6 +191,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
                 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
             };
+            //model.ContentStatuses.Where(s => s.Value == model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
 
             model.ContentSorts = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
@@ -200,6 +199,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
                 new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
             };
+            //model.ContentSorts.Where(s => s.Value == model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 
             model.ContentsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
@@ -207,25 +207,27 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
                 new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
             };
+            //model.ContentsBulkAction.Where(s => s.Value == model.Options.BulkAction.ToString()).FirstOrDefault().Selected = true;
 
-            model.ContentTypesFilterOptions = new List<SelectListItem>();
-            model.ContentTypesFilterOptions.Add(new SelectListItem() { Text = @T["All content types"].Value, Value = null });
+            model.ContentTypesOptions = new List<SelectListItem>();
+            model.ContentTypesOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
             foreach (var option in model.Options.FilterOptions)
             {
-                model.ContentTypesFilterOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+                model.ContentTypesOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
+            //var selectedContentType = model.Options.SelectedContentType != null ? model.Options.SelectedContentType.ToString() : String.Empty;
+            //model.ContentTypesOptions.Where(s => s.Value == selectedContentType).FirstOrDefault().Selected = true;
 
             var viewModel = new ListContentsViewModel
             {
                 ContentItems = contentItemSummaries,
                 Pager = pagerShape,
                 Options = model.Options,
-                ContentTypeDisplayName = model.ContentTypeDisplayName ?? "",
                 DisplayText = model.DisplayText ?? "",
                 ContentStatuses = model.ContentStatuses,
                 ContentSorts = model.ContentSorts,
                 ContentsBulkAction = model.ContentsBulkAction,
-                ContentTypesFilterOptions = model.ContentTypesFilterOptions
+                ContentTypesOptions = model.ContentTypesOptions
             };
 
             return View(viewModel);
@@ -233,30 +235,40 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public async Task<ActionResult> ListFilterPOST(ContentOptions options)
+        public ActionResult ListFilterPOST(ContentOptions options)
         {
-            var routeValues = ControllerContext.RouteData.Values;
-            if (options != null)
+            //var routeValues = ControllerContext.RouteData.Values;
+            //if (options != null)
+            //{
+            //    routeValues["Options.SelectedCulture"] = options.SelectedCulture; //todo: don't hard-code the key
+            //    routeValues["Options.OrderBy"] = options.OrderBy; //todo: don't hard-code the key
+            //    routeValues["Options.ContentsStatus"] = options.ContentsStatus; //todo: don't hard-code the key
+
+            //    var allTypes = (await GetListableTypesAsync())
+            //    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+            //    .ToList().OrderBy(kvp => kvp.Value);
+
+            //    if (allTypes.Any(ctd => string.Equals(ctd.Key, options.SelectedContentType, StringComparison.OrdinalIgnoreCase)))
+            //    {
+            //        routeValues["Options.SelectedContentType"] = options.SelectedContentType;
+            //    }
+            //    else
+            //    {
+            //        routeValues.Remove("Options.SelectedContentType");
+            //    }
+            //}
+
+            var viewModel = new ListContentsViewModel()
             {
-                routeValues["Options.SelectedCulture"] = options.SelectedCulture; //todo: don't hard-code the key
-                routeValues["Options.OrderBy"] = options.OrderBy; //todo: don't hard-code the key
-                routeValues["Options.ContentsStatus"] = options.ContentsStatus; //todo: don't hard-code the key
+                Options = options
+            };
 
-                var allTypes = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
-                if (allTypes.Any(ctd => string.Equals(ctd.Key, options.SelectedContentTypeFilter, StringComparison.OrdinalIgnoreCase)))
-                {
-                    routeValues["Options.SelectedContentTypeFilter"] = options.SelectedContentTypeFilter;
-                }
-                else
-                {
-                    routeValues.Remove("Options.SelectedContentTypeFilter");
-                }
-            }
-
-            return RedirectToAction("List", routeValues);
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.SelectedCulture", viewModel.Options.SelectedCulture },
+                { "Options.OrderBy", viewModel.Options.OrderBy },
+                { "Options.ContentsStatus", viewModel.Options.ContentsStatus },
+                { "Options.SelectedContentType", viewModel.Options.SelectedContentType },
+            });
         }
 
         //[HttpPost, ActionName("List")]
