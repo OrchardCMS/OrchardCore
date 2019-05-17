@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -65,7 +64,7 @@ namespace OrchardCore.Contents.ViewModels
         public ContentsStatus ContentsStatus { get; set; }
         public ContentsBulkAction BulkAction { get; set; }
         public IEnumerable<string> Cultures { get; set; }
-        public IEnumerable<KeyValuePair<string, string>> FilterOptions { get; set; }
+        public IEnumerable<KeyValuePair<string, string>> ContentTypeOptions { get; set; }
     }
 
     public enum ContentsOrder

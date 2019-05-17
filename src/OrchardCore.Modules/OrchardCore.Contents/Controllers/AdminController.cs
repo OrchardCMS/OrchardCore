@@ -156,7 +156,7 @@ namespace OrchardCore.Contents.Controllers
 
 
 
-            model.Options.FilterOptions = (await GetListableTypesAsync())
+            model.Options.ContentTypeOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
@@ -191,7 +191,6 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
                 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
             };
-            //model.ContentStatuses.Where(s => s.Value == model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
 
             model.ContentSorts = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
@@ -199,7 +198,6 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
                 new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
             };
-            //model.ContentSorts.Where(s => s.Value == model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 
             model.ContentsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
@@ -207,16 +205,13 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
                 new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
             };
-            //model.ContentsBulkAction.Where(s => s.Value == model.Options.BulkAction.ToString()).FirstOrDefault().Selected = true;
 
             model.ContentTypesOptions = new List<SelectListItem>();
             model.ContentTypesOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
-            foreach (var option in model.Options.FilterOptions)
+            foreach (var option in model.Options.ContentTypeOptions)
             {
                 model.ContentTypesOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
-            //var selectedContentType = model.Options.SelectedContentType != null ? model.Options.SelectedContentType.ToString() : String.Empty;
-            //model.ContentTypesOptions.Where(s => s.Value == selectedContentType).FirstOrDefault().Selected = true;
 
             var viewModel = new ListContentsViewModel
             {
@@ -237,27 +232,6 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ContentOptions options)
         {
-            //var routeValues = ControllerContext.RouteData.Values;
-            //if (options != null)
-            //{
-            //    routeValues["Options.SelectedCulture"] = options.SelectedCulture; //todo: don't hard-code the key
-            //    routeValues["Options.OrderBy"] = options.OrderBy; //todo: don't hard-code the key
-            //    routeValues["Options.ContentsStatus"] = options.ContentsStatus; //todo: don't hard-code the key
-
-            //    var allTypes = (await GetListableTypesAsync())
-            //    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-            //    .ToList().OrderBy(kvp => kvp.Value);
-
-            //    if (allTypes.Any(ctd => string.Equals(ctd.Key, options.SelectedContentType, StringComparison.OrdinalIgnoreCase)))
-            //    {
-            //        routeValues["Options.SelectedContentType"] = options.SelectedContentType;
-            //    }
-            //    else
-            //    {
-            //        routeValues.Remove("Options.SelectedContentType");
-            //    }
-            //}
-
             var viewModel = new ListContentsViewModel()
             {
                 Options = options

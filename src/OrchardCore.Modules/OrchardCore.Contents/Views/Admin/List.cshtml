@@ -19,14 +19,10 @@
     var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
 
     IEnumerable<string> cultures = Model.Options.Cultures;
-
-    var selectedContentType = Model.Options.SelectedContentType != null ? Model.Options.SelectedContentType.ToString() : String.Empty;
-    selectedContentType = Context.Request.Query["Options.SelectedContentType"].Count > 0 ? Context.Request.Query["Options.SelectedContentType"].First() : selectedContentType;
-    Model.ContentTypesOptions.Where(s => s.Value == selectedContentType).FirstOrDefault().Selected = true;
 }
 
 <h1>@RenderTitleSegments(pageTitle)</h1>
-@using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form" }))
+@using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form", autocomplete = "off" }))
 {
     <!-- Hidden submit button do not remove -->
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
