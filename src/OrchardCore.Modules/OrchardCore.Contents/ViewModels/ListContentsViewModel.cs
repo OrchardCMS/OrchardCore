@@ -11,13 +11,6 @@ namespace OrchardCore.Contents.ViewModels
             Options = new ContentOptions();
         }
 
-        public string ContentTypeName
-        {
-            get { return Options.SelectedContentType; }
-        }
-
-        public string DisplayText { get; set; }
-
         public int? Page { get; set; }
 
         public ContentOptions Options { get; set; }
@@ -25,28 +18,9 @@ namespace OrchardCore.Contents.ViewModels
         [BindNever]
         public List<dynamic> ContentItems { get; set; }
 
+        [BindNever]
         public dynamic Pager { get; set; }
 
-        public List<SelectListItem> ContentStatuses { get; set; }
-
-        public List<SelectListItem> ContentSorts { get; set; }
-
-        public List<SelectListItem> ContentsBulkAction { get; set; }
-
-        public List<SelectListItem> ContentTypesOptions { get; set; }
-
-        //[BindNever]
-        //public IList<Entry> Entries { get; set; }
-
-        //#region Nested type: Entry
-
-        //public class Entry
-        //{
-        //    public ContentItem ContentItem { get; set; }
-        //    public ContentItemMetadata ContentItemMetadata { get; set; }
-        //}
-
-        //#endregion
     }
 
     public class ContentOptions
@@ -54,17 +28,40 @@ namespace OrchardCore.Contents.ViewModels
         public ContentOptions()
         {
             OrderBy = ContentsOrder.Modified;
-            BulkAction = ContentsBulkAction.None;
+            BulkAction = ViewModels.ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
 
+        public string DisplayText { get; set; }
+
         public string SelectedContentType { get; set; }
+
         public string SelectedCulture { get; set; }
+
         public ContentsOrder OrderBy { get; set; }
+
         public ContentsStatus ContentsStatus { get; set; }
+
         public ContentsBulkAction BulkAction { get; set; }
-        public IEnumerable<string> Cultures { get; set; }
-        public IEnumerable<KeyValuePair<string, string>> ContentTypeOptions { get; set; }
+
+        #region Lists to populate
+
+        [BindNever]
+        public List<SelectListItem> Cultures { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> ContentStatuses { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> ContentSorts { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> ContentsBulkAction { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> ContentTypeOptions { get; set; }
+
+        #endregion
     }
 
     public enum ContentsOrder

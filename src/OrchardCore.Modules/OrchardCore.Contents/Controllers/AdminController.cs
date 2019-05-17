@@ -80,9 +80,9 @@ namespace OrchardCore.Contents.Controllers
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
 
-            if (!string.IsNullOrEmpty(model.DisplayText))
+            if (!string.IsNullOrEmpty(model.Options.DisplayText))
             {
-                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.Options.DisplayText));
             }
 
             switch (model.Options.ContentsStatus)
@@ -106,15 +106,15 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.SelectedContentType = contentTypeName;
             }
 
-            if (!string.IsNullOrEmpty(model.ContentTypeName))
+            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentTypeName);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.ContentTypeName);
+                query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
             }
             else
             {
@@ -154,12 +154,6 @@ namespace OrchardCore.Contents.Controllers
             //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
             //}
 
-
-
-            model.Options.ContentTypeOptions = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
             //model.Options.Cultures = _cultureManager.ListCultures();
 
             // Invoke any service that could alter the query
@@ -171,7 +165,7 @@ namespace OrchardCore.Contents.Controllers
 
             //We prepare the pager
             var routeData = new RouteData();
-            routeData.Values.Add("DisplayText", model.DisplayText);
+            routeData.Values.Add("DisplayText", model.Options.DisplayText);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
@@ -183,8 +177,8 @@ namespace OrchardCore.Contents.Controllers
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
-            //We prepare the SelectLists
-            model.ContentStatuses = new List<SelectListItem>() {
+            //We populate the SelectLists
+            model.Options.ContentStatuses = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
                 new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
                 new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
@@ -192,37 +186,36 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
             };
 
-            model.ContentSorts = new List<SelectListItem>() {
+            model.Options.ContentSorts = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
                 new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
                 new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
                 new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
             };
 
-            model.ContentsBulkAction = new List<SelectListItem>() {
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
                 new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
                 new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
                 new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
             };
 
-            model.ContentTypesOptions = new List<SelectListItem>();
-            model.ContentTypesOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
-            foreach (var option in model.Options.ContentTypeOptions)
+            var ContentTypeOptions = (await GetListableTypesAsync())
+                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                .ToList().OrderBy(kvp => kvp.Value);
+
+            model.Options.ContentTypeOptions = new List<SelectListItem>();
+            model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
+            foreach (var option in ContentTypeOptions)
             {
-                model.ContentTypesOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+                model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
             var viewModel = new ListContentsViewModel
             {
                 ContentItems = contentItemSummaries,
                 Pager = pagerShape,
-                Options = model.Options,
-                DisplayText = model.DisplayText ?? "",
-                ContentStatuses = model.ContentStatuses,
-                ContentSorts = model.ContentSorts,
-                ContentsBulkAction = model.ContentsBulkAction,
-                ContentTypesOptions = model.ContentTypesOptions
+                Options = model.Options
             };
 
             return View(viewModel);
@@ -230,18 +223,14 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ContentOptions options)
+        public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
-            var viewModel = new ListContentsViewModel()
-            {
-                Options = options
-            };
-
             return RedirectToAction("List", new RouteValueDictionary {
-                { "Options.SelectedCulture", viewModel.Options.SelectedCulture },
-                { "Options.OrderBy", viewModel.Options.OrderBy },
-                { "Options.ContentsStatus", viewModel.Options.ContentsStatus },
-                { "Options.SelectedContentType", viewModel.Options.SelectedContentType },
+                { "Options.SelectedCulture", model.Options.SelectedCulture },
+                { "Options.OrderBy", model.Options.OrderBy },
+                { "Options.ContentsStatus", model.Options.ContentsStatus },
+                { "Options.SelectedContentType", model.Options.SelectedContentType },
+                { "Options.DisplayText", model.Options.DisplayText }
             });
         }
 

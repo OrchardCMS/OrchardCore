@@ -6,7 +6,7 @@
 
 @{
     dynamic contentItemModel = Model;
-    var contentTypeDisplayName = Model.ContentTypesOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
+    var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
     if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
@@ -17,8 +17,6 @@
 
     var tenantPrefix = ("/" + ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
     var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
-
-    IEnumerable<string> cultures = Model.Options.Cultures;
 }
 
 <h1>@RenderTitleSegments(pageTitle)</h1>
@@ -36,7 +34,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Title"]</span>
                             </div>
-                            <input asp-for="DisplayText" id="DisplayText" class="form-control" name="DisplayText" />
+                            <input asp-for="Options.DisplayText" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group col-xl-3 mb-xl-n1">
@@ -44,7 +42,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                             </div>
-                            <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.ContentTypesOptions"></select>
+                            <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.Options.ContentTypeOptions"></select>
                         </div>
                     </div>
 
@@ -67,7 +65,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
                             </div>
-                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.ContentStatuses"></select>
+                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.Options.ContentStatuses"></select>
                         </div>
                     </div>
                     <div class="form-group col-xl-3 mb-n1">
@@ -75,7 +73,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
                             </div>
-                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.ContentSorts"></select>
+                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.Options.ContentSorts"></select>
                         </div>
                     </div>
 
@@ -100,7 +98,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text bg-secondary text-light">@T["Actions"]</span>
                 </div>
-                <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.ContentsBulkAction"></select>
+                <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.Options.ContentsBulkAction"></select>
                 <div class="input-group-append">
                     <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
                 </div>
