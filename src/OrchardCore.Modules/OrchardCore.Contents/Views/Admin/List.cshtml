@@ -6,43 +6,21 @@
 
 @{
     dynamic contentItemModel = Model;
-    var typeDisplayName = Model.TypeDisplayName;
+    var contentTypeDisplayName = Model.ContentTypeDisplayName;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
-    if (!string.IsNullOrWhiteSpace(typeDisplayName))
+    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
     {
-        pageTitle = T["Manage {0} Content", (string)typeDisplayName];
-        createLinkText = T["Create New {0}", (string)typeDisplayName];
+        pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
+        createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
     var tenantPrefix = ("/" + ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
     var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
 
     IEnumerable<string> cultures = Model.Options.Cultures;
-    List<SelectListItem> contentStatuses = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-        new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-        new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-        new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-        new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
-    };
-    contentStatuses.Where(s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
-
-    List<SelectListItem> contentSorts = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-        new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-        new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-        new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
-    };
-    contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
-
-    List<SelectListItem> contentsBulkAction = new List<SelectListItem>() {
-        new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
-        new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
-        new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
-        new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
-    };
 }
+
 <h1>@RenderTitleSegments(pageTitle)</h1>
 @using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form" }))
 {
@@ -57,7 +35,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Actions"]</span>
                             </div>
-                            <select asp-for="Options.BulkAction" class="form-control" asp-items="@contentsBulkAction"></select>
+                            <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.ContentsBulkAction"></select>
                             <div class="input-group-append">
                                 <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
                             </div>
@@ -78,14 +56,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                             </div>
-                            <select asp-for="Options.SelectedFilter" class="form-control">
-                                <option value="">@T["All content types"]</option>
-                                @foreach (var option in Model.Options.FilterOptions)
-                                {
-                                    string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                                    <!option @isSelected value="@option.Key">@option.Value</!option>
-                                }
-                            </select>
+                            <select asp-for="Options.SelectedContentTypeFilter" class="form-control" asp-items="Model.ContentTypesFilterOptions"></select>
                         </div>
                     </div>
 
@@ -108,7 +79,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
                             </div>
-                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@contentStatuses"></select>
+                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.ContentStatuses"></select>
                         </div>
                     </div>
                     <div class="form-group col-xl-3 mb-n1">
@@ -116,7 +87,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
                             </div>
-                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@contentSorts"></select>
+                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.ContentSorts"></select>
                         </div>
                     </div>
 

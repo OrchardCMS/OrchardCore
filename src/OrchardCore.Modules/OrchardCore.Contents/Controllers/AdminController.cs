@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -72,7 +73,7 @@ namespace OrchardCore.Contents.Controllers
         public ILogger Logger { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeName = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -100,22 +101,22 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (typeId != "")
+            if (contentTypeName != "")
             {
-                model.Id = typeId;
+                model.Options.SelectedContentTypeFilter = contentTypeName;
             }
 
-            if (!string.IsNullOrEmpty(model.TypeName))
+            if (!string.IsNullOrEmpty(model.ContentTypeName))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentTypeName);
                 if (contentTypeDefinition == null)
                     return NotFound();
 
-                model.TypeDisplayName = contentTypeDefinition.ToString();
+                model.ContentTypeDisplayName = contentTypeDefinition.ToString();
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
+                query = query.With<ContentItemIndex>(x => x.ContentType == model.ContentTypeName);
             }
             else
             {
@@ -155,7 +156,8 @@ namespace OrchardCore.Contents.Controllers
             //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
             //}
 
-            model.Options.SelectedFilter = model.TypeName;
+
+
             model.Options.FilterOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
@@ -169,16 +171,48 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
+            //We prepare the pager
             var routeData = new RouteData();
             routeData.Values.Add("DisplayText", model.DisplayText);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
+            //We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
+            }
+
+            //We prepare the SelectLists
+            model.ContentStatuses = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
+                new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+                new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
+                new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
+                new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+            };
+
+            model.ContentSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
+                new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
+                new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
+                new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
+            };
+
+            model.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
+                new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
+                new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
+                new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
+            };
+
+            model.ContentTypesFilterOptions = new List<SelectListItem>();
+            model.ContentTypesFilterOptions.Add(new SelectListItem() { Text = @T["All content types"].Value, Value = null });
+            foreach (var option in model.Options.FilterOptions)
+            {
+                model.ContentTypesFilterOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
             var viewModel = new ListContentsViewModel
@@ -186,9 +220,12 @@ namespace OrchardCore.Contents.Controllers
                 ContentItems = contentItemSummaries,
                 Pager = pagerShape,
                 Options = model.Options,
-                Id = model.Id,
-                TypeDisplayName = model.TypeDisplayName ?? "",
-                DisplayText = model.DisplayText ?? ""
+                ContentTypeDisplayName = model.ContentTypeDisplayName ?? "",
+                DisplayText = model.DisplayText ?? "",
+                ContentStatuses = model.ContentStatuses,
+                ContentSorts = model.ContentSorts,
+                ContentsBulkAction = model.ContentsBulkAction,
+                ContentTypesFilterOptions = model.ContentTypesFilterOptions
             };
 
             return View(viewModel);
@@ -209,13 +246,13 @@ namespace OrchardCore.Contents.Controllers
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
-                if (allTypes.Any(ctd => string.Equals(ctd.Key, options.SelectedFilter, StringComparison.OrdinalIgnoreCase)))
+                if (allTypes.Any(ctd => string.Equals(ctd.Key, options.SelectedContentTypeFilter, StringComparison.OrdinalIgnoreCase)))
                 {
-                    routeValues["id"] = options.SelectedFilter;
+                    routeValues["Options.SelectedContentTypeFilter"] = options.SelectedContentTypeFilter;
                 }
                 else
                 {
-                    routeValues.Remove("id");
+                    routeValues.Remove("Options.SelectedContentTypeFilter");
                 }
             }
 

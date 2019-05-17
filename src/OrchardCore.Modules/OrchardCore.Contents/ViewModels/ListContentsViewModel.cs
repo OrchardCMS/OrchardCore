@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.ViewModels
@@ -11,19 +12,15 @@ namespace OrchardCore.Contents.ViewModels
             Options = new ContentOptions();
         }
 
-        public string Id { get; set; }
-
-        public string TypeName
+        public string ContentTypeName
         {
-            get { return Id; }
+            get { return Options.SelectedContentTypeFilter; }
         }
 
         public string DisplayText { get; set; }
-        public string TypeDisplayName { get; set; }
+        public string ContentTypeDisplayName { get; set; }
         public int? Page { get; set; }
 
-        [BindNever]
-        public IList<Entry> Entries { get; set; }
         public ContentOptions Options { get; set; }
 
         [BindNever]
@@ -31,15 +28,26 @@ namespace OrchardCore.Contents.ViewModels
 
         public dynamic Pager { get; set; }
 
-        #region Nested type: Entry
+        public List<SelectListItem> ContentStatuses { get; set; }
 
-        public class Entry
-        {
-            public ContentItem ContentItem { get; set; }
-            public ContentItemMetadata ContentItemMetadata { get; set; }
-        }
+        public List<SelectListItem> ContentSorts { get; set; }
 
-        #endregion
+        public List<SelectListItem> ContentsBulkAction { get; set; }
+
+        public List<SelectListItem> ContentTypesFilterOptions { get; set; }
+
+        //[BindNever]
+        //public IList<Entry> Entries { get; set; }
+
+        //#region Nested type: Entry
+
+        //public class Entry
+        //{
+        //    public ContentItem ContentItem { get; set; }
+        //    public ContentItemMetadata ContentItemMetadata { get; set; }
+        //}
+
+        //#endregion
     }
 
     public class ContentOptions
@@ -50,7 +58,7 @@ namespace OrchardCore.Contents.ViewModels
             BulkAction = ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
-        public string SelectedFilter { get; set; }
+        public string SelectedContentTypeFilter { get; set; }
         public string SelectedCulture { get; set; }
         public IEnumerable<KeyValuePair<string, string>> FilterOptions { get; set; }
         public ContentsOrder OrderBy { get; set; }
