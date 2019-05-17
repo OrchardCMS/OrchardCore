@@ -24,24 +24,12 @@
 <h1>@RenderTitleSegments(pageTitle)</h1>
 @using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form" }))
 {
+    <!-- Hidden submit button do not remove -->
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
 
     <fieldset class="filter-options">
         <div class="card mb-3">
             <div class="card-body bg-light">
-                <div class="row">
-                    <div class="form-group col-xl-4">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Actions"]</span>
-                            </div>
-                            <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.ContentsBulkAction"></select>
-                            <div class="input-group-append">
-                                <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="form-group col-xl-3 mb-xl-n1">
                         <div class="input-group">
@@ -95,8 +83,30 @@
             </div>
         </div>
     </fieldset>
-    <input type="checkbox" class="check-all" />@T["Select all"]
+    <div class="row">
+        <div class="form-group col-xl-8">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <input type="checkbox" id="select-all">
+                </div>
 
+                <div class="input-group-append">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">@T["Select All"]</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-xl-4 float-right">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Actions"]</span>
+                </div>
+                <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.ContentsBulkAction"></select>
+                <div class="input-group-append">
+                    <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
     @if (contentItemModel.ContentItems.Count > 0)
     {
         <ul class="list-group">
@@ -130,7 +140,6 @@
     })
     $(function () {
         $(".filter-options select, .filter-options input").on("change", function () {
-            //this.form.submit();
             $("#submitFilter").click();
         });
     })
