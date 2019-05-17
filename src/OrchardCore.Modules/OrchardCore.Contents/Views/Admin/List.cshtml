@@ -80,7 +80,7 @@
             </div>
         </div>
     </fieldset>
-    @*<div class="row">
+    <div class="row">
         <div class="form-group col-xl-8">
             <div class="input-group">
                 <div class="input-group-text">
@@ -99,11 +99,11 @@
                 </div>
                 <select asp-for="Options.BulkAction" class="form-control" asp-items="@Model.Options.ContentsBulkAction"></select>
                 <div class="input-group-append">
-                    <button class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit">@T["Apply"]</button>
+                    <input class="input-group-text bg-secondary text-light" type="submit" name="submit.BulkEdit" value="@T["Apply"]" />
                 </div>
             </div>
         </div>
-    </div>*@
+    </div>
     @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group">
@@ -140,4 +140,7 @@
             $("#submitFilter").click();
         });
     })
+    $("#select-all").click(function(){
+        $(':checkbox[name="itemIds"]').not(this).prop('checked', this.checked);
+    });
 </script>
