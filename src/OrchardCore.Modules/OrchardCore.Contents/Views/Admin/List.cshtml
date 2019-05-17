@@ -133,24 +133,23 @@
 <script at="Foot" type="text/javascript">
     $(function () {
         $("#Options_SelectedContentType").change(function (e) {
-            var value = $('#Options_SelectedContentType option:selected').val();
+            var value = $("#Options_SelectedContentType option:selected").val();
             console.log(value);
-            var newAction = '@formActionWithoutTypeName' + '/' + value;
-            $('#items-form').attr('action', newAction);
+            var newAction = "@formActionWithoutTypeName" + "/" + value;
+            $("#items-form").attr("action", newAction);
         });
-    })
-    $(function () {
+
         $(".filter-options select, .filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
-    })
-    $(function () {
+
         $(".dropdown-menu .dropdown-item").on("click", function () {
             $("[name='Options.BulkAction']").val($(this).data("action"));
             $("[name='submit.BulkAction']").click();
         });
+
+        $("#select-all").click(function(){
+            $(":checkbox[name='itemIds']").not(this).prop("checked", this.checked);
+        });
     })
-    $("#select-all").click(function(){
-        $(':checkbox[name="itemIds"]').not(this).prop('checked', this.checked);
-    });
 </script>
