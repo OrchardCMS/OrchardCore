@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static IServiceCollection AddDataLocalization(this IServiceCollection services)
         {
-            services.AddSingleton<IDataLocalizerFactory, YesSqlDataLocalizerFactory>();
+            services.AddSingleton<IDataLocalizerFactory, ContentTypeDefinitionDataLocalizerFactory>();
             services.AddTransient<IDataLocalizer, DataLocalizer>();
 
             return services;

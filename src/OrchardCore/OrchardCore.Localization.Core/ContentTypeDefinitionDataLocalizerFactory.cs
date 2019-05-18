@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Localization
 {
-    public class YesSqlDataLocalizerFactory : IDataLocalizerFactory
+    public class ContentTypeDefinitionDataLocalizerFactory : IDataLocalizerFactory
     {
-        private readonly ConcurrentDictionary<string, YesSqlDataLocalizer> _localizerCache = new ConcurrentDictionary<string, YesSqlDataLocalizer>();
+        private readonly ConcurrentDictionary<string, ContentTypeDefinitionDataLocalizer> _localizerCache = new ConcurrentDictionary<string, ContentTypeDefinitionDataLocalizer>();
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly bool _fallBackToParentUICultures;
         private readonly ILoggerFactory _loggerFactory;
 
-        public YesSqlDataLocalizerFactory(
+        public ContentTypeDefinitionDataLocalizerFactory(
             IHttpContextAccessor httpContextAccessor,
             IOptions<RequestLocalizationOptions> requestLocalizationOptions,
             ILoggerFactory loggerFactory)
@@ -43,7 +43,7 @@ namespace OrchardCore.Localization
                     : GetResources().GetAwaiter().GetResult();
                 dictionary.MergeTranslations(resources);
 
-                return new YesSqlDataLocalizer(dictionary, _loggerFactory.CreateLogger<DataLocalizer>());
+                return new ContentTypeDefinitionDataLocalizer(dictionary, _loggerFactory.CreateLogger<DataLocalizer>());
             });
         }
 

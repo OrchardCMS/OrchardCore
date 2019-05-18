@@ -17,12 +17,12 @@ namespace OrchardCore.Localization
         ]
      }
     */
-    public class YesSqlDataLocalizer : IDataLocalizer
+    public class ContentTypeDefinitionDataLocalizer : IDataLocalizer
     {
         private readonly CultureDictionary _data;
         private readonly ILogger _logger;
 
-        public YesSqlDataLocalizer(CultureDictionary data, ILogger logger)
+        public ContentTypeDefinitionDataLocalizer(CultureDictionary data, ILogger logger)
         {
             _data = data ?? throw new ArgumentNullException(nameof(data));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -79,7 +79,7 @@ namespace OrchardCore.Localization
             }
 
             //TODO: Log the content type definition name for the resource that we looking for
-            _logger.LogDebug($"{nameof(YesSqlDataLocalizer)} searched for '{name}' in the database with culture '{CultureInfo.CurrentUICulture.Name}'.");
+            _logger.LogDebug($"{nameof(ContentTypeDefinitionDataLocalizer)} searched for '{name}' in the database with culture '{CultureInfo.CurrentUICulture.Name}'.");
 
             return translation;
         }
