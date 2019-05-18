@@ -65,6 +65,14 @@ namespace OrchardCore.Localization
                 {
                     foreach (var resource in cultureResources)
                     {
+                        var oldResurce = records.FirstOrDefault(r => r.Key == resource.Key);
+
+                        if (oldResurce != null && oldResurce.Key != oldResurce.Translations.First())
+                        {
+                            // Don't override the translated resource in the parent culture(s)
+                            continue;
+                        }
+
                         records.Add(new CultureDictionaryRecord(resource.Key, null, new string[] { resource.Value }));
                     }
                 }
