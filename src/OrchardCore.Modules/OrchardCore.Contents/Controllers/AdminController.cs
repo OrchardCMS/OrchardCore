@@ -249,8 +249,8 @@ namespace OrchardCore.Contents.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
                             {
-                                //_notifier.Warning(T["Couldn't publish selected content."]);
-                                //_transactionManager.Cancel();
+                                _notifier.Warning(T["Couldn't publish selected content."]);
+                                _session.Cancel();
                                 return Unauthorized();
                             }
 
@@ -263,8 +263,8 @@ namespace OrchardCore.Contents.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
                             {
-                                //_notifier.Warning(T["Couldn't unpublish selected content."]);
-                                //_transactionManager.Cancel();
+                                _notifier.Warning(T["Couldn't unpublish selected content."]);
+                                _session.Cancel();
                                 return Unauthorized();
                             }
 
@@ -277,8 +277,8 @@ namespace OrchardCore.Contents.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, item))
                             {
-                                //_notifier.Warning(T["Couldn't remove selected content."]);
-                                //_transactionManager.Cancel();
+                                _notifier.Warning(T["Couldn't remove selected content."]);
+                                _session.Cancel();
                                 return Unauthorized();
                             }
 
