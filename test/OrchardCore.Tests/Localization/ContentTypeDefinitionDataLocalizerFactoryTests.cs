@@ -16,20 +16,16 @@ namespace OrchardCore.Tests.Localization
 {
     public class ContentTypeDefinitionDataLocalizerFactoryTests
     {
-        private readonly IList<CultureDictionary> _cultureDictionaries = new List<CultureDictionary>();
-        private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
-        private readonly Mock<IOptions<RequestLocalizationOptions>> _requestLocalizationOptions;
+        private static readonly Mock<IHttpContextAccessor> _httpContextAccessor;
+        private static readonly Mock<IOptions<RequestLocalizationOptions>> _requestLocalizationOptions;
 
-        public ContentTypeDefinitionDataLocalizerFactoryTests()
+        static ContentTypeDefinitionDataLocalizerFactoryTests()
         {
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
             _httpContextAccessor.Setup(c => c.HttpContext).Returns(GetHttpContext);
 
             _requestLocalizationOptions = new Mock<IOptions<RequestLocalizationOptions>>();
-            _requestLocalizationOptions.Setup(o => o.Value).Returns(new RequestLocalizationOptions
-            {
-                FallBackToParentUICultures = true
-            });
+            _requestLocalizationOptions.Setup(o => o.Value).Returns(new RequestLocalizationOptions());
         }
 
         [Fact]
@@ -57,7 +53,7 @@ namespace OrchardCore.Tests.Localization
                 localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(null, null, NullLoggerFactory.Instance);
             });
 
-            localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(_httpContextAccessor.Object, _requestLocalizationOptions.Object, NullLoggerFactory.Instance);
+            localizerFactory = CreateLocalizerFactory();
             Assert.NotNull(localizerFactory);
         }
 
@@ -65,10 +61,7 @@ namespace OrchardCore.Tests.Localization
         public void CreateLocalizerGetsCachedVersionIfTheLocalizerCreatedBefore()
         {
             var culture = "ar-YE";
-            var localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(
-                _httpContextAccessor.Object,
-                _requestLocalizationOptions.Object,
-                NullLoggerFactory.Instance);
+            var localizerFactory = CreateLocalizerFactory();
 
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
@@ -78,7 +71,17 @@ namespace OrchardCore.Tests.Localization
             Assert.Same(localizer1, localizer2);
         }
 
-        private HttpContext GetHttpContext()
+        internal static IDataLocalizerFactory CreateLocalizerFactory(bool fallBackToParentUICulture = true)
+        {
+            _requestLocalizationOptions.Object.Value.FallBackToParentUICultures = fallBackToParentUICulture;
+
+            return new ContentTypeDefinitionDataLocalizerFactory(
+                _httpContextAccessor.Object,
+                _requestLocalizationOptions.Object,
+                NullLoggerFactory.Instance);
+        }
+
+        private static HttpContext GetHttpContext()
         {
             var serviceProvider = new Mock<IServiceProvider>();
             serviceProvider.Setup(s => s.GetService(typeof(IContentDefinitionStore)))
@@ -99,12 +102,17 @@ namespace OrchardCore.Tests.Localization
                     ContentTypeDefinitionRecords = new List<ContentTypeDefinitionRecord>
                     {
                         new ContentTypeDefinitionRecord{ Name = "Menu", DisplayName = new LocalizedObject("Menu")},
-                        new ContentTypeDefinitionRecord{ Name = "Blog", DisplayName = new LocalizedObject("Blog")},
+                        new ContentTypeDefinitionRecord{ Name = "Blog", DisplayName = ConvertToLocalizedObject("Blog",
+                            new Dictionary<string, string>{
+                                { "fr", "Blog" },
+                                { "ar", "مدونة" }
+                            })},
                         new ContentTypeDefinitionRecord{ Name = "Shirt", DisplayName = ConvertToLocalizedObject("Shirt",
                             new Dictionary<string, string>{
                                 { "fr", "Chemise" },
-                                { "ar", "قميص" } }
-                            )}
+                                { "ar", "قميص" },
+                                { "ar-YE", "شميز" }
+                            })}
                     }
                 };
 

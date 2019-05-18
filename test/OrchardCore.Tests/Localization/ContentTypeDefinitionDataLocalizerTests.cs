@@ -30,11 +30,6 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
                 new CultureDictionaryRecord("Shirt", null, new[] { "قميص" }),
             });
-            SetupDictionary("ar-YE", new[] {
-                new CultureDictionaryRecord("Menu", null, new[] { "قائمة" }),
-                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
-                new CultureDictionaryRecord("Shirt", null, new[] { "شميز" }),
-            });
             SetupDictionary("cs", new CultureDictionaryRecord[] { });
 
             _logger = new Mock<ILogger>();
@@ -83,13 +78,42 @@ namespace OrchardCore.Tests.Localization
         public void LocalizerReturnsTranslationFromSpecificCultureIfItExists()
         {
             var culture = "ar-YE";
-            var localizer = new ContentTypeDefinitionDataLocalizer(GetDictionary(culture), _logger.Object);
-
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
+            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory();
+            var localizer = localizerFactory.Create();
             var translation = localizer["Shirt"];
 
             Assert.Equal("شميز", translation);
+        }
+
+
+        [Fact]
+        public void LocalizerFallbacksToParentCultureIfTranslationDoesntExistInSpecificCulture()
+        {
+            var culture = "fr-FR";
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory();
+            var localizer = localizerFactory.Create();
+            var translation = localizer["Shirt"];
+
+            Assert.Equal("Chemise", translation);
+        }
+
+        [Theory]
+        [InlineData(false, "Blog", "Blog")]
+        [InlineData(true, "Blog", "مدونة")]
+        public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentUICulture, string resourceKey, string expected)
+        {
+            var culture = "ar-YE";
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory(fallBackToParentUICulture);
+            var localizer = localizerFactory.Create();
+            var translation = localizer[resourceKey];
+
+            Assert.Equal(expected, translation);
         }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
