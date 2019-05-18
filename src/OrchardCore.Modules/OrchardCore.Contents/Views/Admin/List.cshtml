@@ -86,7 +86,10 @@
         <div class="form-group col-6 float-left">
             <div class="input-group input-group-sm">
                 <div class="input-group-text">
-                    <input type="checkbox" id="select-all">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all"></label>
+                    </div>
                 </div>
 
                 <div class="input-group-append">
@@ -97,7 +100,7 @@
         <div class="form-group col-6 float-right">
             <div class="dropdown float-right">
                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Actions"]
+                    @T["Bulk Actions"]
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
                     @foreach (var item in Model.Options.ContentsBulkAction)
