@@ -16,19 +16,19 @@ namespace OrchardCore.Tests.Localization
         public ContentTypeDefinitionDataLocalizerTests()
         {
             SetupDictionary("en", new[] {
-                new CultureDictionaryRecord("Menu", null, new[] { "Menu" }),
-                new CultureDictionaryRecord("Blog", null, new[] { "Blog" }),
-                new CultureDictionaryRecord("Shirt", null, new[] { "Shirt" }),
+                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
+                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
+                new CultureDictionaryRecord("Shirt", new[] { "Shirt" }),
             });
             SetupDictionary("fr", new[] {
-                new CultureDictionaryRecord("Menu", null, new[] { "Menu" }),
-                new CultureDictionaryRecord("Blog", null, new[] { "Blog" }),
-                new CultureDictionaryRecord("Shirt", null, new[] { "Chemise" }),
+                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
+                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
+                new CultureDictionaryRecord("Shirt", new[] { "Chemise" }),
             });
             SetupDictionary("ar", new[] {
-                new CultureDictionaryRecord("Menu", null, new[] { "قائمة" }),
-                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
-                new CultureDictionaryRecord("Shirt", null, new[] { "قميص" }),
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "قميص" }),
             });
             SetupDictionary("cs", new CultureDictionaryRecord[] { });
 

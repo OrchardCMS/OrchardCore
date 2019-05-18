@@ -73,7 +73,7 @@ namespace OrchardCore.Localization
                             continue;
                         }
 
-                        records.Add(new CultureDictionaryRecord(resource.Key, null, new string[] { resource.Value }));
+                        records.Add(new CultureDictionaryRecord(resource.Key, new string[] { resource.Value }));
                     }
                 }
 
@@ -89,7 +89,7 @@ namespace OrchardCore.Localization
             var contentDefinition = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
             return contentDefinition.ContentTypeDefinitionRecords
-                .Select(r => new CultureDictionaryRecord(r.DisplayName.Default, null, new string[] { r.DisplayName }));
+                .Select(r => new CultureDictionaryRecord(r.DisplayName.Default, new string[] { r.DisplayName }));
         }
     }
 }

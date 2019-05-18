@@ -7,6 +7,12 @@ namespace OrchardCore.Localization
         public string Key { get; private set; }
         public string[] Translations { get; private set; }
 
+        public CultureDictionaryRecord(string messageId, string[] translations)
+            : this(messageId, null, translations)
+        {
+
+        }
+
         public CultureDictionaryRecord(string messageId, string context, string[] translations)
         {
             Key = GetKey(messageId, context);
