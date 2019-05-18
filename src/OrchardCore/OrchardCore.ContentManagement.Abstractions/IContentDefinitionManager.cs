@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentManagement.Metadata
 {
@@ -42,7 +43,7 @@ namespace OrchardCore.ContentManagement.Metadata
     {
         public static void AlterTypeDefinition(this IContentDefinitionManager manager, string name, Action<ContentTypeDefinitionBuilder> alteration)
         {
-            var typeDefinition = manager.GetTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+            var typeDefinition = manager.GetTypeDefinition(name) ?? new ContentTypeDefinition(name, new LocalizedObject(name.CamelFriendly()));
             var builder = new ContentTypeDefinitionBuilder(typeDefinition);
             alteration(builder);
             manager.StoreTypeDefinition(builder.Build());

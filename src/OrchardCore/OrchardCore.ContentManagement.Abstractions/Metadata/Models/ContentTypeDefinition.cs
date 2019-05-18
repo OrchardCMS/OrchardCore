@@ -1,13 +1,14 @@
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public class ContentTypeDefinition : ContentDefinition
     {
-        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JObject settings)
+        public ContentTypeDefinition(string name, LocalizedObject displayName, IEnumerable<ContentTypePartDefinition> parts, JObject settings)
         {
             Name = name;
             DisplayName = displayName;
@@ -20,7 +21,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             }
         }
 
-        public ContentTypeDefinition(string name, string displayName)
+        public ContentTypeDefinition(string name, LocalizedObject displayName)
         {
             Name = name;
             DisplayName = displayName;
@@ -29,7 +30,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         }
 
         [Required, StringLength(1024)]
-        public string DisplayName { get; private set; }
+        public LocalizedObject DisplayName { get; private set; }
+
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
 
         /// <summary>

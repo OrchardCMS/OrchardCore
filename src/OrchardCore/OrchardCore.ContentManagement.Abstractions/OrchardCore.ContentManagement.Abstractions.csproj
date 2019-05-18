@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
   </ItemGroup>
 

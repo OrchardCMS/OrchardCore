@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using YesSql;
@@ -90,7 +91,7 @@ namespace OrchardCore.ContentTypes.Services
             while (_contentDefinitionManager.GetTypeDefinition(name) != null)
                 name = VersionName(name);
 
-            var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
+            var contentTypeDefinition = new ContentTypeDefinition(name, new LocalizedObject(displayName));
 
 
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public class ContentTypeDefinitionBuilder
     {
         private string _name;
-        private string _displayName;
+        private LocalizedObject _displayName;
         private readonly IList<ContentTypePartDefinition> _parts;
         private readonly JObject _settings;
 
@@ -51,7 +52,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder DisplayedAs(string displayName)
         {
-            _displayName = displayName;
+            _displayName = new LocalizedObject(displayName);
             return this;
         }
 

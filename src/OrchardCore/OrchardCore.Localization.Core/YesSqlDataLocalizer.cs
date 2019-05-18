@@ -11,7 +11,7 @@ namespace OrchardCore.Localization
     {
      { "blog" :
         [
-            { "en" : "Blog"},
+            { "" : "Blog"},
             { "fr" : "Blog"},
             { "ar" : "مدونة"}
         ]

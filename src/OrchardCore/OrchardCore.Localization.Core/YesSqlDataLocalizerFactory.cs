@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Localization
 {
     public class YesSqlDataLocalizerFactory : IDataLocalizerFactory
     {
         private readonly ConcurrentDictionary<string, YesSqlDataLocalizer> _localizerCache = new ConcurrentDictionary<string, YesSqlDataLocalizer>();
+        private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly bool _fallBackToParentUICultures;
         private readonly ILoggerFactory _loggerFactory;
 
         public YesSqlDataLocalizerFactory(
-            ILoggerFactory loggerFactory,
-            IOptions<RequestLocalizationOptions> requestLocalizationOptions)
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<RequestLocalizationOptions> requestLocalizationOptions,
+            ILoggerFactory loggerFactory)
         {
+            _contentDefinitionStore = httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionStore>();
             _fallBackToParentUICultures = requestLocalizationOptions.Value.FallBackToParentUICultures;
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
@@ -26,77 +33,55 @@ namespace OrchardCore.Localization
         public IDataLocalizer Create()
         {
             var culture = CultureInfo.CurrentUICulture;
+            IEnumerable<CultureDictionaryRecord> resources = null;
 
             return _localizerCache.GetOrAdd($"C={culture.Name}", _ =>
             {
-                //TODO: Fetch the data from the database
-                CultureDictionary dictionary = null;
-
-                if (_fallBackToParentUICultures)
-                {
-                    dictionary = new CultureDictionary(culture.Name, null);
-                    dictionary.MergeTranslations(GetResourcesFromCultureHierarchy(culture));
-                }
-                else
-                {
-                    dictionary = GetDictionaries().SingleOrDefault(d => d.CultureName == culture.Name);
-                }
+                var dictionary = new CultureDictionary(culture.Name, null);
+                resources = _fallBackToParentUICultures
+                    ? GetResourcesFromCultureHierarchy(culture).GetAwaiter().GetResult()
+                    : GetResources().GetAwaiter().GetResult();
+                dictionary.MergeTranslations(resources);
 
                 return new YesSqlDataLocalizer(dictionary, _loggerFactory.CreateLogger<DataLocalizer>());
             });
         }
 
-        private IEnumerable<CultureDictionaryRecord> GetResourcesFromCultureHierarchy(CultureInfo culture)
+        private async Task<IEnumerable<CultureDictionaryRecord>> GetResourcesFromCultureHierarchy(CultureInfo culture)
         {
             var currentCulture = culture;
             var records = new List<CultureDictionaryRecord>();
+            var contentDefinition = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-            while (true)
+            do
             {
-                var cultureResources = GetDictionaries().Where(c => c.CultureName == currentCulture.Name)
-                    .SelectMany(c => c.Translations);
+                var cultureResources = contentDefinition.ContentTypeDefinitionRecords.Select(r => new
+                {
+                    Key = r.DisplayName.Default,
+                    Value = r.DisplayName.GetValueOrDefault(currentCulture.Name)
+                });
 
                 if (cultureResources != null)
                 {
                     foreach (var resource in cultureResources)
                     {
-                        yield return new CultureDictionaryRecord(resource.Key, null, resource.Value);
+                        records.Add(new CultureDictionaryRecord(resource.Key, null, new string[] { resource.Value }));
                     }
-                }
-
-                if (currentCulture == currentCulture.Parent)
-                {
-                    break;
                 }
 
                 currentCulture = currentCulture.Parent;
             }
+            while (currentCulture != currentCulture.Parent);
+
+            return records;
         }
 
-        private IEnumerable<CultureDictionary> GetDictionaries()
+        private async Task<IEnumerable<CultureDictionaryRecord>> GetResources()
         {
-            yield return SetupDictionary("ar-YE", new List<CultureDictionaryRecord>
-                {
-                    new CultureDictionaryRecord("Bye", null, new[] { "مع السلامة" })
-                });
-            yield return SetupDictionary("ar", new List<CultureDictionaryRecord>
-                {
-                    new CultureDictionaryRecord("Hello", null, new[] { "مرحبا" }),
-                    new CultureDictionaryRecord("Bye", null, new[] { "مع السلامة" })
-                });
-            yield return SetupDictionary("fr-FR", new List<CultureDictionaryRecord>
-                {
-                    new CultureDictionaryRecord("Hello", null, new[] { "Bonjour" }),
-                    new CultureDictionaryRecord("Bye", null, new[] { "au revoir" })
-                });
-        }
+            var contentDefinition = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-        private CultureDictionary SetupDictionary(string culture, IEnumerable<CultureDictionaryRecord> records)
-        {
-            var dictionary = new CultureDictionary(culture, null);
-            dictionary.MergeTranslations(records);
-
-            return dictionary;
+            return contentDefinition.ContentTypeDefinitionRecords
+                .Select(r => new CultureDictionaryRecord(r.DisplayName.Default, null, new string[] { r.DisplayName }));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
@@ -11,7 +12,9 @@ namespace OrchardCore.ContentManagement.Metadata.Records
         }
 
         public string Name { get; set; }
-        public string DisplayName { get; set; }
+
+        public LocalizedObject DisplayName { get; set; }
+
         public JObject Settings { get; set; }
 
         public IList<ContentTypePartDefinitionRecord> ContentTypePartDefinitionRecords { get; set; }
