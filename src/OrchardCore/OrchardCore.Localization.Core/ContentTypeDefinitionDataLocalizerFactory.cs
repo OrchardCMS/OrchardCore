@@ -25,8 +25,8 @@ namespace OrchardCore.Localization
             IOptions<RequestLocalizationOptions> requestLocalizationOptions,
             ILoggerFactory loggerFactory)
         {
-            _contentDefinitionStore = httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionStore>();
-            _fallBackToParentUICultures = requestLocalizationOptions.Value.FallBackToParentUICultures;
+            _contentDefinitionStore = httpContextAccessor?.HttpContext.RequestServices.GetService<IContentDefinitionStore>() ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _fallBackToParentUICultures = requestLocalizationOptions?.Value.FallBackToParentUICultures ?? throw new ArgumentNullException(nameof(requestLocalizationOptions));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
