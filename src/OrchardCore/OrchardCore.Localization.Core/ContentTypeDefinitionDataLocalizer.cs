@@ -7,16 +7,6 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Localization
 {
-    /*
-    {
-     { "blog" :
-        [
-            { "" : "Blog"},
-            { "fr" : "Blog"},
-            { "ar" : "مدونة"}
-        ]
-     }
-    */
     public class ContentTypeDefinitionDataLocalizer : IDataLocalizer
     {
         private readonly CultureDictionary _data;

@@ -87,7 +87,9 @@
       "ContentTypes": [
         {
           "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
+          "DisplayName": {
+            "": "Liquid Page"
+          },
           "Hidden": false,
           "Settings": {
             "Creatable": "True",
@@ -149,7 +151,9 @@
         },
         {
           "Name": "HtmlWidget",
-          "DisplayName": "Html",
+          "DisplayName": {
+            "": "Html"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
@@ -170,7 +174,9 @@
         },
         {
           "Name": "Page",
-          "DisplayName": "Page",
+          "DisplayName": {
+            "": "Page"
+          },
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
@@ -223,7 +229,9 @@
         },
         {
           "Name": "LandingPage",
-          "DisplayName": "Landing Page",
+          "DisplayName": {
+            "": "Landing Page"
+          },
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
@@ -369,7 +377,9 @@
         },
         {
           "Name": "Service",
-          "DisplayName": "Service",
+          "DisplayName": {
+            "": "Service"
+          },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Service",
@@ -396,7 +406,9 @@
         },
         {
           "Name": "Project",
-          "DisplayName": "Project",
+          "DisplayName": {
+            "": "Project"
+          },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Project",
@@ -423,7 +435,9 @@
         },
         {
           "Name": "Milestone",
-          "DisplayName": "Milestone",
+          "DisplayName": {
+            "": "Milestone"
+          },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Milestone",
@@ -450,7 +464,9 @@
         },
         {
           "Name": "TeamMember",
-          "DisplayName": "Team Member",
+          "DisplayName": {
+            "": "Team Member"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
@@ -478,7 +494,9 @@
         },
         {
           "Name": "Client",
-          "DisplayName": "Client",
+          "DisplayName": {
+            "": "Client"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
@@ -506,7 +524,9 @@
         },
         {
           "Name": "Container",
-          "DisplayName": "Container",
+          "DisplayName": {
+            "": "Container"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
@@ -534,7 +554,9 @@
         },
         {
           "Name": "Blockquote",
-          "DisplayName": "Blockquote",
+          "DisplayName": {
+            "": "Blockquote"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
@@ -555,7 +577,9 @@
         },
         {
           "Name": "ImageWidget",
-          "DisplayName": "Image",
+          "DisplayName": {
+            "": "Image"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
@@ -576,7 +600,9 @@
         },
         {
           "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
+          "DisplayName": {
+            "": "Liquid"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
@@ -597,7 +623,9 @@
         },
         {
           "Name": "Image",
-          "DisplayName": "Image",
+          "DisplayName": {
+            "": "Image"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
@@ -625,7 +653,9 @@
         },
         {
           "Name": "Paragraph",
-          "DisplayName": "Paragraph",
+          "DisplayName": {
+            "": "Paragraph"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",

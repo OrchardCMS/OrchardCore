@@ -257,7 +257,9 @@
       "ContentTypes": [
         {
           "Name": "ComingSoon",
-          "DisplayName": "Coming Soon",
+          "DisplayName": {
+            "": "Coming Soon"
+          },
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
@@ -322,7 +324,9 @@
         },
         {
           "Name": "SocialIcon",
-          "DisplayName": "Social Icon",
+          "DisplayName": {
+            "": "Social Icon"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
@@ -350,7 +354,9 @@
         },
         {
           "Name": "Register",
-          "DisplayName": "Register",
+          "DisplayName": {
+            "": "Register"
+          },
           "Settings": {
             "Creatable": "False",
             "Draftable": "False",
