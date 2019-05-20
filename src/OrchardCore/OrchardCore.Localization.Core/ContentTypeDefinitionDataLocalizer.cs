@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -9,12 +8,12 @@ namespace OrchardCore.Localization
 {
     public class ContentTypeDefinitionDataLocalizer : IDataLocalizer
     {
-        private readonly CultureDictionary _data;
+        private readonly DataResourceManager _resourceManager;
         private readonly ILogger _logger;
 
-        public ContentTypeDefinitionDataLocalizer(CultureDictionary data, ILogger logger)
+        public ContentTypeDefinitionDataLocalizer(DataResourceManager resourceManager, ILogger logger)
         {
-            _data = data ?? throw new ArgumentNullException(nameof(data));
+            _resourceManager = resourceManager ?? throw new ArgumentNullException(nameof(resourceManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -46,9 +45,12 @@ namespace OrchardCore.Localization
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            foreach (var translation in _data.Translations)
+            var resourceNames = _resourceManager.GetAllResourceStrings(CultureInfo.CurrentUICulture, includeParentCultures);
+
+            foreach (var name in resourceNames)
             {
-                yield return new LocalizedString(translation.Key, translation.Value.First());
+                var value = GetTranslation(name);
+                yield return new LocalizedString(name, value ?? name, resourceNotFound: value == null);
             }
         }
 
@@ -61,12 +63,7 @@ namespace OrchardCore.Localization
                 throw new ArgumentNullException(nameof(name));
             }
 
-            string translation = null;
-
-            if (_data.Translations.ContainsKey(name))
-            {
-                translation = _data.Translations[name].First();
-            }
+            var translation = _resourceManager.GetString(name);
 
             //TODO: Log the content type definition name for the resource that we looking for
             _logger.LogDebug($"{nameof(ContentTypeDefinitionDataLocalizer)} searched for '{name}' in the database with culture '{CultureInfo.CurrentUICulture.Name}'.");

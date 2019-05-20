@@ -16,13 +16,13 @@ namespace OrchardCore.Tests.Localization
 {
     public class ContentTypeDefinitionDataLocalizerFactoryTests
     {
-        private static readonly Mock<IHttpContextAccessor> _httpContextAccessor;
-        private static readonly Mock<IOptions<RequestLocalizationOptions>> _requestLocalizationOptions;
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
+        private readonly Mock<IOptions<RequestLocalizationOptions>> _requestLocalizationOptions;
 
-        static ContentTypeDefinitionDataLocalizerFactoryTests()
+        public ContentTypeDefinitionDataLocalizerFactoryTests()
         {
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
-            _httpContextAccessor.Setup(c => c.HttpContext).Returns(GetHttpContext);
+            _httpContextAccessor.Setup(c => c.HttpContext).Returns(GetHttpContext());
 
             _requestLocalizationOptions = new Mock<IOptions<RequestLocalizationOptions>>();
             _requestLocalizationOptions.Setup(o => o.Value).Returns(new RequestLocalizationOptions());
@@ -53,7 +53,10 @@ namespace OrchardCore.Tests.Localization
                 localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(null, null, NullLoggerFactory.Instance);
             });
 
-            localizerFactory = CreateLocalizerFactory();
+            localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(
+                _httpContextAccessor.Object,
+                _requestLocalizationOptions.Object,
+                NullLoggerFactory.Instance);
             Assert.NotNull(localizerFactory);
         }
 
@@ -61,7 +64,10 @@ namespace OrchardCore.Tests.Localization
         public void CreateLocalizerGetsCachedVersionIfTheLocalizerCreatedBefore()
         {
             var culture = "ar-YE";
-            var localizerFactory = CreateLocalizerFactory();
+            var localizerFactory = new ContentTypeDefinitionDataLocalizerFactory(
+                _httpContextAccessor.Object,
+                _requestLocalizationOptions.Object,
+                NullLoggerFactory.Instance);
 
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
@@ -69,16 +75,6 @@ namespace OrchardCore.Tests.Localization
             var localizer2 = localizerFactory.Create();
 
             Assert.Same(localizer1, localizer2);
-        }
-
-        internal static IDataLocalizerFactory CreateLocalizerFactory(bool fallBackToParentUICulture = true)
-        {
-            _requestLocalizationOptions.Object.Value.FallBackToParentUICultures = fallBackToParentUICulture;
-
-            return new ContentTypeDefinitionDataLocalizerFactory(
-                _httpContextAccessor.Object,
-                _requestLocalizationOptions.Object,
-                NullLoggerFactory.Instance);
         }
 
         private static HttpContext GetHttpContext()

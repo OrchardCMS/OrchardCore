@@ -10,36 +10,26 @@ namespace OrchardCore.Tests.Localization
 {
     public class ContentTypeDefinitionDataLocalizerTests
     {
-        private readonly IList<CultureDictionary> _cultureDictionaries = new List<CultureDictionary>();
         private readonly Mock<ILogger> _logger;
 
         public ContentTypeDefinitionDataLocalizerTests()
         {
-            SetupDictionary("en", new[] {
-                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
-                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
-                new CultureDictionaryRecord("Shirt", new[] { "Shirt" }),
-            });
-            SetupDictionary("fr", new[] {
-                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
-                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
-                new CultureDictionaryRecord("Shirt", new[] { "Chemise" }),
-            });
-            SetupDictionary("ar", new[] {
-                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
-                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
-                new CultureDictionaryRecord("Shirt", new[] { "قميص" }),
-            });
-            SetupDictionary("cs", new CultureDictionaryRecord[] { });
-
             _logger = new Mock<ILogger>();
         }
 
         [Fact]
         public void LocalizerReturnsTranslationsFromProvidedDictionary()
         {
+            var frDictionary = SetupDictionary("fr", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
+                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
+                new CultureDictionaryRecord("Shirt", new[] { "Chemise" })
+            });
+
             var culture = "fr";
-            var localizer = new ContentTypeDefinitionDataLocalizer(GetDictionary(culture), _logger.Object);
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { frDictionary }),
+                _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
@@ -51,8 +41,16 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void LocalizerReturnsOriginalTextIfTranslationsDoesntExistInProvidedDictionary()
         {
+            var frDictionary = SetupDictionary("fr", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "Menu" }),
+                new CultureDictionaryRecord("Blog", new[] { "Blog" }),
+                new CultureDictionaryRecord("Shirt", new[] { "Chemise" })
+            });
+
             var culture = "fr";
-            var localizer = new ContentTypeDefinitionDataLocalizer(GetDictionary(culture), _logger.Object);
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { frDictionary }),
+                _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
@@ -64,8 +62,12 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void LocalizerReturnsOriginalTextIfDictionaryIsEmpty()
         {
+            var csDictionary = SetupDictionary("cs", new CultureDictionaryRecord[] { });
+
             var culture = "cs";
-            var localizer = new ContentTypeDefinitionDataLocalizer(GetDictionary(culture), _logger.Object);
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { csDictionary }),
+                _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
@@ -77,28 +79,26 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void LocalizerReturnsTranslationFromSpecificCultureIfItExists()
         {
+            var arDictionary = SetupDictionary("ar", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "قميص" })
+            });
+            var ar_yeDictionary = SetupDictionary("ar-YE", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "شميز" })
+            });
+
             var culture = "ar-YE";
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
-            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory();
-            var localizer = localizerFactory.Create();
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { arDictionary, ar_yeDictionary }),
+                _logger.Object);
             var translation = localizer["Shirt"];
 
             Assert.Equal("شميز", translation);
-        }
-
-
-        [Fact]
-        public void LocalizerFallbacksToParentCultureIfTranslationDoesntExistInSpecificCulture()
-        {
-            var culture = "fr-FR";
-            CultureInfo.CurrentUICulture = new CultureInfo(culture);
-
-            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory();
-            var localizer = localizerFactory.Create();
-            var translation = localizer["Shirt"];
-
-            Assert.Equal("Chemise", translation);
         }
 
         [Theory]
@@ -106,24 +106,59 @@ namespace OrchardCore.Tests.Localization
         [InlineData(true, "Blog", "مدونة")]
         public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentUICulture, string resourceKey, string expected)
         {
+            var arDictionary = SetupDictionary("ar", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "قميص" })
+            });
+            var ar_yeDictionary = SetupDictionary("ar-YE", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "شميز" })
+            });
+
             var culture = "ar-YE";
             CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
-            var localizerFactory = ContentTypeDefinitionDataLocalizerFactoryTests.CreateLocalizerFactory(fallBackToParentUICulture);
-            var localizer = localizerFactory.Create();
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { arDictionary, ar_yeDictionary }, fallBackToParentUICulture),
+                _logger.Object);
             var translation = localizer[resourceKey];
 
             Assert.Equal(expected, translation);
         }
 
-        private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
+        [Theory]
+        [InlineData(false, new[] { "شميز" })]
+        [InlineData(true, new[] { "شميز", "قائمة", "مدونة" })]
+        public void LocalizerReturnsGetAllStrings(bool includeParentCultures, string[] values)
+        {
+            var arDictionary = SetupDictionary("ar", new[] {
+                new CultureDictionaryRecord("Menu", new[] { "قائمة" }),
+                new CultureDictionaryRecord("Blog", new[] { "مدونة" }),
+                new CultureDictionaryRecord("Shirt", new[] { "قميص" })
+            });
+            var ar_yeDictionary = SetupDictionary("ar-YE", new[] {
+                new CultureDictionaryRecord("Shirt", new[] { "شميز" })
+            });
+
+            var culture = "ar-YE";
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+
+            var localizer = new ContentTypeDefinitionDataLocalizer(
+                new DataResourceManager(new[] { arDictionary, ar_yeDictionary }),
+                _logger.Object);
+            var localizedStrings = localizer.GetAllStrings(includeParentCultures);
+
+            Assert.Equal(values.Length, localizedStrings.Count());
+            Assert.Equal(values, localizedStrings.Select(l => l.Value));
+        }
+
+        private CultureDictionary SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
             var dictionary = new CultureDictionary(cultureName, null);
             dictionary.MergeTranslations(records);
-            _cultureDictionaries.Add(dictionary);
-        }
 
-        private CultureDictionary GetDictionary(string cultureName)
-            => _cultureDictionaries.SingleOrDefault(d => d.CultureName == cultureName);
+            return dictionary;
+        }
     }
 }
