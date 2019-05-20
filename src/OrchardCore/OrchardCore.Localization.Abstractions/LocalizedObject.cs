@@ -30,9 +30,7 @@ namespace OrchardCore.Localization
 
         public string Default => Values.First();
 
-        public string GetValueOrDefault(string key)=> TryGetValue(key, out var value) ? value : Default;
-
-        public string GetValueOrNull(string key) => TryGetValue(key, out var value) ? value : null;
+        public string GetValueOrDefault(string key) => TryGetValue(key, out var value) ? value : null;
 
         public override string ToString() => GetValueOrDefault(CultureInfo.CurrentUICulture.Name);
     }

@@ -52,10 +52,10 @@ namespace OrchardCore.Localization
             do
             {
                 var records = contentDefinition.ContentTypeDefinitionRecords
-                    .Where(r => r.DisplayName.GetValueOrNull(currentCulture.Name) != null)
+                    .Where(r => r.DisplayName.GetValueOrDefault(currentCulture.Name) != null)
                     .Select(r => new CultureDictionaryRecord(
                         r.DisplayName.Default,
-                        new string[] { r.DisplayName.GetValueOrNull(currentCulture.Name) }));
+                        new string[] { r.DisplayName.GetValueOrDefault(currentCulture.Name) }));
 
                 if (records != null)
                 {
