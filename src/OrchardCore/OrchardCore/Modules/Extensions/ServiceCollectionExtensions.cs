@@ -69,6 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
 
             services.AddSingleton<IDataLocalizerFactory, NullDataLocalizerFactory>();
+            services.AddTransient<IDataLocalizer, DataLocalizer>();
 
             services.AddWebEncoders();
 
