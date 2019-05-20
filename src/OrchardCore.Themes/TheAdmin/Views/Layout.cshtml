@@ -39,7 +39,7 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><img id="imgAvatar" class="rounded-circle" /><span> @loggedInUser.UserName</span></a>
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><gravatar email="loggedInUser.Email" size="28" css-class="rounded-circle" /> <span> @loggedInUser.UserName</span></a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="EditPassword" asp-route-id="@loggedInUser.Id">@T["Change Password"]</a>
                             <a class="dropdown-item" asp-controller="Admin" asp-route-area="OrchardCore.Users" asp-action="Edit" asp-route-id="@loggedInUser.Id">@T["Profile"]</a>
@@ -72,12 +72,5 @@
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok="@T["Ok"]" data-cancel="@T["Cancel"]"></div>
 
     <resources type="Footer" />
-    
-    <script type="text/javascript">
-        $(function(){
-            var gravatarUrl = getGravatar("@loggedInUser.Email", 28);
-            $('#imgAvatar').attr('src', gravatarUrl);
-        });
-    </script>
 </body>
 </html>
