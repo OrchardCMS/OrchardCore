@@ -10,8 +10,9 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Settings;
+using OrchardCore.Twitter.Signin.Settings;
 
-namespace OrchardCore.Twitter.Services
+namespace OrchardCore.Twitter.Signin.Services
 {
     public class TwitterSigninService : ITwitterSigninService
     {
@@ -44,30 +45,9 @@ namespace OrchardCore.Twitter.Services
             var container = await _siteService.GetSiteSettingsAsync();
             container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
             {
-                aspect.ConsumerKey = settings.ConsumerKey;
-                aspect.ConsumerSecret = settings.ConsumerSecret;
                 aspect.CallbackPath = settings.CallbackPath;
             });
             await _siteService.UpdateSiteSettingsAsync(container);
         }
-
-        public IEnumerable<ValidationResult> ValidateSettings(TwitterSigninSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ConsumerKey))
-            {
-                yield return new ValidationResult(T["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-            {
-                yield return new ValidationResult(T["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
-            }
-        }
-
     }
 }

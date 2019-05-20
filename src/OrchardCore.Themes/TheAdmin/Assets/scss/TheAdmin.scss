@@ -462,13 +462,6 @@ body:not(.left-sidebar-compact) {
         border-right: $border-content;
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-        // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
-            .chevron {
-                transform: rotate(90deg);
-                transition-duration: 0.2s;
-            }
-        }
 
         label[aria-expanded="false"] {
             .chevron {
@@ -872,6 +865,18 @@ body:not(.left-sidebar-compact) {
             background: rgba(0,0,0,.1);
             display: block;
             margin: 0px auto;
+        }
+    }
+}
+/* rtl:ignore */
+.left-sidebar-compact {
+    #ta-left-sidebar {
+        // Rotate the chevron's icon when the menu is active
+        label[aria-expanded="true"] {
+            .chevron {
+                transform: rotate(90deg);
+                transition-duration: 0.2s;
+            }
         }
     }
 }
