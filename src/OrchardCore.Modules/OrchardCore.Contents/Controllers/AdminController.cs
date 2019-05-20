@@ -194,7 +194,6 @@ namespace OrchardCore.Contents.Controllers
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = T["Choose action..."].Value, Value = ContentsBulkAction.None.ToString() },
                 new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
                 new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
                 new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
@@ -234,63 +233,66 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        //[HttpPost, ActionName("List")]
-        //[FormValueRequired("submit.BulkEdit")]
-        //public ActionResult ListPOST(ContentOptions options, IEnumerable<int> itemIds, string returnUrl)
-        //{
-        //    if (itemIds != null)
-        //    {
-        //        var checkedContentItems = _contentManager.GetMany<ContentItem>(itemIds, VersionOptions.Latest, QueryHints.Empty);
-        //        switch (options.BulkAction)
-        //        {
-        //            case ContentsBulkAction.None:
-        //                break;
-        //            case ContentsBulkAction.PublishNow:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't publish selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.PublishNow:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't publish selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
 
-        //                    _contentManager.Publish(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully published."));
-        //                break;
-        //            case ContentsBulkAction.Unpublish:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't unpublish selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
+                            await _contentManager.PublishAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully published."]);
+                        break;
+                    case ContentsBulkAction.Unpublish:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't unpublish selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
 
-        //                    _contentManager.Unpublish(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully unpublished."));
-        //                break;
-        //            case ContentsBulkAction.Remove:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.DeleteContent, item, T("Couldn't remove selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
+                            await _contentManager.UnpublishAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully unpublished."]);
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't remove selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
 
-        //                    _contentManager.Remove(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully removed."));
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException();
-        //        }
-        //    }
+                            await _contentManager.RemoveAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+            return RedirectToAction("List");
+        }
 
         public async Task<IActionResult> Create(string id)
         {
