@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Security;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents
@@ -18,14 +19,18 @@ namespace OrchardCore.Contents
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager)
+            IContentManager contentManager,
+            IDataLocalizer dataLocalizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             T = localizer;
+            D = dataLocalizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer T { get; }
+
+        public IDataLocalizer D { get; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -44,7 +49,7 @@ namespace OrchardCore.Contents
                     .LocalNav())
                 );
 
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName.Default);
             if (contentTypes.Any())
             {
                 await builder.AddAsync(T["New"], "-1", async newMenu =>
@@ -56,7 +61,7 @@ namespace OrchardCore.Contents
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
                         if (createRouteValues.Any())
-                            newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
+                            newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName.Default, D[contentTypeDefinition.DisplayName.Default]), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
                                 .Permission(ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition))
                                 );
