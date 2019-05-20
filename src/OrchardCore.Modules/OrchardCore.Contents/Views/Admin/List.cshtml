@@ -98,7 +98,7 @@
         </div>
         <div class="form-group col-6 float-right">
             <div class="dropdown float-right">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button disabled class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     @T["Bulk Actions"]
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
@@ -134,6 +134,10 @@
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
+        var bulkActionButton = $("#bulk-action-menu-button");
+        var selectAllCtrl = $("#select-all");
+        var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
+
         $("#Options_SelectedContentType").change(function (e) {
             var value = $("#Options_SelectedContentType option:selected").val();
             console.log(value);
@@ -146,7 +150,7 @@
         });
 
         $(".dropdown-menu .dropdown-item").on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
 
                 var title = $(this).data('title');
                 var message = $(this).data('message');
@@ -160,8 +164,13 @@
             }
         });
 
-        $("#select-all").click(function(){
-            $(":checkbox[name='itemIds']").not(this).prop("checked", this.checked);
+        selectAllCtrl.click(function(){
+            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            bulkActionButton.attr("disabled", !this.checked);
+        });
+
+        contentItemsCheckboxes.on("click", function () {
+            bulkActionButton.attr("disabled", !($(":checkbox[name='itemIds']:checked").length > 1));
         });
     })
 </script>
