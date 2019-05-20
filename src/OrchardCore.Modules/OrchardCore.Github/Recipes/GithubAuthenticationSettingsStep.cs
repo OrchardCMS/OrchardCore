@@ -8,15 +8,15 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Github.Recipes
 {
     /// <summary>
-    /// This recipe step sets Microsoft Account settings.
+    /// This recipe step sets Github Account settings.
     /// </summary>
-    public class GithubSigninSettingsStep : IRecipeStepHandler
+    public class GithubAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly IGithubAuthenticationService _twitterLoginService;
+        private readonly IGithubAuthenticationService _githubAuthenticationService;
 
-        public GithubSigninSettingsStep(IGithubAuthenticationService twitterLoginService)
+        public GithubAuthenticationSettingsStep(IGithubAuthenticationService githubLoginService)
         {
-            _twitterLoginService = twitterLoginService;
+            _githubAuthenticationService = githubLoginService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -26,11 +26,11 @@ namespace OrchardCore.Github.Recipes
                 return;
             }
             var model = context.Step.ToObject<GithubLoginSettingsStepModel>();
-            var settings = await _twitterLoginService.GetSettingsAsync();
+            var settings = await _githubAuthenticationService.GetSettingsAsync();
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;
             settings.CallbackPath = model.CallbackPath;
-            await _twitterLoginService.UpdateSettingsAsync(settings);
+            await _githubAuthenticationService.UpdateSettingsAsync(settings);
         }
     }
 

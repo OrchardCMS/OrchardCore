@@ -56,8 +56,14 @@ $(function () {
     });
 
     $(document).on('click', '.widget-delete', function () {
-        $(this).closest('.widget-template').remove();
-        $(document).trigger('contentpreview:render');
+        var title = $(this).data('title');
+        var message = $(this).data('message');
+        confirmDialog(title, message, r => {
+            if (r) {
+                $(this).closest('.widget-template').remove();
+                $(document).trigger('contentpreview:render');
+            }
+        });
     });
 
     $(document).on('change', '.widget-editor-footer label', function () {

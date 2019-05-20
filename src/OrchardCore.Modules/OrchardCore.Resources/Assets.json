@@ -6,6 +6,14 @@
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "inputs": [ "../../../node_modules/bootstrap/dist/js/bootstrap.js" ],
+    "output": "wwwroot/Scripts/bootstrap.js"
+  },
+  {
+    "inputs": [ "../../../node_modules/popper.js/dist/umd/popper.js" ],
+    "output": "wwwroot/Scripts/popper.js"
+  },
+  {
     "generateRTL": true,
     "inputs": [ "../../../node_modules/bootstrap-slider/dist/css/bootstrap-slider.css" ],
     "output": "wwwroot/Styles/bootstrap-slider.css"
