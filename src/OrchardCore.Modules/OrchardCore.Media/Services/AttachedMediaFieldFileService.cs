@@ -91,7 +91,7 @@ namespace OrchardCore.Media.Services
 
                     if (fileInfo == null)
                     {
-                        _logger.LogError("A file with the path '{x.path}' does not exist.");
+                        _logger.LogError("A file with the path '{Path}' does not exist.", x.Path);
                         return;
                     }
 
