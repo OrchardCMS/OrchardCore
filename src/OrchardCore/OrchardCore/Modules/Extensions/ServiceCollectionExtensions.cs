@@ -68,6 +68,8 @@ namespace Microsoft.Extensions.DependencyInjection
             // For performance, prevents the 'ResourceManagerStringLocalizer' from being used.
             services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
 
+            services.AddSingleton<IDataLocalizerFactory, NullDataLocalizerFactory>();
+
             services.AddWebEncoders();
 
             // ModularTenantRouterMiddleware which is configured with UseOrchardCore() calls UseRouter() which requires the routing services to be
