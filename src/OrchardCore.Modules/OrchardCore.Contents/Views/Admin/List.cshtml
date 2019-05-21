@@ -1,115 +1,115 @@
+@model ListContentsViewModel
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
 @inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 
 @{
-    var typeDisplayName = Model.TypeDisplayName;
+    var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
     var createLinkText = T["Create New Content"];
-    if (!string.IsNullOrWhiteSpace(typeDisplayName))
+    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
     {
-        pageTitle = T["Manage {0} Content", (string)typeDisplayName];
-        createLinkText = T["Create New {0}", (string)typeDisplayName];
+        pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
+        createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
     var tenantPrefix = ("/" + ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
     var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
-
-    IEnumerable<string> cultures = Model.Options.Cultures;
-    List<SelectListItem> contentStatuses = new List<SelectListItem>() {
-new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
-new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
-new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
-new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
-new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
-};
-    contentStatuses.Where( s => s.Value == Model.Options.ContentsStatus.ToString()).FirstOrDefault().Selected = true;
-
-    List<SelectListItem> contentSorts = new List<SelectListItem>() {
-new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
-new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
-new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
-new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
-};
-    contentSorts.Where(s => s.Value == Model.Options.OrderBy.ToString()).FirstOrDefault().Selected = true;
 }
+
 <h1>@RenderTitleSegments(pageTitle)</h1>
-@using (Html.BeginForm("list", "Admin", FormMethod.Post, new { id = "items-form" }))
+@using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form", autocomplete = "off" }))
 {
-    @*<fieldset class="bulk-actions">
-                <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
-                <label for="publishActions">@T["Actions:"]</label>
-                <select id="publishActions" name="Options.BulkAction">
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.None, T("Choose action...").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.PublishNow, T("Publish Now").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Unpublish, T("Unpublish").ToString())
-                    @Html.SelectOption((ContentsBulkAction)Model.Options.BulkAction, ContentsBulkAction.Remove, T("Delete").ToString())
-                </select>
-                <button type="submit" name="submit.BulkEdit" value="yes">@T["Apply")</button>
-            </fieldset>
-        <fieldset class="bulk-actions container-fluid">
-            <label for="filterResults" class="bulk-filter">@T["Show"]</label>
-                <select id="filterResults" name="Options.SelectedFilter">
-                    @Html.SelectOption((string)Model.Options.SelectedFilter, "", T["any (show all)"])
-                    @foreach (var filterOption in Model.Options.FilterOptions) {
-                        @Html.SelectOption((string)Model.Options.SelectedFilter, (string)filterOption.Key, (string)filterOption.Value)
-                    }
-                </select>
-        </fieldset>*@
-    <fieldset class="filter-options container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="DisplayText" class="label col-form-label">@T["Title"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <input id="DisplayText" class="form-control" name="DisplayText" value="@Model.DisplayText" />
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="contentResults" class="label col-form-label">@T["Filter"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="contentResults" class="form-control" name="Id">
-                    <option value="">@T["All content types"]</option>
-                    @foreach (var option in Model.Options.FilterOptions)
-                    {
-                        string isSelected = option.Key == Model.Options.SelectedFilter ? "selected='selected'" : string.Empty;
-                        <!option @isSelected value="@option.Key">@option.Value</!option>
-                    }
-                </select>
-            </div>
-            @*@if (cultures.Count() > 1) {
-                <div class="col-md-2 col-xl-1 form-group">
-                    <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
+    <!-- Hidden submit button do not remove -->
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+
+    <fieldset class="filter-options">
+        <div class="card mb-3">
+            <div class="card-body bg-light p-3">
+                <div class="row">
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Title"]</span>
+                            </div>
+                            <input asp-for="Options.DisplayText" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                            </div>
+                            <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.Options.ContentTypeOptions"></select>
+                        </div>
+                    </div>
+
+                    @*@if (cultures.Count() > 1) {
+                        <div class="col-md-2 col-xl-1 form-group">
+                            <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
+                        </div>
+                        <div class="col-md-4 col-xl-3 form-group">
+                            <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
+                                <option value="">@T["All cultures"]</option>
+                                @foreach (string culture in cultures) {
+                                    string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
+                                    <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
+                                }
+                            </select>
+                        </div>
+                        }*@
+                    <div class="form-group col-xl-3 mb-xl-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
+                            </div>
+                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.Options.ContentStatuses"></select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-3 mb-n1">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
+                            </div>
+                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.Options.ContentSorts"></select>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="col-md-4 col-xl-3 form-group">
-                    <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                        <option value="">@T["All cultures"]</option>
-                        @foreach (string culture in cultures) {
-                            string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                            <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                        }
-                    </select>
-                </div>
-                }*@
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Show"]</label>
             </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" name="Options.ContentsStatus" asp-items="@contentStatuses"></select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="orderResults" class="label col-form-label">@T["Sort by"]</label>
-            </div>
-            <div class="col-md-4 col-xl-2 form-group">
-                <select id="orderResults" class="form-control" name="Options.OrderBy" asp-items="@contentSorts"></select>
-            </div>
-            @*<div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-primary" name="submit.Filter">@T["Apply"]</button>
-            </div>*@
         </div>
     </fieldset>
-
+    <div class="row">
+        <div class="form-group col-6 float-left">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <div class="custom-control custom-checkbox mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="input-group-append">
+                    <span class="input-group-text bg-secondary text-light">@T["Select All"]</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-6 float-right">
+            <div class="dropdown float-right">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Bulk Actions"]
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                    @foreach (var item in Model.Options.ContentsBulkAction)
+                    {
+                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
     @if (Model.ContentItems.Count > 0)
     {
         <ul class="list-group">
@@ -134,16 +134,34 @@ new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToSt
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        $("#contentResults").change(function (e) {
-            var value = $('#contentResults option:selected').val();
+        $("#Options_SelectedContentType").change(function (e) {
+            var value = $("#Options_SelectedContentType option:selected").val();
             console.log(value);
-            var newAction = '@formActionWithoutTypeName' + '/' + value;
-            $('#items-form').attr('action', newAction);
+            var newAction = "@formActionWithoutTypeName" + "/" + value;
+            $("#items-form").attr("action", newAction);
         });
-    })
-    $(function () {
+
         $(".filter-options select, .filter-options input").on("change", function () {
-            this.form.submit();
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 0) {
+
+                var title = $(this).data('title');
+                var message = $(this).data('message');
+                confirmDialog(title, message, r => {
+                    if (r) {
+                        $("[name='Options.BulkAction']").val($(this).data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                });
+
+            }
+        });
+
+        $("#select-all").click(function(){
+            $(":checkbox[name='itemIds']").not(this).prop("checked", this.checked);
         });
     })
 </script>
