@@ -12,7 +12,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
-    public class PortableObjectStringLocalizerTests
+    public class SiteExtensionsTests
     {
         private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
         private static PluralizationRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Localization
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
-        public PortableObjectStringLocalizerTests()
+        public SiteExtensionsTests()
         {
             _localizationManager = new Mock<ILocalizationManager>();
             _logger = new Mock<ILogger>();
