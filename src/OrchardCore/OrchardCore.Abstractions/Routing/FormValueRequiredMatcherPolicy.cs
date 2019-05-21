@@ -36,7 +36,7 @@ namespace OrchardCore.Routing
             return false;
         }
 
-        public Task ApplyAsync(HttpContext httpContext, EndpointSelectorContext context, CandidateSet candidates)
+        public Task ApplyAsync(HttpContext httpContext, CandidateSet candidates)
         {
             if (!HttpMethods.IsPost(httpContext.Request.Method))
             {

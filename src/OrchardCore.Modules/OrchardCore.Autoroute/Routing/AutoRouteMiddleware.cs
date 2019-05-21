@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
@@ -38,15 +39,24 @@ namespace OrchardCore.Autoroute.Routing
 
                     if (endpoint != null)
                     {
-                        var context = new EndpointSelectorContext()
+                        var routingFeature = new RoutingFeature()
                         {
-                            Endpoint = endpoint,
+                            RouteData = new RouteData(routeValues)
+                        };
+
+                        var routeValuesFeature = new RouteValuesFeature()
+                        {
                             RouteValues = routeValues
                         };
 
-                        httpContext.Features.Set<IRoutingFeature>(context);
-                        httpContext.Features.Set<IRouteValuesFeature>(context);
-                        httpContext.Features.Set<IEndpointFeature>(context);
+                        var endpointFeature = new EndpointFeature()
+                        {
+                            Endpoint = endpoint,
+                        };
+
+                        httpContext.Features.Set<IRoutingFeature>(routingFeature);
+                        httpContext.Features.Set<IRouteValuesFeature>(routeValuesFeature);
+                        httpContext.Features.Set<IEndpointFeature>(endpointFeature);
                     }
                 }
             }
