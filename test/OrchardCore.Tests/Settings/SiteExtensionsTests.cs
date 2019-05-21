@@ -1,3 +1,4 @@
+using System.Globalization;
 using Moq;
 using OrchardCore.Settings;
 using Xunit;
@@ -24,6 +25,26 @@ namespace OrchardCore.Tests.Settings
             var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
 
             Assert.Equal(expected, configuredCultures);
+        }
+
+        [Fact]
+        public void SiteReturnGetConfiguredCulturesWithInvariantCultures()
+        {
+            SetupSiteSettingsCultures(CultureInfo.InstalledUICulture.Name, new string[] { "ar", "fr" });
+
+            var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
+
+            Assert.Equal(new string[] { CultureInfo.InstalledUICulture.Name, "ar", "fr" }, configuredCultures);
+        }
+
+        [Fact]
+        public void SiteReturnGetConfiguredCulturesContainsInvariantCultureIfDefaultCultureIsNull()
+        {
+            SetupSiteSettingsCultures(null, new string[] { "ar", "fr" });
+
+            var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
+
+            Assert.Equal(new string[] { CultureInfo.InstalledUICulture.Name, "ar", "fr" }, configuredCultures);
         }
 
         private void SetupSiteSettingsCultures(string defaultCulture, string[] supportedCultures)
