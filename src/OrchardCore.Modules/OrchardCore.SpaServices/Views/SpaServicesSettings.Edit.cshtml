@@ -1,0 +1,44 @@
+@using OrchardCore.SpaServices.ViewModels;
+@model SpaServicesSettingsViewModel
+@inject IAuthorizationService AuthorizationService
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+@{
+    var authorized = await AuthorizationService.AuthorizeAsync(User, Permissions.SetHomepage);
+
+    if (Model.IsHomepage)
+    {
+        <div class="alert alert-info">@T["The homepage is your Single Page Application"]</div>
+    }
+    else
+    {
+        <div class="alert alert-info">@T["You have not set the homepage to be your Single Page Application"]</div>
+
+        if (authorized)
+        {
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
+                    <label class="custom-control-label" asp-for="SetHomepage">@T["Set SPA as homepage"]</label>
+                    <span class="hint">— @T["Check to set your Single Page Application as the homepage."]</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">@T["You are not authorized to change the Homepage."]</div>
+        }
+    }
+
+            <div class="form-group @(!authorized ? "" : "disabled")" asp-validation-class-for="StaticFile">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="UseStaticFile">
+                    <label class="custom-control-label" asp-for="UseStaticFile">@T["Use static html file"]</label>
+                </div>
+                <input type="text" class="form-control col-lg-6" asp-for="StaticFile" value="@Model.StaticFile" placeholder="/index.html"/>
+                <span asp-validation-for="StaticFile"></span>
+                <span class="hint">— @T["If checked, will use the defined static html file to launch the App. Otherwise, you must define a template (Layout__SPA) to launch the app"]</span>
+            </div>
+
+}

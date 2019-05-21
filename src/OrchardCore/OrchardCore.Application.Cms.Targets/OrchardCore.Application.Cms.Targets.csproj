@@ -21,6 +21,7 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.SpaServices\OrchardCore.SpaServices.csproj" />
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
 
     <!-- 
