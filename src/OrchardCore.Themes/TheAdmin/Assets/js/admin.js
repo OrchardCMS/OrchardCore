@@ -63,7 +63,10 @@ $(function () {
             if (r) {
                 var url = $(this).attr('href');
                 if (url == undefined) {
-                    $(this).parents('form').submit();
+                    var form = $(this).parents('form');
+                    // This line is reuired in case we used the FormValueRequiredAttribute
+                    form.append($("<input type=\"hidden\" name=\"" + $(this).attr('name') + "\" value=\"" + $(this).attr('value') + "\" />"));
+                    form.submit();
                 }
                 else {
                     window.location = url;
