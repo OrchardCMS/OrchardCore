@@ -35,7 +35,7 @@ namespace OrchardCore.Localization
                 options.SetDefaultCulture(siteSettings.Culture);
             }
 
-            if (siteSettings.SupportedCultures.Length > 0)
+            if (siteSettings.SupportedCultures?.Length > 0)
             {
                 var supportedCulture = siteSettings.GetConfiguredCultures();
 
