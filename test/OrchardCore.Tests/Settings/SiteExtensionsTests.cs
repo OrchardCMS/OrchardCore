@@ -62,8 +62,9 @@ namespace OrchardCore.Tests.Settings
 
         [Theory]
         [InlineData(null, null, DefaultCulture, new string[] { DefaultCulture })]
+        [InlineData("", null, DefaultCulture, new string[] { DefaultCulture })]
         [InlineData(null, new string[] { }, DefaultCulture, new string[] { DefaultCulture })]
-        [InlineData(null, new string[] { "ar", "fr" }, DefaultCulture, new string[] { DefaultCulture, "ar", "fr" })]
+        [InlineData(null, new string[] { "ar", "fr" }, DefaultCulture, new string[] { "ar", "fr" })]
         [InlineData("ar", new string[] { "ar", "fr" }, "ar", new string[] { "ar", "fr" })]
         public Task SiteReturnGetConfiguredCulturesWithLocalizationMiddleware(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
             => RunTest(defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
