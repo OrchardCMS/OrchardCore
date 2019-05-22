@@ -20,6 +20,8 @@ namespace OrchardCore.Tests.Settings
     {
         private const string DefaultCulture = "en-US";
 
+        private static readonly string _nonSupportedCulture = "it";
+
         private Mock<ISite> _site;
 
         public SiteExtensionsTests()
@@ -66,14 +68,20 @@ namespace OrchardCore.Tests.Settings
         [InlineData(null, new string[] { }, DefaultCulture, new string[] { DefaultCulture })]
         [InlineData(null, new string[] { "ar", "fr" }, DefaultCulture, new string[] { "ar", "fr" })]
         [InlineData("ar", new string[] { "ar", "fr" }, "ar", new string[] { "ar", "fr" })]
-        public Task SiteReturnGetConfiguredCulturesWithLocalizationMiddleware(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
-            => RunTest(defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
+        public async Task SiteReturnGetConfiguredCulturesWithLocalizationMiddleware(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
+        {
+            await RunTestWithAcceptLanguageHttpHeader(_nonSupportedCulture, defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
+            await RunTestWithQueryString(defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
+        }
 
         [Fact]
-        public Task SiteReturnGetConfiguredCulturesWithLocalizationMiddlewareAndInvariantCulture()
-            => RunTest(CultureInfo.InstalledUICulture.Name, new string[] { }, CultureInfo.InstalledUICulture.Name, new[] { CultureInfo.InstalledUICulture.Name });
+        public async Task SiteReturnGetConfiguredCulturesWithLocalizationMiddlewareAndInvariantCulture()
+        {
+            await RunTestWithAcceptLanguageHttpHeader(_nonSupportedCulture, CultureInfo.InstalledUICulture.Name, new string[] { }, CultureInfo.InstalledUICulture.Name, new[] { CultureInfo.InstalledUICulture.Name });
+            await RunTestWithQueryString(CultureInfo.InstalledUICulture.Name, new string[] { }, CultureInfo.InstalledUICulture.Name, new[] { CultureInfo.InstalledUICulture.Name });
+        }
 
-        private async Task RunTest(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
+        private async Task RunTestWithQueryString(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
         {
             var localizationStartup = new OrchardCoreLocalization.Startup();
             var webHostBuilder = new WebHostBuilder()
@@ -93,7 +101,6 @@ namespace OrchardCore.Tests.Settings
                     app.Run(context =>
                     {
                         var requestLocalizationOptions = context.RequestServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
-                        var defaultRequestCulture = requestLocalizationOptions.DefaultRequestCulture;
 
                         Assert.Equal(expectedDefaultCulture, requestLocalizationOptions.DefaultRequestCulture.Culture.Name);
                         Assert.Equal(expectedSupportedCultures, requestLocalizationOptions.SupportedCultures.Select(c => c.Name).ToArray());
@@ -107,6 +114,43 @@ namespace OrchardCore.Tests.Settings
                 var client = server.CreateClient();
                 var requestedCulture = "en";
                 var response = await client.GetAsync($"page/?culture={requestedCulture}&ui-culture={requestedCulture}");
+            }
+        }
+
+        private async Task RunTestWithAcceptLanguageHttpHeader(string acceptLanguages, string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
+        {
+            var localizationStartup = new OrchardCoreLocalization.Startup();
+            var webHostBuilder = new WebHostBuilder()
+                .ConfigureServices(services =>
+                {
+                    SetupSiteSettingsCultures(defaultCulture, supportedCultures);
+                    services.AddTransient<ISiteService>(_ => new SiteService(_site.Object));
+
+                    services.AddRouting();
+
+                    localizationStartup.ConfigureServices(services);
+                })
+                .Configure(app =>
+                {
+                    localizationStartup.Configure(app, new RouteBuilder(app), app.ApplicationServices);
+
+                    app.Run(context =>
+                    {
+                        var requestLocalizationOptions = context.RequestServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
+
+                        Assert.Equal(expectedDefaultCulture, requestLocalizationOptions.DefaultRequestCulture.Culture.Name);
+                        Assert.Equal(expectedSupportedCultures, requestLocalizationOptions.SupportedCultures.Select(c => c.Name).ToArray());
+
+                        return Task.FromResult(0);
+                    });
+                });
+
+            using (var server = new TestServer(webHostBuilder))
+            {
+                var client = server.CreateClient();
+                client.DefaultRequestHeaders.AcceptLanguage.ParseAdd(acceptLanguages);
+
+                var response = await client.GetAsync(String.Empty);
             }
         }
 
