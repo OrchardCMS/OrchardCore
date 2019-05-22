@@ -42,10 +42,11 @@ namespace OrchardCore.SpaServices.Controllers
             var settings = site.As<SpaServicesSettings>();
             if (settings.UseStaticFile)
             {
-                var fi = _spaStaticFileProvider.FileProvider.GetFileInfo(settings.StaticFile);
-                if (fi.Exists)
+                var file = string.IsNullOrWhiteSpace(settings.StaticFile) ? "index.html" : settings.StaticFile;
+                var fileInfo = _spaStaticFileProvider.FileProvider.GetFileInfo(file);
+                if (fileInfo.Exists)
                 {
-                    using (var sr = new StreamReader(fi.CreateReadStream()))
+                    using (var sr = new StreamReader(fileInfo.CreateReadStream()))
                     {
                         return Content(await sr.ReadToEndAsync(), "text/html; charset=utf-8");
                     }
@@ -53,7 +54,7 @@ namespace OrchardCore.SpaServices.Controllers
                 else
                 {
                     HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                    return Content(T["File `{0}` not found. Please check the settings and/or upload your SPA", settings.StaticFile ?? "index.html"]);
+                    return Content(T["File `{0}` not found. Please check the settings and/or upload your SPA", file]);
                 }
             }
             else
