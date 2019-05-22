@@ -61,7 +61,13 @@ $(function () {
         var message = $(this).data('message');
         confirmDialog(title, message, r => {
             if (r) {
-                window.location = $(this).attr('href');
+                var url = $(this).attr('href');
+                if (url == undefined) {
+                    $(this).parents('form').submit();
+                }
+                else {
+                    window.location = url;
+                }
             }
         });
 
