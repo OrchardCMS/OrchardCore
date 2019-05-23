@@ -72,7 +72,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
                     if (!_indexMapping.TryGetValue(indexKey, out var columnName))
                     {
-                        columnName = typeof(ContentItemIndex).GetProperty(propertyName, BindingFlags.IgnoreCase)?.Name;
+                        columnName = typeof(ContentItemIndex).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)?.Name;
                         _indexMapping.TryAdd(indexKey, columnName);
                     }
 
