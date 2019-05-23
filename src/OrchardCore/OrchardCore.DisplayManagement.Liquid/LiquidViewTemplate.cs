@@ -175,6 +175,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
+        public static void ContextualizeWithDefault(this TemplateContext context, IServiceProvider services)
+        {
+            if (!context.AmbientValues.ContainsKey("Services"))
+            {
+                context.AmbientValues.Add("Services", services);
+            }
+        }
+
         public static Task ContextualizeAsync(this TemplateContext context, RazorPage page, object model)
         {
             var services = page.Context.RequestServices;
