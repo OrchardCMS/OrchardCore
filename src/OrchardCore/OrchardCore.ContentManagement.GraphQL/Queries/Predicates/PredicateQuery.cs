@@ -76,7 +76,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                         _indexMapping.TryAdd(indexKey, columnName);
                     }
 
-                    if (columnName != null) { 
+                    if (columnName is object) { 
                         _usedAliases.Add(alias);
                         return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(columnName);
                     }
