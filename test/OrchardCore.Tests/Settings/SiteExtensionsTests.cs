@@ -16,7 +16,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Settings
 {
-    public class SiteExtensionsTests
+    public class SiteSettingsTests
     {
         private const string InvariantCulture = "";
 
@@ -24,42 +24,9 @@ namespace OrchardCore.Tests.Settings
 
         private Mock<ISite> _site;
 
-        public SiteExtensionsTests()
+        public SiteSettingsTests()
         {
             _site = new Mock<ISite>();
-        }
-
-        [Theory]
-        [InlineData(null, null, new string[] { "en-US" })]
-        [InlineData(null, new string[] { "ar", "fr" }, new string[] { "en-US", "ar", "fr" })]
-        [InlineData("ar", new string[] { "ar", "fr" }, new string[] { "ar", "fr" })]
-        public void SiteReturnGetConfiguredCultures(string defaultCulture, string[] supportedCultures, string[] expected)
-        {
-            SetupSiteSettingsCultures(defaultCulture, supportedCultures);
-
-            var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
-
-            Assert.Equal(expected, configuredCultures);
-        }
-
-        [Fact]
-        public void SiteReturnGetConfiguredCulturesWithInvariantCultures()
-        {
-            SetupSiteSettingsCultures(CultureInfo.InstalledUICulture.Name, new string[] { "ar", "fr" });
-
-            var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
-
-            Assert.Equal(new string[] { CultureInfo.InstalledUICulture.Name, "ar", "fr" }, configuredCultures);
-        }
-
-        [Fact]
-        public void SiteReturnGetConfiguredCulturesContainsInvariantCultureIfDefaultCultureIsNull()
-        {
-            SetupSiteSettingsCultures(null, new string[] { "ar", "fr" });
-
-            var configuredCultures = SiteExtensions.GetConfiguredCultures(_site.Object);
-
-            Assert.Equal(new string[] { CultureInfo.InstalledUICulture.Name, "ar", "fr" }, configuredCultures);
         }
 
         [Theory]
@@ -69,7 +36,7 @@ namespace OrchardCore.Tests.Settings
         [InlineData(null, new string[] { }, null, null)]
         [InlineData(null, new string[] { "ar", "fr" }, null, new string[] { "ar", "fr" })]
         [InlineData("ar", new string[] { "ar", "fr" }, "ar", new string[] { "ar", "fr" })]
-        public async Task SiteReturnGetConfiguredCulturesWithLocalizationMiddleware(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
+        public async Task SiteReturnsConfiguredCultures(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
         {
             SimulateEnvironmentCulture();
 
@@ -88,7 +55,7 @@ namespace OrchardCore.Tests.Settings
         }
 
         [Fact]
-        public async Task SiteReturnGetConfiguredCulturesWithLocalizationMiddlewareAndInvariantCulture()
+        public async Task SiteReturnsConfiguredCulturesWithInvariantCulture()
         {
             await RunTestWithAcceptLanguageHttpHeader(_nonSupportedCulture, CultureInfo.InstalledUICulture.Name, new string[] { }, CultureInfo.InstalledUICulture.Name, new[] { CultureInfo.InstalledUICulture.Name });
             await RunTestWithQueryString(CultureInfo.InstalledUICulture.Name, new string[] { }, CultureInfo.InstalledUICulture.Name, new[] { CultureInfo.InstalledUICulture.Name });
