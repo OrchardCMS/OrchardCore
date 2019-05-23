@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
 using YesSql;
@@ -9,6 +11,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
     public class PredicateQuery : IPredicateQuery
     {
+        private static ConcurrentDictionary<string, string> _indexMapping = new ConcurrentDictionary<string, string>();
 		private readonly HashSet<string> _usedAliases = new HashSet<string>();
         private readonly IDictionary<string, string> _aliases = new Dictionary<string, string>();
         private readonly string _tablePrefix;
@@ -63,15 +66,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // Return the default alias
                     // ContentItemId -> ContentItemIndex.ContentItemId
                     // Ensures its actually a property of ContentItemIndex and gets the correct casing.
-                    var propertyName = values[0];
+                    var propertyName = values[0].ToLower();
 
-                    var contentItemIndexProperty = typeof(ContentItemIndex)
-                                                    .GetProperties()
-                                                    .FirstOrDefault(x => x.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+                    var indexKey = nameof(ContentItemIndex) + propertyName;
 
-                    if (contentItemIndexProperty != null) { 
+                    if (!_indexMapping.TryGetValue(indexKey, out var columnName))
+                    {
+                        columnName = typeof(ContentItemIndex).GetProperty(propertyName, BindingFlags.IgnoreCase)?.Name;
+                        _indexMapping.TryAdd(indexKey, columnName);
+                    }
+
+                    if (columnName != null) { 
                         _usedAliases.Add(alias);
-                        return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(contentItemIndexProperty.Name);
+                        return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(columnName);
                     }
                 }
             }
