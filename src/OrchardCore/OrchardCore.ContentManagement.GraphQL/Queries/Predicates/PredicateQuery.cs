@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.Environment.Shell;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
@@ -8,10 +9,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
     {
 		private readonly HashSet<string> _usedAliases = new HashSet<string>();
         private readonly IDictionary<string, string> _aliases = new Dictionary<string, string>();
+        private readonly string _tablePrefix;
 
-        public PredicateQuery(ISqlDialect dialect)
+        public PredicateQuery(ISqlDialect dialect, ShellSettings shellSettings)
         {
             Dialect = dialect;
+
+            var tablePrefix = shellSettings["TablePrefix"];
+            _tablePrefix = string.IsNullOrEmpty(tablePrefix) ? String.Empty : $"_{tablePrefix}";
         }
 
         public ISqlDialect Dialect { get; set; }
@@ -56,7 +61,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // Return the default alias
                     // ContentItemId -> ContentItemIndex.ContentItemId
                     _usedAliases.Add(alias);
-                    return Dialect.QuoteForTableName(alias) + "." + Dialect.QuoteForColumnName(values[0]);
+                    return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(values[0]);
                 }
             }
             else
@@ -66,7 +71,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.Alias
                     _usedAliases.Add(alias);
-                    return Dialect.QuoteForTableName(alias) + "." + Dialect.QuoteForColumnName(values[1]);
+                    return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(values[1]);
                 }
             }
 

@@ -12,6 +12,7 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using YesSql;
 using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;
 
@@ -118,8 +119,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
+           
+
             var transaction = await session.DemandAsync();
-            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
+
+            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection), context.ServiceProvider.GetService<ShellSettings>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
