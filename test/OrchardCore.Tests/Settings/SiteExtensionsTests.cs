@@ -10,15 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
+using OrchardCoreLocalization = OrchardCore.Localization;
 using OrchardCore.Settings;
 using Xunit;
-using OrchardCoreLocalization = OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Settings
 {
     public class SiteExtensionsTests
     {
-        private const string DefaultCulture = "en-US";
         private const string InvariantCulture = "";
 
         private static readonly string _nonSupportedCulture = "it";
@@ -64,13 +63,26 @@ namespace OrchardCore.Tests.Settings
         }
 
         [Theory]
-        [InlineData(null, null, DefaultCulture, new string[] { DefaultCulture })]
-        [InlineData(InvariantCulture, null, InvariantCulture, new string[] { DefaultCulture })]
-        [InlineData(null, new string[] { }, DefaultCulture, new string[] { DefaultCulture })]
-        [InlineData(null, new string[] { "ar", "fr" }, DefaultCulture, new string[] { "ar", "fr" })]
+        [InlineData(null, null, null, null)]
+        [InlineData(InvariantCulture, null, InvariantCulture, null)]
+        [InlineData(InvariantCulture, new string[] { InvariantCulture }, InvariantCulture, new string[] { InvariantCulture })]
+        [InlineData(null, new string[] { }, null, null)]
+        [InlineData(null, new string[] { "ar", "fr" }, null, new string[] { "ar", "fr" })]
         [InlineData("ar", new string[] { "ar", "fr" }, "ar", new string[] { "ar", "fr" })]
         public async Task SiteReturnGetConfiguredCulturesWithLocalizationMiddleware(string defaultCulture, string[] supportedCultures, string expectedDefaultCulture, string[] expectedSupportedCultures)
         {
+            SimulateEnvironmentCulture();
+
+            if (defaultCulture == null)
+            {
+                expectedDefaultCulture = CultureInfo.CurrentCulture.Name;
+            }
+
+            if (supportedCultures == null || supportedCultures.Length == 0)
+            {
+                expectedSupportedCultures = new[] { CultureInfo.CurrentCulture.Name };
+            }
+
             await RunTestWithAcceptLanguageHttpHeader(_nonSupportedCulture, defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
             await RunTestWithQueryString(defaultCulture, supportedCultures, expectedDefaultCulture, expectedSupportedCultures);
         }
@@ -159,6 +171,20 @@ namespace OrchardCore.Tests.Settings
         {
             _site.Setup(s => s.Culture).Returns(defaultCulture);
             _site.Setup(s => s.SupportedCultures).Returns(supportedCultures);
+        }
+
+        private void SimulateEnvironmentCulture()
+        {
+            var culturesList = new[] { InvariantCulture, "ar", "fr", "en-US", "it-IT", "fr-CA" };
+            var environmentCulture = culturesList[new Random().Next(0, culturesList.Length - 1)];
+
+            SetCurrentThreadCulture(environmentCulture);
+        }
+
+        private void SetCurrentThreadCulture(string culture)
+        {
+            CultureInfo.CurrentCulture = new CultureInfo(culture);
+            CultureInfo.CurrentUICulture = new CultureInfo(culture);
         }
 
         private class SiteService : ISiteService
