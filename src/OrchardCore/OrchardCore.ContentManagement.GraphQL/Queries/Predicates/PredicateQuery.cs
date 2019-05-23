@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             Dialect = dialect;
 
             var tablePrefix = shellSettings["TablePrefix"];
-            _tablePrefix = string.IsNullOrEmpty(tablePrefix) ? String.Empty : $"_{tablePrefix}";
+            _tablePrefix = string.IsNullOrEmpty(tablePrefix) ? String.Empty : $"{tablePrefix}_";
         }
 
         public ISqlDialect Dialect { get; set; }

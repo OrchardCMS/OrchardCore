@@ -119,8 +119,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-           
-
             var transaction = await session.DemandAsync();
 
             IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection), context.ServiceProvider.GetService<ShellSettings>());
