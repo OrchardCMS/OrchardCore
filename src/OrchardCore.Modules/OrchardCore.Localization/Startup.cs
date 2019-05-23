@@ -29,7 +29,7 @@ namespace OrchardCore.Localization
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
-            if (!String.IsNullOrEmpty(siteSettings.Culture))
+            if (siteSettings.Culture != null)
             {
                 options.SetDefaultCulture(siteSettings.Culture);
             }

@@ -19,6 +19,7 @@ namespace OrchardCore.Tests.Settings
     public class SiteExtensionsTests
     {
         private const string DefaultCulture = "en-US";
+        private const string InvariantCulture = "";
 
         private static readonly string _nonSupportedCulture = "it";
 
@@ -64,7 +65,7 @@ namespace OrchardCore.Tests.Settings
 
         [Theory]
         [InlineData(null, null, DefaultCulture, new string[] { DefaultCulture })]
-        [InlineData("", null, DefaultCulture, new string[] { DefaultCulture })]
+        [InlineData(InvariantCulture, null, InvariantCulture, new string[] { DefaultCulture })]
         [InlineData(null, new string[] { }, DefaultCulture, new string[] { DefaultCulture })]
         [InlineData(null, new string[] { "ar", "fr" }, DefaultCulture, new string[] { "ar", "fr" })]
         [InlineData("ar", new string[] { "ar", "fr" }, "ar", new string[] { "ar", "fr" })]
