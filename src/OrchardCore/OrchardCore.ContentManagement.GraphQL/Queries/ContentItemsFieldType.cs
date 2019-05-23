@@ -85,7 +85,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var filter in filters)
             {
-                preQuery = filter.PreQuery(preQuery, context);
+                preQuery = await filter.PreQueryAsync(preQuery, context);
             }
 
             var query = preQuery.With<ContentItemIndex>();
@@ -101,7 +101,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var filter in filters)
             {
-                contentItems = filter.PostQuery(contentItems, context);
+                contentItems = await filter.PostQueryAsync(contentItems, context);
             }
 
             return contentItems;
