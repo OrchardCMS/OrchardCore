@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
 using YesSql;
 
@@ -60,8 +62,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                 {
                     // Return the default alias
                     // ContentItemId -> ContentItemIndex.ContentItemId
-                    _usedAliases.Add(alias);
-                    return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(values[0]);
+                    // Ensures its actually a property of ContentItemIndex and gets the correct casing.
+                    var propertyName = values[0];
+
+                    var contentItemIndexProperty = typeof(ContentItemIndex)
+                                                    .GetProperties()
+                                                    .FirstOrDefault(x => x.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+
+                    if (contentItemIndexProperty != null) { 
+                        _usedAliases.Add(alias);
+                        return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(contentItemIndexProperty.Name);
+                    }
                 }
             }
             else
