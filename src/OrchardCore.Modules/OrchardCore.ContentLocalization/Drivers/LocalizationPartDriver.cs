@@ -71,7 +71,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                 model.Culture = await GetDefaultCultureNameAsync();
             }
 
-            var currentCultures = settings.SupportedCultures.Where(c=>c != model.Culture).Select(culture =>
+            var currentCultures = settings.GetConfiguredCultures().Where(c=>c != model.Culture).Select(culture =>
             {
                 return new LocalizationLinksViewModel()
                 {

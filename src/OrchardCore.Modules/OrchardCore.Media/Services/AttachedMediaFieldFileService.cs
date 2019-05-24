@@ -9,6 +9,7 @@ using OrchardCore.Media.ViewModels;
 using System.Security.Cryptography;
 using System.IO;
 using OrchardCore.ContentManagement;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Media.Services
 {
@@ -19,12 +20,15 @@ namespace OrchardCore.Media.Services
     {
         private readonly IMediaFileStore _fileStore;
         private readonly IStringLocalizer<AttachedMediaFieldFileService> T;
+        private readonly ILogger<AttachedMediaFieldFileService> _logger;
 
         public AttachedMediaFieldFileService(IMediaFileStore fileStore,
-            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer)
+            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer,
+            ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
             T = stringLocalizer;
+            _logger = logger;
 
             MediaFieldsFolder = "mediafields";
             MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
@@ -80,9 +84,17 @@ namespace OrchardCore.Media.Services
         // Newly added files
         private void MoveNewFilesToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            items.Where(x => !x.IsRemoved).ToList()
+            items.Where(x => !x.IsRemoved && !string.IsNullOrEmpty(x.Path)).ToList()
                 .ForEach(async x =>
                 {
+                    var fileInfo = await _fileStore.GetFileInfoAsync(x.Path);
+
+                    if (fileInfo == null)
+                    {
+                        _logger.LogError("A file with the path '{Path}' does not exist.", x.Path);
+                        return;
+                    }
+
                     var targetDir = GetContentItemFolder(contentItem);
                     var finalFileName = (await GetFileHashAsync(x.Path)) + GetFileExtension(x.Path);
                     var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
@@ -91,7 +103,7 @@ namespace OrchardCore.Media.Services
 
                     // When there is a validation error before creating the content item we can end up with an empty folder
                     // because the content item is different on each form submit . We need to remove that empty folder.
-                    var previousDirPath = (await _fileStore.GetFileInfoAsync(x.Path)).DirectoryPath;
+                    var previousDirPath = fileInfo.DirectoryPath;
 
                     // fileName is a hash of the file. We preserve disk space by reusing the file.
                     if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)

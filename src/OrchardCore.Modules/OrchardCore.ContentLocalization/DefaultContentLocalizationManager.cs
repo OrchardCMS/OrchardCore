@@ -64,7 +64,7 @@ namespace OrchardCore.ContentLocalization
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // not sure if this is redundant or not. The check is also done in the Admin controller
-            if (!siteSettings.SupportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
+            if (!siteSettings.GetConfiguredCultures().Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
