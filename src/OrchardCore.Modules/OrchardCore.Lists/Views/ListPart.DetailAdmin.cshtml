@@ -3,6 +3,10 @@
 @using OrchardCore.ContentManagement.Metadata.Models;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@if (Model.EnableOrdering)
+{
+    <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+}
 
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
@@ -40,7 +44,8 @@ else
     }
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group">
+        @*if enable order and has more than 1 item put id on *@
+        <ul id="sortable" class="list-group">
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
@@ -61,3 +66,65 @@ else
         <p class="alert alert-warning">@T["The list is empty."]</p>
     }
 }
+@*TODO move to script and only activate if sorting activating*@
+<script At="Foot" type="text/javascript">
+    
+    function updateOrders(oldIndex, newIndex) {
+        var url = "@Url.Action("UpdateOrders", "Order", new { area = "OrchardCore.Lists" })";
+        var before = null;
+        var after = null;
+        var pageSize = 0;
+        @if(Model.Pager.Before != null)
+        {
+            @:before = @Model.Pager.Before;
+        } 
+        @if(Model.Pager.After != null)
+        {
+            @:after = @Model.Pager.After;
+        }
+        @if(Model.Pager.PageSize != null)
+        {
+            @:pageSize = @Model.Pager.PageSize;
+        }
+        $.ajax({
+        url: url,
+            method: 'POST',
+            data: {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                containerId: '@Model.ListPart.ContentItem.ContentItemId',
+                oldIndex: oldIndex,
+                newIndex: newIndex,
+                pagerSlimParameters: {
+                before: before,
+                    after: after
+                },
+                pageSize: pageSize
+
+            },
+            success: function () {
+                console.log('worked');
+                //location.reload(true);
+            },
+            error: function (error) {
+                alert($('#move-error-message').data("message"));
+            }
+        });
+    }
+
+    $(function () {
+        var sortable = document.getElementById("sortable");
+        //if (sortable === undefined) {
+        //    return;
+        //}
+
+        var sortable = Sortable.create(sortable, {
+        handle: ".ui-sortable-handle",
+            onSort: function (evt) {
+                var oldIndex = evt.oldIndex;
+                var newIndex = evt.newIndex;
+                updateOrders(oldIndex, newIndex);
+            }
+        });
+    });
+
+</script>

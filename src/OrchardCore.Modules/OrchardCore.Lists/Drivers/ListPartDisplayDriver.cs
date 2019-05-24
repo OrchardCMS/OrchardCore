@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
+using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
 using YesSql;
@@ -25,18 +26,21 @@ namespace OrchardCore.Lists.Drivers
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IListPartQueryService _listPartQueryService;
 
         public ListPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             ISession session,
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+            IListPartQueryService listPartQueryService
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _serviceProvider = serviceProvider;
             _session = session;
             _contentManager = contentManager;
+            _listPartQueryService = listPartQueryService;
         }
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
@@ -46,9 +50,10 @@ namespace OrchardCore.Lists.Drivers
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
                         var pager = await GetPagerAsync(context.Updater, listPart);
+                        var settings = GetSettings(listPart);
 
                         model.ListPart = listPart;
-                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
+                        model.ContentItems = (await _listPartQueryService.QueryListItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, true)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
@@ -60,7 +65,7 @@ namespace OrchardCore.Lists.Drivers
                         var settings = GetSettings(listPart);
 
                         model.ListPart = listPart;
-                        model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
+                        model.ContentItems = (await _listPartQueryService.QueryListItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;
@@ -81,129 +86,129 @@ namespace OrchardCore.Lists.Drivers
             return pager;
         }
 
-        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool publishedOnly)
-        {
-            if (pager.Before != null)
-            {
-                var beforeValue = new DateTime(long.Parse(pager.Before));
-                var query = _session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, publishedOnly))
-                    .OrderBy(x => x.CreatedUtc)
-                    .Take(pager.PageSize + 1);
+        //private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool publishedOnly)
+        //{
+        //    if (pager.Before != null)
+        //    {
+        //        var beforeValue = new DateTime(long.Parse(pager.Before));
+        //        var query = _session.Query<ContentItem>()
+        //            .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+        //            .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, publishedOnly))
+        //            .OrderBy(x => x.CreatedUtc)
+        //            .Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+        //        var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
+        //        if (containedItems.Count() == 0)
+        //        {
+        //            return containedItems;
+        //        }
 
-                containedItems = containedItems.Reverse();
+        //        containedItems = containedItems.Reverse();
 
-                // There is always an After as we clicked on Before
-                pager.Before = null;
-                pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+        //        // There is always an After as we clicked on Before
+        //        pager.Before = null;
+        //        pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
 
-                if (containedItems.Count() == pager.PageSize + 1)
-                {
-                    containedItems = containedItems.Skip(1);
-                    pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                }
+        //        if (containedItems.Count() == pager.PageSize + 1)
+        //        {
+        //            containedItems = containedItems.Skip(1);
+        //            pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+        //        }
 
-                return containedItems;
-            }
-            else if (pager.After != null)
-            {
-                var afterValue = new DateTime(long.Parse(pager.After));
-                var query = _session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, publishedOnly))
-                    .OrderByDescending(x => x.CreatedUtc)
-                    .Take(pager.PageSize + 1);
+        //        return containedItems;
+        //    }
+        //    else if (pager.After != null)
+        //    {
+        //        var afterValue = new DateTime(long.Parse(pager.After));
+        //        var query = _session.Query<ContentItem>()
+        //            .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+        //            .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, publishedOnly))
+        //            .OrderByDescending(x => x.CreatedUtc)
+        //            .Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+        //        var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
+        //        if (containedItems.Count() == 0)
+        //        {
+        //            return containedItems;
+        //        }
 
-                // There is always a Before page as we clicked on After
-                pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                pager.After = null;
+        //        // There is always a Before page as we clicked on After
+        //        pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+        //        pager.After = null;
 
-                if (containedItems.Count() == pager.PageSize + 1)
-                {
-                    containedItems = containedItems.Take(pager.PageSize);
-                    pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
-                }
+        //        if (containedItems.Count() == pager.PageSize + 1)
+        //        {
+        //            containedItems = containedItems.Take(pager.PageSize);
+        //            pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+        //        }
 
-                return containedItems;
-            }
-            else
-            {
-                var query = _session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
-                    .OrderByDescending(x => x.CreatedUtc)
-                    .Take(pager.PageSize + 1);
+        //        return containedItems;
+        //    }
+        //    else
+        //    {
+        //        var query = _session.Query<ContentItem>()
+        //            .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+        //            .With<ContentItemIndex>(CreateContentIndexFilter(null, null, publishedOnly))
+        //            .OrderByDescending(x => x.CreatedUtc)
+        //            .Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+        //        var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
+        //        if (containedItems.Count() == 0)
+        //        {
+        //            return containedItems;
+        //        }
 
-                pager.Before = null;
-                pager.After = null;
+        //        pager.Before = null;
+        //        pager.After = null;
 
-                if (containedItems.Count() == pager.PageSize + 1)
-                {
-                    containedItems = containedItems.Take(pager.PageSize);
-                    pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
-                }
+        //        if (containedItems.Count() == pager.PageSize + 1)
+        //        {
+        //            containedItems = containedItems.Take(pager.PageSize);
+        //            pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+        //        }
 
-                return containedItems;
-            }
-        }
+        //        return containedItems;
+        //    }
+        //}
 
-        private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
-        {
-            if (before != null)
-            {
-                if (publishedOnly)
-                {
-                    return x => x.Published && x.CreatedUtc > before;
-                }
-                else
-                {
-                    return x => x.Latest && x.CreatedUtc > before;
-                }
-            }
+        //private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
+        //{
+        //    if (before != null)
+        //    {
+        //        if (publishedOnly)
+        //        {
+        //            return x => x.Published && x.CreatedUtc > before;
+        //        }
+        //        else
+        //        {
+        //            return x => x.Latest && x.CreatedUtc > before;
+        //        }
+        //    }
 
-            if (after != null)
-            {
-                if (publishedOnly)
-                {
-                    return x => x.Published && x.CreatedUtc < after;
-                }
-                else
-                {
-                    return x => x.Latest && x.CreatedUtc < after;
-                }
-            }
+        //    if (after != null)
+        //    {
+        //        if (publishedOnly)
+        //        {
+        //            return x => x.Published && x.CreatedUtc < after;
+        //        }
+        //        else
+        //        {
+        //            return x => x.Latest && x.CreatedUtc < after;
+        //        }
+        //    }
 
-            if (publishedOnly)
-            {
-                return x => x.Published;
-            }
-            else
-            {
-                return x => x.Latest;
-            }
-        }
+        //    if (publishedOnly)
+        //    {
+        //        return x => x.Published;
+        //    }
+        //    else
+        //    {
+        //        return x => x.Latest;
+        //    }
+        //}
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPart listPart)
         {
