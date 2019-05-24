@@ -9,6 +9,6 @@ namespace OrchardCore.Lists.ViewModels
         public NameValueCollection ContentTypes { get; set; }
         public string[] ContainedContentTypes { get; set; }
         public int PageSize { get; set; }
-        public bool? EnableOrdering { get; set; }
+        public bool EnableOrdering { get; set; }
     }
 }

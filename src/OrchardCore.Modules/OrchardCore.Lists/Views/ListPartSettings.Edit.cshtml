@@ -7,11 +7,12 @@
     <span class="hint">@T["The number of items to display per page."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="EnableOrdering">
-    <label asp-for="EnableOrdering">@T["Enable Ordering"]</label>
-    @Html.EditorFor(m => m.EnableOrdering, new { htmlAttributes = new { @class="form-control col-sm-6" } })
-    <span asp-validation-for="EnableOrdering" class="text-danger"></span>
-    <span class="hint">@T["Check this option to enable manual reordering of items using drag and drop. If not set, items are order by their created date"]</span>
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="EnableOrdering">
+        <label class="custom-control-label" asp-for="EnableOrdering">@T["Enable Ordering"]</label>
+        <span class="hint">— @T["Check this option to enable manual ordering of items."]</span>
+    </div>
 </fieldset>
 
 <fieldset class="form-group">
