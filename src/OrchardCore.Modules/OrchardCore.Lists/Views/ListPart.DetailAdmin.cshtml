@@ -43,8 +43,11 @@ else
         <ul class="list-group">
             @foreach (var contentItem in Model.ContentItems)
             {
-                var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-
+                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                if (Model.EnableOrdering)
+                {
+                    contentItemSummary.Selectors.Add(await New.ListPart_Sortable());
+                }
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
                 </li>

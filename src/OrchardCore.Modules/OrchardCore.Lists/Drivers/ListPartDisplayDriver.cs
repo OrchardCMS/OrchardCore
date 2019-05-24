@@ -57,11 +57,13 @@ namespace OrchardCore.Lists.Drivers
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
                         var pager = await GetPagerAsync(context.Updater, listPart);
+                        var settings = GetSettings(listPart);
 
                         model.ListPart = listPart;
                         model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
+                        model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
                     .Location("DetailAdmin", "Content:10")
