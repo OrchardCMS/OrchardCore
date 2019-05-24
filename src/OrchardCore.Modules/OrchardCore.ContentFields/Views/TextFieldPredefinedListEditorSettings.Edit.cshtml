@@ -28,7 +28,7 @@
                 <td>
                     <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
                 </td>
-                <td class="text-center">
+                <td class="text-center align-middle">
                     <div class="custom-control custom-radio ml-2">
                         <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
                         <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
