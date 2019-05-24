@@ -37,6 +37,7 @@ namespace OrchardCore.Lists.Settings
             {
                 model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
+                model.EnableOrdering = model.ListPartSettings.EnableOrdering;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
@@ -56,7 +57,7 @@ namespace OrchardCore.Lists.Settings
 
             var model = new ListPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering);
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
@@ -65,6 +66,7 @@ namespace OrchardCore.Lists.Settings
             else
             {
                 context.Builder.WithSetting("PageSize", model.PageSize.ToString());
+                context.Builder.WithSetting("EnableOrdering", model.EnableOrdering.ToString());
                 context.Builder.ContainedContentTypes(model.ContainedContentTypes);
             }
 

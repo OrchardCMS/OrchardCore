@@ -7,6 +7,13 @@
     <span class="hint">@T["The number of items to display per page."]</span>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="EnableOrdering">
+    <label asp-for="EnableOrdering">@T["Enable Ordering"]</label>
+    @Html.EditorFor(m => m.EnableOrdering, new { htmlAttributes = new { @class="form-control col-sm-6" } })
+    <span asp-validation-for="EnableOrdering" class="text-danger"></span>
+    <span class="hint">@T["Check this option to enable manual reordering of items using drag and drop. If not set, items are order by their created date"]</span>
+</fieldset>
+
 <fieldset class="form-group">
     <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
     <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
