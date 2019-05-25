@@ -3,9 +3,13 @@
 @using OrchardCore.ContentManagement.Metadata.Models;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@if (Model.EnableOrdering)
-{
-    <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+@{
+    var enableOrdering = Model.EnableOrdering && Model.ContentItems.Count() > 1;
+    if (enableOrdering)
+    {
+        <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
+        <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    }
 }
 
 @if (!Model.ContainedContentTypeDefinitions.Any())
@@ -20,7 +24,7 @@ else
     {
         var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
         <p>
-            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">
+            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">
                 @T["Create {0}", contentTypeDefinition.DisplayName]
             </a>
         </p>
@@ -36,7 +40,7 @@ else
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                     {
-                        <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
+                        <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">@containedContentTypeDefinition.DisplayName</a>
                     }
                 </div>
             </div>
@@ -44,12 +48,11 @@ else
     }
     @if (Model.ContentItems.Any())
     {
-        @*if enable order and has more than 1 item put id on *@
-        <ul id="sortable" class="list-group">
+        <ul class="list-group" @if (enableOrdering) { <text> id="ci-sortable" </text> }>
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-                if (Model.EnableOrdering)
+                if (enableOrdering)
                 {
                     contentItemSummary.Selectors.Add(await New.ListPart_Sortable());
                 }
@@ -60,71 +63,18 @@ else
         </ul>
 
         @await DisplayAsync(Model.Pager)
+        @if (enableOrdering)
+        {
+            <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
+            <div id="container-id" class="d-none" data-id="@Model.ListPart.ContentItem.ContentItemId" />
+            <div id="pager-before" class="d-none" data-before="@Model.Pager.Before" />
+            <div id="pager-after" class="d-none" data-after="@Model.Pager.After" />
+            <div id="pager-pagesize" class="d-none" data-pagesize="@Model.Pager.PageSize" />
+            <div id="update-order-error-message" class="d-none" data-message="@T["There was an error when updating the order of the items."]" />
+        }
     }
     else
     {
         <p class="alert alert-warning">@T["The list is empty."]</p>
     }
 }
-@*TODO move to script and only activate if sorting activating*@
-<script At="Foot" type="text/javascript">
-    
-    function updateOrders(oldIndex, newIndex) {
-        var url = "@Url.Action("UpdateOrders", "Order", new { area = "OrchardCore.Lists" })";
-        var before = null;
-        var after = null;
-        var pageSize = 0;
-        @if(Model.Pager.Before != null)
-        {
-            @:before = @Model.Pager.Before;
-        } 
-        @if(Model.Pager.After != null)
-        {
-            @:after = @Model.Pager.After;
-        }
-        @if(Model.Pager.PageSize != null)
-        {
-            @:pageSize = @Model.Pager.PageSize;
-        }
-        $.ajax({
-        url: url,
-            method: 'POST',
-            data: {
-            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                containerId: '@Model.ListPart.ContentItem.ContentItemId',
-                oldIndex: oldIndex,
-                newIndex: newIndex,
-                pagerSlimParameters: {
-                before: before,
-                    after: after
-                },
-                pageSize: pageSize
-
-            },
-            success: function () {
-                console.log('worked');
-                //location.reload(true);
-            },
-            error: function (error) {
-                alert($('#move-error-message').data("message"));
-            }
-        });
-    }
-
-    $(function () {
-        var sortable = document.getElementById("sortable");
-        //if (sortable === undefined) {
-        //    return;
-        //}
-
-        var sortable = Sortable.create(sortable, {
-        handle: ".ui-sortable-handle",
-            onSort: function (evt) {
-                var oldIndex = evt.oldIndex;
-                var newIndex = evt.newIndex;
-                updateOrders(oldIndex, newIndex);
-            }
-        });
-    });
-
-</script>

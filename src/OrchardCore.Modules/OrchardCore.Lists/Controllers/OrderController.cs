@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Navigation;
 
@@ -14,41 +13,55 @@ namespace OrchardCore.Lists.Controllers
     [Admin]
     public class OrderController : Controller
     {
-        private readonly IListPartQueryService _listPartQueryService;
-        //private readonly IContentManager _contentManager;
-
-        public OrderController(
-            IListPartQueryService listPartQueryService,
-            IContentManager contentManager
-            )
+        private readonly IContainerService _containerService;
+        public OrderController(IContainerService listPartQueryService)
         {
-            _listPartQueryService = listPartQueryService;
-            //_contentManager = contentManager;
+            _containerService = listPartQueryService;
         }
-        [HttpPost]
-        public async Task<IActionResult> UpdateOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
-        {
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
+        {
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
-            var pageOfContentItems = (await _listPartQueryService.QueryListItemsAsync(containerId, true, pager, true)).ToList();
-            //var pager = new Pager(_services.WorkContext.CurrentSite, pagerParameters);
-            //var query = OrderByPosition(GetListContentItemQuery(containerId));
-            //if (query == null)
-            //{
-            //    return HttpNotFound();
-            //}
-            //var pageOfContentItems = query.Slice(pager.GetStartIndex(), pager.PageSize).ToList();
+            // Reverse pager as it represents the next page(s), rather than current page
+            if (pager.Before != null && pager.After != null)
+            {
+                var beforeValue = int.Parse(pager.Before);
+                beforeValue -= 1;
+                var afterValue = int.Parse(pager.After);
+                afterValue += 1;
+                pager.Before = afterValue.ToString();
+                pager.After = beforeValue.ToString();
+            }
+            else if (pager.Before != null)
+            {
+                var beforeValue = int.Parse(pager.Before);
+                beforeValue -= 1;
+                pager.Before = null;
+                pager.After = beforeValue.ToString();
+            }
+            else if (pager.After != null)
+            {
+                var afterValue = int.Parse(pager.After);
+                afterValue += 1;
+                pager.After = null;
+                pager.Before = afterValue.ToString();
+            }
+
+            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, true)).ToList();
+            if (pageOfContentItems == null || !pageOfContentItems.Any())
+            {
+                return NotFound();
+            }
+
+            var currentOrderOfFirstItem = pageOfContentItems.FirstOrDefault().As<ContainedPart>().Order;
+
             var contentItem = pageOfContentItems[oldIndex];
             pageOfContentItems.Remove(contentItem);
             pageOfContentItems.Insert(newIndex, contentItem);
 
-            //pager.Page) - PageDefault) * PageSize;
-            //var index = pager.GetStartIndex() + pageOfContentItems.Count;
-            //foreach (var item in pageOfContentItems.Select(x => x.As<ContainablePart>()))
-            //{
-            //    item.Position = --index;
-            //    RePublish(item);
-            //}
+            await _containerService.UpdateContentItemOrdersAsync(pageOfContentItems, currentOrderOfFirstItem);
+
             return Ok();
         }
     }
