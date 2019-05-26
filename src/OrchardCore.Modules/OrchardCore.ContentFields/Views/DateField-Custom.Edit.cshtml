@@ -1,0 +1,37 @@
+@model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
+
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ResourceManagement
+
+@inject IResourceManager ResourceManager
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
+    AppendDatePickerScript();
+}
+
+@functions{
+    private void AppendDatePickerScript()
+    {
+        const string cultureSeparator = "-";
+        var culture = Orchard.CultureName();
+        var language = culture.Contains(cultureSeparator)
+            ? culture.Substring(0, culture.IndexOf(cultureSeparator))
+            : culture;
+        var datePickerScript = new TagBuilder("script");
+        datePickerScript.InnerHtml.AppendHtml($@"$(function () {{
+            $('.datepicker').datepicker($.datepicker.regional['{language}']);
+        }});");
+
+        ResourceManager.RegisterFootScript(datePickerScript);
+    }
+}
+
+<fieldset class="form-group">
+    <div class="row col-md-6 col-lg-4">
+        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>
