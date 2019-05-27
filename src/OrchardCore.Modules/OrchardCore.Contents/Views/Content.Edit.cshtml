@@ -1,8 +1,7 @@
-@*@using OrchardCore.Shapes*@
-@*@{
-        var tabs = (IEnumerable<string>)CoreShapes.HarvestAndSortTabs(Model.Content);
-        Display.LocalNavigation(Tabs: tabs);
-    }*@
+@using OrchardCore.DisplayManagement.Zones
+@{
+    var tabs = (IEnumerable<string>)ZoneShapes.HarvestAndSortTabs(Model.Parts);
+}
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
@@ -17,6 +16,10 @@
             }
         </div>
         <div class="edit-item-parts">
+            @if (tabs.Any())
+            {
+                @await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: tabs))
+            }
             @if (Model.Parts != null)
             {
                 @await DisplayAsync(Model.Parts)
@@ -38,13 +41,13 @@
             </div>
         </div>
     </div>
-@if (Model.Sidebar != null)
-{
-    <div class="edit-sidebar-handler"></div>
-    <div class="edit-sidebar group">
-        @await DisplayAsync(Model.Sidebar)
-    </div>
-}
+    @if (Model.Sidebar != null)
+    {
+        <div class="edit-sidebar-handler"></div>
+        <div class="edit-sidebar group">
+            @await DisplayAsync(Model.Sidebar)
+        </div>
+    }
 </div>
 
 @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))

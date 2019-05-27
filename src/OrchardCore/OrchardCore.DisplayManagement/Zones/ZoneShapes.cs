@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,18 +35,25 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (tabbed.Count > 1)
             {
+                var tabIndex = 0;
+                var tabId = Shape.ContentItem != null ? (string)Shape.ContentItem.ContentItemId : "";
+                var tabContentBuilder = new TagBuilder("div");
+                tabContentBuilder.AddCssClass("tab-content");
                 foreach (var tab in tabbed)
                 {
                     var tabName = String.IsNullOrWhiteSpace(tab.Key) ? "Content" : tab.Key;
-                    var tabBuilder = new TagBuilder("div");
-                    tabBuilder.Attributes["id"] = "tab-" + tabName.HtmlClassify();
-                    tabBuilder.Attributes["data-tab"] = tabName;
+                    var tabItemBuilder = new TagBuilder("div");
+                    tabItemBuilder.Attributes["id"] = $"tab-{tabId}-{tabName}".HtmlClassify();
+                    var tabItemClasses = tabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
+                    tabItemBuilder.AddCssClass(tabItemClasses);
                     foreach (var item in tab)
                     {
-                        tabBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
+                        tabItemBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
                     }
-                    htmlContents.Add(tabBuilder);
+                    tabContentBuilder.InnerHtml.AppendHtml(tabItemBuilder);
+                    tabIndex++;
                 }
+                htmlContents.Add(tabContentBuilder);
             }
             else if (tabbed.Count > 0)
             {
@@ -54,6 +61,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     htmlContents.Add(await DisplayAsync(item));
                 }
+
             }
 
             var htmlContentBuilder = new HtmlContentBuilder();
@@ -64,5 +72,32 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
+
+        public static IEnumerable<string> HarvestAndSortTabs(IEnumerable<dynamic> shapes)
+        {
+            var tabs = new List<string>();
+
+            foreach (var shape in shapes)
+            {
+                var tab = (string)shape.Metadata.Tab;
+
+                if (String.IsNullOrEmpty(tab))
+                    continue;
+
+                if (!tabs.Contains(tab))
+                    tabs.Add(tab);
+            }
+
+            // If we have any tabs, make sure we have at least the Content tab and that it is the first one,
+            // since that's where we will put anything else not part of a tab.
+            if (tabs.Any())
+            {
+                tabs.Remove("Content");
+                tabs.Insert(0, "Content");
+            }
+
+            return tabs;
+        }
+
     }
 }
