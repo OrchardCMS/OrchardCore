@@ -1,5 +1,4 @@
 @using OrchardCore.Mvc.Utilities;
-@using Microsoft.Extensions.Localization;
 @{
     var tabs = ((IEnumerable<dynamic>)Model.Tabs).ToArray();
     string contentItemId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
@@ -10,7 +9,7 @@
     <ul class="nav nav-tabs flex-column flex-md-row" role="tablist">
         @foreach (var tab in tabs)
         {
-            var tabText = tab is string ? (string)tab : (string)(tab.Text is LocalizedString ? tab.Text.ToString() : tab.Text);
+            var tabText = tab.ToString();
             var defaultTabId = $"tab-{contentItemId}-{tabText}".HtmlClassify();
             var tabId = tab is string ? defaultTabId : (string)(tab.TabName ?? defaultTabId);
             var tabCssClasses = tabIndex == 0 ? "nav-item nav-link active" : "nav-item nav-link";
