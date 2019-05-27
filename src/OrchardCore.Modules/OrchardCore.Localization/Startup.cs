@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Services;
+using OrchardCore.Localization.TagHelpers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -30,6 +31,8 @@ namespace OrchardCore.Localization
 
             // Override the default localization file locations with Orchard specific ones
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+
+            services.AddTagHelpers<CulturePickerTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

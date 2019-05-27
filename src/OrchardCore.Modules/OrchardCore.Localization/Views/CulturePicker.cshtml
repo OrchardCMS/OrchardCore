@@ -1,0 +1,35 @@
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
+@using OrchardCore.DisplayManagement
+@using OrchardCore.ResourceManagement
+
+@inject IResourceManager ResourceManager
+
+@{
+    var localizationOptions = ViewContext.HttpContext.RequestServices.GetService<IOptions<RequestLocalizationOptions>>();
+
+    AppendLocalizationCookieScript();
+}
+
+@functions{
+    private void AppendLocalizationCookieScript()
+    {
+        var localizationScript = new TagBuilder("script");
+        localizationScript.InnerHtml.AppendHtml($@"function setLocalizationCookie(code) {{
+document.cookie = '{CookieRequestCultureProvider.DefaultCookieName}=c='+code+'|uic='+code;
+window.location.reload();
+}}");
+        ResourceManager.RegisterFootScript(localizationScript);
+    }
+}
+
+<select class="form-control" onchange="setLocalizationCookie(this.value)">
+    @foreach (var culture in localizationOptions.Value.SupportedUICultures)
+    {
+        var shape = await (New as IShapeFactory).CreateAsync("CulturePickerItem",
+            Arguments.From(new { Text = culture.DisplayName, Value = culture.Name }));
+        @await DisplayAsync(shape);
+    }
+</select>

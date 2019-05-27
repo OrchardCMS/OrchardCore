@@ -1,0 +1,7 @@
+@using Microsoft.AspNetCore.Localization
+
+@{
+    var selectedCulture = ViewContext.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+}
+
+<option selected="@(Model.Value == selectedCulture ? "selected" : String.Empty)" value="@Model.Value">@Model.Text</option>
