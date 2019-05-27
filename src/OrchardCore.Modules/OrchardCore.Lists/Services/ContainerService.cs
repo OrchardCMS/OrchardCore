@@ -59,8 +59,11 @@ namespace OrchardCore.Lists.Services
             var i = 0;
             foreach (var item in contentItems)
             {
-                item.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
-                await _contentManager.UpdateAsync(item);
+                if (item.As<ContainedPart>() != null && item.As<ContainedPart>().Order != orderOfFirstItem + i)
+                {
+                    item.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
+                    await _contentManager.UpdateAsync(item);
+                }
                 i++;
             }
         }
