@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using YesSql;
 
@@ -42,7 +41,10 @@ namespace OrchardCore.AdminMenu.Services
                                     .Where(x => x.Enabled == true)
                                     .Where(x => x.MenuItems.Count > 0);
 
-            await trees.ToList().InvokeAsync(tree => BuildTreeAsync(tree, builder), Logger);
+            foreach (var tree in trees)
+            {
+                await BuildTreeAsync(tree, builder);
+            }
         }
 
         private async Task BuildTreeAsync(Models.AdminMenu tree, NavigationBuilder builder)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services
 {
@@ -71,46 +71,47 @@ namespace OrchardCore.Media.Services
         }
 
         // Files just uploaded and then inmediately discarded.
-        private Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
+        private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
         {
-            return items.Where(x => x.IsRemoved && x.IsNew).ToList().InvokeAsync(x => _fileStore.TryDeleteFileAsync(x.Path), _logger);
+            foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))
+            {
+                await _fileStore.TryDeleteFileAsync(item.Path);
+            }
         }
 
         // Newly added files
-        private Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
+        private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            return items.Where(x => !x.IsRemoved && !string.IsNullOrEmpty(x.Path)).ToList()
-                .InvokeAsync(async x =>
+            foreach (var item in items.Where(x => !x.IsRemoved && !String.IsNullOrEmpty(x.Path)))
+            {
+                var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
+
+                if (fileInfo == null)
                 {
-                    var fileInfo = await _fileStore.GetFileInfoAsync(x.Path);
+                    _logger.LogError("A file with the path '{Path}' does not exist.", item.Path);
+                    return;
+                }
 
-                    if (fileInfo == null)
-                    {
-                        _logger.LogError("A file with the path '{Path}' does not exist.", x.Path);
-                        return;
-                    }
+                var targetDir = GetContentItemFolder(contentItem);
+                var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
+                var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
-                    var targetDir = GetContentItemFolder(contentItem);
-                    var finalFileName = (await GetFileHashAsync(x.Path)) + GetFileExtension(x.Path);
-                    var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+                await _fileStore.TryCreateDirectoryAsync(targetDir);
 
-                    await _fileStore.TryCreateDirectoryAsync(targetDir);
+                // When there is a validation error before creating the content item we can end up with an empty folder
+                // because the content item is different on each form submit . We need to remove that empty folder.
+                var previousDirPath = fileInfo.DirectoryPath;
 
-                    // When there is a validation error before creating the content item we can end up with an empty folder
-                    // because the content item is different on each form submit . We need to remove that empty folder.
-                    var previousDirPath = fileInfo.DirectoryPath;
+                // fileName is a hash of the file. We preserve disk space by reusing the file.
+                if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
+                {
+                    await _fileStore.MoveFileAsync(item.Path, finalFilePath);
+                }
 
-                    // fileName is a hash of the file. We preserve disk space by reusing the file.
-                    if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
-                    {
-                        await _fileStore.MoveFileAsync(x.Path, finalFilePath);
-                    }
+                item.Path = finalFilePath;
 
-                    x.Path = finalFilePath;
-
-                    await DeleteDirIfEmpty(previousDirPath);
-
-                }, _logger);
+                await DeleteDirIfEmptyAsync(previousDirPath);
+            }
         }
 
         private string GetContentItemFolder(ContentItem contentItem)
@@ -145,7 +146,7 @@ namespace OrchardCore.Media.Services
             return lastPoint > -1 ? path.Substring(lastPoint) : "";
         }
 
-        private async Task DeleteDirIfEmpty(string previousDirPath)
+        private async Task DeleteDirIfEmptyAsync(string previousDirPath)
         {
             if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) == null)
             {
