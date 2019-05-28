@@ -38,8 +38,8 @@ namespace OrchardCore.AdminMenu.Services
             }
 
             var trees = (await _AdminMenuService.GetAsync())
-                .Where(m => m.Enabled == true)
-                .Where(m => m.MenuItems.Count > 0);
+                .Where(m => m.Enabled && m.MenuItems.Count > 0)
+                ;
 
             foreach (var tree in trees)
             {
@@ -52,6 +52,7 @@ namespace OrchardCore.AdminMenu.Services
             foreach (MenuItem node in tree.MenuItems)
             {
                 var nodeBuilder = _nodeBuilders.Where(x => x.Name == node.GetType().Name).FirstOrDefault();
+                
                 if (nodeBuilder != null)
                 {
                     await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);
