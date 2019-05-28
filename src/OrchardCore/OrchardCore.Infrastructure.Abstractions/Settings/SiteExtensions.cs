@@ -7,7 +7,7 @@ namespace OrchardCore.Settings
     {
         public static string[] GetConfiguredCultures(this ISite site)
         {
-            return new[] { CultureInfo.InstalledUICulture.Name }.Union(site.SupportedCultures).ToArray();
+            return new[] { site.Culture ?? CultureInfo.InstalledUICulture.Name }.Union(site.SupportedCultures).ToArray();
         }
     }
 }
