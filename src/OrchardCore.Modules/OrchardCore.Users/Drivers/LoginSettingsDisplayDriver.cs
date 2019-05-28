@@ -15,7 +15,8 @@ namespace OrchardCore.Users.Drivers
         {
             return Initialize<LoginSettings>("LoginSettings_Edit", model => {
                 model.UseSiteTheme = section.UseSiteTheme;
-                model.MapExternalUsersScript = section.MapExternalUsersScript;
+                model.SyncRolesFromExternalProviders = section.SyncRolesFromExternalProviders;
+                model.GetRolesScript = section.GetRolesScript;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

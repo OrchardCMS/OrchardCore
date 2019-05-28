@@ -17,25 +17,24 @@
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="DisableLocalUsersAuthentication">
+<div class="form-group" asp-validation-class-for="SyncRolesFromExternalProviders">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="DisableLocalUsersAuthentication" />
-        <span asp-validation-for="DisableLocalUsersAuthentication"></span>
-        <label class="custom-control-label" asp-for="DisableLocalUsersAuthentication">@T["Disable local users authentication"]</label>
-        <span class="hint">— @T["Allow users to authenticate only using their external provider credentials."]</span>
+        <input type="checkbox" class="custom-control-input" asp-for="SyncRolesFromExternalProviders" />
+        <span asp-validation-for="SyncRolesFromExternalProviders"></span>
+        <label class="custom-control-label" asp-for="SyncRolesFromExternalProviders">@T["Use a script to define user roles based on external provider claims"]</label>
+        <span class="hint">— @T["On multiple providers, return false if you do not want to sync the roles."]</span>
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="MapExternalUsersScript">
-    <label asp-for="MapExternalUsersScript">@T["Script"]</label>
-    <textarea asp-for="MapExternalUsersScript" rows="1" class="form-control content-preview-text"></textarea>
-    <span class="hint">@T["Write code to return a list of Roles based on the external claims."]</span>
+<div class="form-group" asp-validation-class-for="GetRolesScript">
+    <textarea asp-for="GetRolesScript" rows="1" class="form-control content-preview-text"></textarea>
 </div>
 
 <script at="Foot">
 $(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.MapExternalUsersScript)');
-    debugger;
+    var textArea = document.getElementById('@Html.IdFor(x => x.GetRolesScript)');
+    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.SyncRolesFromExternalProviders)');
+
     if (textArea == null) {
         return;
     }
@@ -46,21 +45,35 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "javascript" },
+        readOnly: 'nocursor'
     });
 
     if (editor.doc.lineCount() == 1) {
-        editor.doc.setValue('function transformClaims(incomingToken) {\n\n}');
-        editor.markText({ line: 0, ch: 0 }, { line: 0 }, { readOnly: true });
-        editor.markText({ line: 2, ch: 0 }, { line: 2 }, { readOnly: true });
+        editor.doc.setValue('/*****************************************************************************\n' +
+                            ' Use the claims variable to inspect the external identity claims and\n'+
+                            ' return a list of roles.Each claim has the following properties\n' +
+                            ' { Issuer, OriginalIssuer, Properties, Type, Value, ValueType }\n' +
+                            ' You can use log(level, text) to append to OrchardCore log file\n' +
+                            ' The provider variable holds the provider id of the claims\n' +
+                            ' The script must return a list of roles or false if no sync should occur\n' +
+                            '*****************************************************************************/\n');
+        editor.markText({ line: 0, ch: 0 }, { line: 8 }, { readOnly: true });
     };
 
+    $('#@Html.IdFor(x => x.GetRolesScript)').data('editor', editor);
 
-    // listen for the beforeChange event, test the changed line number, and cancel
-    //editor.on('beforeChange', function (cm, change) {
-    //    if (change.from.line == 0 ) {
-    //        change.cancel();
-    //    }
-    //});
+
+    function toggleEditorState() {
+        var editor = $('#@Html.IdFor(x => x.GetRolesScript)').data('editor');
+        if (editor.options.readOnly === "nocursor") {
+            editor.options.readOnly = false;
+        } else {
+            editor.options.readOnly = "nocursor";
+        }
+    }
+
+    syncRolesCheckbox.addEventListener("change", toggleEditorState);
+
 
 });
 </script>

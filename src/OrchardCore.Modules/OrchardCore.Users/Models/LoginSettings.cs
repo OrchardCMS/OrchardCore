@@ -4,8 +4,8 @@ namespace OrchardCore.Users.Models
     {
         public bool UseSiteTheme { get; set; }
 
-        public bool DisableLocalUsersAuthentication { get; set; }
+        public bool SyncRolesFromExternalProviders { get; set; }
 
-        public string MapExternalUsersScript { get; set; }
+        public string GetRolesScript { get; set; }
     }
 }

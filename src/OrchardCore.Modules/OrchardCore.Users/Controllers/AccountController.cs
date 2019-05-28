@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -208,16 +209,31 @@ namespace OrchardCore.Users.Controllers
             {
 
                 var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-                if (!string.IsNullOrWhiteSpace(loginSettings.MapExternalUsersScript))
+                if (!string.IsNullOrWhiteSpace(loginSettings.GetRolesScript))
                 {
-                    var jsEngine = _scriptingManager.GetScriptingEngine("js");
+                    var claims = JsonConvert.SerializeObject(info.Principal.Claims.Select(c => new { c.Issuer, c.OriginalIssuer, c.Properties, c.Type, c.Value, c.ValueType }));
+                    var transformedRoles = _scriptingManager.Evaluate($"js: function getRolesFromClaims(provider,claims) {{\n{loginSettings.GetRolesScript}\n}}\nreturn getRolesFromClaims({info.LoginProvider},{claims});", null, null, null) as IEnumerable<object>;
 
-                    var scope = jsEngine.CreateScope(new GlobalMethod[] { }, Request.HttpContext.RequestServices, null, null);
+                    var user = await _signInManager.UserManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                    var userRoles = await _userManager.GetRolesAsync(user);
 
-                    var transform =  jsEngine.Evaluate(scope, loginSettings.MapExternalUsersScript + "\n" + "return transformClaims('');");
+                    var rolesToAdd = transformedRoles.Where(c => c != null && !userRoles.Contains(c.ToString())).Select(c => c.ToString()).ToList();
+                    var rolesToRemove = userRoles.Where(c => !transformedRoles.Contains(c)).ToList();
 
+                    if (rolesToAdd.Count > 0)
+                    {
+                        await _userManager.AddToRolesAsync(user, rolesToAdd);
+                    }
+                    if (rolesToRemove.Count > 0)
+                    {
+                        await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                    }
+                    if (rolesToRemove.Count > 0 || rolesToAdd.Count > 0)
+                    {
+                        await _signInManager.SignOutAsync();
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                    }
                 }
-
                 await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
                 _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
                 return RedirectToLocal(returnUrl);

@@ -11,11 +11,13 @@
     ThemeLayout.Metadata.Alternates.Add("Layout__Login");
 
     var userCanRegister = (await _site.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister;
+    var disableLocalLogin = (await _site.GetSiteSettingsAsync()).As<LoginSettings>().SyncRolesFromExternalProviders;
     var allowResetPassword = (await _site.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
     var loginProviders = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 }
 
 <div class="row">
+
     <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : "")">
         <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
             <h4>@T["Use a local account to log in."]</h4>
