@@ -4,6 +4,8 @@ namespace OrchardCore.Users.Models
     {
         public bool UseSiteTheme { get; set; }
 
-        public string MapExternalClaimsScript { get; set; }
+        public bool DisableLocalUsersAuthentication { get; set; }
+
+        public string MapExternalUsersScript { get; set; }
     }
 }

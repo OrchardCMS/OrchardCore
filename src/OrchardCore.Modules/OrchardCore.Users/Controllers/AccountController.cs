@@ -12,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -29,6 +30,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+        private readonly IScriptingManager _scriptingManager;
 
         public AccountController(
             IUserService userService,
@@ -37,7 +39,8 @@ namespace OrchardCore.Users.Controllers
             ILogger<AccountController> logger,
             ISiteService siteService,
             IStringLocalizer<AccountController> stringLocalizer,
-            IEnumerable<ILoginFormEvent> accountEvents)
+            IEnumerable<ILoginFormEvent> accountEvents,
+            IScriptingManager scriptingManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -45,7 +48,7 @@ namespace OrchardCore.Users.Controllers
             _logger = logger;
             _siteService = siteService;
             _accountEvents = accountEvents;
-
+            _scriptingManager = scriptingManager;
             T = stringLocalizer;
         }
 
@@ -203,6 +206,18 @@ namespace OrchardCore.Users.Controllers
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
+
+                var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+                if (!string.IsNullOrWhiteSpace(loginSettings.MapExternalUsersScript))
+                {
+                    var jsEngine = _scriptingManager.GetScriptingEngine("js");
+
+                    var scope = jsEngine.CreateScope(new GlobalMethod[] { }, Request.HttpContext.RequestServices, null, null);
+
+                    var transform =  jsEngine.Evaluate(scope, loginSettings.MapExternalUsersScript + "\n" + "return transformClaims('');");
+
+                }
+
                 await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
                 _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
                 return RedirectToLocal(returnUrl);
