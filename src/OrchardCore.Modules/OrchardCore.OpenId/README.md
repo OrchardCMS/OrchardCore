@@ -23,7 +23,9 @@ Allows adding, editing and removing the registered applications.
 Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.
 It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing 
 Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
-So, Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications, not only to Orchard Core services.
++ Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications.
++ Orchard Core services.
+    + The authorization server feature maintains its own private JWT/validation handler instance for the userinfo API endpoint. This way, you don't have to enable the token validation feature for current tenant.
 
 Flows supported: [code/implicit/hybrid flows](http://openid.net/specs/openid-connect-core-1_0.html) and [client credentials/resource owner password grants](https://tools.ietf.org/html/rfc6749).
 
@@ -35,8 +37,8 @@ Available settings are:
 
 + Testing Mode: Enabling Testing mode, removes the need of providing a certificate for signing tokens providing an ephemeral key. Also removes the requirement of using HTTPS for issuing tokens.
 + Token Format: there are two options:
-  + JWT: This format uses signed JWT standard tokens (not encrypted). It requires that the SSL certificate being used is accepted as a trusted certificate by the client.
-  + Encrypted: This format uses non-standard opaque tokens encrypted by the ASP.NET data protection block. It doesn't require the client to accept the SSL certificate as a trusted certificate.
+    + JWT: This format uses signed JWT standard tokens (not encrypted). It requires that the SSL certificate being used is accepted as a trusted certificate by the client.
+    + Encrypted: This format uses non-standard opaque tokens encrypted by the ASP.NET data protection block. It doesn't require the client to accept the SSL certificate as a trusted certificate.
 + Authority: Orchard URL used by Orchard to act as an identity server.
 + Audiences: URLs of the resource servers for which the identity server issues valid JWT tokens.
 + Certificate Store Location: CurrentUser/LocalMachine https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
@@ -86,20 +88,20 @@ OpenID Connect apps require the following configuration.
 + Client Id: Client identifier of the application. It has to be provided by a client when requesting a valid token.
 + Display Name: Display name associated with the current application.
 + Type: There are two options:
-  + Confidential: Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token.
-  + Public: Public applications don't use client secret on their communications.
-  + Client Secret: Client secret is a password associated with the application. It will be required when the application is configured as Confidential.
-  + Flows: If general OpenID Connect settings allow this flow, an app can also enable this flow.
-  + Allow Password Flow: It requires that the Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.3
-  + Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
-  + Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth
-  + Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth
-  + Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens
-  + Normalized RoleNames: This configuration is only required if Client Credentials Flow is enabled. It determines the roles assigned to the app when it is authenticated using that flow.
-  + Redirect Options: Those options are only required when Implicit Flow, Authorization Code Flow or Allow Hybrid Flow is required.
-  + Logout Redirect Uri: logout callback URL.
-  + Redirect Uri: callback URL.
-  + Skip Consent: sets whether a consent form has to be completed by the user after log in.
+    + Confidential: Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token.
+    + Public: Public applications don't use client secret on their communications.
++ Client Secret: Client secret is a password associated with the application. It will be required when the application is configured as Confidential.
++ Flows: If general OpenID Connect settings allow this flow, an app can also enable this flow.
+    + Allow Password Flow: It requires that the Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.3
+    + Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
+    + Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth
+    + Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth
+    + Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens
++ Normalized RoleNames: This configuration is only required if Client Credentials Flow is enabled. It determines the roles assigned to the app when it is authenticated using that flow.
++ Redirect Options: Those options are only required when Implicit Flow, Authorization Code Flow or Allow Hybrid Flow is required.
++ Logout Redirect Uri: logout callback URL.
++ Redirect Uri: callback URL.
++ Skip Consent: sets whether a consent form has to be completed by the user after log in.
 
   A sample of OpenID Connect App recipe step:
 ```json
@@ -183,7 +185,9 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
     1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
 
 ## Token Validation
-Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.
++ Validates tokens issued by the Orchard OpenID server
+    + Configure the validation feature to transparently use the server configuration of another tenant, which has the authorization server feature enabled.
++ Validates token by a remote server supporting JWT and OpenID Connect discovery.
 
 ## OIDC Client
 Authenticates users from an external OpenID Connect identity provider. 
@@ -205,14 +209,14 @@ Available settings are:
 + Scopes: Extra scopes except openid and profile.
 + Response Mode: Configure Response Mode see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse. If fragment or query only Code Authentication Flow is allowed.
 + Supported Flows: Select one of the OIDC flows:
-  + Code Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
-  + Hybrid Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#HybridAuthRequest)
-    + Use `code id_token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
-    + Use `code id_token token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
-    + Use `code token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample)
-  + Implicit Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest)
-    + Use `id_token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample)
-    + Use `id_token token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample)
+    + Code Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth)
+    + Hybrid Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#HybridAuthRequest)
+        + Use `code id_token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
+        + Use `code id_token token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample)
+        + Use `code token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample)
+    + Implicit Authentication Flow (see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest)
+        + Use `id_token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample)
+        + Use `id_token token` response type (example: http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample)
 + Client Secret: It is used with one of the 'confidential' flows, code or hybrid.
 
 A sample of OpenID Connect Client Settings recipe step:
