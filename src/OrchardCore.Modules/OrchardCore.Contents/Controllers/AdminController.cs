@@ -19,6 +19,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Layers.Models;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ActionConstraints;
 using OrchardCore.Navigation;
@@ -385,7 +386,16 @@ namespace OrchardCore.Contents.Controllers
 
             if (createNew)
             {
-                return RedirectToAction("Create", new RouteValueDictionary { { "id", id }, { "returnUrl", returnUrl } });
+                var routeValueDictionnary = new RouteValueDictionary { { "id", id }, { "returnUrl", returnUrl } };
+                var layerMetadata = contentItem.As<LayerMetadata>();
+
+                if (layerMetadata != null)
+                {
+                    routeValueDictionnary.Add("LayerMetadata.Zone", layerMetadata.Zone);
+                    routeValueDictionnary.Add("LayerMetadata.Position", layerMetadata.Position + 1);
+                }
+
+                return RedirectToAction("Create", routeValueDictionnary);
             }
             else
             {
@@ -536,7 +546,16 @@ namespace OrchardCore.Contents.Controllers
             }
             else if (createNew)
             {
-                return RedirectToAction("Create", new RouteValueDictionary { { "id", contentItem.ContentType }, { "returnUrl", returnUrl } });
+                var routeValueDictionnary = new RouteValueDictionary { { "id", contentItem.ContentType }, { "returnUrl", returnUrl } };
+                var layerMetadata = contentItem.As<LayerMetadata>();
+
+                if (layerMetadata != null)
+                {
+                    routeValueDictionnary.Add("LayerMetadata.Zone", layerMetadata.Zone);
+                    routeValueDictionnary.Add("LayerMetadata.Position", layerMetadata.Position + 1);
+                }
+
+                return RedirectToAction("Create", routeValueDictionnary);
             }
             else
             {
