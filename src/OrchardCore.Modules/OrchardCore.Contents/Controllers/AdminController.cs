@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Controllers
         public ILogger Logger { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeName = "")
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -101,9 +101,9 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (contentTypeName != "")
+            if (contentTypeId != "")
             {
-                model.Options.SelectedContentType = contentTypeName;
+                model.Options.SelectedContentType = contentTypeId;
             }
 
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
