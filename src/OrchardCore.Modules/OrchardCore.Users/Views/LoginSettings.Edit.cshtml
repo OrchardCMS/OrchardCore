@@ -21,9 +21,11 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="SyncRolesFromExternalProviders" />
         <span asp-validation-for="SyncRolesFromExternalProviders"></span>
-        <label class="custom-control-label" asp-for="SyncRolesFromExternalProviders">@T["Use a script to define user roles based on external provider claims"]</label>
-        <span class="hint">— @T["On multiple providers, return false if you do not want to sync the roles."]</span>
+        <label class="custom-control-label" asp-for="SyncRolesFromExternalProviders">@T["Use the following script set user roles based on external provider claims"]</label>
+        <button type="button" class="btn btn-sm" onclick="resetScript()">@T["Reset Script"]</button>
     </div>
+    <span class="hint">— @T["Return an array of roles or null if you don't want to replace roles for a provider."]</span>
+
 </div>
 
 <div class="form-group" asp-validation-class-for="GetRolesScript">
@@ -31,6 +33,69 @@
 </div>
 
 <script at="Foot">
+    function resetScript(keepText) {
+        var editor = $('#@Html.IdFor(x => x.GetRolesScript)').data('editor');
+        if (!keepText) {
+            editor.doc.setValue(
+                '/******************************************************************************/\n' +
+                '/* Input                                                                      */\n' +
+                '/* =====                                                                      */\n' +
+                '/* claims   : a list of claims received from the external provider            */\n' +
+                '/* provider : the id of the provider                                          */\n' +
+                '/*                                                                            */\n' +
+                '/* Output                                                                     */\n' +
+                '/* ======                                                                     */\n' +
+                '/* a list of roles to update local user or false                              */\n' +
+                '/*                                                                            */\n' +
+                '/* Description                                                                */\n' +
+                '/* ===========                                                                */\n' +
+                '/* Use the claims variable to inspect the external identity claims and        */\n' +
+                '/* return a list of roles.Each claim has the following properties             */\n' +
+                '/* { Issuer, OriginalIssuer, Properties, Type, Value, ValueType }             */\n' +
+                '/* You can use log(level, text) to append to OrchardCore log file             */\n' +
+                '/* The provider variable holds the provider id of the claims                  */\n' +
+                '/* The script must return a list of local roles to use or null to leave as is */\n' +
+                '/******************************************************************************/\n' +
+                '\n' +
+                '/* Uncomment to map AzureAD\n' +
+                'var roles = [];\n' +
+                'switch (provider) {\n' +
+                '    case "AzureAD":\n' +
+                '        claims.forEach(claim => {\n' +
+                '            if (claim.Type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+                '                switch (claim.Value) {\n' +
+                '                    case "Writer":\n' +
+                '                        roles.push("Author");\n' +
+                '                        break;\n' +
+                '                    case "Admin":\n' +
+                '                        roles.push("Administrator");\n' +
+                '                        break;\n' +
+                '                    default:\n' +
+                '                        log("Warning", "Role " + claim.Value + " was not handled");\n' +
+                '                }\n' +
+                '            }\n' +
+                '        });\n' +
+                '        return roles;\n' +
+                '    default:\n' +
+    	        '        log("Warning", "Provider " + provider + " was not handled");\n' +
+                '}\n' +
+                '*/\n' +
+                'return false;\n'
+            );
+        }
+        editor.markText({ line: 0, ch: 0 }, { line: 18 }, { readOnly: true });
+    }
+
+    function toggleEditorState() {
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.SyncRolesFromExternalProviders)');
+        var editor = $('#@Html.IdFor(x => x.GetRolesScript)').data('editor');
+        if (syncRolesCheckbox.checked) {
+            editor.options.readOnly = false;
+        } else {
+            editor.options.readOnly = "nocursor";
+        }
+    }
+
 $(function () {
     var textArea = document.getElementById('@Html.IdFor(x => x.GetRolesScript)');
     var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.SyncRolesFromExternalProviders)');
@@ -44,36 +109,15 @@ $(function () {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
-        mode: { name: "javascript" },
-        readOnly: 'nocursor'
+        autoCloseTags: true,
+        mode: "javascript"
     });
-
-    if (editor.doc.lineCount() == 1) {
-        editor.doc.setValue('/*****************************************************************************\n' +
-                            ' Use the claims variable to inspect the external identity claims and\n'+
-                            ' return a list of roles.Each claim has the following properties\n' +
-                            ' { Issuer, OriginalIssuer, Properties, Type, Value, ValueType }\n' +
-                            ' You can use log(level, text) to append to OrchardCore log file\n' +
-                            ' The provider variable holds the provider id of the claims\n' +
-                            ' The script must return a list of roles or false if no sync should occur\n' +
-                            '*****************************************************************************/\n');
-        editor.markText({ line: 0, ch: 0 }, { line: 8 }, { readOnly: true });
-    };
 
     $('#@Html.IdFor(x => x.GetRolesScript)').data('editor', editor);
 
 
-    function toggleEditorState() {
-        var editor = $('#@Html.IdFor(x => x.GetRolesScript)').data('editor');
-        if (editor.options.readOnly === "nocursor") {
-            editor.options.readOnly = false;
-        } else {
-            editor.options.readOnly = "nocursor";
-        }
-    }
-
+    resetScript(editor.doc.lineCount() > 1);
     syncRolesCheckbox.addEventListener("change", toggleEditorState);
-
-
+    toggleEditorState();
 });
 </script>
