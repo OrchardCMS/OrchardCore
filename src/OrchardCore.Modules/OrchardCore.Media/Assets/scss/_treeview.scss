@@ -72,13 +72,6 @@
         padding: 12px 12px 12px 6px;
     }
 
-    .opened {
-        svg {
-            transform: rotate(90deg);
-            -webkit-transform: rotate(90deg);
-        }
-    }
-
     .empty {
         transform: none;
         visibility: hidden;
@@ -108,6 +101,15 @@
                 align-items: center;
                 background-color: $selected-background-color;
             }
+        }
+    }
+}
+/* rtl:ignore */
+#folder-tree {
+    .opened {
+        svg {
+            transform: rotate(90deg);
+            -webkit-transform: rotate(90deg);
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MailKit.Net.Smtp;
 using MimeKit;
+using MailKit.Security;
 
 namespace OrchardCore.Email.Services
 {
@@ -37,12 +38,12 @@ namespace OrchardCore.Email.Services
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
-            var mimeMessage = FromMailMessage(message);         
+            var mimeMessage = FromMailMessage(message);
             try
             {
                 using (var client = new SmtpClient())
                 {
-                    switch(_options.DeliveryMethod)
+                    switch (_options.DeliveryMethod)
                     {
                         case SmtpDeliveryMethod.Network:
                             await SendOnlineMessage(mimeMessage, client);
@@ -66,13 +67,16 @@ namespace OrchardCore.Email.Services
         }
 
         private MimeMessage FromMailMessage(MailMessage message)
-        {
+        {            
+
             var mimeMessage = new MimeMessage
             {
                 Sender = (message.From == null
                     ? new MailboxAddress(_options.DefaultSender)
                     : new MailboxAddress(message.From))
             };
+
+            mimeMessage.From.Add(mimeMessage.Sender);
 
             if (message.To != null)
             {
@@ -123,7 +127,27 @@ namespace OrchardCore.Email.Services
 
         private async Task SendOnlineMessage(MimeMessage message, SmtpClient client)
         {
-            await client.ConnectAsync(_options.Host, _options.Port, _options.EnableSsl);    
+            var secureSocketOptions = SecureSocketOptions.Auto;
+
+            if (!_options.AutoSelectEncryption)
+            {
+                switch (_options.EncryptionMethod)
+                {
+                    case SmtpEncryptionMethod.None:
+                        secureSocketOptions = SecureSocketOptions.None;
+                        break;
+                    case SmtpEncryptionMethod.SSLTLS:
+                        secureSocketOptions = SecureSocketOptions.SslOnConnect;
+                        break;
+                    case SmtpEncryptionMethod.STARTTLS:
+                        secureSocketOptions = SecureSocketOptions.StartTls;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
             var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
             if (_options.RequireCredentials)
             {

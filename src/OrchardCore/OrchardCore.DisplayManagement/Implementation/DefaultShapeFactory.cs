@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 
 namespace OrchardCore.DisplayManagement.Implementation
@@ -14,9 +12,9 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeFactoryEvents> _events;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
-        private ShapeTable _scopedShapeTable; 
+        private ShapeTable _scopedShapeTable;
 
-        
+
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,
@@ -42,8 +40,8 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
-                        
-			return true;
+
+            return true;
         }
 
         private async Task<ShapeTable> GetShapeTableAsync()
@@ -118,7 +116,8 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Created(createdContext);
             }
 
-            if (shapeDescriptor != null) {
+            if (shapeDescriptor != null)
+            {
                 foreach (var ev in shapeDescriptor.CreatedAsync)
                 {
                     await ev(createdContext);

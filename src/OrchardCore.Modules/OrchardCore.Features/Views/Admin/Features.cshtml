@@ -6,37 +6,31 @@
 }
 <h1>@RenderTitleSegments(T["Features"])</h1>
 
-<fieldset class="admin-toolbar container-fluid">
-    <form asp-action="Index" method="get">
-        <div class="row">
-            <div class="col-md-1 col-xl-1 form-group">
-                <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
+<form asp-action="Features" method="post">
+    <div class="card">
+        <div class="card-body bg-light">
+            <div class="input-group mb-3 w-xl-50">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Filter:"]</span>
+                </div>
                 <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
             </div>
-        </div>
-    </form>
-</fieldset>
 
-<form asp-action="Features" method="post">
-    <fieldset class="admin-toolbar container-fluid">
-        <div class="row">
-            <div class="col-md-2 col-xl-1 form-group">
-                <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
-            </div>
-            <div class="col-md-3 col-xl-2 form-group">
+            <div class="input-group w-xl-50">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Actions:"]</span>
+                </div>
                 <select class="form-control" name="bulkAction">
                     <option value="@FeaturesBulkAction.Enable.ToString()">@T["Enable"]</option>
                     <option value="@FeaturesBulkAction.Disable.ToString()">@T["Disable"]</option>
                     <option value="@FeaturesBulkAction.Toggle.ToString()">@T["Toggle"]</option>
                 </select>
-            </div>
-            <div class="col-md-2 col-xl-1 form-group">
-                <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
+                </div>
             </div>
         </div>
-    </fieldset>
+    </div>
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
         foreach (var featureGroup in featureGroups)
@@ -79,7 +73,7 @@
                             var dependencies = (from d in feature.FeatureDependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var missingDependencies = feature.FeatureDependencies
-                                .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
+                            .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
                             var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
 
@@ -143,49 +137,49 @@
         }
     }
 
-    @*<li class="@featureClassName" id="@featureId" title="@string.Format(feature.IsEnabled ? "{0} is enabled" : "{0} is disabled", featureName)">
+    @*<li class="@featureClassName" id="@featureId" title="@string.Format(feature.IsEnabled ? " {0} is enabled" : "{0} is disabled" , featureName)">
             <div class="panel panel-default panel-heading-fullwidth panel-borders">
                 <div class="panel-heading">
                     <div class="title">
                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                         {
-                            <span class="or-checkbox">
-                                <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" />
-                                <label for="@feature.Descriptor.Id">
-                                    @featureName
-                                </label>
-                            </span>
+                        <span class="or-checkbox">
+                            <input type="checkbox" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id" />
+                            <label for="@feature.Descriptor.Id">
+                                @featureName
+                            </label>
+                        </span>
                         }
                         else
                         {
-                            @featureName
+                        @featureName
                         }
                     </div>
                     <div class="tools">
                         @if (showDisable && feature.IsEnabled)
                         {
-                            var dependantsJoined = string.Join(", ", feature.DependentFeatures.Select(f => f.Name));
-                            <div class="switch-button">
-                                <input type="checkbox" checked="" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
-                                    <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Disable" data-feature-force="true" data-feature-dependants="@dependantsJoined">@T["Disable"]</label>
-                                </span>
-                            </div>
+                        var dependantsJoined = string.Join(", ", feature.DependentFeatures.Select(f => f.Name));
+                        <div class="switch-button">
+                            <input type="checkbox" checked="" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
+                                <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Disable" data-feature-force="true" data-feature-dependants="@dependantsJoined">@T["Disable"]</label>
+                            </span>
+                        </div>
                         }
 
                         @if (showEnable && !feature.IsEnabled)
                         {
-                            <div class="switch-button">
-                                <input type="checkbox" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
-                                    <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Enable" data-feature-force="true">@T["Enable"]</label>
-                                </span>
-                            </div>
+                        <div class="switch-button">
+                            <input type="checkbox" name="swt@(feature.Descriptor.Id)" id="swt@(feature.Descriptor.Id)"><span>
+                                <label for="swt@(feature.Descriptor.Id)" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Enable" data-feature-force="true">@T["Enable"]</label>
+                            </span>
+                        </div>
                         }
 
                         @if (feature.NeedsUpdate)
                         {
-                            <span class="icon s7-upload">
-                                <a href="#" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Update" data-feature-force="false">@T["Update"]</a>
-                            </span>
+                        <span class="icon s7-upload">
+                            <a href="#" data-feature-id="@feature.Descriptor.Id" data-feature-action="@FeaturesBulkAction.Update" data-feature-force="false">@T["Update"]</a>
+                        </span>
                         }
                     </div>
                 </div>
@@ -193,41 +187,41 @@
                     <p class="description" title="@feature.Descriptor.Description">@feature.Descriptor.Description</p>
                     @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
                     {
-                        <div class="dependencies">
-                            <h4>@T["Depends on:"]</h4>
-                            <ul>
-                                @foreach (var d in dependencies)
-                                {
-                                    <li>
-                                        <a href="#@d">@(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)</a>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                    <div class="dependencies">
+                        <h4>@T["Depends on:"]</h4>
+                        <ul>
+                            @foreach (var d in dependencies)
+                            {
+                            <li>
+                                <a href="#@d">@(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)</a>
+                            </li>
+                            }
+                        </ul>
+                    </div>
                     }
                     @if (missingDependencies.Any())
                     {
-                        <div class="missingdependencies">
-                            <h4>@T["Missing:"]</h4>
-                            <ul>
-                                @foreach (var d in missingDependencies)
-                                {
-                                    <li>
-                                        @d
-                                    </li>
-                                }
-                            </ul>
-                        </div>}
+                    <div class="missingdependencies">
+                        <h4>@T["Missing:"]</h4>
+                        <ul>
+                            @foreach (var d in missingDependencies)
+                            {
+                            <li>
+                                @d
+                            </li>
+                            }
+                        </ul>
+                    </div>}
                 </div>
                 <div class="panel-footer">
-                        @if (lifecycleStatus != LifecycleStatus.Production) {
-                            var iconClass = lifecycleStatusClassDictionary[lifecycleStatus];
-                            <div class="lifecycle-status lifecycle-status-@feature.Descriptor.Extension.LifecycleStatus.ToString().HtmlClassify()">
-                                <i class="fa @iconClass"></i>
-                                @T(lifecycleStatus.ToString())
-                            </div>
-                        }
+                    @if (lifecycleStatus != LifecycleStatus.Production) {
+                    var iconClass = lifecycleStatusClassDictionary[lifecycleStatus];
+                    <div class="lifecycle-status lifecycle-status-@feature.Descriptor.Extension.LifecycleStatus.ToString().HtmlClassify()">
+                        <i class="fa @iconClass"></i>
+                        @T(lifecycleStatus.ToString())
                     </div>
+                    }
+                </div>
             </div>
         </li>*@
 </form>
@@ -245,12 +239,21 @@
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
-            } else {
+            }
+            else {
                 elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
                     $(this).toggle(found);
                 });
+            }
+        });
+
+        //prevent posting form on pressing enter key
+        searchBox.keypress(function (e) {
+            var key = e.charCode || e.keyCode || 0;
+            if (key == 13) {
+                return false;
             }
         });
     });

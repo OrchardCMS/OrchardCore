@@ -6,7 +6,7 @@
 
 <script at="Foot">
     
-    initializeMediaApplication(true, $('#mediaApplicationUrl').val());
+    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
 
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
     $(function () {
@@ -46,5 +46,3 @@
 
 <h1>@RenderTitleSegments(T["Assets"])</h1>
 
-
-<input type="hidden" id="mediaApplicationUrl" value="@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })" />

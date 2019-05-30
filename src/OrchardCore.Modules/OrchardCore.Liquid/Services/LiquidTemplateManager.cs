@@ -51,6 +51,7 @@ namespace OrchardCore.Liquid.Services
                 return parsed;
             });
 
+            context.ContextualizeWithDefault(_serviceProvider);
             return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
         }
 
