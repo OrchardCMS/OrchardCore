@@ -36,6 +36,13 @@ body {
     margin-bottom: $footer-height;
 }
 
+/* rtl:ignore */
+[dir=rtl] .dropdown-menu {
+    left: auto !important;
+    right: 0px !important;
+    transform: translate3d(0px, 38px, 0px) !important;
+}
+
 .left-sidebar-compact .ta-footer {
     width: calc(100% - 60px);
     transition: width 0.2s ease-in-out, width 0.2s ease-in-out;
