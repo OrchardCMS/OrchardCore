@@ -38,24 +38,18 @@ namespace OrchardCore.Roles.Deployment
 
             foreach (var roleName in allRoleNames)
             {
-                var task = _roleManager.FindByNameAsync(_roleManager.NormalizeKey(roleName)).ContinueWith(async roleTask =>
+                var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(roleName));
+
+                if (role != null)
                 {
-                    var role = (Role)await roleTask;
-                    if (role != null)
-                    {
-                        permissions.Add(JObject.FromObject(
-                            new RolesStepRoleModel
-                            {
-                                Name = role.NormalizedRoleName,
-                                Permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
-                            }));
-                    }
-                });
-
-                tasks.Add(task);
+                    permissions.Add(JObject.FromObject(
+                        new RolesStepRoleModel
+                        {
+                            Name = role.NormalizedRoleName,
+                            Permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                        }));
+                }
             }
-
-            await Task.WhenAll(tasks);
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "Roles"),
