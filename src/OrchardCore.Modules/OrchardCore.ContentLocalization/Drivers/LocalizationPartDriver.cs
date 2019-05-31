@@ -71,15 +71,15 @@ namespace OrchardCore.ContentLocalization.Drivers
             }
 
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-            var currentCultures = supportedCultures.Where(c=>c != model.Culture).Select(culture =>
-            {
-                return new LocalizationLinksViewModel()
-                {
-                    IsDeleted = false,
-                    Culture = CultureInfo.GetCultureInfo(culture),
-                    ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
-                };
-            }).ToList();
+            var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
+              {
+                  return new LocalizationLinksViewModel()
+                  {
+                      IsDeleted = false,
+                      Culture = CultureInfo.GetCultureInfo(culture),
+                      ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
+                  };
+              }).ToList();
 
             // Content items that have been translated but the culture was removed from the settings page
             var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>

@@ -13,7 +13,7 @@ namespace OrchardCore.Localization
             T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        IStringLocalizer T { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

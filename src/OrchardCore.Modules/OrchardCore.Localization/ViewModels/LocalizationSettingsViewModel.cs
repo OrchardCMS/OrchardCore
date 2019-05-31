@@ -9,6 +9,7 @@ namespace OrchardCore.Localization.ViewModels
         [BindNever]
         public CultureEntry[] Cultures { get; set; } = Array.Empty<CultureEntry>();
 
+        // This property is a json array that is set in the editor
         public string SupportedCultures { get; set; }
         public string DefaultCulture { get; set; }
     }

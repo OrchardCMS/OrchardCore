@@ -9,10 +9,7 @@ namespace OrchardCore.Localization
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] 
-            {
-                ManageCultures,
-            };
+            yield return ManageCultures;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

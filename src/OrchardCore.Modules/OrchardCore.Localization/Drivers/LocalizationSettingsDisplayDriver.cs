@@ -39,15 +39,16 @@ namespace OrchardCore.Localization.Drivers
             S = s;
         }
 
-        IHtmlLocalizer H { get; set; }
-        IStringLocalizer S { get; set; }
+        IHtmlLocalizer H { get; }
+        IStringLocalizer S { get; }
 
         public override IDisplayResult Edit(LocalizationSettings section, BuildEditorContext context)
         {
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
                 {
                     model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                        .Select(cultureInfo => {
+                        .Select(cultureInfo =>
+                        {
                             return new CultureEntry
                             {
                                 Supported = section.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
@@ -64,7 +65,7 @@ namespace OrchardCore.Localization.Drivers
                 }).Location("Content:2").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section,  BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
         {
             if (context.GroupId == GroupId)
             {

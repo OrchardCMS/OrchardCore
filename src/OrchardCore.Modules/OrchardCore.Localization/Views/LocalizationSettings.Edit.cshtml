@@ -4,7 +4,7 @@
 
 @{ 
     // ['fr-FR', 'en-US']
-    var options = "['" + String.Join("','", Model.Cultures.Where(x => x.Supported).Select(x => x.CultureInfo.Name)) + "']";
+    var options = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray());
     var defaultCulture = Model.Cultures.Where(x => x.IsDefault).FirstOrDefault().CultureInfo.Name;
     var selectedCulture = Model.Cultures.First().CultureInfo.Name;
 }
@@ -19,7 +19,7 @@
 <script type="text/x-template" id="options-table">
     <fieldset class="form-group">
         <table class="table">
-            <thead class="">
+            <thead>
                 <tr>
                     <th scope="col">@T["Culture"]</th>
                     <th scope="col" colspan="3">@T["Default Culture"]</th>

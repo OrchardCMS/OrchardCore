@@ -28,7 +28,7 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedCulture) {
         name: 'options-table',
         methods: {
             add: function () {
-                store.addCulture(/* the one in the ddl */);
+                store.addCulture();
             },
             remove: function (index) {
                 store.removeOption(index);
@@ -62,8 +62,4 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedCulture) {
         el: elem
     });
 
-}
-
-function IsNullOrWhiteSpace(str) {
-    return str === null || str.match(/^ *$/) !== null;
 }
