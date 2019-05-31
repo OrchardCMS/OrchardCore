@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,8 @@ using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
+using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using YesSql;
@@ -62,9 +63,10 @@ namespace OrchardCore.ContentLocalization
         {
             var localizationPart = content.As<LocalizationPart>();
             var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var localizationSettings = siteSettings.As<LocalizationSettings>();
 
             // not sure if this is redundant or not. The check is also done in the Admin controller
-            if (!siteSettings.GetConfiguredCultures().Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
+            if (!localizationSettings.SupportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
@@ -106,14 +108,10 @@ namespace OrchardCore.ContentLocalization
 
         private async Task<string> GetDefaultCultureNameAsync()
         {
-            var setting = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var localizationSettings = siteSettings.As<LocalizationSettings>();
 
-            if (!String.IsNullOrEmpty(setting.Culture))
-            {
-                return CultureInfo.GetCultureInfo(setting.Culture).Name;
-            }
-
-            return CultureInfo.InstalledUICulture.Name;
+            return localizationSettings.DefaultCulture;
         }
     }
 }

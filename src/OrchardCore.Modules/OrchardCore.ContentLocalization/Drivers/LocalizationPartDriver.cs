@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
@@ -60,6 +61,8 @@ namespace OrchardCore.ContentLocalization.Drivers
         public async Task BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
         {
             var settings = await _siteService.GetSiteSettingsAsync();
+            var localizationSettings = settings.As<LocalizationSettings>();
+
             var alreadyTranslated = await _contentLocalizationManager.GetItemsForSet(localizationPart.LocalizationSet);
 
             model.Culture = localizationPart.Culture;
@@ -71,7 +74,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                 model.Culture = await GetDefaultCultureNameAsync();
             }
 
-            var currentCultures = settings.GetConfiguredCultures().Where(c=>c != model.Culture).Select(culture =>
+            var currentCultures = localizationSettings.SupportedCultures.Where(c=>c != model.Culture).Select(culture =>
             {
                 return new LocalizationLinksViewModel()
                 {
@@ -102,14 +105,10 @@ namespace OrchardCore.ContentLocalization.Drivers
 
         private async Task<string> GetDefaultCultureNameAsync()
         {
-            var setting = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var localizationSettings = siteSettings.As<LocalizationSettings>();
 
-            if (!String.IsNullOrEmpty(setting.Culture))
-            {
-                return CultureInfo.GetCultureInfo(setting.Culture).Name;
-            }
-
-            return CultureInfo.InstalledUICulture.Name;
+            return localizationSettings.DefaultCulture;
         }
     }
 }

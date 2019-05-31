@@ -1,0 +1,77 @@
+@model LocalizationSettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+@{ 
+    // ['fr-FR', 'en-US']
+    var options = "['" + String.Join("','", Model.Cultures.Where(x => x.Supported).Select(x => x.CultureInfo.Name)) + "']";
+    var defaultCulture = Model.Cultures.Where(x => x.IsDefault).FirstOrDefault().CultureInfo.Name;
+    var selectedCulture = Model.Cultures.First().CultureInfo.Name;
+}
+
+<script asp-src="~/OrchardCore.Localization/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.Localization/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+
+<script at="Foot">
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(options), '@defaultCulture', '@selectedCulture');
+</script>
+
+<script type="text/x-template" id="options-table">
+    <fieldset class="form-group">
+        <table class="table">
+            <thead class="">
+                <tr>
+                    <th scope="col">@T["Culture"]</th>
+                    <th scope="col" colspan="3">@T["Default Culture"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(option, index) in data.options" :key="index">
+                    <td>
+                        <span>{{ option }}</span>
+                        <input type="hidden" class="form-control" v-bind:value="option" />
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="custom-control custom-radio ml-2">
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" v-bind:value="option" v-model="data.selected" v-on:click="uncheck(index)">
+                            <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col">
+                <select v-model="data.culture" class="form-control col">
+                    @foreach(var culture in Model.Cultures)
+                    {
+                        <option value="@culture.CultureInfo.Name">@culture.CultureInfo.Name (@culture.CultureInfo.DisplayName)</option>
+                    }
+                </select>
+            </div>
+            <div class="col">
+                <a v-on:click="add()" href="javascript:void" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
+            </div>
+        </div>
+
+        <input class="form-control" id="@Html.IdFor(m => m.SupportedCultures)" name="@Html.NameFor(m => m.SupportedCultures)" type="hidden" v-bind:value="getSupportedCultures()" />
+        <input class="form-control" id="@Html.IdFor(m => m.DefaultCulture)" name="@Html.NameFor(m => m.DefaultCulture)" type="hidden" v-bind:value="getDefaultCulture()" />
+    </fieldset>
+</script>
+
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
+
+    <div class="row">
+        <fieldset class="col-sm-6">
+            <label>@T["Define which cultures are supported by the site."]</label>
+            <options-table :data="sharedState"></options-table>
+        </fieldset>
+    </div>
+</div>

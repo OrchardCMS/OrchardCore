@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Version = "2.0.0",
     Description = "Provides support for UI localization.",
     Category = "Internationalization",
-    Dependencies = new[] { "OrchardCore.Settings" }
+    Dependencies = new[] { "OrchardCore.Settings", "OrchardCore.Localization" }
 )]
