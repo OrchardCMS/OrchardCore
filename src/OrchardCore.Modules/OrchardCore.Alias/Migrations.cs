@@ -1,8 +1,9 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
+using OrchardCore.Alias.Drivers;
 
 namespace OrchardCore.Alias
 {
@@ -31,6 +32,22 @@ namespace OrchardCore.Alias
             );
 
             return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .DropIndex("IDX_AliasPartIndex_Alias")
+            );
+
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .AlterColumn("Alias", cmd => cmd.WithLength(AliasPartDisplayDriver.MaxAliasLength))
+            );
+
+            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
+            );
+            return 2;
         }
     }
 }
