@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.ContentLocalization
@@ -19,7 +18,7 @@ namespace OrchardCore.ContentLocalization
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ISiteService _siteService;
+        private readonly ILocalizationService _localizationService;
         private readonly ILogger<DefaultContentLocalizationManager> _logger;
         private readonly Entities.IIdGenerator _iidGenerator;
 
@@ -29,14 +28,14 @@ namespace OrchardCore.ContentLocalization
         public DefaultContentLocalizationManager(
             IContentManager contentManager,
             ISession session,
-            ISiteService siteService,
+            ILocalizationService localizationService,
             ILogger<DefaultContentLocalizationManager> logger,
             IEnumerable<IContentLocalizationHandler> handlers,
             Entities.IIdGenerator iidGenerator)
         {
             _contentManager = contentManager;
             _session = session;
-            _siteService = siteService;
+            _localizationService = localizationService;
             Handlers = handlers;
             _iidGenerator = iidGenerator;
             ReversedHandlers = handlers.Reverse().ToArray();
@@ -62,11 +61,11 @@ namespace OrchardCore.ContentLocalization
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
         {
             var localizationPart = content.As<LocalizationPart>();
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var localizationSettings = siteSettings.As<LocalizationSettings>();
+
+            var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
             // not sure if this is redundant or not. The check is also done in the Admin controller
-            if (!localizationSettings.SupportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
+            if (!supportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
@@ -76,7 +75,7 @@ namespace OrchardCore.ContentLocalization
                 // If the source content item is not yet localized, define its defaults
 
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
-                localizationPart.Culture = await GetDefaultCultureNameAsync();
+                localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
                 _session.Save(content);
             }
             else
@@ -104,14 +103,6 @@ namespace OrchardCore.ContentLocalization
 
             _session.Save(cloned);
             return cloned;
-        }
-
-        private async Task<string> GetDefaultCultureNameAsync()
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var localizationSettings = siteSettings.As<LocalizationSettings>();
-
-            return localizationSettings.DefaultCulture;
         }
     }
 }

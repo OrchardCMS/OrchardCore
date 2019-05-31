@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Entities;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -24,6 +24,7 @@ namespace OrchardCore.Localization
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
 
@@ -33,14 +34,16 @@ namespace OrchardCore.Localization
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var siteSettings = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().GetAwaiter().GetResult();
-            var localizationSettings = siteSettings.As<LocalizationSettings>();
+            var localizationService = serviceProvider.GetService<ILocalizationService>();
+
+            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
+            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            options.SetDefaultCulture(localizationSettings.DefaultCulture ?? "");
+            options.SetDefaultCulture(defaultCulture);
             options
-                .AddSupportedCultures(localizationSettings.SupportedCultures)
-                .AddSupportedUICultures(localizationSettings.SupportedCultures)
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures)
                 ;
 
             app.UseRequestLocalization(options);

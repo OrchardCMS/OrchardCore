@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
