@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using MailKit.Net.Smtp;
 using MimeKit;
 using MailKit.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace OrchardCore.Email.Services
 {
@@ -41,24 +43,19 @@ namespace OrchardCore.Email.Services
             var mimeMessage = FromMailMessage(message);
             try
             {
-                using (var client = new SmtpClient())
+                switch (_options.DeliveryMethod)
                 {
-                    switch (_options.DeliveryMethod)
-                    {
-                        case SmtpDeliveryMethod.Network:
-                            await SendOnlineMessage(mimeMessage, client);
-                            break;
-                        case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                            await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
-                            break;
-                        default:
-                            throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
+                    case SmtpDeliveryMethod.Network:
+                        await SendOnlineMessage(mimeMessage);
+                        break;
+                    case SmtpDeliveryMethod.SpecifiedPickupDirectory:
+                        await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
+                        break;
+                    default:
+                        throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
 
-                    }
-                    client.Disconnect(true);
-
-                    return SmtpResult.Success;
                 }
+                return SmtpResult.Success;
             }
             catch (Exception ex)
             {
@@ -67,7 +64,7 @@ namespace OrchardCore.Email.Services
         }
 
         private MimeMessage FromMailMessage(MailMessage message)
-        {            
+        {
 
             var mimeMessage = new MimeMessage
             {
@@ -125,7 +122,33 @@ namespace OrchardCore.Email.Services
             return mimeMessage;
         }
 
-        private async Task SendOnlineMessage(MimeMessage message, SmtpClient client)
+        private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            bool valid = sslPolicyErrors == SslPolicyErrors.None;
+            if (!string.IsNullOrWhiteSpace(_options.CertificateThumbprint))
+            {
+                valid = certificate.GetCertHashString().Equals(_options.CertificateThumbprint);
+            }
+
+            if (!valid)
+            {
+                _logger.LogError($"SMTP Server's certificate {certificate.Subject} issued by {certificate.Issuer} " +
+                    $"with thumbprint {certificate.GetCertHashString()} and expiration date {certificate.GetExpirationDateString()} " +
+                    $"is considered invalid with {sslPolicyErrors} policy errors");
+            }
+
+            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors))
+            {
+                for (int i = 0; i < chain.ChainStatus.Length - 1; i++)
+                {
+                    _logger.LogError($"{i} = {chain.ChainStatus[i].StatusInformation} : {chain.ChainStatus[i].Status}");
+                }
+            }
+
+            return valid;
+        }
+
+        private async Task SendOnlineMessage(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
@@ -146,22 +169,26 @@ namespace OrchardCore.Email.Services
                         break;
                 }
             }
-
-            await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
-            var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
-            if (_options.RequireCredentials)
+            using (var client = new SmtpClient())
             {
-                if (_options.UseDefaultCredentials)
+                client.ServerCertificateValidationCallback = CertificateValidationCallback;
+                await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+                var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
+                if (_options.RequireCredentials)
                 {
-                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
-                    await client.AuthenticateAsync(String.Empty, String.Empty);
+                    if (_options.UseDefaultCredentials)
+                    {
+                        // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
+                        await client.AuthenticateAsync(String.Empty, String.Empty);
+                    }
+                    else if (!String.IsNullOrWhiteSpace(_options.UserName))
+                    {
+                        await client.AuthenticateAsync(_options.UserName, _options.Password);
+                    }
                 }
-                else if (!String.IsNullOrWhiteSpace(_options.UserName))
-                {
-                    await client.AuthenticateAsync(_options.UserName, _options.Password);
-                }
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
-            await client.SendAsync(message);
         }
 
         private async Task SendOfflineMessage(MimeMessage message, string pickupDirectory)

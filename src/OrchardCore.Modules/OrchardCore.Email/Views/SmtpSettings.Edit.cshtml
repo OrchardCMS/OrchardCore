@@ -79,6 +79,13 @@
                     </div>
                 </div>
 
+                <div class="form-group" asp-validation-class-for="CertificateThumbprint">
+                    <label asp-for="CertificateThumbprint">@T["SMTP Server's certificate Thumbprint"]</label>
+                    <input asp-for="CertificateThumbprint" class="form-control" type="text" />
+                    <span asp-validation-for="CertificateThumbprint"></span>
+                    <span class="hint">@T["Pin the SMTP server's certificate. If used and the certificate has different Thumbprint, the certificate will be considered invalid. Check log file for entries regarding the certificate validation process."]</span>
+                </div>
+
                 <div class="form-group clearfix" asp-validation-class-for="RequireCredentials">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="RequireCredentials" data-toggle="collapse" data-target=".requireCredential">

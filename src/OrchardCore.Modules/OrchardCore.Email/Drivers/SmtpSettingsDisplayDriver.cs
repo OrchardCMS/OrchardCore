@@ -59,6 +59,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;
                     model.Password = section.Password;
+                    model.CertificateThumbprint = section.CertificateThumbprint;
                 }).Location("Content:5").OnGroup(GroupId)
             };
 

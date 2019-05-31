@@ -25,6 +25,7 @@ namespace OrchardCore.Email
         public SmtpEncryptionMethod EncryptionMethod { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string CertificateThumbprint { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

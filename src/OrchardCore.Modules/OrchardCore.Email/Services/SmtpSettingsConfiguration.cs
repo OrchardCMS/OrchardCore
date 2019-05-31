@@ -39,6 +39,7 @@ namespace OrchardCore.Email.Services
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
+            options.CertificateThumbprint = settings.CertificateThumbprint;
 
             // Decrypt the password
             if (!String.IsNullOrWhiteSpace(settings.Password))
