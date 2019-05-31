@@ -132,16 +132,19 @@ namespace OrchardCore.Email.Services
 
             if (!valid)
             {
-                _logger.LogError($"SMTP Server's certificate {certificate.Subject} issued by {certificate.Issuer} " +
-                    $"with thumbprint {certificate.GetCertHashString()} and expiration date {certificate.GetExpirationDateString()} " +
-                    $"is considered invalid with {sslPolicyErrors} policy errors");
+                _logger.LogError(string.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
+                    "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} ",
+                    "is considered invalid with {SslPolicyErrors} policy errors"),
+                    certificate.Subject, certificate.Issuer, certificate.GetCertHashString(),
+                    certificate.GetExpirationDateString(), sslPolicyErrors);
             }
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors))
             {
                 for (int i = 0; i < chain.ChainStatus.Length - 1; i++)
                 {
-                    _logger.LogError($"{i} = {chain.ChainStatus[i].StatusInformation} : {chain.ChainStatus[i].Status}");
+                    _logger.LogError("chainStatus[{ChainStatusIndexi}] = {Status}:{StatusInformation} ",
+                        i, chain.ChainStatus[i].Status, chain.ChainStatus[i].StatusInformation);
                 }
             }
 
