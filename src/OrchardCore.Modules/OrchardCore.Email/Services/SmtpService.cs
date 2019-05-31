@@ -143,8 +143,7 @@ namespace OrchardCore.Email.Services
             {
                 for (int i = 0; i < chain.ChainStatus.Length - 1; i++)
                 {
-                    _logger.LogError("chainStatus[{ChainStatusIndexi}] = {Status}:{StatusInformation} ",
-                        i, chain.ChainStatus[i].Status, chain.ChainStatus[i].StatusInformation);
+                    _logger.LogError("Status: {Status} - {StatusInformation}", chain.ChainStatus[i].Status, chain.ChainStatus[i].StatusInformation);
                 }
             }
 
