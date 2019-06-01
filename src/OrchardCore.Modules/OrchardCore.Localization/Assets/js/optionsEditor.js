@@ -1,53 +1,37 @@
-function initializeOptionsEditor(elem, data, defaultValue, selectedCulture) {
-
-    var previouslyChecked;
-
-    var store = {
-        debug: false,
-        state: {
-            options: data,
-            selected: defaultValue,
-            culture: selectedCulture
-        },
-        addCulture: function () {
-            if (this.debug) { console.log('add culture triggered'); }
-            var exist = this.state.options.includes(this.state.culture);
-            if (!exist) {
-                this.state.options.push(this.state.culture);
-            }
-        },
-        removeOption: function (index) {
-            if (this.debug) { console.log('remove option triggered with', index); }
-            this.state.options.splice(index, 1);
-        }
-    };
+function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) {
 
     var optionsTable = {
-        template: '#options-table',
-        props: ['data'],
         name: 'options-table',
+        template: '#options-table',
+        props: ['data', 'defaultValue', 'selectedValue', 'list'],
+        data: function () {
+            return {
+                defaultCulture: this.defaultValue,
+                selectedCulture: typeof this.selectedValue != 'undefined' ? this.selectedValue : selectedValue,
+                allCultures: this.list
+            }
+        },
         methods: {
             add: function () {
-                store.addCulture();
+                if (!this.data.includes(this.selectedCulture)) {
+                    this.data.push(this.selectedCulture);
+                }
             },
             remove: function (index) {
-                store.removeOption(index);
-            },
-            uncheck: function (index) {
-                if (index === previouslyChecked) {
-                    $('#customRadio_' + index)[0].checked = false;
-                    store.state.selected = null;
-                    previouslyChecked = null;
-                }
-                else {
-                    previouslyChecked = index;
-                }
+                this.data.splice(index, 1);
             },
             getSupportedCultures: function () {
-                return JSON.stringify(store.state.options);
+                return JSON.stringify(this.data);
             },
             getDefaultCulture: function () {
-                return store.state.selected;
+                var result = defaultValue;
+                if (this.defaultCulture != null) {
+                    result = this.defaultCulture;
+                }
+                return result;
+            },
+            getAllCultures: function () {
+                return this.AllCultures;
             }
         }
     };
@@ -57,7 +41,10 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedCulture) {
             optionsTable: optionsTable
         },
         data: {
-            sharedState: store.state
+            allCultures: list,
+            supportedCultures: data,
+            defaultCulture: defaultValue,
+            selectedCulture: selectedValue
         },
         el: elem
     });
