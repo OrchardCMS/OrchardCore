@@ -21,7 +21,7 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
                         return ele.Name == culture;
                     });
 
-                    if (selectedCulture != null) {
+                    if (selectedCulture.length > 0) {
                         selectedCulture[0].Supported = true;
                     }
 
@@ -29,7 +29,9 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
                         return ele.Supported == false
                     });
 
-                    this.selectedCulture = allUnsupportedCultures[0].Name;
+                    if (allUnsupportedCultures.length > 0) {
+                        this.selectedCulture = allUnsupportedCultures[0].Name;
+                    }
                 }
             },
             remove: function (index) {
@@ -39,7 +41,7 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
                     return ele.Name == selectedCulture;
                 });
 
-                if (cultureRemoved != null) {
+                if (cultureRemoved.length > 0) {
                     cultureRemoved[0].Supported = false;
                 }
 
@@ -49,7 +51,9 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
                     return ele.Supported == false
                 });
 
-                this.selectedCulture = allUnsupportedCultures[0].Name;
+                if (allUnsupportedCultures.length > 0) {
+                    this.selectedCulture = allUnsupportedCultures[0].Name;
+                }
             },
             getSupportedCultures: function () {
                 return JSON.stringify(this.data);
