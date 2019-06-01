@@ -15,10 +15,41 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
             add: function () {
                 if (!this.data.includes(this.selectedCulture)) {
                     this.data.push(this.selectedCulture);
+
+                    var culture = this.selectedCulture;
+                    var selectedCulture = this.allCultures.filter(function (ele) {
+                        return ele.Name == culture;
+                    });
+
+                    if (selectedCulture != null) {
+                        selectedCulture[0].Supported = true;
+                    }
+
+                    var allUnsupportedCultures = this.allCultures.filter(function (ele) {
+                        return ele.Supported == false
+                    });
+
+                    this.selectedCulture = allUnsupportedCultures[0].Name;
                 }
             },
             remove: function (index) {
+
+                var selectedCulture = this.data[index];
+                cultureRemoved = this.list.filter(function (ele) {
+                    return ele.Name == selectedCulture;
+                });
+
+                if (cultureRemoved != null) {
+                    cultureRemoved[0].Supported = false;
+                }
+
                 this.data.splice(index, 1);
+
+                var allUnsupportedCultures = this.allCultures.filter(function (ele) {
+                    return ele.Supported == false
+                });
+
+                this.selectedCulture = allUnsupportedCultures[0].Name;
             },
             getSupportedCultures: function () {
                 return JSON.stringify(this.data);
