@@ -1,6 +1,6 @@
 @model LocalizationSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 @{ 
     // ['fr-FR', 'en-US']
@@ -21,25 +21,26 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">@T["Culture"]</th>
-                    <th scope="col" colspan="3">@T["Default Culture"]</th>
+                    <th>@T["Culture"]</th>
+                    <th class="text-center">@T["Default culture"]</th>
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(option, index) in data.options" :key="index">
+                <tr v-for="(culture, index) in data.options" :key="index">
                     <td>
-                        <span>{{ option }}</span>
-                        <input type="hidden" class="form-control" v-bind:value="option" />
+                        <span>{{ culture }}</span>
+                        <input type="hidden" class="form-control" v-bind:value="culture" />
                     </td>
                     <td class="text-center align-middle">
                         <div class="custom-control custom-radio ml-2">
-                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" v-bind:value="option" v-model="data.selected" v-on:click="uncheck(index)">
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" v-bind:value="culture" v-model="data.selected" v-on:click="uncheck(index)">
                             <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
                         </div>
                     </td>
-                    <td class="text-center">
-                        <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
-                            <i class="fas fa-times"></i>
+                    <td>
+                        <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void" class="btn btn-secondary" style="cursor:pointer">
+                            <i class="fas fa-trash"></i>
                         </a>
                     </td>
                 </tr>
@@ -56,7 +57,7 @@
                 </select>
             </div>
             <div class="col">
-                <a v-on:click="add()" href="javascript:void" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
+                <a v-on:click="add()" href="javascript:void" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add culture"]</a>
             </div>
         </div>
 
@@ -69,7 +70,7 @@
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
 
     <div class="row">
-        <fieldset class="col-sm-6">
+        <fieldset class="col-xl-6">
             <label>@T["Define which cultures are supported by the site."]</label>
             <options-table :data="sharedState"></options-table>
         </fieldset>
