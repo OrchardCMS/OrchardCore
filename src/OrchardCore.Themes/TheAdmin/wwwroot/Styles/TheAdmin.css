@@ -9192,6 +9192,10 @@ html[dir], [dir] body {
 
 [dir] body {
   margin-bottom: 40px; }
+[dir=rtl] .dropdown-menu {
+  left: auto !important;
+  right: 0px !important;
+  transform: translate3d(0px, 38px, 0px) !important; }
 
 .left-sidebar-compact .ta-footer {
   width: calc(100% - 60px);
