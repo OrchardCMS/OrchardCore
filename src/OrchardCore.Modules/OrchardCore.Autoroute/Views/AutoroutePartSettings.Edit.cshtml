@@ -12,7 +12,7 @@
 <div class="form-group row">
     <div class="col-lg">
         <label asp-for="Pattern">@T["Pattern"]</label>
-        <input asp-for="Pattern" class="form-control d-none" />
+        <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the custom url of this content type."]</span>
     </div>
 </div>
@@ -45,6 +45,7 @@
     //<![CDATA[
     $(function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
+            autoRefresh: true,
             lineNumbers: true,
             styleActiveLine: true,
             matchBrackets: true,
