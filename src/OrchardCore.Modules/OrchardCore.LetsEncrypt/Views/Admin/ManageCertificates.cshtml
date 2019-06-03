@@ -1,0 +1,79 @@
+@using Microsoft.Azure.Management.AppService.Fluent.Models
+@model OrchardCore.LetsEncrypt.ViewModels.ManageCertificatesViewModel
+
+<h1>@RenderTitleSegments(T["Let's Encrypt - Manage Certificates"])</h1>
+
+<h3 class="mt-3">@T["Hostname SSL Bindings"]</h3>
+<ul class="list-group">
+    @if (Model.HostNameSslStates.Any())
+    {
+        @foreach (var hostNameSslState in Model.HostNameSslStates)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div>@hostNameSslState.Value.Name</div>
+                    @if (!string.IsNullOrEmpty(hostNameSslState.Value.Thumbprint))
+                    {
+                        <code class="hint">Thumbprint: @hostNameSslState.Value.Thumbprint</code>
+                    }
+                    <div>
+                        @switch (hostNameSslState.Value.SslState)
+                        {
+                            case SslState.Disabled:
+                                <span class="badge badge-dark">@T["Disabled"]</span>
+                                break;
+                            case SslState.SniEnabled:
+                                <span class="badge badge-info">@T["SNI Enabled"]</span>
+                                break;
+                            case SslState.IpBasedEnabled:
+                                <span class="badge badge-success">@T["IP Based Enabled"]</span>
+                                break;
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["There are no hostname SSL bindings."]
+        </div>
+    }
+</ul>
+
+<form asp-action="InstallCertificate">
+    <h3 class="mt-3">@T["Request and Install Certificate"]</h3>
+    <div class="row">
+        <div class="form-group col-md-6" asp-validation-class-for="Hostnames">
+            <label for="Hostnames">@T["Hostnames"] <span asp-validation-for="Hostnames"></span></label>
+            <select asp-for="Hostnames" id="hostnames" class="form-control" multiple="multiple" size="3" style="min-height: 0;">
+                @foreach (var hostName in Model.AvailableHostNames.Where(h => !h.EndsWith("azurewebsites.net")))
+                {
+                    <option value="@hostName">@hostName</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6" asp-validation-class-for="RegistrationEmail">
+            <label for="Email">@T["Registration Email"] <span asp-validation-for="RegistrationEmail"></span></label>
+            <input asp-for="RegistrationEmail" id="registration-email" class="form-control" />
+            <span class="text-muted form-text small">@T["The email address to use for the Let's Encrypt account."]</span>
+        </div>
+    </div>
+    <div class="row">
+        <fieldset class="form-group col-md-12">
+            <div class="custom-control custom-checkbox ">
+                <input type="checkbox" id="use-staging" class="custom-control-input" name="UseStaging" value="true" />
+                <label class="custom-control-label" for="use-staging">@T["Use Staging"]</label>
+                <span class="hint">@T["— {0}", "You can only request 5 certificates per week for the same domain. If you are running test check this so you can make unlimited requests."]</span>
+            </div>
+        </fieldset>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            <button class="btn btn-primary" type="submit">@T["Request and install certificate"]</button>
+        </div>
+    </div>
+</form>

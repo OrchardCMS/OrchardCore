@@ -1,0 +1,58 @@
+@using OrchardCore.LetsEncrypt.Settings
+@model LetsEncryptAzureAuthSettings;
+
+<h3>@T["Azure Authentication"]</h3>
+
+<fieldset class="form-group" asp-validation-class-for="Tenant">
+    <label>@T["Tenant"] <span asp-validation-for="Tenant"></span></label>
+    <input asp-for="Tenant" class="form-control" />
+    <span class="hint">@T["The tenant name e.g. myazuretenant.onmicrosoft.com."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="SubscriptionId">
+    <label>@T["Subscription Id"] <span asp-validation-for="SubscriptionId"></span></label>
+    <input asp-for="SubscriptionId" class="form-control" />
+    <span class="hint">@T["The subscription id: TODO: Add better description."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ClientId">
+    <label>@T["Client Id"] <span asp-validation-for="ClientId"></span></label>
+    <input asp-for="ClientId" class="form-control" />
+    <span class="hint">@T["The client id of the service principal."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ClientSecret">
+    <label>@T["Client Secret"] <span asp-validation-for="ClientSecret"></span></label>
+    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
+    <span class="hint">@T["The secret for the service principal."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ResourceGroupName">
+    <label>@T["Resource Group Name"] <span asp-validation-for="ResourceGroupName"></span></label>
+    <input asp-for="ResourceGroupName" class="form-control" />
+    <span class="hint">@T["The name of the resource group this web app belongs to."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="ServicePlanResourceGroupName">
+    <label>@T["Service Plan Resource Group Name"] <span asp-validation-for="ServicePlanResourceGroupName"></span></label>
+    <input asp-for="ServicePlanResourceGroupName" class="form-control" />
+    <span class="hint">@T["The name of the resource group that the app service plan hosting the web app (only required if the app service plan is in a different resource group than the web app)."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="UseIPBasedSSL">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseIPBasedSSL">
+        <label class="custom-control-label" asp-for="UseIPBasedSSL">@T["Use IP Based SSL"]</label>
+        <span class="hint">@T["Check this if you want the certificate to be bound to the WebApps' IP address instead of using SNI. With IP based SSL additional costs might be charged."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="WebAppName">
+    <label>@T["Web App Name"] <span asp-validation-for="WebAppName"></span></label>
+    <input asp-for="WebAppName" class="form-control" />
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="SiteSlotName">
+    <label>@T["Site Slot Name"] <span asp-validation-for="SiteSlotName"></span></label>
+    <input asp-for="SiteSlotName" class="form-control" />
+</fieldset>

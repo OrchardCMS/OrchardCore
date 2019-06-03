@@ -375,7 +375,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocaliza
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Github", "src\OrchardCore.Modules\OrchardCore.Github\OrchardCore.Github.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.LetsEncrypt", "src\OrchardCore.Modules\OrchardCore.LetsEncrypt\OrchardCore.LetsEncrypt.csproj", "{E3D400B7-522C-435F-94D3-93A47A9D0118}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -999,6 +1001,10 @@ Global
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3D400B7-522C-435F-94D3-93A47A9D0118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3D400B7-522C-435F-94D3-93A47A9D0118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3D400B7-522C-435F-94D3-93A47A9D0118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3D400B7-522C-435F-94D3-93A47A9D0118}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1175,6 +1181,7 @@ Global
 		{C2EA489A-B51B-40CE-BE71-8EC9774075C6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{E3D400B7-522C-435F-94D3-93A47A9D0118} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
