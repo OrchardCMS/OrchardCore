@@ -7,9 +7,16 @@ import { buildClientSchema, getIntrospectionQuery } from "graphql";
 import "graphiql/graphiql.css";
 import "../css/graphiql-orchard.css";
 
+function getIntrospectionUrl(): string {
+    return document
+        .getElementById("graphiql")
+        .dataset.introspectionUrl;
+}
+
 function fetcher(params: Object): Promise<any> {
+    var introspectionUrl = getIntrospectionUrl();
     return fetch(
-        "/api/graphql",
+        introspectionUrl,
         {
             method: "POST",
             headers: {
