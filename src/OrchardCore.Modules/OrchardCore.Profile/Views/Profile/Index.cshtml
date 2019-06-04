@@ -7,8 +7,8 @@
         padding-bottom: 0px;
     }
 
-    #main form{
-        margin-top:0px !important;
+    #main form {
+        margin-top: 0px !important;
     }
 
     .profileRow {
@@ -38,17 +38,20 @@
     a{
         color: #007bff;
     }
+
         a:hover {
             color: #003f84;
         }
+
     .btn-primary {
         background-color: #007bff;
         border-color: #007bff;
     }
-        button:hover {
-            background-color: #003f84;
-            border-color: #003f84;
-        }
+
+    button:hover {
+        background-color: #003f84;
+        border-color: #003f84;
+    }
 
     .status {
         font-size: 14px;
@@ -74,7 +77,7 @@
 
 <div class="row">
     <div class="col-md-3">
-        <div class="list-group" id="myList">          
+        <div class="list-group" id="myList">
             @await RenderSectionAsync("ProfileNavigation", required: true)
         </div>
     </div>
