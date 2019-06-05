@@ -28,8 +28,7 @@ function toggleConnectionStringAndPrefix() {
             ? $(".pwd").attr('required', 'required')
             : $(".pwd").removeAttr('required');
 
-        $("#connectionStringHint").html($("#connectionStringHint")
-            .data($(this).data("connection-string-hint-name")));
+        $("#connectionStringHint").html($(this).data("connection-string-sample"));
     });
 }
 

@@ -58,7 +58,7 @@
                 <option value="" data-connection-string="false">@T["None"]</option>
                 @foreach (var provider in DatabaseProviders)
                 {
-                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-hint-name="@($"{provider.Name.ToLower()}-connectionstring")">@provider.Name</option>
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T[provider.SampleConnectionString]">@provider.Name</option>
                 }
             </select>
         </div>
@@ -74,11 +74,7 @@
             <label asp-for="ConnectionString">@T["Connection string"]</label>
             <input asp-for="ConnectionString" class="form-control" />
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
-            <span id="connectionStringHint" class="text-muted form-text small"
-                  data-sqlserver-connectionstring="@T["The connection string to your database instance. e.g., Server=<em>localhost</em>;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>"]"
-                  data-mysql-connectionstring="@T["The connection string to your database instance. e.g., Server=<em>localhost</em>;Database=<em>Orchard</em>;Uid=<em>username</em>;Pwd=<em>password</em>"]"
-                  data-postgres-connectionstring="@T["The connection string to your database instance. e.g., Server=<em>localhost</em>;Port=5432;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>"]">
-            </span>
+            <span id="connectionStringHint" class="text-muted form-text small"></span>
         </div>
     </fieldset>
 
