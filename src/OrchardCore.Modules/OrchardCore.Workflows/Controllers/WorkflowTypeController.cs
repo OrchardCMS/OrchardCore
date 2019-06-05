@@ -343,22 +343,22 @@ namespace OrchardCore.Workflows.Controllers
             var workflow = _workflowManager.NewWorkflow(workflowType);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
             var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
-            var activityThumbnailDisplayTasks = availableActivities.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Thumbnail"));
-            var activityDesignDisplayTasks = activityContexts.Select(async (x, i) => await BuildActivityDisplay(x, i, id, newLocalId, "Design"));
             var workflowCount = await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).CountAsync();
 
-            await Task.WhenAll(activityThumbnailDisplayTasks.Concat(activityDesignDisplayTasks));
-
             var activityThumbnailShapes = new List<dynamic>();
-            foreach (var thumbnailTask in activityThumbnailDisplayTasks)
+            var index = 0;
+
+            foreach (var activity in availableActivities)
             {
-                activityThumbnailShapes.Add(await thumbnailTask);
+                activityThumbnailShapes.Add(await BuildActivityDisplay(activity, index++, id, newLocalId, "Thumbnail"));
             }
 
             var activityDesignShapes = new List<dynamic>();
-            foreach (var designDisplayTask in activityDesignDisplayTasks)
+            index = 0;
+
+            foreach (var activityContext in activityContexts)
             {
-                activityDesignShapes.Add(await designDisplayTask);
+                activityDesignShapes.Add(await BuildActivityDisplay(activityContext, index++, id, newLocalId, "Design"));
             }
 
             var activitiesDataQuery = activityContexts.Select(x => new
