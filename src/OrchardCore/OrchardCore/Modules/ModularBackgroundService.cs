@@ -305,7 +305,12 @@ namespace OrchardCore.Modules
         {
             var context = shell.Settings.CreateHttpContext();
 
-            context.Features.Set(shell);
+            context.Features.Set(new ShellContextFeature
+            {
+                ShellContext = shell,
+                OriginalPathBase = String.Empty,
+                OriginalPath = "/"
+            });
 
             return context;
         }

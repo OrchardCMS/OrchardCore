@@ -30,6 +30,7 @@ using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -289,7 +290,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
 
             var routeData = new RouteData();
-            routeData.Routers.Add(shellContext?.Router ?? new RouteCollection());
+            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
+            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
             return new ActionContext(httpContext, routeData, new ActionDescriptor());
         }
 
