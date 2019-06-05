@@ -5,11 +5,11 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Settings;
-using OrchardCore.Facebook.ViewModels;
+using OrchardCore.Facebook.Login.Settings;
+using OrchardCore.Facebook.Login.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Drivers
+namespace OrchardCore.Facebook.Login.Drivers
 {
     public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
     {

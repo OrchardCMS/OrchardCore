@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using OrchardCore.Facebook.Settings;
+using OrchardCore.Facebook.Login.Settings;
 
-namespace OrchardCore.Facebook.Services
+namespace OrchardCore.Facebook.Login.Services
 {
     public interface IFacebookLoginService
     {
