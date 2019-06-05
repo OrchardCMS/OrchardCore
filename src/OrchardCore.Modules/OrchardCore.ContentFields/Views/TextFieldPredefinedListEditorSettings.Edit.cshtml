@@ -31,11 +31,11 @@
                 <td class="text-center align-middle">
                     <div class="custom-control custom-radio ml-2">
                         <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
-                        <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                        <label class="custom-control-label" title="@T["Set as default"]" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
                 <td class="text-center">
-                    <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
+                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
                         <i class="fas fa-times"></i>
                     </a>
                 </td>
