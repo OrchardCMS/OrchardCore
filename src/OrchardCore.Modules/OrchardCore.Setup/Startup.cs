@@ -15,7 +15,7 @@ namespace OrchardCore.Setup
     public class Startup : StartupBase
     {
         private readonly string _defaultCulture;
-        private readonly string[] _supportedCultures;
+        private string[] _supportedCultures;
 
         public Startup(IShellConfiguration shellConfiguration)
         {
@@ -40,18 +40,14 @@ namespace OrchardCore.Setup
             if (!String.IsNullOrEmpty(_defaultCulture))
             {
                 localizationOptions.SetDefaultCulture(_defaultCulture);
+                _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
             }
 
             if (_supportedCultures?.Length > 0)
             {
-                var supportedCultures =_supportedCultures
-                    .Concat(new[] { localizationOptions.DefaultRequestCulture.Culture.Name })
-                    .Distinct()
-                    .ToArray();
-
                 localizationOptions
-                    .AddSupportedCultures(supportedCultures)
-                    .AddSupportedUICultures(supportedCultures);
+                    .AddSupportedCultures(_supportedCultures)
+                    .AddSupportedUICultures(_supportedCultures);
             }
 
             app.UseRequestLocalization(localizationOptions);
