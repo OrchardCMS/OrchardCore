@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
+using OrchardCore.Mvc.ActionConstraints;
 using YesSql;
 
 namespace OrchardCore.Menu.Controllers
@@ -66,9 +67,9 @@ namespace OrchardCore.Menu.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Create")]
-        public async Task<IActionResult> CreatePost(string id, string menuContentItemId, string menuItemId)
+        [HttpPost, ActionName("Create")]
+        [FormValueRequired("submit.Publish")]
+        public async Task<IActionResult> CreatePost(string id, [Bind(Prefix = "submit.Publish")] string submitPublish, string menuContentItemId, string menuItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
@@ -76,6 +77,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             ContentItem menu;
+            var createNew = submitPublish.Contains("CreateNew");
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
@@ -132,7 +134,14 @@ namespace OrchardCore.Menu.Controllers
 
             _session.Save(menu);
 
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+            if (createNew)
+            {
+                return RedirectToAction("Create", "Admin", new { area = "OrchardCore.Menu", menuContentItemId, menuItemId });
+            }
+            else
+            {
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+            }
         }
 
         public async Task<IActionResult> Edit(string menuContentItemId, string menuItemId)
@@ -168,8 +177,8 @@ namespace OrchardCore.Menu.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Edit")]
+        [HttpPost, ActionName("Edit")]
+        [FormValueRequired("submit.Save")]
         public async Task<IActionResult> EditPost(string menuContentItemId, string menuItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))

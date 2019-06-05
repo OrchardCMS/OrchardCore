@@ -536,15 +536,7 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            if (returnUrl == null)
-            {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
-            }
-            else if (stayOnSamePage)
-            {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
-            }
-            else if (createNew)
+            if (createNew)
             {
                 var routeValueDictionnary = new RouteValueDictionary { { "id", contentItem.ContentType }, { "returnUrl", returnUrl } };
                 var layerMetadata = contentItem.As<LayerMetadata>();
@@ -559,7 +551,12 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                return LocalRedirect(returnUrl);
+                if (!String.IsNullOrEmpty(returnUrl) && !stayOnSamePage)
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
         }
 
