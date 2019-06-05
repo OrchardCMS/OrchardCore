@@ -5,6 +5,8 @@
 
 @import "../../../../../node_modules/bootstrap/scss/bootstrap";
 @import "modules/_sizes.scss";
+@import "modules/_cursors.scss";
+@import "modules/_word-wrap.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
 
@@ -19,22 +21,13 @@ html, body {
     background-color: #FFF;
 }
 
-
-@mixin word-wrap() {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    -ms-word-break: break-all;
-    word-break: break-all;
-    word-break: break-word;
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-}
-
 body {
     margin-bottom: $footer-height;
+    cursor: default;
 }
+
+@include cursor-class(move);
+@include cursor-class(pointer);
 
 /* rtl:ignore */
 [dir=rtl] .dropdown-menu {
@@ -1107,14 +1100,6 @@ ul.pager li a {
 }
 // Sortable
 // ------------------------------
-.ui-sortable-handle {
-    cursor: move;
-}
-
-.btn.ui-sortable-handle {
-    cursor: move !important;
-}
-
 .ui-sortable {
     min-height: $font-size-base;
 }

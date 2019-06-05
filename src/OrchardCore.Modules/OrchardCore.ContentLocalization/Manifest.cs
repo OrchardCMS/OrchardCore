@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = "http://orchardproject.net",
     Version = "1.0.0",
     Description = "Provides a part that allows to localize content items.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Localization" },
     Category = "Internationalization"
 )]

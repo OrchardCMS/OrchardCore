@@ -60,11 +60,16 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return CoerceHtmlString(context.Value);
             }
 
+            // Copy the current context such that the rendering can customize it if necessary
+            // For instance to change the HtmlFieldPrefix
+            var localContext = new DisplayContext(context);
+            localContext.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
+
             var displayContext = new ShapeDisplayContext
             {
                 Shape = shape,
                 ShapeMetadata = shapeMetadata,
-                DisplayContext = context,
+                DisplayContext = localContext,
                 ServiceProvider = _serviceProvider
             };
 
@@ -72,10 +77,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 var theme = await _themeManager.GetThemeAsync();
                 var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
-
-                // Use the same prefix as the shape
-                var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
 
                 // Evaluate global Shape Display Events
                 await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);
@@ -119,7 +120,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                         // invoking ShapeMetadata processing events, this includes the Drivers results
                         await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
 
-                        shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
+                        shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, localContext);
                     }
                     else
                     {
@@ -135,7 +136,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                         ShapeBinding frameBinding;
                         if (TryGetDescriptorBinding(frameType, Enumerable.Empty<string>(), shapeTable, out frameBinding))
                         {
-                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, context);
+                            shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
                         }
                     }
 
@@ -170,9 +171,6 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                 // invoking ShapeMetadata displayed events
                 shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
-
-                //restore original HtmlFieldPrefix
-                context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
             }
             finally
             {
