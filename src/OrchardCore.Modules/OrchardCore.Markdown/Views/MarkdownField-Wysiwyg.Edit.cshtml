@@ -7,8 +7,7 @@
 }
 
 <script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
-<style name="simplemde" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css"></style>
-
+<style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
 
 <fieldset class="form-group">
     <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
@@ -23,13 +22,10 @@
     $(function () {
         var simplemde = new SimpleMDE({
             element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
-            forceSync: true
+            forceSync: true,
+            toolbar: simplemdeToolbar,
+            autoDownloadFontAwesome :false
         });
-
-        if (simplemdeInitialized !== true) {
-            simplemdeInitialized = true;
-            $(document).trigger('simplemde:initialize', [simplemde]);
-        }
 
         simplemde.codemirror.on('change', function () {
             $(document).trigger('contentpreview:render');

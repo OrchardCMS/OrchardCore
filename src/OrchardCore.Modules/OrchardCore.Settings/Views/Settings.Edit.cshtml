@@ -52,38 +52,4 @@
         <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
     </fieldset>
 
-    <fieldset class="form-group col-xl-6" asp-validation-class-for="Culture">
-        <label asp-for="Culture">@T["Default Culture"]</label>
-        <select asp-for="Culture" class="form-control">
-            @if (!String.IsNullOrWhiteSpace(CultureInfo.InstalledUICulture.Name))
-            {
-                <option value="">@T["System ({0} | {1})", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</option>
-            }
-            else
-            {
-                <option value="">@T["System ({0})", !String.IsNullOrEmpty(CultureInfo.InstalledUICulture.DisplayName) ? CultureInfo.InstalledUICulture.DisplayName : CultureInfo.InstalledUICulture.NativeName]</option>
-            }
-
-            @foreach (var culture in Model.SiteCultures)
-            {
-                <option value="@if (!String.IsNullOrEmpty(culture.Name)) { @culture.Name } else { @culture.LCID }" selected="@String.Equals(Model.Culture, culture.Name, StringComparison.OrdinalIgnoreCase)">
-                    @if (!String.IsNullOrWhiteSpace(culture.Name))
-                    {
-                        @culture.Name <text> | </text>
-                    }
-                    @if (!String.IsNullOrWhiteSpace(culture.DisplayName))
-                    {
-                        @culture.DisplayName
-                    }
-                    else
-                    {
-                        @culture.NativeName
-                    }
-                </option>
-            }
-        </select>
-        <span asp-validation-for="Culture"></span>
-        <span class="hint">@T["Determines the default culture used. It is recommended to assign a default culture manually since the system culture can differ from a system to an other."]</span>
-        <p>@Html.ActionLink(T["Add or remove supported cultures for the site"].Value, "Culture")</p>
-    </fieldset>
 </div>

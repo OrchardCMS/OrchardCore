@@ -77,7 +77,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
 
-            services.AddTransient<ICalendarManager, DefaultCalendarManager>();
+            services.AddScoped<ILocalizationService, DefaultLocalizationService>();
+            services.AddScoped<ICalendarManager, DefaultCalendarManager>();
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
