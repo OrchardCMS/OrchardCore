@@ -7,8 +7,8 @@ namespace OrchardCore.Localization.TagHelpers
 	[HtmlTargetElement("culture-picker")]
 	public class CulturePickerTagHelper : BaseShapeTagHelper
 	{
-		public CulturePickerTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory):
-			base(shapeFactory, displayHelperFactory)
+		public CulturePickerTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper):
+			base(shapeFactory, displayHelper)
 		{
 			Type = "CulturePicker";
 		}
