@@ -28,9 +28,8 @@ function toggleConnectionStringAndPrefix() {
             ? $(".pwd").attr('required', 'required')
             : $(".pwd").removeAttr('required');
 
-        var dataProvider = $(this).text().replace(/\s/g, '').toLowerCase();
-        var connectionStringHint = $("#connectionStringHint").data(dataProvider + "-connectionstring");
-        $("#connectionStringHint").html(connectionStringHint);
+        $("#connectionStringHint").html($("#connectionStringHint")
+            .data($(this).data("connection-string-hint-name")));
     });
 }
 

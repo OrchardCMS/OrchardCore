@@ -148,7 +148,7 @@
                 <select asp-for="DatabaseProvider" class="form-control" required>
                     @foreach (var provider in Model.DatabaseProviders)
                     {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-hint-name="@($"{provider.Name.ToLower()}-connectionstring")">@provider.Name</option>
                     }
                 </select>
                 <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
