@@ -53,7 +53,6 @@ namespace OrchardCore.Lists.AdminNodes
 
             if (_node.AddContentTypeAsParent)
             {
-
                 if (_contentType == null)
                 {
                     _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
@@ -90,7 +89,6 @@ namespace OrchardCore.Lists.AdminNodes
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
         {
-
             foreach (var ci in await getContentItemsAsync())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
