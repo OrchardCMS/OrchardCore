@@ -42,9 +42,9 @@ namespace OrchardCore.Media.Services
         /// <remarks>
         /// To be used by content handlers when the content item is deleted
         /// </remarks>
-        public async Task DeleteContentItemFolder(ContentItem contentItem)
+        public Task DeleteContentItemFolderAsync(ContentItem contentItem)
         {
-            await _fileStore.TryDeleteDirectoryAsync(GetContentItemFolder(contentItem));
+            return _fileStore.TryDeleteDirectoryAsync(GetContentItemFolder(contentItem));
         }
 
         /// <summary>

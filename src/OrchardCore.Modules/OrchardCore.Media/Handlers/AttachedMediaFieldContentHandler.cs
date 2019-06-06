@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Handlers
         {
             if (context.NoActiveVersionLeft)
             {
-                await _attachedMediaFieldFileService.DeleteContentItemFolder(context.ContentItem);
+                await _attachedMediaFieldFileService.DeleteContentItemFolderAsync(context.ContentItem);
             }
         }
     }
