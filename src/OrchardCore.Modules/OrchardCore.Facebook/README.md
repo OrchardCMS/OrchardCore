@@ -6,6 +6,7 @@
 
 - Core Components
 - Facebook Login
+- Facebook Widgets
 
 Configuration can be set through the _Configuration -> Facebook_ settings menu in the admin dashboard.
 
@@ -17,8 +18,16 @@ Available settings are:
 
 - AppId: Facebook application id.
 - AppSecret: The application secret.
+- Javascript SDK Version: The FB SDK to load
+- Javascript Sdk js: The sdk js file to load
+- Init on every page: If set the sdk is loaded on every page, otherwise on demand.
+- Parameters for the FB.init() call: a comma seperated key-values that are passed to the FB.init() function
 
-Both settings are available in the [facebook for developers application's](https://developers.facebook.com/apps) page, under Basic Settings.
+Check [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/quickstart) for more info.
+
+AppId and AppSecret settings are available in the [facebook for developers application's](https://developers.facebook.com/apps) page, under Basic Settings.
+
+It registers the sdk with ResourceManager (resources: fb and fbsdk), so you can use it from liquid or razor templates
 
 ## Facebook Login
 
@@ -38,3 +47,15 @@ If no value is provided, setup facebook app to use the default path /signin-face
 
 - If you want to enable new users to register to the site through their Facebook login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - An existing user can link his account to his Facebook login through the External Logins link from User menu
+
+## Facebook Social Plugins Widgets
+
+This modules adds a FacebookPlugin part that can be used to integrate the [Social Plugins](https://developers.facebook.com/docs/plugins)
+It defines the following widgets
+- Chat
+- Comments
+- Continue With
+- Like
+- Quote
+- Save
+- Share
