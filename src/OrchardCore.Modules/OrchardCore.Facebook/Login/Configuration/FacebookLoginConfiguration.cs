@@ -8,25 +8,26 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using OrchardCore.Modules;
+using OrchardCore.Facebook.Login.Services;
+using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Facebook.Configuration
+namespace OrchardCore.Facebook.Login.Configuration
 {
     [Feature(FacebookConstants.Features.Login)]
     public class FacebookLoginConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<FacebookOptions>
     {
-        private readonly IFacebookCoreService _coreService;
+        private readonly IFacebookService _coreService;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger<FacebookLoginConfiguration> _logger;
 
         public FacebookLoginConfiguration(
-            IFacebookCoreService coreService,
+            IFacebookService coreService,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<FacebookLoginConfiguration> logger)
@@ -109,7 +110,7 @@ namespace OrchardCore.Facebook.Configuration
             return settings;
         }
 
-        private async Task<FacebookCoreSettings> GetFacebookCoreSettingsAsync()
+        private async Task<FacebookSettings> GetFacebookCoreSettingsAsync()
         {
             var settings = await _coreService.GetSettingsAsync();
             if ((await _coreService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))

@@ -1,12 +1,10 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using OrchardCore.Facebook.Services;
+using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OrchardCore.Facebook.Settings.FacebookCoreSettings;
 
-namespace OrchardCore.Facebook.Recipes
+namespace OrchardCore.Facebook.Login.Recipes
 {
     /// <summary>
     /// This recipe step sets general OpenID Connect Client settings.
