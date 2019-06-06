@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -44,7 +45,7 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("Begin Routing Request");
             }
 
-            var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
+            var shellContext = ShellScope.Context;
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
@@ -69,7 +70,7 @@ namespace OrchardCore.Modules
                 {
                     if (shellContext.Pipeline == null)
                     {
-                        shellContext.Pipeline = BuildTenantPipeline(shellContext, httpContext.RequestServices);
+                        shellContext.Pipeline = BuildTenantPipeline();
                     }
                 }
 
@@ -84,16 +85,18 @@ namespace OrchardCore.Modules
         }
 
         // Build the middleware pipeline for the current tenant
-        public RequestDelegate BuildTenantPipeline(ShellContext shellContext, IServiceProvider scopeServiceProvider)
+        private IShellPipeline BuildTenantPipeline()
         {
-            var appBuilder = new ApplicationBuilder(shellContext.ServiceProvider, _features);
+            var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
+            var shellPipeline = new ShellRequestPipeline();
+
             Action<IApplicationBuilder> configure = builder =>
             {
-                ConfigureTenantPipeline(builder, shellContext, scopeServiceProvider);
+                shellPipeline.Router = ConfigureTenantPipeline(builder);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -103,12 +106,12 @@ namespace OrchardCore.Modules
 
             configure(appBuilder);
 
-            var pipeline = appBuilder.Build();
+            shellPipeline.Next = appBuilder.Build();
 
-            return pipeline;
+            return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder, ShellContext shellContext, IServiceProvider scopeServiceProvider)
+        private IRouter ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
@@ -125,7 +128,7 @@ namespace OrchardCore.Modules
             // And the ShellSettings test in TenantRoute would also be useless.
             foreach (var startup in startups)
             {
-                startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
+                startup.Configure(appBuilder, routeBuilder, ShellScope.Services);
             }
 
             tenantRouteBuilder.Configure(routeBuilder);
@@ -133,7 +136,8 @@ namespace OrchardCore.Modules
             var router = routeBuilder.Build();
 
             appBuilder.UseRouter(router);
-            shellContext.Router = router;
+
+            return router;
         }
     }
 }
