@@ -8,11 +8,15 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public override Task ExecuteAsync()
         {
+            var viewContextAccessor = Context.RequestServices.GetRequiredService<ViewContextAccessor>();
+
+            if (viewContextAccessor.ViewContext == null)
+            {
+                viewContextAccessor.ViewContext = ViewContext;
+            }
+
             if (RenderAsync != null && ViewContext.ExecutingFilePath == LiquidViewsFeatureProvider.DefaultRazorViewPath)
             {
-                var viewContextAccessor = Context.RequestServices.GetRequiredService<ViewContextAccessor>();
-                viewContextAccessor.ViewContext = ViewContext;
-
                 return RenderAsync(ViewContext.Writer);
             }
 

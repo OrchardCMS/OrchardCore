@@ -59,8 +59,8 @@ namespace OrchardCore.DisplayManagement.LocationExpander
 
             var result = new List<string>();
 
-                foreach (var theme in currentThemeAndBaseThemesOrdered)
-                {
+            foreach (var theme in currentThemeAndBaseThemesOrdered)
+            {
                 if (context.AreaName != theme.Id)
                 {
                     var themePagesPath = '/' + theme.Extension.SubPath + "/Pages";
