@@ -54,7 +54,6 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
-
             var viewName = "/" + relativePath;
             viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
 
@@ -114,8 +113,6 @@ namespace OrchardCore.DisplayManagement.Razor
                         _tempDataProvider),
                     output,
                     new HtmlHelperOptions());
-
-                _viewContextAccessor.ViewContext = viewContext;
 
                 await view.RenderAsync(viewContext);
 

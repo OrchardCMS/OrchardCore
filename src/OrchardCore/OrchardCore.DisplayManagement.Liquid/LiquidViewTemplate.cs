@@ -268,8 +268,6 @@ namespace OrchardCore.DisplayManagement.Liquid
                 context.AmbientValues.Add("LiquidPage", razorView.RazorPage);
             }
 
-            // TODO: Extract the request culture
-
             foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
             {
                 await handler.RenderingAsync(context);
