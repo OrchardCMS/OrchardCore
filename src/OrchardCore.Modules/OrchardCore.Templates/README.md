@@ -320,3 +320,27 @@ Instead of rendering the shape directly, you can also access its properties. In 
 ```liquid
 {{ Model.Content["Article-Description"].Field.Text }}
 ```
+
+## Overriding Views
+
+Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not 
+shapes, the way to override them is a little different than mentionned above.
+
+### View Resolution paths
+The `ThemeViewLocationExpanderProvider.cs` file defines the search paths used by the RazorViewEngine.
+
+```
+Views/{2}/{1}/{0}.cshtml
+Views/{2}/Shared/{0}.cshtml
+Views/Shared/{0}.cshtml
+```
+- 2 = area / module
+- 1 = controller
+- 0 = action
+
+### Overriding Login view
+
+For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place 
+it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`. For this particular file, you would also need to select the `Use site theme for login page`
+option under the `Configuration->Login` page in the admin.
+
