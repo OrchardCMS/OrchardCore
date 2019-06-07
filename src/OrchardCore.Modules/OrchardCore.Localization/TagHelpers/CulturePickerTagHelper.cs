@@ -10,7 +10,7 @@ namespace OrchardCore.Localization.TagHelpers
 		public CulturePickerTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper):
 			base(shapeFactory, displayHelper)
 		{
-			Type = "CulturePicker";
+
 		}
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Services;
@@ -26,6 +27,7 @@ namespace OrchardCore.Localization
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
+            services.AddScoped<IShapeTableProvider, CulturePickerShapes>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
 

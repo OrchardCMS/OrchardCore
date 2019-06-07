@@ -1,5 +1,8 @@
 @{
-    var selectedCulture = ViewContext.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+    TagBuilder optionTag = Tag(Model, "option");
+    optionTag.MergeAttributes(Model.Attributes);
+    optionTag.Attributes.Add("value", Model.Value);
+    optionTag.InnerHtml.Append(Model.Text);
 }
 
-<option selected="@(Model.Value == selectedCulture ? "selected" : String.Empty)" value="@Model.Value">@Model.Text</option>
+@optionTag

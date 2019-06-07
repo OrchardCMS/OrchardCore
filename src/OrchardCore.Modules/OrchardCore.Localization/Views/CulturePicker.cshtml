@@ -1,35 +1,6 @@
-@using System.Globalization
-@using Microsoft.Extensions.DependencyInjection
-@using OrchardCore.DisplayManagement
-@using OrchardCore.Localization
-@using OrchardCore.ResourceManagement
-
-@inject IResourceManager ResourceManager
-
-@{
-    var localizationService = ViewContext.HttpContext.RequestServices.GetService<ILocalizationService>();
-
-    AppendLocalizationCookieScript();
-}
-
-@functions{
-    private void AppendLocalizationCookieScript()
-    {
-        var localizationScript = new TagBuilder("script");
-        localizationScript.InnerHtml.AppendHtml($@"function setLocalizationCookie(code) {{
-document.cookie = '{CookieRequestCultureProvider.DefaultCookieName}=c='+code+'|uic='+code;
-window.location.reload();
-}}");
-        ResourceManager.RegisterFootScript(localizationScript);
-    }
-}
-
 <select class="form-control" onchange="setLocalizationCookie(this.value)">
-    @foreach (var culture in await localizationService.GetSupportedCulturesAsync())
+    @foreach (var item in Model.Items)
     {
-        var cultureInfo = CultureInfo.GetCultureInfo(culture);
-        var shape = await (New as IShapeFactory).CreateAsync("CulturePickerItem",
-            Arguments.From(new { Text = cultureInfo.DisplayName, Value = cultureInfo.Name }));
-        @await DisplayAsync(shape);
+        @await DisplayAsync(item);
     }
 </select>
