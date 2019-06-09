@@ -76,7 +76,7 @@ namespace OrchardCore.Media.Services
             // ensure end trailing slash
             childPath = _fileStore.NormalizePath(childPath)
                         .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
-            
+
             return childPath.Equals(_mediaFieldsFolder, StringComparison.InvariantCultureIgnoreCase);
         }
 

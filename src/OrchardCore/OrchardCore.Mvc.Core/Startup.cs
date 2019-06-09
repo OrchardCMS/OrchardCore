@@ -94,9 +94,8 @@ namespace OrchardCore.Mvc
 
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
-            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart(httpContextAccessor));
-            manager.FeatureProviders.Add(new ShellViewFeatureProvider(httpContextAccessor));
+            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart());
+            manager.FeatureProviders.Add(new ShellViewFeatureProvider(services));
         }
 
         internal static void AddMvcModuleCoreServices(IServiceCollection services)

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -31,8 +32,8 @@ namespace OrchardCore.Lucene
         public LuceneIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            LuceneIndexingState indexingState, 
-            LuceneIndexManager indexManager, 
+            LuceneIndexingState indexingState,
+            LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
             ILogger<LuceneIndexingService> logger)
@@ -69,19 +70,21 @@ namespace OrchardCore.Lucene
                 return;
             }
 
-            IndexingTask[] batch;
+            var batch = Array.Empty<IndexingTask>();
 
             do
             {
                 // Create a scope for the content manager
-                using (var scope = await _shellHost.GetScopeAsync(_shellSettings))
+                var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
+
+                await shellScope.UsingAsync(async scope =>
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
                     if (!batch.Any())
                     {
-                        break;
+                        return;
                     }
 
                     foreach (var task in batch)
@@ -123,7 +126,6 @@ namespace OrchardCore.Lucene
                         }
                     }
 
-
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
@@ -137,7 +139,7 @@ namespace OrchardCore.Lucene
 
                     _indexingState.Update();
 
-                } 
+                });
             } while (batch.Length == BatchSize);
         }
 

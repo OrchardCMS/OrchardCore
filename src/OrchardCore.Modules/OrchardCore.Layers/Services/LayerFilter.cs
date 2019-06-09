@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
@@ -25,7 +26,6 @@ namespace OrchardCore.Layers.Services
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IThemeManager _themeManager;
@@ -49,7 +49,6 @@ namespace OrchardCore.Layers.Services
             _contentItemDisplayManager = contentItemDisplayManager;
             _modelUpdaterAccessor = modelUpdaterAccessor;
             _scriptingManager = scriptingManager;
-            _serviceProvider = serviceProvider;
             _memoryCache = memoryCache;
             _signal = signal;
             _themeManager = themeManager;
@@ -84,7 +83,7 @@ namespace OrchardCore.Layers.Services
 				var updater = _modelUpdaterAccessor.ModelUpdater;
 
 				var engine = _scriptingManager.GetScriptingEngine("js");
-				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider, null, null);
+				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
 
 				var layersCache = new Dictionary<string, bool>();
 

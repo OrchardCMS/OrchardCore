@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Liquid
             }
             else
             {
-                var contentItemId = input.ToString();
+                var contentItemId = input.ToStringValue();
 
                 return FluidValue.Create(await contentManager.GetAsync(contentItemId));
             }

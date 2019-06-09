@@ -65,7 +65,7 @@ namespace OrchardCore.Users.Services
                 await _session.CommitAsync();
 
                 var context = new CreateUserContext(user);
-                await Handlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
+                await Handlers.InvokeAsync(handler => handler.CreatedAsync(context), _logger);
             }
             catch
             {

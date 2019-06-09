@@ -67,13 +67,16 @@ namespace OrchardCore.Email.Services
         }
 
         private MimeMessage FromMailMessage(MailMessage message)
-        {
+        {            
+
             var mimeMessage = new MimeMessage
             {
                 Sender = (message.From == null
                     ? new MailboxAddress(_options.DefaultSender)
                     : new MailboxAddress(message.From))
             };
+
+            mimeMessage.From.Add(mimeMessage.Sender);
 
             if (message.To != null)
             {

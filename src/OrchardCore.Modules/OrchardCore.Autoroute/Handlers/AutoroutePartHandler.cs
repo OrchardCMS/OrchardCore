@@ -109,6 +109,7 @@ namespace OrchardCore.Autoroute.Handlers
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
+                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {
