@@ -147,14 +147,10 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private ActionContext GetActionContext()
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
-
             var routeData = new RouteData();
-            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
-            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
+            routeData.Routers.Add(new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            return new ActionContext(_httpContextAccessor.HttpContext, routeData, new ActionDescriptor());
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

@@ -173,7 +173,13 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.StatusCode = (int)httpResult;
             context.Response.ContentType = "application/json";
 
-            await _writer.WriteAsync(context.Response.Body, result);
+            using (var stream = new MemoryStream())
+            {
+                // We use an intermediate stream because 'IDocumentWriter' does a synchronous write
+                // while an asynchronous write is mandatory for the response body.
+                await _writer.WriteAsync(stream, result);
+                await context.Response.Body.WriteAsync(stream.GetBuffer());
+            }
         }
 
         private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
@@ -198,7 +204,13 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
 
-            await _writer.WriteAsync(context.Response.Body, errorResult);
+            using (var stream = new MemoryStream())
+            {
+                // We use an intermediate stream because 'IDocumentWriter' does a synchronous write
+                // while an asynchronous write is mandatory for the response body.
+                await _writer.WriteAsync(stream, errorResult);
+                await context.Response.Body.WriteAsync(stream.GetBuffer());
+            }
         }
     }
 }

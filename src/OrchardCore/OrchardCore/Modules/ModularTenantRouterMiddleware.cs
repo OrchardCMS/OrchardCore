@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
@@ -96,7 +95,7 @@ namespace OrchardCore.Modules
 
             Action<IApplicationBuilder> configure = builder =>
             {
-                shellPipeline.Router = ConfigureTenantPipeline(builder);
+                ConfigureTenantPipeline(builder);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -111,33 +110,21 @@ namespace OrchardCore.Modules
             return shellPipeline;
         }
 
-        private IRouter ConfigureTenantPipeline(IApplicationBuilder appBuilder)
+        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with an Order of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal Order values.
-            startups = startups.OrderBy(s => s.Order);
+            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
-            var routeBuilder = tenantRouteBuilder.Build(appBuilder);
-
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
-            // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSettings. This way there would just be one lookup.
-            // And the ShellSettings test in TenantRoute would also be useless.
-            foreach (var startup in startups)
+            appBuilder.UseRouting().UseEndpoints(routes =>
             {
-                startup.Configure(appBuilder, routeBuilder, ShellScope.Services);
-            }
-
-            tenantRouteBuilder.Configure(routeBuilder);
-
-            var router = routeBuilder.Build();
-
-            appBuilder.UseRouter(router);
-
-            return router;
+                foreach (var startup in startups)
+                {
+                    startup.Configure(appBuilder, routes, ShellScope.Services);
+                }
+            });
         }
     }
 }
