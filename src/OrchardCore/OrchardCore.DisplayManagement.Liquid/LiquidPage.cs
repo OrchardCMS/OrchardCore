@@ -1,6 +1,5 @@
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -10,9 +9,6 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (RenderAsync != null && ViewContext.ExecutingFilePath == LiquidViewsFeatureProvider.DefaultRazorViewPath)
             {
-                var viewContextAccessor = Context.RequestServices.GetRequiredService<ViewContextAccessor>();
-                viewContextAccessor.ViewContext = ViewContext;
-
                 return RenderAsync(ViewContext.Writer);
             }
 

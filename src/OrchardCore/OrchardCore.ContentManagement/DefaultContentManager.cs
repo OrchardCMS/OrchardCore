@@ -61,18 +61,18 @@ namespace OrchardCore.ContentManagement
             };
 
             // invoke handlers to weld aspects onto kernel
-            await Handlers.InvokeAsync(async handler => await handler.ActivatingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.ActivatingAsync(context), _logger);
 
             var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.ActivatedAsync(context2), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.ActivatedAsync(context2), _logger);
 
             var context3 = new InitializingContentContext(context2.ContentItem);
 
-            await Handlers.InvokeAsync(async handler => await handler.InitializingAsync(context3), _logger);
-            await ReversedHandlers.InvokeAsync(async handler => await handler.InitializedAsync(context3), _logger);
+            await Handlers.InvokeAsync(handler => handler.InitializingAsync(context3), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.InitializedAsync(context3), _logger);
 
             // composite result is returned
             return context3.ContentItem;
@@ -116,7 +116,7 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems[i] = await LoadAsync(contentItems[i]);
             }
-            
+
             return contentItems.OrderBy(c => contentItemIds.ToImmutableArray().IndexOf(c.ContentItemId));
         }
 
@@ -209,8 +209,8 @@ namespace OrchardCore.ContentManagement
                 var context = new LoadContentContext(contentItem);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                await Handlers.InvokeAsync(async handler => await handler.LoadingAsync(context), _logger);
-                await ReversedHandlers.InvokeAsync(async handler => await handler.LoadedAsync(context), _logger);
+                await Handlers.InvokeAsync(handler => handler.LoadingAsync(context), _logger);
+                await ReversedHandlers.InvokeAsync(handler => handler.LoadedAsync(context), _logger);
 
                 loaded = context.ContentItem;
             }
@@ -250,7 +250,7 @@ namespace OrchardCore.ContentManagement
             var context = new PublishContentContext(contentItem, previous);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            await Handlers.InvokeAsync(async handler => await handler.PublishingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.PublishingAsync(context), _logger);
 
             if (context.Cancel)
             {
@@ -267,7 +267,7 @@ namespace OrchardCore.ContentManagement
 
             _session.Save(contentItem);
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.PublishedAsync(context), _logger);
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -304,13 +304,13 @@ namespace OrchardCore.ContentManagement
                 PublishingItem = null
             };
 
-            await Handlers.InvokeAsync(async handler => await handler.UnpublishingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.UnpublishingAsync(context), _logger);
 
             publishedItem.Published = false;
 
             _session.Save(publishedItem);
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.UnpublishedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context), _logger);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
@@ -353,8 +353,8 @@ namespace OrchardCore.ContentManagement
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
-            await Handlers.InvokeAsync(async handler => await handler.VersioningAsync(context), _logger);
-            await ReversedHandlers.InvokeAsync(async handler => await handler.VersionedAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.VersioningAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.VersionedAsync(context), _logger);
 
             return context.BuildingContentItem;
         }
@@ -378,9 +378,9 @@ namespace OrchardCore.ContentManagement
             var context = new CreateContentContext(contentItem);
 
             // invoke handlers to add information to persistent stores
-            await Handlers.InvokeAsync(async handler => await handler.CreatingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.CreatingAsync(context), _logger);
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.CreatedAsync(context), _logger);
 
             _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
@@ -390,10 +390,10 @@ namespace OrchardCore.ContentManagement
                 var publishContext = new PublishContentContext(contentItem, null);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                await Handlers.InvokeAsync(async handler => await handler.PublishingAsync(publishContext), _logger);
+                await Handlers.InvokeAsync(handler => handler.PublishingAsync(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                await ReversedHandlers.InvokeAsync(async handler => await handler.PublishedAsync(publishContext), _logger);
+                await ReversedHandlers.InvokeAsync(handler => handler.PublishedAsync(publishContext), _logger);
             }
         }
 
@@ -401,8 +401,8 @@ namespace OrchardCore.ContentManagement
         {
             var context = new UpdateContentContext(contentItem);
 
-            await Handlers.InvokeAsync(async handler => await handler.UpdatingAsync(context), _logger);
-            await ReversedHandlers.InvokeAsync(async handler => await handler.UpdatedAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.UpdatingAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.UpdatedAsync(context), _logger);
 
             _session.Save(contentItem);
         }
@@ -415,7 +415,7 @@ namespace OrchardCore.ContentManagement
                 Aspect = aspect
             };
 
-            await Handlers.InvokeAsync(async handler => await handler.GetContentItemAspectAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context), _logger);
 
             return aspect;
         }
@@ -429,7 +429,7 @@ namespace OrchardCore.ContentManagement
 
             var context = new RemoveContentContext(contentItem, true);
 
-            await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.RemovingAsync(context), _logger);
 
             foreach (var version in activeVersions)
             {
@@ -438,7 +438,7 @@ namespace OrchardCore.ContentManagement
                 _session.Save(version);
             }
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.RemovedAsync(context), _logger);
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
@@ -452,14 +452,14 @@ namespace OrchardCore.ContentManagement
 
             var context = new RemoveContentContext(contentItem, publishedItem == null);
 
-            await Handlers.InvokeAsync(async handler => await handler.RemovingAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.RemovingAsync(context), _logger);
 
             contentItem.Latest = false;
             _session.Save(contentItem);
 
-            await ReversedHandlers.InvokeAsync(async handler => await handler.RemovedAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.RemovedAsync(context), _logger);
 
-            
+
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
@@ -477,8 +477,8 @@ namespace OrchardCore.ContentManagement
             context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
             context.CloneContentItem.DisplayText = contentItem.DisplayText;
 
-            await Handlers.InvokeAsync(async handler => await handler.CloningAsync(context), _logger);
-            await ReversedHandlers.InvokeAsync(async handler => await handler.ClonedAsync(context), _logger);
+            await Handlers.InvokeAsync(handler => handler.CloningAsync(context), _logger);
+            await ReversedHandlers.InvokeAsync(handler => handler.ClonedAsync(context), _logger);
 
             _session.Save(context.CloneContentItem);
             return context.CloneContentItem;

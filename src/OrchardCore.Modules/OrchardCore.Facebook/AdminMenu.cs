@@ -26,14 +26,13 @@ namespace OrchardCore.Facebook
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Facebook"], "1", settings =>
-                        settings.AddClass("facebook").Id("facebook")
-                                .Add(T["Application"], "1", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
-                                .Permission(Permissions.ManageFacebookApp)
-                                .LocalNav())
-                        ));
+                builder.Add(T["Facebook"], "15", settings =>
+                    settings.AddClass("facebook").Id("facebook")
+                            .Add(T["Application"], "1", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
+                            .Permission(Permissions.ManageFacebookApp)
+                            .LocalNav())
+                );
             }
             return Task.CompletedTask;
         }
@@ -58,14 +57,13 @@ namespace OrchardCore.Facebook
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Configuration"], "15", category =>
-                    category.Add(T["Facebook"], "1", settings =>
-                        settings.AddClass("facebook").Id("facebook")
-                                .Add(T["Login"], "2", client => client
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
-                                .Permission(Permissions.ManageFacebookApp)
-                                .LocalNav())
-                    ));
+                builder.Add(T["Facebook"], "1", settings =>
+                    settings.AddClass("facebook").Id("facebook")
+                            .Add(T["Login"], "2", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
+                            .Permission(Permissions.ManageFacebookApp)
+                            .LocalNav())
+                );
             }
 
             return Task.CompletedTask;

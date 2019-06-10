@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -53,7 +54,6 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
-
             var viewName = "/" + relativePath;
             viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
 
@@ -114,8 +114,6 @@ namespace OrchardCore.DisplayManagement.Razor
                     output,
                     new HtmlHelperOptions());
 
-                _viewContextAccessor.ViewContext = viewContext;
-
                 await view.RenderAsync(viewContext);
 
                 return output.ToString();
@@ -150,7 +148,8 @@ namespace OrchardCore.DisplayManagement.Razor
             var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
 
             var routeData = new RouteData();
-            routeData.Routers.Add(shellContext?.Router ?? new RouteCollection());
+            var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
+            routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
 
             return new ActionContext(httpContext, routeData, new ActionDescriptor());
         }

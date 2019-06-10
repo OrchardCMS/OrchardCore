@@ -30,7 +30,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddDataAccess()
                 .AddDataStorage()
                 .AddBackgroundService()
-                .AddDeferredTasks()
 
                 .AddTheming()
                 .AddLiquidViews()
@@ -48,8 +47,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 s.AddTagHelpers<ScriptTagHelper>();
                 s.AddTagHelpers<StyleTagHelper>();
             });
-
-            builder.Configure(app => app.UseDataAccess());
 
             configure?.Invoke(builder);
 
