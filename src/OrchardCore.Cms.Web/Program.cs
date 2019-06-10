@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -11,10 +12,16 @@ namespace OrchardCore.Cms.Web
             => BuildHost(args).RunAsync();
 
         public static IHost BuildHost(string[] args)
-            => Host.CreateDefaultBuilder(args)
+        {
+            var host = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                     webBuilder.UseStartup<Startup>()
                         .UseNLogWeb())
-            .Build();
+                .Build();
+
+            Console.WriteLine("Application started.");
+
+            return host;
+        }
     }
 }

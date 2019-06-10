@@ -2,15 +2,14 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 
@@ -21,22 +20,19 @@ namespace OrchardCore.Apis.GraphQL
         private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
-        private readonly IDocumentWriter _writer;
 
-        private readonly static JsonSerializer _serializer = new JsonSerializer();
+        internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new MediaType("application/json");
         private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
 
         public GraphQLMiddleware(
             RequestDelegate next,
             GraphQLSettings settings,
-            IDocumentExecuter executer,
-            IDocumentWriter writer)
+            IDocumentExecuter executer)
         {
             _next = next;
             _settings = settings;
             _executer = executer;
-            _writer = writer;
         }
 
         public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService)
@@ -173,13 +169,9 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.StatusCode = (int)httpResult;
             context.Response.ContentType = "application/json";
 
-            using (var stream = new MemoryStream())
-            {
-                // We use an intermediate stream because 'IDocumentWriter' does a synchronous write
-                // while an asynchronous write is mandatory for the response body.
-                await _writer.WriteAsync(stream, result);
-                await context.Response.Body.WriteAsync(stream.GetBuffer());
-            }
+            // Asynchronous write to the response body is mandatory.
+            var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(result).ToString());
+            await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
         }
 
         private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
@@ -201,16 +193,12 @@ namespace OrchardCore.Apis.GraphQL
                 errorResult.Errors.Add(new ExecutionError(message, e));
             }
 
-            context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
 
-            using (var stream = new MemoryStream())
-            {
-                // We use an intermediate stream because 'IDocumentWriter' does a synchronous write
-                // while an asynchronous write is mandatory for the response body.
-                await _writer.WriteAsync(stream, errorResult);
-                await context.Response.Body.WriteAsync(stream.GetBuffer());
-            }
+            // Asynchronous write to the response body is mandatory.
+            var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(errorResult).ToString());
+            await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
         }
     }
 }
