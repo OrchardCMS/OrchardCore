@@ -25,14 +25,21 @@ namespace OrchardCore.DisplayManagement.Razor
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
 
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
+
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                // We make the ViewContext available to other sub-systems that need it.
-                var viewContextAccessor = Context.RequestServices.GetService<ViewContextAccessor>();
-                viewContextAccessor.ViewContext = ViewContext;
-
                 _displayHelper = Context.RequestServices.GetService<IDisplayHelper>();
             }
         }
