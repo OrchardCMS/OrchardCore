@@ -55,10 +55,6 @@ namespace OrchardCore.Mvc
             // Add a route endpoint selector policy.
             services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
 
-            // There are some issues when using the default formatters based on
-            // System.Text.Json. Here, we manually add JSON.NET based formatters.
-            builder.AddNewtonsoftJson();
-
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddModularRazorPages();
