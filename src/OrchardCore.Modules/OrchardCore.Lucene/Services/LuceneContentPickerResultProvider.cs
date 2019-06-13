@@ -60,7 +60,8 @@ namespace OrchardCore.Lucene.Services
                     results.Add(new ContentPickerResult
                     {
                         ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
-                        DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue()
+                        DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
+                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue() == "true" ? true : false 
                     });
                 }
 
