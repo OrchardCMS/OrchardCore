@@ -42,6 +42,14 @@ namespace OrchardCore.Resources
                 ;
 
             manifest
+                .DefineScript("jQuery-ui-i18n")
+                .SetDependencies("jQuery-ui")
+                .SetUrl("~/OrchardCore.Resources/Scripts/jquery-ui-i18n.min.js", "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.js")
+                .SetCdn("http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/i18n/jquery-ui-i18n.min.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/i18n/jquery-ui-i18n.js")
+                .SetVersion("1.7.2")
+                ;
+
+            manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.js")
