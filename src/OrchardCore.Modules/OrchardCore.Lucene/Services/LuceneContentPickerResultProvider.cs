@@ -68,7 +68,7 @@ namespace OrchardCore.Lucene.Services
                 return Task.CompletedTask;
             });
 
-            return results.OrderBy(r => r.DisplayText);
+            return results.OrderBy(x => x.DisplayText);
         }
     }
 }

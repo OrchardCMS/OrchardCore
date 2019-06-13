@@ -45,7 +45,7 @@ namespace OrchardCore.ContentFields.Services
                 });
             }
 
-            return results.OrderBy(r => r.DisplayText);
+            return results.OrderBy(x => x.DisplayText);
         }
     }
 }
