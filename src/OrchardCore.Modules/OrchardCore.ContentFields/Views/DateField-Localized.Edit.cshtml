@@ -3,8 +3,6 @@
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
 
-@inject IResourceManager ResourceManager
-
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
     var language = Orchard.CultureName().Split('-')[0];
@@ -20,7 +18,7 @@
 </fieldset>
 
 <script at="Foot">
-$(function () {
-    $('#@datepickerId').datepicker($.datepicker.regional['@language']);
-});
+    $(function () {
+        $('#@datepickerId').datepicker($.datepicker.regional['@language']);
+    });
 </script>        
