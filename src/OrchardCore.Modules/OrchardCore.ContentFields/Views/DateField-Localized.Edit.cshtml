@@ -2,31 +2,14 @@
 
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ResourceManagement
 
 @inject IResourceManager ResourceManager
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
-    AppendDatePickerScript();
-}
-
-@functions{
-    private void AppendDatePickerScript()
-    {
-        const string cultureSeparator = "-";
-        var culture = Orchard.CultureName();
-        var language = culture.Contains(cultureSeparator)
-            ? culture.Substring(0, culture.IndexOf(cultureSeparator))
-            : culture;
-        var datePickerScript = new TagBuilder("script");
-        datePickerScript.InnerHtml.AppendHtml($@"$(function () {{
-            $('.datepicker').datepicker($.datepicker.regional['{language}']);
-        }});");
-
-        ResourceManager.RegisterFootScript(datePickerScript);
-    }
-}
+    var language = Orchard.CultureName().Split('-')[0];
+    var datepickerId = Html.IdFor(m => m.Value);
+}       
 
 <fieldset class="form-group">
     <div class="row col-md-6 col-lg-4">
@@ -35,3 +18,9 @@
         <span class="hint">@settings.Hint</span>
     </div>
 </fieldset>
+
+<script at="Foot">
+$(function () {
+    $('#@datepickerId').datepicker($.datepicker.regional['@language']);
+});
+</script>        
