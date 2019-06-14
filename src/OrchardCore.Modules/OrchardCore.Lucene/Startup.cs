@@ -33,6 +33,7 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<LuceneIndexingState>();
+            services.AddSingleton<LuceneIndexSettings>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 

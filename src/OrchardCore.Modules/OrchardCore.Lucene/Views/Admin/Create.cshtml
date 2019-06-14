@@ -7,8 +7,14 @@
 
     <div class="form-group" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index Name"]</label>
-        <input asp-for="IndexName" class="form-control" autofocus/>
+        <input asp-for="IndexName" class="form-control" autofocus />
         <span asp-validation-for="IndexName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="IndexName">
+        <label asp-for="AnalyzerName">@T["Analyzer Name"]</label>
+        <input asp-for="AnalyzerName" class="form-control" autofocus />
+        <span asp-validation-for="AnalyzerName" class="text-danger"></span>
     </div>
 
     <fieldset>

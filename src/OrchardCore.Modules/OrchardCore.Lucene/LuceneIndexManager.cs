@@ -148,23 +148,29 @@ namespace OrchardCore.Lucene
 
         public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
         {
-            using (var reader = GetReader(indexName))
+            if (Exists(indexName))
             {
-                var indexSearcher = new IndexSearcher(reader.IndexReader);
-                await searcher(indexSearcher);
-            }
+                using (var reader = GetReader(indexName))
+                {
+                    var indexSearcher = new IndexSearcher(reader.IndexReader);
+                    await searcher(indexSearcher);
+                }
 
-            _timestamps[indexName] = _clock.UtcNow;
+                _timestamps[indexName] = _clock.UtcNow;
+            }
         }
 
         public void Read(string indexName, Action<IndexReader> reader)
         {
-            using (var indexReader = GetReader(indexName))
+            if (Exists(indexName))
             {
-                reader(indexReader.IndexReader);
-            }
+                using (var indexReader = GetReader(indexName))
+                {
+                    reader(indexReader.IndexReader);
+                }
 
-            _timestamps[indexName] = _clock.UtcNow;
+                _timestamps[indexName] = _clock.UtcNow;
+            }
         }
 
         /// <summary>
@@ -300,8 +306,9 @@ namespace OrchardCore.Lucene
         {
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
-                var directory = CreateDirectory(indexName);
-                var reader = DirectoryReader.Open(directory);
+                var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
+                //var directory = CreateDirectory(indexName);
+                var reader = DirectoryReader.Open(FSDirectory.Open(path));
                 return new IndexReaderPool(reader);
             });
 

@@ -59,9 +59,10 @@ namespace OrchardCore.Lucene.Controllers
 
         public ActionResult Index()
         {
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray();
+            var viewModel = new AdminIndexViewModel
+            {
+                Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray()
+            };
 
             return View(viewModel);
         }
@@ -76,6 +77,7 @@ namespace OrchardCore.Lucene.Controllers
             var model = new AdminEditViewModel
             {
                 IndexName = "",
+                AnalyzerName = "standardanalyzer"
             };
 
             return View(model);
@@ -105,8 +107,8 @@ namespace OrchardCore.Lucene.Controllers
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-                _luceneIndexingService.RebuildIndex(model.IndexName);
-                await _luceneIndexingService.ProcessContentItemsAsync();
+                _luceneIndexingService.CreateIndex(model.IndexName);
+                //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
             {
@@ -155,7 +157,7 @@ namespace OrchardCore.Lucene.Controllers
             }
 
             _luceneIndexingService.RebuildIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync();
+            await _luceneIndexingService.ProcessContentItemsAsync(id);
 
             _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
 
@@ -177,7 +179,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                _luceneIndexManager.DeleteIndex(model.IndexName);
+                _luceneIndexingService.DeleteIndex(model.IndexName);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
