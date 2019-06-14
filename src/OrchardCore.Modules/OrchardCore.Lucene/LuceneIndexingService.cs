@@ -25,6 +25,7 @@ namespace OrchardCore.Lucene
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly LuceneIndexingState _indexingState;
+        private readonly LuceneIndexSettings _luceneIndexSettings;
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
@@ -33,6 +34,7 @@ namespace OrchardCore.Lucene
             IShellHost shellHost,
             ShellSettings shellSettings,
             LuceneIndexingState indexingState,
+            LuceneIndexSettings luceneIndexSettings,
             LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
@@ -41,6 +43,7 @@ namespace OrchardCore.Lucene
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _indexingState = indexingState;
+            _luceneIndexSettings = luceneIndexSettings;
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
@@ -50,24 +53,31 @@ namespace OrchardCore.Lucene
 
         public ILogger Logger { get; }
 
-        public async Task ProcessContentItemsAsync()
+        public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
-
             var allIndices = new Dictionary<string, int>();
+            var lastTaskId = Int32.MaxValue;
 
-            // Find the lowest task id to process
-            var lastTaskId = int.MaxValue;
-            foreach (var indexName in _indexManager.List())
+            if (String.IsNullOrEmpty(indexName))
             {
+                // Find the lowest task id to process
+                foreach (var indexSetting in _luceneIndexSettings.List())
+                {
+                    var taskId = _indexingState.GetLastTaskId(indexSetting.Name);
+                    lastTaskId = Math.Min(lastTaskId, taskId);
+                    allIndices.Add(indexSetting.Name, taskId);
+                }
+
+                if (allIndices.Count == 0)
+                {
+                    return;
+                }
+            }
+            else {
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
-            }
-
-            if (allIndices.Count == 0)
-            {
-                return;
             }
 
             var batch = Array.Empty<IndexingTask>();
@@ -141,6 +151,26 @@ namespace OrchardCore.Lucene
 
                 });
             } while (batch.Length == BatchSize);
+        }
+
+        /// <summary>
+        /// Creates a new index
+        /// </summary>
+        /// <returns></returns>
+        public void CreateIndex(string indexName)
+        {
+            RebuildIndex(indexName);
+            _luceneIndexSettings.CreateIndex(indexName, "standardanalyzer");
+        }
+
+        /// <summary>
+        /// Deletes permanently an index
+        /// </summary>
+        /// <returns></returns>
+        public void DeleteIndex(string indexName)
+        {
+            _indexManager.DeleteIndex(indexName);
+            _luceneIndexSettings.DeleteIndex(indexName);
         }
 
         /// <summary>
