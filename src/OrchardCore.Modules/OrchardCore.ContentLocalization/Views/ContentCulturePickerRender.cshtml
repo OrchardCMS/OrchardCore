@@ -1,0 +1,19 @@
+@using System.Globalization;
+
+<ul>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
+        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+            @foreach (var culture in ((IEnumerable<CultureInfo>)Model.SupportedCultures).Where(c => c != Model.CurrentCulture))
+            {
+                <a asp-action="RedirectToLocalizedContent" 
+                   asp-controller="ContentCulturePicker" 
+                   asp-route-area="OrchardCore.ContentLocalization" 
+                   asp-route-contentItemUrl="@FullRequestPath" 
+                   asp-route-targetCulture="@culture.Name" 
+                   class="dropdown-item"
+                 >@culture.DisplayName</a>
+            }
+        </div>
+    </li>
+</ul>
