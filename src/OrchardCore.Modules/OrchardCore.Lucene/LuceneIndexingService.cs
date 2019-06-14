@@ -68,16 +68,16 @@ namespace OrchardCore.Lucene
                     lastTaskId = Math.Min(lastTaskId, taskId);
                     allIndices.Add(indexSetting.Name, taskId);
                 }
-
-                if (allIndices.Count == 0)
-                {
-                    return;
-                }
             }
             else {
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
+            }
+            
+            if (allIndices.Count == 0)
+            {
+                return;
             }
 
             var batch = Array.Empty<IndexingTask>();
