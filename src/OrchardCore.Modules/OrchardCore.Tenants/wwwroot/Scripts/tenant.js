@@ -18,6 +18,6 @@ function toggleConnectionStringAndPrefix() {
             ? $(".tablePrefix").show()
             : $(".tablePrefix").hide();
 
-        $("#connectionStringHint").html($(this).data("connection-string-sample"));
+        $("#connectionStringHint").text($(this).data("connection-string-sample"));
     });
 }

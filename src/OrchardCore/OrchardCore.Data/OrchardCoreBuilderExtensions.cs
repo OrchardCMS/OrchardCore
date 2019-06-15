@@ -38,10 +38,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=<em>localhost</em>;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, sampleConnectionString: "Server=<em>localhost</em>;Database=<em>Orchard</em>;Uid=<em>username</em>;Pwd=<em>password</em>", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=<em>localhost</em>;Port=5432;Database=<em>Orchard</em>;User Id=<em>username</em>;Password=<em>password</em>", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
 
