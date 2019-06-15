@@ -75,15 +75,7 @@ namespace OrchardCore.Environment.Shell
                 var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
-                {
-                    var descriptor = new ShellDescriptor
-                    {
-                        Features = shellState.Features
-                            .Where(FeatureShouldBeLoadedForStateChangeNotifications)
-                            .Select(x => new ShellFeature { Id = x.Id })
-                            .ToArray()
-                    };
-
+                {                    
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", _settings.Name);
@@ -109,9 +101,5 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private static bool FeatureShouldBeLoadedForStateChangeNotifications(ShellFeatureState shellFeatureState)
-        {
-            return FeatureIsChanging(shellFeatureState) || shellFeatureState.EnableState == ShellFeatureState.State.Up;
-        }
     }
 }
