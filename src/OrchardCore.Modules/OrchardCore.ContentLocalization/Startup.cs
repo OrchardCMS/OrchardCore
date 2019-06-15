@@ -26,7 +26,7 @@ namespace OrchardCore.ContentLocalization
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IAuthorizationHandler, LocalizedContentAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
         }
     }
