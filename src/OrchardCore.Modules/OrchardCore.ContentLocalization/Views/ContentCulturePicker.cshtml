@@ -17,6 +17,7 @@
                    asp-controller="ContentCulturePicker"
                    asp-route-area="OrchardCore.ContentLocalization"
                    asp-route-contentItemUrl="@Context.Request.Path"
+                   asp-route-QueryString="@Context.Request.QueryString"
                    asp-route-targetCulture="@culture.Name"
                    class="dropdown-item">@culture.DisplayName</a>
             }

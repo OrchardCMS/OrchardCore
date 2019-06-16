@@ -35,7 +35,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, string queryString)
         {
             if (contentItemUrl == "/Error")
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl);
+                return LocalRedirect('~' + contentItemUrl + queryString);
             }
 
             // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
@@ -63,11 +63,11 @@ namespace OrchardCore.ContentLocalization.Controllers
 
                 if (contentItem != null && _autorouteEntries.TryGetPath(contentItem.ContentItemId, out var path))
                 {
-                    return LocalRedirect("~" + path);
+                    return LocalRedirect("~" + path + queryString);
                 }
             }
 
-            return LocalRedirect('~' + contentItemUrl);
+            return LocalRedirect('~' + contentItemUrl + queryString);
         }
     }
 }
