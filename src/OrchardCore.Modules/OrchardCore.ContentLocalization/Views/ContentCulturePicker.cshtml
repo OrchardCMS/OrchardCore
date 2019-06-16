@@ -11,7 +11,7 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@currentCulture.DisplayName</a>
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in supportedCultures.Where(c => c.LCID != currentCulture.LCID))
+            @foreach (var culture in supportedCultures)
             {
                 <a asp-action="RedirectToLocalizedContent"
                    asp-controller="ContentCulturePicker"
