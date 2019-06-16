@@ -55,7 +55,7 @@ namespace OrchardCore.Modules
                 PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
                 httpContext.Request.PathBase += prefix;
                 httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
-                httpContext.Request.Path = remainingPath.HasValue ? remainingPath : new PathString("/");
+                httpContext.Request.Path = remainingPath;
             }
 
             // Do we need to rebuild the pipeline ?
