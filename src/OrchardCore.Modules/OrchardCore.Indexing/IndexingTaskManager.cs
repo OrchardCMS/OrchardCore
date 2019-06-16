@@ -157,7 +157,8 @@ namespace OrchardCore.Indexing.Services
                     }
                     catch (Exception e)
                     {
-                        logger.LogError(e, "An error occured while updating indexing tasks");
+                        transaction.Rollback();
+                        logger.LogError(e, "An error occured while updating indexing tasks, rollbacked them.");
                         throw;
                     }
                 }
