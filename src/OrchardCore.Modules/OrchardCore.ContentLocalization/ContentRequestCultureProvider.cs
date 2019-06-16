@@ -17,8 +17,8 @@ namespace OrchardCore.ContentLocalization
             {
                 throw new ArgumentNullException(nameof(httpContext));
             }
+
             var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
-            
             var culture = await culturePickerService.GetCultureFromRoute(httpContext.Request.Path);
 
             if (!string.IsNullOrEmpty(culture))

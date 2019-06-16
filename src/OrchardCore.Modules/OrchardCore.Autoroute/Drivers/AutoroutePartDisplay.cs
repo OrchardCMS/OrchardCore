@@ -96,6 +96,8 @@ namespace OrchardCore.Autoroute.Drivers
                 model.Path = "";
             }
 
+            model.Path = model.Path.Trim('\\', '/');
+
             var httpContext = _httpContextAccessor.HttpContext;
 
             if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))

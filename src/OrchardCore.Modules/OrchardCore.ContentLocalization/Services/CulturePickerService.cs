@@ -40,7 +40,7 @@ namespace OrchardCore.ContentLocalization
 
             string contentItemId;
 
-            if (url == "/" || !url.HasValue)
+            if (url == "/")
             {
                 // get contentItemId from homeroute
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
