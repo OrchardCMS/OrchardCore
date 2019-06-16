@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
@@ -10,17 +11,15 @@ namespace OrchardCore.ContentLocalization
 {
     public class ContentCulturePickerService : IContentCulturePickerService
     {
-        private readonly ISession _session;
+        private readonly YesSql.ISession _session;
         private readonly IAutorouteEntries _autorouteEntries;
         private readonly ISiteService _siteService;
         private readonly IContentLocalizationManager _contentLocalizationManager;
-        private readonly string _tenantPrefix;
 
 
         public ContentCulturePickerService(
             IContentLocalizationManager contentLocalizationManager,
-            ISession session,
-
+            YesSql.ISession session,
             IAutorouteEntries autorouteEntries,
             ShellSettings shellSettings,
             ISiteService siteService
@@ -30,14 +29,18 @@ namespace OrchardCore.ContentLocalization
             _session = session;
             _autorouteEntries = autorouteEntries;
             _siteService = siteService;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
-        public async Task<string> GetContentItemIdFromRoute(string url)
+        public async Task<string> GetContentItemIdFromRoute(PathString url)
         {
-            var cleanedUrl = url.Remove(url.IndexOf(_tenantPrefix), _tenantPrefix.Length);
+            if (!url.HasValue)
+            {
+                url = "/";
+            }
+
             string contentItemId;
-            if (cleanedUrl == "/")
+
+            if (url == "/" || !url.HasValue)
             {
                 // get contentItemId from homeroute
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -47,8 +50,9 @@ namespace OrchardCore.ContentLocalization
             else
             {
                 // try to get from autorouteEntries
-                _autorouteEntries.TryGetContentItemId(cleanedUrl, out contentItemId);
+                _autorouteEntries.TryGetContentItemId(url, out contentItemId);
             }
+
             if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
@@ -57,30 +61,33 @@ namespace OrchardCore.ContentLocalization
             return contentItemId;
         }
 
-        public async Task<string> GetCultureFromRoute(string url)
+        public async Task<string> GetCultureFromRoute(PathString url)
         {
             var contentItemId = await GetContentItemIdFromRoute(url);
+
             if (!string.IsNullOrEmpty(contentItemId))
             {
                 var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId == contentItemId).FirstOrDefaultAsync();
+
                 if (indexValue is object)
                 {
                     return indexValue.Culture;
                 }
             }
+
             return null;
         }
 
         public async Task<ContentItem> GetRelatedContentItem(string contentItemId, string culture)
         {
-            var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o =>
-                o.ContentItemId == contentItemId
-            ).FirstOrDefaultAsync();
+            var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId == contentItemId)
+                .FirstOrDefaultAsync();
 
             if (indexValue is object)
             {
                 return await _contentLocalizationManager.GetContentItem(indexValue.LocalizationSet, culture);
             }
+
             return null;
         }
     }

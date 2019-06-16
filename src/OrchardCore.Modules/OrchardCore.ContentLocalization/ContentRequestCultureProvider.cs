@@ -1,12 +1,8 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using YesSql;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using OrchardCore.Autoroute.Services;
-using OrchardCore.ContentLocalization.Records;
-using OrchardCore.ContentManagement;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -23,13 +19,13 @@ namespace OrchardCore.ContentLocalization
             }
             var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
             
-            var path = httpContext.Request.PathBase + httpContext.Request.Path + httpContext.Request.QueryString;
+            var culture = await culturePickerService.GetCultureFromRoute(httpContext.Request.Path);
 
-            var culture = await culturePickerService.GetCultureFromRoute(path);
             if (!string.IsNullOrEmpty(culture))
             {
                 return new ProviderCultureResult(culture);
             }
+
             return null;
         }
     }

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization
@@ -9,13 +10,14 @@ namespace OrchardCore.ContentLocalization
         /// Get the ContentItemId that matches the Url
         /// </summary>
         /// <returns>ContentItemId or null if not found</returns>
-        Task<string> GetContentItemIdFromRoute(string url);
+        Task<string> GetContentItemIdFromRoute(PathString url);
 
         /// <summary>
         /// Get the Culture of the ContentItem from a URL
         /// </summary>
         /// <returns>Culture or null if not found</returns>
-        Task<string> GetCultureFromRoute(string url);
+        Task<string> GetCultureFromRoute(PathString url);
+
         /// <summary>
         /// Get the ContentItem that that is related to relatedContentItemId via the LocalizationSet and culture
         /// </summary>
