@@ -37,6 +37,11 @@ namespace OrchardCore.ContentLocalization.Controllers
         [HttpGet]
         public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl)
         {
+            if (contentItemUrl == "/Error")
+            {
+                return NoContent();
+            }
+
             if (!contentItemUrl.HasValue)
             {
                 contentItemUrl = "/";
