@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Indexing;
@@ -30,14 +32,12 @@ namespace OrchardCore.ContentLocalization
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizedContentAuthorizationHandler>();
-
         }
     }
 
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class ContentPickerStartup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
@@ -54,6 +54,16 @@ namespace OrchardCore.ContentLocalization
 
                 options.RequestCultureProviders.Insert(index, new ContentRequestCultureProvider());
             });
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "RedirectToLocalizedContent",
+                areaName: "OrchardCore.ContentLocalization",
+                template: "RedirectToLocalizedContent",
+                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
+            );
         }
     }
 }

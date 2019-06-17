@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -21,9 +20,7 @@ namespace OrchardCore.ContentLocalization
             IContentLocalizationManager contentLocalizationManager,
             YesSql.ISession session,
             IAutorouteEntries autorouteEntries,
-            ShellSettings shellSettings,
-            ISiteService siteService
-            )
+            ISiteService siteService)
         {
             _contentLocalizationManager = contentLocalizationManager;
             _session = session;
@@ -31,7 +28,7 @@ namespace OrchardCore.ContentLocalization
             _siteService = siteService;
         }
 
-        public async Task<string> GetContentItemIdFromRoute(PathString url)
+        public async Task<string> GetContentItemIdFromRouteAsync(PathString url)
         {
             if (!url.HasValue)
             {
@@ -61,9 +58,9 @@ namespace OrchardCore.ContentLocalization
             return contentItemId;
         }
 
-        public async Task<string> GetCultureFromRoute(PathString url)
+        public async Task<string> GetCultureFromRouteAsync(PathString url)
         {
-            var contentItemId = await GetContentItemIdFromRoute(url);
+            var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
             if (!string.IsNullOrEmpty(contentItemId))
             {
@@ -78,7 +75,7 @@ namespace OrchardCore.ContentLocalization
             return null;
         }
 
-        public async Task<ContentItem> GetRelatedContentItem(string contentItemId, string culture)
+        public async Task<ContentItem> GetRelatedContentItemAsync(string contentItemId, string culture)
         {
             var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId == contentItemId)
                 .FirstOrDefaultAsync();

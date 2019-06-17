@@ -25,8 +25,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             ILocalizationService locationService,
             IContentCulturePickerService culturePickerService,
             IAutorouteEntries autorouteEntries,
-            ShellSettings shellSettings
-           )
+            ShellSettings shellSettings)
         {
             T = localizer;
             _locationService = locationService;
@@ -55,11 +54,11 @@ namespace OrchardCore.ContentLocalization.Controllers
             }
 
             // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
-            var contentItemId = await _culturePickerService.GetContentItemIdFromRoute(contentItemUrl);
+            var contentItemId = await _culturePickerService.GetContentItemIdFromRouteAsync(contentItemUrl);
 
             if (!string.IsNullOrEmpty(contentItemId))
             {
-                var contentItem = await _culturePickerService.GetRelatedContentItem(contentItemId, targetCulture);
+                var contentItem = await _culturePickerService.GetRelatedContentItemAsync(contentItemId, targetCulture);
 
                 if (contentItem != null && _autorouteEntries.TryGetPath(contentItem.ContentItemId, out var path))
                 {

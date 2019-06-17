@@ -19,7 +19,7 @@ namespace OrchardCore.ContentLocalization
             }
 
             var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
-            var culture = await culturePickerService.GetCultureFromRoute(httpContext.Request.Path);
+            var culture = await culturePickerService.GetCultureFromRouteAsync(httpContext.Request.Path);
 
             if (!string.IsNullOrEmpty(culture))
             {

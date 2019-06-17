@@ -1,27 +1,32 @@
 @using System.Globalization
+@using OrchardCore.ContentLocalization;
 @using OrchardCore.ContentLocalization.Models;
 @using OrchardCore.ContentManagement
-@using Microsoft.AspNetCore.Routing
 
-@inject OrchardCore.Localization.ILocalizationService localizationService
+@inject OrchardCore.Localization.ILocalizationService LocalizationService
+@inject IContentCulturePickerService ContentCulturePickerService
 @inject IContentManager ContentManager
 
 @{
     CultureInfo currentCulture = null;
     IEnumerable<CultureInfo> supportedCultures = null;
 
-    ContentItem contentItem = null;
-    var contentItemId = Context.GetRouteData()?.Values["contentItemId"]?.ToString();
+    var contentItemId = await ContentCulturePickerService.GetContentItemIdFromRouteAsync(Context.Request.Path);
 
     if (contentItemId != null)
     {
         // Retrieve the content item cached by the content manager.
-        contentItem = await ContentManager.GetAsync(contentItemId);
+        var contentItem = await ContentManager.GetAsync(contentItemId);
 
         if (contentItem?.Has<LocalizationPart>() ?? false)
         {
-            currentCulture = CultureInfo.GetCultureInfo(contentItem.As<LocalizationPart>().Culture);
-            supportedCultures = (await localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+            var culture = contentItem.As<LocalizationPart>().Culture;
+
+            if (culture != null)
+            {
+                currentCulture = CultureInfo.GetCultureInfo(contentItem.As<LocalizationPart>().Culture);
+                supportedCultures = (await LocalizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
+            }
         }
     }
 }
