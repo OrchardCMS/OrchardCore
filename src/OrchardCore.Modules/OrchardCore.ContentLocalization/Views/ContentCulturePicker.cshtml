@@ -1,15 +1,15 @@
 @using System.Globalization
-@using OrchardCore.ContentLocalization;
 @using OrchardCore.ContentLocalization.Models;
+@using OrchardCore.ContentLocalization.Services;
 @using OrchardCore.ContentManagement
 
-@inject OrchardCore.Localization.ILocalizationService LocalizationService
 @inject IContentCulturePickerService ContentCulturePickerService
 @inject IContentManager ContentManager
+@inject ILocalizationEntries LocalizationEntries
 
 @{
-    CultureInfo currentCulture = null;
-    IEnumerable<CultureInfo> supportedCultures = null;
+    String currentCulture = null;
+    IEnumerable<LocalizationEntry> localizations = null;
 
     var contentItemId = await ContentCulturePickerService.GetContentItemIdFromRouteAsync(Context.Request.Path);
 
@@ -18,15 +18,10 @@
         // Retrieve the content item cached by the content manager.
         var contentItem = await ContentManager.GetAsync(contentItemId);
 
-        if (contentItem?.Has<LocalizationPart>() ?? false)
+        if (LocalizationEntries.TryGetLocalization(contentItem.ContentItemId, out var localization))
         {
-            var culture = contentItem.As<LocalizationPart>().Culture;
-
-            if (culture != null)
-            {
-                currentCulture = CultureInfo.GetCultureInfo(contentItem.As<LocalizationPart>().Culture);
-                supportedCultures = (await LocalizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
-            }
+            currentCulture = localization.Culture;
+            localizations = LocalizationEntries.GetLocalizations(localization.LocalizationSet);
         }
     }
 }
@@ -35,16 +30,15 @@
 {
     <ul>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@currentCulture.DisplayName</a>
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@CultureInfo.GetCultureInfo(currentCulture).DisplayName</a>
             <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-                @foreach (var culture in supportedCultures.Where(c => c != currentCulture))
+                @foreach (var localization in localizations.Where(entry => entry.Culture != currentCulture))
                 {
-                    <a asp-action="RedirectToLocalizedContent"
-                       asp-controller="ContentCulturePicker"
-                       asp-route-area="OrchardCore.ContentLocalization"
-                       asp-route-contentItemUrl="@Context.Request.Path"
-                       asp-route-QueryString="@Context.Request.QueryString"
-                       asp-route-targetCulture="@culture.Name"
+                    var culture = CultureInfo.GetCultureInfo(localization.Culture);
+                    <a asp-action="Display"
+                       asp-controller="Item"
+                       asp-route-area="OrchardCore.Contents"
+                       asp-route-contentItemId="@localization.ContentItemId"
                        class="dropdown-item">@culture.DisplayName</a>
                 }
             </div>

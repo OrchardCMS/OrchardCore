@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentLocalization.Services;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -19,11 +20,11 @@ namespace OrchardCore.ContentLocalization
             }
 
             var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
-            var culture = await culturePickerService.GetCultureFromRouteAsync(httpContext.Request.Path);
+            var localization = await culturePickerService.GetLocalizationFromRouteAsync(httpContext.Request.Path);
 
-            if (!string.IsNullOrEmpty(culture))
+            if (localization != null)
             {
-                return new ProviderCultureResult(culture);
+                return new ProviderCultureResult(localization.Culture);
             }
 
             return null;

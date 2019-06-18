@@ -1,17 +1,16 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Services;
-using OrchardCore.ContentLocalization.Records;
-using OrchardCore.ContentManagement;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.Settings;
-using YesSql;
 
-namespace OrchardCore.ContentLocalization
+namespace OrchardCore.ContentLocalization.Services
 {
     public class ContentCulturePickerService : IContentCulturePickerService
     {
         private readonly YesSql.ISession _session;
         private readonly IAutorouteEntries _autorouteEntries;
+        private readonly ILocalizationEntries _localizationEntries;
         private readonly ISiteService _siteService;
         private readonly IContentLocalizationManager _contentLocalizationManager;
 
@@ -20,11 +19,13 @@ namespace OrchardCore.ContentLocalization
             IContentLocalizationManager contentLocalizationManager,
             YesSql.ISession session,
             IAutorouteEntries autorouteEntries,
+            ILocalizationEntries localizationEntries,
             ISiteService siteService)
         {
             _contentLocalizationManager = contentLocalizationManager;
             _session = session;
             _autorouteEntries = autorouteEntries;
+            _localizationEntries = localizationEntries;
             _siteService = siteService;
         }
 
@@ -58,31 +59,16 @@ namespace OrchardCore.ContentLocalization
             return contentItemId;
         }
 
-        public async Task<string> GetCultureFromRouteAsync(PathString url)
+        public async Task<LocalizationEntry> GetLocalizationFromRouteAsync(PathString url)
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
             if (!string.IsNullOrEmpty(contentItemId))
             {
-                var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId == contentItemId).FirstOrDefaultAsync();
-
-                if (indexValue is object)
+                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
                 {
-                    return indexValue.Culture;
+                    return localization;
                 }
-            }
-
-            return null;
-        }
-
-        public async Task<ContentItem> GetRelatedContentItemAsync(string contentItemId, string culture)
-        {
-            var indexValue = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId == contentItemId)
-                .FirstOrDefaultAsync();
-
-            if (indexValue is object)
-            {
-                return await _contentLocalizationManager.GetContentItem(indexValue.LocalizationSet, culture);
             }
 
             return null;

@@ -3,17 +3,22 @@ using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Drivers;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
+using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
+using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -44,26 +49,20 @@ namespace OrchardCore.ContentLocalization
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var index = options.RequestCultureProviders.ToList()
-                    .FindIndex(p => p is AcceptLanguageHeaderRequestCultureProvider);
-
-                if (index == -1)
-                {
-                    index = options.RequestCultureProviders.Count();
-                }
-
-                options.RequestCultureProviders.Insert(index, new ContentRequestCultureProvider());
+                options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
             });
+
+            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
+            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
-                name: "RedirectToLocalizedContent",
-                areaName: "OrchardCore.ContentLocalization",
-                template: "RedirectToLocalizedContent",
-                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
-            );
+            var session = serviceProvider.GetRequiredService<ISession>();
+            var entries = serviceProvider.GetRequiredService<ILocalizationEntries>();
+
+            var indexes = session.QueryIndex<LocalizedContentItemIndex>().ListAsync().GetAwaiter().GetResult();
+            entries.AddEntries(indexes.Select(i => new Models.LocalizationEntry { ContentItemId = i.ContentItemId, LocalizationSet = i.LocalizationSet, Culture = i.Culture }));
         }
     }
 }

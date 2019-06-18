@@ -1,27 +1,21 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement;
+using OrchardCore.ContentLocalization.Models;
 
-namespace OrchardCore.ContentLocalization
+namespace OrchardCore.ContentLocalization.Services
 {
     public interface IContentCulturePickerService
     {
         /// <summary>
-        /// Get the ContentItemId that matches the Url
+        /// Get the ContentItemId that matches the url.
         /// </summary>
         /// <returns>ContentItemId or null if not found</returns>
         Task<string> GetContentItemIdFromRouteAsync(PathString url);
 
         /// <summary>
-        /// Get the Culture of the ContentItem from a URL
+        /// Get the Localization of the ContentItem from an url.
         /// </summary>
         /// <returns>Culture or null if not found</returns>
-        Task<string> GetCultureFromRouteAsync(PathString url);
-
-        /// <summary>
-        /// Get the ContentItem that that is related to relatedContentItemId via the LocalizationSet and culture
-        /// </summary>
-        ///  <returns>ContentItem or null if not found</returns>
-        Task<ContentItem> GetRelatedContentItemAsync(string contentItemId, string culture);
+        Task<LocalizationEntry> GetLocalizationFromRouteAsync(PathString url);
     }
 }
