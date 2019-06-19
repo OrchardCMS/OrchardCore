@@ -1,47 +1,19 @@
+@using Microsoft.AspNetCore.Localization
 @using System.Globalization
-@using OrchardCore.ContentLocalization.Models;
 @using OrchardCore.ContentLocalization.Services;
 @using OrchardCore.ContentManagement
 
 @inject IContentCulturePickerService ContentCulturePickerService
+@inject OrchardCore.Localization.ILocalizationService localizationService
 @inject IContentManager ContentManager
 @inject ILocalizationEntries LocalizationEntries
 
 @{
-    String currentCulture = null;
-    IEnumerable<LocalizationEntry> localizations = null;
-
-    var contentItemId = await ContentCulturePickerService.GetContentItemIdFromRouteAsync(Context.Request.Path);
-
-    if (contentItemId != null)
-    {
-        // Retrieve the content item cached by the content manager.
-        var contentItem = await ContentManager.GetAsync(contentItemId);
-
-        if (LocalizationEntries.TryGetLocalization(contentItem.ContentItemId, out var localization))
-        {
-            currentCulture = localization.Culture;
-            localizations = LocalizationEntries.GetLocalizations(localization.LocalizationSet);
-        }
-    }
+    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture;
+    var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 }
+@await DisplayAsync(await New.ContentCulturePickerContainer(
+    CurrentCulture: currentCulture,
 
-@if (currentCulture != null)
-{
-    <ul>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@CultureInfo.GetCultureInfo(currentCulture).DisplayName</a>
-            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-                @foreach (var localization in localizations.Where(entry => entry.Culture != currentCulture))
-                {
-                    var culture = CultureInfo.GetCultureInfo(localization.Culture);
-                    <a asp-action="Display"
-                       asp-controller="Item"
-                       asp-route-area="OrchardCore.Contents"
-                       asp-route-contentItemId="@localization.ContentItemId"
-                       class="dropdown-item">@culture.DisplayName</a>
-                }
-            </div>
-        </li>
-    </ul>
-}
+    SupportedCultures: supportedCultures.Select(c => CultureInfo.GetCultureInfo(c))
+)) 

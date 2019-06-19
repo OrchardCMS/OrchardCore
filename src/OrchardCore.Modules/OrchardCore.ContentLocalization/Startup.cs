@@ -58,11 +58,18 @@ namespace OrchardCore.ContentLocalization
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+               name: "RedirectToLocalizedContent",
+               areaName: "OrchardCore.ContentLocalization",
+               template: "RedirectToLocalizedContent",
+               defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
+           );
+
             var session = serviceProvider.GetRequiredService<ISession>();
             var entries = serviceProvider.GetRequiredService<ILocalizationEntries>();
 
             var indexes = session.QueryIndex<LocalizedContentItemIndex>().ListAsync().GetAwaiter().GetResult();
-            entries.AddEntries(indexes.Select(i => new Models.LocalizationEntry { ContentItemId = i.ContentItemId, LocalizationSet = i.LocalizationSet, Culture = i.Culture }));
+            entries.AddEntries(indexes.Select(i => new LocalizationEntry { ContentItemId = i.ContentItemId, LocalizationSet = i.LocalizationSet, Culture = i.Culture }));
         }
     }
 }

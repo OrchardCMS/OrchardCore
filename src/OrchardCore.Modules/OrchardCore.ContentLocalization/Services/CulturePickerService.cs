@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Services;
@@ -8,22 +9,17 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class ContentCulturePickerService : IContentCulturePickerService
     {
-        private readonly YesSql.ISession _session;
         private readonly IAutorouteEntries _autorouteEntries;
         private readonly ILocalizationEntries _localizationEntries;
         private readonly ISiteService _siteService;
-        private readonly IContentLocalizationManager _contentLocalizationManager;
 
 
         public ContentCulturePickerService(
             IContentLocalizationManager contentLocalizationManager,
-            YesSql.ISession session,
             IAutorouteEntries autorouteEntries,
             ILocalizationEntries localizationEntries,
             ISiteService siteService)
         {
-            _contentLocalizationManager = contentLocalizationManager;
-            _session = session;
             _autorouteEntries = autorouteEntries;
             _localizationEntries = localizationEntries;
             _siteService = siteService;
@@ -59,6 +55,7 @@ namespace OrchardCore.ContentLocalization.Services
             return contentItemId;
         }
 
+
         public async Task<LocalizationEntry> GetLocalizationFromRouteAsync(PathString url)
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
@@ -68,6 +65,21 @@ namespace OrchardCore.ContentLocalization.Services
                 if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
                 {
                     return localization;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<IEnumerable<LocalizationEntry>> GetLocalizationsFromRouteAsync(PathString url)
+        {
+            var contentItemId = await GetContentItemIdFromRouteAsync(url);
+
+            if (!string.IsNullOrEmpty(contentItemId))
+            {
+                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
+                {
+                    return _localizationEntries.GetLocalizations(localization.LocalizationSet);
                 }
             }
 
