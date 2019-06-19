@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Services;
@@ -55,7 +56,6 @@ namespace OrchardCore.ContentLocalization.Services
             return contentItemId;
         }
 
-
         public async Task<LocalizationEntry> GetLocalizationFromRouteAsync(PathString url)
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            return null;
+            return Enumerable.Empty<LocalizationEntry>();
         }
     }
 }

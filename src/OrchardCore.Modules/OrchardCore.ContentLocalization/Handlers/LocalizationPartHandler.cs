@@ -19,11 +19,11 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.LocalizationSet))
             {
-                _entries.AddEntry(new Models.LocalizationEntry()
+                _entries.AddEntry(new LocalizationEntry()
                 {
                     ContentItemId = part.ContentItem.ContentItemId,
                     LocalizationSet = part.LocalizationSet,
-                    Culture = part.Culture
+                    Culture = part.Culture.ToLowerInvariant()
                 });
             }
 
@@ -32,13 +32,25 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(part.ContentItem.ContentItemId);
+            _entries.RemoveEntry(new LocalizationEntry()
+            {
+                ContentItemId = part.ContentItem.ContentItemId,
+                LocalizationSet = part.LocalizationSet,
+                Culture = part.Culture.ToLowerInvariant()
+            });
+
             return Task.CompletedTask;
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(part.ContentItem.ContentItemId);
+            _entries.RemoveEntry(new LocalizationEntry()
+            {
+                ContentItemId = part.ContentItem.ContentItemId,
+                LocalizationSet = part.LocalizationSet,
+                Culture = part.Culture.ToLowerInvariant()
+            });
+
             return Task.CompletedTask;
         }
     }

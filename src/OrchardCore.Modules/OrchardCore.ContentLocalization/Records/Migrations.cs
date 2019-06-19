@@ -36,5 +36,13 @@ namespace OrchardCore.ContentLocalization.Records
 
             return 1;
         }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
+
+            return 2;
+        }
     }
 }

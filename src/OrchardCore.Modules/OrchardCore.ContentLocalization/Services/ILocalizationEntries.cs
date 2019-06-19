@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using OrchardCore.ContentLocalization.Models;
 
 namespace OrchardCore.ContentLocalization.Services
@@ -6,9 +7,9 @@ namespace OrchardCore.ContentLocalization.Services
     public interface ILocalizationEntries
     {
         bool TryGetLocalization(string contentItemId, out LocalizationEntry localization);
-        IEnumerable<LocalizationEntry> GetLocalizations(string localizationSet);
+        ImmutableArray<LocalizationEntry> GetLocalizations(string localizationSet);
         void AddEntries(IEnumerable<LocalizationEntry> entries);
-        void RemoveEntries(IEnumerable<string> contentItemIds);
+        void RemoveEntries(IEnumerable<LocalizationEntry> entries);
     }
 
     public static class LocalizationEntriesExtensions
@@ -18,9 +19,9 @@ namespace OrchardCore.ContentLocalization.Services
             entries.AddEntries(new[] { entry });
         }
 
-        public static void RemoveEntry(this ILocalizationEntries entries, string contentItemId)
+        public static void RemoveEntry(this ILocalizationEntries entries, LocalizationEntry entry)
         {
-            entries.RemoveEntries(new[] { contentItemId });
+            entries.RemoveEntries(new[] { entry });
         }
     }
 }

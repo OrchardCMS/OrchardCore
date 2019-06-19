@@ -6,11 +6,10 @@
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
             @foreach (var culture in ((IEnumerable<CultureInfo>)Model.SupportedCultures).Where(entry => !string.Equals(entry.Name, Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase)))
             {
-            @await DisplayAsync(await New.ContentCulturePickerLink(
-               Culture: culture
-            ))
+                @await DisplayAsync(await New.ContentCulturePickerLink(
+                   Culture: culture
+                ))
             }
         </div>
     </li>
 </ul>
-

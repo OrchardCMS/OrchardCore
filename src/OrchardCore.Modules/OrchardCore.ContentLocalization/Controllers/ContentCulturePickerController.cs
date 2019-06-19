@@ -2,17 +2,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
-using OrchardCore.Autoroute.Services;
-using OrchardCore.Autoroute.Model;
-using OrchardCore.Environment.Shell;
-using OrchardCore.ContentLocalization.Services;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
@@ -39,40 +35,46 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl, string queryString)
+        public async Task<IActionResult> RedirectToLocalizedContent(string targetCulture, PathString contentItemUrl)
         {
+            // Invariant culture name is empty so a null value is bound.
+            targetCulture = targetCulture ?? "";
+
             if (contentItemUrl == "/Error")
             {
                 return NoContent();
             }
+
             if (!contentItemUrl.HasValue)
             {
                 contentItemUrl = "/";
             }
+
             var supportedCultures = await _locationService.GetSupportedCulturesAsync();
+
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return LocalRedirect('~' + contentItemUrl + queryString);
+                return NoContent();
             }
 
             // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
             var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
-            if (localizations is object && localizations.Any())
+            if (localizations.Any())
             {
-                var targetContent = localizations.SingleOrDefault(l => string.Equals(l.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+                var localization = localizations.SingleOrDefault(l => String.Equals(l.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
-                if(targetContent is object)
+                if(localization is object)
                 {
-                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = targetContent.ContentItemId }));
+                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
                 }
             }
+
             // Try to get the Homepage url for the culture
-
             var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
-
             if (homeLocalizations.Any())
             {
-                var localization = homeLocalizations.SingleOrDefault(h => string.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+                var localization = homeLocalizations.SingleOrDefault(h => String.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+
                 if (localization is object)
                 {
                     return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
