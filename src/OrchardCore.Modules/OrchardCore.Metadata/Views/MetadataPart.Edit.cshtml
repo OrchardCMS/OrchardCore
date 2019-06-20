@@ -12,7 +12,7 @@
     <div class="form-group">
         <label asp-for="MetaTitle">@T["Page title"]</label>
         <input asp-for="MetaTitle" class="form-control" data-counter data-counter-max-length="60" />
-        <span class="hint">@T["If left blank, uses the content item's display text as the page title. Recommened length: under 60 characters."]</span>
+        <span class="hint">@T["If left blank, uses the content item's display text as the page title. Recommended length: under 60 characters."]</span>
     </div>
     <div class="form-group">
         <label asp-for="MetaDescription">@T["Meta description"]</label>
@@ -20,7 +20,7 @@
         <span class="hint">
             @T["The page description or 'meta description', " +
        "provides a brief summary of a web page. It is sometimes used by search engines " +
-       "in search results. Recommened length: under 160 characters."]
+       "in search results. Recommended length: under 160 characters."]
         </span>
     </div>
     @if (Model.Settings.SupportMetaKeywords)
@@ -43,15 +43,15 @@
                 <input asp-for="OpenGraphTitle" class="form-control" data-counter data-counter-max-length="150" />
                 <span class="hint">
                     @T["Used when sharing the content on social networks using the Open Graph title tag." +
-                " If left blank, uses the content item's page title metadata as the value. Recommened length: under 150 characters."]
+                " If left blank, uses the content item's page title metadata as the value. Recommended length: under 150 characters."]
                 </span>
             </div>
             <div class="form-group">
-                <label asp-for="OpenGraphDescription">@T["OpenGraph description (og:description)"]</label>
+                <label asp-for="OpenGraphDescription">@T["Open Graph description (og:description)"]</label>
                 <textarea asp-for="OpenGraphDescription" class="form-control" data-counter data-counter-max-length="150" ></textarea>
                 <span class="hint">
                     @T["Used when sharing the content on social networks using the Open Graph description tag. Leave blank " +
-                " If left blank, uses the content item's meta description as the value. Recommened length: under 150 characters."]
+                " If left blank, uses the content item's meta description as the value. Recommended length: under 150 characters."]
                 </span>
             </div>
             <div class="form-group">
@@ -81,7 +81,7 @@
                             <option value="video.other">Video - other</option>*@
                     </select>
                     <span class="hint">
-                        @T["Currently on the website type is supported."]
+                        @T["Currently only the website type is supported."]
                     </span>
                 </div>
                 <div class="form-group">
