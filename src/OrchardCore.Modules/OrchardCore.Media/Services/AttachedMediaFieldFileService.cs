@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
-using System.Security.Cryptography;
-using System.IO;
-using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Media.Services
 {
@@ -19,12 +19,15 @@ namespace OrchardCore.Media.Services
     {
         private readonly IMediaFileStore _fileStore;
         private readonly IStringLocalizer<AttachedMediaFieldFileService> T;
+        private readonly ILogger<AttachedMediaFieldFileService> _logger;
 
         public AttachedMediaFieldFileService(IMediaFileStore fileStore,
-            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer)
+            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer,
+            ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
             T = stringLocalizer;
+            _logger = logger;
 
             MediaFieldsFolder = "mediafields";
             MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
@@ -39,11 +42,10 @@ namespace OrchardCore.Media.Services
         /// <remarks>
         /// To be used by content handlers when the content item is deleted
         /// </remarks>
-        public async Task DeleteContentItemFolder(ContentItem contentItem)
+        public Task DeleteContentItemFolderAsync(ContentItem contentItem)
         {
-            await _fileStore.TryDeleteDirectoryAsync(GetContentItemFolder(contentItem));
+            return _fileStore.TryDeleteDirectoryAsync(GetContentItemFolder(contentItem));
         }
-
 
         /// <summary>
         /// Moves uploaded files to a folder specific for the content item
@@ -57,11 +59,10 @@ namespace OrchardCore.Media.Services
 
             await EnsureGlobalDirectoriesAsync();
 
-            RemoveTemporary(items);
+            await RemoveTemporaryAsync(items);
 
-            MoveNewFilesToContentItemDirAndUpdatePaths(items, contentItem);
+            await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem);
         }
-
 
         private async Task EnsureGlobalDirectoriesAsync()
         {
@@ -69,49 +70,54 @@ namespace OrchardCore.Media.Services
             await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder);
         }
 
-
         // Files just uploaded and then inmediately discarded.
-        private void RemoveTemporary(List<EditMediaFieldItemInfo> items)
+        private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
         {
-            items.Where(x => x.IsRemoved && x.IsNew).ToList().ForEach(async x => await _fileStore.TryDeleteFileAsync(x.Path));
+            foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))
+            {
+                await _fileStore.TryDeleteFileAsync(item.Path);
+            }
         }
-
 
         // Newly added files
-        private void MoveNewFilesToContentItemDirAndUpdatePaths(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
+        private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            items.Where(x => !x.IsRemoved).ToList()
-                .ForEach(async x =>
+            foreach (var item in items.Where(i => !i.IsRemoved && !String.IsNullOrEmpty(i.Path)))
+            {
+                var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
+
+                if (fileInfo == null)
                 {
-                    var targetDir = GetContentItemFolder(contentItem);
-                    var finalFileName = (await GetFileHashAsync(x.Path)) + GetFileExtension(x.Path);
-                    var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
-                    
-                    await _fileStore.TryCreateDirectoryAsync(targetDir);
+                    _logger.LogError("A file with the path '{Path}' does not exist.", item.Path);
+                    return;
+                }
 
-                    // When there is a validation error before creating the content item we can end up with an empty folder
-                    // because the content item is different on each form submit . We need to remove that empty folder.
-                    var previousDirPath = (await _fileStore.GetFileInfoAsync(x.Path)).DirectoryPath;
+                var targetDir = GetContentItemFolder(contentItem);
+                var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
+                var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
-                    // fileName is a hash of the file. We preserve disk space by reusing the file.
-                    if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
-                    {
-                        await _fileStore.MoveFileAsync(x.Path, finalFilePath);
-                    }
+                await _fileStore.TryCreateDirectoryAsync(targetDir);
 
-                    x.Path = finalFilePath;
+                // When there is a validation error before creating the content item we can end up with an empty folder
+                // because the content item is different on each form submit . We need to remove that empty folder.
+                var previousDirPath = fileInfo.DirectoryPath;
 
-                    await DeleteDirIfEmpty(previousDirPath);                    
-                    
-                });
+                // fileName is a hash of the file. We preserve disk space by reusing the file.
+                if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
+                {
+                    await _fileStore.MoveFileAsync(item.Path, finalFilePath);
+                }
+
+                item.Path = finalFilePath;
+
+                await DeleteDirIfEmptyAsync(previousDirPath);
+            }
         }
-
 
         private string GetContentItemFolder(ContentItem contentItem)
         {
             return _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
         }
-
 
         private async Task<string> GetFileHashAsync(string filePath)
         {
@@ -123,18 +129,16 @@ namespace OrchardCore.Media.Services
             }
         }
 
-
         public string ByteArrayToHexString(byte[] bytes)
         {
             var sb = new StringBuilder();
             foreach (var b in bytes)
             {
                 sb.Append(b.ToString("x2").ToLower());
-            }                
+            }
 
             return sb.ToString();
         }
-
 
         private string GetFileExtension(string path)
         {
@@ -142,8 +146,7 @@ namespace OrchardCore.Media.Services
             return lastPoint > -1 ? path.Substring(lastPoint) : "";
         }
 
-
-        private async Task DeleteDirIfEmpty(string previousDirPath)
+        private async Task DeleteDirIfEmptyAsync(string previousDirPath)
         {
             if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) == null)
             {

@@ -1,14 +1,8 @@
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 
 namespace OrchardCore.Users.Controllers
@@ -16,42 +10,23 @@ namespace OrchardCore.Users.Controllers
     public abstract class BaseEmailController : Controller
     {
         private readonly ISmtpService _smtpService;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IHtmlDisplay _displayManager;
+        private readonly IDisplayHelper _displayHelper;
 
         public BaseEmailController(
             ISmtpService smtpService,
-            IShapeFactory shapeFactory,
-            IHtmlDisplay displayManager)
+            IDisplayHelper displayHelper)
         {
             _smtpService = smtpService;
-            _shapeFactory = shapeFactory;
-            _displayManager = displayManager;
+            _displayHelper = displayHelper;
         }
 
         protected async Task<bool> SendEmailAsync(string email, string subject, IShape model)
         {
-            var options = ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines
-                    .Select(x => x.FindView(
-                        ControllerContext,
-                        ControllerContext.ActionDescriptor.ActionName, 
-                        false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
-            {
-                ServiceProvider = ControllerContext.HttpContext.RequestServices,
-                Value = model,
-                ViewContext = new ViewContext(ControllerContext, view, ViewData, TempData, new StringWriter(), new HtmlHelperOptions())
-            };
-
             var body = string.Empty;
 
             using (var sw = new StringWriter())
             {
-                var htmlContent = await _displayManager.ExecuteAsync(displayContext);
+                var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
                 htmlContent.WriteTo(sw, HtmlEncoder.Default);
                 body = sw.ToString();
             }

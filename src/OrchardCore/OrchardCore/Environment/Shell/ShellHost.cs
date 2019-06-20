@@ -4,19 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Hosting.ShellBuilders;
-using OrchardCore.Modules;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the
+    /// All <see cref="ShellContext"/> object are loaded when <see cref="InitializeAsync"/> is called. They can be removed when the
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>
@@ -110,14 +108,9 @@ namespace OrchardCore.Environment.Shell
             return shell;
         }
 
-        public async Task<IServiceScope> GetScopeAsync(ShellSettings settings)
+        public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
         {
-            return (await GetScopeAndContextAsync(settings)).Scope;
-        }
-
-        public async Task<(IServiceScope Scope, ShellContext ShellContext)> GetScopeAndContextAsync(ShellSettings settings)
-        {
-            IServiceScope scope = null;
+            ShellScope scope = null;
             ShellContext shellContext = null;
 
             while (scope == null)
@@ -140,7 +133,7 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
-            return (scope, shellContext);
+            return scope;
         }
 
         public Task UpdateShellSettingsAsync(ShellSettings settings)

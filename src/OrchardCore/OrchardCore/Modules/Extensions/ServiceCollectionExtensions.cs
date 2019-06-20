@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
@@ -16,6 +15,7 @@ using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Localization;
@@ -74,11 +74,12 @@ namespace Microsoft.Extensions.DependencyInjection
             // registered. This is also called by AddMvcCore() but some applications that do not enlist into MVC will need it too.
             services.AddRouting();
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
             services.AddSingleton<IClock, Clock>();
             services.AddScoped<ILocalClock, LocalClock>();
 
-            services.AddTransient<ICalendarManager, DefaultCalendarManager>();
+            services.AddScoped<ILocalizationService, DefaultLocalizationService>();
+            services.AddScoped<ICalendarManager, DefaultCalendarManager>();
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
@@ -233,14 +234,13 @@ namespace Microsoft.Extensions.DependencyInjection
                     .Services;
 
                 // Retrieve the implementation type of the newly startup filter registered as a singleton
-                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.ImplementationType;
+                var startupFilterType = collection.FirstOrDefault(s => s.ServiceType == typeof(IStartupFilter))?.GetImplementationType();
 
                 if (startupFilterType != null)
                 {
                     // Remove any previously registered data protection startup filters.
                     var descriptors = services.Where(s => s.ServiceType == typeof(IStartupFilter) &&
-                        (s.ImplementationInstance?.GetType() == startupFilterType ||
-                        s.ImplementationType == startupFilterType)).ToArray();
+                        (s.GetImplementationType() == startupFilterType)).ToArray();
 
                     foreach (var descriptor in descriptors)
                     {

@@ -21,6 +21,7 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 | Bootstrap | Style | 3.4.0, 4.1.3 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
 | font-awesome | Style | 4.7.0, 5.5.0 | - |
+| jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
 
 ## Usage
 

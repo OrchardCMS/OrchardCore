@@ -42,14 +42,6 @@ namespace OrchardCore.Settings.Deployment
                         data.Add(new JProperty(nameof(ISite.Calendar), site.Calendar));
                         break;
 
-                    case "Culture":
-                        data.Add(new JProperty(nameof(ISite.Culture), site.Culture));
-                        break;
-
-                    case "SupportedCultures":
-                        data.Add(new JProperty(nameof(ISite.SupportedCultures), site.SupportedCultures));
-                        break;
-
                     case "MaxPagedCount":
                         data.Add(new JProperty(nameof(ISite.MaxPagedCount), site.MaxPagedCount));
                         break;

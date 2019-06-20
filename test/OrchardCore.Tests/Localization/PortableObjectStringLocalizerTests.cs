@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -258,6 +259,29 @@ namespace OrchardCore.Tests.Localization
             var translation = localizer[resourceKey];
 
             Assert.Equal(expected, translation);
+        }
+
+        [Theory]
+        [InlineData(false, new[] { "مدونة", "منتج" })]
+        [InlineData(true, new[] { "مدونة", "منتج", "قائمة", "صفحة", "مقالة" })]
+        public void LocalizerReturnsGetAllStrings(bool includeParentCultures, string[] expected)
+        {
+            SetupDictionary("ar", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
+                new CultureDictionaryRecord("Menu", null, new[] { "قائمة" }),
+                new CultureDictionaryRecord("Page", null, new[] { "صفحة" }),
+                new CultureDictionaryRecord("Article", null, new[] { "مقالة" })
+            }, _arPluralRule);
+            SetupDictionary("ar-YE", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
+                new CultureDictionaryRecord("Product", null, new[] { "منتج" })
+            }, _arPluralRule);
+
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
+            var translations = localizer.GetAllStrings(includeParentCultures).Select(l => l.Value).ToArray();
+
+            Assert.Equal(expected.Count(), translations.Count());
         }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)

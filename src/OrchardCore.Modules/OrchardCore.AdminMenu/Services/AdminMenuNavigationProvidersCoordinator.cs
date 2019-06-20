@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using OrchardCore.AdminMenu.Models;
 using OrchardCore.Navigation;
 using YesSql;
 
@@ -39,11 +38,13 @@ namespace OrchardCore.AdminMenu.Services
             }
 
             var trees = (await _AdminMenuService.GetAsync())
-                                    .Where(x => x.Enabled == true)
-                                    .Where( x => x.MenuItems.Count > 0);
+                .Where(m => m.Enabled && m.MenuItems.Count > 0)
+                ;
 
-
-            trees.ToList().ForEach( async p => await BuildTreeAsync(p, builder));
+            foreach (var tree in trees)
+            {
+                await BuildTreeAsync(tree, builder);
+            }
         }
 
         private async Task BuildTreeAsync(Models.AdminMenu tree, NavigationBuilder builder)
@@ -51,6 +52,7 @@ namespace OrchardCore.AdminMenu.Services
             foreach (MenuItem node in tree.MenuItems)
             {
                 var nodeBuilder = _nodeBuilders.Where(x => x.Name == node.GetType().Name).FirstOrDefault();
+                
                 if (nodeBuilder != null)
                 {
                     await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);
@@ -61,6 +63,5 @@ namespace OrchardCore.AdminMenu.Services
                 }
             }
         }
-
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,7 +21,6 @@ namespace OrchardCore.Nancy
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var contextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
             var options = serviceProvider.GetService<IOptions<NancyOptions>>();
 
             app.UseOwin(x => x.UseNancy(no =>
@@ -31,7 +29,7 @@ namespace OrchardCore.Nancy
                     new[]
                     {
                         (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
-                        (IAssemblyCatalog)new AmbientAssemblyCatalog(contextAccessor)
+                        (IAssemblyCatalog)new AmbientAssemblyCatalog()
                     });
 
                 no.PerformPassThrough = options.Value.PerformPassThrough;

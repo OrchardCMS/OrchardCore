@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -20,37 +20,42 @@ namespace OrchardCore.Environment.Shell.Builders
             foreach (var services in servicesByType)
             {
                 // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
-                if (services.First().ServiceType == typeof(IStartupFilter))
+                if (services.Key == typeof(IStartupFilter))
                 {
-                    continue;
                 }
 
-                // if only one service of a given type
-                if (services.Count() == 1)
+                // A generic type definition is rather used to create other constructed generic types.
+                else if (services.Key.IsGenericTypeDefinition)
+                {
+                    // So, we just need to pass the descriptor.
+                    foreach (var service in services)
+                    {
+                        clonedCollection.Add(service);
+                    }
+                }
+
+                // If only one service of a given type.
+                else if (services.Count() == 1)
                 {
                     var service = services.First();
 
-                    // Register the singleton instances to all containers
                     if (service.Lifetime == ServiceLifetime.Singleton)
                     {
-                        // Treat open-generic registrations differently
-                        if (service.ServiceType.IsGenericType && service.ServiceType.GenericTypeArguments.Length == 0)
+                        // An host singleton is shared accross tenant containers but only registered instances are not disposed
+                        // by the DI, so we check if it is disposable or if it uses a factory which may return a different type.
+
+                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.ImplementationFactory != null)
                         {
-                            // There is no Func based way to register an open-generic type, instead of
-                            // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));
-                            // Right now, we register them as singleton per cloned scope even though it's wrong
-                            // but in the actual examples it won't matter.
-                            clonedCollection.AddSingleton(service.ServiceType, service.ImplementationType);
+                            // If disposable, register an instance that we resolve immediately from the main container.
+                            clonedCollection.CloneSingleton(service, serviceProvider.GetService(service.ServiceType));
                         }
                         else
                         {
-                            // When a service from the main container is resolved, just add its instance to the container.
-                            // It will be shared by all tenant service providers.
-                            clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
+                            // If not disposable, the singleton can be resolved through a factory when first requested.
+                            clonedCollection.CloneSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
 
-                            // Ideally the service should be resolved when first requested, but ASP.NET DI will call Dispose()
-                            // and this would fail reusability of the instance across tenants' containers.
-                            // clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
+                            // Note: Most of the time a singleton of a given type is unique and not disposable. So,
+                            // most of the time it will be resolved when first requested through a tenant container.
                         }
                     }
                     else
@@ -59,50 +64,46 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                // If multiple services of the same type
+                // If all services of the same type are not singletons.
+                else if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
+                {
+                    // We don't need to resolve them.
+                    foreach (var service in services)
+                    {
+                        clonedCollection.Add(service);
+                    }
+                }
+
+                // If all services of the same type are singletons.
+                else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
+                {
+                    // We can resolve them from the main container.
+                    var instances = serviceProvider.GetServices(services.Key);
+
+                    for (var i = 0; i < services.Count(); i++)
+                    {
+                        clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
+                    }
+                }
+
+                // If singletons and scoped services are mixed.
                 else
                 {
-                    // If all services of the same type are not singletons.
-                    if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
+                    // We need a service scope to resolve them.
+                    using (var scope = serviceProvider.CreateScope())
                     {
-                        // We don't need to resolve them.
-                        foreach (var service in services)
+                        var instances = scope.ServiceProvider.GetServices(services.Key);
+
+                        // Then we only keep singleton instances.
+                        for (var i = 0; i < services.Count(); i++)
                         {
-                            clonedCollection.Add(service);
-                        }
-                    }
-
-                    // If all services of the same type are singletons.
-                    else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
-                    {
-                        // We can resolve them from the main container.
-                        var instances = serviceProvider.GetServices(services.Key);
-
-                        foreach (var instance in instances)
-                        {
-                            clonedCollection.AddSingleton(services.Key, instance);
-                        }
-                    }
-
-                    // If singletons and scoped services are mixed.
-                    else
-                    {
-                        // We need a service scope to resolve them.
-                        using (var scope = serviceProvider.CreateScope())
-                        {
-                            var instances = scope.ServiceProvider.GetServices(services.Key);
-
-                            // Then we only keep singleton instances.
-                            for (var i = 0; i < services.Count(); i++)
+                            if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                             {
-                                if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
-                                {
-                                    clonedCollection.AddSingleton(services.Key, instances.ElementAt(i));
-                                }
-                                else
-                                {
-                                    clonedCollection.Add(services.ElementAt(i));
-                                }
+                                clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
+                            }
+                            else
+                            {
+                                clonedCollection.Add(services.ElementAt(i));
                             }
                         }
                     }
