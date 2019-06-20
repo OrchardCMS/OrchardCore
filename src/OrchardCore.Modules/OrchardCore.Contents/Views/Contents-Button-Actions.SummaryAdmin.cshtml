@@ -24,18 +24,22 @@
 
         @if (hasDraft && hasPublished)
         {
-            <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Discard Draft"]</a>
+            <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-title=@T["Discard Draft"] data-message=@T["Are you sure you want to discard this draft?"] class="dropdown-item btn-sm">@T["Discard Draft"]</a>
         }
 
         @if (hasPublished)
         {
-            <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+            <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"] class="dropdown-item btn-sm">@T["Unpublish"]</a>
         }
 
         @if (hasDraft || hasPublished)
         {
             <a remove-for="@contentItem" class="dropdown-item btn-sm" asp-route-returnUrl="@FullRequestPath" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
+        @*
+        TODO: User permissions to display or not display.
+        *@
+        <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
 
     </div>
 </div>

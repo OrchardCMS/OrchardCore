@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -8,13 +8,14 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css">
+    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css" />
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
     <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
+    <script asp-name="jQuery-ui-i18n" at="Foot"></script>
 
     <resources type="Header" />
 
@@ -23,7 +24,7 @@
 
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body class="preload" dir="@Orchard.CultureDir()">
+<body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
@@ -58,7 +59,7 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"></div>
+    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok="@T["Ok"]" data-cancel="@T["Cancel"]"></div>
 
     <resources type="Footer" />
 </body>

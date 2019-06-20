@@ -95,8 +95,8 @@ namespace OrchardCore.OpenId.Recipes
         public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.Encrypted;
         [Url]
         public string Authority { get; set; }
-        public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
-        public StoreName CertificateStoreName { get; set; } = StoreName.My;
+        public StoreLocation? CertificateStoreLocation  { get; set; }
+        public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbprint { get; set; }
         public bool EnableTokenEndpoint { get; set; }
         public bool EnableAuthorizationEndpoint { get; set; }

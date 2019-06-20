@@ -1,10 +1,10 @@
 # Getting started with an Orchard Core Theme
 
-In this article, we are going to create an Orchard Core Theme by adding it to an existing Orchard Core CMS application [created previously](README).
+In this article, we are going to create an Orchard Core Theme by adding it to an existing Orchard Core CMS application [created previously](./).
 
 ## Create an Orchard Core Theme
 
-- Install the [Code Generation Templates](../../Templates/README) 
+- Install the [Code Generation Templates](../../Templates/) 
 - Create a folder with the name of your theme (Ex: `MyTheme.OrchardCore`) and open it
 - Execute the command `dotnet new octheme`
 - Add a reference to the theme from the main Orchard Core CMS Web application

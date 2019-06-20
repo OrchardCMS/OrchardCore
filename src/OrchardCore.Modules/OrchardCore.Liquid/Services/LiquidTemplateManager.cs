@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -50,7 +51,13 @@ namespace OrchardCore.Liquid.Services
                 return parsed;
             });
 
+            context.ContextualizeWithDefault(_serviceProvider);
             return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+        }
+
+        public bool Validate(string template, out IEnumerable<string> errors)
+        {
+            return LiquidViewTemplate.TryParse(template, out _, out errors);
         }
     }
 }

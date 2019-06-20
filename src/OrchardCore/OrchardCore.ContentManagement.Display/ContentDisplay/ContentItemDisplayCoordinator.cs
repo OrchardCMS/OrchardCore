@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Display
 {
@@ -46,7 +45,7 @@ namespace OrchardCore.ContentManagement.Display
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            if(contentTypeDefinition == null)
+            if (contentTypeDefinition == null)
             {
                 return;
             }
@@ -156,7 +155,12 @@ namespace OrchardCore.ContentManagement.Display
                 return;
 
             dynamic contentShape = context.Shape;
-            dynamic partsShape = await context.ShapeFactory.CreateAsync("Zone", Arguments.Empty);
+            dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
+                Arguments.From(new
+                {
+                    ContentItem = contentItem
+                }));
+
             contentShape.Zones["Parts"] = partsShape;
 
             foreach (var displayDriver in _displayDrivers)

@@ -109,6 +109,7 @@ namespace OrchardCore.Autoroute.Handlers
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
+                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {
@@ -117,6 +118,14 @@ namespace OrchardCore.Autoroute.Handlers
 
                 part.Apply();
             }
+        }
+
+        public async override Task CloningAsync(CloneContentContext context, AutoroutePart part)
+        {
+            var clonedPart = context.CloneContentItem.As<AutoroutePart>();
+            clonedPart.Path = await GenerateUniquePathAsync(part.Path, clonedPart);
+            clonedPart.SetHomepage = false;
+            clonedPart.Apply();
         }
 
         private Task RemoveTagAsync(AutoroutePart part)
@@ -142,9 +151,8 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1)
+            if (versionSeparatorPosition > -1 && int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
             {
-                int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version);
                 unversionedPath = path.Substring(0, versionSeparatorPosition);
             }
 

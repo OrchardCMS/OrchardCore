@@ -12,6 +12,7 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using YesSql;
 using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;
 
@@ -78,7 +79,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var session = graphContext.ServiceProvider.GetService<ISession>();
 
-            var query = session.Query<ContentItem, ContentItemIndex>();
+            var preQuery = session.Query<ContentItem>();
+
+            var filters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
+
+            foreach (var filter in filters)
+            {
+                preQuery = await filter.PreQueryAsync(preQuery, context);
+            }
+
+            var query = preQuery.With<ContentItemIndex>();
 
             query = FilterVersion(query, versionOption);
             query = FilterContentType(query, context);
@@ -87,7 +97,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentItemsQuery = await FilterWhereArguments(query, where, context, session, graphContext);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
-            return await contentItemsQuery.ListAsync();
+            var contentItems = await contentItemsQuery.ListAsync();
+
+            foreach (var filter in filters)
+            {
+                contentItems = await filter.PostQueryAsync(contentItems, context);
+            }
+
+            return contentItems;
         }
 
         private async Task<IQuery<ContentItem>> FilterWhereArguments(
@@ -103,7 +120,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             var transaction = await session.DemandAsync();
-            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection));
+
+            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection), context.ServiceProvider.GetService<ShellSettings>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));

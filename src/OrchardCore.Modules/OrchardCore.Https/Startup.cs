@@ -9,6 +9,7 @@ using OrchardCore.Https.Drivers;
 using OrchardCore.Https.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https
@@ -35,6 +36,8 @@ namespace OrchardCore.Https
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
             services.AddSingleton<IHttpsService, HttpsService>();
+
+            services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddOptions<HttpsRedirectionOptions>()
                 .Configure<IHttpsService>((options, service) =>

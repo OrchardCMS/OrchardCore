@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -44,7 +45,7 @@ namespace OrchardCore.ContentFields.Services
                 });
             }
 
-            return results;
+            return results.OrderBy(x => x.DisplayText);
         }
     }
 }

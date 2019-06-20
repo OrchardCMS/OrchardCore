@@ -41,14 +41,6 @@ namespace OrchardCore.Settings.Recipes
                         site.Calendar = property.Value.ToString();
                         break;
 
-                    case "Culture":
-                        site.Culture = property.Value.ToString();
-                        break;
-
-                    case "SupportedCultures":
-                        site.SupportedCultures = property.Value.ToObject<string[]>();
-                        break;
-
                     case "MaxPagedCount":
                         site.MaxPagedCount = property.Value.Value<int>();
                         break;
