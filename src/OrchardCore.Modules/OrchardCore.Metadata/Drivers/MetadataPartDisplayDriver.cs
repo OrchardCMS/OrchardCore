@@ -182,7 +182,7 @@ namespace OrchardCore.Metadata.Drivers
                 model.Settings = settings;
 
                 return Task.CompletedTask;
-            });
+            }).Location("Parts#Metadata:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MetadataPart model, IUpdateModel updater)

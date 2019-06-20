@@ -2,28 +2,34 @@ var charCountInput = $('[data-counter]');
 
 charCountInput.each(function () {
     var currLength = $(this).val().length;
-    var label = $('label[for="' + $(this).attr('id') + '"]');
-    var span = $('<span />').addClass('counter-display').html(currLength);
     var maxLength = $(this).data('counter-max-length');
-    if (maxLength) {
-        if (currLength > maxLength) {
-            span.addClass('is-invalid');
-        }
+    var remainLength = 0;
+    if (maxLength && currLength <= maxLength) {
+        remainLength = maxLength - currLength;
     }
-    label.append(span);
+    var label = $('label[for="' + $(this).attr('id') + '"]');
+    var span = $('<span />').addClass('counter-display').html(remainLength + " characters remaining of " + maxLength);
+    if (maxLength && remainLength === 0) {
+        span.addClass('is-invalid');
+    }
+    $(this).after(span);
 });
 
 charCountInput.keyup(function () {
-    var length = $(this).val().length;
-    var display = $('label[for="' + $(this).attr('id') + '"] > .counter-display');
+    var currLength = $(this).val().length;
+    var display = $(this).next('.counter-display');
     var maxLength = $(this).data('counter-max-length');
+    var remainLength = 0;
+    if (maxLength && currLength <= maxLength) {
+        remainLength = maxLength - currLength;
+    }
     if (maxLength) {
-        if (length > maxLength) {
+        if (remainLength === 0) {
             display.addClass('is-invalid');
         }
         else {
             display.removeClass('is-invalid');
         }
     }
-    display.text(length);
+    display.text(remainLength + " characters remaining of " + maxLength);
 });
