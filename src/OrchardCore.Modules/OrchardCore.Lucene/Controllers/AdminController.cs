@@ -7,6 +7,7 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -77,7 +78,9 @@ namespace OrchardCore.Lucene.Controllers
             var model = new AdminEditViewModel
             {
                 IndexName = "",
-                AnalyzerName = "standardanalyzer"
+                AnalyzerName = "standardanalyzer",
+                Analyzers = _luceneAnalyzerManager.GetAnalyzers()
+                .Select(x => new SelectListItem { Text = x.Name, Value = x.Name })
             };
 
             return View(model);
@@ -183,7 +186,7 @@ namespace OrchardCore.Lucene.Controllers
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _notifier.Error(H["An error occurred while deleting the index"]);
                 Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
@@ -260,7 +263,7 @@ namespace OrchardCore.Lucene.Controllers
                     var docs = await _queryService.SearchAsync(context, parameterizedQuery);
                     model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Logger.LogError(e, "Error while executing query");
                     ModelState.AddModelError(nameof(model.DecodedQuery), "Invalid query");
@@ -268,7 +271,7 @@ namespace OrchardCore.Lucene.Controllers
 
                 stopwatch.Stop();
                 model.Elapsed = stopwatch.Elapsed;
-            });            
+            });
 
             return View(model);
         }
