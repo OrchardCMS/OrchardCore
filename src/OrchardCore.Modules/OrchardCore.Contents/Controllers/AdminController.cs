@@ -605,33 +605,8 @@ namespace OrchardCore.Contents.Controllers
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
         }
 
-
         [HttpPost, ActionName("Edit")]
-        [FormValueRequired("submit.RemoveItem")]
-        public async Task<IActionResult> RemoveItem(string contentItemId, string returnUrl)
-        {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
-            {
-                return Unauthorized();
-            }
-
-            if (contentItem != null)
-            {
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-                await _contentManager.RemoveAsync(contentItem);
-
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["That content has been removed."]
-                    : T["That {0} has been removed.", typeDefinition.DisplayName]);
-            }
-
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
-        }
-
-                [HttpPost]
+        [FormValueRequired("submit.Remove")]
         public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -654,7 +629,6 @@ namespace OrchardCore.Contents.Controllers
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Publish(string contentItemId, string returnUrl)
