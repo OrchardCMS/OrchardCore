@@ -40,11 +40,6 @@ namespace OrchardCore.ContentLocalization.Controllers
             // Invariant culture name is empty so a null value is bound.
             targetCulture = targetCulture ?? "";
 
-            if (contentItemUrl == "/Error")
-            {
-                return NoContent();
-            }
-
             if (!contentItemUrl.HasValue)
             {
                 contentItemUrl = "/";
@@ -54,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (!supportedCultures.Any(t => t == targetCulture))
             {
-                return NoContent();
+                return LocalRedirect('~' + contentItemUrl);
             }
 
             // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
@@ -63,7 +58,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 var localization = localizations.SingleOrDefault(l => String.Equals(l.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
-                if(localization is object)
+                if (localization != null)
                 {
                     return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
                 }
@@ -75,7 +70,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 var localization = homeLocalizations.SingleOrDefault(h => String.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
-                if (localization is object)
+                if (localization != null)
                 {
                     return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
                 }
