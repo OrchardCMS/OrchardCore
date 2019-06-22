@@ -22,7 +22,7 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using Lucene.Net.Analysis.Fr;
+using OrchardCore.Lucene.Analyzers;
 
 namespace OrchardCore.Lucene
 {

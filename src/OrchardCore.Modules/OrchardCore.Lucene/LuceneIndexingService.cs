@@ -156,10 +156,10 @@ namespace OrchardCore.Lucene
         /// Creates a new index
         /// </summary>
         /// <returns></returns>
-        public void CreateIndex(string indexName)
+        public void CreateIndex(string indexName, string analyzer)
         {
             RebuildIndex(indexName);
-            _luceneIndexSettings.CreateIndex(indexName, "standardanalyzer");
+            _luceneIndexSettings.CreateIndex(indexName, analyzer);
         }
 
         /// <summary>

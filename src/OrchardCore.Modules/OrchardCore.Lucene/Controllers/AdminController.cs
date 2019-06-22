@@ -27,6 +27,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private readonly LuceneIndexSettings _luceneIndexSettings;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
 
@@ -35,6 +36,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
+            LuceneIndexSettings luceneIndexSettings,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
@@ -46,6 +48,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
+            _luceneIndexSettings = luceneIndexSettings;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _notifier = notifier;
@@ -110,7 +113,8 @@ namespace OrchardCore.Lucene.Controllers
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-                _luceneIndexingService.CreateIndex(model.IndexName);
+                _luceneIndexSettings.CreateIndex(model.IndexName, model.AnalyzerName);
+                _luceneIndexingService.CreateIndex(model.IndexName, model.AnalyzerName);
                 //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
@@ -244,7 +248,7 @@ namespace OrchardCore.Lucene.Controllers
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettings.GetIndexAnalyzer(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();
