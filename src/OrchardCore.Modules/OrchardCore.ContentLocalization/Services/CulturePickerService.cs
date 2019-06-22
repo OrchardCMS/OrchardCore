@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Services
@@ -16,7 +16,6 @@ namespace OrchardCore.ContentLocalization.Services
 
 
         public ContentCulturePickerService(
-            IContentLocalizationManager contentLocalizationManager,
             IAutorouteEntries autorouteEntries,
             ILocalizationEntries localizationEntries,
             ISiteService siteService)

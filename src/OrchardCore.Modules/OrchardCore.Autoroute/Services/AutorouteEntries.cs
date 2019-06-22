@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {

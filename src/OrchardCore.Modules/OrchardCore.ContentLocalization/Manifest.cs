@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id ="OrchardCore.ContentLocalization",
+    Id = "OrchardCore.ContentLocalization",
     Name = "Content Localization",
     Description = "Provides a part that allows to localize content items.",
     Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Localization" },
@@ -22,7 +22,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",
     Name = "Content Culture Picker",
     Description = "Provides a culture picker shape for the frontend.",
-    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Autoroute" },
+    Dependencies = new[] { "OrchardCore.ContentLocalization" },
     Category = "Internationalization"
 )]
-

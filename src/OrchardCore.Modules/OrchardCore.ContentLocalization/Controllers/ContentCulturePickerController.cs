@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 
@@ -17,20 +16,16 @@ namespace OrchardCore.ContentLocalization.Controllers
     {
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
-        private readonly string _tenantPrefix;
 
         public IHtmlLocalizer T { get; }
 
         public ContentCulturePickerController(
             IHtmlLocalizer<AdminController> localizer,
             ILocalizationService locationService,
-            IContentCulturePickerService culturePickerService,
-            ShellSettings shellSettings
-           )
+            IContentCulturePickerService culturePickerService)
         {
             T = localizer;
             _locationService = locationService;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
             _culturePickerService = culturePickerService;
         }
 
