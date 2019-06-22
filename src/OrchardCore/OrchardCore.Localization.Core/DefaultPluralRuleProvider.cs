@@ -6,6 +6,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// This class provides the pluralization rules based on the Unicode Common Locale Data Repository.
     /// c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+    /// c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml
     /// </summary>
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
