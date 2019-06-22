@@ -201,11 +201,10 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Theory]
-        [InlineData("zh-Hans", "zh", "球", 1, new string[] { "球" })]
-        [InlineData("zh-Hans", "zh", "球", 2, new string[] { "球" })]
-        public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string parentCulture, string expected, int count, string[] translations)
+        [InlineData("zh-Hans", "球", 1, new string[] { "球" })]
+        [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
+        public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
         {
-            var translationCulture = CultureInfo.GetCultureInfo(parentCulture);
             var currentCulture = CultureInfo.GetCultureInfo(culture);
             CultureInfo.CurrentUICulture = currentCulture;
 
