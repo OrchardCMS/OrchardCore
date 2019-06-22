@@ -15,7 +15,8 @@ namespace OrchardCore.Tests.Localization
         [InlineData("zh-Hans-CN", "zh")]
         [InlineData("zh-Hans", "zh")]
         [InlineData("zh-Hant", "zh")]
-        public void TryGetRuleShouldReturnRuleForTopCulture(string culture, string expected) {
+        public void TryGetRuleShouldReturnRuleForTopCulture(string culture, string expected)
+        {
             var expectedCulture = CultureInfo.GetCultureInfo(expected);
             var testCulture = CultureInfo.GetCultureInfo(culture);
 
