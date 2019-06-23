@@ -232,6 +232,10 @@ namespace OrchardCore.Lucene
                     case DocumentIndex.Types.Text:
                         if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                         {
+                            if (store == Field.Store.YES)
+                            {
+                                doc.Add(new TextField(entry.Name + ".Analyzed", Convert.ToString(entry.Value), Field.Store.NO));
+                            }
                             doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         else
