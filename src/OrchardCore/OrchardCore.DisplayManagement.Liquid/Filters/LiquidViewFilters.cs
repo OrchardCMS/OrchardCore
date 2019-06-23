@@ -93,16 +93,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return NilValue.Instance;
         }
 
-        public static ValueTask<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return new ValueTask<FluidValue>(input);
-        }
-
         public static string LowerKebabToPascalCase(string attribute)
         {
             attribute = attribute.Trim();
