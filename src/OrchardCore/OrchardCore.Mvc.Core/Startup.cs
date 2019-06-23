@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Caching.Memory;
@@ -57,6 +58,8 @@ namespace OrchardCore.Mvc
 
             // Use a custom 'IViewCompilationMemoryCacheProvider' so that all tenants reuse the same ICompilerCache instance.
             services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
+
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             AddMvcModuleCoreServices(services);
         }
