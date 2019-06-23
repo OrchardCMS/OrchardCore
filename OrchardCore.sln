@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.28822.285
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
+	ProjectSection(SolutionItems) = preProject
+		src\OrchardCore.Modules\OrchardCore.Lucene.FrenchAnalyzer\OrchardCore.Lucene.FrenchAnalyzer.csproj = src\OrchardCore.Modules\OrchardCore.Lucene.FrenchAnalyzer\OrchardCore.Lucene.FrenchAnalyzer.csproj
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{275E087F-A4E2-4A7B-A924-ED68E3A52086}"
 EndProject
@@ -375,7 +378,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentLocaliza
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Github", "src\OrchardCore.Modules\OrchardCore.Github\OrchardCore.Github.csproj", "{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core", "src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj", "{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lucene.FrenchAnalyzer", "src\OrchardCore.Modules\OrchardCore.Lucene.FrenchAnalyzer\OrchardCore.Lucene.FrenchAnalyzer.csproj", "{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -999,6 +1004,10 @@ Global
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1175,6 +1184,7 @@ Global
 		{C2EA489A-B51B-40CE-BE71-8EC9774075C6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{BF8B2286-F2CF-42EC-AB09-5105EC7B3FDA} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

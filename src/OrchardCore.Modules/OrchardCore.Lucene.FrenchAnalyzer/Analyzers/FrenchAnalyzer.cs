@@ -11,7 +11,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace OrchardCore.Lucene.Analyzers
+namespace OrchardCore.Lucene.FrenchAnalyzer.Analyzers
 {
     /*
 	 * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -214,7 +214,7 @@ namespace OrchardCore.Lucene.Analyzers
                     result = new SnowballFilter(result, new FrenchStemmer());
                 }
                 result = new ASCIIFoldingFilter(result);
-                return new TokenStreamComponents(source, result);
+                return new TokenStreamComponents(source, new LowerCaseFilter(m_matchVersion, result));
             }
             else
             {
