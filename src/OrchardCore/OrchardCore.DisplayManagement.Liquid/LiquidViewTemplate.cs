@@ -32,7 +32,6 @@ using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
