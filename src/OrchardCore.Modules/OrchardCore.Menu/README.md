@@ -10,7 +10,7 @@ The `Menu` shape is used to render a Menu.
 | --------- | ------------ |
 | `Model.ContentItemId` | If defined, contains the content item identifier of the menu to render. |
 | `Model.Items` | The list of menu items shapes for the menu. These are shapes of type `MenuItem`. |
-| `Model.Differentiator` | If defined, contains the formatted name of the menu. For instance `MainMenu`. |
+| `Model.Differentiator` | If defined, contains the formatted name of the menu (title). For instance `MainMenu`. |
 
 #### Menu Alternates
 

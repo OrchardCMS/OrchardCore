@@ -1,23 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Nancy.AssemblyCatalogs
 {
     public class AmbientAssemblyCatalog : IAssemblyCatalog
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AmbientAssemblyCatalog"/> class.
         /// </summary>
-        public AmbientAssemblyCatalog(IHttpContextAccessor httpContextAccessor)
+        public AmbientAssemblyCatalog()
         {
-            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -26,7 +23,7 @@ namespace OrchardCore.Nancy.AssemblyCatalogs
         /// <returns>An <see cref="IReadOnlyCollection{T}"/> of <see cref="Assembly"/> instances.</returns>
         public IReadOnlyCollection<Assembly> GetAssemblies()
         {
-            var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+            var shellBluePrint = ShellScope.Services.GetRequiredService<ShellBlueprint>();
             return shellBluePrint.Dependencies.Keys
                 .Select(type => type.Assembly)
                 .Distinct()

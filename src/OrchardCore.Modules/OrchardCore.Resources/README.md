@@ -35,6 +35,7 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 | jQuery | Script | 3.3.1 | - |
 | jQuery.slim | Script | 3.3.1 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
+| jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
 | popper | Script | 1.15.0 | - |
 | bootstrap | Script | 3.4.0, 4.3.1 | jQuery, Popper |
 | bootstrap | Style | 3.4.0, 4.3.1 | - |

@@ -7,7 +7,7 @@ namespace OrchardCore.ContentLocalization
     {
 
         public static readonly Permission EditLocalizedContent = new Permission("EditLocalizedContent", "Edit content for others");
-        public static readonly Permission EditOwnLocalizedContent = new Permission("EditLocalizedContent", "Edit own content", new[] { EditLocalizedContent });
+        public static readonly Permission EditOwnLocalizedContent = new Permission("EditOwnLocalizedContent", "Edit own content", new[] { EditLocalizedContent });
 
         public IEnumerable<Permission> GetPermissions()
         {

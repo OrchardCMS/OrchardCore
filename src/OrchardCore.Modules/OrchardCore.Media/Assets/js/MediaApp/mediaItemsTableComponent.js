@@ -42,6 +42,7 @@ Vue.component('mediaItemsTable', {
                                     <div class="buttons-container"> \
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
+                                        <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a> \
                                     </div> \
                                 </div> \
                             </td> \
@@ -75,6 +76,7 @@ Vue.component('mediaItemsTable', {
         self.T.typeHeader = $('#t-type-header').val();
         self.T.editButton = $('#t-edit-button').val();
         self.T.deleteButton = $('#t-delete-button').val();
+        self.T.viewButton = $('#t-view-button').val();
     },
     methods: {
         isMediaSelected: function (media) {

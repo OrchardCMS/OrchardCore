@@ -9191,7 +9191,18 @@ html[dir], [dir] body {
   background-color: #FFF; }
 
 [dir] body {
-  margin-bottom: 40px; }
+  margin-bottom: 40px;
+  cursor: default; }
+
+[dir] .cursor-move {
+  cursor: move; }
+
+[dir] .cursor-pointer {
+  cursor: pointer; }
+[dir=rtl] .dropdown-menu {
+  left: auto !important;
+  right: 0px !important;
+  transform: translate3d(0px, 38px, 0px) !important; }
 
 .left-sidebar-compact .ta-footer {
   width: calc(100% - 60px);
@@ -10146,12 +10157,6 @@ select[multiple] {
     border-bottom-left-radius: 0.25rem; }
     [dir] .nav-tabs .nav-link.active {
       border-bottom: 1px solid #dee2e6; } }
-
-[dir] .ui-sortable-handle {
-  cursor: move; }
-
-[dir] .btn.ui-sortable-handle, [dir] .ui-sortable-handle.button {
-  cursor: move !important; }
 
 .ui-sortable {
   min-height: 1rem; }
