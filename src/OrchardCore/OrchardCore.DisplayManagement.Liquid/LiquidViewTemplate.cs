@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -298,6 +299,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                 context.MemberAccessStrategy.Register(model.GetType());
                 context.LocalScope.SetValue("Model", model);
             }
+
+            context.CultureInfo = CultureInfo.CurrentUICulture;
         }
 
         private static ActionContext GetActionContext(IServiceProvider services)
