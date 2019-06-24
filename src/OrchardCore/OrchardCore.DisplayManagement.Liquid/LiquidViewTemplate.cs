@@ -185,7 +185,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 });
             }
 
-            // Check if a newly created 'ViewContext' has been cached for rendering.
+            // Check if a 'ViewContext' has been cached for rendering.
             if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
                 context is ViewContext viewContext &&
                 viewContext.View is RazorView razorView &&
@@ -253,8 +253,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                 var actionContext = GetActionContext(services);
                 viewContext = GetViewContext(services, actionContext);
 
-                // Check if the newly created 'ViewContext' need to be used for rendering.
-                if (context.AmbientValues.TryGetValue("UseViewContext", out var useViewContext))
+                // If there was no 'ViewContext' but a 'DisplayContext' ...
+                if (displayContext.Value != null)
                 {
                     // Cache the 'ViewContext' to be used for rendering.
                     context.AmbientValues.Add("ViewContext", viewContext);

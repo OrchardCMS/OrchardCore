@@ -72,11 +72,6 @@ namespace OrchardCore.Templates.Services
                 BindingAsync = async displayContext =>
                 {
                     var context = new TemplateContext();
-
-                    // This binding doesn't use the view engine, so we mark the template to use
-                    // a newly created 'ViewContext' for rendering (if no one was existing yet).
-                    context.AmbientValues.Add("UseViewContext", true);
-
                     await context.ContextualizeAsync(displayContext);
                     var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, HtmlEncoder.Default, context);
                     return new HtmlString(htmlContent);
