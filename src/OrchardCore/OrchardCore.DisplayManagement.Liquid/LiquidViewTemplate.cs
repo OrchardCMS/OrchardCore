@@ -253,7 +253,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 var actionContext = GetActionContext(services);
                 viewContext = GetViewContext(services, actionContext);
 
-                // If there was no 'ViewContext' but a 'DisplayContext' ...
+                // If there was no 'ViewContext' but a 'DisplayContext'.
                 if (displayContext.Value != null)
                 {
                     // Cache the 'ViewContext' to be used for rendering.
