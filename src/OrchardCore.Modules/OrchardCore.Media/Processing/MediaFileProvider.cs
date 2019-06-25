@@ -30,8 +30,7 @@ namespace OrchardCore.Media.Processing
         public MediaFileProvider(
             IMediaFileStore mediaStore,
             IOptions<ImageSharpMiddlewareOptions> options,
-            IShellConfiguration shellConfiguration
-            ,
+            IShellConfiguration shellConfiguration,
             PathString requestPath
             )
         {
