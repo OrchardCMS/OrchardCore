@@ -42,7 +42,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
+using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.Memory;
 
 namespace OrchardCore.Media
@@ -145,10 +147,19 @@ namespace OrchardCore.Media
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
             .SetCache<PhysicalFileSystemCache>()
             .SetCacheHash<CacheHash>()
-            .AddProvider<MediaFileProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
+
+            // When ImageSharp next release w/fix for service registration via Implementation Factory move
+            // back to AddImageSharpCore Builder Extensions
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IImageProvider, MediaFileProvider>(serviceProvider =>
+            {
+                var mediaStore = serviceProvider.GetRequiredService<IMediaFileStore>();
+                var options = serviceProvider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>();
+                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
+                return new MediaFileProvider(mediaStore, options, shellConfiguration, AssetsUrlPrefix);
+            }));
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
