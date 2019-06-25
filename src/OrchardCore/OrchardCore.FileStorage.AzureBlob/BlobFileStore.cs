@@ -268,13 +268,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             var blob = GetBlobReference(path);
 
+            if (!overwrite && await blob.ExistsAsync())
+                throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+
             var name = path.Split('/').Last();
             _contentTypeProvider.TryGetContentType(name, out var contentType);
 
             blob.Properties.ContentType = contentType ?? "application/octet-stream";
-
-            if (!overwrite && await blob.ExistsAsync())
-                throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
 
             await blob.UploadFromStreamAsync(inputStream);
         }
