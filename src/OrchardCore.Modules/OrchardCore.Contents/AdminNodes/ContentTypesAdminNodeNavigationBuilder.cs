@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
 using OrchardCore.Contents.Security;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Contents.AdminNodes
 {
@@ -23,13 +24,14 @@ namespace OrchardCore.Contents.AdminNodes
         public ContentTypesAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
             ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
 
             var tenantPrefix = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/');
-            _contentItemlistUrl = tenantPrefix + "/Admin/Contents/ContentItems/";
-
+            var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            _contentItemlistUrl = tenantPrefix + pathBase +  "/Admin/Contents/ContentItems/";
 
             _logger = logger;
         }
@@ -46,7 +48,7 @@ namespace OrchardCore.Contents.AdminNodes
                 return;
             }
 
-            // Add ContentTypes specific children            
+            // Add ContentTypes specific children
             var typesToShow = GetContentTypesToShow(node);
             foreach (var ctd in typesToShow)
             {
@@ -61,7 +63,7 @@ namespace OrchardCore.Contents.AdminNodes
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
             }
-            
+
 
             // Add external children
             foreach (var childNode in node.Items)
@@ -124,7 +126,7 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList<string>()
                 ?? new List<string>();
         }
-        
+
     }
 
 }
