@@ -25,13 +25,11 @@ namespace OrchardCore.Media.Processing
         private readonly IMediaFileStore _mediaStore;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
-        private readonly PathString _requestPath;
 
         public MediaFileProvider(
             IMediaFileStore mediaStore,
             IOptions<ImageSharpMiddlewareOptions> options,
-            IShellConfiguration shellConfiguration,
-            PathString requestPath
+            IShellConfiguration shellConfiguration
             )
         {
             _mediaStore = mediaStore;
@@ -39,7 +37,6 @@ namespace OrchardCore.Media.Processing
 
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
             _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSizes;
-            _requestPath = requestPath;
         }
 
         /// <inheritdoc/>
@@ -51,7 +48,7 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(_requestPath))
+            if (!context.Request.Path.StartsWithSegments(Startup.AssetsRequestPath))
             {
                 return false;
             }

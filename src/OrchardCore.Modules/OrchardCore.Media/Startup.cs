@@ -42,9 +42,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
-using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
-using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.Memory;
 
 namespace OrchardCore.Media
@@ -52,9 +50,9 @@ namespace OrchardCore.Media
     public class Startup : StartupBase
     {
         /// <summary>
-        /// The url prefix used to route asset files
+        /// The request path used to route asset files
         /// </summary>
-        private const string AssetsUrlPrefix = "/media";
+        public static readonly PathString AssetsRequestPath = new PathString("/media");
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
@@ -86,7 +84,7 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
                     .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
@@ -147,19 +145,10 @@ namespace OrchardCore.Media
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
             .SetCache<PhysicalFileSystemCache>()
             .SetCacheHash<CacheHash>()
+            .AddProvider<MediaFileProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
-
-            // When ImageSharp next release w/fix for service registration via Implementation Factory move
-            // back to AddImageSharpCore Builder Extensions
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IImageProvider, MediaFileProvider>(serviceProvider =>
-            {
-                var mediaStore = serviceProvider.GetRequiredService<IMediaFileStore>();
-                var options = serviceProvider.GetRequiredService<IOptions<ImageSharpMiddlewareOptions>>();
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                return new MediaFileProvider(mediaStore, options, shellConfiguration, AssetsUrlPrefix);
-            }));
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
@@ -196,7 +185,7 @@ namespace OrchardCore.Media
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
-                RequestPath = AssetsUrlPrefix,
+                RequestPath = AssetsRequestPath,
                 FileProvider = new PhysicalFileProvider(mediaPath),
                 ServeUnknownFileTypes = true,
             });
