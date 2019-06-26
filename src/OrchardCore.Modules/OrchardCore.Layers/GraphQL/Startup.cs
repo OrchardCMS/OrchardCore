@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Layers.GraphQL

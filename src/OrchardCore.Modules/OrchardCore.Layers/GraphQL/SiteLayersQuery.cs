@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -8,12 +7,13 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Layers.Models;
+using OrchardCore.Layers.Services;
 
 namespace OrchardCore.Layers.GraphQL
 {
     public class SiteLayersQuery : ISchemaBuilder
     {
-        public SiteLayersQuery(IStringLocalizer<LayerQuery> localizer)
+        public SiteLayersQuery(IStringLocalizer<SiteLayersQuery> localizer)
         {
             T = localizer;
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.Layers.GraphQL
             {
                 Name = "SiteLayers",
                 Description = T["Site layers define the rules and zone placement for widgets."],
-                Type = typeof(ListGraphType<LayerObjectType>),
+                Type = typeof(ListGraphType<LayerQueryObjectType>),
                 Resolver = new AsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
             };
 
@@ -35,13 +35,13 @@ namespace OrchardCore.Layers.GraphQL
             return Task.FromResult<IChangeToken>(null);
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(ResolveFieldContext resolveContext)
+        private async Task<IEnumerable<Layer>> ResolveAsync(ResolveFieldContext resolveContext)
         {
             var context = (GraphQLContext)resolveContext.UserContext;
             var layerService = context.ServiceProvider.GetService<ILayerService>();
 
             var allLayers = await layerService.GetLayersAsync();
-            return allLayers;
+            return allLayers.Layers;
         }
     }
 }

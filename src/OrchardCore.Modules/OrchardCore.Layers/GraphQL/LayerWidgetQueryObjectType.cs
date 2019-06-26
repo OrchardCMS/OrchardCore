@@ -1,10 +1,11 @@
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL.Queries.Types;
+using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.GraphQL
 {
-    public class LayerWidgetQueryObjectType : ObjectGraphType<IContentItem>
+    public class LayerWidgetQueryObjectType : ObjectGraphType<ContentItem>
     {
         public LayerWidgetQueryObjectType()
         {
@@ -12,30 +13,23 @@ namespace OrchardCore.Layers.GraphQL
 
             Field<StringGraphType>(
                 "zone", 
-                "The name of the widget's zone.", 
-                resolve: context => AsLayerMetadata(context.Source, x => x.Zone));
+                "The name of the widget's zone.",
+                resolve: context => context.Source.As<LayerMetadata>()?.Zone);
 
-            Field<StringGraphType>(
+            Field<DecimalGraphType>(
                 "position", 
                 "The position of the widget in the zone.", 
-                resolve: context => AsLayerMetadata(context.Source, x => x.Position));
+                resolve: context => context.Source.As<LayerMetadata>()?.Position);
 
-            Field<StringGraphType>(
+            Field<BooleanGraphType>(
                 "renderTitle", 
                 "Whether to render the widget's title.", 
-                resolve: context => AsLayerMetadata(context.Source, x => x.RenderTitle));
+                resolve: context => context.Source.As<LayerMetadata>()?.RenderTitle);
 
             Field<ContentItemInterface>(
                 "widget",
                 "A widget on this layer.",
                 resolve: context => context.Source);
-        }
-
-        private string AsLayerMetadata(IContentItem contentItem, Expression<Func<LayerMetadata, string>> propAccessor)
-        {
-            var layerMetadata = contentItem.As<LayerMetadata>();
-            if(layerMetadata == null) return null;
-            return propAccessor(layerMetadata);
         }
     }
 }
