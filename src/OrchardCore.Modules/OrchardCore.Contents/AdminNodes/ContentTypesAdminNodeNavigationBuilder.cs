@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.AdminMenu.Services;
-using OrchardCore.Navigation;
 using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata.Models;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
-using OrchardCore.Contents.Security;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.AdminMenu.Services;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents.Security;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.AdminNodes
 {
@@ -23,15 +22,13 @@ namespace OrchardCore.Contents.AdminNodes
 
         public ContentTypesAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
 
-            var tenantPrefix = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/');
             var pathBase = httpContextAccessor.HttpContext.Request.PathBase;
-            _contentItemlistUrl = tenantPrefix + pathBase +  "/Admin/Contents/ContentItems/";
+            _contentItemlistUrl = pathBase + "/Admin/Contents/ContentItems/";
 
             _logger = logger;
         }
@@ -58,7 +55,7 @@ namespace OrchardCore.Contents.AdminNodes
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
-                        ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name] , ctd));
+                        ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
@@ -105,7 +102,7 @@ namespace OrchardCore.Contents.AdminNodes
         {
             if (node.ShowAll)
             {
-              return AddPrefixToClasses(node.IconClass);
+                return AddPrefixToClasses(node.IconClass);
             }
             else
             {

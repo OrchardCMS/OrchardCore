@@ -14,8 +14,7 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var tenantPrefix = ("/" + ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-    var formActionWithoutTypeName = tenantPrefix + Context.Request.PathBase + "/Admin/Contents/ContentItems";
+    var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
 }
 
 <h1>@RenderTitleSegments(pageTitle)</h1>
