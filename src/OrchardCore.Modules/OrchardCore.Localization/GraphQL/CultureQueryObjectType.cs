@@ -8,7 +8,7 @@ namespace OrchardCore.Localization.GraphQL
         {
             Name = "SiteCulture";
 
-            Field<StringGraphType>("locale", "The language locale code.", resolve: context => context.Source.Locale);
+            Field<StringGraphType>("culture", "The culture code.", resolve: context => context.Source.Culture);
             Field<BooleanGraphType>("default", "Whether this is the default culture.", resolve: context => context.Source.IsDefault);
         }
     }

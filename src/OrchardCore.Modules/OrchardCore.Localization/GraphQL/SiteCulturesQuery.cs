@@ -45,7 +45,7 @@ namespace OrchardCore.Localization.GraphQL
 
              var cultures = supportedCultures.Select(culture =>
                 new SiteCulture {
-                    Locale = culture,
+                    Culture = culture,
                     IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
                 }
             );
