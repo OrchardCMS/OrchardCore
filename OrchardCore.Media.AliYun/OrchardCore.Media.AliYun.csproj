@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\src\OrchardCore\OrchardCore.Module.Targets\Package.Build.props" Link="Package.Build.props">
+      <PackagePath>build\$(TargetFramework)\$(PackageId).props</PackagePath>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.FileStorage.AliYunOss\OrchardCore.FileStorage.AliYunOss.csproj" />
+    <ProjectReference Include="..\src\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" />
+    <ProjectReference Include="..\src\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" />
+    <ProjectReference Include="..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+</Project>
