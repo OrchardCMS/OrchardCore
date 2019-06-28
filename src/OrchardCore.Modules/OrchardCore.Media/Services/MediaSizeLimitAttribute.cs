@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell.Configuration;
 namespace OrchardCore.Media.Services
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    [Obsolete("This type is being deprecated because of GH/#3263")]
+    //[Obsolete("This type is being deprecated because of GH/#3263")]
     public class MediaSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
     {
         public int Order { get; set; } = 900;
@@ -72,7 +72,7 @@ namespace OrchardCore.Media.Services
 
                     var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
 
-                    if (maxRequestBodySizeFeature != null && maxRequestBodySizeFeature.IsReadOnly)
+                    if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
                     {
                         maxRequestBodySizeFeature.MaxRequestBodySize = _maxUploadSize;
                     }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -172,6 +173,7 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
+        [MediaSizeLimit]
         public async Task<ActionResult<object>> Upload(
             string path,
             string contentType,
