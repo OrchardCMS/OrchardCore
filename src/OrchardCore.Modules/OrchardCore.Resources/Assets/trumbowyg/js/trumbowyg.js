@@ -461,7 +461,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             'i': 'em',
             's': 'del',
             'strike': 'del',
-            'div': 'p'
+            'div': 'div'
         },
 
         init: function () {
