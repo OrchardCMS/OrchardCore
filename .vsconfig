@@ -8,7 +8,7 @@
     "Microsoft.VisualStudio.Component.Roslyn.Compiler",
     "Microsoft.VisualStudio.Component.Roslyn.LanguageServices",
     "Microsoft.VisualStudio.Component.FSharp",
-    "Microsoft.Net.Core.Component.SDK.2.1",
+    "Microsoft.Net.Core.Component.SDK.2.2",
     "Microsoft.NetCore.ComponentGroup.DevelopmentTools.2.1",
     "Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions",
     "Microsoft.VisualStudio.Component.DockerTools",
