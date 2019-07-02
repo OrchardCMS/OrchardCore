@@ -99,7 +99,7 @@ namespace OrchardCore.Media.Controllers
             {
                 return NotFound();
             }
-            
+
 
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
@@ -114,7 +114,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return allowed.ToArray();            
+            return allowed.ToArray();
         }
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
@@ -213,7 +213,7 @@ namespace OrchardCore.Media.Controllers
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
-                }                
+                }
 
                 if (file.Length > maxFileSize)
                 {
@@ -243,7 +243,7 @@ namespace OrchardCore.Media.Controllers
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
-                }                
+                }
 
                 if (file.Length > maxFileSize)
                 {
@@ -275,7 +275,7 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occured while uploading a media");
+                    _logger.LogError(ex, "An error occurred while uploading a media");
 
                     result.Add(new
                     {
@@ -407,7 +407,7 @@ namespace OrchardCore.Media.Controllers
                 return Unauthorized();
             }
 
-            if ((mediaNames == null) || (mediaNames.Length < 1) 
+            if ((mediaNames == null) || (mediaNames.Length < 1)
                 || string.IsNullOrEmpty(sourceFolder)
                 || string.IsNullOrEmpty(targetFolder))
             {
@@ -429,8 +429,8 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (FileStoreException)
                 {
-                    filesOnError.Add(sourcePath);                    
-                }                
+                    filesOnError.Add(sourcePath);
+                }
             }
 
             if (filesOnError.Count > 0)
