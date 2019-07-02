@@ -74,7 +74,7 @@ namespace OrchardCore.Layers.Services
                 var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
                 {
                     entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
-                    return _layerService.GetLayerWidgetsAsync(x => x.Published);
+                    return _layerService.GetLayerWidgetsMetadataAsync(x => x.Published);
                 });
 
 				var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
