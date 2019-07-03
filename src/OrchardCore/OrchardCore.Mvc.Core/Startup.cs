@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
@@ -87,6 +88,8 @@ namespace OrchardCore.Mvc
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
 
             services.AddSingleton<RazorCompilationFileProviderAccessor>();
+
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             AddMvcModuleCoreServices(services);
         }

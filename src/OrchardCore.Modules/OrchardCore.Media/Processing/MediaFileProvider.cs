@@ -29,7 +29,8 @@ namespace OrchardCore.Media.Processing
         public MediaFileProvider(
             IMediaFileStore mediaStore,
             IOptions<ImageSharpMiddlewareOptions> options,
-            IShellConfiguration shellConfiguration)
+            IShellConfiguration shellConfiguration
+            )
         {
             _mediaStore = mediaStore;
             _formatUtilities = new FormatUtilities(options.Value.Configuration);
@@ -47,6 +48,11 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
+            if (!context.Request.Path.StartsWithSegments(Startup.AssetsRequestPath))
+            {
+                return false;
+            }
+
             if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
             {
                 return false;
