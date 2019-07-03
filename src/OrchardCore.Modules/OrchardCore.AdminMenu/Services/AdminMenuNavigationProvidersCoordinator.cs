@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Navigation;
 using YesSql;
@@ -15,15 +17,21 @@ namespace OrchardCore.AdminMenu.Services
     public class AdminMenuNavigationProvidersCoordinator : INavigationProvider
     {
         private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAdminNodeNavigationBuilder> _nodeBuilders;
         private readonly ILogger Logger;
 
         public AdminMenuNavigationProvidersCoordinator(
             IAdminMenuService AdminMenuervice,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IAdminNodeNavigationBuilder> nodeBuilders,
             ILogger<AdminMenuNavigationProvidersCoordinator> logger)
         {
             _AdminMenuService = AdminMenuervice;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
             _nodeBuilders = nodeBuilders;
             Logger = logger;
         }
@@ -38,12 +46,16 @@ namespace OrchardCore.AdminMenu.Services
             }
 
             var trees = (await _AdminMenuService.GetAsync())
-                .Where(m => m.Enabled && m.MenuItems.Count > 0)
-                ;
+                .Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
             {
-                await BuildTreeAsync(tree, builder);
+                if (await _authorizationService.AuthorizeAsync(
+                    _httpContextAccessor.HttpContext?.User,
+                    Permissions.CreatePermissionForAdminMenu(tree.Name)))
+                {
+                    await BuildTreeAsync(tree, builder);
+                }
             }
         }
 
