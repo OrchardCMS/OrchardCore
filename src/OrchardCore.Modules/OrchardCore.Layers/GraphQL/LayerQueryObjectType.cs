@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Layers.Models;
@@ -24,12 +26,21 @@ namespace OrchardCore.Layers.GraphQL
                 .Name("widgets")
                 .Description("The widgets for this layer.")
                 .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
-                .Resolve(ctx => {
+                .ResolveAsync(async ctx => {
                     var context = (GraphQLContext)ctx.UserContext;
                     var layerService = context.ServiceProvider.GetService<ILayerService>();
                     
                     var filter = GetVersionFilter(ctx.GetArgument<PublicationStatusEnum>("status"));
-                    return layerService.GetLayerWidgetsAsync(filter);
+                    var widgets = await layerService.GetLayerWidgetsAsync(filter);
+
+                    var layerWidgets = widgets?.Where(item =>
+                    {
+                        var metadata = item.As<LayerMetadata>();
+                        if (metadata == null) return false;
+                        return metadata.Layer == ctx.Source.Name;
+                    });
+
+                    return layerWidgets;
                 });
         }
 
