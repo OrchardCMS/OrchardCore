@@ -222,7 +222,7 @@ namespace OrchardCore.Media.Controllers
                         name = file.FileName,
                         size = file.Length,
                         folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
+                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double)maxFileSize / 1024 / 1024)].ToString()
                     });
 
                     _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
@@ -252,7 +252,7 @@ namespace OrchardCore.Media.Controllers
                         name = file.FileName,
                         size = file.Length,
                         folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
+                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double)maxFileSize / 1024 / 1024)].ToString()
                     });
 
                     _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
@@ -395,8 +395,6 @@ namespace OrchardCore.Media.Controllers
             return Ok();
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
@@ -417,12 +415,12 @@ namespace OrchardCore.Media.Controllers
             sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
             targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
 
-            var  filesOnError = new List<string>();
+            var filesOnError = new List<string>();
 
             foreach (var name in mediaNames)
             {
                 var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
-                var targetPath = _mediaFileStore.Combine( targetFolder, name);
+                var targetPath = _mediaFileStore.Combine(targetFolder, name);
                 try
                 {
                     await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);

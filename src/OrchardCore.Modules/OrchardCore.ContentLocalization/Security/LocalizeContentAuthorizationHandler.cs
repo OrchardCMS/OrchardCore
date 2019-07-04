@@ -7,13 +7,13 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Contents.Security
+namespace OrchardCore.ContentLocalization.Security
 {
-    public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    public class LocalizeContentAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ContentTypeAuthorizationHandler(IServiceProvider serviceProvider)
+        public LocalizeContentAuthorizationHandler(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -43,22 +43,6 @@ namespace OrchardCore.Contents.Security
                 }
             }
 
-            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(permission ?? requirement.Permission);
-
-            if (contentTypePermission != null)
-            {
-                // The resource can be a content type name
-                var contentType = contentItem != null
-                    ? contentItem.ContentType
-                    : Convert.ToString(context.Resource.ToString())
-                    ;
-
-                if (!String.IsNullOrEmpty(contentType))
-                {
-                    permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
-                }
-            }
-
             if (permission == null)
             {
                 return;
@@ -75,29 +59,9 @@ namespace OrchardCore.Contents.Security
 
         private static Permission GetOwnerVariation(Permission permission)
         {
-            if (permission.Name == Permissions.PublishContent.Name)
+            if (permission.Name == Permissions.LocalizeContent.Name)
             {
-                return Permissions.PublishOwnContent;
-            }
-
-            if (permission.Name == Permissions.EditContent.Name)
-            {
-                return Permissions.EditOwnContent;
-            }
-
-            if (permission.Name == Permissions.DeleteContent.Name)
-            {
-                return Permissions.DeleteOwnContent;
-            }
-
-            if (permission.Name == Permissions.ViewContent.Name)
-            {
-                return Permissions.ViewOwnContent;
-            }
-
-            if (permission.Name == Permissions.PreviewContent.Name)
-            {
-                return Permissions.PreviewOwnContent;
+                return Permissions.LocalizeOwnContent;
             }
 
             return null;

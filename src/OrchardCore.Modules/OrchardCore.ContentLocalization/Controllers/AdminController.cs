@@ -46,7 +46,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditLocalizedContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
                 return Unauthorized();
             }
@@ -74,7 +74,6 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 _notifier.Warning(T["A localization already exist for '{0}'", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
-
             }
 
             try
