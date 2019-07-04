@@ -16,20 +16,20 @@ namespace OrchardCore.AdminMenu.Services
     // This class is itself one more INavigationProvider so it can be called from this module's AdminMenu.cs
     public class AdminMenuNavigationProvidersCoordinator : INavigationProvider
     {
-        private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAdminMenuService _adminMenuService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAdminNodeNavigationBuilder> _nodeBuilders;
         private readonly ILogger Logger;
 
         public AdminMenuNavigationProvidersCoordinator(
-            IAdminMenuService AdminMenuervice,
+            IAdminMenuService adminMenuService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IEnumerable<IAdminNodeNavigationBuilder> nodeBuilders,
             ILogger<AdminMenuNavigationProvidersCoordinator> logger)
         {
-            _AdminMenuService = AdminMenuervice;
+            _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
             _nodeBuilders = nodeBuilders;
@@ -45,7 +45,7 @@ namespace OrchardCore.AdminMenu.Services
                 return;
             }
 
-            var trees = (await _AdminMenuService.GetAsync())
+            var trees = (await _adminMenuService.GetAsync())
                 .Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
