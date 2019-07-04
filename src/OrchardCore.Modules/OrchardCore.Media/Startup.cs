@@ -50,9 +50,9 @@ namespace OrchardCore.Media
     public class Startup : StartupBase
     {
         /// <summary>
-        /// The url prefix used to route asset files
+        /// The request path used to route asset files
         /// </summary>
-        private const string AssetsUrlPrefix = "/media";
+        public static readonly PathString AssetsRequestPath = new PathString("/media");
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
@@ -87,7 +87,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(AssetsUrlPrefix, mediaPath);
+                return new MediaFileProvider(AssetsRequestPath, mediaPath);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>
@@ -103,7 +103,7 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
                     .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
@@ -197,7 +197,7 @@ namespace OrchardCore.Media
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
-                RequestPath = AssetsUrlPrefix,
+                RequestPath = AssetsRequestPath,
                 FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
             });
