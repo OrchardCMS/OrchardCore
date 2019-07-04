@@ -41,7 +41,6 @@ namespace OrchardCore.Settings.Services
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
                 var session = GetSession();
-
                 site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
