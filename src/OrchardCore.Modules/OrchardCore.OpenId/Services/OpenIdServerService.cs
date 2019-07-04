@@ -296,7 +296,7 @@ namespace OrchardCore.OpenId.Services
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, "An error occured while trying to generate a X.509 signing certificate.");
+                    _logger.LogError(exception, "An error occurred while trying to generate a X.509 signing certificate.");
                 }
 #else
                 _logger.LogError("This platform doesn't support X.509 certificate generation.");

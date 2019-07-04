@@ -15,7 +15,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             _path = path;
             _blobProperties = blobProperties;
-            _name = _path.Split('/').Last();
+            _name = System.IO.Path.GetFileName(_path);
 
             if (_name == _path) // file is in root Directory
             {

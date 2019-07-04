@@ -49,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditLocalizedContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
             {
                 return Unauthorized();
             }
