@@ -6,6 +6,7 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
@@ -14,15 +15,18 @@ namespace OrchardCore.Apis.GraphQL.Services
         private readonly IMemoryCache _memoryCache;
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ISignal _signal;
 
         public SchemaService(
             IMemoryCache memoryCache,
             IEnumerable<ISchemaBuilder> schemaBuilders,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ISignal signal)
         {
             _memoryCache = memoryCache;
             _schemaBuilders = schemaBuilders;
             _serviceProvider = serviceProvider;
+            _signal = signal;
         }
 
         public Task<ISchema> GetSchema()
@@ -30,6 +34,7 @@ namespace OrchardCore.Apis.GraphQL.Services
             return _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
             {
                 f.SetSlidingExpiration(TimeSpan.FromHours(1));
+                f.AddExpirationToken(_signal.GetToken("ContentDefinitionManager:Serial"));
 
                 ISchema schema = new Schema
                 {
