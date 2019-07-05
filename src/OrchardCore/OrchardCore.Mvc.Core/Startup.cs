@@ -49,7 +49,7 @@ namespace OrchardCore.Mvc
             services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
-            
+
             // Adding localization
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();

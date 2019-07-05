@@ -20,7 +20,7 @@ namespace OrchardCore.Resources
         {
             var settings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-            switch(settings.ResourceDebugMode)
+            switch (settings.ResourceDebugMode)
             {
                 case ResourceDebugMode.Enabled:
                     options.DebugMode = true;
