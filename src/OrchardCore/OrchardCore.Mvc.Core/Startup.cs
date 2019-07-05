@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -48,7 +49,7 @@ namespace OrchardCore.Mvc
             services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
-            
+
             // Adding localization
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();
@@ -60,6 +61,9 @@ namespace OrchardCore.Mvc
             services.AddSingleton<IViewCompilationMemoryCacheProvider>(new RazorViewCompilationMemoryCacheProvider());
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+            // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
+            services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
 
             AddMvcModuleCoreServices(services);
         }

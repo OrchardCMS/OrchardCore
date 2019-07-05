@@ -12,6 +12,7 @@ namespace OrchardCore.Settings
         string TimeZoneId { get; set; }
         ResourceDebugMode ResourceDebugMode { get; set; }
         bool UseCdn { get; set; }
+        string CdnBaseUrl { get; set; }
         int PageSize { get; set; }
         int MaxPageSize { get; set; }
         int MaxPagedCount { get; set; }

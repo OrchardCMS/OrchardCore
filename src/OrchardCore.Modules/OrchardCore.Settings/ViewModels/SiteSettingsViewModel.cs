@@ -6,6 +6,7 @@ namespace OrchardCore.Settings.ViewModels
         public string BaseUrl { get; set; }
         public string TimeZone { get; set; }
         public bool UseCdn { get; set; }
+        public string CdnBaseUrl { get; set; }
         public ResourceDebugMode ResourceDebugMode { get; set; }
     }
 }
