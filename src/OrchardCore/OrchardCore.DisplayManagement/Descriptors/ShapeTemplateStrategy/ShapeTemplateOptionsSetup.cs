@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
         /// <summary>
         /// Initializes a new instance of <see cref="ShapeTemplateViewOptions"/>.
         /// </summary>
-        /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> for the application.</param>
+        /// <param name="hostingEnvironment"><see cref="IHostEnvironment"/> for the application.</param>
         public ShapeTemplateOptionsSetup(IHostEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {
             _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));

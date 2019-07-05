@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Autoroute.Services;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing

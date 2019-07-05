@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// <summary>
         /// Initializes a new instance of <see cref="LiquidViewOptions"/>.
         /// </summary>
-        /// <param name="hostingEnvironment"><see cref="IHostingEnvironment"/> for the application.</param>
+        /// <param name="hostingEnvironment"><see cref="IHostEnvironment"/> for the application.</param>
         /// <param name="applicationContext"><see cref="IApplicationContext"/> for the application.</param>
         public LiquidViewOptionsSetup(IHostEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {

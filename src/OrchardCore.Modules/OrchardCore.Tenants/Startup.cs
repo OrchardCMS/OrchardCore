@@ -57,6 +57,7 @@ namespace OrchardCore.Tenants
                 return serviceProvider.GetRequiredService<ITenantFileProvider>();
             });
         }
+
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();

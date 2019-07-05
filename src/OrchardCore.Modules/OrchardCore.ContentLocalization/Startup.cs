@@ -56,12 +56,12 @@ namespace OrchardCore.ContentLocalization
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                name: "RedirectToLocalizedContent",
                areaName: "OrchardCore.ContentLocalization",
-               template: "RedirectToLocalizedContent",
+               pattern: "RedirectToLocalizedContent",
                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
            );
 
