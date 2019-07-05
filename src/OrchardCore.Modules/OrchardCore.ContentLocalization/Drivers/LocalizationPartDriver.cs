@@ -48,7 +48,10 @@ namespace OrchardCore.ContentLocalization.Drivers
         {
             var viewModel = new LocalizationPartViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
-            model.Culture = viewModel.Culture;
+
+            // Invariant culture name is empty so a null value is bound.
+            model.Culture = viewModel.Culture ?? "";
+
             // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
             if (String.IsNullOrEmpty(model.LocalizationSet))
             {
@@ -65,7 +68,8 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.LocalizationSet = localizationPart.LocalizationSet;
             model.LocalizationPart = localizationPart;
 
-            if (String.IsNullOrEmpty(model.Culture))
+            // Invariant culture name is empty so we only do a null check.
+            if (model.Culture == null)
             {
                 model.Culture = await _localizationService.GetDefaultCultureAsync();
             }

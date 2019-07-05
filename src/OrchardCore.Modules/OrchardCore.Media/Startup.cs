@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -35,6 +34,7 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -76,6 +76,25 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IMediaFileProvider>(serviceProvider =>
+            {
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+
+                if (!Directory.Exists(mediaPath))
+                {
+                    Directory.CreateDirectory(mediaPath);
+                }
+                return new MediaFileProvider(AssetsRequestPath, mediaPath);
+            });
+
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+            {
+                return serviceProvider.GetRequiredService<IMediaFileProvider>();
+            });
+
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -145,9 +164,10 @@ namespace OrchardCore.Media
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
             .SetCache<PhysicalFileSystemCache>()
             .SetCacheHash<CacheHash>()
-            .AddProvider<MediaFileProvider>()
+            .AddProvider<MediaResizingFileProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
+            .AddProcessor<ImageVersionProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
@@ -169,15 +189,7 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
-
-            if (!Directory.Exists(mediaPath))
-            {
-                Directory.CreateDirectory(mediaPath);
-            }
+            var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
 
             // ImageSharp before the static file provider
             app.UseImageSharp();
@@ -186,7 +198,7 @@ namespace OrchardCore.Media
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsRequestPath,
-                FileProvider = new PhysicalFileProvider(mediaPath),
+                FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
             });
         }

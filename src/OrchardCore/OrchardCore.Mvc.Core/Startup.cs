@@ -91,6 +91,9 @@ namespace OrchardCore.Mvc
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
+            // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
+            services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
+
             AddMvcModuleCoreServices(services);
         }
 

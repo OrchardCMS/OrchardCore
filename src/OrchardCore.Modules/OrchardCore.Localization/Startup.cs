@@ -27,8 +27,6 @@ namespace OrchardCore.Localization
             services.AddScoped<ILocalizationService, LocalizationService>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
-
-            // Override the default localization file locations with Orchard specific ones
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 

@@ -6,45 +6,55 @@ namespace OrchardCore.ContentLocalization
     public class Permissions : IPermissionProvider
     {
 
-        public static readonly Permission EditLocalizedContent = new Permission("EditLocalizedContent", "Edit content for others");
-        public static readonly Permission EditOwnLocalizedContent = new Permission("EditOwnLocalizedContent", "Edit own content", new[] { EditLocalizedContent });
+        public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
+        public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] {
-                EditLocalizedContent,
-                EditOwnLocalizedContent,
+            return new[]
+            {
+                LocalizeContent,
+                LocalizeOwnContent,
             };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
-                new PermissionStereotype {
+            return new[]
+            {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] {EditLocalizedContent, EditOwnLocalizedContent}
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] {EditLocalizedContent, EditOwnLocalizedContent}
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator"
                 },
-                new PermissionStereotype {
-                    Name = "Author"
+                new PermissionStereotype
+                {
+                    Name = "Author",
+                    Permissions = new[] { LocalizeOwnContent }
                 },
-                new PermissionStereotype {
-                    Name = "Contributor"
+                new PermissionStereotype
+                {
+                    Name = "Contributor",
+                    Permissions = new[] { LocalizeOwnContent }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Authenticated"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Anonymous"
                 },
             };
         }
-
     }
 }
