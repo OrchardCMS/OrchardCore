@@ -26,7 +26,7 @@ namespace OrchardCore.ResourceManagement
             { "link", TagRenderMode.SelfClosing },
             { "stylesheet", TagRenderMode.SelfClosing }
         };
-        
+
         private string _basePath;
 
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
@@ -39,7 +39,7 @@ namespace OrchardCore.ResourceManagement
             FilePathAttributeName = _filePathAttributes.ContainsKey(TagName) ? _filePathAttributes[TagName] : null;
             TagRenderMode = _fileTagRenderModes.ContainsKey(TagName) ? _fileTagRenderModes[TagName] : TagRenderMode.Normal;
         }
-        
+
         private static string Coalesce(params string[] strings)
         {
             foreach (var str in strings)
@@ -59,6 +59,7 @@ namespace OrchardCore.ResourceManagement
         public string Name { get; private set; }
         public string Type { get; private set; }
         public string Version { get; private set; }
+        public bool? AppendVersion { get; private set; }
         public string Url { get; private set; }
         public string UrlDebug { get; private set; }
         public string UrlCdn { get; private set; }
@@ -164,6 +165,12 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public ResourceDefinition SetAppendVersion(bool? appendVersion)
+        {
+            AppendVersion = appendVersion;
+            return this;
+        }
+
         public ResourceDefinition SetCultures(params string[] cultures)
         {
             Cultures = cultures;
@@ -182,7 +189,9 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public TagBuilder GetTagBuilder(RequireSettings settings, string applicationPath)
+        public TagBuilder GetTagBuilder(RequireSettings settings,
+            string applicationPath,
+            IFileVersionProvider fileVersionProvider)
         {
             string url;
             // Url priority:
@@ -198,6 +207,7 @@ namespace OrchardCore.ResourceManagement
                     ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
                     : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
             }
+
             if (String.IsNullOrEmpty(url))
             {
                 url = null;
@@ -221,7 +231,21 @@ namespace OrchardCore.ResourceManagement
                 {
                     url = applicationPath + url.Substring(1);
                 }
-                
+            }
+
+            // If settings has value, it can override resource definition, otherwise use resource definition
+            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
+                (!settings.AppendVersion.HasValue && AppendVersion == true)))
+            {
+                url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
+            }
+
+            // Don't prefix cdn if the path is absolute, or is in debug mode.
+            if (!settings.DebugMode
+                && !String.IsNullOrEmpty(settings.CdnBaseUrl)
+                && !Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            {
+                url = settings.CdnBaseUrl + url;
             }
 
             var tagBuilder = new TagBuilder(TagName)

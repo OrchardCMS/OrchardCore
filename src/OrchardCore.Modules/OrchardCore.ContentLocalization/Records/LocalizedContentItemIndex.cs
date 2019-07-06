@@ -9,6 +9,7 @@ namespace OrchardCore.ContentLocalization.Records
         public string ContentItemId { get; set; }
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }
+        public bool Published { get; set; }
     }
 
     public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>
@@ -22,6 +23,7 @@ namespace OrchardCore.ContentLocalization.Records
                     {
                         return null;
                     }
+
                     var localizationPart = contentItem.As<LocalizationPart>();
 
                     if (string.IsNullOrEmpty(localizationPart?.LocalizationSet) || localizationPart?.Culture == null)
@@ -34,6 +36,7 @@ namespace OrchardCore.ContentLocalization.Records
                         Culture = localizationPart.Culture.ToLowerInvariant(),
                         LocalizationSet = localizationPart.LocalizationSet,
                         ContentItemId = contentItem.ContentItemId,
+                        Published = contentItem.Published
                     };
                 });
         }

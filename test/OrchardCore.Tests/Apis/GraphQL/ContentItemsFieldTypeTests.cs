@@ -12,6 +12,7 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using Xunit;
 using YesSql;
 using YesSql.Indexes;
@@ -23,15 +24,22 @@ namespace OrchardCore.Tests.Apis.GraphQL
     public class ContentItemsFieldTypeTests : IDisposable
     {
         protected IStore _store;
+        protected IStore _prefixedStore;
+        protected string _prefix;
         protected string _tempFilename;
 
         public ContentItemsFieldTypeTests()
         {
-            _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            var connectionString = @"Data Source=" + _tempFilename + ";Cache=Shared";
-            _store = StoreFactory.CreateAsync(new Configuration().UseSqLite(connectionString)).GetAwaiter().GetResult();
+            var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
-            CreateTables();
+            _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            _store = StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename))).GetAwaiter().GetResult();
+
+            _prefix = "tp";
+            _prefixedStore = StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_")).GetAwaiter().GetResult();
+
+            CreateTables(_store);
+            CreateTables(_prefixedStore);
         }
 
         public void Dispose()
@@ -39,17 +47,27 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _store.Dispose();
             _store = null;
 
+            _prefixedStore.Dispose();
+            _prefixedStore = null;
+
             if (File.Exists(_tempFilename))
             {
                 File.Delete(_tempFilename);
             }
+
+            var prefixFilename = _tempFilename + _prefix;
+
+            if (File.Exists(prefixFilename))
+            {
+                File.Delete(prefixFilename);
+            }
         }
 
-        private void CreateTables()
+        private void CreateTables(IStore store)
         {
-            using (var session = _store.CreateSession())
+            using (var session = store.CreateSession())
             {
-                var builder = new SchemaBuilder(_store.Configuration, session.DemandAsync().GetAwaiter().GetResult());
+                var builder = new SchemaBuilder(store.Configuration, session.DemandAsync().GetAwaiter().GetResult());
 
                 builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -75,7 +93,104 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 );
             }
 
-            _store.RegisterIndexes<ContentItemIndexProvider>();
+            store.RegisterIndexes<ContentItemIndexProvider>();
+        }
+
+
+        [Fact]
+        public async Task ShouldFilterByContentItemIndex()
+        {
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
+                services.Build();
+
+                var returnType = new ListGraphType<StringGraphType>();
+                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+                var animalWhereInput = new AnimalPartWhereInput();
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.CommitAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema());
+
+                context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
+                var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldFilterByContentItemIndexWhenSqlTablePrefixIsUsed()
+        {
+            _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _prefixedStore.CreateSession());
+
+                var shellSettings = new ShellSettings();
+                shellSettings["TablePrefix"] = _prefix;
+
+                services.Services.AddScoped(x => shellSettings);
+                services.Build();
+
+                var returnType = new ListGraphType<StringGraphType>();
+                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
+
+                var animalWhereInput = new AnimalPartWhereInput();
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.CommitAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema());
+
+                context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
+                var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
         }
 
 
@@ -87,7 +202,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
             using (var services = new FakeServiceCollection())
             {
                 services.Populate(new ServiceCollection());
-                services.Services.AddScoped<ISession>(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
@@ -139,7 +255,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
             using (var services = new FakeServiceCollection())
             {
                 services.Populate(new ServiceCollection());
-                services.Services.AddScoped<ISession>(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
@@ -196,6 +313,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
@@ -243,6 +361,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             using (var services = new FakeServiceCollection())
             {
                 services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => new ShellSettings());
                 services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();

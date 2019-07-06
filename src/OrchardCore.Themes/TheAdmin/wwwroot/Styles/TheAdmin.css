@@ -3,6 +3,159 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+/*
+ * Container style
+ */
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+}
+
+/*
+ * Scrollbar rail styles
+ */
+.ps__rail-x {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+[dir] .ps__rail-x {
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 0;
+  transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+[dir] .ps__rail-y {
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+}
+
+[dir=ltr] .ps__rail-y {
+  right: 0;
+}
+
+[dir=rtl] .ps__rail-y {
+  left: 0;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+}
+
+[dir] .ps--active-x > .ps__rail-x, [dir] .ps--active-y > .ps__rail-y {
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 0.6;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  opacity: 0.9;
+}
+
+[dir] .ps .ps__rail-x:hover, [dir] .ps .ps__rail-y:hover, [dir] .ps .ps__rail-x:focus, [dir] .ps .ps__rail-y:focus, [dir] .ps .ps__rail-x.ps--clicking, [dir] .ps .ps__rail-y.ps--clicking {
+  background-color: #eee;
+}
+
+/*
+ * Scrollbar thumb styles
+ */
+.ps__thumb-x {
+  transition: background-color .2s linear, height .2s ease-in-out;
+  height: 6px;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+  /* please don't change 'position' */
+  position: absolute;
+}
+[dir] .ps__thumb-x {
+  background-color: #aaa;
+  border-radius: 6px;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+}
+
+.ps__thumb-y {
+  transition: background-color .2s linear, width .2s ease-in-out;
+  width: 6px;
+  /* there must be 'right' for ps__thumb-y */
+  /* please don't change 'position' */
+  position: absolute;
+}
+
+[dir] .ps__thumb-y {
+  background-color: #aaa;
+  border-radius: 6px;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+}
+
+[dir=ltr] .ps__thumb-y {
+  right: 2px;
+}
+
+[dir=rtl] .ps__thumb-y {
+  left: 2px;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  height: 11px;
+}
+
+[dir] .ps__rail-x:hover > .ps__thumb-x, [dir] .ps__rail-x:focus > .ps__thumb-x, [dir] .ps__rail-x.ps--clicking .ps__thumb-x {
+  background-color: #999;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  width: 11px;
+}
+
+[dir] .ps__rail-y:hover > .ps__thumb-y, [dir] .ps__rail-y:focus > .ps__thumb-y, [dir] .ps__rail-y.ps--clicking .ps__thumb-y {
+  background-color: #999;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps {
+    overflow: auto !important;
+  }
+}
+
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -8621,57 +8774,42 @@ a.text-dark:hover, a.text-dark:focus {
   margin-left: 1rem; }
   [dir=rtl] .switch + .switch {
     margin-right: 1rem; }
-
 /* BASICS */
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: Consolas, monospace;
   height: auto;
   color: black;
-  font-size: 1rem; }
-[dir] .CodeMirror {
-  border: 1px solid #eee; }
+  border: 1px solid #dee2e6;
+  font-size: 1rem;
+  text-align: left;
+  direction: ltr; }
 
 /* PADDING */
 .CodeMirror-lines {
+  padding: 4px 0;
   /* Vertical padding around content */ }
-[dir] .CodeMirror-lines {
-  padding: 4px 0; }
 
 .CodeMirror pre {
+  padding: 0 4px;
   /* Horizontal padding of content */ }
 
-[dir] .CodeMirror pre {
-  padding: 0 4px; }
-
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  background-color: white;
   /* The little square between H and V scrollbars */ }
-
-[dir] .CodeMirror-scrollbar-filler, [dir] .CodeMirror-gutter-filler {
-  background-color: white; }
 
 /* GUTTER */
 .CodeMirror-gutters {
+  border-right: 1px solid #ddd;
+  background-color: #f7f7f7;
   white-space: nowrap; }
-[dir] .CodeMirror-gutters {
-  background-color: #f7f7f7; }
-[dir=ltr] .CodeMirror-gutters {
-  border-right: 1px solid #ddd; }
-[dir=rtl] .CodeMirror-gutters {
-  border-left: 1px solid #ddd; }
 
 .CodeMirror-linenumber {
+  padding: 0 3px 0 5px;
   min-width: 20px;
+  text-align: right;
   color: #999;
   white-space: nowrap; }
-
-[dir=ltr] .CodeMirror-linenumber {
-  padding: 0 3px 0 5px;
-  text-align: right; }
-
-[dir=rtl] .CodeMirror-linenumber {
-  padding: 0 5px 0 3px;
-  text-align: left; }
 
 .CodeMirror-guttermarker {
   color: black; }
@@ -8681,24 +8819,16 @@ a.text-dark:hover, a.text-dark:focus {
 
 /* CURSOR */
 .CodeMirror-cursor {
-  width: 0; }
-[dir=ltr] .CodeMirror-cursor {
   border-left: 1px solid black;
-  border-right: none; }
-[dir=rtl] .CodeMirror-cursor {
-  border-right: 1px solid black;
-  border-left: none; }
+  border-right: none;
+  width: 0; }
 
 /* Shown when moving in bi-directional text */
-[dir=ltr] .CodeMirror div.CodeMirror-secondarycursor {
+.CodeMirror div.CodeMirror-secondarycursor {
   border-left: 1px solid silver; }
-[dir=rtl] .CodeMirror div.CodeMirror-secondarycursor {
-  border-right: 1px solid silver; }
 
 .cm-fat-cursor .CodeMirror-cursor {
-  width: auto; }
-
-[dir] .cm-fat-cursor .CodeMirror-cursor {
+  width: auto;
   border: 0 !important;
   background: #7e7; }
 
@@ -8706,21 +8836,12 @@ a.text-dark:hover, a.text-dark:focus {
   z-index: 1; }
 
 .cm-animate-fat-cursor {
-  width: auto; }
-
-[dir] .cm-animate-fat-cursor {
+  width: auto;
   border: 0;
+  -webkit-animation: blink 1.06s steps(1) infinite;
+  -moz-animation: blink 1.06s steps(1) infinite;
+  animation: blink 1.06s steps(1) infinite;
   background-color: #7e7; }
-
-[dir=ltr] .cm-animate-fat-cursor {
-  -webkit-animation: blink 1.06s steps(1) infinite;
-  -moz-animation: blink 1.06s steps(1) infinite;
-  animation: blink 1.06s steps(1) infinite; }
-
-[dir=rtl] .cm-animate-fat-cursor {
-  -webkit-animation: blink 1.06s steps(1) infinite;
-  -moz-animation: blink 1.06s steps(1) infinite;
-  animation: blink 1.06s steps(1) infinite; }
 
 @-moz-keyframes blink {
   0% { }
@@ -8747,28 +8868,17 @@ a.text-dark:hover, a.text-dark:focus {
 
 .CodeMirror-rulers {
   position: absolute;
+  left: 0;
+  right: 0;
   top: -50px;
   bottom: -20px;
   overflow: hidden; }
 
-[dir=ltr] .CodeMirror-rulers {
-  left: 0;
-  right: 0; }
-
-[dir=rtl] .CodeMirror-rulers {
-  right: 0;
-  left: 0; }
-
 .CodeMirror-ruler {
+  border-left: 1px solid #ccc;
   top: 0;
   bottom: 0;
   position: absolute; }
-
-[dir=ltr] .CodeMirror-ruler {
-  border-left: 1px solid #ccc; }
-
-[dir=rtl] .CodeMirror-ruler {
-  border-right: 1px solid #ccc; }
 
 /* DEFAULT THEME */
 .cm-s-default .cm-header {
@@ -8852,7 +8962,7 @@ a.text-dark:hover, a.text-dark:focus {
 .cm-invalidchar {
   color: #f00; }
 
-[dir] .CodeMirror-composing {
+.CodeMirror-composing {
   border-bottom: 2px solid; }
 
 /* Default styles for common addons */
@@ -8862,10 +8972,10 @@ div.CodeMirror span.CodeMirror-matchingbracket {
 div.CodeMirror span.CodeMirror-nonmatchingbracket {
   color: #f22; }
 
-[dir] .CodeMirror-matchingtag {
+.CodeMirror-matchingtag {
   background: rgba(255, 150, 0, 0.3); }
 
-[dir] .CodeMirror-activeline-background {
+.CodeMirror-activeline-background {
   background: #e8f2ff; }
 
 /* STOP */
@@ -8873,8 +8983,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
    the editor. You probably shouldn't touch them. */
 .CodeMirror {
   position: relative;
-  overflow: hidden; }
-[dir] .CodeMirror {
+  overflow: hidden;
   background: white; }
 
 .CodeMirror-scroll {
@@ -8882,29 +8991,17 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Things will break if this is overridden */
   /* 30px is the magic margin used to hide the element's real scrollbars */
   /* See overflow: hidden in .CodeMirror */
+  margin-bottom: -30px;
+  margin-right: -30px;
+  padding-bottom: 30px;
   height: 100%;
   outline: none;
   /* Prevent dragging from highlighting the element */
   position: relative; }
 
-[dir] .CodeMirror-scroll {
-  margin-bottom: -30px;
-  padding-bottom: 30px; }
-
-[dir=ltr] .CodeMirror-scroll {
-  margin-right: -30px; }
-
-[dir=rtl] .CodeMirror-scroll {
-  margin-left: -30px; }
-
 .CodeMirror-sizer {
-  position: relative; }
-
-[dir=ltr] .CodeMirror-sizer {
+  position: relative;
   border-right: 30px solid transparent; }
-
-[dir=rtl] .CodeMirror-sizer {
-  border-left: 30px solid transparent; }
 
 /* The fake, visible scrollbars. Used to force redraw during scrolling
    before actual scrolling happens, thus preventing shaking and
@@ -8915,71 +9012,42 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   display: none; }
 
 .CodeMirror-vscrollbar {
+  right: 0;
   top: 0;
   overflow-x: hidden;
   overflow-y: scroll; }
 
-[dir=ltr] .CodeMirror-vscrollbar {
-  right: 0; }
-
-[dir=rtl] .CodeMirror-vscrollbar {
-  left: 0; }
-
 .CodeMirror-hscrollbar {
   bottom: 0;
+  left: 0;
   overflow-y: hidden;
   overflow-x: scroll; }
 
-[dir=ltr] .CodeMirror-hscrollbar {
-  left: 0; }
-
-[dir=rtl] .CodeMirror-hscrollbar {
-  right: 0; }
-
 .CodeMirror-scrollbar-filler {
+  right: 0;
   bottom: 0; }
-
-[dir=ltr] .CodeMirror-scrollbar-filler {
-  right: 0; }
-
-[dir=rtl] .CodeMirror-scrollbar-filler {
-  left: 0; }
 
 .CodeMirror-gutter-filler {
+  left: 0;
   bottom: 0; }
-
-[dir=ltr] .CodeMirror-gutter-filler {
-  left: 0; }
-
-[dir=rtl] .CodeMirror-gutter-filler {
-  right: 0; }
 
 .CodeMirror-gutters {
   position: absolute;
+  left: 0;
   top: 0;
   min-height: 100%;
   z-index: 3; }
-
-[dir=ltr] .CodeMirror-gutters {
-  left: 0; }
-
-[dir=rtl] .CodeMirror-gutters {
-  right: 0; }
 
 .CodeMirror-gutter {
   white-space: normal;
   height: 100%;
   display: inline-block;
-  vertical-align: top; }
-
-[dir] .CodeMirror-gutter {
+  vertical-align: top;
   margin-bottom: -30px; }
 
 .CodeMirror-gutter-wrapper {
   position: absolute;
-  z-index: 4; }
-
-[dir] .CodeMirror-gutter-wrapper {
+  z-index: 4;
   background: none !important;
   border: none !important; }
 
@@ -8991,30 +9059,30 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 .CodeMirror-gutter-elt {
   position: absolute;
+  cursor: default;
   z-index: 4; }
 
-[dir] .CodeMirror-gutter-elt {
-  cursor: default; }
-
-[dir] .CodeMirror-gutter-wrapper ::selection {
+.CodeMirror-gutter-wrapper ::selection {
   background-color: transparent; }
 
-[dir] .CodeMirror-gutter-wrapper ::-moz-selection {
+.CodeMirror-gutter-wrapper ::-moz-selection {
   background-color: transparent; }
 
 .CodeMirror-lines {
+  cursor: text;
   min-height: 1px;
   /* prevents collapsing before first draw */ }
-
-[dir] .CodeMirror-lines {
-  cursor: text; }
 
 .CodeMirror pre {
   /* Reset some styles that the rest of the page might have set */
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
+  border-radius: 0;
+  border-width: 0;
+  background: transparent;
   font-family: inherit;
   font-size: inherit;
+  margin: 0;
   white-space: pre;
   word-wrap: normal;
   line-height: inherit;
@@ -9026,12 +9094,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   -webkit-font-variant-ligatures: contextual;
   font-variant-ligatures: contextual; }
 
-[dir] .CodeMirror pre {
-  border-radius: 0;
-  border-width: 0;
-  background: transparent;
-  margin: 0; }
-
 .CodeMirror-wrap pre {
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -9039,28 +9101,19 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 .CodeMirror-linebackground {
   position: absolute;
+  left: 0;
+  right: 0;
   top: 0;
   bottom: 0;
   z-index: 0; }
-
-[dir=ltr] .CodeMirror-linebackground {
-  left: 0;
-  right: 0; }
-
-[dir=rtl] .CodeMirror-linebackground {
-  right: 0;
-  left: 0; }
 
 .CodeMirror-linewidget {
   position: relative;
   z-index: 2;
   overflow: auto; }
 
-[dir=ltr] .CodeMirror-rtl pre {
+.CodeMirror-rtl pre {
   direction: rtl; }
-
-[dir=rtl] .CodeMirror-rtl pre {
-  direction: ltr; }
 
 .CodeMirror-code {
   outline: none; }
@@ -9099,30 +9152,28 @@ div.CodeMirror-dragcursors {
 .CodeMirror-focused div.CodeMirror-cursors {
   visibility: visible; }
 
-[dir] .CodeMirror-selected {
+.CodeMirror-selected {
   background: #d9d9d9; }
 
-[dir] .CodeMirror-focused .CodeMirror-selected {
+.CodeMirror-focused .CodeMirror-selected {
   background: #d7d4f0; }
 
-[dir] .CodeMirror-crosshair {
+.CodeMirror-crosshair {
   cursor: crosshair; }
 
-[dir] .CodeMirror-line::selection, [dir] .CodeMirror-line > span::selection, [dir] .CodeMirror-line > span > span::selection {
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
   background: #d7d4f0; }
 
-[dir] .CodeMirror-line::-moz-selection, [dir] .CodeMirror-line > span::-moz-selection, [dir] .CodeMirror-line > span > span::-moz-selection {
+.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection {
   background: #d7d4f0; }
 
-[dir] .cm-searching {
+.cm-searching {
   background: #ffa;
   background: rgba(255, 255, 0, 0.4); }
 
 /* Used to force a border model for a node */
-[dir=ltr] .cm-force-border {
+.cm-force-border {
   padding-right: .1px; }
-[dir=rtl] .cm-force-border {
-  padding-left: .1px; }
 
 @media print {
   /* Hide the cursor when printing */
@@ -9134,14 +9185,24 @@ div.CodeMirror-dragcursors {
   content: ''; }
 
 /* Help users use markselection to safely style text background */
-[dir] span.CodeMirror-selectedtext {
+span.CodeMirror-selectedtext {
   background: none; }
-
 html[dir], [dir] body {
   background-color: #FFF; }
 
 [dir] body {
-  margin-bottom: 40px; }
+  margin-bottom: 40px;
+  cursor: default; }
+
+[dir] .cursor-move {
+  cursor: move; }
+
+[dir] .cursor-pointer {
+  cursor: pointer; }
+[dir=rtl] .dropdown-menu {
+  left: auto !important;
+  right: 0px !important;
+  transform: translate3d(0px, 38px, 0px) !important; }
 
 .left-sidebar-compact .ta-footer {
   width: calc(100% - 60px);
@@ -9556,12 +9617,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
   border-left: 1px solid #DEDEDE;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
-  [dir] .left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
-    transition-duration: 0.2s; }
-  [dir=ltr] .left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
-  transform: rotate(90deg); }
-  [dir=rtl] .left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
-    transform: rotate(-90deg); }
   [dir] .left-sidebar-compact #ta-left-sidebar label[aria-expanded="false"] .chevron {
     transition-duration: 0.2s; }
   .left-sidebar-compact #ta-left-sidebar .collapse {
@@ -9926,6 +9981,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir] .left-sidebar-compact #ta-left-sidebar .footer:before {
     background: rgba(0, 0, 0, 0.1);
     margin: 0px auto; }
+.left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
+  transform: rotate(90deg);
+  transition-duration: 0.2s; }
 
 html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
   background-color: #f8f9fa !important; }
@@ -10032,11 +10090,73 @@ select[multiple] {
 [dir] ul.pager {
   margin-top: 1rem; }
 
-[dir] .ui-sortable-handle {
-  cursor: move; }
+[dir] .tab-pane {
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+  padding-top: 1rem; }
 
-[dir] .btn.ui-sortable-handle, [dir] .ui-sortable-handle.button {
-  cursor: move !important; }
+[dir=ltr] .tab-pane {
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem; }
+
+[dir=rtl] .tab-pane {
+  border-right: 1px solid #dee2e6;
+  border-left: 1px solid #dee2e6;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  border-top-left-radius: 0.25rem;
+  padding-right: 1rem;
+  padding-left: 1rem; }
+
+[dir] .nav-tabs {
+  border-bottom: none;
+  margin-top: 1px;
+  margin-bottom: -1px; }
+  .nav-tabs .nav-link {
+    color: white;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
+  [dir] .nav-tabs .nav-link {
+    border: none;
+    background-color: #6c757d; }
+    @media (prefers-reduced-motion: reduce) {
+      .nav-tabs .nav-link {
+        transition: none; } }
+    [dir] .nav-tabs .nav-link:hover {
+      background-color: #5a6268; }
+    .nav-tabs .nav-link.active {
+      color: #212529; }
+    [dir] .nav-tabs .nav-link.active {
+      border-top: 1px solid #dee2e6;
+      cursor: initial;
+      background-color: white; }
+    [dir=ltr] .nav-tabs .nav-link.active {
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6; }
+    [dir=rtl] .nav-tabs .nav-link.active {
+      border-right: 1px solid #dee2e6;
+      border-left: 1px solid #dee2e6; }
+      [dir] .nav-tabs .nav-link.active:hover {
+        background-color: white; }
+  [dir] .nav-tabs .nav-item {
+    margin-bottom: 0px; }
+
+@media (max-width: 767.98px) {
+  [dir] .nav-tabs .nav-item:not(.nav-link) {
+    padding-bottom: 0.25rem; }
+  [dir=ltr] .nav-tabs .nav-link {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem; }
+  [dir=rtl] .nav-tabs .nav-link {
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem; }
+    [dir] .nav-tabs .nav-link.active {
+      border-bottom: 1px solid #dee2e6; } }
 
 .ui-sortable {
   min-height: 1rem; }
@@ -10071,156 +10191,3 @@ select[multiple] {
     .persona .persona-content.small, .persona .persona-content.hint {
       font-size: 11px;
       line-height: 24px; }
-
-/*
- * Container style
- */
-.ps {
-  overflow: hidden !important;
-  overflow-anchor: none;
-  -ms-overflow-style: none;
-  touch-action: auto;
-  -ms-touch-action: auto;
-}
-
-/*
- * Scrollbar rail styles
- */
-.ps__rail-x {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  height: 15px;
-  /* there must be 'bottom' or 'top' for ps__rail-x */
-  bottom: 0px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-[dir] .ps__rail-x {
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-}
-
-.ps__rail-y {
-  display: none;
-  opacity: 0;
-  transition: background-color .2s linear, opacity .2s linear;
-  width: 15px;
-  /* there must be 'right' or 'left' for ps__rail-y */
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-[dir] .ps__rail-y {
-  -webkit-transition: background-color .2s linear, opacity .2s linear;
-}
-
-[dir=ltr] .ps__rail-y {
-  right: 0;
-}
-
-[dir=rtl] .ps__rail-y {
-  left: 0;
-}
-
-.ps--active-x > .ps__rail-x,
-.ps--active-y > .ps__rail-y {
-  display: block;
-}
-
-[dir] .ps--active-x > .ps__rail-x, [dir] .ps--active-y > .ps__rail-y {
-  background-color: transparent;
-}
-
-.ps:hover > .ps__rail-x,
-.ps:hover > .ps__rail-y,
-.ps--focus > .ps__rail-x,
-.ps--focus > .ps__rail-y,
-.ps--scrolling-x > .ps__rail-x,
-.ps--scrolling-y > .ps__rail-y {
-  opacity: 0.6;
-}
-
-.ps .ps__rail-x:hover,
-.ps .ps__rail-y:hover,
-.ps .ps__rail-x:focus,
-.ps .ps__rail-y:focus,
-.ps .ps__rail-x.ps--clicking,
-.ps .ps__rail-y.ps--clicking {
-  opacity: 0.9;
-}
-
-[dir] .ps .ps__rail-x:hover, [dir] .ps .ps__rail-y:hover, [dir] .ps .ps__rail-x:focus, [dir] .ps .ps__rail-y:focus, [dir] .ps .ps__rail-x.ps--clicking, [dir] .ps .ps__rail-y.ps--clicking {
-  background-color: #eee;
-}
-
-/*
- * Scrollbar thumb styles
- */
-.ps__thumb-x {
-  transition: background-color .2s linear, height .2s ease-in-out;
-  height: 6px;
-  /* there must be 'bottom' for ps__thumb-x */
-  bottom: 2px;
-  /* please don't change 'position' */
-  position: absolute;
-}
-[dir] .ps__thumb-x {
-  background-color: #aaa;
-  border-radius: 6px;
-  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
-}
-
-.ps__thumb-y {
-  transition: background-color .2s linear, width .2s ease-in-out;
-  width: 6px;
-  /* there must be 'right' for ps__thumb-y */
-  /* please don't change 'position' */
-  position: absolute;
-}
-
-[dir] .ps__thumb-y {
-  background-color: #aaa;
-  border-radius: 6px;
-  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
-}
-
-[dir=ltr] .ps__thumb-y {
-  right: 2px;
-}
-
-[dir=rtl] .ps__thumb-y {
-  left: 2px;
-}
-
-.ps__rail-x:hover > .ps__thumb-x,
-.ps__rail-x:focus > .ps__thumb-x,
-.ps__rail-x.ps--clicking .ps__thumb-x {
-  height: 11px;
-}
-
-[dir] .ps__rail-x:hover > .ps__thumb-x, [dir] .ps__rail-x:focus > .ps__thumb-x, [dir] .ps__rail-x.ps--clicking .ps__thumb-x {
-  background-color: #999;
-}
-
-.ps__rail-y:hover > .ps__thumb-y,
-.ps__rail-y:focus > .ps__thumb-y,
-.ps__rail-y.ps--clicking .ps__thumb-y {
-  width: 11px;
-}
-
-[dir] .ps__rail-y:hover > .ps__thumb-y, [dir] .ps__rail-y:focus > .ps__thumb-y, [dir] .ps__rail-y.ps--clicking .ps__thumb-y {
-  background-color: #999;
-}
-
-/* MS supports */
-@supports (-ms-overflow-style: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}
-
-@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
-  .ps {
-    overflow: auto !important;
-  }
-}

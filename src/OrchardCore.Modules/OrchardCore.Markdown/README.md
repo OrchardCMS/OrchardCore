@@ -112,6 +112,6 @@ Copyright (c) 2016, Alexandre Mutel
 BSD-2
 
 ### SimpleMDE
-<https://github.com/NextStepWebs/simplemde-markdown-editor>
+<https://github.com/sparksuite/simplemde-markdown-editor>
 Copyright (c) 2015 Next Step Webs, Inc.  
 MIT

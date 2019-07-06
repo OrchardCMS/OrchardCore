@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.Editors
 {
@@ -126,7 +126,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             await BindPlacementAsync(partContext);
 
-            await _handlers.InvokeAsync(async handler => await handler.BuildPartEditorAsync(contentPartDefinition, partContext), Logger);
+            await _handlers.InvokeAsync(handler => handler.BuildPartEditorAsync(contentPartDefinition, partContext), Logger);
 
             return contentPartDefinitionShape;
         }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
@@ -16,6 +17,7 @@ namespace OrchardCore.ResourceManagement
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
         private readonly string _pathBase;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
+        private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
 
         private List<LinkEntry> _links;
@@ -31,12 +33,14 @@ namespace OrchardCore.ResourceManagement
             IHttpContextAccessor httpContextAccessor,
             IEnumerable<IResourceManifestProvider> resourceProviders,
             IResourceManifestState resourceManifestState,
-            IOptions<ResourceManagementOptions> options)
+            IOptions<ResourceManagementOptions> options,
+            IFileVersionProvider fileVersionProvider)
         {
             _resourceManifestState = resourceManifestState;
             _options = options;
             _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
             _providers = resourceProviders;
+            _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
             _localScripts = new HashSet<string>();
@@ -124,7 +128,7 @@ namespace OrchardCore.ResourceManagement
                 resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
             }
 
-            return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            return RegisterResource(resourceType, GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
         }
 
         public void RegisterHeadScript(IHtmlContent script)
@@ -361,11 +365,14 @@ namespace OrchardCore.ResourceManagement
                 {
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}.");
                 }
-
                 ExpandDependencies(resource, settings, allResources);
             }
             requiredResources = (from DictionaryEntry entry in allResources
-                                 select new ResourceRequiredContext { Resource = (ResourceDefinition)entry.Key, Settings = (RequireSettings)entry.Value }).ToList();
+                                 select new ResourceRequiredContext {
+                                     Resource = (ResourceDefinition)entry.Key,
+                                     Settings = (RequireSettings)entry.Value,
+                                     FileVersionProvider = _fileVersionProvider
+                                 }).ToList();
             _builtResources[resourceType] = requiredResources;
             return requiredResources;
         }
@@ -415,6 +422,11 @@ namespace OrchardCore.ResourceManagement
             if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
             {
                 link.Href = _pathBase + href.Substring(1);
+            }
+
+            if (link.AppendVersion)
+            {
+                link.Href = _fileVersionProvider.AddFileVersionToPath(_pathBase, link.Href);
             }
 
             _links.Add(link);
@@ -637,6 +649,18 @@ namespace OrchardCore.ResourceManagement
                 sb.Append(Name);
                 sb.Append(")");
                 return sb.ToString();
+            }
+        }
+
+        private string GetResourceKey(string releasePath, string debugPath)
+        {
+            if (_options.Value.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            {
+                return debugPath;
+            }
+            else
+            {
+                return releasePath;
             }
         }
     }

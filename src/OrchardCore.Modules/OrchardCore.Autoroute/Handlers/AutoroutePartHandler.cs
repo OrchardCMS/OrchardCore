@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Fluid;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;
@@ -109,6 +109,7 @@ namespace OrchardCore.Autoroute.Handlers
                 templateContext.SetValue("ContentItem", part.ContentItem);
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
+                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {
