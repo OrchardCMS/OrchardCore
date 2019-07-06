@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -173,8 +172,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
                 {
-                    // And configure the tenant cookie name just to be retrieved on setup.
-                    services.Configure<AntiforgeryOptions>(o => o.Cookie.Name = cookieName);
+                    // And delete a cookie that may have been created by another instance.
+                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
                     return;
                 }
 
