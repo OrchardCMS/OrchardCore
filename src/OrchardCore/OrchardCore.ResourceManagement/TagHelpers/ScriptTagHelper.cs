@@ -49,6 +49,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
+            // Prevent collisions with Mvc ScriptTagHelper
+            if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src) && AppendVersion.HasValue)
+            {
+                return;
+            }
+
             output.SuppressOutput();
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
