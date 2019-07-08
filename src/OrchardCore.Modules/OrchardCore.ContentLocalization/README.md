@@ -26,11 +26,11 @@ The ContentculturePicker selects the url to redirect using the following rules
 
 ### Setting the cookie
 
-By default, switching cultures does not set the localization cookie. To set the cookie, you must enable the SetCookie setting under
+To disable setting the Culture cookie when switching cultures, a setting exists under the
 `Configuration/Settings/ContentCulturePicker` admin menu.
 
 #### Recipe Step
-The cookie can be enabled during recipes using the settings step. Here is a sample step:
+The cookie can be set during recipes using the settings step. Here is a sample step:
 
 ``` json
 {
