@@ -10,7 +10,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
-    [HtmlTargetElement("script", Attributes = AppendVersionAttributeName)]
     public class ScriptTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
@@ -49,12 +48,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            // Prevent collisions with Mvc ScriptTagHelper
-            if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src) && AppendVersion.HasValue)
-            {
-                return;
-            }
-
             output.SuppressOutput();
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
