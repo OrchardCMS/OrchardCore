@@ -22,10 +22,6 @@ namespace OrchardCore.Modules
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
-                Name = name;
-                SubPath = Application.ModulesRoot + Name;
-                Root = SubPath + '/';
-
                 Assembly = Assembly.Load(new AssemblyName(name));
 
                 Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
@@ -38,12 +34,10 @@ namespace OrchardCore.Modules
                 ModuleInfo =
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
-                    new ModuleAttribute { Name = Name };
+                    new ModuleAttribute { Name = name };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute)).ToList();
-
-                ModuleInfo.Id = Name;
 
                 if (isApplication)
                 {
@@ -57,7 +51,7 @@ namespace OrchardCore.Modules
                     {
                         features.Insert(0, new Manifest.FeatureAttribute()
                         {
-                            Id = ModuleInfo.Id,
+                            Id = name,
                             Name = ModuleInfo.Name,
                             Description = ModuleInfo.Description,
                             Priority = ModuleInfo.Priority,
@@ -67,6 +61,15 @@ namespace OrchardCore.Modules
                 }
 
                 ModuleInfo.Features.AddRange(features);
+
+                // The 'ModuleInfo.Id' allows a module project to change its 'AssemblyName'
+                // without to update the code. If not provided, the assembly name is used.
+
+                var logicalName = ModuleInfo.Id ?? name;
+
+                Name = ModuleInfo.Id = logicalName;
+                SubPath = Application.ModulesRoot + Name;
+                Root = SubPath + '/';
             }
             else
             {

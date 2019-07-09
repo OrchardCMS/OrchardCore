@@ -35,7 +35,12 @@ namespace OrchardCore.Users.Services
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            var routeData = _httpContextAccessor.HttpContext.GetRouteData().Values;
+            var routeData = _httpContextAccessor.HttpContext.GetRouteData()?.Values;
+
+            if (routeData == null)
+            {
+                return null;
+            }
 
             if (routeData["area"]?.ToString() == "OrchardCore.Users")
             {

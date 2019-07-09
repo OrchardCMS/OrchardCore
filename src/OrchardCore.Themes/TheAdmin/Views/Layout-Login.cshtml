@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -16,7 +16,7 @@
     <resources type="Header" />
 
 </head>
-<body class="preload" dir="@Orchard.CultureDir()">
+<body class="preload">
     <div class="ta-content ta-content-login">
         @await RenderSectionAsync("Messages", required: false)
         

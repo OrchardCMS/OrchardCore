@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace OrchardCore.Liquid
     public interface ILiquidTemplateManager
     {
         Task RenderAsync(string template, TextWriter textWriter, TextEncoder encoder, TemplateContext context);
+        bool Validate(string template, out IEnumerable<string> errors);
     }
 
     public static class LiquidTemplateManagerExtensions

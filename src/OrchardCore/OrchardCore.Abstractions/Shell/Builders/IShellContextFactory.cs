@@ -1,6 +1,5 @@
-﻿using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Hosting.ShellBuilders;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Builders
 {

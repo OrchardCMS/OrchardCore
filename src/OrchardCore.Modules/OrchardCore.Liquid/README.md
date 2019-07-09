@@ -215,6 +215,26 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+
+#### User Filters
+##### has_permission filter
+checks if the User has permission clearance, optionally on a resource 
+```liquid
+{{ User | has_permission:"EditContent",Model.ContentItem }}
+```
+##### is_in_role filter
+checks if the user is in role
+```liquid
+{{ User | is_in_role:"Administrator" }}
+```
+##### has_claim filter
+checks if the user has a claim of the specified type
+```liquid
+{{ User | has_claim:"email_verified","true" }}
+{{ User | has_claim:"Permission","ManageSettings" }}
+```
+
+
 ### Site
 
 Gives access to the current site settings, e.g `Site.SiteName`.
@@ -231,6 +251,8 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | `SuperUser` | `admin` | The user name of the site's super user. | 
 | `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | 
 | `UseCdn` | `false` | Enable/disable the use of a CDN. | 
+| `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
+| `CdnBaseUrl` | `https://localhost:44300` | If provided a CDN Base url is prepended to local scripts and stylesheets  | 
 
 ### Request
 

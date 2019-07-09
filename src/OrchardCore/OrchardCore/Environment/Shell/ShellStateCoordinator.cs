@@ -2,8 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Environment.Shell.State;
 
 namespace OrchardCore.Environment.Shell
@@ -13,15 +13,12 @@ namespace OrchardCore.Environment.Shell
     {
         private readonly ShellSettings _settings;
         private readonly IShellStateManager _stateManager;
-        private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public ShellStateCoordinator(
             ShellSettings settings,
             IShellStateManager stateManager,
-            IDeferredTaskEngine deferredTaskEngine,
             ILogger<ShellStateCoordinator> logger)
         {
-            _deferredTaskEngine = deferredTaskEngine;
             _settings = settings;
             _stateManager = stateManager;
             Logger = logger;
@@ -71,22 +68,14 @@ namespace OrchardCore.Environment.Shell
 
         private void FireApplyChangesIfNeeded()
         {
-            _deferredTaskEngine.AddTask(async context =>
+            ShellScope.AddDeferredTask(async scope =>
             {
-                var stateManager = context.ServiceProvider.GetRequiredService<IShellStateManager>();
-                var shellStateUpdater = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
+                var stateManager = scope.ServiceProvider.GetRequiredService<IShellStateManager>();
+                var shellStateUpdater = scope.ServiceProvider.GetRequiredService<IShellStateUpdater>();
                 var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
-                {
-                    var descriptor = new ShellDescriptor
-                    {
-                        Features = shellState.Features
-                            .Where(FeatureShouldBeLoadedForStateChangeNotifications)
-                            .Select(x => new ShellFeature { Id = x.Id })
-                            .ToArray()
-                    };
-
+                {                    
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for tenant '{TenantName}'", _settings.Name);
@@ -112,9 +101,5 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private static bool FeatureShouldBeLoadedForStateChangeNotifications(ShellFeatureState shellFeatureState)
-        {
-            return FeatureIsChanging(shellFeatureState) || shellFeatureState.EnableState == ShellFeatureState.State.Up;
-        }
     }
 }

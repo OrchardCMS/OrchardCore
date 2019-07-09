@@ -1,7 +1,7 @@
 @using OrchardCore.ContentFields.Settings
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 <script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
@@ -21,25 +21,25 @@
             </tr>
         </thead>
         <draggable v-model="data.options" :element="'tbody'">
-            <tr v-for="(option, index) in data.options" :key="index" class="ui-sortable-handle">
+            <tr v-for="(option, index) in data.options" :key="index">
                 <td>
                     <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
                 </td>
                 <td>
                     <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
                 </td>
-                <td class="text-center">
+                <td class="text-center align-middle">
                     <div class="custom-control custom-radio ml-2">
                         <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.selected" v-on:click="uncheck(index)">
-                        <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                        <label class="custom-control-label" title="@T["Set as default"]" v-bind:for="'customRadio_' + index"></label>
                     </div>
                 </td>
                 <td class="text-center">
-                    <a v-on:click="remove(index)" title="Remove element from list" class="btn" style="background-color:transparent;">
+                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
                         <i class="fas fa-times"></i>
                     </a>
                 </td>
-                <td class="text-center"><div class="btn ui-sortable-handle"><i class="fas fa-arrows-alt"></i></div></td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
             </tr>
         </draggable>
         <tfoot>
