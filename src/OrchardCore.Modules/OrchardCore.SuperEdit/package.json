@@ -1,0 +1,38 @@
+{
+  "scripts": {
+    "webpack": "webpack"
+  },
+  "devDependencies": {
+    "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
+    "@types/webpack-env": "^1.13.6",
+    "aspnet-webpack": "^3.0.0",
+    "awesome-typescript-loader": "^5.2.0",
+    "babel-core": "^6.26.3",
+    "clean-webpack-plugin": "^0.1.19",
+    "typescript": "^2.9.2",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-middleware": "^3.1.3",
+    "webpack-hot-middleware": "^2.22.2"
+  },
+  "dependencies": {
+    "react": "^16.4.1",
+    "@hot-loader/react-dom": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.12.5",
+    "style-loader": "*",
+    "css-loader": "*",
+    "sass-loader": "*",
+    "sass": "*",
+    "file-loader": "*",
+    "extract-loader": "*",
+    "babel-loader": "*",
+    "@babel/core": "*",
+    "@babel/plugin-proposal-decorators": "*",
+    "@babel/plugin-proposal-class-properties": "*",
+    "@babel/preset-env": "*",
+    "@babel/preset-typescript": "*",
+    "@babel/preset-react": "*"
+  }
+}

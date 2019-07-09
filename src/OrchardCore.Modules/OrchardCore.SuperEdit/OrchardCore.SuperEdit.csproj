@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.FileSystem\OrchardCore.FileStorage.FileSystem.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Contents\OrchardCore.Contents.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenants\OrchardCore.Tenants.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\Scripts\" />
+    <Folder Include="wwwroot\Styles\" />
+  </ItemGroup>
+</Project>
