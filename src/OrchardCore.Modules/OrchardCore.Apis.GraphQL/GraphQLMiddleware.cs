@@ -165,13 +165,10 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
+                _.ValidationRules = _settings.ValidationRules;
             });
 
-            var httpResult = result.Errors?.Count > 0
-                ? HttpStatusCode.BadRequest
-                : HttpStatusCode.OK;
-
-            context.Response.StatusCode = (int)httpResult;
+            context.Response.StatusCode = (int) HttpStatusCode.OK;
             context.Response.ContentType = "application/json";
 
             await _writer.WriteAsync(context.Response.Body, result);

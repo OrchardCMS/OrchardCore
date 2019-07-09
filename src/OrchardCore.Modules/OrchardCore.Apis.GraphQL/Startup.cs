@@ -1,12 +1,14 @@
 using System;
 using GraphQL;
 using GraphQL.Http;
+using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Apis.GraphQL.Services;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -31,6 +33,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, SerialDocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
+            services.AddTransient<IValidationRule, RequiresPermissionValidationRule>();
 
             services.AddScoped<ISchemaFactory, SchemaService>();
 
@@ -44,6 +47,7 @@ namespace OrchardCore.Apis.GraphQL
                 $"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}",
                 _hostingEnvironment.IsDevelopment());
 
+
             app.UseMiddleware<GraphQLMiddleware>(new GraphQLSettings
             {
                 BuildUserContext = ctx => new GraphQLContext
@@ -52,7 +56,8 @@ namespace OrchardCore.Apis.GraphQL
                     User = ctx.User,
                     ServiceProvider = ctx.RequestServices,
                 },
-                ExposeExceptions = exposeExceptions
+                ExposeExceptions = exposeExceptions,
+                ValidationRules = serviceProvider.GetServices<IValidationRule>()
             });
         }
     }
