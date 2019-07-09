@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Routing;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Routing;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Diagnostics
 {
@@ -30,9 +33,9 @@ namespace OrchardCore.Diagnostics
             // c.f. https://docs.asp.net/en/latest/fundamentals/error-handling.html#id3
             app.UseStatusCodePagesWithReExecute("/Error", "?status={0}");
 
-            app.Use((context, next) =>
+            app.Use(async (context, next) =>
             {
-                var builder = next();
+                await next();
 
                 if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                 {
@@ -45,9 +48,28 @@ namespace OrchardCore.Diagnostics
                             statusCodePagesFeature.Enabled = false;
                         }
                     }
-                }
+                    else
+                    {
+                        // Workaround of c.f. https://github.com/aspnet/AspNetCore/issues/11555
+                        var endpointDataSource = context.RequestServices.GetRequiredService<EndpointDataSource>();
 
-                return builder;
+                        var routeValues = new RouteValueDictionary(new
+                        {
+                            area = "OrchardCore.Diagnostics",
+                            controller = "Diagnostics",
+                            action = "Error"
+                        });
+
+                        var endpoint = endpointDataSource.Endpoints
+                            .Where(e => e.Match(routeValues))
+                            .FirstOrDefault();
+
+                        if (endpoint != null)
+                        {
+                            endpoint.Select(context, routeValues);
+                        }
+                    }
+                }
             });
 
             routes.MapAreaControllerRoute(

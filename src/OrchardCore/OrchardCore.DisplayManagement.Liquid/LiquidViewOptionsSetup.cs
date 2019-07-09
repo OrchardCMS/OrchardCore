@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
+using OrchardCore.Mvc;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
