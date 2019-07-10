@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -62,7 +61,7 @@ namespace OrchardCore.Media
 
         private readonly int _maxBrowserCacheDays;
         private readonly int _maxCacheDays;
-        private readonly string _cdnUrl;
+        private readonly string _cdnBaseUrl;
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -74,7 +73,7 @@ namespace OrchardCore.Media
 
             _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
             _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
-            _cdnUrl = configurationSection.GetValue("CdnUrl".TrimEnd('/'), String.Empty);
+            _cdnBaseUrl = configurationSection.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -90,7 +89,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(AssetsRequestPath, mediaPath);
+                return new MediaFileProvider(AssetsRequestPath, mediaPath, _cdnBaseUrl);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>
@@ -116,7 +115,7 @@ namespace OrchardCore.Media
                     mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
                 }
 
-                return new MediaFileStore(fileStore, mediaUrlBase, _cdnUrl);
+                return new MediaFileStore(fileStore, mediaUrlBase, _cdnBaseUrl);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();

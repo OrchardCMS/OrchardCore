@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Abstractions.Modules.FileProviders;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 
@@ -20,11 +21,11 @@ namespace OrchardCore.Mvc
     {
         private const string VersionKey = "v";
         private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
-
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
         private readonly IMemoryCache _cache;
+        private readonly string _cdnBaseUrl;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
@@ -32,6 +33,9 @@ namespace OrchardCore.Mvc
             IMemoryCache cache
             )
         {
+            var cdnBaseUrlProvider = (ICdnBaseUrlProvider)staticFileProviders
+                .FirstOrDefault(x => x is ICdnBaseUrlProvider);
+            _cdnBaseUrl = cdnBaseUrlProvider?.CdnBaseUrl;
             _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
             _cache = cache;
@@ -54,8 +58,15 @@ namespace OrchardCore.Mvc
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                // Don't append version if the path is absolute.
-                return path;
+                // Check and remove CdnBaseUrl from resolvedPath
+                if (!String.IsNullOrEmpty(_cdnBaseUrl) && resolvedPath.StartsWith(_cdnBaseUrl))
+                {
+                    resolvedPath = resolvedPath.Substring(_cdnBaseUrl.Length);
+                }
+                else // Don't append version if the path is absolute.
+                {
+                    return path;
+                }
             }
 
             // Try to get the hash from the tenant level cache.
@@ -69,7 +80,7 @@ namespace OrchardCore.Mvc
                 return path;
             }
 
-            // Try to get the hash from the cache shared accross tenants.
+            // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
             {
                 if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))

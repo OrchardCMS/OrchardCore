@@ -10,13 +10,13 @@ namespace OrchardCore.Media.Services
     {
         private readonly IFileStore _fileStore;
         private readonly string _publicUrlBase;
-        private readonly string _cdnUrl;
+        private readonly string _cdnBaseUrl;
 
-        public MediaFileStore(IFileStore fileStore, string publicUrlBase, string cdnUrl = "")
+        public MediaFileStore(IFileStore fileStore, string publicUrlBase, string cdnBaseUrl = "")
         {
             _fileStore = fileStore;
             _publicUrlBase = publicUrlBase;
-            _cdnUrl = cdnUrl;
+            _cdnBaseUrl = cdnBaseUrl;
         }
 
         public MediaFileStore(IFileStore fileStore)
@@ -81,17 +81,29 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            return _cdnUrl + _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
+            return _cdnBaseUrl + _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            if (!publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
+            if (publicUrl.StartsWith(_cdnBaseUrl))
+            {
+                var resolvedPath = publicUrl.Substring(_cdnBaseUrl.Length);
+                if (resolvedPath.StartsWith(_publicUrlBase))
+                {
+                    return resolvedPath.Substring(_publicUrlBase.Length);
+                } else
+                {
+                    return resolvedPath;
+                }
+            }
+            else if (publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
+            {
+                return publicUrl.Substring(_publicUrlBase.Length);
+            } else
             {
                 throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
             }
-
-            return publicUrl.Substring(_publicUrlBase.Length);
         }
     }
 }
