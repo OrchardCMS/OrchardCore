@@ -3,7 +3,7 @@ import { hot } from 'react-hot-loader';
 
 const App: React.SFC = () =>
     <div>
-        Hello, hot reloading 5
+        Hello, hot reloading 1
     </div>;
 
 export default hot(module)(App);

@@ -82,7 +82,7 @@ module.exports = (env) => {
         },
 
         plugins: [
-            new CleanWebpackPlugin(path.join(outputDir, 'wwwroot', 'Scripts')),
+            new CleanWebpackPlugin([path.join(outputDir, 'wwwroot', 'Scripts'), path.join(outputDir, 'wwwroot', 'Styles')]),
             new CheckerPlugin()
         ]
     }];
