@@ -127,7 +127,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
                 catch (Exception e)
                 {
-                    await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
+                    await WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
                     return;
                 }
             }

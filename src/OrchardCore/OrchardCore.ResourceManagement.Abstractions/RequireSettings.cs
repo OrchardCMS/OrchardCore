@@ -14,9 +14,11 @@ namespace OrchardCore.ResourceManagement
         public string Culture { get; set; }
         public bool DebugMode { get; set; }
         public bool CdnMode { get; set; }
+        public string CdnBaseUrl { get; set; }
         public ResourceLocation Location { get; set; }
         public string Condition { get; set; }
         public string Version { get; set; }
+        public bool? AppendVersion { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
         public Dictionary<string, string> Attributes
         {
@@ -34,6 +36,7 @@ namespace OrchardCore.ResourceManagement
             CdnMode = options.UseCdn;
             DebugMode = options.DebugMode;
             Culture = options.Culture;
+            CdnBaseUrl = options.CdnBaseUrl;
         }
 
         public bool HasAttributes
@@ -100,6 +103,12 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        public RequireSettings UseCdnBaseUrl(string cdnBaseUrl)
+        {
+            CdnBaseUrl = cdnBaseUrl;
+            return this;
+        }
+
         public RequireSettings WithBasePath(string basePath)
         {
             BasePath = basePath;
@@ -118,6 +127,12 @@ namespace OrchardCore.ResourceManagement
             {
                 Version = version;
             }
+            return this;
+        }
+
+        public RequireSettings SetAppendVersion(bool? appendVersion)
+        {
+            AppendVersion = appendVersion;
             return this;
         }
 
@@ -177,14 +192,16 @@ namespace OrchardCore.ResourceManagement
             var settings = (new RequireSettings
             {
                 Name = Name,
-                Type = Type
+                Type = Type,
             }).AtLocation(Location).AtLocation(other.Location)
                 .WithBasePath(BasePath).WithBasePath(other.BasePath)
                 .UseCdn(CdnMode).UseCdn(other.CdnMode)
+                .UseCdnBaseUrl(CdnBaseUrl).UseCdnBaseUrl(other.CdnBaseUrl)
                 .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
                 .UseCulture(Culture).UseCulture(other.Culture)
                 .UseCondition(Condition).UseCondition(other.Condition)
                 .UseVersion(Version).UseVersion(other.Version)
+                .SetAppendVersion(AppendVersion).SetAppendVersion(other.AppendVersion)
                 .Define(InlineDefinition).Define(other.InlineDefinition);
             settings._attributes = MergeAttributes(other);
             return settings;

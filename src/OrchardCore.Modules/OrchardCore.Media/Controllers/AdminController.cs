@@ -99,7 +99,7 @@ namespace OrchardCore.Media.Controllers
             {
                 return NotFound();
             }
-            
+
 
             var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
@@ -114,7 +114,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return allowed.ToArray();            
+            return allowed.ToArray();
         }
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
@@ -213,7 +213,7 @@ namespace OrchardCore.Media.Controllers
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
-                }                
+                }
 
                 if (file.Length > maxFileSize)
                 {
@@ -222,7 +222,7 @@ namespace OrchardCore.Media.Controllers
                         name = file.FileName,
                         size = file.Length,
                         folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
+                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double)maxFileSize / 1024 / 1024)].ToString()
                     });
 
                     _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
@@ -243,7 +243,7 @@ namespace OrchardCore.Media.Controllers
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
-                }                
+                }
 
                 if (file.Length > maxFileSize)
                 {
@@ -252,7 +252,7 @@ namespace OrchardCore.Media.Controllers
                         name = file.FileName,
                         size = file.Length,
                         folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
+                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double)maxFileSize / 1024 / 1024)].ToString()
                     });
 
                     _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
@@ -275,7 +275,7 @@ namespace OrchardCore.Media.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occured while uploading a media");
+                    _logger.LogError(ex, "An error occurred while uploading a media");
 
                     result.Add(new
                     {
@@ -395,8 +395,6 @@ namespace OrchardCore.Media.Controllers
             return Ok();
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
@@ -407,7 +405,7 @@ namespace OrchardCore.Media.Controllers
                 return Unauthorized();
             }
 
-            if ((mediaNames == null) || (mediaNames.Length < 1) 
+            if ((mediaNames == null) || (mediaNames.Length < 1)
                 || string.IsNullOrEmpty(sourceFolder)
                 || string.IsNullOrEmpty(targetFolder))
             {
@@ -417,20 +415,20 @@ namespace OrchardCore.Media.Controllers
             sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
             targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
 
-            var  filesOnError = new List<string>();
+            var filesOnError = new List<string>();
 
             foreach (var name in mediaNames)
             {
                 var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
-                var targetPath = _mediaFileStore.Combine( targetFolder, name);
+                var targetPath = _mediaFileStore.Combine(targetFolder, name);
                 try
                 {
                     await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
                 }
                 catch (FileStoreException)
                 {
-                    filesOnError.Add(sourcePath);                    
-                }                
+                    filesOnError.Add(sourcePath);
+                }
             }
 
             if (filesOnError.Count > 0)
