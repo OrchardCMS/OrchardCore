@@ -1,7 +1,4 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -15,6 +12,7 @@ using OrchardCore.Queries.Recipes;
 using OrchardCore.Queries.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Scripting;
 
 namespace OrchardCore.Queries
 {
@@ -49,6 +47,14 @@ namespace OrchardCore.Queries
             services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<QueryFilter>("query");
+        }
+    }
+    [RequireFeatures("OrchardCore.Queries")]
+    public class QueriesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
         }
     }
 }

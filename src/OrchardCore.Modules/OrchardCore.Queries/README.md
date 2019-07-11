@@ -211,3 +211,11 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `day(_date_)`    | Returns the days part of a date.    |
 | `month(_date_)`  | Returns the months part of a date.  |
 | `year(_date_)`   | Returns the years part of a date.   |
+
+# Scripting
+
+The following JavaScript functions are available with this module.
+
+| Function | Description | Signature |
+| -------- | ----------- | --------- |
+| `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
