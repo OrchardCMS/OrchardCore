@@ -10,7 +10,7 @@ namespace OrchardCore.CustomSettings
         public static async Task<T> GetCustomSettingsAsync<T>(this ISiteService siteService, string name = null)
             where T : ContentPart
         {
-            if (string.IsNullOrEmpty(name))
+            if (name == null)
             {
                 name = typeof(T).Name;
             }
