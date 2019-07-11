@@ -47,6 +47,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.CustomSettings.Abstractions\OrchardCore.CustomSettings.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
