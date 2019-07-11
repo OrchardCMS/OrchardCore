@@ -35,6 +35,7 @@ namespace OrchardCore.Queries
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
+            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
         }
     }
 
@@ -47,14 +48,6 @@ namespace OrchardCore.Queries
             services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
 
             services.AddLiquidFilter<QueryFilter>("query");
-        }
-    }
-    [RequireFeatures("OrchardCore.Queries")]
-    public class QueriesStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
         }
     }
 }
