@@ -30,7 +30,6 @@ namespace OrchardCore.Tests.Settings
                 )
             );
 
-            var allSettingsResult = await mockSiteService.GetSiteSettingsAsync();
             var testSettingsResult = await mockSiteService.GetCustomSettingsAsync<TestSettings>();
 
             Assert.IsType<TestSettings>(testSettingsResult);
