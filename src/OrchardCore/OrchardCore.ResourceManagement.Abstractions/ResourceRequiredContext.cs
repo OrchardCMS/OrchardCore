@@ -18,7 +18,7 @@ namespace OrchardCore.ResourceManagement
 
             if (String.IsNullOrEmpty(Settings.Condition))
             {
-                return tagBuilder;
+                return new TagBuilderWrapper(tagBuilder);
             }
 
             var builder = new HtmlContentBuilder();
@@ -32,7 +32,7 @@ namespace OrchardCore.ResourceManagement
                 builder.AppendHtml("<!--[if " + Settings.Condition + "]>");
             }
 
-            builder.AppendHtml(tagBuilder);
+            builder.AppendHtml(new TagBuilderWrapper(tagBuilder));
 
             if (!string.IsNullOrEmpty(Settings.Condition))
             {
