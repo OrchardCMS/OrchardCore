@@ -12,7 +12,7 @@
 }
 
 <script asp-src="~/OrchardCore.Localization/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.Localization/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
 
 <script at="Foot">
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(supportedCultures), '@defaultCulture', '@selectedCulture', @Html.Raw(allCultures));
