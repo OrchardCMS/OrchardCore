@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
@@ -17,6 +18,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
@@ -183,13 +185,22 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                var tenantName = settings.Name;
+                var cookieName = "orchantiforgery_" + settings.Name;
+
+                // If uninitialized, we use the host services.
+                if (settings.State == TenantState.Uninitialized)
+                {
+                    // And delete a cookie that may have been created by another instance.
+                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+                    return;
+                }
 
                 // Re-register the antiforgery  services to be tenant-aware.
                 var collection = new ServiceCollection()
                     .AddAntiforgery(options =>
                     {
-                        options.Cookie.Name = "orchantiforgery_" + tenantName;
+                        options.Cookie.Name = cookieName;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                         // set by the pipeline and comming from the request 'PathBase' which already ends with the
