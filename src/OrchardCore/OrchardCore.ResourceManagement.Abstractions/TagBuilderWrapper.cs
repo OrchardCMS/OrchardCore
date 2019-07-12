@@ -29,26 +29,31 @@ namespace OrchardCore.ResourceManagement
                     AppendAttributes(writer, encoder);
                     writer.Write(">");
                     break;
+
                 case TagRenderMode.EndTag:
                     writer.Write("</");
                     writer.Write(_tagBuilder.TagName);
                     writer.Write(">");
                     break;
+
                 case TagRenderMode.SelfClosing:
                     writer.Write("<");
                     writer.Write(_tagBuilder.TagName);
                     AppendAttributes(writer, encoder);
                     writer.Write(" />");
                     break;
+
                 default:
                     writer.Write("<");
                     writer.Write(_tagBuilder.TagName);
                     AppendAttributes(writer, encoder);
                     writer.Write(">");
+
                     if (_tagBuilder.HasInnerHtml)
                     {
                         _tagBuilder.InnerHtml.WriteTo(writer, encoder);
                     }
+
                     writer.Write("</");
                     writer.Write(_tagBuilder.TagName);
                     writer.Write(">");
@@ -61,8 +66,7 @@ namespace OrchardCore.ResourceManagement
             foreach (var attribute in _tagBuilder.Attributes)
             {
                 var key = attribute.Key;
-                if (string.Equals(key, "id", StringComparison.OrdinalIgnoreCase) &&
-                    string.IsNullOrEmpty(attribute.Value))
+                if (string.Equals(key, "id", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(attribute.Value))
                 {
                     continue;
                 }
@@ -70,9 +74,10 @@ namespace OrchardCore.ResourceManagement
                 writer.Write(" ");
                 writer.Write(key);
                 writer.Write("=\"");
+
                 if (attribute.Value != null)
                 {
-                    if (attribute.Key == "integrity")
+                    if (string.Equals(key, "integrity", StringComparison.OrdinalIgnoreCase))
                     {
                         writer.Write(attribute.Value);
                     }
