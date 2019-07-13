@@ -1,9 +1,18 @@
-namespace OrchardCore.Environment.Cache
+namespace OrchardCore
 {
-    public class BooleanBoxes
+    /// <summary>
+    /// Provides reusable boxed booleans.
+    /// </summary>
+    public static class BooleanBoxes
     {
+        /// <summary>
+        /// Static boxed instance for true.
+        /// </summary>
         public static readonly object TrueBox = true;
 
+        /// <summary>
+        /// Static boxed instance for false.
+        /// </summary>
         public static readonly object FalseBox = false;
 
         public static object Box(bool value)

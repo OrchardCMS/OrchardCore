@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Layers.Services
