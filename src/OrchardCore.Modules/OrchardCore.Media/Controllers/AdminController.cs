@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
@@ -51,6 +52,7 @@ namespace OrchardCore.Media.Controllers
         };
 
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly IShellConfiguration _shellConfiguration;
@@ -59,6 +61,7 @@ namespace OrchardCore.Media.Controllers
 
         public AdminController(
             IMediaFileStore mediaFileStore,
+            IFileVersionProvider fileVersionProvider,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
             IShellConfiguration shellConfiguration,
@@ -66,6 +69,7 @@ namespace OrchardCore.Media.Controllers
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
+            _fileVersionProvider = fileVersionProvider;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
             _shellConfiguration = shellConfiguration;
@@ -492,7 +496,7 @@ namespace OrchardCore.Media.Controllers
                 name = mediaFile.Name,
                 size = mediaFile.Length,
                 folder = mediaFile.DirectoryPath,
-                url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
+                url = _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(mediaFile.Path)),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream"
             };
