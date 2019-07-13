@@ -3,24 +3,25 @@
 @* Adding meta tags *@
 <meta asp-name="foo" content="bar" />
 <meta asp-name="foo" content="baz" />
+<meta asp-property="foo" content="bar" />
 
 @* Inline definition of resources and dependencies *@
-<script asp-name="blitz" asp-src="blitz.min.js" debug-src="blitz.js"></script>
-<script asp-name="baz" asp-src="baz.min.js?v=1.0" debug-src="baz.js?v=1.0" version="1.0"></script>
-<script asp-name="baz" asp-src="baz.min.js?v=2.0" debug-src="baz.js?v=2.0" version="2.0"></script>
-<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz:1.0" version="1.0"></script>
-<script asp-name="foo" asp-src="foo.min.js?v=2.0" debug-src="foo.js?v=2.0" depends-on="baz, blitz" version="2.0"></script>
-<script asp-name="foo" asp-src="foo.min.js?v=3.0" debug-src="foo.js?v=3.0" depends-on="baz" version="3.0"></script>
+<script asp-name="blitz" asp-src="blitz.min.js" debug-src="blitz.js" asp-append-version="true"></script>
+<script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js" version="1.0" asp-append-version="true"></script>
+<script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js" version="2.0" asp-append-version="true"></script>
+<script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz:1.0" version="1.0" asp-append-version="true"></script>
+<script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz, blitz" version="2.0" asp-append-version="true"></script>
+<script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz" version="3.0" asp-append-version="true"></script>
 
 @* Injecting named resources *@
-<script asp-name="foo" version="2.0" at="Head"></script>
+<script asp-name="foo" version="2.0" at="Head" asp-append-version="true"></script>
 
 @* Injecting custom scripts urls *@
-<script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
-<script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
+<script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar" asp-append-version="true"></script>
+<script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE" asp-append-version="true"></script>
 
 @* Injecting custom stylesheets *@
-<style asp-src="bar.min.css" debug-src="bar.css"></style>
+<style asp-src="bar.min.css" debug-src="bar.css" asp-append-version="true"></style>
 
 @* Adding custom links *@
 <link asp-src="http://example.com/feed" rel="alternate" type="application/rss+xml" />
@@ -33,7 +34,7 @@
 </div>
 
 <form asp-action="Index">
-    <input name="text"/>
+    <input name="text" />
     <button type="submit">GO!!!</button>
 </form>
 

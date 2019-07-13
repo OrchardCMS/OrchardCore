@@ -7,8 +7,8 @@
     var settings = Model.TypePartDefinition.Settings.ToObject<MarkdownBodyPartSettings>();
 }
 
-<script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
-<style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
+<script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot" asp-append-version="true"></script>
+<style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css" asp-append-version="true"></style>
 
 <fieldset class="form-group">
     <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>

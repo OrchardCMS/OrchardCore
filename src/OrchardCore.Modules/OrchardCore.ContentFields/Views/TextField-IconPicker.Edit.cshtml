@@ -6,10 +6,10 @@
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
 }
 
-<style name="fontpickerStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.css"></style>
-<style name="fontpickerCustomStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/iconpicker-custom.css"></style>
-<script name="fontpickerScript" asp-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot" depends-on="jquery"></script>
-<script name="iconpickerCustomScript" asp-src="~/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot"></script>
+<style name="fontpickerStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.css" asp-append-version="true"></style>
+<style name="fontpickerCustomStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/iconpicker-custom.css" asp-append-version="true"></style>
+<script name="fontpickerScript" asp-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot" depends-on="jquery" asp-append-version="true"></script>
+<script name="iconpickerCustomScript" asp-src="~/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot" asp-append-version="true"></script>
 
 <fieldset class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
