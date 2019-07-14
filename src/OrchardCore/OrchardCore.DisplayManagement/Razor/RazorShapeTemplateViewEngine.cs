@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,20 +25,20 @@ namespace OrchardCore.DisplayManagement.Razor
 {
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
-        private readonly IOptions<MvcViewOptions> _options;
+        private readonly IOptions<MvcViewOptions> _mvcViewOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
         private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
-            IOptions<MvcViewOptions> options,
+            IOptions<MvcViewOptions> mvcViewOptions,
             IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
             IHttpContextAccessor httpContextAccessor,
             ViewContextAccessor viewContextAccessor,
             ITempDataProvider tempDataProvider)
         {
-            _options = options;
+            _mvcViewOptions = mvcViewOptions;
             _httpContextAccessor = httpContextAccessor;
             _viewContextAccessor = viewContextAccessor;
             _tempDataProvider = tempDataProvider;
@@ -75,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext displayContext)
         {
-            var viewEngines = _options.Value.ViewEngines;
+            var viewEngines = _mvcViewOptions.Value.ViewEngines;
 
             if (viewEngines.Count == 0)
             {
@@ -94,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public async Task<string> RenderViewToStringAsync(string viewName, object model, IRazorViewEngine viewEngine)
         {
-            var actionContext = GetActionContext();
+            var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
 
             using (var output = new StringWriter())
@@ -142,16 +143,32 @@ namespace OrchardCore.DisplayManagement.Razor
             throw new InvalidOperationException(errorMessage);
         }
 
-        private ActionContext GetActionContext()
+        private async Task<ActionContext> GetActionContextAsync()
         {
             var httpContext = _httpContextAccessor.HttpContext;
+
+            var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext != null)
+            {
+                return actionContext;
+            }
+
             var shellContext = httpContext.Features.Get<ShellContextFeature>()?.ShellContext;
 
             var routeData = new RouteData();
             var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
             routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IViewResultFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnResultExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Settings;
+using OrchardCore.DisplayManagement.Layout;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
     /// <summary>
-    /// Inject an instance of <see cref="ISite"/> in the HttpContext items such that
+    /// Inject an instance of the theme layout <see cref="IShape"/> in the HttpContext items such that
     /// a View can reuse it when it's executed.
     /// </summary>
-    public class SiteViewResultFilter : IAsyncResultFilter, IViewResultFilter
+    public class ThemeLayoutViewResultFilter : IAsyncResultFilter, IViewResultFilter
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
@@ -27,14 +27,13 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private async Task OnResultExecutionAsync(HttpContext context)
         {
-            if (!context.Items.ContainsKey(typeof(ISite)))
+            if (!context.Items.ContainsKey(typeof(IShape)))
             {
-                var siteService = context.RequestServices.GetService<ISiteService>();
+                var layoutAccessor = context.RequestServices.GetService<ILayoutAccessor>();
 
-                // siteService can be null during Setup
-                if (siteService != null)
+                if (layoutAccessor != null)
                 {
-                    context.Items.Add(typeof(ISite), await siteService.GetSiteSettingsAsync());
+                    context.Items.Add(typeof(IShape), await layoutAccessor.GetLayoutAsync());
                 }
             }
         }

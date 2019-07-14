@@ -251,7 +251,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext == null)
             {
-                var actionContext = GetActionContext(services);
+                var actionContext = await GetActionContextAsync(services);
                 viewContext = GetViewContext(services, actionContext);
 
                 // If there was no 'ViewContext' but a 'DisplayContext'.
@@ -303,7 +303,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.CultureInfo = CultureInfo.CurrentUICulture;
         }
 
-        private static ActionContext GetActionContext(IServiceProvider services)
+        private async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
         {
             var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
 
@@ -320,7 +320,15 @@ namespace OrchardCore.DisplayManagement.Liquid
             var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
             routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IViewResultFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnResultExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static ViewContext GetViewContext(IServiceProvider services, ActionContext actionContext)
