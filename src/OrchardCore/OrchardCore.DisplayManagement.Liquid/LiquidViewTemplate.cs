@@ -321,7 +321,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
 
             actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-            var filters = httpContext.RequestServices.GetServices<IViewResultFilter>();
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
 
             foreach (var filter in filters)
             {

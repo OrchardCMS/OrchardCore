@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,29 +10,24 @@ namespace OrchardCore.DisplayManagement.Razor
     /// Inject an instance of the theme layout <see cref="IShape"/> in the HttpContext items such that
     /// a View can reuse it when it's executed.
     /// </summary>
-    public class ThemeLayoutViewResultFilter : IAsyncResultFilter, IViewResultFilter
+    public class ThemeLayoutViewResultFilter : IAsyncViewResultFilter
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            await OnResultExecutionAsync(context.HttpContext);
+            await OnResultExecutionAsync(context);
             await next();
         }
 
         // Used when we create fake view and action contexts.
-        public Task OnResultExecutionAsync(ActionContext context)
+        public async Task OnResultExecutionAsync(ActionContext context)
         {
-            return OnResultExecutionAsync(context.HttpContext);
-        }
-
-        private async Task OnResultExecutionAsync(HttpContext context)
-        {
-            if (!context.Items.ContainsKey(typeof(IShape)))
+            if (!context.HttpContext.Items.ContainsKey(typeof(IShape)))
             {
-                var layoutAccessor = context.RequestServices.GetService<ILayoutAccessor>();
+                var layoutAccessor = context.HttpContext.RequestServices.GetService<ILayoutAccessor>();
 
                 if (layoutAccessor != null)
                 {
-                    context.Items.Add(typeof(IShape), await layoutAccessor.GetLayoutAsync());
+                    context.HttpContext.Items.Add(typeof(IShape), await layoutAccessor.GetLayoutAsync());
                 }
             }
         }

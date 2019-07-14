@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,30 +10,25 @@ namespace OrchardCore.DisplayManagement.Razor
     /// Inject an instance of <see cref="ISite"/> in the HttpContext items such that
     /// a View can reuse it when it's executed.
     /// </summary>
-    public class SiteViewResultFilter : IAsyncResultFilter, IViewResultFilter
+    public class SiteViewResultFilter : IAsyncViewResultFilter
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            await OnResultExecutionAsync(context.HttpContext);
+            await OnResultExecutionAsync(context);
             await next();
         }
 
         // Used when we create fake view and action contexts.
-        public Task OnResultExecutionAsync(ActionContext context)
+        public async Task OnResultExecutionAsync(ActionContext context)
         {
-            return OnResultExecutionAsync(context.HttpContext);
-        }
-
-        private async Task OnResultExecutionAsync(HttpContext context)
-        {
-            if (!context.Items.ContainsKey(typeof(ISite)))
+            if (!context.HttpContext.Items.ContainsKey(typeof(ISite)))
             {
-                var siteService = context.RequestServices.GetService<ISiteService>();
+                var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
                 // siteService can be null during Setup
                 if (siteService != null)
                 {
-                    context.Items.Add(typeof(ISite), await siteService.GetSiteSettingsAsync());
+                    context.HttpContext.Items.Add(typeof(ISite), await siteService.GetSiteSettingsAsync());
                 }
             }
         }

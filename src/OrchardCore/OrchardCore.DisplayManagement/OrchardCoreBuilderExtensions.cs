@@ -46,8 +46,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     });
 
                     // Used as services when we create fake view and action contexts.
-                    services.AddScoped<IViewResultFilter, SiteViewResultFilter>();
-                    services.AddScoped<IViewResultFilter, ThemeLayoutViewResultFilter>();
+                    services.AddScoped<IAsyncViewResultFilter, SiteViewResultFilter>();
+                    services.AddScoped<IAsyncViewResultFilter, ThemeLayoutViewResultFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
