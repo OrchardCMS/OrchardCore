@@ -46,12 +46,13 @@ namespace OrchardCore.Facebook.Filters
                             options = string.Concat(options, ",", settings.FBInitParams, "}");
                         }
                         var require = new RequireSettings() { Name = "fb", Type = "script", };
-                        var resource=_resourceManager.FindResource(require);
+                        var resource = _resourceManager.FindResource(require);
 
                         _resourceManager.RegisterResource("script", "fb");
 
-                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fb.js"" type=""text/javascript""></script>"));
-                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fbsdk.js"" type=""text/javascript""></script>"));
+                        var pathBase = context.HttpContext.Request.PathBase.ToString();
+                        _resourceManager.RegisterFootScript(new HtmlString($"<script src=\"{pathBase}/OrchardCore.Facebook/sdk/fb.js\" type=\"text/javascript\"></script>"));
+                        _resourceManager.RegisterFootScript(new HtmlString($"<script src=\"{pathBase}/OrchardCore.Facebook/sdk/fbsdk.js\" type=\"text/javascript\"></script>"));
                     }
                 }
             }
