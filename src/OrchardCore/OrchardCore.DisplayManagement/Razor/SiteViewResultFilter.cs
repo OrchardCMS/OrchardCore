@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Razor
             await next();
         }
 
-        // Used when we create fake view and action contexts.
+        // Used as a service when we create a fake 'ActionContext'.
         public async Task OnResultExecutionAsync(ActionContext context)
         {
             if (!context.HttpContext.Items.ContainsKey(typeof(ISite)))

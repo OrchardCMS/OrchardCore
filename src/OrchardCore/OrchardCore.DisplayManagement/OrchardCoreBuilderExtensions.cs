@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Filters.Add(typeof(ThemeLayoutViewResultFilter));
                     });
 
-                    // Used as services when we create fake view and action contexts.
+                    // Used as services when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewResultFilter, SiteViewResultFilter>();
                     services.AddScoped<IAsyncViewResultFilter, ThemeLayoutViewResultFilter>();
 
