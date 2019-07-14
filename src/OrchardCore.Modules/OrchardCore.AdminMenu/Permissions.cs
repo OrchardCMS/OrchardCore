@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
 {
-    public class Permissions : IPermissionProvider
+    public class Permissions : IAsyncPermissionProvider
     {
         public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
 
@@ -19,17 +20,22 @@ namespace OrchardCore.AdminMenu
             _adminMenuService = adminMenuService;
         }
 
-
+        // Sync version for backward compatibility.
         public IEnumerable<Permission> GetPermissions()
+        {
+            return GetPermissionsAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             var list = new List<Permission> { ManageAdminMenu, ViewAdminMenuAll };
 
-            foreach (var adminMenu in _adminMenuService.GetAsync().GetAwaiter().GetResult())
+            foreach (var adminMenu in await _adminMenuService.GetAsync())
             {
                 list.Add(CreatePermissionForAdminMenu(adminMenu.Name));
-            }            
+            }
 
-            return list;            
+            return list;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

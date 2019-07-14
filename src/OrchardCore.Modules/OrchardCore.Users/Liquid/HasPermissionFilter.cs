@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Security.Permissions;
 using OrchardCore.Liquid;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users.Liquid
 {
@@ -34,7 +34,12 @@ namespace OrchardCore.Users.Liquid
 
             foreach (var item in permissionProviders)
             {
-                permission = item.GetPermissions().FirstOrDefault(c => c.Name == permissionName);
+                var permissions = item is IAsyncPermissionProvider asyncItem
+                    ? await asyncItem.GetPermissionsAsync()
+                    : item.GetPermissions();
+
+                permission = permissions.FirstOrDefault(p => p.Name == permissionName);
+
                 if (permission != null)
                     break;
             }
