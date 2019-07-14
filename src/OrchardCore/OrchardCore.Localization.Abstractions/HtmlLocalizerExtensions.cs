@@ -1,21 +1,23 @@
 using System;
 using OrchardCore.Localization;
 
-namespace Microsoft.Extensions.Localization
+namespace Microsoft.AspNetCore.Mvc.Localization
 {
-    public static class StringLocalizerExtensions
+    public static class HtmlLocalizerExtensions
     {
-        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string singular, string plural, params object[] arguments)
+        public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
             if (plural == null)
             {
                 throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            return localizer[singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments }];
+            var localizedString = localizer.GetString(singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments });
+
+            return new LocalizedHtmlString(singular, localizedString);
         }
 
-        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
+        public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
         {
             if (pluralForms == null)
             {
@@ -27,7 +29,10 @@ namespace Microsoft.Extensions.Localization
                 throw new ArgumentException(nameof(pluralForms), "PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            return localizer[pluralForms[0], new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments }];
+            var name = pluralForms[0];
+            var localizedString = localizer.GetString(name, new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments });
+
+            return new LocalizedHtmlString(name, localizedString);
         }
     }
 }
