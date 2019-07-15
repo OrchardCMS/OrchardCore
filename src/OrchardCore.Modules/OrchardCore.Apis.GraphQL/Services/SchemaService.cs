@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -14,6 +15,7 @@ namespace OrchardCore.Apis.GraphQL.Services
         private readonly IMemoryCache _memoryCache;
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _serviceProvider;
+        private static SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
 
         public SchemaService(
             IMemoryCache memoryCache,
@@ -25,64 +27,84 @@ namespace OrchardCore.Apis.GraphQL.Services
             _serviceProvider = serviceProvider;
         }
 
-        public Task<ISchema> GetSchema()
+        public async Task<ISchema> GetSchema()
         {
-            return _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
+            if (_memoryCache.TryGetValue<ISchema>("GraphQLSchema", out var schema)) {
+                return schema;
+            }
+
+            await _schemaGenerationSemaphore.WaitAsync();
+
+            if (_memoryCache.TryGetValue("GraphQLSchema", out schema))
             {
-                f.SetSlidingExpiration(TimeSpan.FromHours(1));
+                return schema;
+            }
 
-                ISchema schema = new Schema
+            try
+            {
+                schema = await _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
                 {
-                    Query = new ObjectGraphType { Name = "Query" },
-                    Mutation = new ObjectGraphType { Name = "Mutation" },
-                    Subscription = new ObjectGraphType { Name = "Subscription" },
-                    FieldNameConverter = new OrchardFieldNameConverter(),
+                    f.SetSlidingExpiration(TimeSpan.FromHours(1));
 
-                    DependencyResolver = _serviceProvider.GetService<IDependencyResolver>()
-                };
-
-                foreach (var builder in _schemaBuilders)
-                {
-                    var token = await builder.BuildAsync(schema);
-
-                    if (token != null)
+                    schema = new Schema
                     {
-                        f.AddExpirationToken(token);
+                        Query = new ObjectGraphType { Name = "Query" },
+                        Mutation = new ObjectGraphType { Name = "Mutation" },
+                        Subscription = new ObjectGraphType { Name = "Subscription" },
+                        FieldNameConverter = new OrchardFieldNameConverter(),
+
+                        DependencyResolver = _serviceProvider.GetService<IDependencyResolver>()
+                    };
+
+                    foreach (var builder in _schemaBuilders)
+                    {
+                        var token = await builder.BuildAsync(schema);
+
+                        if (token != null)
+                        {
+                            f.AddExpirationToken(token);
+                        }
                     }
-                }
 
-                foreach (var type in _serviceProvider.GetServices<IInputObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
+                    foreach (var type in _serviceProvider.GetServices<IInputObjectGraphType>())
+                    {
+                        schema.RegisterType(type);
+                    }
 
-                foreach (var type in _serviceProvider.GetServices<IObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
-                
+                    foreach (var type in _serviceProvider.GetServices<IObjectGraphType>())
+                    {
+                        schema.RegisterType(type);
+                    }
+
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 
                 if (!schema.Query.Fields.Any())
-                {
-                    schema.Query = null;
-                }
+                    {
+                        schema.Query = null;
+                    }
 
-                if (!schema.Mutation.Fields.Any())
-                {
-                    schema.Mutation = null;
-                }
+                    if (!schema.Mutation.Fields.Any())
+                    {
+                        schema.Mutation = null;
+                    }
 
-                if (!schema.Subscription.Fields.Any())
-                {
-                    schema.Subscription = null;
-                }
+                    if (!schema.Subscription.Fields.Any())
+                    {
+                        schema.Subscription = null;
+                    }
 
-                schema.Initialize();
+                    schema.Initialize();
 
-                return schema;
-            });
+                    return schema;
+                });
+            }
+            finally
+            {
+                _schemaGenerationSemaphore.Release();
+            }
+
+            return schema;
         }
     }
 }
