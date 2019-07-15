@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
-                query.RequirePermission(CommonPermissions.ViewContent);
+                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {

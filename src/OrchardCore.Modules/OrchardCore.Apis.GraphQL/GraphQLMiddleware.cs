@@ -84,7 +84,6 @@ namespace OrchardCore.Apis.GraphQL
 
             if (HttpMethods.IsPost(context.Request.Method))
             {
-
                 var mediaType = new MediaType(context.Request.ContentType);
 
                 try
@@ -181,8 +180,10 @@ namespace OrchardCore.Apis.GraphQL
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var errorResult = new ExecutionResult();
-            errorResult.Errors = new ExecutionErrors();
+            var errorResult = new ExecutionResult
+            {
+                Errors = new ExecutionErrors()
+            };
 
             if (e == null)
             {
