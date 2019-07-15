@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions.Modules.FileProviders;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
 {
-    public class MediaFileStore : IMediaFileStore
+    public class MediaFileStore : IMediaFileStore, ICdnPathProvider
     {
         private readonly IFileStore _fileStore;
         private readonly string _publicUrlBase;
@@ -22,6 +23,16 @@ namespace OrchardCore.Media.Services
         public MediaFileStore(IFileStore fileStore)
         {
             _fileStore = fileStore;
+        }
+
+        public bool MatchCdnPath(string path)
+        {
+            return !String.IsNullOrEmpty(_cdnBaseUrl) && path.StartsWith(_cdnBaseUrl);
+        }
+
+        public string RemoveCdnPath(string path)
+        {
+            return path.Substring(_cdnBaseUrl.Length);
         }
 
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)

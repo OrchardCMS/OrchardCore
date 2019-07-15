@@ -89,7 +89,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(AssetsRequestPath, mediaPath, _cdnBaseUrl);
+                return new MediaFileProvider(AssetsRequestPath, mediaPath);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>

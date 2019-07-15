@@ -24,20 +24,19 @@ namespace OrchardCore.Mvc
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
+        private readonly IEnumerable<ICdnPathProvider> _cdnPathProviders;
         private readonly IMemoryCache _cache;
-        private readonly string _cdnBaseUrl;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
+            IEnumerable<ICdnPathProvider> cdnPathProviders,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
         {
-            var cdnBaseUrlProvider = (ICdnBaseUrlProvider)staticFileProviders
-                .FirstOrDefault(x => x is ICdnBaseUrlProvider);
-            _cdnBaseUrl = cdnBaseUrlProvider?.CdnBaseUrl;
             _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
+            _cdnPathProviders = cdnPathProviders;
             _cache = cache;
         }
 
@@ -58,12 +57,19 @@ namespace OrchardCore.Mvc
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
+                var hasResolvedCdnPath = false;
                 // Check and remove CdnBaseUrl from resolvedPath
-                if (!String.IsNullOrEmpty(_cdnBaseUrl) && resolvedPath.StartsWith(_cdnBaseUrl))
+                foreach(var cdnPathProvider in _cdnPathProviders)
                 {
-                    resolvedPath = resolvedPath.Substring(_cdnBaseUrl.Length);
+                    if (cdnPathProvider.MatchCdnPath(resolvedPath))
+                    {
+                        resolvedPath = cdnPathProvider.RemoveCdnPath(resolvedPath);
+                        hasResolvedCdnPath = true;
+                        break;
+                    }
                 }
-                else // Don't append version if the path is absolute.
+                // Don't append version if the path is absolute.
+                if (!hasResolvedCdnPath)
                 {
                     return path;
                 }
