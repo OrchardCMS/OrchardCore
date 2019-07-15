@@ -40,5 +40,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         public DateTime LastModifiedUtc => _blobProperties.LastModified.GetValueOrDefault().UtcDateTime;
 
         public bool IsDirectory => false;
+
+        public string FileHash => _blobProperties.ContentMD5;
     }
 }

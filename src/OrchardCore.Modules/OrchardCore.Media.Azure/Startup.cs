@@ -9,6 +9,8 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
+using Microsoft.Extensions.Configuration;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Azure
 {
@@ -35,20 +37,36 @@ namespace OrchardCore.Media.Azure
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
+                //TODO register as IBlobFileStore
+                services.AddSingleton<IFileStore>(serviceProvider =>
                 {
                     var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
 
-                    var fileStore = new BlobFileStore(options, clock, contentTypeProvider);
+                    return new BlobFileStore(options, clock, contentTypeProvider);
+                });
+
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
+                {
+                    var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                    var fileStore = (BlobFileStore)serviceProvider.GetRequiredService<IFileStore>();
 
                     var mediaBaseUri = fileStore.BaseUri;
                     if (!String.IsNullOrEmpty(options.PublicHostName))
                         mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
 
-                    return new MediaFileStore(fileStore, mediaBaseUri.ToString());
+                    // This really doesn't need a cdn value, as publichostname suffices, but if we pass it as a cdn value
+                    // then it is more possible to strip it ??
+                    //TODO move to IOptions
+                    var mediaSection = _configuration.GetSection("OrchardCore.Media");
+
+                    var cdnBaseUrl = mediaSection.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
+                    return new MediaFileStore(fileStore, mediaBaseUri.ToString(), cdnBaseUrl);
                 }));
+
+                // TODO Remove IMediaFileProvider, and IStaticFileProvider
+                // If possible also remove the static files middleware
             }
 
             services.Configure<MvcOptions>((options) =>

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Abstractions.Modules.FileProviders;
+using OrchardCore.FileStorage;
+using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 
@@ -25,11 +27,13 @@ namespace OrchardCore.Mvc
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
         private readonly IEnumerable<ICdnPathProvider> _cdnPathProviders;
+        private readonly IEnumerable<IFileStore> _fileStores;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
             IEnumerable<ICdnPathProvider> cdnPathProviders,
+            IEnumerable<IFileStore> fileStores,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
@@ -37,6 +41,7 @@ namespace OrchardCore.Mvc
             _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
             _cdnPathProviders = cdnPathProviders;
+            _fileStores = fileStores;
             _cache = cache;
         }
 
@@ -55,9 +60,10 @@ namespace OrchardCore.Mvc
                 resolvedPath = path.Substring(0, queryStringOrFragmentStartIndex);
             }
 
+            var hasResolvedCdnPath = false;
+
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                var hasResolvedCdnPath = false;
                 // Check and remove CdnBaseUrl from resolvedPath
                 foreach(var cdnPathProvider in _cdnPathProviders)
                 {
@@ -140,6 +146,18 @@ namespace OrchardCore.Mvc
 
                     }
 
+                    return QueryHelpers.AddQueryString(path, VersionKey, value);
+                }
+            }
+
+            foreach (var fileStore in _fileStores)
+            {
+                var fileInfo = (BlobFile)fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
+                if (fileInfo != null)
+                {
+                    value = fileInfo.FileHash;
+                    cacheEntryOptions.SetSize(value.Length * sizeof(char));
+                    _cache.Set(cacheKey, value, cacheEntryOptions);
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
                 }
             }
