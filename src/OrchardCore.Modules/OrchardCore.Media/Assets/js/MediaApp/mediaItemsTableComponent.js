@@ -32,7 +32,7 @@ Vue.component('mediaItemsTable', {
                           :key="media.name"> \
                              <td class="thumbnail-column"> \
                                 <div class="img-wrapper"> \
-                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="mapMediaUrl(media.url, thumbSize)" /> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" /> \
                                     <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
                                 </div> \
                             </td> \
@@ -85,7 +85,7 @@ Vue.component('mediaItemsTable', {
             });
             return result;
         },
-        mapMediaUrl: function (url, thumbSize) {
+        buildMediaUrl: function (url, thumbSize) {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
         changeSort: function (newSort) {

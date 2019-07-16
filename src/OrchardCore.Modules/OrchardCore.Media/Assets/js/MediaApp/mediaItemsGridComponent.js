@@ -11,7 +11,7 @@ Vue.component('mediaItemsGrid', {
                     draggable="true" v-on:dragstart="dragStart(media, $event)"> \
                     <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
                         <img v-if="media.mime.startsWith(\'image\')" \
-                                :src="mapMediaUrl(media.url, thumbSize)" \
+                                :src="buildMediaUrl(media.url, thumbSize)" \
                                 :data-mime="media.mime" \
                                 :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
                         <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
@@ -49,7 +49,7 @@ Vue.component('mediaItemsGrid', {
             });
             return result;
         },
-        mapMediaUrl: function (url, thumbSize) {
+        buildMediaUrl: function (url, thumbSize) {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
         toggleSelectionOfMedia: function (media) {
