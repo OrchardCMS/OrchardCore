@@ -37,20 +37,12 @@ namespace OrchardCore.Media.Azure
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-                //TODO register as IBlobFileStore
-                services.AddSingleton<IFileStore>(serviceProvider =>
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
-
-                    return new BlobFileStore(options, clock, contentTypeProvider);
-                });
-
-                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
-                {
-                    var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                    var fileStore = (BlobFileStore)serviceProvider.GetRequiredService<IFileStore>();
+                    var fileStore = new BlobFileStore(options, clock, contentTypeProvider);
 
                     var mediaBaseUri = fileStore.BaseUri;
                     if (!String.IsNullOrEmpty(options.PublicHostName))
@@ -65,8 +57,10 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaBaseUri.ToString(), cdnBaseUrl);
                 }));
 
-                // TODO Remove IMediaFileProvider, and IStaticFileProvider
-                // If possible also remove the static files middleware
+                services.AddSingleton<IFileStore>(serviceProvider =>
+                {
+                    return serviceProvider.GetRequiredService<IMediaFileStore>();
+                });
             }
 
             services.Configure<MvcOptions>((options) =>

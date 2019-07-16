@@ -25,6 +25,7 @@ namespace OrchardCore.Media.Services
             _fileStore = fileStore;
         }
 
+
         public bool MatchCdnPath(string path)
         {
             return !String.IsNullOrEmpty(_cdnBaseUrl) && path.StartsWith(_cdnBaseUrl);
