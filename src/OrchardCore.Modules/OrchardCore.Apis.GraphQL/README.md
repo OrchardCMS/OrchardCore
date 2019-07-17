@@ -93,7 +93,7 @@ Configuration is done via the standard shell configuration, as follows.
 
 If set to true stack traces are exposed to graphql clients
 
-*MaxDepth (int?, Default: null)*
+*MaxDepth (int?, Default: 10)*
 
 Enforces the total maximum nesting across all queries in a request.
 
