@@ -25,12 +25,19 @@ namespace OrchardCore.Autoroute.Services
             return _paths.TryGetValue(contentItemId, out path);
         }
 
+        public string HomePageId { get; set; }
+
         public void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
             lock (this)
             {
                 foreach (var entry in entries)
                 {
+                    if (_paths.TryGetValue(entry.ContentItemId, out var previousPath))
+                    {
+                        _contentItemIds.Remove(previousPath);
+                    }
+
                     var requestPath = "/" + entry.Path.TrimStart('/');
                     _paths[entry.ContentItemId] = requestPath;
                     _contentItemIds[requestPath] = entry.ContentItemId;

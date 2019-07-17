@@ -4,6 +4,7 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
@@ -68,11 +69,12 @@ namespace OrchardCore.Autoroute
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
+
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
+            entries.AddEntries(autoroutes.Select(o => new AutorouteEntry { ContentItemId = o.ContentItemId, Path = o.Path }));
 
-            entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
-
-            var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
+            var options = serviceProvider.GetRequiredService<IOptions<AutorouteOptions>>().Value;
+            var autorouteRoute = new AutorouteRoute(routes.DefaultHandler, entries, options);
 
             routes.Routes.Insert(0, autorouteRoute);
         }
