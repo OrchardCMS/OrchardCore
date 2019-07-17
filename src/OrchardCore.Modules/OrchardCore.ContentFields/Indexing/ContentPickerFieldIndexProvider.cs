@@ -24,7 +24,6 @@ namespace OrchardCore.ContentFields.Indexing
         private IContentDefinitionManager _contentDefinitionManager;
 
         public ContentPickerFieldIndexProvider(IServiceProvider serviceProvider)
-            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -26,7 +25,6 @@ namespace OrchardCore.ContentFields.Indexing
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TextFieldIndexProvider(IServiceProvider serviceProvider)
-            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -80,6 +78,8 @@ namespace OrchardCore.ContentFields.Indexing
                                     ContentType = contentItem.ContentType,
                                     ContentPart = fieldDefinition.PartDefinition.Name,
                                     ContentField = fieldDefinition.Name,
+                                    Published = contentItem.Published,
+                                    Latest = contentItem.Latest,
                                     RichText = field.Text
                                 });
                             }
@@ -90,9 +90,9 @@ namespace OrchardCore.ContentFields.Indexing
                                     ContentType = contentItem.ContentType,
                                     ContentPart = fieldDefinition.PartDefinition.Name,
                                     ContentField = fieldDefinition.Name,
-                                    Text = field.Text,
                                     Published = contentItem.Published,
-                                    Latest = contentItem.Latest
+                                    Latest = contentItem.Latest,
+                                    Text = field.Text
                                 });
                             }
                         }

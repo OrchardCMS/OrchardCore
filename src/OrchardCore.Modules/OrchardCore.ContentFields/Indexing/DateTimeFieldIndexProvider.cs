@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -25,7 +24,6 @@ namespace OrchardCore.ContentFields.Indexing
         private IContentDefinitionManager _contentDefinitionManager;
 
         public DateTimeFieldIndexProvider(IServiceProvider serviceProvider)
-            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -75,9 +73,9 @@ namespace OrchardCore.ContentFields.Indexing
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
-                            DateTime = field.Value,
                             Published = contentItem.Published,
-                            Latest = contentItem.Latest
+                            Latest = contentItem.Latest,
+                            DateTime = field.Value
                         });
                     }
 

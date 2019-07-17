@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -25,7 +24,6 @@ namespace OrchardCore.ContentFields.Indexing
         private IContentDefinitionManager _contentDefinitionManager;
 
         public BooleanFieldIndexProvider(IServiceProvider serviceProvider)
-            : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -35,11 +33,6 @@ namespace OrchardCore.ContentFields.Indexing
             context.For<BooleanFieldIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.IsPublished())
-                    {
-                        return null;
-                    }
-
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {

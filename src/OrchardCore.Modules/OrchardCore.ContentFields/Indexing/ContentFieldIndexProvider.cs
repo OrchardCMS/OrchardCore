@@ -17,12 +17,5 @@ namespace OrchardCore.ContentFields.Indexing
 
     public abstract class ContentFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
-
-        public ContentFieldIndexProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
     }
 }
