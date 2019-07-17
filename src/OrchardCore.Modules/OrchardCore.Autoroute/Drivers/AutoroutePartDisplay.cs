@@ -63,9 +63,7 @@ namespace OrchardCore.Autoroute.Drivers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = siteSettings.HomeRoute;
 
-                if (autoroutePart.ContentItem.ContentItemId == homeRoute?[_options.ContentItemIdKey]?.ToString() &&
-                    _options.GlobalRouteValues.All(entry => String.Equals(homeRoute?[entry.Key]?.ToString(),
-                        entry.Value.ToString(), StringComparison.OrdinalIgnoreCase)))
+                if (autoroutePart.ContentItem.ContentItemId == homeRoute?[_options.ContentItemIdKey]?.ToString())
                 {
                     model.IsHomepage = true;
                 }
