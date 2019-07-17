@@ -74,12 +74,12 @@ namespace OrchardCore.ContentFields.Indexing
                         {
                             results.Add(new ContentPickerFieldIndex
                             {
-                                ContentItemId = contentItemId,
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
                                 Published = contentItem.Published,
-                                Latest = contentItem.Latest
+                                Latest = contentItem.Latest,
+                                ContentItemId = contentItemId
                             });
                         }
                     }
