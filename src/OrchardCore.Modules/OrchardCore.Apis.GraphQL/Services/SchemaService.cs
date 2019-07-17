@@ -27,18 +27,14 @@ namespace OrchardCore.Apis.GraphQL.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<ISchema> GetSchema()
+        public async Task<ISchema> GetSchemaAsync()
         {
-            if (_memoryCache.TryGetValue<ISchema>("GraphQLSchema", out var schema)) {
+            if (_memoryCache.TryGetValue<ISchema>("GraphQLSchema", out var schema))
+            {
                 return schema;
             }
 
             await _schemaGenerationSemaphore.WaitAsync();
-
-            if (_memoryCache.TryGetValue("GraphQLSchema", out schema))
-            {
-                return schema;
-            }
 
             try
             {
@@ -76,10 +72,10 @@ namespace OrchardCore.Apis.GraphQL.Services
                         schema.RegisterType(type);
                     }
 
-                // Clean Query, Mutation and Subscription if they have no fields
-                // to prevent GraphQL configuration errors.
+                    // Clean Query, Mutation and Subscription if they have no fields
+                    // to prevent GraphQL configuration errors.
 
-                if (!schema.Query.Fields.Any())
+                    if (!schema.Query.Fields.Any())
                     {
                         schema.Query = null;
                     }
@@ -107,4 +103,4 @@ namespace OrchardCore.Apis.GraphQL.Services
             return schema;
         }
     }
-}
+}}

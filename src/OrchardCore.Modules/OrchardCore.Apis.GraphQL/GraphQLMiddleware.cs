@@ -76,7 +76,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
         {
-            var schema = await schemaService.GetSchema();
+            var schema = await schemaService.GetSchemaAsync();
 
             GraphQLRequest request = null;
 
@@ -84,7 +84,6 @@ namespace OrchardCore.Apis.GraphQL
 
             if (HttpMethods.IsPost(context.Request.Method))
             {
-
                 var mediaType = new MediaType(context.Request.ContentType);
 
                 try
@@ -127,7 +126,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
                 catch (Exception e)
                 {
-                    await WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                    await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
                     return;
                 }
             }
@@ -165,13 +164,10 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
+                _.ValidationRules = _settings.ValidationRules;
             });
 
-            var httpResult = result.Errors?.Count > 0
-                ? HttpStatusCode.BadRequest
-                : HttpStatusCode.OK;
-
-            context.Response.StatusCode = (int)httpResult;
+            context.Response.StatusCode = (int) HttpStatusCode.OK;
             context.Response.ContentType = "application/json";
 
             await _writer.WriteAsync(context.Response.Body, result);
@@ -184,8 +180,10 @@ namespace OrchardCore.Apis.GraphQL
                 throw new ArgumentNullException(nameof(message));
             }
 
-            var errorResult = new ExecutionResult();
-            errorResult.Errors = new ExecutionErrors();
+            var errorResult = new ExecutionResult
+            {
+                Errors = new ExecutionErrors()
+            };
 
             if (e == null)
             {
