@@ -10,8 +10,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    // Remark: 
-
     public class NumericFieldIndex : ContentFieldIndex
     {
         public decimal? Numeric { get; set; }

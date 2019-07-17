@@ -10,8 +10,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    // Remark: 
-
     public class ContentPickerFieldIndex : ContentFieldIndex
     {
         public string ContentItemId { get; set; }

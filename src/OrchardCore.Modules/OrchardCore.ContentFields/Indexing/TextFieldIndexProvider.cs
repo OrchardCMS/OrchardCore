@@ -10,8 +10,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    // Remark: 
-
     public class TextFieldIndex : ContentFieldIndex
     {
         public string Text { get; set; }

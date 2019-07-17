@@ -11,8 +11,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Taxonomies.Indexing
 {
-    // Remark: 
-
     public class TaxonomyIndex : MapIndex
     {
         public string TaxonomyContentItemId { get; set; }

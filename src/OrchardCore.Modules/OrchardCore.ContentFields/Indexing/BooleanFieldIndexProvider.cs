@@ -10,8 +10,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    // Remark: 
-
     public class BooleanFieldIndex : ContentFieldIndex
     {
         public bool? Boolean { get; set; }

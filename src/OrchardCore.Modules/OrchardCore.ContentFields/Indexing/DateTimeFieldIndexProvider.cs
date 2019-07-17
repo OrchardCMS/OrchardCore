@@ -10,8 +10,6 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    // Remark: 
-
     public class DateTimeFieldIndex : ContentFieldIndex
     {
         public DateTime? DateTime { get; set; }
@@ -82,7 +80,5 @@ namespace OrchardCore.ContentFields.Indexing
                     return results;
                 });
         }
-
-
     }
 }
