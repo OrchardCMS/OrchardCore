@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.Services;
-using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.Navigation;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
@@ -33,7 +30,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            builder.Add(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
+            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
 
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
@@ -58,8 +55,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     }
                 }
             });
-
-            return Task.CompletedTask;
         }
     }
 }

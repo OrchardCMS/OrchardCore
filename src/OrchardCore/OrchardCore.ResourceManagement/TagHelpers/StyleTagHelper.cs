@@ -1,4 +1,7 @@
 using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
@@ -10,12 +13,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     {
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
+
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
 
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
@@ -56,6 +63,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
+                }
+
+                if (AppendVersion.HasValue == true)
+                {
+                    setting.SetAppendVersion(AppendVersion);
                 }
 
                 if (Debug != null)
@@ -101,6 +113,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
+                }
+
+                if (AppendVersion.HasValue == true)
+                {
+                    setting.SetAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))

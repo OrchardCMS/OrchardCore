@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
@@ -31,7 +31,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
-                    var requestPath = "/" + entry.Path;
+                    var requestPath = "/" + entry.Path.TrimStart('/');
                     _paths[entry.ContentItemId] = requestPath;
                     _contentItemIds[requestPath] = entry.ContentItemId;
                 }

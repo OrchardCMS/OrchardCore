@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -32,7 +30,6 @@ namespace OrchardCore.Tests.DisplayManagement
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-            serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
@@ -70,8 +67,7 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             return new DisplayContext
             {
-                Value = shape,
-                ViewContext = new ViewContext()
+                Value = shape
             };
         }
 
@@ -149,6 +145,80 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Hi there!", result.ToString());
+        }
+
+        [Fact]
+        public async Task AddAlternatesOnDisplaying()
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+                DisplayingAsync = new Func<ShapeDisplayContext, Task>[] {
+                    context =>
+                    {
+                            context.ShapeMetadata.Alternates.Add("Bar");
+                            return Task.CompletedTask;
+                    }
+                }
+            };
+
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo")),
+            };
+            descriptor.Bindings["Bar"] = new ShapeBinding
+            {
+                BindingName = "Bar",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar")),
+            };
+
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+            Assert.Equal("Bar", result.ToString());
+        }
+
+        [Fact]
+        public async Task AddAlternatesOnProcessing()
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+                ProcessingAsync = new Func<ShapeDisplayContext, Task>[] {
+                    context =>
+                    {
+                            context.ShapeMetadata.Alternates.Add("Bar");
+                            return Task.CompletedTask;
+                    }
+                }
+            };
+
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo")),
+            };
+            descriptor.Bindings["Bar"] = new ShapeBinding
+            {
+                BindingName = "Bar",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar")),
+            };
+
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+            Assert.Equal("Bar", result.ToString());
         }
 
         [Fact]

@@ -2,32 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.PortableObject
 {
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
+        private string _context;
 
-        private CultureDictionary _dictionary;
-        private CultureDictionary _parentCultureDictionary;
-
-        public string Context { get; private set; }
-
-        public PortableObjectStringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager, ILogger logger)
+        public PortableObjectStringLocalizer(
+            string context,
+            ILocalizationManager localizationManager,
+            bool fallBackToParentCulture,
+            ILogger logger)
         {
-            Context = context;
+            _context = context;
             _localizationManager = localizationManager;
+            _fallBackToParentCulture = fallBackToParentCulture;
             _logger = logger;
-            _dictionary = localizationManager.GetDictionary(culture);
-
-            if (culture.Parent != null)
-            {
-                _parentCultureDictionary = localizationManager.GetDictionary(culture.Parent);
-            }
         }
 
         public LocalizedString this[string name]
@@ -39,7 +37,8 @@ namespace OrchardCore.Localization.PortableObject
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var translation = GetTranslation(name, Context, null);
+                var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
+
                 return new LocalizedString(name, translation ?? name, translation == null);
             }
         }
@@ -57,12 +56,53 @@ namespace OrchardCore.Localization.PortableObject
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
-            return _dictionary.Translations.Select(t => new LocalizedString(t.Key, t.Value.FirstOrDefault()));
+            var culture = CultureInfo.CurrentUICulture;
+
+            return includeParentCultures
+                ? GetAllStringsFromCultureHierarchy(culture)
+                : GetAllStrings(culture);
+        }
+
+        private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+        {
+            var currentCulture = culture;
+            var allLocalizedStrings = new List<LocalizedString>();
+
+            do
+            {
+                var localizedStrings = GetAllStrings(currentCulture);
+
+                if (localizedStrings != null)
+                {
+                    foreach (var localizedString in localizedStrings)
+                    {
+                        if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
+                        {
+                            allLocalizedStrings.Add(localizedString);
+                        }
+                    }
+                }
+
+                currentCulture = currentCulture.Parent;
+            } while (currentCulture != currentCulture.Parent);
+
+            return allLocalizedStrings;
+        }
+
+        private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
+        {
+            var dictionary = _localizationManager.GetDictionary(culture);
+
+            foreach (var translation in dictionary.Translations)
+            {
+                yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
+            }
         }
 
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            return new PortableObjectStringLocalizer(culture, Context, _localizationManager, _logger);
+            // This method is never used in ASP.NET and is made obsolete in future releases.
+            return this;
         }
 
         public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
@@ -75,7 +115,8 @@ namespace OrchardCore.Localization.PortableObject
             // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
             if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
             {
-                var translation = GetTranslation(name, Context, pluralArgument.Count);
+                var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
                 object[] argumentsWithCount;
 
                 if (pluralArgument.Arguments.Length > 0)
@@ -89,7 +130,8 @@ namespace OrchardCore.Localization.PortableObject
                     argumentsWithCount = new object[] { pluralArgument.Count };
                 }
 
-                translation = translation ?? GetTranslation(pluralArgument.Forms, pluralArgument.Count);
+                translation = translation ?? GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
                 return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
             }
             else
@@ -99,32 +141,47 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private string GetTranslation(string[] pluralForms, int? count)
+        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
-            var pluralForm = count.HasValue ? _dictionary.PluralRule(count.Value) : 0;
+            var dictionary = _localizationManager.GetDictionary(culture);
+
+            var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
+
             if (pluralForm >= pluralForms.Length)
             {
-                throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist in values provided by the IStringLocalizer.Plural method. Provided values: {pluralForms}");
+                _logger.LogWarning($"Plural form '{pluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {String.Join(", ", pluralForms)}");
+
+                // Use the latest available form
+                return pluralForms[pluralForms.Length - 1];
             }
 
             return pluralForms[pluralForm];
         }
 
-        private string GetTranslation(string name, string context, int? count)
+        private string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
             var key = CultureDictionaryRecord.GetKey(name, context);
             try
             {
-                var translation = _dictionary[key, count];
+                var dictionary = _localizationManager.GetDictionary(culture);
 
-                if (translation == null && _parentCultureDictionary != null)
+                var translation = dictionary[key, count];
+
+                // Should we search in the parent culture?
+                if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
                 {
-                    translation = _parentCultureDictionary[key, count]; // fallback to the parent culture
+                    dictionary = _localizationManager.GetDictionary(culture.Parent);
+
+                    if (dictionary != null)
+                    {
+                        translation = dictionary[key, count]; // fallback to the parent culture
+                    }
                 }
 
+                // No exact translation found, search without context
                 if (translation == null && context != null)
                 {
-                    translation = GetTranslation(name, null, count); // fallback to the translation without context
+                    translation = GetTranslation(name, null, culture, count);
                 }
 
                 return translation;

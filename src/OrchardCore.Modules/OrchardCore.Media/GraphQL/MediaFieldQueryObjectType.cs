@@ -17,12 +17,8 @@ namespace OrchardCore.Media.GraphQL
                 .Name("paths")
                 .Description("the media paths")
                 .PagingArguments()
-                .Resolve(x =>
-                {
-                    return x.Page(x.Source.Paths);
-                });
-                
-
+                .Resolve(x => x.Page(x.Source.Paths));
+            
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("urls")
                 .Description("the absolute urls of the media items")
@@ -35,6 +31,5 @@ namespace OrchardCore.Media.GraphQL
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
         }
-
     }
 }

@@ -1,14 +1,15 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Facebook;
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
-using OrchardCore.Facebook.Configuration;
 using OrchardCore.Facebook.Drivers;
+using OrchardCore.Facebook.Filters;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -16,35 +17,26 @@ namespace OrchardCore.Facebook
 {
     public class Startup : StartupBase
     {
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            builder.UseMiddleware<ScriptsMiddleware>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<IFacebookCoreService, FacebookCoreService>();
-            services.AddScoped<IDisplayDriver<ISite>, FacebookCoreSettingsDisplayDriver>();
-        }
-    }
+            services.AddSingleton<IFacebookService, FacebookService>();
+            services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
 
-    [Feature(FacebookConstants.Features.Login)]
-    public class LoginStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
-            services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuLogin>();
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
 
-            // Register the options initializers required by the OpenID Connect client handler.
-            services.TryAddEnumerable(new[]
+            services.Configure<MvcOptions>((options) =>
             {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
-
-                // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions,FacebookHandler>>()
+                options.Filters.Add(typeof(FBInitFilter));
             });
+
         }
     }
 }

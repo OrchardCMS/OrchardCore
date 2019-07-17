@@ -33,7 +33,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            builder.Add(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
+            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder => {
 
                 // Add the actual link
                 itemBuilder.Url(node.LinkUrl);
@@ -59,8 +59,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     }
                 }
             });
-
-            return Task.CompletedTask;
         }
 
         // Add adminNode's IconClass property values to menuItem.Classes. 

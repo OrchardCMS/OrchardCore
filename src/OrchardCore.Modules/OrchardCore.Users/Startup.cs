@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -8,13 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Navigation;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -22,11 +22,11 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using YesSql.Indexes;
 using OrchardCore.Users.ViewModels;
-using Fluid;
+using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
@@ -36,12 +36,10 @@ namespace OrchardCore.Users
         private const string ChangePasswordPath = "ChangePassword";
 
         private readonly string _tenantName;
-        private readonly string _tenantPrefix;
 
         public Startup(ShellSettings shellSettings)
         {
             _tenantName = shellSettings.Name;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -86,7 +84,11 @@ namespace OrchardCore.Users
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = "orchauth_" + _tenantName;
-                options.Cookie.Path = _tenantPrefix;
+
+                // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+                // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                // tenant prefix but may also start by a path related e.g to a virtual folder.
+
                 options.LoginPath = "/" + LoginPath;
                 options.AccessDeniedPath = options.LoginPath;
 
@@ -112,13 +114,30 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+            services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
     }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
+            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
+            services.AddLiquidFilter<HasClaimFilter>("has_claim");
+            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
+        }
+    }
+
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase

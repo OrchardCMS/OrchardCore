@@ -37,9 +37,9 @@ The following properties are available on the `DisplayTaxonomyFieldViewModel` cl
 Returns a the term from its content item id and taxonomy.
 
 ```
-@foreach(var termId in Model.Field.TermContentItemIds)
+@foreach(var termId in Model.TermContentItemIds)
 {
-    @await OrchardCore.GetTaxonomyTermAsync(Model.Field.TaxonomyContentItemId, termId);
+    @await OrchardCore.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, termId);
 }
 ```
 
@@ -48,10 +48,10 @@ Returns a the term from its content item id and taxonomy.
 Returns the list of terms including their parents.
 
 ```
-@foreach(var termId in Model.Field.TermContentItemIds)
+@foreach(var termId in Model.TermContentItemIds)
 {
     <div>
-    @foreach(var parent in await OrchardCore.GetInheritedTermsAsync(Model.Field.TaxonomyContentItemId, termId))
+    @foreach(var parent in await OrchardCore.GetInheritedTermsAsync(Model.TaxonomyContentItemId, termId))
     {
         @parent
     }    

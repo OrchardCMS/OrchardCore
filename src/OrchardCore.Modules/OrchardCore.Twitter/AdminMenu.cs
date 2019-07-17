@@ -8,13 +8,13 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter
 {
-    [Feature(TwitterConstants.Features.TwitterSignin)]
-    public class AdminMenuTwitterLogin : INavigationProvider
+    [Feature(TwitterConstants.Features.Twitter)]
+    public class AdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuTwitterLogin(
-            IStringLocalizer<AdminMenuTwitterLogin> localizer,
+        public AdminMenu(
+            IStringLocalizer<AdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;
@@ -29,8 +29,40 @@ namespace OrchardCore.Twitter
             {
                 builder.Add(T["Twitter"], "15", settings => settings
                         .AddClass("twitter").Id("twitter")
-                        .Add(T["Sign in with Twitter"], "10", client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.TwitterSignin })
+                        .Add(T["Twitter Integration"], "10", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
+                            .Permission(Permissions.ManageTwitter)
+                            .LocalNav())
+                    );
+            }
+            return Task.CompletedTask;
+        }
+    }
+
+
+    [Feature(TwitterConstants.Features.Signin)]
+    public class AdminMenuSignin: INavigationProvider
+    {
+        private readonly ShellDescriptor _shellDescriptor;
+
+        public AdminMenuSignin(
+            IStringLocalizer<AdminMenuSignin> localizer,
+            ShellDescriptor shellDescriptor)
+        {
+            T = localizer;
+            _shellDescriptor = shellDescriptor;
+        }
+
+        public IStringLocalizer T { get; set; }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                builder.Add(T["Twitter"], "15", settings => settings
+                        .AddClass("twitter").Id("twitter")                        
+                        .Add(T["Sign in with Twitter"], "15", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
                             .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav())
                     );
@@ -38,4 +70,5 @@ namespace OrchardCore.Twitter
             return Task.CompletedTask;
         }
     }
+
 }

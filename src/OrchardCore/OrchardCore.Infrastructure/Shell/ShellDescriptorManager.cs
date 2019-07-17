@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Data.Abstractions;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -70,8 +69,10 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                     var features = _alwaysEnabledFeatures.Concat(configuredFeatures.Features
                         .Select(id => new ShellFeature(id) { AlwaysEnabled = true })).Distinct();
 
-                    _shellDescriptor.Features = features.Concat(
-                        _shellDescriptor.Features).Distinct().ToList();
+                    _shellDescriptor.Features = features
+                        .Concat(_shellDescriptor.Features)
+                        .Distinct()
+                        .ToList();
                 }
             }
 
@@ -81,7 +82,10 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
         {
             var shellDescriptorRecord = await GetShellDescriptorAsync();
-            var serialNumber = shellDescriptorRecord == null ? 0 : shellDescriptorRecord.SerialNumber;
+            var serialNumber = shellDescriptorRecord == null
+                ? 0
+                : shellDescriptorRecord.SerialNumber;
+
             if (priorSerialNumber != serialNumber)
             {
                 throw new InvalidOperationException("Invalid serial number for shell descriptor");
@@ -119,7 +123,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         private class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = new string[] { };
+            public string[] Features { get; set; } = Array.Empty<string>();
         }
 
         private async Task UpgradeFromBeta2()
@@ -129,29 +133,38 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             var connectionAccessor = _serviceProvider.GetRequiredService<IDbConnectionAccessor>();
 
-            var connection = await connectionAccessor.GetConnectionAsync() as DbConnection;
-            var dialect = SqlDialectFactory.For(connection);
-            var tablePrefix = _shellSettings["TablePrefix"];
-
-            if (!String.IsNullOrEmpty(tablePrefix))
+            using (var connection = connectionAccessor.CreateConnection())
             {
-                tablePrefix += '_';
+                await connection.OpenAsync();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var dialect = SqlDialectFactory.For(connection);
+                    var tablePrefix = _shellSettings["TablePrefix"];
+
+                    if (!String.IsNullOrEmpty(tablePrefix))
+                    {
+                        tablePrefix += '_';
+                    }
+
+                    var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
+
+                    var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";
+                    var newShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Abstractions";
+
+                    var updateShellDescriptorCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellDescriptorType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellDescriptorType)}";
+
+                    var oldShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions";
+                    var newShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Abstractions";
+
+                    var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
+
+                    await connection.ExecuteAsync(updateShellDescriptorCmd, null, transaction);
+                    await connection.ExecuteAsync(updateShellStateCmd, null, transaction);
+
+                    transaction.Commit();
+                }
             }
-
-            var documentTable = dialect.QuoteForTableName($"{tablePrefix}{nameof(Document)}");
-
-            var oldShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Environment.Shell.Abstractions";
-            var newShellDescriptorType = "OrchardCore.Environment.Shell.Descriptor.Models.ShellDescriptor, OrchardCore.Abstractions";
-
-            var updateShellDescriptorCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellDescriptorType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellDescriptorType)}";
-
-            var oldShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Environment.Shell.Abstractions";
-            var newShellStateType = "OrchardCore.Environment.Shell.State.ShellState, OrchardCore.Abstractions";
-
-            var updateShellStateCmd = $"UPDATE {documentTable} SET {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(newShellStateType)} WHERE {dialect.QuoteForColumnName(nameof(Document.Type))} = {dialect.GetSqlValue(oldShellStateType)}";
-
-            await connection.ExecuteAsync(updateShellDescriptorCmd);
-            await connection.ExecuteAsync(updateShellStateCmd);
         }
     }
 }

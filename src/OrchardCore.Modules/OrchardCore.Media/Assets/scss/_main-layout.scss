@@ -6,32 +6,61 @@
     left: 260px;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 
+
     #mediaContainer {
         display: flex;
         flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
         height: 100%;
         align-items: stretch;
+
+        #navigationApp {
+            border-right: $media-border-content;
+            border-top: $media-border-content;
+            flex-shrink: 0;
+        }
+
+        #mediaContainerMain {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .media-container-middle {
+                flex-grow: 1;
+                flex-shrink: 0;
+                overflow: auto;
+            }
+
+            .media-container-footer {
+                border-top: $media-border-content;
+            }
+        }
     }
     // on large screen they are side by side
     @media only screen and ( min-width: 768px ) {
         #mediaContainer {
             flex-direction: row;
+
+            #mediaContainerMain {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .media-container-middle {
+                    flex-shrink: 1;
+                }
+            }
         }
         // we don't want left navigation 100% tall when on stacked over the thumbs list
         #navigationApp {
             height: 100%;
+            width: 260px;
+            overflow: auto;
         }
     }
 
     .alert-info {
         font-size: 0.875rem;
-    }
-
-
-    #navigationApp {
-        border-right: $media-border-content;
-        border-top: $media-border-content;
-        min-width: 260px;
     }
 
     .message-warning {
@@ -42,13 +71,6 @@
     a.disabled {
         cursor: default;
     }
-}
-
-.modal-content .modal-body #mediaApp {
-    position: static;
-    margin: 0px -15px 0px -15px;
-    margin-top: 0;
-    height: 100%;
 }
 
 .left-sidebar-compact #mediaApp {

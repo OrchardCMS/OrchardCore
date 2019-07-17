@@ -94,7 +94,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -267,10 +267,21 @@ namespace OrchardCore.Lucene
                         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
-                            OpenMode = OpenMode.CREATE_OR_APPEND
+                            OpenMode = OpenMode.CREATE_OR_APPEND,
+                            WriteLockTimeout = Lock.LOCK_POLL_INTERVAL * 3
                         };
 
-                        writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
+                        writer = new IndexWriterWrapper(directory, config);
+
+                        if (close)
+                        {
+                            action?.Invoke(writer);
+                            writer.Dispose();
+                            _timestamps[indexName] = _clock.UtcNow;
+                            return;
+                        }
+
+                        _writers[indexName] = writer;
                     }
                 }
             }
@@ -281,19 +292,6 @@ namespace OrchardCore.Lucene
             }
 
             action?.Invoke(writer);
-
-            if (close && !writer.IsClosing)
-            {
-                lock (this)
-                {
-                    if (!writer.IsClosing)
-                    {
-                        writer.IsClosing = true;
-                        writer.Dispose();
-                        _writers.TryRemove(indexName, out writer);
-                    }
-                }
-            }
 
             _timestamps[indexName] = _clock.UtcNow;
         }

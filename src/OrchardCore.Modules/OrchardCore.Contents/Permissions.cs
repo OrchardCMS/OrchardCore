@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -9,16 +9,20 @@ namespace OrchardCore.Contents
         // Note - in code you should demand PublishContent, EditContent, or DeleteContent
         // Do not demand the "Own" variations - those are applied automatically when you demand the main ones
 
-        public static readonly Permission PublishContent = new Permission("PublishContent", "Publish or unpublish content for others");
-        public static readonly Permission PublishOwnContent = new Permission("PublishOwnContent", "Publish or unpublish own content", new[] { PublishContent });
-        public static readonly Permission EditContent = new Permission("EditContent", "Edit content for others", new[] { PublishContent });
-        public static readonly Permission EditOwnContent = new Permission("EditOwnContent", "Edit own content", new[] { EditContent, PublishOwnContent });
-        public static readonly Permission DeleteContent = new Permission("DeleteContent", "Delete content for others");
-        public static readonly Permission DeleteOwnContent = new Permission("DeleteOwnContent", "Delete own content", new[] { DeleteContent });
-        public static readonly Permission ViewContent = new Permission("ViewContent", "View all content", new[] { EditContent });
-        public static readonly Permission ViewOwnContent = new Permission("ViewOwnContent", "View own content", new[] { ViewContent });
-        public static readonly Permission PreviewContent = new Permission("PreviewContent", "Preview content", new[] { EditContent, PublishContent });
-        public static readonly Permission PreviewOwnContent = new Permission("PreviewOwnContent", "Preview own content", new[] { PreviewContent });
+        // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController
+
+        public static readonly Permission PublishContent = CommonPermissions.PublishContent;
+        public static readonly Permission PublishOwnContent = CommonPermissions.PublishOwnContent;
+        public static readonly Permission EditContent = CommonPermissions.EditContent;
+        public static readonly Permission EditOwnContent = CommonPermissions.EditOwnContent;
+        public static readonly Permission DeleteContent = CommonPermissions.DeleteContent;
+        public static readonly Permission DeleteOwnContent = CommonPermissions.DeleteOwnContent;
+        public static readonly Permission ViewContent = CommonPermissions.ViewContent;
+        public static readonly Permission ViewOwnContent = CommonPermissions.ViewOwnContent;
+        public static readonly Permission PreviewContent = CommonPermissions.PreviewContent;
+        public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
+        public static readonly Permission CloneContent = CommonPermissions.CloneContent;
+        public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
 
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
@@ -35,7 +39,9 @@ namespace OrchardCore.Contents
                 ViewContent,
                 ViewOwnContent,
                 PreviewOwnContent,
-                PreviewContent
+                PreviewContent,
+                CloneContent,
+                CloneOwnContent
             };
         }
 
@@ -44,22 +50,22 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent,EditContent,DeleteContent,PreviewContent}
+                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent}
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent,EditOwnContent,DeleteOwnContent,PreviewOwnContent}
+                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent,PreviewOwnContent}
+                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent}
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",

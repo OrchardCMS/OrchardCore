@@ -3,7 +3,7 @@
   "displayName": "Coming Soon",
   "description": "Coming Soon website.",
   "author": "The Orchard Team",
-  "website": "http://orchardproject.net",
+  "website": "https://orchardproject.net",
   "version": "2.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
@@ -14,7 +14,8 @@
     "comingSoonContentItemId": "[js:uuid()]",
     "workflowTypeId": "[js:uuid()]",
     "workflowActivityId": "[js:uuid()]",
-    "now": "[js: new Date().toISOString()]"
+    "now": "[js: new Date().toISOString()]",
+    "readyDate": "[js: const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];var date = new Date();date.setMonth(date.getMonth() + 1);return '<strong>' + monthNames[date.getMonth()] + ' ' + date.getFullYear()+'</strong>';]"
   },
 
   "steps": [
@@ -219,7 +220,7 @@
                   }
                 },
                 "HtmlBodyPart": {
-                  "Html": "<p class=\"mb-5\">We're working hard to finish the development of this site. Our target launch date is\r\n                <strong>January 2019</strong>! Sign up for updates using the form below!</p>"
+                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up for updates using the form below!</p>']"
                 },
                 "FlowMetadata": {
                   "Alignment": 3,
@@ -574,8 +575,12 @@
                 },
                 "SendConfirmationEmail": true,
                 "ConfirmationEmailTemplate": {
-                  "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl }}\">click here</a> to confirm your email."
+                  "Expression": "Thank you for your interest! Please <a href=\"{{ Workflow.Properties.EmailConfirmationUrl | raw }}\">click here</a> to confirm your email."
+                },
+                "ConfirmationEmailSubject": {
+                  "Expression": "Welcome to {{Site.SiteName}}"
                 }
+
               }
             },
             {

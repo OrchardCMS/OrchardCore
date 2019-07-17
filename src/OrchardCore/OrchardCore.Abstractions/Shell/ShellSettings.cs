@@ -46,7 +46,7 @@ namespace OrchardCore.Environment.Shell
 
         public string RequestUrlPrefix
         {
-            get => _settings["RequestUrlPrefix"];
+            get => _settings["RequestUrlPrefix"]?.Trim(' ', '/');
             set => _settings["RequestUrlPrefix"] = value;
         }
 

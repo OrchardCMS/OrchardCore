@@ -1,16 +1,18 @@
 using System;
 using System.IO;
 using Fluid;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -23,6 +25,7 @@ using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
+using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -31,6 +34,7 @@ using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -46,18 +50,15 @@ namespace OrchardCore.Media
     public class Startup : StartupBase
     {
         /// <summary>
-        /// The url prefix used to route asset files
+        /// The request path used to route asset files
         /// </summary>
-        private const string AssetsUrlPrefix = "/media";
-
-        public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+        public static readonly PathString AssetsRequestPath = new PathString("/media");
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
         /// </summary>
         private const string AssetsPath = "Media";
 
-        private readonly int[] _supportedSizes;
         private readonly int _maxBrowserCacheDays;
         private readonly int _maxCacheDays;
         static Startup()
@@ -69,13 +70,31 @@ namespace OrchardCore.Media
         {
             var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
 
-            _supportedSizes = configurationSection.GetSection("SupportedSizes").Get<int[]>() ?? DefaultSizes;
             _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
             _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IMediaFileProvider>(serviceProvider =>
+            {
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+
+                if (!Directory.Exists(mediaPath))
+                {
+                    Directory.CreateDirectory(mediaPath);
+                }
+                return new MediaFileProvider(AssetsRequestPath, mediaPath);
+            });
+
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+            {
+                return serviceProvider.GetRequiredService<IMediaFileProvider>();
+            });
+
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -84,12 +103,21 @@ namespace OrchardCore.Media
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsUrlPrefix);
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
+
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                if (originalPathBase.HasValue)
+                {
+                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                }
 
                 return new MediaFileStore(fileStore, mediaUrlBase);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImageMediaPart>();
@@ -126,36 +154,6 @@ namespace OrchardCore.Media
                         {
                             validation.Commands[ResizeWebProcessor.Mode] = "max";
                         }
-
-                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Width, out var width))
-                        {
-                            if (Int32.TryParse(width, out var parsedWidth))
-                            {
-                                if (Array.BinarySearch<int>(_supportedSizes, parsedWidth) < 0)
-                                {
-                                    validation.Commands.Clear();
-                                }
-                            }
-                            else
-                            {
-                                validation.Commands.Remove(ResizeWebProcessor.Width);
-                            }
-                        }
-
-                        if (validation.Commands.TryGetValue(ResizeWebProcessor.Height, out var height))
-                        {
-                            if (Int32.TryParse(height, out var parsedHeight))
-                            {
-                                if (Array.BinarySearch<int>(_supportedSizes, parsedHeight) < 0)
-                                {
-                                    validation.Commands.Clear();
-                                }
-                            }
-                            else
-                            {
-                                validation.Commands.Remove(ResizeWebProcessor.Height);
-                            }
-                        }
                     }
                 };
                 options.OnProcessed = _ => { };
@@ -166,15 +164,19 @@ namespace OrchardCore.Media
             .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
             .SetCache<PhysicalFileSystemCache>()
             .SetCacheHash<CacheHash>()
-            .AddProvider<MediaFileProvider>()
+            .AddProvider<MediaResizingFileProvider>()
             .AddProcessor<ResizeWebProcessor>()
             .AddProcessor<FormatWebProcessor>()
+            .AddProcessor<ImageVersionProcessor>()
             .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+            services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
+            services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
+            services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -187,15 +189,7 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
-
-            if (!Directory.Exists(mediaPath))
-            {
-                Directory.CreateDirectory(mediaPath);
-            }
+            var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
 
             // ImageSharp before the static file provider
             app.UseImageSharp();
@@ -203,8 +197,8 @@ namespace OrchardCore.Media
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
-                RequestPath = AssetsUrlPrefix,
-                FileProvider = new PhysicalFileProvider(mediaPath),
+                RequestPath = AssetsRequestPath,
+                FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
             });
         }

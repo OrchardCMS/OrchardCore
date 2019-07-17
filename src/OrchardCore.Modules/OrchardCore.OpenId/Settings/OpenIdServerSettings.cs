@@ -8,7 +8,7 @@ namespace OrchardCore.OpenId.Settings
     public class OpenIdServerSettings
     {
         public TokenFormat AccessTokenFormat { get; set; }
-        public string Authority { get; set; }
+        public Uri Authority { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbprint { get; set; }

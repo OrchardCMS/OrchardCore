@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace OrchardCore.OpenId.Drivers
         public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
             => Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
                 model.Audience = settings.Audience;
                 model.Tenant = settings.Tenant;
 
@@ -31,14 +32,17 @@ namespace OrchardCore.OpenId.Drivers
                 foreach (var shellSettings in _shellHost.GetAllSettings()
                     .Where(s => s.State == TenantState.Running))
                 {
-                    using (var scope = await _shellHost.GetScopeAsync(shellSettings))
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                    await shellScope.UsingAsync(scope =>
                     {
                         var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
                         if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
                         {
                             availableTenants.Add(shellSettings.Name);
                         }
-                    }
+                        return Task.CompletedTask;
+                    });
                 }
 
                 model.AvailableTenants = availableTenants;
@@ -51,7 +55,7 @@ namespace OrchardCore.OpenId.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.Authority = model.Authority?.Trim();
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience?.Trim();
             settings.Tenant = model.Tenant;
 

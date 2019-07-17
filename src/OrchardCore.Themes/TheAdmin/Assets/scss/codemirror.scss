@@ -1,12 +1,14 @@
+/* rtl:begin:ignore */
 /* BASICS */
-
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: Consolas, monospace;
     height: auto;
     color: black;
-    border: 1px solid #eee;
+    border: 1px solid $gray-300;
     font-size: $font-size-base;
+    text-align: left;
+    direction: ltr;
 }
 
 /* PADDING */
@@ -531,3 +533,4 @@ div.CodeMirror-dragcursors {
 span.CodeMirror-selectedtext {
     background: none;
 }
+/* rtl:end:ignore */

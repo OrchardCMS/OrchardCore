@@ -1,0 +1,24 @@
+@model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
+
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
+    var language = Orchard.CultureName().Split('-')[0];
+    var datepickerId = Html.IdFor(m => m.Value);
+}       
+
+<fieldset class="form-group">
+    <div class="row col-md-6 col-lg-4">
+        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@datepickerId').datepicker($.datepicker.regional['@language']);
+    });
+</script>        

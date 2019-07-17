@@ -1,0 +1,14 @@
+@using System.Globalization
+@using Microsoft.AspNetCore.Localization
+
+@inject OrchardCore.Localization.ILocalizationService localizationService
+
+@{
+    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture;
+    var supportedCultures = await localizationService.GetSupportedCulturesAsync();
+}
+
+@await DisplayAsync(await New.ContentCulturePickerContainer(
+    CurrentCulture: currentCulture,
+    SupportedCultures: supportedCultures.Select(c => CultureInfo.GetCultureInfo(c))
+))

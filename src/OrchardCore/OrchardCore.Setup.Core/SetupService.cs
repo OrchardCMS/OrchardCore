@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
-using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
@@ -24,42 +22,33 @@ namespace OrchardCore.Setup.Services
 {
     public class SetupService : ISetupService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
-        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
-        private readonly IStringLocalizer<RecipeExecutor> _recipeExecutorLocalizer;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
         public SetupService(
-            IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
             IHostingEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
-            ILoggerFactory loggerFactory,
             ILogger<SetupService> logger,
             IStringLocalizerFactory stringLocalizerFactory,
             IStringLocalizer<SetupService> stringLocalizer,
-            IStringLocalizer<RecipeExecutor> recipeExecutorLocalizer,
             IApplicationLifetime applicationLifetime
             )
         {
-            _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
             _recipeHarvesters = recipeHarvesters;
-            _loggerFactory = loggerFactory;
             _logger = logger;
             T = stringLocalizer;
-            _recipeExecutorLocalizer = recipeExecutorLocalizer;
             _applicationLifetime = applicationLifetime;
         }
 
@@ -144,7 +133,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                using (var scope = shellContext.CreateScope())
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
                     IStore store;
 
@@ -163,7 +152,7 @@ namespace OrchardCore.Setup.Services
 
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
-                        return null;
+                        return;
                     }
 
                     // Create the "minimum shell descriptor"
@@ -173,50 +162,37 @@ namespace OrchardCore.Setup.Services
                         .UpdateShellDescriptorAsync(0,
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
+                });
 
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return null;
                 }
 
                 executionId = Guid.NewGuid().ToString("n");
+
+                var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+
+                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
+                {
+                    SiteName = context.SiteName,
+                    AdminUsername = context.AdminUsername,
+                    AdminEmail = context.AdminEmail,
+                    AdminPassword = context.AdminPassword,
+                    DatabaseProvider = context.DatabaseProvider,
+                    DatabaseConnectionString = context.DatabaseConnectionString,
+                    DatabaseTablePrefix = context.DatabaseTablePrefix
+                },
+                _applicationLifetime.ApplicationStopping);
             }
-
-            var recipeExecutor = new RecipeExecutor(
-                _httpContextAccessor,
-                Enumerable.Empty<IRecipeEventHandler>(),
-                shellSettings,
-                _shellHost,
-                _loggerFactory.CreateLogger<RecipeExecutor>(),
-                _recipeExecutorLocalizer
-            );
-
-            await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
-            {
-                SiteName = context.SiteName,
-                AdminUsername = context.AdminUsername,
-                AdminEmail = context.AdminEmail,
-                AdminPassword = context.AdminPassword,
-                DatabaseProvider = context.DatabaseProvider,
-                DatabaseConnectionString = context.DatabaseConnectionString,
-                DatabaseTablePrefix = context.DatabaseTablePrefix
-            },
-            _applicationLifetime.ApplicationStopping);
 
             // Reloading the shell context as the recipe  has probably updated its features
             using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
             {
-                using (var scope = shellContext.CreateScope())
+                await shellContext.CreateScope().UsingAsync(async scope =>
                 {
-                    var hasErrors = false;
-
                     void reportError(string key, string message)
                     {
-                        hasErrors = true;
                         context.Errors[key] = message;
                     }
 
@@ -235,19 +211,11 @@ namespace OrchardCore.Setup.Services
                         context.SiteTimeZone,
                         reportError
                     ), logger);
+                });
 
-                    if (hasErrors)
-                    {
-                        return executionId;
-                    }
-
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
+                if (context.Errors.Any())
+                {
+                    return executionId;
                 }
             }
 

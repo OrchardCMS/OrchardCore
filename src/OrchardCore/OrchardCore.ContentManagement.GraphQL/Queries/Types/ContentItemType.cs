@@ -1,11 +1,24 @@
+using System.IO;
+using System.Text.Encodings.Web;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.GraphQL.Options;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public class ContentItemType : ObjectGraphType<ContentItem>
     {
-        public ContentItemType()
+        private readonly GraphQLContentOptions _options;
+
+        public ContentItemType(IOptions<GraphQLContentOptions> optionsAccessor)
         {
+            _options = optionsAccessor.Value;
+
             Name = "ContentItemType";
 
             Field(ci => ci.ContentItemId).Description("Content item id");
@@ -20,6 +33,28 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 
+            Field<StringGraphType>()
+                .Name("render")
+                .ResolveAsync(async context =>
+                {
+                    var userContext = (GraphQLContext)context.UserContext;
+                    var serviceProvider = userContext.ServiceProvider;
+
+                    // Build shape
+                    var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+                    var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
+                    var model = await displayManager.BuildDisplayAsync(context.Source, updateModelAccessor.ModelUpdater);
+
+                    var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
+
+                    using (var sw = new StringWriter())
+                    {
+                        var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                        htmlContent.WriteTo(sw, HtmlEncoder.Default);
+                        return sw.ToString();
+                    }
+                });
+
             Interface<ContentItemInterface>();
 
             IsTypeOf = IsContentType;
@@ -28,6 +63,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         private bool IsContentType(object obj)
         {
             return obj is ContentItem item && item.ContentType == Name;
+        }
+
+        public override FieldType AddField(FieldType fieldType)
+        {
+            if (!_options.ShouldSkip(this.GetType(), fieldType.Name))
+            {
+                return base.AddField(fieldType);
+            }
+
+            return null;
         }
     }
 }
