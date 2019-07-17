@@ -103,4 +103,4 @@ namespace OrchardCore.Apis.GraphQL.Services
             return schema;
         }
     }
-}}
+}
