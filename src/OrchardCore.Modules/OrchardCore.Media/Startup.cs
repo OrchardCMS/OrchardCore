@@ -49,19 +49,14 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        /// <summary>
-        /// The request path used to route asset files
-        /// </summary>
-        public static readonly PathString AssetsRequestPath = new PathString("/media");
 
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
         /// </summary>
         private const string AssetsPath = "Media";
 
-        private readonly int _maxBrowserCacheDays;
-        private readonly int _maxCacheDays;
-        private readonly string _cdnBaseUrl;
+        private readonly IShellConfiguration _shellConfiguration;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -69,15 +64,14 @@ namespace OrchardCore.Media
 
         public Startup(IShellConfiguration shellConfiguration)
         {
-            var configurationSection = shellConfiguration.GetSection("OrchardCore.Media");
-
-            _maxBrowserCacheDays = configurationSection.GetValue("MaxBrowserCacheDays", 30);
-            _maxCacheDays = configurationSection.GetValue("MaxCacheDays", 365);
-            _cdnBaseUrl = configurationSection.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            var mediaConfiguration = _shellConfiguration.GetSection("OrchardCore.Media");
+            var mediaOptions = mediaConfiguration.Get<MediaOptions>();
+            services.Configure<MediaOptions>(mediaConfiguration);
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -89,7 +83,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(AssetsRequestPath, mediaPath);
+                return new MediaFileProvider(MediaOptions.AssetsRequestPath, mediaPath);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>
@@ -97,25 +91,48 @@ namespace OrchardCore.Media
                 return serviceProvider.GetRequiredService<IMediaFileProvider>();
             });
 
-            services.AddSingleton<IMediaFileStore>(serviceProvider =>
+            //TODO clean this up, make sure it's good, can we make it cleaner
+            services.AddSingleton<IMediaFileStorePathProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
-                var fileStore = new FileSystemStore(mediaPath);
-
-                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
+                var mediaProviderOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+                
+                var mediaUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, MediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
                     .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
 
                 if (originalPathBase.HasValue)
                 {
-                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                    mediaUrlBase = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, mediaUrlBase);
                 }
+                return new MediaFileStorePathProvider(mediaUrlBase, mediaProviderOptions.Value.CdnBaseUrl);
+            });
 
-                return new MediaFileStore(fileStore, mediaUrlBase, _cdnBaseUrl);
+            services.AddSingleton<IMediaFileStore>(serviceProvider =>
+            {
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                var mediaFileStoreOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+                var pathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
+
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var fileStore = new FileSystemStore(mediaPath);
+
+                //var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
+
+                //var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                //    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                //if (originalPathBase.HasValue)
+                //{
+                //    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                //}
+
+                //var pathProvider = new MediaFileStorePathProvider(mediaUrlBase, mediaOptions.Value.CdnBaseUrl);
+
+                return new MediaFileStore(fileStore, pathProvider);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -134,8 +151,8 @@ namespace OrchardCore.Media
             services.AddImageSharpCore(options =>
             {
                 options.Configuration = Configuration.Default;
-                options.MaxBrowserCacheDays = _maxBrowserCacheDays;
-                options.MaxCacheDays = _maxCacheDays;
+                options.MaxBrowserCacheDays = mediaOptions.MaxBrowserCacheDays;
+                options.MaxCacheDays = mediaOptions.MaxCacheDays;
                 options.CachedNameLength = 12;
                 options.OnParseCommands = validation =>
                 {
@@ -199,7 +216,7 @@ namespace OrchardCore.Media
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
-                RequestPath = AssetsRequestPath,
+                RequestPath = MediaOptions.AssetsRequestPath,
                 FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
             });

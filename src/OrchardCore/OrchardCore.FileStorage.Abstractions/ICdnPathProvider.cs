@@ -1,4 +1,4 @@
-namespace OrchardCore.Abstractions.Modules.FileProviders
+namespace OrchardCore.FileStorage
 {
     public interface ICdnPathProvider
     {

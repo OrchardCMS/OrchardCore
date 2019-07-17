@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.FileStorage.FileSystem
@@ -20,5 +21,6 @@ namespace OrchardCore.FileStorage.FileSystem
         public DateTime LastModifiedUtc => _fileInfo.LastModified.UtcDateTime;
         public long Length => _fileInfo.Length;
         public bool IsDirectory => _fileInfo.IsDirectory;
+        public string FileHash => String.Empty;
     }
 }

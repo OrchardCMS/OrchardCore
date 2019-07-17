@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.Abstractions.Modules.FileProviders;
 using OrchardCore.FileStorage;
-using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 
@@ -60,12 +58,11 @@ namespace OrchardCore.Mvc
                 resolvedPath = path.Substring(0, queryStringOrFragmentStartIndex);
             }
 
-            var hasResolvedCdnPath = false;
-
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
                 // Check and remove CdnBaseUrl from resolvedPath
-                foreach(var cdnPathProvider in _cdnPathProviders)
+                var hasResolvedCdnPath = false;
+                foreach (var cdnPathProvider in _cdnPathProviders)
                 {
                     if (cdnPathProvider.MatchCdnPath(resolvedPath))
                     {
@@ -152,7 +149,7 @@ namespace OrchardCore.Mvc
 
             foreach (var fileStore in _fileStores)
             {
-                var fileInfo = (BlobFile)fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
+                var fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
                 if (fileInfo != null)
                 {
                     value = fileInfo.FileHash;

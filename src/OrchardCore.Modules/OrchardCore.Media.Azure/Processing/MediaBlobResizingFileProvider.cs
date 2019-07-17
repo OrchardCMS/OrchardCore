@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell.Configuration;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
@@ -12,15 +16,15 @@ using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.ImageSharp.Web.Resolvers;
 
-namespace OrchardCore.Media.Processing
+namespace OrchardCore.Media.Azure.Processing
 {
-    public class MediaResizingFileProvider : IImageProvider
+    public class MediaBlobResizingFileProvider : IImageProvider
     {
         private readonly IMediaFileStore _mediaStore;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
 
-        public MediaResizingFileProvider(
+        public MediaBlobResizingFileProvider(
             IMediaFileStore mediaStore,
             IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
             IOptions<MediaOptions> mediaOptions
@@ -50,11 +54,12 @@ namespace OrchardCore.Media.Processing
                 return false;
             }
 
-            if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
-                !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
-            {
-                return false;
-            }
+            // Always allow ImageSharp to process an Image file from Blob, until have have a middleware to serve images (and probably a cache too)
+            //if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
+            //    !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
+            //{
+            //    return false;
+            //}
 
             if (context.Request.Query.TryGetValue(ResizeWebProcessor.Width, out var widthString))
             {
@@ -92,7 +97,7 @@ namespace OrchardCore.Media.Processing
                 return null;
             }
             var metadata = new ImageMetaData(file.LastModifiedUtc);
-            return new MediaFileResolver(_mediaStore, filePath, metadata);
+            return new MediaBlobFileResolver(_mediaStore, filePath, metadata);
         }
     }
 }

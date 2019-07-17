@@ -30,37 +30,39 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
+            var mediaBlobConfiguration = _configuration.GetSection("OrchardCore.Media.Azure");
+            var mediaBlobStorageOptions = mediaBlobConfiguration.Get<MediaBlobStorageOptions>();
+            services.Configure<MediaBlobStorageOptions>(mediaBlobConfiguration);
 
             // Only replace default implementation if options are valid.
-            var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
-            var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
-                    var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+                    var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
-                    var fileStore = new BlobFileStore(options, clock, contentTypeProvider);
+                    var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
 
-                    var mediaBaseUri = fileStore.BaseUri;
-                    if (!String.IsNullOrEmpty(options.PublicHostName))
-                        mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.PublicHostName }.Uri;
+                    if (!blobStorageOptions.SupportResizing)
+                    {
+                        services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(sp =>
+                        {
+                            var mediaBaseUri = fileStore.BaseUri;
+                            if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
+                                mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
 
-                    // This really doesn't need a cdn value, as publichostname suffices, but if we pass it as a cdn value
-                    // then it is more possible to strip it ??
-                    //TODO move to IOptions
-                    var mediaSection = _configuration.GetSection("OrchardCore.Media");
-
-                    var cdnBaseUrl = mediaSection.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
-                    return new MediaFileStore(fileStore, mediaBaseUri.ToString(), cdnBaseUrl);
+                            return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
+                        }));
+                    }
+                    var mediaFileStorePathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
+                    return new MediaFileStore(fileStore, mediaFileStorePathProvider);
                 }));
 
-                services.AddSingleton<IFileStore>(serviceProvider =>
-                {
-                    return serviceProvider.GetRequiredService<IMediaFileStore>();
-                });
+                services.AddSingleton<IFileStore>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
+
+                services.AddSingleton<ICdnPathProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
             }
 
             services.Configure<MvcOptions>((options) =>

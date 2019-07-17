@@ -1,41 +1,21 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using OrchardCore.Abstractions.Modules.FileProviders;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
 {
-    public class MediaFileStore : IMediaFileStore, ICdnPathProvider
+    public class MediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
-        private readonly string _publicUrlBase;
-        private readonly string _cdnBaseUrl;
+        private readonly IMediaFileStorePathProvider _pathProvider;
 
-        public MediaFileStore(IFileStore fileStore, string publicUrlBase, string cdnBaseUrl = "")
+        public MediaFileStore(IFileStore fileStore, IMediaFileStorePathProvider pathProvider)
         {
             _fileStore = fileStore;
-            _publicUrlBase = publicUrlBase;
-            _cdnBaseUrl = cdnBaseUrl;
+            _pathProvider = pathProvider;
         }
-
-        public MediaFileStore(IFileStore fileStore)
-        {
-            _fileStore = fileStore;
-        }
-
-
-        public bool MatchCdnPath(string path)
-        {
-            return !String.IsNullOrEmpty(_cdnBaseUrl) && path.StartsWith(_cdnBaseUrl);
-        }
-
-        public string RemoveCdnPath(string path)
-        {
-            return path.Substring(_cdnBaseUrl.Length);
-        }
-
+        
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
@@ -93,29 +73,22 @@ namespace OrchardCore.Media.Services
 
         public string MapPathToPublicUrl(string path)
         {
-            return _cdnBaseUrl + _publicUrlBase.TrimEnd('/') + "/" + this.NormalizePath(path);
+            return _pathProvider.MapPathToPublicUrl(path);
         }
 
         public string MapPublicUrlToPath(string publicUrl)
         {
-            if (publicUrl.StartsWith(_cdnBaseUrl))
-            {
-                var resolvedPath = publicUrl.Substring(_cdnBaseUrl.Length);
-                if (resolvedPath.StartsWith(_publicUrlBase))
-                {
-                    return resolvedPath.Substring(_publicUrlBase.Length);
-                } else
-                {
-                    return resolvedPath;
-                }
-            }
-            else if (publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
-            {
-                return publicUrl.Substring(_publicUrlBase.Length);
-            } else
-            {
-                throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
-            }
+            return _pathProvider.MapPublicUrlToPath(publicUrl);
+        }
+
+        public bool MatchCdnPath(string path)
+        {
+            return _pathProvider.MatchCdnPath(path);
+        }
+
+        public string RemoveCdnPath(string path)
+        {
+            return _pathProvider.RemoveCdnPath(path);
         }
     }
 }

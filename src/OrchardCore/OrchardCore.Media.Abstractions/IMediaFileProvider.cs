@@ -1,4 +1,3 @@
-using OrchardCore.Abstractions.Modules.FileProviders;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media
