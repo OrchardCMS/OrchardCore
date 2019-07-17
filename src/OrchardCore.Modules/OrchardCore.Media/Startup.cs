@@ -69,8 +69,13 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            //TODO have to test whether this works with all the defaults, especially if they half completed
             var mediaConfiguration = _shellConfiguration.GetSection("OrchardCore.Media");
             var mediaOptions = mediaConfiguration.Get<MediaOptions>();
+            if (mediaOptions == null)
+            {
+                mediaOptions = new MediaOptions();
+            }
             services.Configure<MediaOptions>(mediaConfiguration);
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {

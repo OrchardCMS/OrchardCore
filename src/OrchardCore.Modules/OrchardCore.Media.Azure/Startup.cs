@@ -11,6 +11,8 @@ using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.FileStorage;
+using SixLabors.ImageSharp.Web.Providers;
+using OrchardCore.Media.Azure.Processing;
 
 namespace OrchardCore.Media.Azure
 {
@@ -32,7 +34,12 @@ namespace OrchardCore.Media.Azure
         {
             var mediaBlobConfiguration = _configuration.GetSection("OrchardCore.Media.Azure");
             var mediaBlobStorageOptions = mediaBlobConfiguration.Get<MediaBlobStorageOptions>();
+            if (mediaBlobStorageOptions == null)
+            {
+                mediaBlobStorageOptions = new MediaBlobStorageOptions();
+            }
             services.Configure<MediaBlobStorageOptions>(mediaBlobConfiguration);
+            //TODO also remove IMediaFileProvider and IStaticFileProvider
 
             // Only replace default implementation if options are valid.
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
@@ -55,6 +62,9 @@ namespace OrchardCore.Media.Azure
 
                             return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
                         }));
+                    } else
+                    {
+                        services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
                     }
                     var mediaFileStorePathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider);
