@@ -53,7 +53,6 @@ public class MyController : Controller
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var blogSettings = siteSettings.As<ContentItem>("BlogSettings");
-
         var blogHtml = blogSettings.As<HtmlBodyPart>();
 
         return View();
