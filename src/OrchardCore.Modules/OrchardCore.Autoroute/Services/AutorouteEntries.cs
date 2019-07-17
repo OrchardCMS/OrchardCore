@@ -25,8 +25,6 @@ namespace OrchardCore.Autoroute.Services
             return _paths.TryGetValue(contentItemId, out path);
         }
 
-        public string HomePageId { get; set; }
-
         public void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
             lock (this)
