@@ -34,11 +34,6 @@ namespace OrchardCore.ContentFields.Indexing
             context.For<ContentPickerFieldIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.IsPublished())
-                    {
-                        return null;
-                    }
-
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
@@ -82,7 +77,9 @@ namespace OrchardCore.ContentFields.Indexing
                                 ContentItemId = contentItemId,
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name
+                                ContentField = fieldDefinition.Name,
+                                Published = contentItem.Published,
+                                Latest = contentItem.Latest
                             });
                         }
                     }

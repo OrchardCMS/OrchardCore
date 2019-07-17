@@ -12,6 +12,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<string>("Text", column => column.Nullable().WithLength(4000))
                 .Column<string>("RichText", column => column.Nullable().Unlimited())
             );
@@ -20,6 +22,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<bool>("Boolean", column => column.Nullable())
             );
 
@@ -27,6 +31,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<decimal>("Numeric", column => column.Nullable())
             );
 
@@ -34,6 +40,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<DateTime>("DateTime", column => column.Nullable())
             );
 
@@ -41,6 +49,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<DateTime>("Date", column => column.Nullable())
             );
 
@@ -48,6 +58,8 @@ namespace OrchardCore.ContentFields
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<string>("ContentPart", column => column.WithLength(255))
                 .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
                 .Column<string>("ContentItemId", column => column.WithLength(26))
             );
 
