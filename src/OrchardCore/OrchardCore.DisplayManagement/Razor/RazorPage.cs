@@ -113,7 +113,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    _themeLayout = Context.Items[typeof(IShape)];
+                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
                 }
 
                 return _themeLayout;
@@ -354,7 +354,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_site == null)
                 {
-                    _site = (ISite)Context.Items[typeof(ISite)];
+                    _site = Context.Features.Get<RazorViewFeature>()?.Site;
                 }
 
                 return _site;

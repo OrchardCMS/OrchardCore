@@ -41,13 +41,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Filters.Add(typeof(ModelBinderAccessorFilter));
                         options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(SiteViewResultFilter));
-                        options.Filters.Add(typeof(ThemeLayoutViewResultFilter));
+                        options.Filters.Add(typeof(RazorViewResultFilter));
                     });
 
-                    // Used as services when we create a fake 'ActionContext'.
-                    services.AddScoped<IAsyncViewResultFilter, SiteViewResultFilter>();
-                    services.AddScoped<IAsyncViewResultFilter, ThemeLayoutViewResultFilter>();
+                    // Used as a service when we create a fake 'ActionContext'.
+                    services.AddScoped<IAsyncViewResultFilter, RazorViewResultFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();

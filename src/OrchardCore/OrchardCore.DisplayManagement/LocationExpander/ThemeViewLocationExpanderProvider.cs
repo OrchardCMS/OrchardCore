@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Extensions;
-using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Mvc.LocationExpander;
 
@@ -24,20 +23,11 @@ namespace OrchardCore.DisplayManagement.LocationExpander
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
-            var themeManager = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetService<IThemeManager>();
+            var currentTheme = context.ActionContext.HttpContext.Features.Get<RazorViewFeature>()?.Theme;
 
-            if (themeManager != null)
+            if (currentTheme != null)
             {
-                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
-
-                if (currentTheme != null)
-                {
-                    context.Values["Theme"] = currentTheme.Id;
-                }
+                context.Values["Theme"] = currentTheme.Id;
             }
         }
 
