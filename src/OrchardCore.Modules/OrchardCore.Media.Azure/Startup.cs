@@ -14,6 +14,8 @@ using OrchardCore.FileStorage;
 using SixLabors.ImageSharp.Web.Providers;
 using OrchardCore.Media.Azure.Processing;
 using Microsoft.WindowsAzure.Storage;
+using System.Linq;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media.Azure
 {
@@ -42,10 +44,20 @@ namespace OrchardCore.Media.Azure
             services.Configure<MediaBlobStorageOptions>(mediaBlobConfiguration);
             //TODO also remove IMediaFileProvider and IStaticFileProvider
 
+
             // Only replace default implementation if options are valid.
-            var mediaBlobCheckPassed = MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger);
-            if (mediaBlobCheckPassed)
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
+                // Remove the IMediaFileProvider Static File Provider, as we no longer need to serve from media from the file system
+                //NOTE have to remove the static file options bit first
+                //services.RemoveAll<IMediaFileProvider>();
+                var staticFileProviderDescriptor = services.FirstOrDefault(x => x.ServiceType == typeof(IStaticFileProvider) &&
+                    x.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
+                var staticFileProviderDescriptors = services.Where(x => x.ServiceType == typeof(IStaticFileProvider));
+                if (staticFileProviderDescriptor != null)
+                {
+                    services.Remove(staticFileProviderDescriptor);
+                }
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;

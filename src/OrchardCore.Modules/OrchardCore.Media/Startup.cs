@@ -92,7 +92,7 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(MediaOptions.AssetsRequestPath, mediaPath);
             });
 
-            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
             {
                 return serviceProvider.GetRequiredService<IMediaFileProvider>();
             });
