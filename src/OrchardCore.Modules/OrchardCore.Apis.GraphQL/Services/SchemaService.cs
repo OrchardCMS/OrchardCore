@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,100 +8,97 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Apis.GraphQL.Services
 {
     public class SchemaService : ISchemaFactory
     {
-        private readonly IMemoryCache _memoryCache;
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
-        private readonly IServiceProvider _serviceProvider;
-        private static SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly ConcurrentDictionary<ISchemaBuilder, IChangeToken> _changeTokens = new ConcurrentDictionary<ISchemaBuilder, IChangeToken>();
 
-        public SchemaService(
-            IMemoryCache memoryCache,
-            IEnumerable<ISchemaBuilder> schemaBuilders,
-            IServiceProvider serviceProvider)
+        private ISchema _schema;
+
+        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders)
         {
-            _memoryCache = memoryCache;
             _schemaBuilders = schemaBuilders;
-            _serviceProvider = serviceProvider;
         }
 
         public async Task<ISchema> GetSchemaAsync()
         {
-            if (_memoryCache.TryGetValue<ISchema>("GraphQLSchema", out var schema))
+            if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
             {
-                return schema;
+                return _schema;
             }
 
             await _schemaGenerationSemaphore.WaitAsync();
 
+            if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
+            {
+                return _schema;
+            }
+
             try
             {
-                schema = await _memoryCache.GetOrCreateAsync("GraphQLSchema", async f =>
+                var serviceProvider = ShellScope.Services;
+
+                var schema = new Schema
                 {
-                    f.SetSlidingExpiration(TimeSpan.FromHours(1));
+                    Query = new ObjectGraphType { Name = "Query" },
+                    Mutation = new ObjectGraphType { Name = "Mutation" },
+                    Subscription = new ObjectGraphType { Name = "Subscription" },
+                    FieldNameConverter = new OrchardFieldNameConverter(),
+                    DependencyResolver = serviceProvider.GetService<IDependencyResolver>()
+                };
 
-                    schema = new Schema
+                foreach (var builder in _schemaBuilders)
+                {
+                    var token = await builder.BuildAsync(schema);
+
+                    if (token is object)
                     {
-                        Query = new ObjectGraphType { Name = "Query" },
-                        Mutation = new ObjectGraphType { Name = "Mutation" },
-                        Subscription = new ObjectGraphType { Name = "Subscription" },
-                        FieldNameConverter = new OrchardFieldNameConverter(),
-
-                        DependencyResolver = _serviceProvider.GetService<IDependencyResolver>()
-                    };
-
-                    foreach (var builder in _schemaBuilders)
-                    {
-                        var token = await builder.BuildAsync(schema);
-
-                        if (token != null)
-                        {
-                            f.AddExpirationToken(token);
-                        }
+                        _changeTokens[builder] = token;
                     }
+                }
 
-                    foreach (var type in _serviceProvider.GetServices<IInputObjectGraphType>())
-                    {
-                        schema.RegisterType(type);
-                    }
+                foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
 
-                    foreach (var type in _serviceProvider.GetServices<IObjectGraphType>())
-                    {
-                        schema.RegisterType(type);
-                    }
+                foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
 
-                    // Clean Query, Mutation and Subscription if they have no fields
-                    // to prevent GraphQL configuration errors.
+                // Clean Query, Mutation and Subscription if they have no fields
+                // to prevent GraphQL configuration errors.
 
-                    if (!schema.Query.Fields.Any())
-                    {
-                        schema.Query = null;
-                    }
+                if (!schema.Query.Fields.Any())
+                {
+                    schema.Query = null;
+                }
 
-                    if (!schema.Mutation.Fields.Any())
-                    {
-                        schema.Mutation = null;
-                    }
+                if (!schema.Mutation.Fields.Any())
+                {
+                    schema.Mutation = null;
+                }
 
-                    if (!schema.Subscription.Fields.Any())
-                    {
-                        schema.Subscription = null;
-                    }
+                if (!schema.Subscription.Fields.Any())
+                {
+                    schema.Subscription = null;
+                }
 
-                    schema.Initialize();
+                schema.Initialize();
+                return _schema = schema;
 
-                    return schema;
-                });
             }
             finally
             {
                 _schemaGenerationSemaphore.Release();
             }
-
-            return schema;
         }
     }
 }
