@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
+using GraphQL.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -164,7 +165,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
-                _.ValidationRules = _settings.ValidationRules;
+                _.ValidationRules = (_settings.ValidationRules ?? Enumerable.Empty<IValidationRule>()).Concat(DocumentValidator.CoreRules());
             });
 
             context.Response.StatusCode = (int) HttpStatusCode.OK;
