@@ -214,18 +214,22 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
+            var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
 
             // ImageSharp before the static file provider
             app.UseImageSharp();
 
-            app.UseStaticFiles(new StaticFileOptions
+            // IMediaFileProvider maybe removed by Blob Storage
+            if (mediaFileProvider != null)
             {
-                // The tenant's prefix is already implied by the infrastructure
-                RequestPath = MediaOptions.AssetsRequestPath,
-                FileProvider = mediaFileProvider,
-                ServeUnknownFileTypes = true,
-            });
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    // The tenant's prefix is already implied by the infrastructure
+                    RequestPath = MediaOptions.AssetsRequestPath,
+                    FileProvider = mediaFileProvider,
+                    ServeUnknownFileTypes = true,
+                });
+            }
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
