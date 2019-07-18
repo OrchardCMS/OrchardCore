@@ -33,13 +33,13 @@ namespace OrchardCore.Apis.GraphQL.Services
 
             await _schemaGenerationSemaphore.WaitAsync();
 
-            if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
-            {
-                return _schema;
-            }
-
             try
             {
+                if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
+                {
+                    return _schema;
+                }
+
                 var serviceProvider = ShellScope.Services;
 
                 var schema = new Schema
