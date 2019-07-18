@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
     public interface IShapeTableManager
     {
-        ShapeTable GetShapeTable(string themeId);
+        Task<ShapeTable> GetShapeTableAsync(string themeId);
     }
 
     public interface IShapeTableProvider

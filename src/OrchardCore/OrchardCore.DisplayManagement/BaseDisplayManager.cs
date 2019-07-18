@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement
                 return;
             }
 
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
+            var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
 
             context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => FindPlacementImpl(shapeTable, shapeType, differentiator, displayType, context);
         }

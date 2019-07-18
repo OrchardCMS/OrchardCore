@@ -72,7 +72,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             try
             {
                 var theme = await _themeManager.GetThemeAsync();
-                var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
+                var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
 
                 // Evaluate global Shape Display Events
                 await _shapeDisplayEvents.InvokeAsync(sde => sde.DisplayingAsync(displayContext), _logger);

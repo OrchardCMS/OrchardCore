@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             _memoryCache = memoryCache;
         }
 
-        public ShapeTable GetShapeTable(string themeId)
+        public async Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
 
@@ -76,10 +77,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledAndOrderedFeatureIds = _shellFeaturesManager
-                    .GetEnabledFeaturesAsync()
-                    .GetAwaiter()
-                    .GetResult()
+                var enabledAndOrderedFeatureIds = (await _shellFeaturesManager
+                    .GetEnabledFeaturesAsync())
                     .Select(f => f.Id)
                     .ToList();
 
