@@ -42,7 +42,8 @@ namespace OrchardCore.Media.Azure
             //TODO also remove IMediaFileProvider and IStaticFileProvider
 
             // Only replace default implementation if options are valid.
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
+            var mediaBlobCheck = MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger);
+            if (mediaBlobCheck)
             {
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
@@ -52,6 +53,7 @@ namespace OrchardCore.Media.Azure
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
 
+                    // This doesn't work here, container is built (so readonly)
                     if (!blobStorageOptions.SupportResizing)
                     {
                         services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(sp =>
@@ -70,6 +72,21 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider);
                 }));
 
+                if (mediaBlobStorageOptions.SupportResizing)
+                {
+                    services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
+                } else
+                {
+                    // do this
+                    //services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(sp =>
+                    //{
+                    //    var mediaBaseUri = fileStore.BaseUri;
+                    //    if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
+                    //        mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
+
+                    //    return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
+                    //}));
+                }
                 services.AddSingleton<IFileStore>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
 
                 services.AddSingleton<ICdnPathProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
