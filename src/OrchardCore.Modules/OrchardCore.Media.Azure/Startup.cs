@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.FileStorage;
 using SixLabors.ImageSharp.Web.Providers;
 using OrchardCore.Media.Azure.Processing;
+using Microsoft.WindowsAzure.Storage;
 
 namespace OrchardCore.Media.Azure
 {
@@ -42,32 +43,15 @@ namespace OrchardCore.Media.Azure
             //TODO also remove IMediaFileProvider and IStaticFileProvider
 
             // Only replace default implementation if options are valid.
-            var mediaBlobCheck = MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger);
-            if (mediaBlobCheck)
+            var mediaBlobCheckPassed = MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger);
+            if (mediaBlobCheckPassed)
             {
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
-                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-
-                    // This doesn't work here, container is built (so readonly)
-                    if (!blobStorageOptions.SupportResizing)
-                    {
-                        services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(sp =>
-                        {
-                            var mediaBaseUri = fileStore.BaseUri;
-                            if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
-                                mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
-
-                            return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
-                        }));
-                    } else
-                    {
-                        services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
-                    }
                     var mediaFileStorePathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider);
                 }));
@@ -77,15 +61,24 @@ namespace OrchardCore.Media.Azure
                     services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
                 } else
                 {
-                    // do this
-                    //services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(sp =>
-                    //{
-                    //    var mediaBaseUri = fileStore.BaseUri;
-                    //    if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
-                    //        mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
+                    services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(serviceProvider =>
+                    {
+                        var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                        // These do not make http calls, or verify that connection is valid, and blob can connect
+                        //We should use TryParse in Filter. Check whether this throws on a bad ConnectionString
+                        var storageAccount = CloudStorageAccount.Parse(blobStorageOptions.ConnectionString);
+                        var blobClient = storageAccount.CreateCloudBlobClient();
+                        var blobContainer = blobClient.GetContainerReference(blobStorageOptions.ContainerName);
 
-                    //    return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
-                    //}));
+                        var uriBuilder = new UriBuilder(blobContainer.Uri);
+                        uriBuilder.Path = IMediaFileStorePathProviderHelpers.Combine(uriBuilder.Path, blobStorageOptions.BasePath);
+                        var mediaBaseUri = uriBuilder.Uri;
+
+                        if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
+                            mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
+
+                        return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
+                    }));
                 }
                 services.AddSingleton<IFileStore>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
 
