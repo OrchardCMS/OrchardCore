@@ -9,8 +9,8 @@ using OrchardCore.Settings;
 namespace OrchardCore.DisplayManagement.Razor
 {
     /// <summary>
-    /// Inject an instance of the theme layout <see cref="IShape"/> in the HttpContext items such that
-    /// a View can reuse it when it's executed.
+    /// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
+    /// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
     /// </summary>
     public class RazorViewResultFilter : IAsyncViewResultFilter
     {
