@@ -70,31 +70,12 @@ namespace OrchardCore.Media.Azure
                 if (mediaBlobStorageOptions.SupportResizing)
                 {
                     services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
-                    //TODO this could work for both, but doesn't yet
-                    services.AddSingleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>();
                 } else
                 {
-                    services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(serviceProvider =>
-                    {
-                        var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                        // These do not make http calls, or verify that connection is valid, and blob can connect
-                        //We should use TryParse in Filter. Check whether this throws on a bad ConnectionString
-                        var storageAccount = CloudStorageAccount.Parse(blobStorageOptions.ConnectionString);
-                        var blobClient = storageAccount.CreateCloudBlobClient();
-                        var blobContainer = blobClient.GetContainerReference(blobStorageOptions.ContainerName);
-
-                        var uriBuilder = new UriBuilder(blobContainer.Uri);
-                        uriBuilder.Path = IMediaFileStorePathProviderHelpers.Combine(uriBuilder.Path, blobStorageOptions.BasePath);
-                        var mediaBaseUri = uriBuilder.Uri;
-
-                        if (!String.IsNullOrEmpty(blobStorageOptions.PublicHostName))
-                            mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = blobStorageOptions.PublicHostName }.Uri;
-
-                        return new MediaBlobFileStorePathProvider(mediaBaseUri.ToString());
-                    }));
+                    services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider, MediaBlobFileStorePathProvider>());
                 }
-                services.AddSingleton<IFileStore>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
 
+                services.AddSingleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>();
                 services.AddSingleton<ICdnPathProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
             }
 

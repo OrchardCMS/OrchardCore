@@ -6,12 +6,12 @@ namespace OrchardCore.Media.Services
 {
     public class MediaFileStorePathProvider : IMediaFileStorePathProvider
     {
-        private readonly string _cdnBaseUrl;
         private readonly string _siteUrlBase;
+        private readonly string _cdnBaseUrl;
         public MediaFileStorePathProvider(string siteUrlBase, string cdnBaseUrl)
         {
-            _cdnBaseUrl = cdnBaseUrl;
             _siteUrlBase = siteUrlBase;
+            _cdnBaseUrl = cdnBaseUrl;
         }
 
         public string MapPathToPublicUrl(string path)

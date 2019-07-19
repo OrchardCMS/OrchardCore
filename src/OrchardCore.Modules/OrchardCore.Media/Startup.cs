@@ -98,6 +98,7 @@ namespace OrchardCore.Media
             });
 
             //TODO clean this up, make sure it's good, can we make it cleaner
+            // this can all be injected into the constructor
             services.AddSingleton<IMediaFileStorePathProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
