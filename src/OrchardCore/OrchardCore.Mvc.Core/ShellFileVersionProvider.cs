@@ -79,15 +79,17 @@ namespace OrchardCore.Mvc
             }
 
             // Try to get the hash from the tenant level cache.
-            if (_cache.TryGetValue(resolvedPath, out string value))
-            {
-                if (value.Length > 0)
-                {
-                    return QueryHelpers.AddQueryString(path, VersionKey, value);
-                }
+            string value;
+            //TODO turn back on!
+            //if (_cache.TryGetValue(resolvedPath, out string value))
+            //{
+            //    if (value.Length > 0)
+            //    {
+            //        return QueryHelpers.AddQueryString(path, VersionKey, value);
+            //    }
 
-                return path;
-            }
+            //    return path;
+            //}
 
             // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
@@ -149,7 +151,31 @@ namespace OrchardCore.Mvc
 
             foreach (var fileStore in _fileStores)
             {
+                // So we need to do this
+
+                //// Path has already been correctly parsed before here.
+                //var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
+
                 var fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
+                // So this one needs to send a path of /catbot-black.png
+                // not /media/catbot-black.png. which means we need the MapPublicUrlMethod
+                // so this is a problem, as we now need to mediapathprovider to help with mapping.
+
+                if (fileInfo == null &&
+                    requestPathBase.HasValue &&
+                    resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    resolvedPath = resolvedPath.Substring(requestPathBase.Value.Length);
+                    fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
+                }
+                if (fileInfo == null &&
+                    fileStore is IVirtualPathBaseProvider virtualPathBaseProvider &&
+                    virtualPathBaseProvider.VirtualPathBase.HasValue &&
+                    resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    resolvedPath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Value.Length);
+                    fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
+                }
                 if (fileInfo != null)
                 {
                     value = fileInfo.FileHash;

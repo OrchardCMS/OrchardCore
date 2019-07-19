@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
@@ -14,8 +15,10 @@ namespace OrchardCore.Media.Services
         {
             _fileStore = fileStore;
             _pathProvider = pathProvider;
+            VirtualPathBase = MediaOptions.AssetsRequestPath;
         }
-        
+
+        public PathString VirtualPathBase { get; }
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);

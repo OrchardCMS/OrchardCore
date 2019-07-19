@@ -42,16 +42,15 @@ namespace OrchardCore.Media.Azure
                 mediaBlobStorageOptions = new MediaBlobStorageOptions();
             }
             services.Configure<MediaBlobStorageOptions>(mediaBlobConfiguration);
-            //TODO also remove IMediaFileProvider and IStaticFileProvider
-
 
             // Only replace default implementation if options are valid.
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
                 // Remove the IMediaFileProvider & IStaticFileProvider, as we no longer need to serve from media from the file system
                 services.RemoveAll<IMediaFileProvider>();
-                var staticFileProviderDescriptor = services.FirstOrDefault(x => x.ServiceType == typeof(IStaticFileProvider) &&
-                    x.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
+                var staticFileProviderDescriptor = services.FirstOrDefault(descriptor =>
+                    descriptor.ServiceType == typeof(IStaticFileProvider) &&
+                    descriptor.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
                 var staticFileProviderDescriptors = services.Where(x => x.ServiceType == typeof(IStaticFileProvider));
                 if (staticFileProviderDescriptor != null)
                 {

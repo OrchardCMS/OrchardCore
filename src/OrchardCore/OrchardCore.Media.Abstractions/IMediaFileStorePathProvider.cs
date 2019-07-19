@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using OrchardCore.FileStorage;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media
 {
