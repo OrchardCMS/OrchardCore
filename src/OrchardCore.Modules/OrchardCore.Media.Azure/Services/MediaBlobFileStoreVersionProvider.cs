@@ -36,12 +36,12 @@ namespace OrchardCore.Media.Azure.Services
             // Path has already been correctly parsed before here.
             var mappedPath = _mediaFileStore.MapPublicUrlToPath(requestPathBase + path);
 
-            var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath);
+            var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath) as BlobFile;
 
             //TODO test this without requestPathBase
             if (fileInfo != null)
             {
-                var value = ((BlobFile)fileInfo).FileHash;
+                var value = fileInfo.FileHash;
                 //TODO expiry from configuration
                 var cacheEntryOptions = new MemoryCacheEntryOptions();
                 cacheEntryOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));
