@@ -24,3 +24,23 @@ Designed to be completed in 2-3 hours, these guides provide deeper, in-context e
 
 - Building a Website from a Web Template (TBD)
 - Implementing a Self-Service SaaS solution (TBD)
+
+## Training Demo module
+
+Demo Orchard Core module for training purposes guiding you to become an Orchard developer. You can use this module as part of a vanilla Orchard Core source that including the full source code - which is the recommended way. You can use it as part of a solution the uses Orchard Core NuGet packages, however, it's harder to look under the hood of Orchard Core features.
+
+The module assumes that you have a good understanding of basic Orchard concepts, and that you can get around the Orchard admin area. You should also be familiar with how to use Visual Studio and write C#, as well as the concepts of ASP.NET Core MVC. 
+
+The module's source is available in two public source repositories, automatically mirrored in both directions with Git-hg Mirror:
+
+- [https://bitbucket.org/Lombiq/orchard-training-demo-module](https://bitbucket.org/Lombiq/orchard-training-demo-module) (Mercurial repository)
+- [https://github.com/Lombiq/Orchard-Training-Demo-Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) (Git repository)
+
+
+This project is developed by [Lombiq Technologies Ltd.](https://lombiq.com/) Commercial-grade support is available through Lombiq.
+
+## Lombiq's Orchard Dojo Newsletter
+
+Lombiq has started this newsletter to inform the community around Orchard with the latest news about the platform. By subscribing to this newsletter, you will get an e-mail every time when a new post published to Orchard Dojo, including This week in Orchard, which is a weekly newsletter that gives you a short recap every week.
+
+If you are interested in to read our weekly articles, [subscribe here](https://orcharddojo.us12.list-manage.com/subscribe?u=32f819a768237590e479c9d0a&id=039db8f13f)!
