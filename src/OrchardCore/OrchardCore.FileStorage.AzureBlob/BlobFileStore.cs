@@ -84,7 +84,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             await blob.FetchAttributesAsync();
 
-            return new BlobFile(path, blob.Properties);
+            return new BlobFile(path, blob);
         }
 
         public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
@@ -134,7 +134,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                         case CloudBlockBlob blobItem:
                             // Ignore directory marker files.
                             if (includeSubDirectories || itemName != _directoryMarkerFileName)
-                                results.Add(new BlobFile(itemPath, blobItem.Properties));
+                                results.Add(new BlobFile(itemPath, blobItem));
                             break;
                     }
                 }
@@ -260,6 +260,17 @@ namespace OrchardCore.FileStorage.AzureBlob
                 throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
 
             return await blob.OpenReadAsync();
+        }
+
+        public async Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        {
+            await _verifyContainerTask;
+            
+            var blobFile = fileStoreEntry as BlobFile;
+            if (blobFile == null || blobFile.BlobReference == null)
+                throw new FileStoreException("Cannot get file stream because the file does not exist.");
+
+            return await blobFile.BlobReference.OpenReadAsync();
         }
 
         public async Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)

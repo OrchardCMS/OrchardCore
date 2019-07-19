@@ -1,5 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
+using OrchardCore.FileStorage.AzureBlob;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Resolvers;
 
@@ -8,13 +10,13 @@ namespace OrchardCore.Media.Azure.Processing
     public class MediaBlobFileResolver : IImageResolver
     {
         private readonly IMediaFileStore _mediaStore;
-        private readonly string _filePath;
+        private readonly BlobFile _fileStoreEntry;
         private readonly ImageMetaData _metadata;
 
-        public MediaBlobFileResolver(IMediaFileStore mediaStore, string filePath, in ImageMetaData metadata)
+        public MediaBlobFileResolver(IMediaFileStore mediaStore, BlobFile fileStoreEntry, in ImageMetaData metadata)
         {
             _mediaStore = mediaStore;
-            _filePath = filePath;
+            _fileStoreEntry = fileStoreEntry;
             _metadata = metadata;
         }
 
@@ -33,16 +35,14 @@ namespace OrchardCore.Media.Azure.Processing
         /// <inheritdoc/>
         public async Task<Stream> OpenReadAsync()
         {
-            // Check has already been done. be much better if we could just pass the BlobReference in
-            //var file = await _mediaStore.GetFileInfoAsync(_filePath);
 
-            //// Check to see if the file exists.
-            //if (file == null)
-            //{
-            //    return null;
-            //}
+            // Check to see if the file exists.
+            if (_fileStoreEntry == null)
+            {
+                return null;
+            }
 
-            return await _mediaStore.GetFileStreamAsync(_filePath);
+            return await _mediaStore.GetFileStreamAsync(_fileStoreEntry);
         }
     }
 }

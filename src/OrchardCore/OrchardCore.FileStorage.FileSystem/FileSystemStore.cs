@@ -162,6 +162,16 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.FromResult<Stream>(stream);
         }
 
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        {
+            if (!File.Exists(fileStoreEntry.Path))
+                throw new FileStoreException($"Cannot get file stream because the file '{fileStoreEntry.Path}' does not exist.");
+
+            var stream = File.OpenRead(fileStoreEntry.Path);
+
+            return Task.FromResult<Stream>(stream);
+        }
+
         public async Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
         {
             var physicalPath = GetPhysicalPath(path);

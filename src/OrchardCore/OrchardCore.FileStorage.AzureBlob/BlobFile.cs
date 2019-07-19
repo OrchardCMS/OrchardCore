@@ -8,14 +8,14 @@ namespace OrchardCore.FileStorage.AzureBlob
     public class BlobFile : IFileStoreEntry
     {
         private readonly string _path;
-        private readonly BlobProperties _blobProperties;
+        private readonly CloudBlockBlob _blobReference;
         private readonly string _name;
         private readonly string _directoryPath;
 
-        public BlobFile(string path, BlobProperties blobProperties)
+        public BlobFile(string path, CloudBlockBlob blobProperties)
         {
             _path = path;
-            _blobProperties = blobProperties;
+            _blobReference = blobProperties;
             _name = System.IO.Path.GetFileName(_path);
 
             if (_name == _path) // file is in root Directory
@@ -36,12 +36,14 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public string DirectoryPath => _directoryPath;
 
-        public long Length => _blobProperties.Length;
+        public long Length => _blobReference.Properties.Length;
 
-        public DateTime LastModifiedUtc => _blobProperties.LastModified.GetValueOrDefault().UtcDateTime;
+        public DateTime LastModifiedUtc => _blobReference.Properties.LastModified.GetValueOrDefault().UtcDateTime;
 
         public bool IsDirectory => false;
 
-        public string FileHash => _blobProperties.ContentMD5;
+        public string FileHash => _blobReference.Properties.ContentMD5;
+
+        public CloudBlockBlob BlobReference => _blobReference;
     }
 }

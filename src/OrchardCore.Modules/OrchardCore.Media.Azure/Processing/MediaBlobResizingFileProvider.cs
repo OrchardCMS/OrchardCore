@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.FileStorage.AzureBlob;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
@@ -89,15 +90,18 @@ namespace OrchardCore.Media.Azure.Processing
         {
             // Path has already been correctly parsed before here.
             var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
-            //the path here is /catbot-black.png, request path is /media/catbot-black.png
+
             // Check to see if the file exists.
             var file = await _mediaStore.GetFileInfoAsync(filePath);
-            if (file == null)
+
+            var blobFile = file as BlobFile;
+            if (blobFile == null || blobFile.BlobReference == null)
             {
                 return null;
             }
+
             var metadata = new ImageMetaData(file.LastModifiedUtc);
-            return new MediaBlobFileResolver(_mediaStore, filePath, metadata);
+            return new MediaBlobFileResolver(_mediaStore, blobFile, metadata);
         }
     }
 }

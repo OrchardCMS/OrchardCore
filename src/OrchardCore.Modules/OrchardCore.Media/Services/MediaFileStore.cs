@@ -69,6 +69,11 @@ namespace OrchardCore.Media.Services
             return _fileStore.GetFileStreamAsync(path);
         }
 
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        {
+            return _fileStore.GetFileStreamAsync(fileStoreEntry);
+        }
+
         public Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
         {
             return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
