@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
@@ -20,24 +20,21 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ILogger _logger;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
-            _logger = logger;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
             _placementParseMatchProviders = placementParseMatchProviders;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public async Task DiscoverAsync(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
@@ -81,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     var matches = filter.Filters.ToList();
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-                    
+
                     if (matches.Any())
                     {
                         predicate = matches.Aggregate(predicate, BuildPredicate);

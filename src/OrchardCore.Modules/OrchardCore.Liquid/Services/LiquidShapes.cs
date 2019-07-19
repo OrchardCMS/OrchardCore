@@ -34,10 +34,11 @@ namespace OrchardCore.Liquid.Services
             model.ContentItem = liquidPart.ContentItem;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
             builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
+            return Task.CompletedTask;
         }
     }
 }

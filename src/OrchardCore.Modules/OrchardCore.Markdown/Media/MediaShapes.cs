@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
@@ -5,7 +6,7 @@ namespace OrchardCore.Markdown.Media
 {
     public class MediaShapes : IShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("MarkdownBodyPart_Edit")
                 .OnDisplaying(displaying =>
@@ -28,6 +29,8 @@ namespace OrchardCore.Markdown.Media
                         editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBodyPart");
                     }
                 });
+
+            return Task.CompletedTask;
         }
     }
 }

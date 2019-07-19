@@ -4,12 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Mvc.Utilities;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Navigation
 {
     public class NavigationShapes : IShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
@@ -94,6 +95,8 @@ namespace OrchardCore.Navigation
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName));
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
                 });
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

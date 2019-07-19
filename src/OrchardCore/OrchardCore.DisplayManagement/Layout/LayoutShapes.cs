@@ -5,7 +5,7 @@ namespace OrchardCore.DisplayManagement.Zones
 {
     public class LayoutShapes : IShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder
                 .Describe("Layout")
@@ -23,6 +23,8 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     layout.Content = await created.ShapeFactory.CreateAsync("Zone", new { ZoneName = "Content" });
                 });
+
+            return Task.CompletedTask;
         }
    }
 }

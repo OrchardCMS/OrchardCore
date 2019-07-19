@@ -1,8 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Contents
 {
     public class Shapes : IShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
@@ -78,6 +78,8 @@ namespace OrchardCore.Contents
 
                     content.Add(displayShape);
                 });
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

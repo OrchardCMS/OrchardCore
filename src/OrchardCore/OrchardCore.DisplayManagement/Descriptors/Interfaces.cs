@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public interface IShapeTableProvider
     {
-        void Discover(ShapeTableBuilder builder);
+        Task DiscoverAsync(ShapeTableBuilder builder);
     }
 
     public interface IShapeTableHarvester : IShapeTableProvider

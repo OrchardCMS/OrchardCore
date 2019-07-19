@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Html;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public Task DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Foo")
                 .OnDisplaying(displaying =>
                     displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
                 );
+
+            return Task.CompletedTask;
         }
 
         [Shape]

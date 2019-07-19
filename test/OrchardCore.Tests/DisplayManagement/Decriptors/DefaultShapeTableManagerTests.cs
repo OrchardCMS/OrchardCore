@@ -301,7 +301,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             public Action<ShapeTableBuilder> Discover = x => { };
 
-            void IShapeTableProvider.Discover(ShapeTableBuilder builder)
+            Task IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
             {
                 foreach (var pair in FeatureShapes)
                 {
@@ -312,6 +312,8 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 }
 
                 Discover(builder);
+
+                return Task.CompletedTask;
             }
         }
 
