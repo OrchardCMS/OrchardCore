@@ -36,10 +36,5 @@ namespace OrchardCore.FileStorage
         /// Gets a boolean indicating whether the file store entry is a directory.
         /// </summary>
         bool IsDirectory { get; }
-
-        /// <summary>
-        /// Get the FileHash value, if the file store supports a file hash value, empty if it does not
-        /// </summary>
-        string FileHash { get; }
     }
 }

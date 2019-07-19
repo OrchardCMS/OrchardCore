@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.FileStorage.AzureBlob;
 
 namespace OrchardCore.Media.Azure.Services
 {
@@ -40,8 +41,7 @@ namespace OrchardCore.Media.Azure.Services
             //TODO test this without requestPathBase
             if (fileInfo != null)
             {
-                //TODO cast to BlobFileEntry rather than putting on interface
-                var value = fileInfo.FileHash;
+                var value = ((BlobFile)fileInfo).FileHash;
                 //TODO expiry from configuration
                 var cacheEntryOptions = new MemoryCacheEntryOptions();
                 cacheEntryOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));

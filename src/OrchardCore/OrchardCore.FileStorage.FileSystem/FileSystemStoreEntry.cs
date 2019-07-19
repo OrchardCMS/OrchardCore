@@ -21,6 +21,5 @@ namespace OrchardCore.FileStorage.FileSystem
         public DateTime LastModifiedUtc => _fileInfo.LastModified.UtcDateTime;
         public long Length => _fileInfo.Length;
         public bool IsDirectory => _fileInfo.IsDirectory;
-        public string FileHash => String.Empty;
     }
 }

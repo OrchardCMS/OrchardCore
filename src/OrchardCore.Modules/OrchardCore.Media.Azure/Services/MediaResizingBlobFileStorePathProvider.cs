@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure.Services
 {
     //TODO currently think this is the same as the default one. so maybe not required
     //public class MediaResizingBlobFileStorePathProvider : IMediaFileStorePathProvider

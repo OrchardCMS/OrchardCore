@@ -30,7 +30,5 @@ namespace OrchardCore.FileStorage.AzureBlob
         public DateTime LastModifiedUtc => _lastModifiedUtc;
 
         public bool IsDirectory => true;
-
-        public string FileHash => String.Empty;
     }
 }

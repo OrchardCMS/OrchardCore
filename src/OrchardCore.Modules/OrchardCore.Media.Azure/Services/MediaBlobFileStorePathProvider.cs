@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure.Services
 {
     //TODO This currently maintains the original blob configuration, so allows serving direct form blob, but no resizing
     public class MediaBlobFileStorePathProvider : IMediaFileStorePathProvider
