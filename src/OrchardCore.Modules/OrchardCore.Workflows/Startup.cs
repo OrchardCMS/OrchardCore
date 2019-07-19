@@ -1,15 +1,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
@@ -66,7 +64,6 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplay>();
             services.AddActivity<LogTask, LogTaskDisplay>();
 
-            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 

@@ -18,6 +18,7 @@ namespace OrchardCore.Settings.Drivers
                         model.BaseUrl = site.BaseUrl;
                         model.TimeZone = site.TimeZoneId;
                         model.UseCdn = site.UseCdn;
+                        model.CdnBaseUrl = site.CdnBaseUrl;
                         model.ResourceDebugMode = site.ResourceDebugMode;
                     }).Location("Content:1").OnGroup(GroupId)
             );
@@ -35,6 +36,7 @@ namespace OrchardCore.Settings.Drivers
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
                     site.UseCdn = model.UseCdn;
+                    site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
                 }
             }

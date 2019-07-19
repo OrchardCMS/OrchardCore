@@ -10,9 +10,13 @@
 }
 
 <fieldset class="form-group">
-    <div class="row col-xs">
+    <div class="row col-sm-3">
         <label asp-for="Value">@name</label>
         <select asp-for="Value" class="form-control content-preview-select">
+            @if (!settings.Required)
+            {
+                <option value="">@T["Choose an option..."]</option>
+            }
             @for (decimal d = from; d <= to; d += step)
             {
                 <option value="@d">@d</option>
