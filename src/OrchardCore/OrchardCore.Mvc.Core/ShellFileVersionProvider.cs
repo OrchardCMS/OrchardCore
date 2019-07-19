@@ -25,13 +25,13 @@ namespace OrchardCore.Mvc
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
         private readonly IEnumerable<ICdnPathProvider> _cdnPathProviders;
-        private readonly IEnumerable<IFileStore> _fileStores;
+        private readonly IEnumerable<IFileStoreVersionProvider> _fileStoreVersionProviders;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
             IEnumerable<ICdnPathProvider> cdnPathProviders,
-            IEnumerable<IFileStore> fileStores,
+            IEnumerable<IFileStoreVersionProvider> fileStoreVersionProviders,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
@@ -39,7 +39,7 @@ namespace OrchardCore.Mvc
             _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
             _cdnPathProviders = cdnPathProviders;
-            _fileStores = fileStores;
+            _fileStoreVersionProviders = fileStoreVersionProviders;
             _cache = cache;
         }
 
@@ -149,39 +149,13 @@ namespace OrchardCore.Mvc
                 }
             }
 
-            foreach (var fileStore in _fileStores)
+            foreach (var fileStoreVersionProvider in _fileStoreVersionProviders)
             {
-                // So we need to do this
-
-                //// Path has already been correctly parsed before here.
-                //var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
-
-                var fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
-                // So this one needs to send a path of /catbot-black.png
-                // not /media/catbot-black.png. which means we need the MapPublicUrlMethod
-                // so this is a problem, as we now need to mediapathprovider to help with mapping.
-
-                if (fileInfo == null &&
-                    requestPathBase.HasValue &&
-                    resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                // This will set cache if file is found
+                var versionedPath = fileStoreVersionProvider.AddFileVersionToPathAsync(requestPathBase, resolvedPath).GetAwaiter().GetResult();
+                if (versionedPath != null)
                 {
-                    resolvedPath = resolvedPath.Substring(requestPathBase.Value.Length);
-                    fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
-                }
-                if (fileInfo == null &&
-                    fileStore is IVirtualPathBaseProvider virtualPathBaseProvider &&
-                    virtualPathBaseProvider.VirtualPathBase.HasValue &&
-                    resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
-                {
-                    resolvedPath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Value.Length);
-                    fileInfo = fileStore.GetFileInfoAsync(resolvedPath).GetAwaiter().GetResult();
-                }
-                if (fileInfo != null)
-                {
-                    value = fileInfo.FileHash;
-                    cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                    _cache.Set(cacheKey, value, cacheEntryOptions);
-                    return QueryHelpers.AddQueryString(path, VersionKey, value);
+                    return versionedPath;
                 }
             }
 

@@ -16,6 +16,7 @@ using OrchardCore.Media.Azure.Processing;
 using Microsoft.WindowsAzure.Storage;
 using System.Linq;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Media.Azure.Services;
 
 namespace OrchardCore.Media.Azure
 {
@@ -69,6 +70,8 @@ namespace OrchardCore.Media.Azure
                 if (mediaBlobStorageOptions.SupportResizing)
                 {
                     services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
+                    //TODO this could work for both, but doesn't yet
+                    services.AddSingleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>();
                 } else
                 {
                     services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider>(serviceProvider =>
