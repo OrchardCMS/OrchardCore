@@ -35,7 +35,6 @@ namespace OrchardCore.Contents.AdminNodes
 
         public string Name => typeof(ContentTypesAdminNode).Name;
 
-
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var node = menuItem as ContentTypesAdminNode;
@@ -46,7 +45,7 @@ namespace OrchardCore.Contents.AdminNodes
             }
 
             // Add ContentTypes specific children
-            var typesToShow = GetContentTypesToShow(node);
+            var typesToShow = await GetContentTypesToShowAsync(node);
             foreach (var ctd in typesToShow)
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
@@ -61,7 +60,6 @@ namespace OrchardCore.Contents.AdminNodes
                 });
             }
 
-
             // Add external children
             foreach (var childNode in node.Items)
             {
@@ -75,15 +73,12 @@ namespace OrchardCore.Contents.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypesToShowAsync(ContentTypesAdminNode node)
         {
-
-            var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
+            var typesToShow = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Listable);
-
 
             if (!node.ShowAll)
             {
@@ -92,7 +87,6 @@ namespace OrchardCore.Contents.AdminNodes
                 typesToShow = typesToShow
                     .Where(ctd => node.ContentTypes.ToList()
                                     .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));
-
             }
 
             return typesToShow.OrderBy(t => t.DisplayName);
@@ -111,7 +105,6 @@ namespace OrchardCore.Contents.AdminNodes
                                 .FirstOrDefault();
 
                 return AddPrefixToClasses(typeEntry.IconClass);
-
             }
         }
 
@@ -123,7 +116,5 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList<string>()
                 ?? new List<string>();
         }
-
     }
-
 }

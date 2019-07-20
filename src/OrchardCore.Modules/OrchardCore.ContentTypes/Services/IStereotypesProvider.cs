@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentTypes.Services
 {
     public interface IStereotypesProvider
     {
-        IEnumerable<StereotypeDescription> GetStereotypes();
+        Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync();
     }
 
     public class StereotypeDescription

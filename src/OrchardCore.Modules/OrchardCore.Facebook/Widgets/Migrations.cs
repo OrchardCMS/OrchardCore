@@ -1,10 +1,9 @@
-using OrchardCore.Facebook.Widgets.Models;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Recipes.Services;
-using System.Threading.Tasks;
-using OrchardCore.Facebook.Widgets.Settings;
 
 namespace OrchardCore.Facebook.Widgets
 {
@@ -21,7 +20,7 @@ namespace OrchardCore.Facebook.Widgets
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(FacebookPluginPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(FacebookPluginPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a facebook plugin part to create facebook social plugin widgets."));
 

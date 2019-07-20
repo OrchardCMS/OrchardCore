@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.ContentManagement.Metadata
 {
@@ -15,16 +15,16 @@ namespace OrchardCore.ContentManagement.Metadata
     /// </summary>
     public interface IContentDefinitionManager
     {
-        IEnumerable<ContentTypeDefinition> ListTypeDefinitions();
-        IEnumerable<ContentPartDefinition> ListPartDefinitions();
+        Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync();
+        Task<IEnumerable<ContentPartDefinition>> ListPartDefinitionsAsync();
 
-        ContentTypeDefinition GetTypeDefinition(string name);
-        ContentPartDefinition GetPartDefinition(string name);
-        void DeleteTypeDefinition(string name);
-        void DeletePartDefinition(string name);
+        Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name);
+        Task<ContentPartDefinition> GetPartDefinitionAsync(string name);
+        Task DeleteTypeDefinitionAsync(string name);
+        Task DeletePartDefinitionAsync(string name);
 
-        void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition);
-        void StorePartDefinition(ContentPartDefinition contentPartDefinition);
+        Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition);
+        Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition);
 
         /// <summary>
         /// Returns a serial number representing the list of types and settings for the current tenant.
@@ -40,19 +40,19 @@ namespace OrchardCore.ContentManagement.Metadata
 
     public static class ContentDefinitionManagerExtensions
     {
-        public static void AlterTypeDefinition(this IContentDefinitionManager manager, string name, Action<ContentTypeDefinitionBuilder> alteration)
+        public static async Task AlterTypeDefinitionAsync(this IContentDefinitionManager manager, string name, Action<ContentTypeDefinitionBuilder> alteration)
         {
-            var typeDefinition = manager.GetTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+            var typeDefinition = await manager.GetTypeDefinitionAsync(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
             var builder = new ContentTypeDefinitionBuilder(typeDefinition);
             alteration(builder);
-            manager.StoreTypeDefinition(builder.Build());
+            await manager.StoreTypeDefinitionAsync(builder.Build());
         }
-        public static void AlterPartDefinition(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
+        public static async Task AlterPartDefinitionAsync(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
         {
-            var partDefinition = manager.GetPartDefinition(name) ?? new ContentPartDefinition(name);
+            var partDefinition = await manager.GetPartDefinitionAsync(name) ?? new ContentPartDefinition(name);
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
-            manager.StorePartDefinition(builder.Build());
+            await manager.StorePartDefinitionAsync(builder.Build());
         }
     }
 }

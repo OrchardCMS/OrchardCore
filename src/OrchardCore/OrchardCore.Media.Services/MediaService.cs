@@ -28,7 +28,7 @@ namespace OrchardCore.Media
 
             using (var stream = await _mediaFileStore.GetFileStreamAsync(path))
             {
-                var mediaFactory = GetMediaFactory(stream, file.Name, mimeType, contentType);
+                var mediaFactory = await GetMediaFactoryAsync(stream, file.Name, mimeType, contentType);
 
                 if (mediaFactory == null)
                 {
@@ -39,11 +39,19 @@ namespace OrchardCore.Media
             }
         }
 
-        public IMediaFactory GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType)
+        public async Task<IMediaFactory> GetMediaFactoryAsync(Stream stream, string fileName, string mimeType, string contentType)
         {
-            var requestMediaFactoryResult = _mediaFactorySelectors
-                .Select(x => x.GetMediaFactory(stream, fileName, mimeType, contentType))
-                .Where(x => x != null)
+            var results = new List<MediaFactorySelectorResult>();
+            foreach (var selector in _mediaFactorySelectors)
+            {
+                var result = await selector.GetMediaFactoryAsync(stream, fileName, mimeType, contentType);
+                if (result != null)
+                {
+                    results.Add(result);
+                }
+            }
+
+            var requestMediaFactoryResult = results
                 .OrderByDescending(x => x.Priority)
                 .FirstOrDefault();
 

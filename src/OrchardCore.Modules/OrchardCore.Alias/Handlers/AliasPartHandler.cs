@@ -45,7 +45,7 @@ namespace OrchardCore.Alias.Handlers
                 return;
             }
 
-            var pattern = GetPattern(part);
+            var pattern = await GetPatternAsync(part);
 
             if (!String.IsNullOrEmpty(pattern))
             {
@@ -60,9 +60,9 @@ namespace OrchardCore.Alias.Handlers
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>
-        private string GetPattern(AliasPart part)
+        private async Task<string> GetPatternAsync(AliasPart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart", StringComparison.Ordinal));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
@@ -92,7 +92,7 @@ namespace OrchardCore.Alias.Handlers
             clonedPart.Apply();
 
         }
-        
+
         private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)
         {
             var version = 1;

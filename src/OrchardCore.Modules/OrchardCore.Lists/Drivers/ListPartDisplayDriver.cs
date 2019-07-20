@@ -42,14 +42,14 @@ namespace OrchardCore.Lists.Drivers
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
             return
-                Combine( 
+                Combine(
                     Initialize<ListPartViewModel>("ListPart", async model =>
                     {
                         var pager = await GetPagerAsync(context.Updater, listPart);
 
                         model.ListPart = listPart;
                         model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                        model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(listPart);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
@@ -60,7 +60,7 @@ namespace OrchardCore.Lists.Drivers
 
                         model.ListPart = listPart;
                         model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
-                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                        model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(listPart);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
@@ -70,7 +70,7 @@ namespace OrchardCore.Lists.Drivers
 
         private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, ListPart part)
         {
-            var settings = GetSettings(part);
+            var settings = await GetSettingsAsync(part);
             PagerSlimParameters pagerParameters = new PagerSlimParameters();
             await updater.TryUpdateModelAsync(pagerParameters);
 
@@ -203,16 +203,22 @@ namespace OrchardCore.Lists.Drivers
             }
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPart listPart)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPart listPart)
         {
-            var settings = GetSettings(listPart);
+            var settings = await GetSettingsAsync(listPart);
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+
+            var typeDefinitions = new List<ContentTypeDefinition>();
+            foreach (var contentType in contentTypes)
+            {
+                typeDefinitions.Add(await _contentDefinitionManager.GetTypeDefinitionAsync(contentType));
+            }
+            return typeDefinitions;
         }
 
-        private ListPartSettings GetSettings(ListPart listPart)
+        private async Task<ListPartSettings> GetSettingsAsync(ListPart listPart)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
             return contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
         }

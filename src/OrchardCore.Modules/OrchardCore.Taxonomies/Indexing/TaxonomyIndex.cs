@@ -55,13 +55,13 @@ namespace OrchardCore.Taxonomies.Indexing
 
                     // Search for Taxonomy fields
                     var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinition(contentItem.ContentType)
+                        .GetTypeDefinitionAsync(contentItem.ContentType).GetAwaiter().GetResult()
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)))
                         .ToArray();
 
                     // This type doesn't have any TaxonomyField, ignore it
                     if (fieldDefinitions.Length == 0)
-                    {                        
+                    {
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }

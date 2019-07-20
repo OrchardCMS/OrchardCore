@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             // This method is called on New()
             // Adds all the parts to a content item based on the content type definition.
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task ActivatedAsync(ActivatedContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task CreatingAsync(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -97,7 +97,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task CreatedAsync(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -117,7 +117,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task InitializingAsync(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -133,7 +133,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task InitializedAsync(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -158,7 +158,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             // A part is missing if the content type is changed and an old content item is loaded, 
             // like edited.
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task LoadedAsync(LoadContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -215,7 +215,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task PublishingAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -234,7 +234,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task PublishedAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -253,7 +253,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task RemovingAsync(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -272,7 +272,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task RemovedAsync(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -291,7 +291,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task UnpublishingAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -310,7 +310,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task UnpublishedAsync(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -329,7 +329,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task UpdatingAsync(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -348,7 +348,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task UpdatedAsync(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -367,7 +367,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task VersioningAsync(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -388,7 +388,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task VersionedAsync(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -409,7 +409,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
 
         public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -427,7 +427,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
         }
         public override async Task ClonedAsync(CloneContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -445,7 +445,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
         }
         public override async Task CloningAsync(CloneContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 

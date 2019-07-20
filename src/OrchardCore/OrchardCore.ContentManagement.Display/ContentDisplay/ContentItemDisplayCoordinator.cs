@@ -43,7 +43,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {
@@ -150,7 +150,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -230,7 +230,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 

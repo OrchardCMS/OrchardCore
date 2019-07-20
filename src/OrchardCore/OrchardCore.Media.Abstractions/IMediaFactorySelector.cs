@@ -1,9 +1,10 @@
-﻿using System.IO;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Media
 {
     public interface IMediaFactorySelector
     {
-        MediaFactorySelectorResult GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType);
+        Task<MediaFactorySelectorResult> GetMediaFactoryAsync(Stream stream, string fileName, string mimeType, string contentType);
     }
 }

@@ -65,7 +65,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
@@ -110,7 +110,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
 
@@ -146,7 +146,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 

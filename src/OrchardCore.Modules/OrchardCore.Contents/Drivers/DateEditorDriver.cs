@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
 
@@ -22,9 +22,9 @@ namespace OrchardCore.Contents.Drivers
             _localClock = localClock;
         }
 
-        public override IDisplayResult Edit(CommonPart part)
+        public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
         {
-            var settings = GetSettings(part);
+            var settings = await GetSettingsAsync(part);
 
             if (settings.DisplayDateEditor)
             {
@@ -37,14 +37,14 @@ namespace OrchardCore.Contents.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
         {
-            var settings = GetSettings(part);
+            var settings = await GetSettingsAsync(part);
 
             if (settings.DisplayDateEditor)
             {
                 var model = new DateEditorViewModel();
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (model.LocalDateTime == null)
                 {
@@ -56,12 +56,12 @@ namespace OrchardCore.Contents.Drivers
                 }
             }
 
-            return Edit(part);
+            return await EditAsync(part, context);
         }
 
-        public CommonPartSettings GetSettings(CommonPart part)
+        public async Task<CommonPartSettings> GetSettingsAsync(CommonPart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart", StringComparison.Ordinal));
             return contentTypePartDefinition.GetSettings<CommonPartSettings>();
         }

@@ -1,7 +1,8 @@
-using System.Linq;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentTypes.ViewModels
 {
@@ -16,10 +17,10 @@ namespace OrchardCore.ContentTypes.ViewModels
         public bool IsSelected { get; set; }
         public ContentTypeDefinition ContentTypeDefinition { get; set; }
 
-        public static ContentTypeSelection[] Build(IContentDefinitionManager contentDefinitionManager, IEnumerable<string> selectedContentTypes)
+        public static async Task<ContentTypeSelection[]> BuildAsync(IContentDefinitionManager contentDefinitionManager, IEnumerable<string> selectedContentTypes)
         {
-            var contentTypes = contentDefinitionManager
-                .ListTypeDefinitions()
+            var contentTypes = (await contentDefinitionManager
+                .ListTypeDefinitionsAsync())
                 .Select(x =>
                     new ContentTypeSelection
                     {

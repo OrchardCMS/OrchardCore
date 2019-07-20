@@ -84,7 +84,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, typeBuilder =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypeDefinition.Name, typeBuilder =>
             {
                 var typeContext = new UpdateTypeEditorContext(
                     typeBuilder,
@@ -143,7 +143,7 @@ namespace OrchardCore.ContentTypes.Editors
             UpdatePartEditorContext partContext = null;
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
+            await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, partBuilder =>
             {
                 partContext = new UpdatePartEditorContext(
                     partBuilder,
@@ -201,7 +201,7 @@ namespace OrchardCore.ContentTypes.Editors
             dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
 
                 typeBuilder.WithPart(contentTypePartDefinition.Name, async typePartBuilder =>
@@ -267,7 +267,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
+            await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, partBuilder =>
             {
                 partBuilder.WithField(contentPartFieldDefinition.Name, async partFieldBuilder =>
                 {

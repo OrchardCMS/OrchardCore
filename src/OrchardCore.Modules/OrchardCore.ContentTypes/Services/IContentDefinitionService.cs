@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.ViewModels;
 
@@ -7,30 +8,30 @@ namespace OrchardCore.ContentTypes.Services
 {
     public interface IContentDefinitionService
     {
-        IEnumerable<EditTypeViewModel> GetTypes();
-        EditTypeViewModel GetType(string name);
-        ContentTypeDefinition AddType(string name, string displayName);
-        void RemoveType(string name, bool deleteContent);
-        void AddPartToType(string partName, string typeName);
-        void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName);
-        void RemovePartFromType(string partName, string typeName);
-        string GenerateContentTypeNameFromDisplayName(string displayName);
-        string GenerateFieldNameFromDisplayName(string partName, string displayName);
+        Task<IEnumerable<EditTypeViewModel>> GetTypesAsync();
+        Task<EditTypeViewModel> GetTypeAsync(string name);
+        Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName);
+        Task RemoveTypeAsync(string name, bool deleteContent);
+        Task AddPartToTypeAsync(string partName, string typeName);
+        Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName);
+        Task RemovePartFromTypeAsync(string partName, string typeName);
+        Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName);
+        Task<string> GenerateFieldNameFromDisplayNameAsync(string partName, string displayName);
 
-        IEnumerable<EditPartViewModel> GetParts(bool metadataPartsOnly);
-        EditPartViewModel GetPart(string name);
-        EditPartViewModel AddPart(CreatePartViewModel partViewModel);
-        void RemovePart(string name);
+        Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly);
+        Task<EditPartViewModel> GetPartAsync(string name);
+        Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel);
+        Task RemovePartAsync(string name);
 
-        IEnumerable<Type> GetFields();
-        void AddFieldToPart(string fieldName, string fieldTypeName, string partName);
-        void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName);
-        void RemoveFieldFromPart(string fieldName, string partName);
-        void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
+        Task<IEnumerable<Type>> GetFieldsAsync();
+        Task AddFieldToPartAsync(string fieldName, string fieldTypeName, string partName);
+        Task AddFieldToPartAsync(string fieldName, string displayName, string fieldTypeName, string partName);
+        Task RemoveFieldFromPartAsync(string fieldName, string partName);
+        Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
 
-        void AlterTypePart(EditTypePartViewModel partViewModel);
+        Task AlterTypePartAsync(EditTypePartViewModel partViewModel);
 
-        void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames);
-        void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames);
+        Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames);
+        Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames);
     }
 }

@@ -1,14 +1,15 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Security.Permissions;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security
 {
-    public class ContentTypePermissions : IPermissionProvider
+    public class ContentTypePermissions : IAsyncPermissionProvider
     {
         private static readonly Permission PublishContent = new Permission("Publish_{0}", "Publish or unpublish {0} for others", new[] { Permissions.PublishContent });
         private static readonly Permission PublishOwnContent = new Permission("PublishOwn_{0}", "Publish or unpublish {0}", new[] { PublishContent, Permissions.PublishOwnContent });
@@ -41,19 +42,28 @@ namespace OrchardCore.Contents.Security
             _contentDefinitionManager = contentDefinitionManager;
         }
 
+        // Sync version for backward compatibility.
         public IEnumerable<Permission> GetPermissions()
         {
+            return GetPermissionsAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
             // manage rights only for Securable types
-            var securableTypes = _contentDefinitionManager.ListTypeDefinitions()
+            var securableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Securable);
 
+            var permissions = new List<Permission>();
             foreach (var typeDefinition in securableTypes)
             {
                 foreach (var permissionTemplate in PermissionTemplates.Values)
                 {
-                    yield return CreateDynamicPermission(permissionTemplate, typeDefinition);
+                    permissions.Add(CreateDynamicPermission(permissionTemplate, typeDefinition));
                 }
             }
+
+            return permissions;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

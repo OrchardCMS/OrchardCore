@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -33,14 +33,14 @@ namespace OrchardCore.Lists.Settings
                 return null;
             }
 
-            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
+            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", async model =>
             {
                 model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach(var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }

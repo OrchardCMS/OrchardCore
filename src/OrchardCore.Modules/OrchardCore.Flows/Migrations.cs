@@ -1,5 +1,6 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Flows
@@ -13,18 +14,18 @@ namespace OrchardCore.Flows
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("FlowPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FlowPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a customizable body for your content item."));
 
             return 1;
         }
 
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1()
         {
-            _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
                 .Attachable()
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item."));

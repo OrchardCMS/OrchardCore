@@ -1,16 +1,16 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Indexes;
+using OrchardCore.Alias.Models;
+using OrchardCore.Alias.Settings;
+using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Alias.Models;
-using OrchardCore.Alias.Settings;
-using OrchardCore.Alias.ViewModels;
-using YesSql;
-using OrchardCore.Alias.Indexes;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Mvc.ModelBinding;
+using YesSql;
 
 namespace OrchardCore.Alias.Drivers
 {
@@ -32,12 +32,12 @@ namespace OrchardCore.Alias.Drivers
 
         public override IDisplayResult Edit(AliasPart aliasPart)
         {
-            return Initialize<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModel(m, aliasPart));
+            return Initialize<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModelAsync(m, aliasPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater)
         {
-            var settings = GetAliasPartSettings(model);
+            var settings = await GetAliasPartSettingsAsync(model);
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
 
@@ -46,18 +46,18 @@ namespace OrchardCore.Alias.Drivers
             return Edit(model);
         }
 
-        public AliasPartSettings GetAliasPartSettings(AliasPart part)
+        public async Task<AliasPartSettings> GetAliasPartSettingsAsync(AliasPart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(AliasPart));
             var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 
             return settings;
         }
 
-        private void BuildViewModel(AliasPartViewModel model, AliasPart part)
+        private async Task BuildViewModelAsync(AliasPartViewModel model, AliasPart part)
         {
-            var settings = GetAliasPartSettings(part);
+            var settings = await GetAliasPartSettingsAsync(part);
 
             model.Alias = part.Alias;
             model.AliasPart = part;

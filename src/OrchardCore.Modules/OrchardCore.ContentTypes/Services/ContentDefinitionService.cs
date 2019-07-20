@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
@@ -49,17 +49,17 @@ namespace OrchardCore.ContentTypes.Services
         public ILogger Logger { get; }
         public IStringLocalizer T { get; set; }
 
-        public IEnumerable<EditTypeViewModel> GetTypes()
+        public async Task<IEnumerable<EditTypeViewModel>> GetTypesAsync()
         {
-            return _contentDefinitionManager
-                .ListTypeDefinitions()
+            return (await _contentDefinitionManager
+                .ListTypeDefinitionsAsync())
                 .Select(ctd => new EditTypeViewModel(ctd))
                 .OrderBy(m => m.DisplayName);
         }
 
-        public EditTypeViewModel GetType(string name)
+        public async Task<EditTypeViewModel> GetTypeAsync(string name)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
 
             if (contentTypeDefinition == null)
             {
@@ -69,7 +69,7 @@ namespace OrchardCore.ContentTypes.Services
             return new EditTypeViewModel(contentTypeDefinition);
         }
 
-        public ContentTypeDefinition AddType(string name, string displayName)
+        public async Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName)
         {
             if (String.IsNullOrWhiteSpace(displayName))
             {
@@ -78,62 +78,65 @@ namespace OrchardCore.ContentTypes.Services
 
             if (String.IsNullOrWhiteSpace(name))
             {
-                name = GenerateContentTypeNameFromDisplayName(displayName);
+                name = await GenerateContentTypeNameFromDisplayNameAsync(displayName);
             }
-            else {
+            else
+            {
                 if (!name[0].IsLetter())
                 {
                     throw new ArgumentException("Content type name must start with a letter", "name");
                 }
             }
 
-            while (_contentDefinitionManager.GetTypeDefinition(name) != null)
+            while (await _contentDefinitionManager.GetTypeDefinitionAsync(name) != null)
+            {
                 name = VersionName(name);
+            }
 
             var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
 
 
-            _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
+            await _contentDefinitionManager.StoreTypeDefinitionAsync(contentTypeDefinition);
             // Ensure it has its own part
-            _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
-            _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(name, builder => builder.WithPart(name));
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
 
             _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeCreated(new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }), Logger);
 
             return contentTypeDefinition;
         }
 
-        public void RemoveType(string name, bool deleteContent)
+        public async Task RemoveTypeAsync(string name, bool deleteContent)
         {
 
             // first remove all attached parts
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
             var partDefinitions = typeDefinition.Parts.ToArray();
             foreach (var partDefinition in partDefinitions)
             {
-                RemovePartFromType(partDefinition.PartDefinition.Name, name);
+                await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
 
                 // delete the part if it's its own part
                 if (partDefinition.PartDefinition.Name == name)
                 {
-                    RemovePart(name);
+                    await RemovePartAsync(name);
                 }
             }
 
-            _contentDefinitionManager.DeleteTypeDefinition(name);
+            await _contentDefinitionManager.DeleteTypeDefinitionAsync(name);
 
             _contentDefinitionEventHandlers.Invoke(x => x.ContentTypeRemoved(new ContentTypeRemovedContext { ContentTypeDefinition = typeDefinition }), Logger);
         }
 
-        public void AddPartToType(string partName, string typeName)
+        public async Task AddPartToTypeAsync(string partName, string typeName)
         {
-            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithPart(partName));
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(partName));
             _contentDefinitionEventHandlers.Invoke(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
         }
 
-        public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
+        public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
         {
-            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithPart(name, partName, cfg =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(name, partName, cfg =>
             {
                 cfg.WithDisplayName(displayName);
                 cfg.WithDescription(description);
@@ -142,19 +145,19 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionEventHandlers.Invoke(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
         }
 
-        public void RemovePartFromType(string partName, string typeName)
+        public async Task RemovePartFromTypeAsync(string partName, string typeName)
         {
-            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.RemovePart(partName));
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
             _contentDefinitionEventHandlers.Invoke(x => x.ContentPartDetached(new ContentPartDetachedContext { ContentTypeName = typeName, ContentPartName = partName }), Logger);
         }
 
-        public IEnumerable<EditPartViewModel> GetParts(bool metadataPartsOnly)
+        public async Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly)
         {
-            var typeNames = new HashSet<string>(GetTypes().Select(ctd => ctd.Name));
+            var typeNames = new HashSet<string>((await GetTypesAsync()).Select(ctd => ctd.Name));
 
             // user-defined parts
             // except for those parts with the same name as a type (implicit type's part or a mistake)
-            var userContentParts = _contentDefinitionManager.ListPartDefinitions()
+            var userContentParts = (await _contentDefinitionManager.ListPartDefinitionsAsync())
                 .Where(cpd => !typeNames.Contains(cpd.Name))
                 .Select(cpd => new EditPartViewModel(cpd))
                 .ToDictionary(
@@ -175,15 +178,15 @@ namespace OrchardCore.ContentTypes.Services
                 .OrderBy(m => m.DisplayName);
         }
 
-        public EditPartViewModel GetPart(string name)
+        public async Task<EditPartViewModel> GetPartAsync(string name)
         {
-            var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(name);
+            var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
 
             if (contentPartDefinition == null)
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
 
-                if(contentTypeDefinition == null)
+                if (contentTypeDefinition == null)
                 {
                     return null;
                 }
@@ -196,17 +199,17 @@ namespace OrchardCore.ContentTypes.Services
             return viewModel;
         }
 
-        public EditPartViewModel AddPart(CreatePartViewModel partViewModel)
+        public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
         {
             var name = partViewModel.Name;
 
-            if (_contentDefinitionManager.GetPartDefinition(name) != null)
+            if (await _contentDefinitionManager.GetPartDefinitionAsync(name) != null)
                 throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
 
             if (!string.IsNullOrEmpty(name))
             {
-                _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
-                var partDefinition = _contentDefinitionManager.GetPartDefinition(name);
+                await _contentDefinitionManager.AlterPartDefinitionAsync(name, builder => builder.Attachable());
+                var partDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
                 _contentDefinitionEventHandlers.Invoke(x => x.ContentPartCreated(new ContentPartCreatedContext { ContentPartDefinition = partDefinition }), Logger);
                 return new EditPartViewModel(partDefinition);
             }
@@ -214,9 +217,9 @@ namespace OrchardCore.ContentTypes.Services
             return null;
         }
 
-        public void RemovePart(string name)
+        public async Task RemovePartAsync(string name)
         {
-            var partDefinition = _contentDefinitionManager.GetPartDefinition(name);
+            var partDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
 
             if (partDefinition == null)
             {
@@ -227,42 +230,42 @@ namespace OrchardCore.ContentTypes.Services
             var fieldDefinitions = partDefinition.Fields.ToArray();
             foreach (var fieldDefinition in fieldDefinitions)
             {
-                RemoveFieldFromPart(fieldDefinition.Name, name);
+                await RemoveFieldFromPartAsync(fieldDefinition.Name, name);
             }
 
-            _contentDefinitionManager.DeletePartDefinition(name);
+            await _contentDefinitionManager.DeletePartDefinitionAsync(name);
             _contentDefinitionEventHandlers.Invoke(x => x.ContentPartRemoved(new ContentPartRemovedContext { ContentPartDefinition = partDefinition }), Logger);
         }
 
-        public IEnumerable<Type> GetFields()
+        public Task<IEnumerable<Type>> GetFieldsAsync()
         {
-            return _contentFields.Select(x => x.GetType()).ToList();
+            return Task.FromResult((IEnumerable<Type>)_contentFields.Select(x => x.GetType()).ToArray());
         }
 
-        public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
+        public Task AddFieldToPartAsync(string fieldName, string fieldTypeName, string partName)
         {
-            AddFieldToPart(fieldName, fieldName, fieldTypeName, partName);
+            return AddFieldToPartAsync(fieldName, fieldName, fieldTypeName, partName);
         }
 
-        public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
+        public async Task AddFieldToPartAsync(string fieldName, string displayName, string fieldTypeName, string partName)
         {
             if (String.IsNullOrEmpty(fieldName))
             {
                 throw new ArgumentException(nameof(fieldName));
             }
 
-            var partDefinition = _contentDefinitionManager.GetPartDefinition(partName);
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(partName);
+            var partDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(partName);
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(partName);
 
             // If the type exists ensure it has its own part
             if (typeDefinition != null)
             {
-                _contentDefinitionManager.AlterTypeDefinition(partName, builder => builder.WithPart(partName));
+                await _contentDefinitionManager.AlterTypeDefinitionAsync(partName, builder => builder.WithPart(partName));
             }
 
             fieldName = fieldName.ToSafeName();
 
-            _contentDefinitionManager.AlterPartDefinition(partName,
+            await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
                 partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
             _contentDefinitionEventHandlers.Invoke(x => x.ContentFieldAttached(new ContentFieldAttachedContext
@@ -274,9 +277,9 @@ namespace OrchardCore.ContentTypes.Services
             }), Logger);
         }
 
-        public void RemoveFieldFromPart(string fieldName, string partName)
+        public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
         {
-            _contentDefinitionManager.AlterPartDefinition(partName, typeBuilder => typeBuilder.RemoveField(fieldName));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(partName, typeBuilder => typeBuilder.RemoveField(fieldName));
             _contentDefinitionEventHandlers.Invoke(x => x.ContentFieldDetached(new ContentFieldDetachedContext
             {
                 ContentPartName = partName,
@@ -284,9 +287,9 @@ namespace OrchardCore.ContentTypes.Services
             }), Logger);
         }
 
-        public void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
+        public Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
         {
-            _contentDefinitionManager.AlterPartDefinition(partViewModel.Name, partBuilder =>
+            return _contentDefinitionManager.AlterPartDefinitionAsync(partViewModel.Name, partBuilder =>
             {
                 partBuilder.WithField(fieldViewModel.Name, fieldBuilder =>
                 {
@@ -297,11 +300,11 @@ namespace OrchardCore.ContentTypes.Services
             });
         }
 
-        public void AlterTypePart(EditTypePartViewModel typePartViewModel)
+        public Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
         {
             var typeDefinition = typePartViewModel.TypePartDefinition.ContentTypeDefinition;
 
-            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            return _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
             {
                 type.WithPart(typePartViewModel.Name, typePartViewModel.TypePartDefinition.PartDefinition, part =>
                 {
@@ -312,9 +315,9 @@ namespace OrchardCore.ContentTypes.Services
             });
         }
 
-        public void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames)
+        public Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
         {
-            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            return _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
             {
                 for (var i = 0; i < partNames.Length; i++)
                 {
@@ -327,9 +330,9 @@ namespace OrchardCore.ContentTypes.Services
             });
         }
 
-        public void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames)
+        public Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
         {
-            _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, type =>
+            return _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
             {
                 for (var i = 0; i < fieldNames.Length; i++)
                 {
@@ -342,26 +345,28 @@ namespace OrchardCore.ContentTypes.Services
             });
         }
 
-        public string GenerateContentTypeNameFromDisplayName(string displayName)
+        public async Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName)
         {
             displayName = displayName.ToSafeName();
 
-            while (_contentDefinitionManager.GetTypeDefinition(displayName) != null)
+            while (await _contentDefinitionManager.GetTypeDefinitionAsync(displayName) != null)
+            {
                 displayName = VersionName(displayName);
+            }
 
             return displayName;
         }
 
-        public string GenerateFieldNameFromDisplayName(string partName, string displayName)
+        public async Task<string> GenerateFieldNameFromDisplayNameAsync(string partName, string displayName)
         {
             IEnumerable<ContentPartFieldDefinition> fieldDefinitions;
 
-            var part = _contentDefinitionManager.GetPartDefinition(partName);
+            var part = await _contentDefinitionManager.GetPartDefinitionAsync(partName);
             displayName = displayName.ToSafeName();
 
             if (part == null)
             {
-                var type = _contentDefinitionManager.GetTypeDefinition(partName);
+                var type = await _contentDefinitionManager.GetTypeDefinitionAsync(partName);
 
                 if (type == null)
                 {
@@ -375,12 +380,14 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     return displayName;
                 }
-                else {
+                else
+                {
                     fieldDefinitions = typePart.PartDefinition.Fields.ToArray();
                 }
 
             }
-            else {
+            else
+            {
                 fieldDefinitions = part.Fields.ToArray();
             }
 
@@ -401,7 +408,8 @@ namespace OrchardCore.ContentTypes.Services
                 //this could unintentionally chomp something that looks like a version
                 name = string.Join("-", nameParts.Take(nameParts.Length - 1));
             }
-            else {
+            else
+            {
                 version = 2;
             }
 

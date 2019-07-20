@@ -23,6 +23,6 @@ namespace OrchardCore.Media
         /// <param name="mimeType">The mime-type of the file to process.</param>
         /// <param name="contentType">The content type intended to be created.</param>
         /// <returns></returns>
-        IMediaFactory GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType);
+        Task<IMediaFactory> GetMediaFactoryAsync(Stream stream, string fileName, string mimeType, string contentType);
     }
 }

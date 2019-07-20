@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentTypes.Services
 {
     public interface IStereotypeService
     {
-        IEnumerable<StereotypeDescription> GetStereotypes();
+        Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync();
     }
 
     public class StereotypeService : IStereotypeService
@@ -17,9 +17,14 @@ namespace OrchardCore.ContentTypes.Services
             _providers = providers;
         }
 
-        public IEnumerable<StereotypeDescription> GetStereotypes()
+        public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
-            return _providers.SelectMany(x => x.GetStereotypes());
+            var stereotypes = new List<StereotypeDescription>();
+            foreach (var provider in _providers)
+            {
+                stereotypes.AddRange(await provider.GetStereotypesAsync());
+            }
+            return stereotypes;
         }
     }
 }

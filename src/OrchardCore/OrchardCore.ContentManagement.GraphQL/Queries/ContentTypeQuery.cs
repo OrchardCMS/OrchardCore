@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -35,14 +34,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         public IStringLocalizer T { get; set; }
 
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
-            foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
+            foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync())
             {
                 var typeType = new ContentItemType(_optionsAccessor)
                 {
@@ -76,7 +75,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 }
             }
 
-            return Task.FromResult(contentDefinitionManager.ChangeToken);
+            return contentDefinitionManager.ChangeToken;
         }
     }
 }

@@ -47,15 +47,15 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
         {
-            return Initialize<BagPartEditViewModel>("BagPart_Edit", m =>
+            return Initialize<BagPartEditViewModel>("BagPart_Edit", async m =>
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BagPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var model = new BagPartEditViewModel { BagPart = part };
@@ -75,10 +75,18 @@ namespace OrchardCore.Flows.Drivers
             return Edit(part, context);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
-            return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+
+            var typeDefinitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in settings.ContainedContentTypes)
+            {
+                typeDefinitions.Add(await _contentDefinitionManager.GetTypeDefinitionAsync(contentType));
+            }
+
+            return typeDefinitions;
         }
     }
 }

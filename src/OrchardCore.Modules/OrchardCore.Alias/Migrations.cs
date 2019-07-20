@@ -1,8 +1,9 @@
-﻿using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Alias
 {
@@ -15,9 +16,9 @@ namespace OrchardCore.Alias
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(AliasPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AliasPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to define custom aliases for content items."));
 

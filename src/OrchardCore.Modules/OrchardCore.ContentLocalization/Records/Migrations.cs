@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -14,9 +15,9 @@ namespace OrchardCore.ContentLocalization.Records
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(LocalizationPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(LocalizationPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to create localized version of content."));
 

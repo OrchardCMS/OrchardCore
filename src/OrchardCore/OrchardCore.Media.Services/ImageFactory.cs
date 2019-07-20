@@ -20,7 +20,7 @@ namespace OrchardCore.Media
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public MediaFactorySelectorResult GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType)
+        public async Task<MediaFactorySelectorResult> GetMediaFactoryAsync(Stream stream, string fileName, string mimeType, string contentType)
         {
             if (!mimeType.StartsWith("image/"))
             {
@@ -29,7 +29,7 @@ namespace OrchardCore.Media
 
             if (!String.IsNullOrEmpty(contentType))
             {
-                var contentDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
+                var contentDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
                 if (contentDefinition == null || contentDefinition.Parts.All(x => x.PartDefinition.Name != typeof(ImageMediaPart).Name))
                 {
                     return null;

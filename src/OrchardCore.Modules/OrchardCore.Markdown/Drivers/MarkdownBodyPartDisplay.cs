@@ -30,14 +30,14 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition))
+            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModelAsync(m, MarkdownBodyPart, context.TypePartDefinition))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(MarkdownBodyPart MarkdownBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, MarkdownBodyPart, context.TypePartDefinition));
+            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, MarkdownBodyPart, context.TypePartDefinition));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater)
@@ -51,9 +51,9 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model);
         }
 
-        private async Task BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
+        private async Task BuildViewModelAsync(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart, ContentTypePartDefinition definition)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(MarkdownBodyPart.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(MarkdownBodyPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownBodyPart));
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
