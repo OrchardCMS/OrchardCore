@@ -39,7 +39,7 @@ namespace OrchardCore.Title
             return 2;
         }
 
-        public async Task<int> UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
             // This code can be removed in RC
             // We are patching all content item versions by moving the Title to DisplayText

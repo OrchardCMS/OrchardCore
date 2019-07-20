@@ -23,7 +23,7 @@ namespace OrchardCore.Flows
             return 1;
         }
 
-        public async Task<int> UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
             await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
                 .Attachable()

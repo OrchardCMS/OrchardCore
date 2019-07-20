@@ -43,7 +43,7 @@ namespace OrchardCore.Html
             return 3;
         }
 
-        public async Task<int> UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
             // This code can be removed in RC
 
