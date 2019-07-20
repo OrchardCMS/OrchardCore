@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
@@ -11,11 +12,13 @@ namespace OrchardCore.Media.Services
         private readonly IFileStore _fileStore;
         private readonly IMediaFileStorePathProvider _pathProvider;
 
-        public MediaFileStore(IFileStore fileStore, IMediaFileStorePathProvider pathProvider)
+        public MediaFileStore(IFileStore fileStore,
+            IMediaFileStorePathProvider pathProvider,
+            IOptions<MediaOptions> mediaOptions)
         {
             _fileStore = fileStore;
             _pathProvider = pathProvider;
-            VirtualPathBase = MediaOptions.AssetsRequestPath;
+            VirtualPathBase = mediaOptions.Value.AssetsRequestPath;
         }
 
         public PathString VirtualPathBase { get; }

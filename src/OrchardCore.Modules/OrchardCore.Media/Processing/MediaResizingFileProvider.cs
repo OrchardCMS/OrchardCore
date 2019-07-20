@@ -19,6 +19,7 @@ namespace OrchardCore.Media.Processing
         private readonly IMediaFileStore _mediaStore;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
+        private readonly PathString _assetsRequestPath;
 
         public MediaResizingFileProvider(
             IMediaFileStore mediaStore,
@@ -29,6 +30,7 @@ namespace OrchardCore.Media.Processing
             _mediaStore = mediaStore;
             _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
             _supportedSizes = mediaOptions.Value.SupportedSizes;
+            _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
         }
 
         /// <inheritdoc/>
@@ -40,7 +42,7 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(MediaOptions.AssetsRequestPath))
+            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
             {
                 return false;
             }

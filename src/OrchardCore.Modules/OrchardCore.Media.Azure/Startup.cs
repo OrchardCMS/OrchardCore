@@ -37,6 +37,7 @@ namespace OrchardCore.Media.Azure
         public override void ConfigureServices(IServiceCollection services)
         {
             var mediaBlobConfiguration = _configuration.GetSection("OrchardCore.Media.Azure");
+            //TODO change this back to just the values we need
             var mediaBlobStorageOptions = mediaBlobConfiguration.Get<MediaBlobStorageOptions>();
             if (mediaBlobStorageOptions == null)
             {
@@ -52,7 +53,6 @@ namespace OrchardCore.Media.Azure
                 var staticFileProviderDescriptor = services.FirstOrDefault(descriptor =>
                     descriptor.ServiceType == typeof(IStaticFileProvider) &&
                     descriptor.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
-                var staticFileProviderDescriptors = services.Where(x => x.ServiceType == typeof(IStaticFileProvider));
                 if (staticFileProviderDescriptor != null)
                 {
                     services.Remove(staticFileProviderDescriptor);
@@ -60,11 +60,12 @@ namespace OrchardCore.Media.Azure
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
                     var mediaFileStorePathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
-                    return new MediaFileStore(fileStore, mediaFileStorePathProvider);
+                    return new MediaFileStore(fileStore, mediaFileStorePathProvider, mediaOptions);
                 }));
 
                 if (mediaBlobStorageOptions.SupportResizing)

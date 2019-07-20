@@ -9,8 +9,7 @@ namespace OrchardCore.Media
         /// <summary>
         /// The request path used to route asset files
         /// </summary>
-        public static readonly PathString AssetsRequestPath = new PathString("/media");
-
+        public PathString AssetsRequestPath = new PathString("/media");
         public int MaxBrowserCacheDays { get; set; } = 30;
         public int MaxCacheDays { get; set; } = 365;
 

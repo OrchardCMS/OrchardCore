@@ -70,7 +70,7 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //TODO have to test whether this works with all the defaults, especially if they half completed
+            //TODO this is a problem, because it makes in unreplaceable in DI
             var mediaConfiguration = _shellConfiguration.GetSection("OrchardCore.Media");
             var mediaOptions = mediaConfiguration.Get<MediaOptions>();
             if (mediaOptions == null)
@@ -82,6 +82,7 @@ namespace OrchardCore.Media
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
 
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
 
@@ -89,7 +90,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(MediaOptions.AssetsRequestPath, mediaPath);
+                return new MediaFileProvider(options.Value.AssetsRequestPath, mediaPath);
             });
 
             services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
@@ -105,7 +106,7 @@ namespace OrchardCore.Media
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaProviderOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
                 
-                var mediaUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, MediaOptions.AssetsRequestPath);
+                var mediaUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaProviderOptions.Value.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
                     .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
@@ -139,7 +140,7 @@ namespace OrchardCore.Media
 
                 //var pathProvider = new MediaFileStorePathProvider(mediaUrlBase, mediaOptions.Value.CdnBaseUrl);
 
-                return new MediaFileStore(fileStore, pathProvider);
+                return new MediaFileStore(fileStore, pathProvider, mediaFileStoreOptions);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -216,7 +217,8 @@ namespace OrchardCore.Media
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
-
+            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+            //TODO we could also remove ImageSharp dependencies if we're not using it, and not initiate the middleware
             // ImageSharp before the static file provider
             app.UseImageSharp();
 
@@ -226,7 +228,7 @@ namespace OrchardCore.Media
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     // The tenant's prefix is already implied by the infrastructure
-                    RequestPath = MediaOptions.AssetsRequestPath,
+                    RequestPath = mediaOptions.Value.AssetsRequestPath,
                     FileProvider = mediaFileProvider,
                     ServeUnknownFileTypes = true,
                 });

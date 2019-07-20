@@ -24,6 +24,7 @@ namespace OrchardCore.Media.Azure.Processing
         private readonly IMediaFileStore _mediaStore;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
+        private readonly PathString _assetsRequestPath;
 
         public MediaBlobResizingFileProvider(
             IMediaFileStore mediaStore,
@@ -34,6 +35,7 @@ namespace OrchardCore.Media.Azure.Processing
             _mediaStore = mediaStore;
             _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
             _supportedSizes = mediaOptions.Value.SupportedSizes;
+            _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
         }
 
         /// <inheritdoc/>
@@ -45,7 +47,7 @@ namespace OrchardCore.Media.Azure.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(MediaOptions.AssetsRequestPath))
+            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
             {
                 return false;
             }

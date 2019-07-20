@@ -12,27 +12,28 @@ namespace OrchardCore.Media.Azure.Services
         private readonly string _siteUrlBase;
         private readonly string _publicUrlBase;
         public MediaBlobFileStorePathProvider(
-            IOptions<MediaBlobStorageOptions> options,
+            IOptions<MediaBlobStorageOptions> mediaBlobStorageOptions,
+            IOptions<MediaOptions> mediaOptions,
             IHttpContextAccessor httpContextAccessor,
             ShellSettings shellSettings
             )
         {
             // These do not make http calls, or verify that connection is valid, and blob can connect
             //We should use TryParse in Filter. Check whether this throws on a bad ConnectionString
-            var storageAccount = CloudStorageAccount.Parse(options.Value.ConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(mediaBlobStorageOptions.Value.ConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(options.Value.ContainerName);
+            var blobContainer = blobClient.GetContainerReference(mediaBlobStorageOptions.Value.ContainerName);
 
             var uriBuilder = new UriBuilder(blobContainer.Uri);
-            uriBuilder.Path = IMediaFileStorePathProviderHelpers.Combine(uriBuilder.Path, options.Value.BasePath);
+            uriBuilder.Path = IMediaFileStorePathProviderHelpers.Combine(uriBuilder.Path, mediaBlobStorageOptions.Value.BasePath);
             var mediaBaseUri = uriBuilder.Uri;
 
-            if (!String.IsNullOrEmpty(options.Value.PublicHostName))
-                mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = options.Value.PublicHostName }.Uri;
+            if (!String.IsNullOrEmpty(mediaBlobStorageOptions.Value.PublicHostName))
+                mediaBaseUri = new UriBuilder(mediaBaseUri) { Host = mediaBlobStorageOptions.Value.PublicHostName }.Uri;
 
             _publicUrlBase = mediaBaseUri.ToString();
 
-            _siteUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, MediaOptions.AssetsRequestPath);
+            _siteUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
 
             var originalPathBase = httpContextAccessor
                 .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
