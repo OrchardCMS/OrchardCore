@@ -1,22 +1,23 @@
 using System;
+using System.Linq;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Processing;
+using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
-using Microsoft.Extensions.Configuration;
-using OrchardCore.FileStorage;
-using SixLabors.ImageSharp.Web.Providers;
-using OrchardCore.Media.Azure.Processing;
-using Microsoft.WindowsAzure.Storage;
-using System.Linq;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Media.Azure.Services;
+using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media.Azure
 {
@@ -71,7 +72,8 @@ namespace OrchardCore.Media.Azure
                 if (mediaBlobStorageOptions.SupportResizing)
                 {
                     services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
-                } else
+                }
+                else
                 {
                     services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider, MediaBlobFileStorePathProvider>());
                 }
@@ -84,6 +86,17 @@ namespace OrchardCore.Media.Azure
             {
                 options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
             });
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+            if (mediaBlobStorageOptions.SupportResizing &&
+                MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger)
+                )
+            {
+                app.UseMiddleware<MediaBlobMiddleware>();
+            }
         }
     }
 }

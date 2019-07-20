@@ -98,25 +98,7 @@ namespace OrchardCore.Media
                 return serviceProvider.GetRequiredService<IMediaFileProvider>();
             });
 
-            //TODO clean this up, make sure it's good, can we make it cleaner
-            // this can all be injected into the constructor
-            services.AddSingleton<IMediaFileStorePathProvider>(serviceProvider =>
-            {
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var mediaProviderOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-                
-                var mediaUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaProviderOptions.Value.AssetsRequestPath);
-
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
-
-                if (originalPathBase.HasValue)
-                {
-                    mediaUrlBase = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, mediaUrlBase);
-                }
-                return new MediaFileStorePathProvider(mediaUrlBase, mediaProviderOptions.Value.CdnBaseUrl);
-            });
+            services.AddSingleton<IMediaFileStorePathProvider, MediaFileStorePathProvider>();
 
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
@@ -127,18 +109,6 @@ namespace OrchardCore.Media
 
                 var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
                 var fileStore = new FileSystemStore(mediaPath);
-
-                //var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, AssetsRequestPath);
-
-                //var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                //    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
-
-                //if (originalPathBase.HasValue)
-                //{
-                //    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
-                //}
-
-                //var pathProvider = new MediaFileStorePathProvider(mediaUrlBase, mediaOptions.Value.CdnBaseUrl);
 
                 return new MediaFileStore(fileStore, pathProvider, mediaFileStoreOptions);
             });

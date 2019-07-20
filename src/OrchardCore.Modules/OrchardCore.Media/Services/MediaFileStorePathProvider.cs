@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Media.Services
 {
@@ -8,10 +11,23 @@ namespace OrchardCore.Media.Services
     {
         private readonly string _siteUrlBase;
         private readonly string _cdnBaseUrl;
-        public MediaFileStorePathProvider(string siteUrlBase, string cdnBaseUrl)
+        public MediaFileStorePathProvider(
+            ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<MediaOptions> mediaOptions
+            )
         {
-            _siteUrlBase = siteUrlBase;
-            _cdnBaseUrl = cdnBaseUrl;
+            _siteUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
+
+            var originalPathBase = httpContextAccessor
+                .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+            if (originalPathBase.HasValue)
+            {
+                _siteUrlBase = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, _siteUrlBase);
+            }
+
+            _cdnBaseUrl = mediaOptions.Value.CdnBaseUrl;
         }
 
         public string MapPathToPublicUrl(string path)
