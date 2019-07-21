@@ -9,42 +9,48 @@ namespace OrchardCore.Layers.Services
 {
     public class DefaultLayersMethodProvider : IGlobalMethodProvider
     {
+        private readonly GlobalMethod _isHomepage;
+        private readonly GlobalMethod _isAnonymous;
+        private readonly GlobalMethod _isAuthenticated;
+        private readonly GlobalMethod _url;
+        private readonly GlobalMethod _culture;
+
         private readonly GlobalMethod[] _allMethods;
 
         public DefaultLayersMethodProvider()
         {
-            var isHomepageMethod = new GlobalMethod
+            _isHomepage = new GlobalMethod
             {
                 Name = "isHomepage",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path;
-                    return BooleanBoxes.Box(requestPath == "/" || string.IsNullOrEmpty(requestPath));
+                    return requestPath == "/" || string.IsNullOrEmpty(requestPath);
                 })
             };
 
-            var isAnonymousMethod = new GlobalMethod
+            _isAnonymous = new GlobalMethod
             {
                 Name = "isAnonymous",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return BooleanBoxes.Box(!httpContext.User?.Identity.IsAuthenticated);
+                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    return !httpContext.User?.Identity.IsAuthenticated;
                 })
             };
 
-            var isAuthenticatedMethod = new GlobalMethod
+            _isAuthenticated = new GlobalMethod
             {
                 Name = "isAuthenticated",
-                Method = serviceProvider => (Func<string, object>)(name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return BooleanBoxes.Box(httpContext.User?.Identity.IsAuthenticated);
+                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    return httpContext.User?.Identity.IsAuthenticated;
                 })
             };
 
-            var urlMethod = new GlobalMethod
+            _url = new GlobalMethod
             {
                 Name = "url",
                 Method = serviceProvider => (Func<string, object>)(url =>
@@ -60,29 +66,25 @@ namespace OrchardCore.Layers.Services
                     if (string.IsNullOrEmpty(requestPath))
                         requestPath = "/";
 
-                    var result = url.EndsWith("*")
+                    return url.EndsWith("*")
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
-                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
-
-                    return BooleanBoxes.Box(result);
+                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase); ;
                 })
             };
 
-            var cultureMethod = new GlobalMethod
+            _culture = new GlobalMethod
             {
                 Name = "culture",
                 Method = serviceProvider => (Func<string, object>)(culture =>
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
 
-                    var result = string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase)
-                                 || string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
-
-                    return BooleanBoxes.Box(result);
+                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
                 })
             };
 
-            _allMethods = new [] { isAnonymousMethod, isAuthenticatedMethod, isHomepageMethod, urlMethod, cultureMethod };
+            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
