@@ -35,16 +35,15 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public async Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
             using (var file = File.CreateText(Filename))
             {
-                var serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, contentDefinitionRecord);
+                using (var writer = new JsonTextWriter(file))
+                {
+                    await JObject.FromObject(contentDefinitionRecord).WriteToAsync(writer);
+                }
             }
-
-            return Task.CompletedTask;
         }
 
         private string Filename => PathExtensions.Combine(
