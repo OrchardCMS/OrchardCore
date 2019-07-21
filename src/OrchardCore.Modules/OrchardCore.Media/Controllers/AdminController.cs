@@ -191,8 +191,6 @@ namespace OrchardCore.Media.Controllers
 
             var section = _shellConfiguration.GetSection("OrchardCore.Media");
 
-            // var maxUploadSize = section.GetValue("MaxRequestBodySize", 100_000_000);
-            var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
             var allowedFileExtensions = section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions;
 
             var result = new List<object>();
@@ -213,51 +211,6 @@ namespace OrchardCore.Media.Controllers
                     });
 
                     _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
-
-                    continue;
-                }                
-
-                if (file.Length > maxFileSize)
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
-                    });
-
-                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
-
-                    continue;
-                }
-
-                if (!allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
-                    });
-
-                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
-
-                    continue;
-                }                
-
-                if (file.Length > maxFileSize)
-                {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = T["The file {0} is too big. The limit is {1}MB", file.FileName, (int)Math.Floor((double) maxFileSize / 1024 / 1024)].ToString()
-                    });
-
-                    _logger.LogInformation("File too big: '{0}' ({1}B)", file.FileName, file.Length);
 
                     continue;
                 }
