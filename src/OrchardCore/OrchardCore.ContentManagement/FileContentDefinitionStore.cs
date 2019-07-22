@@ -1,55 +1,81 @@
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
     public class FileContentDefinitionStore : IContentDefinitionStore
     {
         private readonly IOptions<ShellOptions> _shellOptions;
-        private readonly ShellSettings _shellSettings;
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-        public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
+        public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions)
         {
             _shellOptions = shellOptions;
-            _shellSettings = shellSettings;
         }
 
-        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            if (!File.Exists(Filename))
+            var fileName = GetFilename();
+
+            if (!File.Exists(fileName))
             {
-                return new ContentDefinitionRecord();
+                return Task.FromResult(new ContentDefinitionRecord());
             }
 
-            using (var file = File.OpenText(Filename))
+            _lock.EnterReadLock();
+
+            try
             {
-                using (var reader = new JsonTextReader(file))
+                using (var file = File.OpenText(fileName))
                 {
-                    return (await JObject.LoadAsync(reader)).ToObject<ContentDefinitionRecord>();
+                    using (var reader = new JsonTextReader(file))
+                    {
+                        // We don't use 'LoadAsync' because we use a thread-affine lock type.
+                        return Task.FromResult((JObject.Load(reader)).ToObject<ContentDefinitionRecord>());
+                    }
                 }
             }
-        }
 
-        public async Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
-        {
-            using (var file = File.CreateText(Filename))
+            finally
             {
-                using (var writer = new JsonTextWriter(file))
-                {
-                    await JObject.FromObject(contentDefinitionRecord).WriteToAsync(writer);
-                }
+                _lock.ExitReadLock();
             }
         }
 
-        private string Filename => PathExtensions.Combine(
+        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        {
+            _lock.EnterWriteLock();
+
+            try
+            {
+                using (var file = File.CreateText(GetFilename()))
+                {
+                    using (var writer = new JsonTextWriter(file))
+                    {
+                        // We don't use 'WriteToAsync' because we use a thread-affine lock type.
+                        JObject.FromObject(contentDefinitionRecord).WriteTo(writer);
+                    }
+                }
+            }
+
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private string GetFilename() => PathExtensions.Combine(
                 _shellOptions.Value.ShellsApplicationDataPath,
                 _shellOptions.Value.ShellsContainerName,
-                _shellSettings.Name, "ContentDefinition.json");
-
+                ShellScope.Context.Settings.Name, "ContentDefinition.json");
     }
 }
