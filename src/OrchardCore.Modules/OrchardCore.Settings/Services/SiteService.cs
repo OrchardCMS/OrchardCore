@@ -96,6 +96,7 @@ namespace OrchardCore.Settings.Services
             existing.TimeZoneId = site.TimeZoneId;
             existing.UseCdn = site.UseCdn;
             existing.CdnBaseUrl = site.CdnBaseUrl;
+            existing.AppendVersion = site.AppendVersion;
 
             session.Save(existing);
 
