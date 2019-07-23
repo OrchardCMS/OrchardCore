@@ -5,22 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" asp-append-version="true" />
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.css" />
+    <style asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" asp-append-version="true" ></style>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui" at="Foot" asp-append-version="true"></script>
     <script asp-name="jQuery-ui-i18n" at="Foot"></script>
-
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Header", required: false)
 </head>

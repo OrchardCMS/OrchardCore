@@ -56,29 +56,32 @@ namespace OrchardCore.ContentFields.Fields
                 }
                 else
                 {
-                    var uri = new Uri(model.RawAddress);
-
-                    // if it is a url with QueryString
-                    if (!String.IsNullOrWhiteSpace(uri.Query))
+                    if (model.RawAddress != null)
                     {
-                        var query = QueryHelpers.ParseQuery(uri.Query);
-                        if (query.ContainsKey("v"))
+                        var uri = new Uri(model.RawAddress);
+
+                        // if it is a url with QueryString
+                        if (!String.IsNullOrWhiteSpace(uri.Query))
                         {
-                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                            var query = QueryHelpers.ParseQuery(uri.Query);
+                            if (query.ContainsKey("v"))
+                            {
+                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                            }
+                            else
+                            {
+                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), T["The format of the url is invalid"]);
+                            }
                         }
                         else
                         {
-                            updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), T["The format of the url is invalid"]);
+                            var path = uri.AbsolutePath.Split('?')[0];
+                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                         }
-                    }
-                    else
-                    {
-                        var path = uri.AbsolutePath.Split('?')[0];
-                        model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
-                    }
 
-                    field.RawAddress = model.RawAddress;
-                    field.EmbeddedAddress = model.EmbeddedAddress;
+                        field.RawAddress = model.RawAddress;
+                        field.EmbeddedAddress = model.EmbeddedAddress;
+                    }
                 }
             }
 

@@ -6,10 +6,11 @@ using OrchardCore.FileStorage;
 using OrchardCore.Security;
 
 namespace OrchardCore.Media.Services
-{    /// <summary>
-     /// Check if the path passed as resource is inside the AttachedMediaFieldsFolder
-     /// and in case it is, It checks if the user has ManageAttachedMediaFieldsFolder permission
-     /// </summary>     
+{
+    /// <summary>
+    /// Check if the path passed as resource is inside the AttachedMediaFieldsFolder
+    /// and in case it is, It checks if the user has ManageAttachedMediaFieldsFolder permission
+    /// </summary>     
     public class AttachedMediaFieldsFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
@@ -26,7 +27,6 @@ namespace OrchardCore.Media.Services
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
             _fileStore = fileStore;
         }
-
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
@@ -52,24 +52,21 @@ namespace OrchardCore.Media.Services
             _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
                                 .TrimEnd(_pathSeparator.ToCharArray()) + _pathSeparator;
 
-
             var path = context.Resource as string;
 
-            if (!IsMediaFieldsFolder(path) && !IsDescendantOfMediaFieldsFolder(path))
+            if (IsMediaFieldsFolder(path) || IsDescendantOfMediaFieldsFolder(path))
             {
-                context.Succeed(requirement);
+                return;
             }
 
-            // If we get to here, the path is on the media fields folder and the user must have the ManageMediaFieldsFolder permission.
             // Lazy load to prevent circular dependencies
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
-            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageAttachedMediaFieldsFolder))
+            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnMedia))
             {
                 context.Succeed(requirement);
             }
         }
-
 
         private bool IsMediaFieldsFolder(string childPath)
         {

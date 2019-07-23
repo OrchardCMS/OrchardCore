@@ -82,6 +82,7 @@ namespace OrchardCore.Localization.Drivers
 
                 if (context.Updater.ModelState.IsValid)
                 {
+                    // Invariant culture name is empty so a null value is bound.
                     section.DefaultCulture = model.DefaultCulture ?? "";
                     section.SupportedCultures = supportedCulture;
 
