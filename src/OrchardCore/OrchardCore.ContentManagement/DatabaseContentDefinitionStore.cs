@@ -1,21 +1,20 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.ContentManagement
 {
     public class DatabaseContentDefinitionStore : IContentDefinitionStore
     {
-        private readonly ISession _session;
-
-        public DatabaseContentDefinitionStore(ISession session)
+        public DatabaseContentDefinitionStore()
         {
-            _session = session;
         }
 
         public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            var contentDefinitionRecord = await _session
+            var contentDefinitionRecord = await Session
                 .Query<ContentDefinitionRecord>()
                 .FirstOrDefaultAsync();
 
@@ -30,9 +29,11 @@ namespace OrchardCore.ContentManagement
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            _session.Save(contentDefinitionRecord);
+            Session.Save(contentDefinitionRecord);
 
             return Task.CompletedTask;
         }
+
+        private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
     }
 }

@@ -16,8 +16,8 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddContentManagement(this IServiceCollection services)
         {
             services.AddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
-            services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
-            services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
+            services.AddSingleton<IContentDefinitionManager, ContentDefinitionManager>();
+            services.AddSingleton<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
             services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();

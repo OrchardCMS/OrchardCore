@@ -38,7 +38,7 @@ namespace OrchardCore.ContentManagement
                     using (var reader = new JsonTextReader(file))
                     {
                         // We don't use 'LoadAsync' because we use a thread-affine lock type.
-                        return Task.FromResult((JObject.Load(reader)).ToObject<ContentDefinitionRecord>());
+                        return Task.FromResult(JObject.Load(reader).ToObject<ContentDefinitionRecord>());
                     }
                 }
             }

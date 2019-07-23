@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -16,7 +15,6 @@ namespace OrchardCore.ContentManagement
         private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
 
         private ContentDefinitionRecord _contentDefinitionRecord;
-        private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
@@ -25,16 +23,14 @@ namespace OrchardCore.ContentManagement
         public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
 
         public ContentDefinitionManager(
-            IMemoryCache memoryCache,
             ISignal signal,
             IContentDefinitionStore contentDefinitionStore)
         {
             _signal = signal;
             _contentDefinitionStore = contentDefinitionStore;
-            _memoryCache = memoryCache;
 
-            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
-            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
+            _typeDefinitions = new ConcurrentDictionary<string, ContentTypeDefinition>();
+            _partDefinitions = new ConcurrentDictionary<string, ContentPartDefinition>();
         }
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
@@ -91,7 +87,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition)
         {
-            await ApplyAsync(contentTypeDefinition, await AcquireAsync(contentTypeDefinition));
+            Apply(contentTypeDefinition, await AcquireAsync(contentTypeDefinition));
             await UpdateContentDefinitionRecordAsync();
         }
 
@@ -155,7 +151,7 @@ namespace OrchardCore.ContentManagement
             return result;
         }
 
-        private Task ApplyAsync(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
+        private void Apply(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
         {
             record.DisplayName = model.DisplayName;
             record.Settings = model.Settings;
@@ -185,9 +181,6 @@ namespace OrchardCore.ContentManagement
                 }
                 Apply(part, typePartRecord);
             }
-
-            // Persist changes
-            return UpdateContentDefinitionRecordAsync();
         }
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
@@ -238,7 +231,7 @@ namespace OrchardCore.ContentManagement
             }
 
             var typePartDefinitions = new List<ContentTypePartDefinition>();
-            foreach(var typePartDefinition in source.ContentTypePartDefinitionRecords)
+            foreach (var typePartDefinition in source.ContentTypePartDefinitionRecords)
             {
                 typePartDefinitions.Add(await BuildAsync(typePartDefinition));
             }
@@ -286,20 +279,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<int> GetTypesHashAsync()
         {
-            // The serial number is stored in local cache in order to prevent
-            // loading the record if it's not necessary
-
-            int serial;
-            if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
-            {
-                serial = _memoryCache.Set(
-                    TypeHashCacheKey,
-                    (await GetContentDefinitionRecordAsync()).Serial,
-                    _signal.GetToken(TypeHashCacheKey)
-                );
-            }
-
-            return serial;
+            return (await GetContentDefinitionRecordAsync()).Serial;
         }
 
         private async Task<ContentDefinitionRecord> GetContentDefinitionRecordAsync()
@@ -318,7 +298,6 @@ namespace OrchardCore.ContentManagement
             await _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord);
 
             _signal.SignalToken(TypeHashCacheKey);
-
 
             // Release cached values
             _typeDefinitions.Clear();
