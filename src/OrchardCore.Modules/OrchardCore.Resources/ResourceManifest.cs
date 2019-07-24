@@ -79,9 +79,9 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("popper")
                 .SetUrl("~/OrchardCore.Resources/Scripts/popper.min.js", "~/OrchardCore.Resources/Scripts/popper.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.js")
-                .SetCdnIntegrity("sha384-L2pyEeut/H3mtgCBaUNw7KWzp5n9+4pDQiExs933/5QfaTh8YStYFFkOzSoXjlTb", "sha384-pPGXaBMsJRALMdm7MaTNILgYVlY/jHTDrtHn7e4DqC0TFAcZcyrUyypeAjpZrz7j")
-                .SetVersion("1.15.0")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js", "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.js")
+                .SetCdnIntegrity("sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1", "sha384-+pJF094Ta2RnahQyTGMfUIP/QGRrcV9M7UybKYko0JCH3B5ukTC6V0kEUSWTWhrn")
+                .SetVersion("1.14.7")
                 .SetAppendVersion(true)
                 ;
 
