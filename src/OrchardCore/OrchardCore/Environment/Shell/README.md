@@ -10,7 +10,7 @@ Orchard Core supports a hierachy of Configuration Sources
 
 * The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`
 * Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`  
-* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support Environment
+* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version
 * Environment Variables, or AppSettings as Environment Variables via Azure
 
 The Configuration Sources are loaded in the above order, and settings lower in the heirachy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
@@ -39,7 +39,7 @@ Each OrchardCore module has it's own configuration section under the `OrchardCor
 }
 ```
 
-In addition you can specify a `Tenant` Setting by using the Tenant Name, in this example the `Default` tenant. The Tenant must exist, and you need to include a `State` key for it to be recognised. The value of the key is not important as it will be overwritten by the value in the `tenants.json` file. Note: The tenant name is case sensitive.
+In addition you can specify a `Tenant` Setting by using the Tenant Name, in this example the `Default` tenant. The Tenant must exist, and you need to include a `State` key for it to be recognised by `IShellConfiguration`. The value of the key is not important as the value in the `tenants.json` file will be used. Note: The tenant name is case sensitive.
 
 ```
 {
