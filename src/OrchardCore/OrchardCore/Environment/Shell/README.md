@@ -13,7 +13,7 @@ Orchard Core supports a hierachy of Configuration Sources
 * Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version
 * Environment Variables, or AppSettings as Environment Variables via Azure
 
-The Configuration Sources are loaded in the above order, and settings lower in the heirachy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
+The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
 
@@ -27,19 +27,19 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 }
 ```
 
-Each OrchardCore module has it's own configuration section under the `OrchardCore` section
+Each Orchard Core module has its own configuration section under the `OrchardCore` section
 
 ```
 {
   "OrchardCore": {
-    "OrchardCore.Media":{
+    "OrchardCore.Media": {
       ... individual module configuration ...
     }
   }
 }
 ```
 
-In addition you can specify a `Tenant` Setting by using the Tenant Name, in this example the `Default` tenant. The Tenant must exist, and you need to include a `State` key for it to be recognised by `IShellConfiguration`. The value of the key is not important as the value in the `tenants.json` file will be used. Note: The tenant name is case sensitive.
+In addition you can specify a `Tenant` setting by using the Tenant Name, in this example the `Default` tenant. The tenant must exist and you need to include a `State` key for it to be recognized by `IShellConfiguration`. The value of the key is not important as the value in the `tenants.json` file will be used. The tenant name is case sensitive.
 
 ```
 {
@@ -56,12 +56,13 @@ In addition you can specify a `Tenant` Setting by using the Tenant Name, in this
 
 ### `IShellConfiguration` in the Global Tenant Configuration `App_Data/appsettings.json`
 
-These settings can also be located in an `App_Data/appsettings.json` folder (not created by default), and any settings specified there, will override settings from the `Startup` Project.
+These settings can also be located in an `App_Data/appsettings.json` folder (not created by default), and any settings specified there will override settings from the `Startup` Project.
 
 ### `IShellConfiguration` in the Individual Tenants Folder
 
-These settings are mutable, and written during the setup for the Tenant. For this reason, reading from Environment Name is not supported.
+These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
 Additionally these `appsettings.json` files do not need the `OrchardCore` section
+
 ```
 {
   "OrchardCore.Media": {
@@ -81,20 +82,20 @@ OrchardCore__Default__State__Placeholder
 OrchardCore__Default__OrchardCore.Media__MaxFileSize
 ```
 
-### Order of heirachy
+### Order of hierarchy
 
-By default an OrchardCore site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
+By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
 
 1. Startup project `appsettings.json`
-2. Startup project `appsettings.Environment.json`
-3. User Secrets (if environment = Development)
+2. Startup project `appsettings.{environment}.json`
+3. User Secrets (if environment is __Development__)
 4. Environment Variables
 5. Command Line Args
 
 `IShellConfiguration` will then add to these
 
 6. `App_Data/appsettings.json`
-7. `App_Data/Sites/tenant_name/appsettings.json` for the particular tenant
+7. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
 
 ### Configuration during Deployment
 
