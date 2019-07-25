@@ -2,6 +2,8 @@
 @inject OrchardCore.Modules.IClock Clock
 @using System.Globalization
 
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
 <fieldset class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"]</label>
     <input asp-for="SiteName" class="form-control" />

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
@@ -8,7 +9,19 @@ namespace OrchardCore.Settings.Drivers
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
-        
+
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
+
+        public DefaultSiteSettingsDisplayDriver(
+            IShellHost shellHost,
+            ShellSettings shellSettings
+            )
+        {
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
+        }
+
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(
@@ -40,6 +53,8 @@ namespace OrchardCore.Settings.Drivers
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
                     site.AppendVersion = model.AppendVersion;
+
+                    await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }
             }
 
