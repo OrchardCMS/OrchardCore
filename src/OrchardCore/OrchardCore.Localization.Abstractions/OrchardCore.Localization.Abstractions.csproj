@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Localization" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
