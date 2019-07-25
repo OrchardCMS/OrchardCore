@@ -18,6 +18,14 @@
     <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
 </fieldset>
 
+<fieldset class="form-group" asp-validation-class-for="AppendVersion">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
+        <label class="custom-control-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
+        <span class="hint">@T[" — Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+    </div>
+</fieldset>
+
 <fieldset class="form-group" asp-validation-class-for="UseCdn">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />

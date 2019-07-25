@@ -33,6 +33,7 @@ namespace OrchardCore.Settings.Drivers
                         model.UseCdn = site.UseCdn;
                         model.CdnBaseUrl = site.CdnBaseUrl;
                         model.ResourceDebugMode = site.ResourceDebugMode;
+                        model.AppendVersion = site.AppendVersion;
                     }).Location("Content:1").OnGroup(GroupId)
             );
         }
@@ -51,6 +52,7 @@ namespace OrchardCore.Settings.Drivers
                     site.UseCdn = model.UseCdn;
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
+                    site.AppendVersion = model.AppendVersion;
 
                     await _shellHost.ReloadShellContextAsync(_shellSettings);
                 }

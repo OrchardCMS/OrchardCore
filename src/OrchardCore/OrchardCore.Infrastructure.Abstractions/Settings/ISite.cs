@@ -18,5 +18,6 @@ namespace OrchardCore.Settings
         int MaxPagedCount { get; set; }
         string BaseUrl { get; set; }
         RouteValueDictionary HomeRoute { get; set; }
+        bool AppendVersion { get; set; }
     }
 }
