@@ -32,7 +32,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string Condition { get; set; }
         public string Culture { get; set; }
         public bool? Debug { get; set; }
-        public string Dependencies { get; set; }
+        public string DependsOn { get; set; }
         public string Version { get; set; }
 
         public ResourceLocation At { get; set; }
@@ -147,9 +147,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(Dependencies))
+                if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(Dependencies.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style

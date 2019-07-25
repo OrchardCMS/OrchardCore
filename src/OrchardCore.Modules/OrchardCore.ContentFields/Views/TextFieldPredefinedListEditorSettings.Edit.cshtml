@@ -3,9 +3,9 @@
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.min.js" debug-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));

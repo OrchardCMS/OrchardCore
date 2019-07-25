@@ -1,11 +1,11 @@
 using System;
 using OrchardCore.Localization;
 
-namespace Microsoft.Extensions.Localization
+namespace Microsoft.AspNetCore.Mvc.Localization
 {
-    public static class StringLocalizerExtensions
+    public static class ViewLocalizerExtensions
     {
-        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string singular, string plural, params object[] arguments)
+        public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
             if (plural == null)
             {
@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.Localization
             return localizer[singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments }];
         }
 
-        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
+        public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
         {
             if (pluralForms == null)
             {
