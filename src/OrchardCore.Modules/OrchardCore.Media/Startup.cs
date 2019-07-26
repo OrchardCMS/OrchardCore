@@ -3,10 +3,8 @@ using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -38,20 +36,17 @@ using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
-using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.Memory;
 
 namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-
         /// <summary>
         /// The path in the tenant's App_Data folder containing the assets
         /// </summary>
@@ -72,6 +67,7 @@ namespace OrchardCore.Media
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MediaOptions>(_shellConfiguration.GetSection("OrchardCore.Media"));
+
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -87,10 +83,9 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(options.Value.AssetsRequestPath, mediaPath);
             });
 
-            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
-            {
-                return serviceProvider.GetRequiredService<IMediaFileProvider>();
-            });
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
+                serviceProvider.GetRequiredService<IMediaFileProvider>()
+            ));
 
             services.AddSingleton<IMediaFileStorePathProvider, MediaFileStorePathProvider>();
 
@@ -106,6 +101,9 @@ namespace OrchardCore.Media
 
                 return new MediaFileStore(fileStore, pathProvider, mediaFileStoreOptions);
             });
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<ICdnPathProvider, IMediaFileStorePathProvider>(serviceProvider =>
+                serviceProvider.GetRequiredService<IMediaFileStorePathProvider>()));
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();

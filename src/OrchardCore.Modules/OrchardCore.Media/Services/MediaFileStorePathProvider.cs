@@ -72,7 +72,7 @@ namespace OrchardCore.Media.Services
 
         public bool MatchCdnPath(string path)
         {
-            return !String.IsNullOrEmpty(_cdnBaseUrl) && path.StartsWith(_cdnBaseUrl);
+            return !String.IsNullOrEmpty(_cdnBaseUrl) && path.StartsWith(_cdnBaseUrl, StringComparison.OrdinalIgnoreCase);
         }
 
         public string RemoveCdnPath(string path)

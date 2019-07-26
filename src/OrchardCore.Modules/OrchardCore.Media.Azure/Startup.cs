@@ -58,6 +58,7 @@ namespace OrchardCore.Media.Azure
                 {
                     services.Remove(staticFileProviderDescriptor);
                 }
+
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
@@ -78,8 +79,7 @@ namespace OrchardCore.Media.Azure
                     services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider, MediaBlobFileStorePathProvider>());
                 }
 
-                services.AddSingleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>();
-                services.AddSingleton<ICdnPathProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStore>());
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>());
             }
 
             services.Configure<MvcOptions>((options) =>

@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
@@ -52,10 +53,9 @@ namespace OrchardCore.Tenants
                 return new TenantFileProvider(contentRoot);
             });
 
-            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
-            {
-                return serviceProvider.GetRequiredService<ITenantFileProvider>();
-            });
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, ITenantFileProvider>(serviceProvider =>
+                serviceProvider.GetRequiredService<ITenantFileProvider>()
+            ));
         }
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {

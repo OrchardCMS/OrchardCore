@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Azure.Services
 
         public bool MatchCdnPath(string path)
         {
-            return !String.IsNullOrEmpty(_publicUrlBase) && path.StartsWith(_publicUrlBase);
+            return !String.IsNullOrEmpty(_publicUrlBase) && path.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
