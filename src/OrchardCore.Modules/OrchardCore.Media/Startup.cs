@@ -42,6 +42,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.Memory;
@@ -70,14 +71,7 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //TODO this is a problem, because it makes in unreplaceable in DI
-            var mediaConfiguration = _shellConfiguration.GetSection("OrchardCore.Media");
-            var mediaOptions = mediaConfiguration.Get<MediaOptions>();
-            if (mediaOptions == null)
-            {
-                mediaOptions = new MediaOptions();
-            }
-            services.Configure<MediaOptions>(mediaConfiguration);
+            services.Configure<MediaOptions>(_shellConfiguration.GetSection("OrchardCore.Media"));
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -126,46 +120,19 @@ namespace OrchardCore.Media
 
             // ImageSharp
 
-            services.AddImageSharpCore(options =>
-            {
-                options.Configuration = Configuration.Default;
-                options.MaxBrowserCacheDays = mediaOptions.MaxBrowserCacheDays;
-                options.MaxCacheDays = mediaOptions.MaxCacheDays;
-                options.CachedNameLength = 12;
-                options.OnParseCommands = validation =>
-                {
-                    // Force some parameters to prevent disk filling.
-                    // For more advanced resize parameters the usage of profiles will be necessary.
-                    // This can be done with a custom IImageWebProcessor implementation that would 
-                    // accept profile names.
+            // Add Custom ImageSharp Configuration first, to override ImageSharp defaults
+            services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-                    validation.Commands.Remove(ResizeWebProcessor.Compand);
-                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                    validation.Commands.Remove(ResizeWebProcessor.Xy);
-                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
-
-                    if (validation.Commands.Count > 0)
-                    {
-                        if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
-                        {
-                            validation.Commands[ResizeWebProcessor.Mode] = "max";
-                        }
-                    }
-                };
-                options.OnProcessed = _ => { };
-                options.OnPrepareResponse = _ => { };
-            })
-
-            .SetRequestParser<QueryCollectionRequestParser>()
-            .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-            .SetCache<PhysicalFileSystemCache>()
-            .SetCacheHash<CacheHash>()
-            .AddProvider<MediaResizingFileProvider>()
-            .AddProcessor<ResizeWebProcessor>()
-            .AddProcessor<FormatWebProcessor>()
-            .AddProcessor<ImageVersionProcessor>()
-            .AddProcessor<BackgroundColorWebProcessor>();
+            services.AddImageSharpCore()
+                .SetRequestParser<QueryCollectionRequestParser>()
+                .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
+                .SetCache<PhysicalFileSystemCache>()
+                .SetCacheHash<CacheHash>()
+                .AddProvider<MediaResizingFileProvider>()
+                .AddProcessor<ResizeWebProcessor>()
+                .AddProcessor<FormatWebProcessor>()
+                .AddProcessor<ImageVersionProcessor>()
+                .AddProcessor<BackgroundColorWebProcessor>();
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
