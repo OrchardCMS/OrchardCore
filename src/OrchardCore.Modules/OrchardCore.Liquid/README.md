@@ -137,6 +137,24 @@ Output
 landing-page
 ```
 
+### `liquid`
+
+Renders a liquid string, useful if you are rendering a field value directly which may have liquid content, such as, an html field.
+
+Input
+
+```liquid
+{{ Model.ContentItem.Content.Paragraph.Content.Html | liquid | raw }}
+```
+
+In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value.
+
+Output
+
+```
+<p> <img src="/blog/media/kitten.jpg" /> </p>
+```
+
 ### `markdownify`
 
 Converts a Markdown string to HTML.
@@ -619,6 +637,23 @@ Example
 
 ```liquid
 {% antiforgerytoken %}
+```
+
+## Razor Helper
+
+To render a liquid encoded property within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
+
+Input
+```
+@await Orchard.LiquidToHtml((string)Model.ContentItem.Content.Paragraph.Content.Html)
+```
+
+In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
+
+Output
+
+```
+<p> <img src="/blog/media/kitten.jpg" /> </p>
 ```
 
 ## CREDITS
