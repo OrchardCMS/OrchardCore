@@ -87,9 +87,9 @@ namespace OrchardCore.Media.Services
             return _pathProvider.MapPathToPublicUrl(path);
         }
 
-        public string MapPublicUrlToPath(string publicUrl)
+        public string MapRequestPathToFileStorePath(string publicUrl)
         {
-            return _pathProvider.MapPublicUrlToPath(publicUrl);
+            return _pathProvider.MapRequestPathToFileStorePath(publicUrl);
         }
 
         public bool MatchCdnPath(string path)

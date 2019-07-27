@@ -34,7 +34,7 @@ namespace OrchardCore.Media.Azure.Services
         public async Task<string> AddFileVersionToPathAsync(PathString requestPathBase, string path)
         {
             // Path has already been correctly parsed before here.
-            var mappedPath = _mediaFileStore.MapPublicUrlToPath(requestPathBase + path);
+            var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(requestPathBase + path);
 
             var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath) as BlobFile;
 

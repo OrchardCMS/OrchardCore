@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Azure.Services
         /// </summary>
         /// <param name="publicUrl"></param>
         /// <returns></returns>
-        public string MapPublicUrlToPath(string publicUrl)
+        public string MapRequestPathToFileStorePath(string publicUrl)
         {
 
             //TODO make this MapSiteUrlToPath ??

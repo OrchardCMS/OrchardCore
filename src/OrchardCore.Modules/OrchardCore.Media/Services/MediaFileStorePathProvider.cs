@@ -9,7 +9,7 @@ namespace OrchardCore.Media.Services
 {
     public class MediaFileStorePathProvider : IMediaFileStorePathProvider
     {
-        private readonly string _siteUrlBase;
+        private readonly string _requestBaseUrl;
         private readonly string _cdnBaseUrl;
         public MediaFileStorePathProvider(
             ShellSettings shellSettings,
@@ -17,14 +17,14 @@ namespace OrchardCore.Media.Services
             IOptions<MediaOptions> mediaOptions
             )
         {
-            _siteUrlBase = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
+            _requestBaseUrl = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
 
             var originalPathBase = httpContextAccessor
                 .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
 
             if (originalPathBase.HasValue)
             {
-                _siteUrlBase = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, _siteUrlBase);
+                _requestBaseUrl = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, _requestBaseUrl);
             }
 
             _cdnBaseUrl = mediaOptions.Value.CdnBaseUrl;
@@ -33,9 +33,9 @@ namespace OrchardCore.Media.Services
         public string MapPathToPublicUrl(string path)
         {
             //TODO fix extensions
-            return _cdnBaseUrl + _siteUrlBase.TrimEnd('/') + "/" + IMediaFileStorePathProviderHelpers.NormalizePath(path);
+            return _cdnBaseUrl + _requestBaseUrl.TrimEnd('/') + "/" + IMediaFileStorePathProviderHelpers.NormalizePath(path);
         }
-        public string MapPublicUrlToPath(string publicUrl)
+        public string MapRequestPathToFileStorePath(string requestPath)
         {
             //Hmm maybe bring back what I wrote for the other one
 
@@ -62,12 +62,12 @@ namespace OrchardCore.Media.Services
 
 
             //TODO make this MapSiteUrlToPath
-            if (!publicUrl.StartsWith(_siteUrlBase, StringComparison.OrdinalIgnoreCase))
+            if (!requestPath.StartsWith(_requestBaseUrl, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
+                throw new ArgumentOutOfRangeException(nameof(requestPath), "The specified URL is not inside the URL scope of the file store.");
             }
 
-            return publicUrl.Substring(_siteUrlBase.Length);
+            return requestPath.Substring(_requestBaseUrl.Length);
         }
 
         public bool MatchCdnPath(string path)

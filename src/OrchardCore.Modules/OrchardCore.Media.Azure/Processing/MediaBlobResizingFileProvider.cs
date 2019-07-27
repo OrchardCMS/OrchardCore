@@ -91,7 +91,7 @@ namespace OrchardCore.Media.Azure.Processing
         public async Task<IImageResolver> GetAsync(HttpContext context)
         {
             // Path has already been correctly parsed before here.
-            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
+            var filePath = _mediaStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path.Value);
 
             // Check to see if the file exists.
             var file = await _mediaStore.GetFileInfoAsync(filePath);

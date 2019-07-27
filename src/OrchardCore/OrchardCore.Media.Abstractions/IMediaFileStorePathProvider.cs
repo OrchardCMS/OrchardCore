@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using OrchardCore.FileStorage;
-using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media
 {
     public interface IMediaFileStorePathProvider : ICdnPathProvider
     {
+        //TODO update to include cdn url in comments
         /// <summary>
         /// Maps a path within the file store to a publicly accessible URL.
         /// </summary>
@@ -14,13 +14,14 @@ namespace OrchardCore.Media
         /// <returns>A string containing the mapped public URL of the given path.</returns>
         string MapPathToPublicUrl(string path);
 
+        //TODO rename summary if this feels like a better name
         /// <summary>
         /// Maps a public URL to a path within the file store.
         /// </summary>
-        /// <param name="publicUrl">The public URL to map.</param>
+        /// <param name="requestPath">The public URL to map.</param>
         /// <returns>The mapped path of the given public URL within the file store.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown if the specified <paramref name="publicUrl"/> value is not within the publicly accessible URL space of the file store.</exception>
-        string MapPublicUrlToPath(string publicUrl);
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown if the specified <paramref name="requestPath"/> value is not within the publicly accessible URL space of the file store.</exception>
+        string MapRequestPathToFileStorePath(string requestPath);
     }
 
     //TODO rationalise these extensions together

@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Azure.Services
                 return;
             }
             // TODO this needs supported files/extensions for validation
-            var mappedPath = _mediaFileStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path);
+            var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path);
   
             var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath);
             if (fileInfo == null)
