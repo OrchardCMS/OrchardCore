@@ -10,17 +10,11 @@ namespace OrchardCore.Lists.Models
             return builder.WithSetting("ContainedContentTypes", new string[] { });
         }
 
-        public static ContentTypePartDefinitionBuilder ContainedContentTypes(this ContentTypePartDefinitionBuilder builder, string[] containedContentTypes)
+        public static ContentTypePartDefinitionBuilder ContainedContentTypes(this ContentTypePartDefinitionBuilder builder, string[] containedContentTypes, bool keepExistingTypes = true)
         {
-            return builder.WithSetting("ContainedContentTypes", containedContentTypes);
-        }
-
-        public static ContentTypePartDefinitionBuilder AddContainedContentTypes(this ContentTypePartDefinitionBuilder builder, string[] containedContentTypes)
-        {
-            return builder.MergeSettings(new JObject()
-            {
-                ["ContainedContentTypes"] = new JArray(containedContentTypes)
-            });
+            return keepExistingTypes
+                ? builder.MergeSettings(new JObject() { ["ContainedContentTypes"] = new JArray(containedContentTypes) })
+                : builder.WithSetting("ContainedContentTypes", containedContentTypes);
         }
     }
 }
