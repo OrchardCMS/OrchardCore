@@ -5,6 +5,11 @@ namespace OrchardCore.Lists.Models
 {
     public static class ListPartSettingsExtensions
     {
+        public static ContentTypePartDefinitionBuilder ClearContainedContentTypes(this ContentTypePartDefinitionBuilder builder)
+        {
+            return builder.WithSetting("ContainedContentTypes", new string[] { });
+        }
+
         public static ContentTypePartDefinitionBuilder ContainedContentTypes(this ContentTypePartDefinitionBuilder builder, string[] containedContentTypes)
         {
             return builder.WithSetting("ContainedContentTypes", containedContentTypes);
