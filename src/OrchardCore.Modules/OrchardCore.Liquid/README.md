@@ -139,12 +139,12 @@ landing-page
 
 ### `liquid`
 
-Renders a liquid string, useful if you are rendering a field value directly which may have liquid content, such as, an html field.
+Renders a liquid string template.
 
 Input
 
 ```liquid
-{{ Model.ContentItem.Content.Paragraph.Content.Html | liquid | raw }}
+{{ Model.ContentItem.Content.Paragraph.Content.Html | liquid }}
 ```
 
 In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value.
@@ -641,7 +641,7 @@ Example
 
 ## Razor Helper
 
-To render a liquid encoded property within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
+To render a liquid string template within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
 
 Input
 ```
