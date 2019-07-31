@@ -31,10 +31,10 @@ namespace OrchardCore.Media.Azure.Services
             _options = options.Value;
         }
 
-        public async Task<string> AddFileVersionToPathAsync(PathString requestPathBase, string path)
+        public async Task<string> AddFileVersionToPathAsync(PathString requestPathBase, string resolvedPath, string path)
         {
             // Path has already been correctly parsed before here.
-            var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(requestPathBase + path);
+            var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(requestPathBase + resolvedPath);
 
             var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath) as BlobFile;
 
@@ -42,14 +42,15 @@ namespace OrchardCore.Media.Azure.Services
             if (fileInfo != null)
             {
                 var value = fileInfo.FileHash;
-                //TODO expiry from configuration
+                //TODO expiry from configuration, and probably from ISignal
                 var cacheEntryOptions = new MemoryCacheEntryOptions();
                 cacheEntryOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));
                 cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                //TODO test
-                // Set to original path, so ShellFileVersionProvider can retrieve from cache
-                _cache.Set(requestPathBase + path, value, cacheEntryOptions);
-                return QueryHelpers.AddQueryString(requestPathBase + path, VersionKey, value);
+                //TODO Test
+                // Set to resolvedPath, so ShellFileVersionProvider can retrieve from cache
+                _cache.Set(requestPathBase + resolvedPath, value, cacheEntryOptions);
+                // Return actual path with query string
+                return QueryHelpers.AddQueryString(path, VersionKey, value);
             }
             return null;
         }

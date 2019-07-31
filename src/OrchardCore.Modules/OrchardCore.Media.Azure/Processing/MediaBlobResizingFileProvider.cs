@@ -47,6 +47,7 @@ namespace OrchardCore.Media.Azure.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
+            //TODO This method will be identical to the normal, so move to provider
             if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
             {
                 return false;
@@ -57,7 +58,7 @@ namespace OrchardCore.Media.Azure.Processing
                 return false;
             }
 
-            // Always allow ImageSharp to process an Image file from Blob, until have have a middleware to serve images (and probably a cache too)
+            // Always allow ImageSharp to process an Image file from Blob, until have have a middleware to serve images (and possibly a cache too)
             //if (!context.Request.Query.ContainsKey(ResizeWebProcessor.Width) &&
             //    !context.Request.Query.ContainsKey(ResizeWebProcessor.Height))
             //{
@@ -90,6 +91,8 @@ namespace OrchardCore.Media.Azure.Processing
         /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(HttpContext context)
         {
+            //TODO consider this. It causes a HEAD request every time, checking if the files exists. Cache? Hmm BlobFile is CQRS so possible.
+
             // Path has already been correctly parsed before here.
             var filePath = _mediaStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path.Value);
 

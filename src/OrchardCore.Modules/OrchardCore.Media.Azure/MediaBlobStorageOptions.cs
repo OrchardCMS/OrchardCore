@@ -4,6 +4,7 @@ namespace OrchardCore.Media.Azure
 {
     public class MediaBlobStorageOptions : BlobStorageOptions
     {
+        //TODO Probably add Blob Security Level
         public string PublicHostName { get; set; }
         public bool SupportResizing { get; set; }
 
