@@ -155,6 +155,8 @@ Output
 <p> <img src="/blog/media/kitten.jpg" /> </p>
 ```
 
+Optionally you can pass a class for model binding.
+
 ### `markdownify`
 
 Converts a Markdown string to HTML.
@@ -639,9 +641,11 @@ Example
 {% antiforgerytoken %}
 ```
 
-## Razor Helper
+## Razor Helpers
 
-To render a liquid string template within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
+### `LiquidToHtml`
+
+To render a liquid string template as `IHtmlContent` within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
 
 Input
 ```
@@ -655,6 +659,27 @@ Output
 ```
 <p> <img src="/blog/media/kitten.jpg" /> </p>
 ```
+
+Optionally you can pass a class for model binding.
+
+### `LiquidToRaw`
+
+To render a liquid string template as a raw string, before passing to another helper, within Razor use the `LiquidToRaw` helper extension method on the view's base `Orchard` property, e.g.:
+
+Input
+```
+var markdown = @await Orchard.LiquidToRaw((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown);
+```
+
+In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and that the raw string will then be passed to the `MarkdownToHtml` helper, before rendering as html.
+
+Output
+
+```
+<p> <img src="/blog/media/kitten.jpg" /> </p>
+```
+
+Optionally you can pass a class for model binding.
 
 ## CREDITS
 
