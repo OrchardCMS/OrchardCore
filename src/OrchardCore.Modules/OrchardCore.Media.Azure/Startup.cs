@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -14,10 +13,8 @@ using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Azure.Processing;
 using OrchardCore.Media.Azure.Services;
-using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media.Azure
 {

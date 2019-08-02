@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media.Services
+namespace OrchardCore.Media
 {
     public class MediaFileStore : IMediaFileStore
     {
