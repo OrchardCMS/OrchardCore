@@ -13,23 +13,25 @@ namespace OrchardCore.ContentManagement
     public class FileContentDefinitionStore : IContentDefinitionStore
     {
         private readonly IOptions<ShellOptions> _shellOptions;
-        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions)
         {
             _shellOptions = shellOptions;
         }
 
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
             var fileName = GetFilename();
 
             if (!File.Exists(fileName))
             {
-                return Task.FromResult(new ContentDefinitionRecord());
+                var contentDefinitionRecord = new ContentDefinitionRecord();
+                await SaveContentDefinitionAsync(contentDefinitionRecord);
+                return contentDefinitionRecord;
             }
 
-            _lock.EnterReadLock();
+            await _semaphore.WaitAsync();
 
             try
             {
@@ -37,21 +39,20 @@ namespace OrchardCore.ContentManagement
                 {
                     using (var reader = new JsonTextReader(file))
                     {
-                        // We don't use 'LoadAsync' because we use a thread-affine lock type.
-                        return Task.FromResult(JObject.Load(reader).ToObject<ContentDefinitionRecord>());
+                        return (await JObject.LoadAsync(reader)).ToObject<ContentDefinitionRecord>();
                     }
                 }
             }
 
             finally
             {
-                _lock.ExitReadLock();
+                _semaphore.Release();
             }
         }
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public async Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            _lock.EnterWriteLock();
+            await _semaphore.WaitAsync();
 
             try
             {
@@ -59,23 +60,20 @@ namespace OrchardCore.ContentManagement
                 {
                     using (var writer = new JsonTextWriter(file))
                     {
-                        // We don't use 'WriteToAsync' because we use a thread-affine lock type.
-                        JObject.FromObject(contentDefinitionRecord).WriteTo(writer);
+                        await JObject.FromObject(contentDefinitionRecord).WriteToAsync(writer);
                     }
                 }
             }
 
             finally
             {
-                _lock.ExitWriteLock();
+                _semaphore.Release();
             }
-
-            return Task.CompletedTask;
         }
 
         private string GetFilename() => PathExtensions.Combine(
-                _shellOptions.Value.ShellsApplicationDataPath,
-                _shellOptions.Value.ShellsContainerName,
-                ShellScope.Context.Settings.Name, "ContentDefinition.json");
+            _shellOptions.Value.ShellsApplicationDataPath,
+            _shellOptions.Value.ShellsContainerName,
+            ShellScope.Context.Settings.Name, "ContentDefinition.json");
     }
 }

@@ -13,7 +13,6 @@ namespace OrchardCore.HomeRoute
         private RouteValueDictionary _homeRoute;
         private IChangeToken _changeToken;
 
-        // 'HomeRoute' requires a registered 'ISiteService' implementation.
         public HomeRouteMiddleware(RequestDelegate next, ISiteService siteService)
         {
             _next = next;
@@ -24,9 +23,8 @@ namespace OrchardCore.HomeRoute
         {
             if (_changeToken?.HasChanged ?? true)
             {
-                // Assumed to be atomic as we just update reference types.
-                _homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 _changeToken = _siteService.ChangeToken;
+                _homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
             }
 
             httpContext.Features.Set(new HomeRouteFeature
