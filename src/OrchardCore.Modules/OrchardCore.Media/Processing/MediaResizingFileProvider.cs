@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
-using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -16,18 +15,18 @@ namespace OrchardCore.Media.Processing
 {
     public class MediaResizingFileProvider : IImageProvider
     {
-        private readonly IMediaFileStore _mediaStore;
+        private readonly IMediaFileResolverFactory _mediafileResolveFactory;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
         private readonly PathString _assetsRequestPath;
 
         public MediaResizingFileProvider(
-            IMediaFileStore mediaStore,
+            IMediaFileResolverFactory mediaFileResolverFactory,
             IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
             IOptions<MediaOptions> mediaOptions
             )
         {
-            _mediaStore = mediaStore;
+            _mediafileResolveFactory = mediaFileResolverFactory;
             _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
             _supportedSizes = mediaOptions.Value.SupportedSizes;
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
@@ -84,17 +83,7 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(HttpContext context)
         {
-            // Path has already been correctly parsed before here.
-            var filePath = _mediaStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path.Value);
-
-            // Check to see if the file exists.
-            var file = await _mediaStore.GetFileInfoAsync(filePath);
-            if (file == null)
-            {
-                return null;
-            }
-            var metadata = new ImageMetaData(file.LastModifiedUtc);
-            return new MediaFileResolver(_mediaStore, filePath, metadata);
+            return await _mediafileResolveFactory.GetAsync(context);
         }
     }
 }

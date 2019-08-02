@@ -121,6 +121,9 @@ namespace OrchardCore.Media
             // Add Custom ImageSharp Configuration first, to override ImageSharp defaults
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
+            // Add MediaFileResolverFactory, which creates ImageSharp Image Resolvers 
+            services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
+
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
                 .SetMemoryAllocator<ArrayPoolMemoryAllocator>()

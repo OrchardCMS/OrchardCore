@@ -6,7 +6,6 @@ namespace OrchardCore.Media.Azure
     {
         //TODO Probably add Blob Security Level
         public string PublicHostName { get; set; }
-        public bool SupportResizing { get; set; }
 
         /// <summary>
         /// Time to expire the Blob ContentMD5 File Version Hash from cache, in minutes, defaults to 2 hours

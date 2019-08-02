@@ -37,27 +37,25 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var mediaBlobConfiguration = _configuration.GetSection("OrchardCore.Media.Azure");
-            //TODO change this back to just the values we need
-            var mediaBlobStorageOptions = mediaBlobConfiguration.Get<MediaBlobStorageOptions>();
-            if (mediaBlobStorageOptions == null)
-            {
-                mediaBlobStorageOptions = new MediaBlobStorageOptions();
-            }
-            services.Configure<MediaBlobStorageOptions>(mediaBlobConfiguration);
+            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
 
             // Only replace default implementation if options are valid.
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
+            var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
+            var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-                // Remove the IMediaFileProvider & IStaticFileProvider, as we no longer need to serve from media from the file system
-                services.RemoveAll<IMediaFileProvider>();
+                // Remove this specific IStaticFileProvider as we no longer need to provide this particular provider to the ShellFileVersionProvider.
                 var staticFileProviderDescriptor = services.FirstOrDefault(descriptor =>
                     descriptor.ServiceType == typeof(IStaticFileProvider) &&
                     descriptor.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
+
                 if (staticFileProviderDescriptor != null)
                 {
                     services.Remove(staticFileProviderDescriptor);
                 }
+
+                // Remove the IMediaFileProvider as we no longer need to serve from media from the StaticFileMiddleware.
+                services.RemoveAll<IMediaFileProvider>();
 
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
@@ -70,15 +68,10 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider, mediaOptions);
                 }));
 
-                if (mediaBlobStorageOptions.SupportResizing)
-                {
-                    services.Replace(ServiceDescriptor.Singleton<IImageProvider, MediaBlobResizingFileProvider>());
-                }
-                else
-                {
-                    services.Replace(ServiceDescriptor.Singleton<IMediaFileStorePathProvider, MediaBlobFileStorePathProvider>());
-                }
+                // Replace MediaFileResolverFactory with blob implementation.
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileResolverFactory, MediaBlobFileResolverFactory>());
 
+                // Add Azure Blob FileStoreVersionProvider.
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>());
             }
 
@@ -90,10 +83,9 @@ namespace OrchardCore.Media.Azure
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            // Only use middleware if options are valid.
             var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-            if (mediaBlobStorageOptions.SupportResizing &&
-                MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger)
-                )
+            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
                 app.UseMiddleware<MediaBlobMiddleware>();
             }

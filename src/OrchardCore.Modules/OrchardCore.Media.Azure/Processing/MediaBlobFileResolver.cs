@@ -1,6 +1,5 @@
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Blob;
 using OrchardCore.FileStorage.AzureBlob;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Resolvers;
@@ -35,7 +34,6 @@ namespace OrchardCore.Media.Azure.Processing
         /// <inheritdoc/>
         public async Task<Stream> OpenReadAsync()
         {
-
             // Check to see if the file exists.
             if (_fileStoreEntry == null)
             {
