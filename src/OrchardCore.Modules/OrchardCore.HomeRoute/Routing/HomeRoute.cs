@@ -9,7 +9,7 @@ namespace OrchardCore.HomeRoute
     {
         private RouteValueDictionary _routeValues;
         private readonly ISiteService _siteService;
-        private IChangeToken _siteServicechangeToken;
+        private IChangeToken _changeToken;
 
         public HomeRoute(ISiteService siteService)
         {
@@ -18,15 +18,10 @@ namespace OrchardCore.HomeRoute
 
         public async Task<RouteValueDictionary> GetValuesAsync()
         {
-            if (_siteServicechangeToken == null || _siteServicechangeToken.HasChanged)
+            if (_changeToken?.HasChanged ?? true)
             {
-                var routeValues = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
-
-                lock (this)
-                {
-                    _routeValues = routeValues;
-                    _siteServicechangeToken = _siteService.ChangeToken;
-                }
+                _changeToken = _siteService.ChangeToken;
+                _routeValues = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
             }
 
             return new RouteValueDictionary(_routeValues);
