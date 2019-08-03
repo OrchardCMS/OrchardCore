@@ -15,13 +15,14 @@ using OrchardCore.Media.Azure.Processing;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : StartupBase
     {
-        private ILogger<Startup> _logger;
+        private readonly ILogger<Startup> _logger;
         private readonly IShellConfiguration _configuration;
 
         public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
@@ -80,11 +81,15 @@ namespace OrchardCore.Media.Azure
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // Only use middleware if options are valid.
+            // Only use middleware if options are valid, and services replaced.
             var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
+                // ImageSharp after the static blob filestore middleware. (when Middleware is working better!)
+                app.UseImageSharp();
+
                 app.UseMiddleware<MediaBlobMiddleware>();
+
             }
         }
     }

@@ -156,13 +156,13 @@ namespace OrchardCore.Media
         {
             var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-            //TODO we could also remove ImageSharp dependencies if we're not using it, and not initiate the middleware
-            // ImageSharp before the static file provider
-            app.UseImageSharp();
 
-            // IMediaFileProvider maybe removed by Blob Storage
+            // The MediaFileProvider maybe removed by Blob Storage
             if (mediaFileProvider != null)
             {
+                // ImageSharp before the static file provider
+                app.UseImageSharp();
+
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     // The tenant's prefix is already implied by the infrastructure

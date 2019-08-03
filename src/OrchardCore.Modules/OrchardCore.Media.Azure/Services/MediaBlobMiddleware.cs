@@ -36,6 +36,16 @@ namespace OrchardCore.Media.Azure.Services
                 await _next.Invoke(context);
                 return;
             }
+
+            // So this will check it's cache
+
+            // If present in cache return from cache. Use cachebusting to determine cache validity
+
+            // Then check if ImageSharp should handle
+
+            // If not then Cache file and Serve it
+
+
             // TODO this needs supported files/extensions for validation
             var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path);
   
