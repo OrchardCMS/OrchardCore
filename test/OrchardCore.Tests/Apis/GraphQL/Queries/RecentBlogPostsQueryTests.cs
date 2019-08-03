@@ -36,7 +36,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Queries
                     .Query("RecentBlogPosts", builder =>
                     {
                         builder
-                            .AddField("displayText");
+                            .WithField("displayText");
                     });
 
                 var nodes = result["data"]["recentBlogPosts"];

@@ -77,6 +77,10 @@ namespace OrchardCore.Settings.Recipes
                         site.UseCdn = property.Value.Value<bool>();
                         break;
 
+                    case "AppendVersion":
+                        site.AppendVersion = property.Value.Value<bool>();
+                        break;
+
                     case "HomeRoute":
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
                         break;

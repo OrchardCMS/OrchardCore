@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using OrchardCore.Admin;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentFields.Settings;
@@ -9,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Content.Controllers
 {
+    [Admin]
     public class ContentPickerController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;

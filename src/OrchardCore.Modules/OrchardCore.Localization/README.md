@@ -23,6 +23,19 @@ PO files are found at these locations:
 
 `[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
+## Recipe Step
+Cultures can be added during recipes using the settings step. Here is a sample step:
+
+``` json
+{
+  "name": "settings",
+  "LocalizationSettings": {
+    "DefaultCulture":  "fr",
+    "SupportedCultures": [ "fr", "en" ]
+  }
+},
+```
+
 ### Examples
 
 - `/App_Data/Localization/fr.po`

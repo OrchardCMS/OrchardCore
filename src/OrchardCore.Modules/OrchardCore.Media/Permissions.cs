@@ -16,23 +16,29 @@ namespace OrchardCore.Media
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
-                new PermissionStereotype {
+            return new[]
+            {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
                     Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
                     Permissions = new[] { ManageMedia }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
                     Permissions = new[] { ManageOwnMedia }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
                     Permissions = new[] { ManageOwnMedia }
                 },

@@ -1,12 +1,10 @@
-using System.IO;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Services
@@ -19,8 +17,6 @@ namespace OrchardCore.Facebook.Widgets.Services
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
             var part = model.FacebookPluginPart;
 
-            
-            
             var templateContext = new TemplateContext();
             templateContext.SetValue("ContentItem", part.ContentItem);
             templateContext.MemberAccessStrategy.Register<FacebookPluginPartViewModel>();
