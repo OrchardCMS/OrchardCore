@@ -29,7 +29,7 @@ namespace OrchardCore.HomeRoute
                 }
             }
 
-            return _routeValues;
+            return new RouteValueDictionary(_routeValues);
         }
     }
 }
