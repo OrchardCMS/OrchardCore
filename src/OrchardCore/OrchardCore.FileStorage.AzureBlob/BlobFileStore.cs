@@ -54,7 +54,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 {
                     await _blobContainer.CreateIfNotExistsAsync();
                     await CreateBasePathIfNotExistsAsync();
-                    await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = BlobContainerPublicAccessType.Blob });
+                    await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = _options.AccessPermissions });
                 }
                 catch (Exception ex)
                 {
@@ -79,7 +79,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             var blob = GetBlobReference(path);
 
-            if (!await blob.ExistsAsync()) 
+            if (!await blob.ExistsAsync())
                 return null;
 
             await blob.FetchAttributesAsync();
@@ -167,7 +167,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             return true;
         }
 
-     
+
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
@@ -192,13 +192,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             do
             {
-                var segment = 
+                var segment =
                     await blobDirectory.ListBlobsSegmentedAsync(
-                        useFlatBlobListing: true, 
-                        blobListingDetails: BlobListingDetails.None, 
-                        maxResults: null, 
-                        currentToken: continuationToken, 
-                        options: null, 
+                        useFlatBlobListing: true,
+                        blobListingDetails: BlobListingDetails.None,
+                        maxResults: null,
+                        currentToken: continuationToken,
+                        options: null,
                         operationContext: null);
 
                 foreach (var item in segment.Results)
@@ -265,7 +265,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         public async Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             await _verifyContainerTask;
-            
+
             var blobFile = fileStoreEntry as BlobFile;
             if (blobFile == null || blobFile.BlobReference == null)
                 throw new FileStoreException("Cannot get file stream because the file does not exist.");
@@ -281,7 +281,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (!overwrite && await blob.ExistsAsync())
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
-            
+
             _contentTypeProvider.TryGetContentType(path, out var contentType);
 
             blob.Properties.ContentType = contentType ?? "application/octet-stream";
