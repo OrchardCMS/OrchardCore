@@ -10,6 +10,12 @@ namespace OrchardCore.Media
         /// The request path used to route asset files
         /// </summary>
         public PathString AssetsRequestPath = new PathString("/media");
+
+        /// <summary>
+        /// Specify the type of cache to use when resizing media.
+        /// </summary>
+
+        public CacheConfiguration CacheConfiguration = CacheConfiguration.Physical;
         public int MaxBrowserCacheDays { get; set; } = 30;
         public int MaxCacheDays { get; set; } = 365;
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -134,6 +135,12 @@ namespace OrchardCore.Media
                 .AddProcessor<FormatWebProcessor>()
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<BackgroundColorWebProcessor>();
+
+            if (_shellConfiguration.GetSection("OrchardCore.Media")
+                .GetValue<CacheConfiguration>(nameof(MediaOptions.CacheConfiguration)) == CacheConfiguration.None)
+            {
+                services.Replace(ServiceDescriptor.Singleton<IImageCache, NullMediaCache>());
+            }
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
