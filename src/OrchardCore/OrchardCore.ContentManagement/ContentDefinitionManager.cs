@@ -316,21 +316,23 @@ namespace OrchardCore.ContentManagement
                 return scopedCache.ContentDefinitionRecord;
             }
 
-            if (_cache?.ChangeToken.HasChanged ?? true)
+            var cache = _cache;
+
+            if (cache?.ChangeToken.HasChanged ?? true)
             {
                 var changeToken = ChangeToken;
                 var record = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-                _cache = new ContentDefinitionCache()
+                cache = _cache = new ContentDefinitionCache()
                 {
                     ContentDefinitionRecord = record,
                     ChangeToken = changeToken,
                 };
             }
 
-            scopedCache.ChangeToken = _cache.ChangeToken;
+            scopedCache.ChangeToken = cache.ChangeToken;
 
-            return scopedCache.ContentDefinitionRecord = _cache.ContentDefinitionRecord.Clone();
+            return scopedCache.ContentDefinitionRecord = cache.ContentDefinitionRecord.Clone();
         }
 
         private async Task UpdateContentDefinitionRecordAsync()
