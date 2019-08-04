@@ -16,7 +16,7 @@ namespace OrchardCore.Media.Processing
     /// <summary>
     /// A cache for media assets adapted under the Apache License, from ImageSharp.Web.
     /// </summary>
-    public class MediaFileCache : IShellImageCache
+    public class MediaFileCache : IMediaImageCache
     {
         private static readonly ConcurrentDictionary<string, string> _cacheLock = new ConcurrentDictionary<string, string>();
 

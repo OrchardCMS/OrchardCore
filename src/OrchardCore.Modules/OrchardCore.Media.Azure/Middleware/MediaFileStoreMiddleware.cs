@@ -25,7 +25,7 @@ namespace OrchardCore.Media.Azure.Middleware
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly IMediaCacheFileProvider _mediaCacheFileProvider;
-        private readonly IShellImageCache _shellImageCache;
+        private readonly IMediaImageCache _shellImageCache;
         private readonly ICacheHash _cacheHash;
         private readonly IRequestParser _requestParser;
         private readonly IEnumerable<IImageProvider> _imageProviders;
@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Azure.Middleware
             IMediaFileStore mediaFileStore,
             IContentTypeProvider contentTypeProvider,
             IMediaCacheFileProvider mediaCacheFileProvider,
-            IShellImageCache shellImageCache,
+            IMediaImageCache shellImageCache,
             ICacheHash cacheHash,
             IRequestParser requestParser,
             IEnumerable<IImageProvider> imageProviders,

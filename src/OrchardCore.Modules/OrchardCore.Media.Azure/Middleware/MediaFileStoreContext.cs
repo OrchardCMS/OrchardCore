@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Azure.Middleware
         private const int StreamCopyBufferSize = 64 * 1024;
 
         private readonly IMediaFileStore _fileProvider;
-        private readonly IShellImageCache _shellImageCache;
+        private readonly IMediaImageCache _shellImageCache;
         private readonly string _cacheFilePath;
 
         private IFileStoreEntry _fileStoreEntry;
@@ -30,7 +30,7 @@ namespace OrchardCore.Media.Azure.Middleware
             PathString subPath,
             int maxBrowserCacheDays,
             string contentType,
-            IShellImageCache shellImageCache,
+            IMediaImageCache shellImageCache,
             string cacheFilePath
             ) : base(
                 context,

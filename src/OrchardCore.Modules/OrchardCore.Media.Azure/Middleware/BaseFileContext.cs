@@ -12,7 +12,8 @@ using OrchardCore.FileStorage;
 namespace OrchardCore.Media.Azure.Middleware
 {
     /// <summary>
-    /// Base class to provide shared code between contexts, inspired by aspnetcore static file middleware,
+    /// Base class to provide shared code between contexts,
+    /// inspired by aspnetcore static file middleware,
     /// and adapted under the Apache License.
     /// </summary>
     public abstract class BaseFileContext

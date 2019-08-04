@@ -142,12 +142,12 @@ namespace OrchardCore.Media
             services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
 
             // Register the MediaFileCache as a IShellImageCache.
-            services.TryAddSingleton<IShellImageCache, MediaFileCache>();
+            services.TryAddSingleton<IMediaImageCache, MediaFileCache>();
 
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
                 .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache(serviceProvider => serviceProvider.GetRequiredService<IShellImageCache>())
+                .SetCache(serviceProvider => serviceProvider.GetRequiredService<IMediaImageCache>())
                 .SetCacheHash<CacheHash>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ResizeWebProcessor>()
