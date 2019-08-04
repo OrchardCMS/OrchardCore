@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -9,7 +6,7 @@ using SixLabors.ImageSharp.Web.Processors;
 namespace OrchardCore.Media.Processing
 {
     /// <summary>
-    /// Provides default configuration for ImageSharp Processing Pipeline
+    /// Provides default configuration for ImageSharp.
     /// </summary>
     public class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpMiddlewareOptions>
     {

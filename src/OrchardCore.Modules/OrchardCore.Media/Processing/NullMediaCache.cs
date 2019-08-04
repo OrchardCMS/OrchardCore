@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Web.Resolvers;
 namespace OrchardCore.Media.Processing
 {
     /// <summary>
-    /// A null cache, for use when a CDN will perform the caching functions
+    /// A null media cache, for use when a CDN will be handling caching.
     /// </summary>
     public class NullMediaCache : IImageCache
     {
@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Processing
 
         public Task<IImageResolver> GetAsync(string key)
         {
-            // This must return a null Task or it will throw a NullReferenceException inside ImageSharp
+            // This must return a null Task or it will throw a NullReferenceException.
             return Task.FromResult<IImageResolver>(null);
         }
 

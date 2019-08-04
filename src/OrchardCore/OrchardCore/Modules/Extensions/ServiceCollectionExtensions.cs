@@ -145,9 +145,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     return fileProvider;
                 });
 
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, IModuleStaticFileProvider>(serviceProvider =>
-                    serviceProvider.GetRequiredService<IModuleStaticFileProvider>()
-                ));
+                services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+                {
+                    return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
+                });
             });
 
             builder.Configure((app, routes, serviceProvider) =>

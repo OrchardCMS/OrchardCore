@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Middleware;
 using OrchardCore.Media.Azure.Processing;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
@@ -85,10 +86,12 @@ namespace OrchardCore.Media.Azure
             var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
-                // ImageSharp after the static blob filestore middleware. (when Middleware is working better!)
-                app.UseImageSharp();
 
-                app.UseMiddleware<MediaBlobMiddleware>();
+                // Media filestore middleware before ImageSharp.
+                app.UseMiddleware<MediaFileStoreMiddleware>();
+
+                // ImageSharp after the media filestore middleware.
+                app.UseImageSharp();
 
             }
         }

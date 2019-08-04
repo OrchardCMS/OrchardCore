@@ -12,10 +12,10 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly string _name;
         private readonly string _directoryPath;
 
-        public BlobFile(string path, CloudBlockBlob blobProperties)
+        public BlobFile(string path, CloudBlockBlob blobReference)
         {
             _path = path;
-            _blobReference = blobProperties;
+            _blobReference = blobReference;
             _name = System.IO.Path.GetFileName(_path);
 
             if (_name == _path) // file is in root Directory

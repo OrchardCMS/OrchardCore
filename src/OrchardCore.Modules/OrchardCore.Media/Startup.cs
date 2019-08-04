@@ -84,6 +84,22 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(options.Value.AssetsRequestPath, mediaPath);
             });
 
+            services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
+            {
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+
+                var mediaPath = MediaFileCache.GetMediaCachePath(shellOptions.Value, shellSettings, options.Value.AssetsCachePath);
+
+                if (!Directory.Exists(mediaPath))
+                {
+                    Directory.CreateDirectory(mediaPath);
+                }
+                return new MediaCacheFileProvider(mediaPath);
+            });
+
+            // Register with strong service descriptor to facilitate removal by Media.Azure.
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileProvider>()
             ));
@@ -119,16 +135,19 @@ namespace OrchardCore.Media
 
             // ImageSharp
 
-            // Add Custom ImageSharp Configuration first, to override ImageSharp defaults
+            // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            // Add MediaFileResolverFactory, which creates ImageSharp Image Resolvers 
+            // Add MediaFileResolverFactory, which creates ImageSharp image resolvers. 
             services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
+
+            // Register the MediaFileCache as a IShellImageCache.
+            services.TryAddSingleton<IShellImageCache, MediaFileCache>();
 
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
                 .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache<PhysicalFileSystemCache>()
+                .SetCache(serviceProvider => serviceProvider.GetRequiredService<IShellImageCache>())
                 .SetCacheHash<CacheHash>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ResizeWebProcessor>()
@@ -162,11 +181,12 @@ namespace OrchardCore.Media
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
-            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
 
-            // The MediaFileProvider maybe removed by Blob Storage
+            // The MediaFileProvider maybe removed by Media.Azure, and the ImageSharp middleware reordered.
             if (mediaFileProvider != null)
             {
+                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+
                 // ImageSharp before the static file provider
                 app.UseImageSharp();
 
