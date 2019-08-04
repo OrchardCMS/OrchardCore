@@ -37,6 +37,7 @@ namespace OrchardCore.ResourceManagement
             DebugMode = options.DebugMode;
             Culture = options.Culture;
             CdnBaseUrl = options.CdnBaseUrl;
+            AppendVersion = options.AppendVersion;
         }
 
         public bool HasAttributes

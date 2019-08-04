@@ -118,3 +118,66 @@ Fields can not be attached directly to a Content Type. To add fields to a conten
 ```
 
 When added to a part, fields can also have custom settings which for instance will define how the editor will behave, or validation rules. Also refer to their respective documentation pages for a list of possible settings.
+
+### Consuming Content Parts and Fields from CSharp
+
+It's possible to get strongly typed versions of Content Parts and Fields from the above type definitions.
+
+!!! warning
+    These types may be modified in the CMS. It's important to make sure these types will not be modified outside of the development cycle when consuming them in code.
+
+First, create a part that matches the type definition:
+
+```csharp
+public class Product : ContentPart
+{
+    public MediaField Image { get; set; }
+    public NumericField Price { get; set; }
+}
+```
+
+Then, register your ContentPart with Dependency Injection:
+
+```csharp
+public class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<ContentPart, Product>();
+    }
+}
+```
+
+Finally, here is an example of consuming your Content Item as your Content Part in a Controller.
+
+```csharp
+public class ProductController : Controller
+{
+    private readonly IOrchardHelper _orchardHelper;
+
+    public ProductController(IOrchardHelper orchardHelper)
+    {
+        _orchardHelper = orchardHelper;
+    }
+
+    [HttpPost("/api/product/{productId}")]
+    public async Task<ObjectResult> GetProductAsync(string productId)
+    {
+        var product = _orchardHelper.GetContentItemByIdAsync(productId);
+
+        if (product == null) 
+        {
+            return NotFoundObjectResult();
+        }
+
+        var productPart = product.As<Product>();
+
+        // you'll get exceptions if any of these Fields are null
+        // the null-conditional operator (?) should be used for any fields which aren't required
+        return new ObjectResult(new {
+             Image = productPart.Image.Paths.FirstOrDefault(),
+             Price = productPart.Price.Value,
+        });
+    }
+}
+```

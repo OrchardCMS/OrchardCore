@@ -20,5 +20,6 @@ namespace OrchardCore.Settings
         public bool UseCdn { get; set; }
         public string CdnBaseUrl { get; set; }
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
+        public bool AppendVersion { get; set; }
     }
 }
