@@ -38,8 +38,9 @@ namespace OrchardCore.Mvc
             var builder = services.AddMvc(options =>
             {
                 // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
-                // Load this filter between the MediaSizeFilterLimitAttribute and the IgnoreAntiforgeryTokenAttribute
-                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAttribute), 950);
+                // Load this filter after the MediaSizeFilterLimitAttribute, but before the
+                // IgnoreAntiforgeryTokenAttribute. refer : https://github.com/aspnet/AspNetCore/issues/10384
+                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAttribute), 999);
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
