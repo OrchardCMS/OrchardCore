@@ -51,26 +51,31 @@ namespace OrchardCore.Media.Processing
             if (!_cacheLock.TryAdd(cacheFilePath, null))
                 return;
 
-            // Remove leading slash required for PathString, File Provider will handle normalization of path
-            var imagePath = Path.Combine(_cachePath, cacheFilePath.TrimStart('/'));
-            var directory = Path.GetDirectoryName(imagePath);
-
-            if (!Directory.Exists(directory))
+            try
             {
-                Directory.CreateDirectory(directory);
+                // Remove leading slash required for PathString, File Provider will handle normalization of path.
+                var imagePath = Path.Combine(_cachePath, cacheFilePath.TrimStart('/'));
+                var directory = Path.GetDirectoryName(imagePath);
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // If file already exists, another write operation has created it.
+                if (File.Exists(imagePath))
+                {
+                    return;
+                }
+
+                using (var fileStream = File.Create(imagePath))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
             }
-
-            // If file already exists, another write operation has created it.
-            if (File.Exists(imagePath))
+            finally
             {
-                _cacheLock.TryRemove(cacheFilePath, out cacheFilePath);
-                return;
-            }
-
-            using (var fileStream = File.Create(imagePath))
-            {
-                await stream.CopyToAsync(fileStream);
-                _cacheLock.TryRemove(cacheFilePath, out cacheFilePath);
+                _cacheLock.TryRemove(cacheFilePath, out var removedPath);
             }
         }
 
