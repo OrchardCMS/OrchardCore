@@ -12,7 +12,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public INodeVisitor Validate(ValidationContext validationContext)
         {
-            var context = validationContext.UserContext as GraphQLContext;
+            var context = (GraphQLContext) validationContext.UserContext;
 
             return new EnterLeaveListener(_ =>
             {
