@@ -110,9 +110,10 @@ namespace OrchardCore.Apis.GraphQL
                     }
                     else if (context.Request.Query.ContainsKey("query"))
                     {
-                        request = new GraphQLRequest();
-
-                        request.Query = context.Request.Query["query"];
+                        request = new GraphQLRequest
+                        {
+                            Query = context.Request.Query["query"]
+                        };
 
                         if (context.Request.Query.ContainsKey("variables"))
                         {
@@ -139,9 +140,10 @@ namespace OrchardCore.Apis.GraphQL
                     return;
                 }
 
-                request = new GraphQLRequest();
-
-                request.Query = context.Request.Query["query"];
+                request = new GraphQLRequest
+                {
+                    Query = context.Request.Query["query"]
+                };
             }
 
             var queryToExecute = request.Query;
@@ -165,7 +167,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
-                _.ValidationRules = (_settings.ValidationRules ?? Enumerable.Empty<IValidationRule>()).Concat(DocumentValidator.CoreRules());
+                _.ValidationRules = _settings.ValidationRules.Concat(DocumentValidator.CoreRules());
             });
 
             context.Response.StatusCode = (int) HttpStatusCode.OK;
