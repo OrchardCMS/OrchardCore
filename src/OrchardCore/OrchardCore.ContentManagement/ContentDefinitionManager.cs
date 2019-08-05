@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
         {
-            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition))
+            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition) || (_cache?.ChangeToken.HasChanged ?? true))
             {
                 typeDefinition = await BuildAsync((await GetContentDefinitionRecordAsync())
                     .ContentTypeDefinitionRecords
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentPartDefinition> GetPartDefinitionAsync(string name)
         {
-            if (!_partDefinitions.TryGetValue(name, out var partDefinition))
+            if (!_partDefinitions.TryGetValue(name, out var partDefinition) || (_cache?.ChangeToken.HasChanged ?? true))
             {
                 partDefinition = Build((await GetContentDefinitionRecordAsync())
                     .ContentPartDefinitionRecords
@@ -323,6 +323,10 @@ namespace OrchardCore.ContentManagement
                 var changeToken = ChangeToken;
                 var record = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
+                // Release cached values
+                _typeDefinitions.Clear();
+                _partDefinitions.Clear();
+
                 cache = _cache = new ContentDefinitionCache()
                 {
                     ContentDefinitionRecord = record,
@@ -342,10 +346,6 @@ namespace OrchardCore.ContentManagement
 
             await _contentDefinitionStore.SaveContentDefinitionAsync(scopedRecord);
             _signal.SignalToken(TypeHashCacheKey);
-
-            // Release cached values
-            _typeDefinitions.Clear();
-            _partDefinitions.Clear();
         }
     }
 }

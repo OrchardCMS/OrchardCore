@@ -58,7 +58,7 @@ namespace OrchardCore.Settings.Services
                     };
 
                     session.Save(site);
-                    await session.FlushAsync();
+                    await session.CommitAsync();
                     _signal.SignalToken(SiteCacheKey);
                 }
                 else
@@ -94,7 +94,7 @@ namespace OrchardCore.Settings.Services
             existing.AppendVersion = site.AppendVersion;
 
             session.Save(existing);
-            await session.FlushAsync();
+            await session.CommitAsync();
             _signal.SignalToken(SiteCacheKey);
 
             return;

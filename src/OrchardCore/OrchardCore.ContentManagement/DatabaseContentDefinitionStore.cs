@@ -31,7 +31,7 @@ namespace OrchardCore.ContentManagement
         {
             var session = Session;
             session.Save(contentDefinitionRecord);
-            return session.FlushAsync();
+            return session.CommitAsync();
         }
 
         private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
