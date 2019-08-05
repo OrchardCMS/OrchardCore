@@ -18,7 +18,7 @@ using SixLabors.ImageSharp.Web.Resolvers;
 
 namespace OrchardCore.Media.Processing
 {
-    public class MediaFileProvider : IImageProvider
+    public class MediaResizingFileProvider : IImageProvider
     {
         public static int[] DefaultSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
 
@@ -26,10 +26,11 @@ namespace OrchardCore.Media.Processing
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
 
-        public MediaFileProvider(
+        public MediaResizingFileProvider(
             IMediaFileStore mediaStore,
             IOptions<ImageSharpMiddlewareOptions> options,
-            IShellConfiguration shellConfiguration)
+            IShellConfiguration shellConfiguration
+            )
         {
             _mediaStore = mediaStore;
             _formatUtilities = new FormatUtilities(options.Value.Configuration);
@@ -47,6 +48,11 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {
+            if (!context.Request.Path.StartsWithSegments(Startup.AssetsRequestPath))
+            {
+                return false;
+            }
+
             if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
             {
                 return false;

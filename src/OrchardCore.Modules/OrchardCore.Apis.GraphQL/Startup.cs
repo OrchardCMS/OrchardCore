@@ -35,7 +35,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddTransient<IValidationRule, RequiresPermissionValidationRule>();
 
-            services.AddScoped<ISchemaFactory, SchemaService>();
+            services.AddSingleton<ISchemaFactory, SchemaService>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();

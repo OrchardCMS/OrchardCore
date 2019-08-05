@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
@@ -14,7 +14,7 @@ namespace OrchardCore.Autoroute.Routing
     {
         private readonly IAutorouteEntries _entries;
         private readonly IRouter _target;
-        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "contentItemId" }, StringComparer.OrdinalIgnoreCase); 
+        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "contentItemId" }, StringComparer.OrdinalIgnoreCase);
 
         public AutorouteRoute(IAutorouteEntries entries, IRouter target)
         {
@@ -32,9 +32,9 @@ namespace OrchardCore.Autoroute.Routing
             }
 
             var displayRouteData = GetContentItemDisplayRoutes(context.HttpContext, contentItemId).Result;
-            
-            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
-                && string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) 
+
+            if (string.Equals(context.Values["area"]?.ToString(), displayRouteData?["area"]?.ToString(), StringComparison.OrdinalIgnoreCase)
+                && string.Equals(context.Values["controller"]?.ToString(), displayRouteData?["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase)
                 && string.Equals(context.Values["action"]?.ToString(), displayRouteData?["action"]?.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 if (_entries.TryGetPath(contentItemId, out string path))

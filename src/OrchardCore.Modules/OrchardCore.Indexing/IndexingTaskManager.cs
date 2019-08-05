@@ -157,7 +157,7 @@ namespace OrchardCore.Indexing.Services
                     }
                     catch (Exception e)
                     {
-                        logger.LogError(e, "An error occured while updating indexing tasks");
+                        logger.LogError(e, "An error occurred while updating indexing tasks");
                         throw;
                     }
                 }
@@ -190,7 +190,7 @@ namespace OrchardCore.Indexing.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An error occured while reading indexing tasks");
+                    Logger.LogError(e, "An error occurred while reading indexing tasks");
                     throw;
                 }
             }

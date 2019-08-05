@@ -60,20 +60,16 @@ namespace OrchardCore.ContentLocalization
 
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
         {
-            var localizationPart = content.As<LocalizationPart>();
-
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-
-            // not sure if this is redundant or not. The check is also done in the Admin controller
             if (!supportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
 
+            var localizationPart = content.As<LocalizationPart>();
             if (String.IsNullOrEmpty(localizationPart.LocalizationSet))
             {
                 // If the source content item is not yet localized, define its defaults
-
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
                 localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
                 _session.Save(content);

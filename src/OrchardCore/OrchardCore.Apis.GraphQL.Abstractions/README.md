@@ -4,7 +4,7 @@
 
 Queries are made up of three areas, the `type`, `arguments` and `return values`, an example would be;
 
-```json
+```
 {
   blog {
     displayText
@@ -14,7 +14,7 @@ Queries are made up of three areas, the `type`, `arguments` and `return values`,
 
 In this example, the `blog` is the type, and the `displayText` is the return value. You could expand this, to add an argument. An argument is used for filtering a query, for example;
 
-```json
+```
 {
   blog(contentItemId: "4k5df0kadp9asy1n2ejzs1rz4r") {
     displayText
@@ -103,7 +103,7 @@ The main thing to take away from this class is that all Input Types must inherit
 
 When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below;
 
-```json
+```
 {
   blog(autoroutePart: { path: "somewhere" }) {
     displayText
@@ -148,7 +148,7 @@ The first thing we notice is
 
 Shown in the example above, we have an autoroutePart argument, this is registered when we register an input type. From there we can deserialize and perform the query;
 
-```json
+```
 {
   blog(autoroutePart: { path: "somewhere" }) {
     displayText
@@ -168,7 +168,7 @@ Imagine we have the following Content Types: Movie (with name and ReleaseYear as
 
 Now, if we would want to get the Favorite Movies of the Person items we query, the following query will throw an error:
 
-```json
+```
 {
   person {
     name
@@ -190,7 +190,7 @@ The ´inline fragment´ the error hints about, is a construct to tell the query 
 
 The following query gives us the results we want:
 
-```json
+```
 {
   person {
     name

@@ -5,7 +5,7 @@ namespace OrchardCore.Data
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString, bool hasTablePrefix, bool isDefault)
+        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString, bool hasTablePrefix, bool isDefault, string sampleConnectionString = "")
         {
             for (var i = services.Count - 1; i >= 0; i--)
             {
@@ -20,7 +20,7 @@ namespace OrchardCore.Data
                 }
             }
 
-            services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString, HasTablePrefix = hasTablePrefix , IsDefault = isDefault });
+            services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString, HasTablePrefix = hasTablePrefix , IsDefault = isDefault, SampleConnectionString = sampleConnectionString });
 
             return services;
         }
