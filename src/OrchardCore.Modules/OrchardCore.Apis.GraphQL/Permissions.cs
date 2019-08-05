@@ -5,12 +5,13 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.", new[] { ExecuteGraphQLMutations });
         public static readonly Permission ExecuteGraphQLMutations = new Permission("ExecuteGraphQLMutations", "Execute GraphQL Mutations.");
+        public static readonly Permission ExecuteGraphQL = new Permission("ExecuteGraphQL", "Execute GraphQL.", new[] { ExecuteGraphQLMutations });
 
         public IEnumerable<Permission> GetPermissions()
         {
             return new[] {
+                ExecuteGraphQLMutations,
                 ExecuteGraphQL
             };
         }
@@ -20,7 +21,7 @@ namespace OrchardCore.Apis.GraphQL
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = new[] { ExecuteGraphQLMutations }
                 }
             };
         }
