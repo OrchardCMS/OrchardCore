@@ -14,56 +14,49 @@ using YesSql;
 namespace OrchardCore.Layers.Services
 {
     public class LayerService : ILayerService
-	{
-		private readonly IMemoryCache _memoryCache;
-		private readonly ISession _session;
-		private readonly ISignal _signal;
+    {
+        private readonly IMemoryCache _memoryCache;
+        private readonly ISession _session;
+        private readonly ISignal _signal;
 
-		private const string LayersCacheKey = "LayersDocument";
+        private const string LayersCacheKey = "LayersDocument";
 
-		public LayerService(
-			ISignal signal,
-			ISession session,
-			IMemoryCache memoryCache)
-		{
-			_signal = signal;
-			_session = session;
-			_memoryCache = memoryCache;
-		}
+        public LayerService(
+            ISignal signal,
+            ISession session,
+            IMemoryCache memoryCache)
+        {
+            _signal = signal;
+            _session = session;
+            _memoryCache = memoryCache;
+        }
 
-		public async Task<LayersDocument> GetLayersAsync()
-		{
-			LayersDocument layers;
+        public async Task<LayersDocument> GetLayersAsync()
+        {
+            LayersDocument layers;
 
-			if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
-			{
-				layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
+            if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
+            {
+                var changeToken = _signal.GetToken(LayersCacheKey);
+                layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
-				if (layers == null)
-				{
-					lock (_memoryCache)
-					{
-						if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
-						{
-							layers = new LayersDocument();
+                if (layers == null)
+                {
+                    layers = new LayersDocument();
+                    await SaveAsync(layers);
+                }
+                else
+                {
+                    _memoryCache.Set(LayersCacheKey, layers, changeToken);
+                }
+            }
 
-							_session.Save(layers);
-							_memoryCache.Set(LayersCacheKey, layers);
-						}
-					}
-				}
-				else
-				{
-					_memoryCache.Set(LayersCacheKey, layers);
-				}
-			}
+            return layers;
+        }
 
-			return layers;
-		}
-
-		public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
+        public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)
-		{
+        {
             return await _session
                 .Query<ContentItem, LayerMetadataIndex>()
                 .With(predicate)
@@ -80,16 +73,20 @@ namespace OrchardCore.Layers.Services
                 .Where(x => x != null)
                 .OrderBy(x => x.Position)
                 .ToList();
-
         }
 
-		public async Task UpdateAsync(LayersDocument layers)
-		{
-			var existing = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
+        public async Task UpdateAsync(LayersDocument layers)
+        {
+            var existing = await GetLayersAsync();
+            existing.Layers = layers.Layers;
+            await SaveAsync(layers);
+        }
 
-			existing.Layers = layers.Layers;
-			_session.Save(existing);
-			_memoryCache.Set(LayersCacheKey, existing);
-		}
-	}
+        private async Task SaveAsync(LayersDocument document)
+        {
+            _session.Save(document);
+            await _session.CommitAsync();
+            _signal.SignalToken(LayersCacheKey);
+        }
+    }
 }

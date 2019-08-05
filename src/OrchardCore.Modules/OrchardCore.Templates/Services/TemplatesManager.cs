@@ -31,26 +31,17 @@ namespace OrchardCore.Templates.Services
 
             if (!_memoryCache.TryGetValue(CacheKey, out document))
             {
+                var changeToken = ChangeToken;
                 document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
 
                 if (document == null)
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(CacheKey, out document))
-                        {
-                            document = new TemplatesDocument();
-
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
-                        }
-                    }
+                    document = new TemplatesDocument();
+                    await SaveAsync(document);
                 }
                 else
                 {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
+                    _memoryCache.Set(CacheKey, document, changeToken);
                 }
             }
 
@@ -60,24 +51,22 @@ namespace OrchardCore.Templates.Services
         public async Task RemoveTemplateAsync(string name)
         {
             var document = await GetTemplatesDocumentAsync();
-
             document.Templates.Remove(name);
-            _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            await SaveAsync(document);
         }
-        
+
         public async Task UpdateTemplateAsync(string name, Template template)
         {
             var document = await GetTemplatesDocumentAsync();
-
             document.Templates[name] = template;
-            _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            await SaveAsync(document);
         }
 
+        private async Task SaveAsync(TemplatesDocument document)
+        {
+            _session.Save(document);
+            await _session.CommitAsync();
+            _signal.SignalToken(CacheKey);
+        }
     }
 }

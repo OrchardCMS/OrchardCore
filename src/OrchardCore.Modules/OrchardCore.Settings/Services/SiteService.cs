@@ -69,7 +69,7 @@ namespace OrchardCore.Settings.Services
         /// <inheritdoc/>
         public async Task UpdateSiteSettingsAsync(ISite site)
         {
-            var existing = await Session.Query<SiteSettings>().FirstOrDefaultAsync();
+            var existing = await GetSiteSettingsAsync() as SiteSettings;
 
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;

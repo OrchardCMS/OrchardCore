@@ -32,24 +32,17 @@ namespace OrchardCore.BackgroundTasks.Services
         {
             if (!_memoryCache.TryGetValue<BackgroundTaskDocument>(CacheKey, out var document))
             {
+                var changeToken = ChangeToken;
                 document = await _session.Query<BackgroundTaskDocument>().FirstOrDefaultAsync();
 
                 if (document == null)
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(CacheKey, out document))
-                        {
-                            document = new BackgroundTaskDocument();
-
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document, ChangeToken);
-                        }
-                    }
+                    document = new BackgroundTaskDocument();
+                    await SaveAsync(document);
                 }
                 else
                 {
-                    _memoryCache.Set(CacheKey, document, ChangeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
                 }
             }
 
@@ -59,23 +52,22 @@ namespace OrchardCore.BackgroundTasks.Services
         public async Task RemoveAsync(string name)
         {
             var document = await GetDocumentAsync();
-
             document.Settings.Remove(name);
-            _session.Save(document);
-
-            _signal.SignalToken(CacheKey);
-            _memoryCache.Set(CacheKey, document, ChangeToken);
+            await SaveAsync(document);
         }
-        
+
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
             var document = await GetDocumentAsync();
-
             document.Settings[name] = settings;
-            _session.Save(document);
+            await SaveAsync(document);
+        }
 
+        private async Task SaveAsync(BackgroundTaskDocument document)
+        {
+            _session.Save(document);
+            await _session.CommitAsync();
             _signal.SignalToken(CacheKey);
-            _memoryCache.Set(CacheKey, document, ChangeToken);
         }
     }
 }

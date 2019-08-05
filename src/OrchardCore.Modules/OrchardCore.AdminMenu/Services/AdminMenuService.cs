@@ -8,7 +8,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.AdminMenu
@@ -67,10 +66,11 @@ namespace OrchardCore.AdminMenu
 
             var length = adminMenuList.AdminMenu.Length;
             adminMenuList.AdminMenu = adminMenuList.AdminMenu.RemoveAll(m => String.Equals(m.Id, tree.Id));
+            var removed = length - adminMenuList.AdminMenu.Length;
 
             await SaveAsync(adminMenuList);
 
-            return length - adminMenuList.AdminMenu.Length;
+            return removed;
         }
 
         private async Task<AdminMenuList> GetAdminMenuListAsync()

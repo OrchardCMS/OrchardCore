@@ -34,24 +34,14 @@ namespace OrchardCore.Queries.Services
 
         public async Task DeleteQueryAsync(string name)
         {
-            // Ensure QueriesDocument exists 
-            await GetDocumentAsync();
-
-            // Load the currently saved object otherwise it would create a new document
-            // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session or an Id on the document
-
-            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
+            var existing = await GetDocumentAsync();
 
             if (existing.Queries.ContainsKey(name))
             {
                 existing.Queries.Remove(name);
             }
 
-            _session.Save(existing);
-
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            await SaveAsync(existing);
 
             return;
         }
@@ -60,7 +50,7 @@ namespace OrchardCore.Queries.Services
         {
             var document = await GetDocumentAsync();
 
-            if(document.Queries.TryGetValue(name, out var query))
+            if (document.Queries.TryGetValue(name, out var query))
             {
                 return query;
             }
@@ -75,22 +65,12 @@ namespace OrchardCore.Queries.Services
 
         public async Task SaveQueryAsync(string name, Query query)
         {
-            // Ensure QueriesDocument exists 
-            await GetDocumentAsync();
-
-            // Load the currently saved object otherwise it would create a new document
-            // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session
-
-            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
+            var existing = await GetDocumentAsync();
 
             existing.Queries.Remove(name);
             existing.Queries[query.Name] = query;
 
-            _session.Save(existing);
-
-            _memoryCache.Set(QueriesDocumentCacheKey, existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            await SaveAsync(existing);
 
             return;
         }
@@ -101,26 +81,17 @@ namespace OrchardCore.Queries.Services
 
             if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
             {
+                var changeToken = _signal.GetToken(QueriesDocumentCacheKey);
                 queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
                 if (queries == null)
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
-                        {
-                            queries = new QueriesDocument();
-
-                            _session.Save(queries);
-                            _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                            _signal.SignalToken(QueriesDocumentCacheKey);
-                        }
-                    }
+                    queries = new QueriesDocument();
+                    await SaveAsync(queries);
                 }
                 else
                 {
-                    _memoryCache.Set(QueriesDocumentCacheKey, queries);
-                    _signal.SignalToken(QueriesDocumentCacheKey);
+                    _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
                 }
             }
 
@@ -130,13 +101,20 @@ namespace OrchardCore.Queries.Services
         public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
-            
+
             if (querySource == null)
             {
                 throw new ArgumentException("Query source not found: " + query.Source);
             }
 
             return querySource.ExecuteQueryAsync(query, parameters);
+        }
+
+        private async Task SaveAsync(QueriesDocument document)
+        {
+            _session.Save(document);
+            await _session.CommitAsync();
+            _signal.SignalToken(QueriesDocumentCacheKey);
         }
     }
 }
