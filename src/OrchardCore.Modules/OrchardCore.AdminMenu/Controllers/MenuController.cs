@@ -68,14 +68,14 @@ namespace OrchardCore.AdminMenu.Controllers
                 options = new AdminMenuListOptions();
             }
 
-            var trees = await _AdminMenuService.GetAsync();
-            
+            var trees = (await _AdminMenuService.GetAsync()).ToArray();
+
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToList();
+                trees = trees.Where(dp => dp.Name.Contains(options.Search)).ToArray();
             }
 
-            var count = trees.Count();
+            var count = trees.Length;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -136,10 +136,10 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (ModelState.IsValid)
             {
-                var tree = new Models.AdminMenu {Name = model.Name};
+                var tree = new Models.AdminMenu { Name = model.Name };
 
                 await _AdminMenuService.SaveAsync(tree);
-                
+
                 return RedirectToAction(nameof(List));
             }
 
@@ -189,7 +189,7 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 tree.Name = model.Name;
 
-                await _AdminMenuService.SaveAsync(tree);                
+                await _AdminMenuService.SaveAsync(tree);
 
                 _notifier.Success(H["Admin menu updated successfully"]);
 

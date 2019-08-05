@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -42,6 +41,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
+            var changeToken = contentDefinitionManager.ChangeToken;
+
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
                 var typeType = new ContentItemType(_optionsAccessor)
@@ -76,7 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 }
             }
 
-            return Task.FromResult(contentDefinitionManager.ChangeToken);
+            return Task.FromResult(changeToken);
         }
     }
 }

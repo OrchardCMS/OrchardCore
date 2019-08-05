@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,114 +17,94 @@ namespace OrchardCore.AdminMenu
     {
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IClock _clock;
         private const string AdminMenuCacheKey = "AdminMenuervice";
 
         public AdminMenuService(
             ISignal signal,
-            IServiceProvider serviceProvider,
-            IMemoryCache memoryCache,
-            IClock clock)
+            IMemoryCache memoryCache)
         {
             _signal = signal;
-            _serviceProvider = serviceProvider;
-            _clock = clock;
             _memoryCache = memoryCache;
         }
 
         public IChangeToken ChangeToken => _signal.GetToken(AdminMenuCacheKey);
 
-        public async Task<List<Models.AdminMenu>> GetAsync()
+        public async Task<ImmutableArray<Models.AdminMenu>> GetAsync()
         {
-            return (await GetAdminMenuList()).AdminMenu;
+            return (await GetAdminMenuListAsync()).AdminMenu;
         }
 
         public async Task SaveAsync(Models.AdminMenu tree)
         {
-            var adminMenuList = await GetAdminMenuList();
-            var session = GetSession();
+            var adminMenuList = await GetAdminMenuListAsync();
 
-
-            var preexisting = adminMenuList.AdminMenu.Where(x => x.Id == tree.Id).FirstOrDefault();
+            var preexisting = adminMenuList.AdminMenu.Where(m => m.Id == tree.Id).FirstOrDefault();
 
             // it's new? add it
             if (preexisting == null)
             {
-                adminMenuList.AdminMenu.Add(tree);
+                adminMenuList.AdminMenu = adminMenuList.AdminMenu.Add(tree);
             }
             else // not new: replace it
             {
-                var index = adminMenuList.AdminMenu.IndexOf(preexisting);
-                adminMenuList.AdminMenu[index] = tree;
+                adminMenuList.AdminMenu = adminMenuList.AdminMenu.Replace(preexisting, tree);
             }
 
-            session.Save(adminMenuList);
-
-            _memoryCache.Set(AdminMenuCacheKey, adminMenuList);
-            _signal.SignalToken(AdminMenuCacheKey);
+            await SaveAsync(adminMenuList);
         }
 
         public async Task<Models.AdminMenu> GetByIdAsync(string id)
         {
-            return (await GetAdminMenuList())
+            return (await GetAdminMenuListAsync())
                 .AdminMenu
-                .Where(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase))
+                .Where(m => String.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
         }
 
-
         public async Task<int> DeleteAsync(Models.AdminMenu tree)
         {
-            var adminMenuList = await GetAdminMenuList();
-            var session = GetSession();
+            var adminMenuList = await GetAdminMenuListAsync();
 
-            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id));
+            var length = adminMenuList.AdminMenu.Length;
+            adminMenuList.AdminMenu = adminMenuList.AdminMenu.RemoveAll(m => String.Equals(m.Id, tree.Id));
 
-            session.Save(adminMenuList);
+            await SaveAsync(adminMenuList);
 
-            _memoryCache.Set(AdminMenuCacheKey, adminMenuList);
-            _signal.SignalToken(AdminMenuCacheKey);
-
-            return count;
+            return length - adminMenuList.AdminMenu.Length;
         }
 
-        private async Task<AdminMenuList> GetAdminMenuList()
+        private async Task<AdminMenuList> GetAdminMenuListAsync()
         {
             AdminMenuList treeList;
 
             if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out treeList))
             {
-                var session = GetSession();
-
-                treeList = await session.Query<AdminMenuList>().FirstOrDefaultAsync();
+                var changeToken = ChangeToken;
+                treeList = await Session.Query<AdminMenuList>().FirstOrDefaultAsync();
 
                 if (treeList == null)
                 {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out treeList))
-                        {
-                            treeList = new AdminMenuList();
-                            session.Save(treeList);
-                            _memoryCache.Set(AdminMenuCacheKey, treeList);
-                            _signal.SignalToken(AdminMenuCacheKey);
-                        }
-                    }
+                    treeList = new AdminMenuList();
+                    await SaveAsync(treeList);
                 }
                 else
                 {
-                    _memoryCache.Set(AdminMenuCacheKey, treeList);
-                    _signal.SignalToken(AdminMenuCacheKey);
+                    _memoryCache.Set(AdminMenuCacheKey, treeList, changeToken);
                 }
             }
 
             return treeList;
         }
 
-        private ISession GetSession()
+        private async Task SaveAsync(AdminMenuList treeList)
         {
-            return ShellScope.Services.GetService<ISession>();
+            var session = Session;
+
+            session.Save(treeList);
+            await session.CommitAsync();
+            _signal.SignalToken(AdminMenuCacheKey);
         }
+
+        private ISession Session => ShellScope.Services.GetService<ISession>();
     }
 }

@@ -40,35 +40,26 @@ namespace OrchardCore.Settings.Services
 
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
-                var session = GetSession();
-                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+                var changeToken = ChangeToken;
+                site = await Session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
                 {
-                    lock (_memoryCache)
+                    site = new SiteSettings
                     {
-                        if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
-                        {
-                            site = new SiteSettings
-                            {
-                                SiteSalt = Guid.NewGuid().ToString("N"),
-                                SiteName = "My Orchard Project Application",
-                                PageSize = 10,
-                                MaxPageSize = 100,
-                                MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                            };
+                        SiteSalt = Guid.NewGuid().ToString("N"),
+                        SiteName = "My Orchard Project Application",
+                        PageSize = 10,
+                        MaxPageSize = 100,
+                        MaxPagedCount = 0,
+                        TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                    };
 
-                            session.Save(site);
-                            _memoryCache.Set(SiteCacheKey, site);
-                            _signal.SignalToken(SiteCacheKey);
-                        }
-                    }
+                    await SaveAsync(site);
                 }
                 else
                 {
-                    _memoryCache.Set(SiteCacheKey, site);
-                    _signal.SignalToken(SiteCacheKey);
+                    _memoryCache.Set(SiteCacheKey, site, changeToken);
                 }
             }
 
@@ -78,9 +69,7 @@ namespace OrchardCore.Settings.Services
         /// <inheritdoc/>
         public async Task UpdateSiteSettingsAsync(ISite site)
         {
-            var session = GetSession();
-
-            var existing = await session.Query<SiteSettings>().FirstOrDefaultAsync();
+            var existing = await Session.Query<SiteSettings>().FirstOrDefaultAsync();
 
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
@@ -98,17 +87,20 @@ namespace OrchardCore.Settings.Services
             existing.CdnBaseUrl = site.CdnBaseUrl;
             existing.AppendVersion = site.AppendVersion;
 
-            session.Save(existing);
-
-            _memoryCache.Set(SiteCacheKey, site);
-            _signal.SignalToken(SiteCacheKey);
+            await SaveAsync(existing);
 
             return;
         }
 
-        private ISession GetSession()
+        private async Task SaveAsync(ISite site)
         {
-            return ShellScope.Services.GetService<ISession>();
+            var session = Session;
+
+            session.Save(site);
+            await session.CommitAsync();
+            _signal.SignalToken(SiteCacheKey);
         }
+
+        private ISession Session => ShellScope.Services.GetService<ISession>();
     }
 }

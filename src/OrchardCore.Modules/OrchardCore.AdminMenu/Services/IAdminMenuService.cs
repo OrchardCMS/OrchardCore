@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
@@ -9,11 +9,10 @@ namespace OrchardCore.AdminMenu
     /// </summary>
     public interface IAdminMenuService
     {
-
         /// <summary>
         /// Returns all the admin menus
         /// </summary>
-        Task<List<Models.AdminMenu>> GetAsync();
+        Task<ImmutableArray<Models.AdminMenu>> GetAsync();
 
         /// <summary>
         /// Persist an admin menu
@@ -38,7 +37,5 @@ namespace OrchardCore.AdminMenu
         /// Gets a change token that is set when the admin menu has changed.
         /// </summary>
         IChangeToken ChangeToken { get; }
-
-
     }
 }
