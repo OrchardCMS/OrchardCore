@@ -171,11 +171,11 @@ namespace OrchardCore.Apis.GraphQL
                 _.ValidationRules = _settings.ValidationRules.Concat(DocumentValidator.CoreRules());
             });
 
-            context.Response.StatusCode = !result?.Errors?.Any() == true
-                ? (int) HttpStatusCode.OK
-                : result?.Errors?.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode) == true
-                    ? (int) HttpStatusCode.Forbidden
-                    : (int) HttpStatusCode.BadRequest;
+            context.Response.StatusCode = (int) (result.Errors == null || result.Errors.Count == 0
+                ? HttpStatusCode.OK
+                : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
+                    ? HttpStatusCode.Forbidden
+                    : HttpStatusCode.BadRequest);
 
             context.Response.ContentType = "application/json";
 
