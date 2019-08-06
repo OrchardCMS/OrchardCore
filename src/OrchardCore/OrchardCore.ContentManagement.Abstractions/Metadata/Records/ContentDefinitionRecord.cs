@@ -26,7 +26,9 @@ namespace OrchardCore.ContentManagement.Metadata.Records
 
                 ContentPartDefinitionRecords = ContentPartDefinitionRecords
                     .Select(part => part.Clone())
-                    .ToImmutableArray()
+                    .ToImmutableArray(),
+
+                Serial = Serial
             };
         }
     }
