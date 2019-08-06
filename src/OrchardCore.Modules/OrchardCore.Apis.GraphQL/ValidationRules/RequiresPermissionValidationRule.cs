@@ -48,7 +48,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                         validationContext.ReportError(new ValidationError(
                             validationContext.OriginalQuery,
                             ErrorCode,
-                            localizer["Authorization is required to access this field."],
+                            localizer[$"Authorization is required to access the field. {fieldAst.Name}"],
                             fieldAst));
                     }
                 });
