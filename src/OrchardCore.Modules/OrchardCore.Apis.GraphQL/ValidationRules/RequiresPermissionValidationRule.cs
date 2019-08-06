@@ -10,6 +10,8 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 {
     public class RequiresPermissionValidationRule : IValidationRule
     {
+        public static readonly string ErrorCode = "Forbidden";
+
         public INodeVisitor Validate(ValidationContext validationContext)
         {
             var context = (GraphQLContext) validationContext.UserContext;
@@ -28,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                             validationContext.ReportError(new ValidationError(
                                 validationContext.OriginalQuery,
-                                localizer["Forbidden"],
+                                ErrorCode,
                                 localizer[$"Authorization is required to access {op.Name}."],
                                 op));
                         }
@@ -42,10 +44,10 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                     if (fieldDef.HasPermissions() && !Authorize(fieldDef, context))
                     {
                         var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-
+         
                         validationContext.ReportError(new ValidationError(
                             validationContext.OriginalQuery,
-                            localizer["Forbidden"],
+                            ErrorCode,
                             localizer["Authorization is required to access this field."],
                             fieldAst));
                     }

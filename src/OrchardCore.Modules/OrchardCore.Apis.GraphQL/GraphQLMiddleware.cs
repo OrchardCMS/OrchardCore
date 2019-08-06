@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.Apis.GraphQL.ValidationRules;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -170,7 +171,12 @@ namespace OrchardCore.Apis.GraphQL
                 _.ValidationRules = _settings.ValidationRules.Concat(DocumentValidator.CoreRules());
             });
 
-            context.Response.StatusCode = (int) HttpStatusCode.OK;
+            context.Response.StatusCode = !result?.Errors?.Any() == true
+                ? (int) HttpStatusCode.OK
+                : result?.Errors?.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode) == true
+                    ? (int) HttpStatusCode.Forbidden
+                    : (int) HttpStatusCode.BadRequest;
+
             context.Response.ContentType = "application/json";
 
             await _writer.WriteAsync(context.Response.Body, result);
