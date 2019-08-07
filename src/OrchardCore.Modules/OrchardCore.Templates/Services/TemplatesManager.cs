@@ -37,7 +37,9 @@ namespace OrchardCore.Templates.Services
                 if (document == null)
                 {
                     document = new TemplatesDocument();
-                    await SaveAsync(document);
+
+                    _session.Save(document);
+                    _signal.SignalToken(CacheKey);
                 }
                 else
                 {
@@ -51,21 +53,18 @@ namespace OrchardCore.Templates.Services
         public async Task RemoveTemplateAsync(string name)
         {
             var document = await GetTemplatesDocumentAsync();
-            document.Templates.Remove(name);
-            await SaveAsync(document);
+            document.Templates = document.Templates.Remove(name);
+
+            _session.Save(document);
+            _signal.SignalToken(CacheKey);
         }
 
         public async Task UpdateTemplateAsync(string name, Template template)
         {
             var document = await GetTemplatesDocumentAsync();
-            document.Templates[name] = template;
-            await SaveAsync(document);
-        }
+            document.Templates = document.Templates.SetItem(name, template);
 
-        private async Task SaveAsync(TemplatesDocument document)
-        {
             _session.Save(document);
-            await _session.CommitAsync();
             _signal.SignalToken(CacheKey);
         }
     }

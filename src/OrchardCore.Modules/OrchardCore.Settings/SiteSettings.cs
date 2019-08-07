@@ -1,5 +1,5 @@
-using System;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Settings
@@ -21,5 +21,15 @@ namespace OrchardCore.Settings
         public string CdnBaseUrl { get; set; }
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
         public bool AppendVersion { get; set; }
+
+        public SiteSettings Clone()
+        {
+            var settings = MemberwiseClone() as SiteSettings;
+
+            settings.Properties = new JObject(Properties);
+            settings.HomeRoute = new RouteValueDictionary(HomeRoute);
+
+            return settings;
+        }
     }
 }

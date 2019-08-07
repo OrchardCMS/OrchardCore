@@ -18,30 +18,42 @@ namespace OrchardCore.Settings.Services
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
         private readonly IClock _clock;
+
         private const string SiteCacheKey = "SiteService";
 
         public SiteService(
-            ISignal signal,
             IMemoryCache memoryCache,
+            ISignal signal,
             IClock clock)
         {
+            _memoryCache = memoryCache;
             _signal = signal;
             _clock = clock;
-            _memoryCache = memoryCache;
         }
 
         /// <inheritdoc/>
         public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
 
+        private SiteSettingsCache ScopedCache => ShellScope.Services.GetRequiredService<SiteSettingsCache>();
+
         /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            ISite site;
+            var scopedCache = ScopedCache;
+
+            if (scopedCache.SiteSettings != null)
+            {
+                return scopedCache.SiteSettings;
+            }
+
+            SiteSettings site;
 
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
+                var session = Session;
+
                 var changeToken = ChangeToken;
-                site = await Session.Query<SiteSettings>().FirstOrDefaultAsync();
+                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
                 {
@@ -55,21 +67,24 @@ namespace OrchardCore.Settings.Services
                         TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
                     };
 
-                    await SaveAsync(site);
+                    session.Save(site);
+                    _signal.SignalToken(SiteCacheKey);
                 }
                 else
                 {
-                    _memoryCache.Set(SiteCacheKey, site, changeToken);
+                    _memoryCache.Set(SiteCacheKey, site.Clone(), changeToken);
                 }
+
+                return scopedCache.SiteSettings = site;
             }
 
-            return site;
+            return scopedCache.SiteSettings = site.Clone();
         }
 
         /// <inheritdoc/>
-        public async Task UpdateSiteSettingsAsync(ISite site)
+        public Task UpdateSiteSettingsAsync(ISite site)
         {
-            var existing = await GetSiteSettingsAsync() as SiteSettings;
+            var existing = ScopedCache.SiteSettings;
 
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
@@ -87,18 +102,10 @@ namespace OrchardCore.Settings.Services
             existing.CdnBaseUrl = site.CdnBaseUrl;
             existing.AppendVersion = site.AppendVersion;
 
-            await SaveAsync(existing);
-
-            return;
-        }
-
-        private async Task SaveAsync(ISite site)
-        {
-            var session = Session;
-
-            session.Save(site);
-            await session.CommitAsync();
+            Session.Save(existing);
             _signal.SignalToken(SiteCacheKey);
+
+            return Task.CompletedTask;
         }
 
         private ISession Session => ShellScope.Services.GetService<ISession>();

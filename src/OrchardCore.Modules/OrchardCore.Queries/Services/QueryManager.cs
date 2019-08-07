@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -12,8 +13,8 @@ namespace OrchardCore.Queries.Services
     public class QueryManager : IQueryManager
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly ISession _session;
         private readonly ISignal _signal;
+        private readonly ISession _session;
         private IEnumerable<IQuerySource> _querySources;
 
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
@@ -21,14 +22,14 @@ namespace OrchardCore.Queries.Services
         public IChangeToken ChangeToken => _signal.GetToken(QueriesDocumentCacheKey);
 
         public QueryManager(
+            IMemoryCache memoryCache,
             ISignal signal,
             ISession session,
-            IMemoryCache memoryCache,
             IEnumerable<IQuerySource> querySources)
         {
-            _session = session;
             _memoryCache = memoryCache;
             _signal = signal;
+            _session = session;
             _querySources = querySources;
         }
 
@@ -36,12 +37,12 @@ namespace OrchardCore.Queries.Services
         {
             var existing = await GetDocumentAsync();
 
-            if (existing.Queries.ContainsKey(name))
-            {
-                existing.Queries.Remove(name);
-            }
+            existing.Queries = existing.Queries
+                .Remove(name)
+                .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
 
-            await SaveAsync(existing);
+            _session.Save(existing);
+            _signal.SignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -66,11 +67,10 @@ namespace OrchardCore.Queries.Services
         public async Task SaveQueryAsync(string name, Query query)
         {
             var existing = await GetDocumentAsync();
+            existing.Queries = existing.Queries.Remove(name).SetItem(query.Name, query);
 
-            existing.Queries.Remove(name);
-            existing.Queries[query.Name] = query;
-
-            await SaveAsync(existing);
+            _session.Save(existing);
+            _signal.SignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -81,16 +81,19 @@ namespace OrchardCore.Queries.Services
 
             if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
             {
-                var changeToken = _signal.GetToken(QueriesDocumentCacheKey);
+                var changeToken = ChangeToken;
                 queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
                 if (queries == null)
                 {
                     queries = new QueriesDocument();
-                    await SaveAsync(queries);
+
+                    _session.Save(queries);
+                    _signal.SignalToken(QueriesDocumentCacheKey);
                 }
                 else
                 {
+                    queries.Queries = queries.Queries.ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
                     _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
                 }
             }
@@ -108,13 +111,6 @@ namespace OrchardCore.Queries.Services
             }
 
             return querySource.ExecuteQueryAsync(query, parameters);
-        }
-
-        private async Task SaveAsync(QueriesDocument document)
-        {
-            _session.Save(document);
-            await _session.CommitAsync();
-            _signal.SignalToken(QueriesDocumentCacheKey);
         }
     }
 }

@@ -79,8 +79,9 @@ namespace OrchardCore.HomeRoute
             if (_siteServicechangeToken == null || _siteServicechangeToken.HasChanged)
             {
                 var siteService = httpContext.RequestServices.GetRequiredService<ISiteService>();
-                _homeRoute = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+
                 _siteServicechangeToken = siteService.ChangeToken;
+                _homeRoute = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
             }
 
             return _homeRoute;

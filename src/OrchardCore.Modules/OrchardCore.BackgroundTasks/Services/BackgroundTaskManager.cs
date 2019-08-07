@@ -38,7 +38,9 @@ namespace OrchardCore.BackgroundTasks.Services
                 if (document == null)
                 {
                     document = new BackgroundTaskDocument();
-                    await SaveAsync(document);
+
+                    _session.Save(document);
+                    _signal.SignalToken(CacheKey);
                 }
                 else
                 {
@@ -52,21 +54,18 @@ namespace OrchardCore.BackgroundTasks.Services
         public async Task RemoveAsync(string name)
         {
             var document = await GetDocumentAsync();
-            document.Settings.Remove(name);
-            await SaveAsync(document);
+            document.Settings = document.Settings.Remove(name);
+
+            _session.Save(document);
+            _signal.SignalToken(CacheKey);
         }
 
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
             var document = await GetDocumentAsync();
-            document.Settings[name] = settings;
-            await SaveAsync(document);
-        }
+            document.Settings = document.Settings.SetItem(name, settings);
 
-        private async Task SaveAsync(BackgroundTaskDocument document)
-        {
             _session.Save(document);
-            await _session.CommitAsync();
             _signal.SignalToken(CacheKey);
         }
     }

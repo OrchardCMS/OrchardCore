@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
@@ -28,6 +28,7 @@ namespace OrchardCore.Settings
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
+            services.AddScoped<SiteSettingsCache>();
             services.AddRecipeExecutionStep<SettingsStep>();
             services.AddSingleton<ISiteService, SiteService>();
 
