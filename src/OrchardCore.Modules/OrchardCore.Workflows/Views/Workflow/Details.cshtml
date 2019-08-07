@@ -39,7 +39,7 @@
                     </div>
                     <div class="col">
                         <label>@T["Created"]</label>
-                        <span>@LocalClock.ConvertToLocalAsync(Model.Workflow.CreatedUtc).Result</span>
+                        <span>@await LocalClock.ConvertToLocalAsync(Model.Workflow.CreatedUtc)</span>
                     </div>
                     <div class="col">
                         <label>@T["Status"]</label>
