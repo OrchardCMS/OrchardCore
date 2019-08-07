@@ -327,15 +327,17 @@ namespace OrchardCore.ContentManagement
                 _typeDefinitions.Clear();
                 _partDefinitions.Clear();
 
-                cache = _cache = new ContentDefinitionCache()
+                _cache = new ContentDefinitionCache()
                 {
-                    ContentDefinitionRecord = record,
                     ChangeToken = changeToken,
+                    ContentDefinitionRecord = record.Clone()
                 };
+
+                scopedCache.ChangeToken = changeToken;
+                return scopedCache.ContentDefinitionRecord = record;
             }
 
             scopedCache.ChangeToken = cache.ChangeToken;
-
             return scopedCache.ContentDefinitionRecord = cache.ContentDefinitionRecord.Clone();
         }
 

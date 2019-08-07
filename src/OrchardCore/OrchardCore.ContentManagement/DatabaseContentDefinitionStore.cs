@@ -29,9 +29,8 @@ namespace OrchardCore.ContentManagement
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            var session = Session;
-            session.Save(contentDefinitionRecord);
-            return session.CommitAsync();
+            Session.Save(contentDefinitionRecord);
+            return Task.CompletedTask;
         }
 
         private ISession Session => ShellScope.Services.GetRequiredService<ISession>();
