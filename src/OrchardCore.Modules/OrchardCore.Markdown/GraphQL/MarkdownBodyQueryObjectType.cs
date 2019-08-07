@@ -17,12 +17,12 @@ namespace OrchardCore.Markdown.GraphQL
             Description = T["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
-                .Description("the markdown value")
+                .Description(T["the markdown value"])
                 .Type(new StringGraphType());
 
             Field<StringGraphType>()
                 .Name("html")
-                .Description("the HTML representation of the markdown content")
+                .Description(T["the HTML representation of the markdown content"])
                 .ResolveAsync(ToHtml);
         }
 
