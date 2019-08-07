@@ -8,5 +8,6 @@ namespace OrchardCore.Settings.ViewModels
         public bool UseCdn { get; set; }
         public string CdnBaseUrl { get; set; }
         public ResourceDebugMode ResourceDebugMode { get; set; }
+        public bool AppendVersion { get; set; }
     }
 }

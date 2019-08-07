@@ -15,7 +15,7 @@
         <select asp-for="Value" class="form-control content-preview-select">
             @if (!settings.Required)
             {
-                <option value="">@T["Choose an option..."]</option>
+                <option value="">@T["None"]</option>
             }
             @for (decimal d = from; d <= to; d += step)
             {
