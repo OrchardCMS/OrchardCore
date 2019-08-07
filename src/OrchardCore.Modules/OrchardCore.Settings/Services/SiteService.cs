@@ -58,7 +58,6 @@ namespace OrchardCore.Settings.Services
                     };
 
                     session.Save(site);
-                    await session.CommitAsync();
                     _signal.SignalToken(SiteCacheKey);
                 }
                 else
@@ -93,7 +92,6 @@ namespace OrchardCore.Settings.Services
             existing.CdnBaseUrl = site.CdnBaseUrl;
 
             session.Save(existing);
-            await session.CommitAsync();
             _signal.SignalToken(SiteCacheKey);
 
             return;
