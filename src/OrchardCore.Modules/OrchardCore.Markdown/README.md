@@ -106,13 +106,15 @@ You can override the HTML editor for the `Default` editor by creating a shape fi
 
 ## Razor Helper
 
-To render a Markdown string to HTML within Razor use the `MarkdownToHtml` helper extension method on the view's base `Orchard` property, e.g.:
+To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
 
 ```
-@Orchard.MarkdownToHtml((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown)
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown)
 ```
 
 In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
+
+This helper will also parse any liquid included in the Markdown.
 
 ## CREDITS
 

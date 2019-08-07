@@ -643,13 +643,13 @@ Example
 
 ## Razor Helpers
 
-### `LiquidToHtml`
+### `LiquidToHtmlAsync`
 
-To render a liquid string template as `IHtmlContent` within Razor use the `LiquidToHtml` helper extension method on the view's base `Orchard` property, e.g.:
+To render a liquid string template as `IHtmlContent` within Razor use the `LiquidToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
 
 Input
 ```
-@await Orchard.LiquidToHtml((string)Model.ContentItem.Content.Paragraph.Content.Html)
+@await Orchard.LiquidToHtmlAsync((string)Model.ContentItem.Content.Paragraph.Content.Html)
 ```
 
 In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
@@ -657,26 +657,7 @@ In this example we assume that `Model.ContentItem.Content.Paragraph.Content` rep
 Output
 
 ```
-<p> <img src="/blog/media/kitten.jpg" /> </p>
-```
-
-Optionally you can pass a class for model binding.
-
-### `LiquidToRaw`
-
-To render a liquid string template as a raw string, before passing to another helper, within Razor use the `LiquidToRaw` helper extension method on the view's base `Orchard` property, e.g.:
-
-Input
-```
-var markdown = @await Orchard.LiquidToRaw((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown);
-```
-
-In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and that the raw string will then be passed to the `MarkdownToHtml` helper, before rendering as html.
-
-Output
-
-```
-<p> <img src="/blog/media/kitten.jpg" /> </p>
+<p> <img src="/media/kitten.jpg" /> </p>
 ```
 
 Optionally you can pass a class for model binding.
