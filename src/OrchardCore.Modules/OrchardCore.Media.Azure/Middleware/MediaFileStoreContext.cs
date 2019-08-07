@@ -5,21 +5,24 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.FileStorage;
+using SixLabors.ImageSharp.Web;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
+    // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware, and ImageSharp.Web.
+
     /// <summary>
-    /// File store context to serve async media from blob storage,
-    /// inspired by aspnetcore static file middleware,
-    /// and adapted under the Apache License.
+    /// File store context to serve async media from Azure Blob Storage.
     /// </summary>
     public class MediaFileStoreContext : BaseFileContext
     {
         private const int StreamCopyBufferSize = 64 * 1024;
 
         private readonly IMediaFileStore _fileProvider;
-        private readonly IMediaImageCache _shellImageCache;
-        private readonly string _cacheFilePath;
+        private readonly IMediaImageCache _mediaImageCache;
+        private readonly PathString _subPath;
+        private readonly string _cacheKey;
+        private readonly string _extension;
 
         private IFileStoreEntry _fileStoreEntry;
 
@@ -30,19 +33,21 @@ namespace OrchardCore.Media.Azure.Middleware
             PathString subPath,
             int maxBrowserCacheDays,
             string contentType,
-            IMediaImageCache shellImageCache,
-            string cacheFilePath
+            IMediaImageCache mediaImageCache,
+            string cacheKey,
+            string extension
             ) : base(
                 context,
                 logger,
-                subPath,
                 maxBrowserCacheDays,
                 contentType
                 )
         {
             _fileProvider = fileProvider;
-            _shellImageCache = shellImageCache;
-            _cacheFilePath = cacheFilePath;
+            _mediaImageCache = mediaImageCache;
+            _cacheKey = cacheKey;
+            _extension = extension;
+            _subPath = subPath;
         }
 
         public async Task<bool> LookupFileStoreInfo()
@@ -52,9 +57,11 @@ namespace OrchardCore.Media.Azure.Middleware
             {
                 _length = _fileStoreEntry.Length;
 
-                DateTimeOffset last = _fileStoreEntry.LastModifiedUtc;
-                // Truncate to the second.
-                _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
+                // We need to use the same technique as ImageSharp to produce a consistent etag.
+
+                DateTimeOffset last = DateTime.UtcNow;
+                // Truncate to the minute, to allow the cached entry to be the same.
+                _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, 0, last.Offset).ToUniversalTime();
 
                 long etagHash = _lastModified.ToFileTime() ^ _length;
                 _etag = new EntityTagHeaderValue('\"' + Convert.ToString(etagHash, 16) + '\"');
@@ -80,7 +87,10 @@ namespace OrchardCore.Media.Azure.Middleware
                     if (readStream.CanSeek)
                     {
                         readStream.Position = 0;
-                        await _shellImageCache.TrySetAsync(_cacheFilePath, readStream);
+
+                        // Use same metadata as ImageSharp so cache resolves etag correctly.
+                        var cachedImageMetadata = new ImageMetaData(DateTime.UtcNow, _contentType, _maxBrowserCacheDays);
+                        await _mediaImageCache.TrySetAsync(_cacheKey, _extension, readStream, cachedImageMetadata);
                     }
                 }
             }

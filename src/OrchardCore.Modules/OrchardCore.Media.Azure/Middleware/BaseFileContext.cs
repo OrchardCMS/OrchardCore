@@ -11,10 +11,10 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
+    // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware.
+
     /// <summary>
-    /// Base class to provide shared code between contexts,
-    /// inspired by aspnetcore static file middleware,
-    /// and adapted under the Apache License.
+    /// Base class to provide shared code between contexts.
     /// </summary>
     public abstract class BaseFileContext
     {
@@ -24,14 +24,13 @@ namespace OrchardCore.Media.Azure.Middleware
         protected readonly ILogger _logger;
         protected readonly string _method;
         protected readonly string _contentType;
-        protected readonly int _maxBrowserCacheDays;
+        protected readonly TimeSpan _maxBrowserCacheDays;
 
         protected EntityTagHeaderValue _etag;
         protected RequestHeaders _requestHeaders;
         protected ResponseHeaders _responseHeaders;
 
         protected long _length;
-        protected readonly PathString _subPath;
         protected DateTimeOffset _lastModified;
 
         protected PreconditionState _ifMatchState;
@@ -44,7 +43,6 @@ namespace OrchardCore.Media.Azure.Middleware
         public BaseFileContext(
             HttpContext context,
             ILogger logger,
-            PathString cacheFilePath,
             int maxBrowserCacheDays,
             string contentType
             )
@@ -54,8 +52,7 @@ namespace OrchardCore.Media.Azure.Middleware
             _response = context.Response;
             _logger = logger;
             _method = _request.Method;
-            _subPath = cacheFilePath;
-            _maxBrowserCacheDays = maxBrowserCacheDays;
+            _maxBrowserCacheDays = TimeSpan.FromDays(maxBrowserCacheDays);
             _contentType = contentType;
             _etag = null;
             _requestHeaders = _request.GetTypedHeaders();
@@ -150,11 +147,11 @@ namespace OrchardCore.Media.Azure.Middleware
                 _responseHeaders.ETag = _etag;
                 _responseHeaders.Headers[HeaderNames.AcceptRanges] = "bytes";
 
-                // Apply the same cache control headers as ImageSharp
+                // Apply the same cache control headers as ImageSharp.Web.
                 _responseHeaders.CacheControl = new CacheControlHeaderValue
                 {
                     Public = true,
-                    MaxAge = TimeSpan.FromDays(_maxBrowserCacheDays),
+                    MaxAge = _maxBrowserCacheDays,
                     MustRevalidate = true
                 };
             }

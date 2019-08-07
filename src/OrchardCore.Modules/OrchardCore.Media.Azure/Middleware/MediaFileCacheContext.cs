@@ -4,66 +4,71 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using SixLabors.ImageSharp.Web;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
+    // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware, and ImageSharp.Web.
+
     /// <summary>
-    /// File provider context to serve media assets from file system cache,,
-    /// inspired by aspnetcore static file middleware,
-    /// and adapted under the Apache License.
+    /// Media file cache context to serve media assets from file system cache.
     /// </summary>
-    public class MediaFileProviderContext : BaseFileContext
+    public class MediaFileCacheContext : BaseFileContext
     {
         private const int StreamCopyBufferSize = 64 * 1024;
 
-        private readonly IFileProvider _fileProvider;
+        private readonly string _cacheKey;
 
-        private IFileInfo _fileInfo;
+        private readonly IMediaImageCache _mediaImageCache;
 
-        public MediaFileProviderContext(
+        private IMediaCacheFileResolver _mediaCacheFileResolver;
+        private ImageMetaData _imageMetaData;
+
+        public MediaFileCacheContext(
             HttpContext context,
             ILogger logger,
-            IFileProvider fileProvider,
-            PathString cacheFilePath,
+            IMediaImageCache mediaImageCache,
+            string cacheKey,
             int maxBrowserCacheDays,
             string contentType
             ) : base(
                 context,
                 logger,
-                cacheFilePath,
                 maxBrowserCacheDays,
                 contentType
                 )
         {
-            _fileProvider = fileProvider;
-            _fileInfo = null;
+            _mediaImageCache = mediaImageCache;
+            _cacheKey = cacheKey;
         }
 
-        public bool LookupFileInfo()
+        public async Task<bool> LookupFileInfo()
         {
-            _fileInfo = _fileProvider.GetFileInfo(_subPath.Value);
-            if (_fileInfo.Exists)
-            {
-                _length = _fileInfo.Length;
+            // Resolve file through cache so we have correct value for the etag.
+            _mediaCacheFileResolver = await _mediaImageCache.GetMediaCacheFileAsync(_cacheKey);
+            if (_mediaCacheFileResolver == null)
+                return false;
 
-                var last = _fileInfo.LastModified;
-                // Truncate to the second.
-                _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
+            _imageMetaData = await _mediaCacheFileResolver.GetMetaDataAsync();
+            _length = _mediaCacheFileResolver.Length;
 
-                long etagHash = _lastModified.ToFileTime() ^ _length;
-                _etag = new EntityTagHeaderValue('\"' + Convert.ToString(etagHash, 16) + '\"');
-            }
-            return _fileInfo.Exists;
+            DateTimeOffset last = _imageMetaData.LastWriteTimeUtc;
+            // Truncate to the second.
+            _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
+
+            long etagHash = _lastModified.ToFileTime() ^ _length;
+
+            _etag = new EntityTagHeaderValue('\"' + Convert.ToString(etagHash, 16) + '\"');
+
+            return true;
         }
-
 
         public async override Task SendAsync()
         {
             ApplyResponseHeaders(StatusCodes.Status200OK);
-            var physicalPath = _fileInfo.PhysicalPath;
+            var physicalPath = _mediaCacheFileResolver.PhysicalPath;
             var sendFile = _context.Features.Get<IHttpSendFileFeature>();
             if (sendFile != null && !string.IsNullOrEmpty(physicalPath))
             {
@@ -74,7 +79,7 @@ namespace OrchardCore.Media.Azure.Middleware
 
             try
             {
-                using (var readStream = _fileInfo.CreateReadStream())
+                using (var readStream = await _mediaCacheFileResolver.OpenReadAsync())
                 {
                     // Larger StreamCopyBufferSize is required because in case of FileStream readStream isn't going to be buffering
                     await StreamCopyOperation.CopyToAsync(readStream, _response.Body, _length, StreamCopyBufferSize, _context.RequestAborted);

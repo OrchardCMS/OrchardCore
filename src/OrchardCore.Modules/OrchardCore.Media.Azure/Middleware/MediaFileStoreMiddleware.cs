@@ -24,8 +24,7 @@ namespace OrchardCore.Media.Azure.Middleware
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly IMediaCacheFileProvider _mediaCacheFileProvider;
-        private readonly IMediaImageCache _shellImageCache;
+        private readonly IMediaImageCache _mediaImageCache;
         private readonly ICacheHash _cacheHash;
         private readonly IRequestParser _requestParser;
         private readonly IEnumerable<IImageProvider> _imageProviders;
@@ -44,8 +43,7 @@ namespace OrchardCore.Media.Azure.Middleware
             RequestDelegate next,
             IMediaFileStore mediaFileStore,
             IContentTypeProvider contentTypeProvider,
-            IMediaCacheFileProvider mediaCacheFileProvider,
-            IMediaImageCache shellImageCache,
+            IMediaImageCache mediaImageCache,
             ICacheHash cacheHash,
             IRequestParser requestParser,
             IEnumerable<IImageProvider> imageProviders,
@@ -58,8 +56,7 @@ namespace OrchardCore.Media.Azure.Middleware
             _next = next;
             _mediaFileStore = mediaFileStore;
             _contentTypeProvider = contentTypeProvider;
-            _mediaCacheFileProvider = mediaCacheFileProvider;
-            _shellImageCache = shellImageCache;
+            _mediaImageCache = mediaImageCache;
             _cacheHash = cacheHash;
             _requestParser = requestParser;
             _imageProviders = imageProviders;
@@ -108,32 +105,33 @@ namespace OrchardCore.Media.Azure.Middleware
                 return;
             }
 
-            var cacheFilePath = GetCacheKey(context, fileExtension);
+            var cacheKey = GetCacheKey(context);
 
-            // Serve unknown file types, allowed File Extensions is the check if this is acceptable content.
+            // Serve unknown file types, allowed file extensions is the test to see if we should serve this content.
             _contentTypeProvider.TryGetContentType(subPath.Value, out var contentType);
 
             // Create context that will try to serve file, if it exists in cache.
-            var mediaProviderFileContext = new MediaFileProviderContext(context, Logger, _mediaCacheFileProvider, cacheFilePath, _maxBrowserCacheDays, contentType);
+            var mediaProviderFileContext = new MediaFileCacheContext(context, Logger,
+                _mediaImageCache, cacheKey, _maxBrowserCacheDays, contentType);
 
-            if (mediaProviderFileContext.LookupFileInfo())
+            if (await mediaProviderFileContext.LookupFileInfo())
             {
                 // If file exists in cache try to serve it.
                 await mediaProviderFileContext.ServeFile(context, _next);
                 return;
             }
 
-            //  File was not in cache, should ImageSharp handle this request.
+            //  File was not in cache, test if ImageSharp should handle this request.
             var provider = _imageProviders.FirstOrDefault(r => r.Match(context));
             if (provider?.IsValidRequest(context) == true)
             {
-                // Pass to ImageSharp middlewarem
+                // Pass to ImageSharp middleware.
                 await _next(context);
                 return;
             }
 
             var mediaFileStoreContext = new MediaFileStoreContext(context, Logger, _mediaFileStore, subPath,
-                _maxBrowserCacheDays, contentType, _shellImageCache, cacheFilePath);
+                _maxBrowserCacheDays, contentType, _mediaImageCache, cacheKey, fileExtension);
 
             if (await mediaFileStoreContext.LookupFileStoreInfo())
             {
@@ -148,7 +146,7 @@ namespace OrchardCore.Media.Azure.Middleware
         }
 
         // Generate the same cache key as ImageSharp.
-        private string GetCacheKey(HttpContext context, string fileExtension)
+        private string GetCacheKey(HttpContext context)
         {
             var commands = _requestParser.ParseRequestCommands(context)
                 .Where(kvp => _isKnownCommands.Contains(kvp.Key))
@@ -156,8 +154,10 @@ namespace OrchardCore.Media.Azure.Middleware
 
             var uri = GetUri(context, commands);
             var key = _cacheHash.Create(uri, _cachedNameLength);
-            var cacheFilePath = "/" + key + fileExtension;
-            return cacheFilePath;
+            return key;
+            //TODO move this to elsewhere
+            //var cacheFilePath = "/" + key + fileExtension;
+            //return cacheFilePath;
         }
 
         // Generate the same Uri as ImageSharp, noting that only valid commands are included in the Uri.

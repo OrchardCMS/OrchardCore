@@ -84,21 +84,6 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(options.Value.AssetsRequestPath, mediaPath);
             });
 
-            services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
-            {
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-
-                var mediaPath = MediaFileCache.GetMediaCachePath(shellOptions.Value, shellSettings, options.Value.AssetsCachePath);
-
-                if (!Directory.Exists(mediaPath))
-                {
-                    Directory.CreateDirectory(mediaPath);
-                }
-                return new MediaCacheFileProvider(mediaPath);
-            });
-
             // Register with strong service descriptor to facilitate removal by Media.Azure.
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileProvider>()
@@ -141,8 +126,16 @@ namespace OrchardCore.Media
             // Add MediaFileResolverFactory, which creates ImageSharp image resolvers. 
             services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
 
-            // Register the MediaFileCache as a IShellImageCache.
-            services.TryAddSingleton<IMediaImageCache, MediaFileCache>();
+            // Add an IMediaFileCache, which ImageSharp will share.
+            if (_shellConfiguration.GetSection("OrchardCore.Media")
+                .GetValue<CacheConfiguration>(nameof(MediaOptions.CacheConfiguration)) == CacheConfiguration.None)
+            {
+                services.TryAddSingleton<IMediaImageCache, NullMediaCache>();
+            }
+            else
+            {
+                services.TryAddSingleton<IMediaImageCache, MediaFileCache>();
+            }
 
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
@@ -155,11 +148,7 @@ namespace OrchardCore.Media
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<BackgroundColorWebProcessor>();
 
-            if (_shellConfiguration.GetSection("OrchardCore.Media")
-                .GetValue<CacheConfiguration>(nameof(MediaOptions.CacheConfiguration)) == CacheConfiguration.None)
-            {
-                services.Replace(ServiceDescriptor.Singleton<IImageCache, NullMediaCache>());
-            }
+
 
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
