@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Indexing
 
             var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
 
-            if (!String.IsNullOrEmpty(settings.FullText))
+            if (settings.IsFullText)
             {
                 var result = String.Empty;
                 var templateContext = new TemplateContext();

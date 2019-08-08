@@ -35,6 +35,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
             return builder.WithSetting("Stereotype", stereotype);
         }
 
+        public static ContentTypeDefinitionBuilder IsFullText(this ContentTypeDefinitionBuilder builder, bool isFullText = false)
+        {
+            return builder.WithSetting("IsFullText", isFullText.ToString());
+        }
+
         public static ContentTypeDefinitionBuilder FullText(this ContentTypeDefinitionBuilder builder, string fulltext)
         {
             return builder.WithSetting("FullText", fulltext);

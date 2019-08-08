@@ -49,6 +49,20 @@
     </div>
 </fieldset>
 
+<div class="form-group custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" asp-for="IsFullText" data-toggle="collapse" data-target="#fulltext-template" checked="@Model.IsFullText" />
+    <label class="custom-control-label" asp-for="IsFullText">@T["FullText"]</label>
+    <span class="hint">— @T["Determines if this content type can use a customizable FullText index field."]</span>
+</div>
+
+<fieldset class="form-group row collapse" id="fulltext-template">
+    <div class="col">
+        <label asp-for="FullText">@T["Liquid pattern"]</label>
+        <textarea asp-for="FullText" type="text" class="form-control"></textarea>
+        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index. Use the <code>Model</code> helper to reference the current element."]</span>
+    </div>
+</fieldset>
+
 <fieldset class="form-group">
     <div class="row col-md">
         <label asp-for="Stereotype">@T["Stereotype"]</label>
@@ -57,13 +71,6 @@
     </div>
 </fieldset>
 
-<fieldset class="form-group row">
-    <div class="col">
-        <label asp-for="FullText">@T["FullText Index"]</label>
-        <textarea asp-for="FullText" type="text" class="form-control"></textarea>
-        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index. Use the <code>Model</code> helper to reference the current element."]</span>
-    </div>
-</fieldset>
 
 <script at="Foot" depends-on="jquery">
     //<![CDATA[
