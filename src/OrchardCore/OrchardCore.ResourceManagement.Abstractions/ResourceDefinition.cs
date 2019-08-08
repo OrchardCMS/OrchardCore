@@ -165,6 +165,10 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+        /// <summary>
+        /// Should a file version be appended to the resource.
+        /// </summary>
+        /// <param name="appendVersion"></param>
         public ResourceDefinition ShouldAppendVersion(bool? appendVersion)
         {
             AppendVersion = appendVersion;
