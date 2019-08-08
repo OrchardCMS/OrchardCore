@@ -40,13 +40,16 @@ namespace OrchardCore.Contents.Indexing
             if (settings.IsFullText)
             {
                 var result = String.Empty;
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("Model", context.ContentItem);
-
-                using (var writer = new StringWriter())
+                if (!String.IsNullOrEmpty(settings.FullText))
                 {
-                    await _liquidTemplateManager.RenderAsync(settings.FullText, writer, NullEncoder.Default, templateContext);
-                    result = writer.ToString();
+                    var templateContext = new TemplateContext();
+                    templateContext.SetValue("Model", context.ContentItem);
+
+                    using (var writer = new StringWriter())
+                    {
+                        await _liquidTemplateManager.RenderAsync(settings.FullText, writer, NullEncoder.Default, templateContext);
+                        result = writer.ToString();
+                    }
                 }
 
                 context.DocumentIndex.Set(
