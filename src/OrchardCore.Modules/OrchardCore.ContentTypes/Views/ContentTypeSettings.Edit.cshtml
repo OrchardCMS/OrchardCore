@@ -59,7 +59,7 @@
     <div class="col">
         <label asp-for="FullText">@T["Liquid pattern"]</label>
         <textarea asp-for="FullText" type="text" class="form-control"></textarea>
-        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index. Use the <code>Model</code> helper to reference the current element."]</span>
+        <span class="hint">@T["The Liquid template used for a FullText search index field accessible in queries with: <code>Content.ContentItem.FullText</code>. Use the <code>Model</code> helper to reference the current element."]</span>
     </div>
 </fieldset>
 
