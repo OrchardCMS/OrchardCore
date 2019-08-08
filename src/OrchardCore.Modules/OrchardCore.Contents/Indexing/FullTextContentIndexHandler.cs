@@ -37,19 +37,17 @@ namespace OrchardCore.Contents.Indexing
 
             var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
 
-            if (settings.IsFullText)
+            if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
             {
                 var result = String.Empty;
-                if (!String.IsNullOrEmpty(settings.FullText))
-                {
-                    var templateContext = new TemplateContext();
-                    templateContext.SetValue("Model", context.ContentItem);
 
-                    using (var writer = new StringWriter())
-                    {
-                        await _liquidTemplateManager.RenderAsync(settings.FullText, writer, NullEncoder.Default, templateContext);
-                        result = writer.ToString();
-                    }
+                var templateContext = new TemplateContext();
+                templateContext.SetValue("Model", context.ContentItem);
+
+                using (var writer = new StringWriter())
+                {
+                    await _liquidTemplateManager.RenderAsync(settings.FullText, writer, NullEncoder.Default, templateContext);
+                    result = writer.ToString();
                 }
 
                 context.DocumentIndex.Set(
