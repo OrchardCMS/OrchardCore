@@ -49,8 +49,6 @@ namespace OrchardCore.Contents.Recipes
                     _session.Save(existing);
                 }
             }
-
-            await _session.CommitAsync();
         }
     }
 
