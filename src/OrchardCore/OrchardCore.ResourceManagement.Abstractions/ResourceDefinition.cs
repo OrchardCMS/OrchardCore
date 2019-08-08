@@ -165,7 +165,7 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public ResourceDefinition SetAppendVersion(bool? appendVersion)
+        public ResourceDefinition ShouldAppendVersion(bool? appendVersion)
         {
             AppendVersion = appendVersion;
             return this;

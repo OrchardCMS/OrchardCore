@@ -91,7 +91,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (AppendVersion.HasValue)
                     {
-                        definition.SetAppendVersion(AppendVersion);
+                        definition.ShouldAppendVersion(AppendVersion);
                     }
 
                     if (!String.IsNullOrEmpty(Version))
@@ -212,7 +212,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    definition.SetAppendVersion(AppendVersion);
+                    definition.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))
