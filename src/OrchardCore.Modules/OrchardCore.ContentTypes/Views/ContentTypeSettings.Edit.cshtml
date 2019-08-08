@@ -1,5 +1,14 @@
 @model ContentTypeSettingsViewModel
 
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
 <fieldset class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="Creatable">
@@ -47,3 +56,25 @@
         <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
     </div>
 </fieldset>
+
+<fieldset class="form-group row">
+    <div class="col">
+        <label asp-for="FullText">@T["FullText Index"]</label>
+        <textarea asp-for="FullText" type="text" class="form-control"></textarea>
+        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index."]</span>
+    </div>
+</fieldset>
+
+<script at="Foot" depends-on="jquery">
+    //<![CDATA[
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullText)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+    //]]>
+</script>

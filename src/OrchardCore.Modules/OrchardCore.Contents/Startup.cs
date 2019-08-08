@@ -52,6 +52,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddRecipeExecutionStep<ContentStep>();
 
+            services.AddScoped<IContentItemIndexHandler, FullTextContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();

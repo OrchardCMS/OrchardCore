@@ -26,5 +26,9 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Used to determine if this content type supports custom permissions
         /// </summary>
         public bool Securable { get; set; }
+        /// <summary>
+        /// Used to define the string values that should be indexed for a FullText search
+        /// </summary>
+        public string FullText { get; set; }
     }
 }
