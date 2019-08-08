@@ -13,62 +13,50 @@ namespace OrchardCore.Media.Azure.Middleware
 {
     // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware.
 
-    /// <summary>
-    /// Base class to provide shared code between contexts.
-    /// </summary>
     public abstract class BaseFileContext
     {
         protected readonly HttpContext _context;
-        protected readonly HttpRequest _request;
         protected readonly HttpResponse _response;
-        protected readonly ILogger _logger;
-        protected readonly string _method;
         protected readonly string _contentType;
         protected readonly TimeSpan _maxBrowserCacheDays;
+        protected readonly string _cacheKey;
+
+        protected readonly RequestHeaders _requestHeaders;
+        protected readonly ResponseHeaders _responseHeaders;
+        protected readonly bool _isHeadRequest;
 
         protected EntityTagHeaderValue _etag;
-        protected RequestHeaders _requestHeaders;
-        protected ResponseHeaders _responseHeaders;
 
         protected long _length;
         protected DateTimeOffset _lastModified;
 
-        protected PreconditionState _ifMatchState;
-        protected PreconditionState _ifNoneMatchState;
-        protected PreconditionState _ifModifiedSinceState;
-        protected PreconditionState _ifUnmodifiedSinceState;
-
-        protected readonly bool _isHeadRequest;
+        private PreconditionState _ifMatchState;
+        private PreconditionState _ifNoneMatchState;
+        private PreconditionState _ifModifiedSinceState;
+        private PreconditionState _ifUnmodifiedSinceState;
 
         public BaseFileContext(
             HttpContext context,
             ILogger logger,
             int maxBrowserCacheDays,
-            string contentType
+            string contentType,
+            string cacheKey
             )
         {
             _context = context;
-            _request = context.Request;
-            _response = context.Response;
-            _logger = logger;
-            _method = _request.Method;
+            Logger = logger;
             _maxBrowserCacheDays = TimeSpan.FromDays(maxBrowserCacheDays);
             _contentType = contentType;
-            _etag = null;
-            _requestHeaders = _request.GetTypedHeaders();
-            _responseHeaders = _response.GetTypedHeaders();
-
-            _length = 0;
-            _lastModified = new DateTimeOffset();
-            _ifMatchState = PreconditionState.Unspecified;
-            _ifNoneMatchState = PreconditionState.Unspecified;
-            _ifModifiedSinceState = PreconditionState.Unspecified;
-            _ifUnmodifiedSinceState = PreconditionState.Unspecified;
-            if (HttpMethods.IsHead(_method))
+            _cacheKey = cacheKey;
+            _requestHeaders = context.Request.GetTypedHeaders();
+            _responseHeaders = context.Response.GetTypedHeaders();
+            if (HttpMethods.IsHead(context.Request.Method))
             {
                 _isHeadRequest = true;
             }
         }
+
+        public ILogger Logger { get; }
 
         public void ComprehendRequestHeaders()
         {

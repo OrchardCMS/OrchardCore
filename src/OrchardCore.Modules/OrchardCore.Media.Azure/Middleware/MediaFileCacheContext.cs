@@ -19,8 +19,6 @@ namespace OrchardCore.Media.Azure.Middleware
     {
         private const int StreamCopyBufferSize = 64 * 1024;
 
-        private readonly string _cacheKey;
-
         private readonly IMediaImageCache _mediaImageCache;
 
         private IMediaCacheFileResolver _mediaCacheFileResolver;
@@ -30,22 +28,32 @@ namespace OrchardCore.Media.Azure.Middleware
             HttpContext context,
             ILogger logger,
             IMediaImageCache mediaImageCache,
-            string cacheKey,
             int maxBrowserCacheDays,
-            string contentType
+            string contentType,
+            string cacheKey
             ) : base(
                 context,
                 logger,
                 maxBrowserCacheDays,
-                contentType
+                contentType,
+                cacheKey
                 )
         {
             _mediaImageCache = mediaImageCache;
-            _cacheKey = cacheKey;
         }
 
         public async Task<bool> LookupFileInfo()
         {
+            // TODO Consider how to provide a graceful cache period on this, 
+            // so we do not serve a file from cache, if it has been deleted from Blob storage.
+            // One idea: Treat this cache like any other Cdn cache. Cache bust it.
+            // We could pull the v=hash from the query string here, and check the
+            // IFileStoreVersionProvider to see if the version hash is the same
+            // as the file store version hash.
+            // If it is not, then remove the file from the disc cache.
+            // The IFileStoreVersionProvider then becomes responsible for
+            // gracefully expiring it's own memory cache of version hashes.
+
             // Resolve file through cache so we have correct value for the etag.
             _mediaCacheFileResolver = await _mediaImageCache.GetMediaCacheFileAsync(_cacheKey);
             if (_mediaCacheFileResolver == null)

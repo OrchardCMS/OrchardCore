@@ -52,50 +52,16 @@ namespace OrchardCore.Media.Processing
             _fileProvider = new PhysicalFileProvider(_cachePath);
         }
 
-        public async Task TrySetAsync(string key, string extension, Stream stream, ImageMetaData metadata)
-        {
-            // Add the cache key, if it fails, a write operation is already underway.
-            if (!_cacheWriteLock.TryAdd(key, null))
-                return;
-
-            try
-            {
-                // File Provider will handle normalization of path.
-                var path = Path.Combine(_cachePath, this.ToFilePath(key));
-                var imagePath = path + extension;
-                var metaPath = this.ToMetaDataFilePath(path);
-                var directory = Path.GetDirectoryName(imagePath);
-
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                // If file already exists, another write operation has created it.
-                if (File.Exists(imagePath))
-                {
-                    return;
-                }
-
-                using (var fileStream = File.Create(imagePath))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
-
-                using (var fileStream = File.Create(metaPath))
-                {
-                    await metadata.WriteAsync(fileStream).ConfigureAwait(false);
-                }
-            }
-            finally
-            {
-                _cacheWriteLock.TryRemove(key, out var removedPath);
-            }
-        }
-
         [Obsolete("This feature is unused and has been removed from ImageSharp.Web, remove when updating ImageSharp.Web.")]
         public IDictionary<string, string> Settings { get; }
 
+        /// <inheritdoc/>
+        public async Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key)
+        {
+            return (IMediaCacheFileResolver)await this.GetAsync(key);
+        }
+
+        /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(string key)
         {
             string path = this.ToFilePath(key);
@@ -122,13 +88,46 @@ namespace OrchardCore.Media.Processing
 
             return new MediaCacheFileResolver(fileInfo, metadata);
         }
-        public async Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key)
+
+        /// <inheritdoc/>
+        public async Task TrySetAsync(string key, string extension, Stream stream, ImageMetaData metadata)
         {
-            return (IMediaCacheFileResolver)await this.GetAsync(key);
+            // Add the cache key, if it fails, a write operation is already underway.
+            if (!_cacheWriteLock.TryAdd(key, null))
+                return;
+
+            try
+            {
+                // File Provider will handle normalization of path.
+                var path = Path.Combine(_cachePath, this.ToFilePath(key));
+                var imagePath = path + extension;
+                var metaPath = this.ToMetaDataFilePath(path);
+                var directory = Path.GetDirectoryName(imagePath);
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                using (var fileStream = File.Create(imagePath))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+
+                using (var fileStream = File.Create(metaPath))
+                {
+                    await metadata.WriteAsync(fileStream).ConfigureAwait(false);
+                }
+            }
+            //TODO log exceptions?
+            finally
+            {
+                _cacheWriteLock.TryRemove(key, out var removedPath);
+            }
         }
 
-            /// <inheritdoc/>
-            public async Task SetAsync(string key, Stream stream, ImageMetaData metadata)
+        /// <inheritdoc/>
+        public async Task SetAsync(string key, Stream stream, ImageMetaData metadata)
         {
             string path = Path.Combine(_cachePath, this.ToFilePath(key));
             string imagePath = this.ToImageFilePath(path, metadata);
@@ -178,7 +177,7 @@ namespace OrchardCore.Media.Processing
         //private string ToFilePath(string key) // TODO: Avoid the allocation here.
         //    => $"{_cacheOptions.CacheFolder}/{string.Join("/", key.Substring(0, (int)this._options.CachedNameLength).ToCharArray())}/{key}";
 
-        public static string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string _assetsCachePath)
+        private static string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string _assetsCachePath)
         {
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, _assetsCachePath);
         }

@@ -16,51 +16,53 @@ namespace OrchardCore.Media.Azure.Middleware
     /// </summary>
     public class MediaFileStoreContext : BaseFileContext
     {
-        private const int StreamCopyBufferSize = 64 * 1024;
+        private const int StreamCopyBufferSize = 81920;
 
-        private readonly IMediaFileStore _fileProvider;
+        private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaImageCache _mediaImageCache;
         private readonly PathString _subPath;
-        private readonly string _cacheKey;
-        private readonly string _extension;
+        private readonly string _fileExtension;
 
         private IFileStoreEntry _fileStoreEntry;
+        private ImageMetaData _imageMetadata;
 
         public MediaFileStoreContext(
             HttpContext context,
             ILogger logger,
-            IMediaFileStore fileProvider,
-            PathString subPath,
+            IMediaFileStore mediaFileStore,
+            IMediaImageCache mediaImageCache,
             int maxBrowserCacheDays,
             string contentType,
-            IMediaImageCache mediaImageCache,
             string cacheKey,
-            string extension
-            ) : base(
+            PathString subPath,
+            string fileExtension
+            ) : base
+            (
                 context,
                 logger,
                 maxBrowserCacheDays,
-                contentType
-                )
+                contentType,
+                cacheKey
+            )
         {
-            _fileProvider = fileProvider;
+            _mediaFileStore = mediaFileStore;
             _mediaImageCache = mediaImageCache;
-            _cacheKey = cacheKey;
-            _extension = extension;
             _subPath = subPath;
+            _fileExtension = fileExtension;
         }
 
         public async Task<bool> LookupFileStoreInfo()
         {
-            _fileStoreEntry = await _fileProvider.GetFileInfoAsync(_subPath.Value);
+            _fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(_subPath.Value);
             if (_fileStoreEntry != null)
             {
                 _length = _fileStoreEntry.Length;
 
-                // We need to use the same technique as ImageSharp to produce a consistent etag.
+                // Generate ImageSharp metadata now, so etag value will match when cached.
+                _imageMetadata = new ImageMetaData(DateTime.UtcNow, _contentType, _maxBrowserCacheDays);
+                DateTimeOffset last = _imageMetadata.LastWriteTimeUtc;
 
-                DateTimeOffset last = DateTime.UtcNow;
-                // Truncate to the minute, to allow the cached entry to be the same.
+                // Truncate to the second.
                 _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, 0, last.Offset).ToUniversalTime();
 
                 long etagHash = _lastModified.ToFileTime() ^ _length;
@@ -76,28 +78,25 @@ namespace OrchardCore.Media.Azure.Middleware
 
             try
             {
-                using (var readStream = await _fileProvider.GetFileStreamAsync(_fileStoreEntry))
+                using (var readStream = await _mediaFileStore.GetFileStreamAsync(_fileStoreEntry))
                 {
-                    // Serve to the client first
-                    // TODO Come back to this as Azure blob should be buffering. Need to have a look at MultiBufferMemoryStream
-                    // Larger StreamCopyBufferSize is required because in case of FileStream readStream isn't going to be buffering
+                    // Serve to the client first.
+
+                    // Use Default StreamCopyBufferSize to stay below the large object heap threshold.
                     await StreamCopyOperation.CopyToAsync(readStream, _response.Body, _length, StreamCopyBufferSize, _context.RequestAborted);
 
-                    // Reset the stream and write to cache, this does not cause a second request to blob storage
+                    // Reset the stream and write to cache, this does not cause a second request to blob storage.
                     if (readStream.CanSeek)
                     {
                         readStream.Position = 0;
-
-                        // Use same metadata as ImageSharp so cache resolves etag correctly.
-                        var cachedImageMetadata = new ImageMetaData(DateTime.UtcNow, _contentType, _maxBrowserCacheDays);
-                        await _mediaImageCache.TrySetAsync(_cacheKey, _extension, readStream, cachedImageMetadata);
+                        await _mediaImageCache.TrySetAsync(_cacheKey, _fileExtension, readStream, _imageMetadata);
                     }
                 }
             }
             catch (OperationCanceledException ex)
             {
                 //TODO log correctly
-                _logger.LogInformation(ex.Message);
+                Logger.LogInformation(ex.Message);
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
                 // However, if it was cancelled for any other reason we need to prevent empty responses.
                 _context.Abort();

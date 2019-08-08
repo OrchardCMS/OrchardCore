@@ -112,7 +112,7 @@ namespace OrchardCore.Media.Azure.Middleware
 
             // Create context that will try to serve file, if it exists in cache.
             var mediaProviderFileContext = new MediaFileCacheContext(context, Logger,
-                _mediaImageCache, cacheKey, _maxBrowserCacheDays, contentType);
+                _mediaImageCache, _maxBrowserCacheDays, contentType, cacheKey);
 
             if (await mediaProviderFileContext.LookupFileInfo())
             {
@@ -130,8 +130,8 @@ namespace OrchardCore.Media.Azure.Middleware
                 return;
             }
 
-            var mediaFileStoreContext = new MediaFileStoreContext(context, Logger, _mediaFileStore, subPath,
-                _maxBrowserCacheDays, contentType, _mediaImageCache, cacheKey, fileExtension);
+            var mediaFileStoreContext = new MediaFileStoreContext(context, Logger, _mediaFileStore, _mediaImageCache,
+                _maxBrowserCacheDays, contentType, cacheKey, subPath, fileExtension);
 
             if (await mediaFileStoreContext.LookupFileStoreInfo())
             {
@@ -155,9 +155,6 @@ namespace OrchardCore.Media.Azure.Middleware
             var uri = GetUri(context, commands);
             var key = _cacheHash.Create(uri, _cachedNameLength);
             return key;
-            //TODO move this to elsewhere
-            //var cacheFilePath = "/" + key + fileExtension;
-            //return cacheFilePath;
         }
 
         // Generate the same Uri as ImageSharp, noting that only valid commands are included in the Uri.
