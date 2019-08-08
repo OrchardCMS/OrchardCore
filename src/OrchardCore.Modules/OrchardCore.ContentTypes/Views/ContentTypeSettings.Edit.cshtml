@@ -61,7 +61,7 @@
     <div class="col">
         <label asp-for="FullText">@T["FullText Index"]</label>
         <textarea asp-for="FullText" type="text" class="form-control"></textarea>
-        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index."]</span>
+        <span class="hint">@T["(Optional) The Liquid template used for a FullText search index. Use the <code>Model</code> helper to reference the current element."]</span>
     </div>
 </fieldset>
 
