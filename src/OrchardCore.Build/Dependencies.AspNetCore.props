@@ -179,6 +179,7 @@
     <PackageManagement Include="System.Security.Cryptography.Cng" Version="4.5.0" />
     <!-- These definitions are are used in projects that incur package downgrades. -->
     <PackageManagement Include="System.Collections" Version="4.3.0" />
+    <PackageManagement Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageManagement Include="System.Diagnostics.Debug" Version="4.3.0" />
     <PackageManagement Include="System.Globalization" Version="4.3.0" />
     <PackageManagement Include="System.IO" Version="4.3.0" />

@@ -22,9 +22,9 @@ namespace OrchardCore.Layers.Services
         private const string LayersCacheKey = "LayersDocument";
 
         public LayerService(
+            IMemoryCache memoryCache,
             ISignal signal,
-            ISession session,
-            IMemoryCache memoryCache)
+            ISession session)
         {
             _signal = signal;
             _session = session;
@@ -43,7 +43,9 @@ namespace OrchardCore.Layers.Services
                 if (layers == null)
                 {
                     layers = new LayersDocument();
-                    await SaveAsync(layers);
+
+                    _session.Save(layers);
+                    _signal.SignalToken(LayersCacheKey);
                 }
                 else
                 {
@@ -79,13 +81,8 @@ namespace OrchardCore.Layers.Services
         {
             var existing = await GetLayersAsync();
             existing.Layers = layers.Layers;
-            await SaveAsync(layers);
-        }
 
-        private async Task SaveAsync(LayersDocument document)
-        {
-            _session.Save(document);
-            await _session.CommitAsync();
+            _session.Save(existing);
             _signal.SignalToken(LayersCacheKey);
         }
     }

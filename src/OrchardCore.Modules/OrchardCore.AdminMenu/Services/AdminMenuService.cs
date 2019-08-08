@@ -49,7 +49,8 @@ namespace OrchardCore.AdminMenu
                 adminMenuList.AdminMenu = adminMenuList.AdminMenu.Replace(preexisting, tree);
             }
 
-            await SaveAsync(adminMenuList);
+            Session.Save(adminMenuList);
+            _signal.SignalToken(AdminMenuCacheKey);
         }
 
         public async Task<Models.AdminMenu> GetByIdAsync(string id)
@@ -57,7 +58,8 @@ namespace OrchardCore.AdminMenu
             return (await GetAdminMenuListAsync())
                 .AdminMenu
                 .Where(m => String.Equals(m.Id, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
+                .FirstOrDefault()
+                .Clone();
         }
 
         public async Task<int> DeleteAsync(Models.AdminMenu tree)
@@ -68,7 +70,8 @@ namespace OrchardCore.AdminMenu
             adminMenuList.AdminMenu = adminMenuList.AdminMenu.RemoveAll(m => String.Equals(m.Id, tree.Id));
             var removed = length - adminMenuList.AdminMenu.Length;
 
-            await SaveAsync(adminMenuList);
+            Session.Save(adminMenuList);
+            _signal.SignalToken(AdminMenuCacheKey);
 
             return removed;
         }
@@ -79,13 +82,17 @@ namespace OrchardCore.AdminMenu
 
             if (!_memoryCache.TryGetValue(AdminMenuCacheKey, out treeList))
             {
+                var session = Session;
+
                 var changeToken = ChangeToken;
-                treeList = await Session.Query<AdminMenuList>().FirstOrDefaultAsync();
+                treeList = await session.Query<AdminMenuList>().FirstOrDefaultAsync();
 
                 if (treeList == null)
                 {
                     treeList = new AdminMenuList();
-                    await SaveAsync(treeList);
+
+                    session.Save(treeList);
+                    _signal.SignalToken(AdminMenuCacheKey);
                 }
                 else
                 {
@@ -94,15 +101,6 @@ namespace OrchardCore.AdminMenu
             }
 
             return treeList;
-        }
-
-        private async Task SaveAsync(AdminMenuList treeList)
-        {
-            var session = Session;
-
-            session.Save(treeList);
-            await session.CommitAsync();
-            _signal.SignalToken(AdminMenuCacheKey);
         }
 
         private ISession Session => ShellScope.Services.GetService<ISession>();

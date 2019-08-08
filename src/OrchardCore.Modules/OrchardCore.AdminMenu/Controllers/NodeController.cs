@@ -49,7 +49,6 @@ namespace OrchardCore.AdminMenu.Controllers
         public IStringLocalizer T { get; set; }
         public IHtmlLocalizer H { get; set; }
 
-
         public async Task<IActionResult> List(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
@@ -148,7 +147,7 @@ namespace OrchardCore.AdminMenu.Controllers
             if (ModelState.IsValid)
             {
                 treeNode.UniqueId = model.AdminNodeId;
-                tree.MenuItems.Add(treeNode);
+                tree.MenuItems = tree.MenuItems.Add(treeNode);
                 await _AdminMenuService.SaveAsync(tree);
 
                 _notifier.Success(H["Admin node added successfully"]);
@@ -322,7 +321,6 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-
             var nodeToMove = tree.GetMenuItemById(nodeToMoveId);
             if (nodeToMove == null)
             {
@@ -347,4 +345,3 @@ namespace OrchardCore.AdminMenu.Controllers
         }
     }
 }
-

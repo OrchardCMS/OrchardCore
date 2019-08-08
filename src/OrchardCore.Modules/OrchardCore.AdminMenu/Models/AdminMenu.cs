@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using OrchardCore.Navigation;
+using System.Collections.Immutable;
 
 namespace OrchardCore.AdminMenu.Models
 {
@@ -9,8 +8,7 @@ namespace OrchardCore.AdminMenu.Models
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
-        public List<AdminNode> MenuItems { get; } = new List<AdminNode>();
-
+        public ImmutableArray<AdminNode> MenuItems { get; set; } = ImmutableArray.Create<AdminNode>();
 
         public AdminNode GetMenuItemById(string id)
         {
@@ -19,7 +17,7 @@ namespace OrchardCore.AdminMenu.Models
                 var found = menuItem.GetMenuItemById(id);
                 if (found != null)
                 {
-                    return found;
+                    return ShallowCloneMenuItem(found);
                 }
             }
 
@@ -31,7 +29,7 @@ namespace OrchardCore.AdminMenu.Models
         {
             if (MenuItems.Contains(itemToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
             {
-                MenuItems.Remove(itemToRemove);
+                MenuItems = MenuItems.Remove(itemToRemove);
                 return true; // success
             }
             else
@@ -42,7 +40,7 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
 
             return false; // failure
@@ -58,7 +56,7 @@ namespace OrchardCore.AdminMenu.Models
             // insert the node at the destination node
             if (destinationMenuItem == null)
             {
-                MenuItems.Insert(position, menuItemToInsert);
+                MenuItems = MenuItems.Insert(position, menuItemToInsert);
                 return true; // success
             }
             else
@@ -69,10 +67,44 @@ namespace OrchardCore.AdminMenu.Models
                     {
                         return true; // success
                     }
-                }                
+                }
             }
+
             return false; // failure
         }
 
+        public AdminNode ShallowCloneMenuItem(AdminNode nodeToClone)
+        {
+            if (MenuItems.Contains(nodeToClone))
+            {
+                var clone = nodeToClone.ShallowClone();
+                MenuItems = MenuItems.Replace(nodeToClone, clone);
+                return clone;
+            }
+            else
+            {
+                foreach (var firstLevelMenuItem in MenuItems)
+                {
+                    var clone = firstLevelMenuItem.ShallowClone(nodeToClone);
+                    if (clone != null)
+                    {
+                        return clone;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public AdminMenu Clone()
+        {
+            return new AdminMenu()
+            {
+                Id = Id,
+                Name = Name,
+                Enabled = Enabled,
+                MenuItems = MenuItems
+            };
+        }
     }
 }

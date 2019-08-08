@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Layers.Models;
@@ -50,7 +50,7 @@ namespace OrchardCore.Layers.Recipes
 				}
 				else
 				{
-					allLayers.Layers.Add(layer);
+					allLayers.Layers = allLayers.Layers.Add(layer);
 				}
             }
 

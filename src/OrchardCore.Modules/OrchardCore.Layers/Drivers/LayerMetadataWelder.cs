@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
@@ -51,7 +52,7 @@ namespace OrchardCore.Layers.Drivers
 			{
                 shape.Title = model.DisplayText;
 				shape.LayerMetadata = layerMetadata;
-				shape.Layers = (await _layerService.GetLayersAsync()).Layers;
+				shape.Layers = (await _layerService.GetLayersAsync()).Layers.ToList();
 			})
 			.Location("Content:before");
 		}

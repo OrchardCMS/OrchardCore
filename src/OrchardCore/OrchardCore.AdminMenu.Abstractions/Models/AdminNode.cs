@@ -8,8 +8,8 @@ namespace OrchardCore.AdminMenu.Models
     public class AdminNode : MenuItem
     {
         public string UniqueId { get; set; } = Guid.NewGuid().ToString("n");
-        public bool Enabled { get; set; } = true;        
-        
+        public bool Enabled { get; set; } = true;
+
         public AdminNode GetMenuItemById(string id)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
@@ -18,10 +18,16 @@ namespace OrchardCore.AdminMenu.Models
             {
                 // evaluate first node
                 AdminNode item = tempStack.Pop();
-                if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase)) return item;
+                if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
+                {
+                    return item;
+                }
 
                 // not that one; continue with the rest.
-                foreach (var i in item.Items) tempStack.Push((AdminNode)i);
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
             //not found
@@ -39,18 +45,23 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem item = tempStack.Pop();
                 if (item.Items.Contains(nodeToRemove))
                 {
-                    item.Items.Remove(nodeToRemove);
+                    var items = item.Items.ToList();
+                    items.Remove(nodeToRemove);
+
+                    item.Items = items;
                     return true; //success
                 }
 
                 // not that one. continue
-                foreach (var i in item.Items) tempStack.Push((AdminNode)i);
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
             }
 
             // failure
             return false;
         }
-
 
         public bool InsertMenuItem(AdminNode nodeToInsert, MenuItem destinationNode, int position)
         {
@@ -61,16 +72,56 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem node = tempStack.Pop();
                 if (node.Equals(destinationNode))
                 {
-                    node.Items.Insert(position, nodeToInsert);
+                    var items = node.Items.ToList();
+                    items.Insert(position, nodeToInsert);
+
+                    node.Items = items;
                     return true; // success
                 }
 
                 // not that one. continue
-                foreach (var n in node.Items) tempStack.Push((AdminNode)n);
+                foreach (var n in node.Items)
+                {
+                    tempStack.Push((AdminNode)n);
+                }
             }
 
             // failure
             return false;
+        }
+
+        public AdminNode ShallowClone(AdminNode nodeToClone)
+        {
+            var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
+
+            while (tempStack.Any())
+            {
+                MenuItem item = tempStack.Pop();
+
+                var index = item.Items.IndexOf(nodeToClone);
+                if (index != -1)
+                {
+                    var items = item.Items.ToList();
+                    var clone = nodeToClone.ShallowClone();
+
+                    items[index] = clone;
+                    item.Items = items;
+
+                    return clone;
+                }
+
+                foreach (var i in item.Items)
+                {
+                    tempStack.Push((AdminNode)i);
+                }
+            }
+
+            return null;
+        }
+
+        public AdminNode ShallowClone()
+        {
+            return MemberwiseClone() as AdminNode;
         }
     }
 }

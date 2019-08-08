@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace OrchardCore.Layers.Models
 {
     public class LayersDocument
     {
         public int Id { get; set; }
-        public List<Layer> Layers { get; set; } = new List<Layer>();
+        public ImmutableArray<Layer> Layers { get; set; } = ImmutableArray.Create<Layer>();
     }
 }
