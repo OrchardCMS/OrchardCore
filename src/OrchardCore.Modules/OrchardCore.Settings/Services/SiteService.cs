@@ -52,7 +52,10 @@ namespace OrchardCore.Settings.Services
             {
                 var session = Session;
 
+                // First get a new token.
                 var changeToken = ChangeToken;
+
+                // The cache is always updated with the actual persisted data.
                 site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
@@ -72,12 +75,15 @@ namespace OrchardCore.Settings.Services
                 }
                 else
                 {
+                    // Cache a clone to not be mutated by the current scope.
                     _memoryCache.Set(SiteCacheKey, site.Clone(), changeToken);
                 }
 
+                // Here no cloning, the instance needs to stay tied to the session.
                 return scopedCache.SiteSettings = site;
             }
 
+            // Each scope uses a cloned value of the cache.
             return scopedCache.SiteSettings = site.Clone();
         }
 

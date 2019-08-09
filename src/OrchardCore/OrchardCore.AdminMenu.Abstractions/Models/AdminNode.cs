@@ -45,6 +45,7 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem item = tempStack.Pop();
                 if (item.Items.Contains(nodeToRemove))
                 {
+                    // Do the mutation on a new list.
                     var items = item.Items.ToList();
                     items.Remove(nodeToRemove);
 
@@ -72,6 +73,7 @@ namespace OrchardCore.AdminMenu.Models
                 MenuItem node = tempStack.Pop();
                 if (node.Equals(destinationNode))
                 {
+                    // Do the mutation on a new list.
                     var items = node.Items.ToList();
                     items.Insert(position, nodeToInsert);
 
@@ -90,7 +92,10 @@ namespace OrchardCore.AdminMenu.Models
             return false;
         }
 
-        public AdminNode ShallowClone(AdminNode nodeToClone)
+        /// <summary>
+        /// Creates a new parent list referencing a shallow copy of this node.
+        /// </summary>
+        public AdminNode Clone(AdminNode nodeToClone)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
 
@@ -101,8 +106,9 @@ namespace OrchardCore.AdminMenu.Models
                 var index = item.Items.IndexOf(nodeToClone);
                 if (index != -1)
                 {
+                    // Do the mutation on a new list.
                     var items = item.Items.ToList();
-                    var clone = nodeToClone.ShallowClone();
+                    var clone = nodeToClone.Clone();
 
                     items[index] = clone;
                     item.Items = items;
@@ -119,7 +125,10 @@ namespace OrchardCore.AdminMenu.Models
             return null;
         }
 
-        public AdminNode ShallowClone()
+        /// <summary>
+        /// Creates a shallow copy of this node.
+        /// </summary>
+        public AdminNode Clone()
         {
             return MemberwiseClone() as AdminNode;
         }

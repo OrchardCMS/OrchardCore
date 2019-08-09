@@ -17,7 +17,7 @@ namespace OrchardCore.AdminMenu.Models
                 var found = menuItem.GetMenuItemById(id);
                 if (found != null)
                 {
-                    return ShallowCloneMenuItem(found);
+                    return CloneMenuItem(found);
                 }
             }
 
@@ -73,11 +73,14 @@ namespace OrchardCore.AdminMenu.Models
             return false; // failure
         }
 
-        public AdminNode ShallowCloneMenuItem(AdminNode nodeToClone)
+        /// <summary>
+        /// Creates a new parent list referencing a shallow copy of this node.
+        /// </summary>
+        public AdminNode CloneMenuItem(AdminNode nodeToClone)
         {
             if (MenuItems.Contains(nodeToClone))
             {
-                var clone = nodeToClone.ShallowClone();
+                var clone = nodeToClone.Clone();
                 MenuItems = MenuItems.Replace(nodeToClone, clone);
                 return clone;
             }
@@ -85,7 +88,7 @@ namespace OrchardCore.AdminMenu.Models
             {
                 foreach (var firstLevelMenuItem in MenuItems)
                 {
-                    var clone = firstLevelMenuItem.ShallowClone(nodeToClone);
+                    var clone = firstLevelMenuItem.Clone(nodeToClone);
                     if (clone != null)
                     {
                         return clone;
@@ -96,6 +99,9 @@ namespace OrchardCore.AdminMenu.Models
             return null;
         }
 
+        /// <summary>
+        /// Creates a shallow copy of this menu.
+        /// </summary>
         public AdminMenu Clone()
         {
             return new AdminMenu()
