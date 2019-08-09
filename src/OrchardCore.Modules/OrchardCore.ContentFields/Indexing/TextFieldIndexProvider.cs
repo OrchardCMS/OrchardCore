@@ -13,7 +13,7 @@ namespace OrchardCore.ContentFields.Indexing
     public class TextFieldIndex : ContentFieldIndex
     {
         public string Text { get; set; }
-        public string RichText { get; set; }
+        public string BigText { get; set; }
     }
 
     public class TextFieldIndexProvider : ContentFieldIndexProvider
@@ -78,7 +78,7 @@ namespace OrchardCore.ContentFields.Indexing
                                     ContentField = fieldDefinition.Name,
                                     Published = contentItem.Published,
                                     Latest = contentItem.Latest,
-                                    RichText = field.Text
+                                    BigText = field.Text
                                 });
                             }
                             else
