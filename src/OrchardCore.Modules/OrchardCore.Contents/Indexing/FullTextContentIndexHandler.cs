@@ -1,12 +1,9 @@
 using System;
 using System.IO;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 
@@ -35,7 +32,7 @@ namespace OrchardCore.Contents.Indexing
                 return;
             }
 
-            var settings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
+            var settings = contentTypeDefinition.Settings.ToObject<ContentTypeIndexingSettings>();
 
             if (settings.IsFullText && !String.IsNullOrEmpty(settings.FullText))
             {

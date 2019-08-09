@@ -1,0 +1,40 @@
+@model ContentTypeIndexingSettingsViewModel
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<h3 class="mb-3">@T["Indexing"]</h3>
+
+<div class="form-group custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" asp-for="IsFullText" data-toggle="collapse" data-target="#fulltext-template" checked="@Model.IsFullText" />
+    <label class="custom-control-label" asp-for="IsFullText">@T["FullText"]</label>
+    <span class="hint">— @T["Determines if this content type can use a customizable FullText index field."]</span>
+</div>
+
+<fieldset class="form-group row collapse" id="fulltext-template">
+    <div class="col">
+        <label asp-for="FullText">@T["Liquid pattern"]</label>
+        <textarea asp-for="FullText" type="text" class="form-control"></textarea>
+        <span class="hint">@T["The Liquid template used for a FullText search index field accessible in queries with: <code>Content.ContentItem.FullText</code>. Use the <code>Model</code> helper to reference the current element."]</span>
+    </div>
+</fieldset>
+
+<script at="Foot" depends-on="jquery">
+    //<![CDATA[
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullText)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+    //]]>
+</script>

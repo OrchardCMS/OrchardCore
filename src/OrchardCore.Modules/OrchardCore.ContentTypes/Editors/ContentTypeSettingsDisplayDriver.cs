@@ -20,8 +20,6 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Versionable = settings.Versionable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
-                model.IsFullText = settings.IsFullText;
-                model.FullText = settings.FullText;
             }).Location("Content:5");
         }
 
@@ -37,8 +35,6 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
                 context.Builder.Stereotype(model.Stereotype?.Trim());
-                context.Builder.IsFullText(model.IsFullText);
-                context.Builder.FullText(model.FullText);
             }
 
             return Edit(contentTypeDefinition, context.Updater);
