@@ -70,8 +70,8 @@ namespace OrchardCore.Settings.Services
                         TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
                     };
 
-                    session.Save(site);
-                    _signal.SignalToken(SiteCacheKey);
+                    // Persists the new data.
+                    SaveSiteSettings(site);
                 }
                 else
                 {
@@ -108,10 +108,22 @@ namespace OrchardCore.Settings.Services
             existing.CdnBaseUrl = site.CdnBaseUrl;
             existing.AppendVersion = site.AppendVersion;
 
-            Session.Save(existing);
-            _signal.SignalToken(SiteCacheKey);
+            // Persists the new data.
+            SaveSiteSettings(existing);
 
             return Task.CompletedTask;
+        }
+
+        private void SaveSiteSettings(SiteSettings settings)
+        {
+            Session.Save(settings);
+
+            // Invalidates the cache at the end of the transaction.
+            ShellScope.RegisterBeforeDispose(scope =>
+            {
+                _signal.SignalToken(SiteCacheKey);
+                return Task.CompletedTask;
+            });
         }
 
         private ISession Session => ShellScope.Services.GetService<ISession>();
