@@ -16,9 +16,6 @@ namespace OrchardCore.Media.Azure.Processing
         }
         public async Task<IImageResolver> GetAsync(HttpContext context)
         {
-            //TODO consider this. It causes a HEAD request every time, checking if the files exists. Cache? Hmm BlobFile is CQRS so possible.
-            // Or the suggestion from Sebastien is a middleware cache in front of imagesharp. also sounds better
-
             // Path has already been correctly parsed before here.
             var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
 

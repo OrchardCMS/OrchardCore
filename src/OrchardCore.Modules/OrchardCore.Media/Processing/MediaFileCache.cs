@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using SixLabors.ImageSharp.Web;
@@ -35,7 +36,8 @@ namespace OrchardCore.Media.Processing
             IOptions<ImageSharpMiddlewareOptions> isOptions,
             IOptions<MediaOptions> mediaOptions,
             IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
+            ShellSettings shellSettings,
+            ILogger<MediaFileCache> logger
             )
         {
             _isOptions = isOptions.Value;
@@ -48,10 +50,33 @@ namespace OrchardCore.Media.Processing
                 Directory.CreateDirectory(_cachePath);
             }
             _fileProvider = new PhysicalFileProvider(_cachePath);
+
+            Logger = logger;
         }
+
+        public ILogger Logger { get; }
 
         [Obsolete("This feature is unused and has been removed from ImageSharp.Web, remove when updating ImageSharp.Web.")]
         public IDictionary<string, string> Settings { get; }
+
+        /// <inheritdoc/>
+        public Task ClearMediaCacheAsync()
+        {
+            //TODO consider a clear cache items older than xxx days option from the ui,
+            // or a background task to do the same.
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach(var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    Directory.Delete(fileInfo.PhysicalPath, true);
+                } else
+                {
+                    File.Delete(fileInfo.PhysicalPath);
+                }
+            }
+            return Task.CompletedTask;
+        }
 
         /// <inheritdoc/>
         public async Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key)
@@ -94,11 +119,12 @@ namespace OrchardCore.Media.Processing
             if (!_cacheWriteLock.TryAdd(key, null))
                 return;
 
+            var imagePath = String.Empty;
             try
             {
                 // File Provider will handle normalization of path.
                 var path = Path.Combine(_cachePath, this.ToFilePath(key));
-                var imagePath = path + extension;
+                imagePath = path + extension;
                 var metaPath = this.ToMetaDataFilePath(path);
                 var directory = Path.GetDirectoryName(imagePath);
 
@@ -117,7 +143,10 @@ namespace OrchardCore.Media.Processing
                     await metadata.WriteAsync(fileStream).ConfigureAwait(false);
                 }
             }
-            //TODO log exceptions?
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Error saving media cache file {0}", imagePath);
+            }
             finally
             {
                 _cacheWriteLock.TryRemove(key, out var removedPath);
@@ -164,16 +193,14 @@ namespace OrchardCore.Media.Processing
         /// <returns>The <see cref="string"/>.</returns>
         private string ToMetaDataFilePath(string path) => $"{path}.meta";
 
-        //TODO reenable nested file path when testing complete
-        private string ToFilePath(string key) => key;
 
-        ///// <summary>
-        ///// Converts the key into a nested file path.
-        ///// </summary>
-        ///// <param name="key">The cache key.</param>
-        ///// <returns>The <see cref="string"/>.</returns>
-        //private string ToFilePath(string key) // TODO: Avoid the allocation here.
-        //    => $"{_cacheOptions.CacheFolder}/{string.Join("/", key.Substring(0, (int)this._options.CachedNameLength).ToCharArray())}/{key}";
+        /// <summary>
+        /// Converts the key into a nested file path.
+        /// </summary>
+        /// <param name="key">The cache key.</param>
+        /// <returns>The <see cref="string"/>.</returns>
+        private string ToFilePath(string key) // TODO: Avoid the allocation here.
+            => $"{_cachePath}/{string.Join("/", key.Substring(0, (int)_isOptions.CachedNameLength).ToCharArray())}/{key}";
 
         private static string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string _assetsCachePath)
         {

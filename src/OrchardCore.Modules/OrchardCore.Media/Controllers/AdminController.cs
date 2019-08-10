@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 
@@ -21,23 +23,33 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly IMediaImageCache _mediaImageCache;
+        private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
+            IMediaImageCache mediaImageCache,
+            INotifier notifier,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer
+            )
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
+            _mediaImageCache = mediaImageCache;
+            _notifier = notifier;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<IActionResult> Index()
@@ -48,6 +60,31 @@ namespace OrchardCore.Media.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> MediaCache()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            {
+                return Unauthorized();
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearMediaCache()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            {
+                return Unauthorized();
+            }
+
+            await _mediaImageCache.ClearMediaCacheAsync();
+
+            _notifier.Error(H["Media cache cleared."]);
+
+            return RedirectToAction("MediaCache");
         }
 
         public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)

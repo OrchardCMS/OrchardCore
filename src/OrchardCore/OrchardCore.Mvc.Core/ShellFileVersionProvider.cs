@@ -60,7 +60,7 @@ namespace OrchardCore.Mvc
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                // Check and remove CdnBaseUrl from resolvedPath
+                // Check and remove CdnBaseUrl from resolvedPath.
                 var hasResolvedCdnPath = false;
                 foreach (var cdnPathProvider in _cdnPathProviders)
                 {
@@ -79,17 +79,15 @@ namespace OrchardCore.Mvc
             }
 
             // Try to get the hash from the tenant level cache.
-            string value;
-            //TODO turn back on!
-            //if (_cache.TryGetValue(resolvedPath, out string value))
-            //{
-            //    if (value.Length > 0)
-            //    {
-            //        return QueryHelpers.AddQueryString(path, VersionKey, value);
-            //    }
+            if (_cache.TryGetValue(resolvedPath, out string value))
+            {
+                if (value.Length > 0)
+                {
+                    return QueryHelpers.AddQueryString(path, VersionKey, value);
+                }
 
-            //    return path;
-            //}
+                return path;
+            }
 
             // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))

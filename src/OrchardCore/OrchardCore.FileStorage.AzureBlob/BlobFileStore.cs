@@ -167,8 +167,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             return true;
         }
 
-
-
         public async Task<bool> TryDeleteFileAsync(string path)
         {
             await _verifyContainerTask;
@@ -262,6 +260,8 @@ namespace OrchardCore.FileStorage.AzureBlob
             return await blob.OpenReadAsync();
         }
 
+        // Reduces the need to call blob.FetchAttributes, and blob.ExistsAsync,
+        // as Azure Storage Library will perform these actions on OpenReadAsync(). 
         public async Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             await _verifyContainerTask;

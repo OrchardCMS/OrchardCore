@@ -11,6 +11,11 @@ namespace OrchardCore.Media
     public interface IMediaImageCache : IImageCache
     {
         /// <summary>
+        /// Clears the media cache folder of all contents.
+        /// </summary>
+        Task ClearMediaCacheAsync();
+
+        /// <summary>
         /// Try to set a cache file.
         /// </summary>
         /// <param name="key"></param>
@@ -26,6 +31,5 @@ namespace OrchardCore.Media
         /// <param name="key"></param>
         /// <returns></returns>
         Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key);
-        //TODO add cache clear
     }
 }

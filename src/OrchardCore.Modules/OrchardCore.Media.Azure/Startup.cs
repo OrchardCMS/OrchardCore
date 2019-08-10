@@ -43,7 +43,7 @@ namespace OrchardCore.Media.Azure
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-                // Remove this specific IStaticFileProvider as we no longer need to provide this particular provider to the ShellFileVersionProvider.
+                // Remove this specific IStaticFileProvider as we do not need to provide this to the ShellFileVersionProvider.
                 var staticFileProviderDescriptor = services.FirstOrDefault(descriptor =>
                     descriptor.ServiceType == typeof(IStaticFileProvider) &&
                     descriptor.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
@@ -53,7 +53,7 @@ namespace OrchardCore.Media.Azure
                     services.Remove(staticFileProviderDescriptor);
                 }
 
-                // Remove the IMediaFileProvider as we no longer need to serve from media from the StaticFileMiddleware.
+                // Remove the IMediaFileProvider as we no longer need to serve media from the StaticFileMiddleware.
                 services.RemoveAll<IMediaFileProvider>();
 
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
@@ -86,13 +86,11 @@ namespace OrchardCore.Media.Azure
             var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
             {
-
                 // Media filestore middleware before ImageSharp.
                 app.UseMiddleware<MediaFileStoreMiddleware>();
 
                 // ImageSharp after the media filestore middleware.
                 app.UseImageSharp();
-
             }
         }
     }

@@ -29,6 +29,13 @@ namespace OrchardCore.Media
                         .LocalNav()
                     ));
 
+            builder.Add(S["Configuration"], content => content
+                .Add(S["Media Cache"], "1", contentItems => contentItems
+                    .Action("MediaCache", "Admin", new { area = "OrchardCore.Media" })
+                    .Permission(Permissions.ManageMediaCache)
+                    .LocalNav())
+                );
+
             return Task.CompletedTask;
         }
     }

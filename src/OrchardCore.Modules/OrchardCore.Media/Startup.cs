@@ -143,8 +143,6 @@ namespace OrchardCore.Media
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<BackgroundColorWebProcessor>();
 
-
-
             // Media Field
             services.AddSingleton<ContentField, MediaField>();
             services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
@@ -171,12 +169,12 @@ namespace OrchardCore.Media
             {
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
 
-                // ImageSharp before the static file provider
+                // ImageSharp before the static file provider.
                 app.UseImageSharp();
 
                 app.UseStaticFiles(new StaticFileOptions
                 {
-                    // The tenant's prefix is already implied by the infrastructure
+                    // The tenant's prefix is already implied by the infrastructure.
                     RequestPath = mediaOptions.Value.AssetsRequestPath,
                     FileProvider = mediaFileProvider,
                     ServeUnknownFileTypes = true,

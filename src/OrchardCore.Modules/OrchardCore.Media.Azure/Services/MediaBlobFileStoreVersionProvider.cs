@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -14,6 +11,7 @@ namespace OrchardCore.Media.Azure.Services
     public class MediaBlobFileStoreVersionProvider : IFileStoreVersionProvider
     {
         private const string VersionKey = "v";
+
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMemoryCache _cache;
         private readonly MediaBlobStorageOptions _options;
@@ -38,15 +36,14 @@ namespace OrchardCore.Media.Azure.Services
 
             var fileInfo = await _mediaFileStore.GetFileInfoAsync(resolvedPath) as BlobFile;
 
-            //TODO test this without requestPathBase
             if (fileInfo != null)
             {
-                //TODO Consider expiring from Change Token from Media Admin Controller.
-                var cacheEntryOptions = new MemoryCacheEntryOptions();
-                cacheEntryOptions.SetAbsoluteExpiration(
-                    TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));
-
-                cacheEntryOptions.SetSize(fileInfo.FileHash.Length * sizeof(char));
+                //TODO Consider expiring with a Change Token from Blob File Store.
+                // Or consider a graceful cache refresh.
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(
+                        TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120))
+                    .SetSize(fileInfo.FileHash.Length * sizeof(char));
 
                 // Set to cacheKey, so ShellFileVersionProvider can retrieve from cache.
                 _cache.Set(cacheKey, fileInfo.FileHash, cacheEntryOptions);

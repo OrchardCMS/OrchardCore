@@ -16,6 +16,12 @@ namespace OrchardCore.Media.Processing
         public IDictionary<string, string> Settings => throw new NotImplementedException();
 
         /// <inheritdoc/>
+        public Task ClearMediaCacheAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
         public Task<IImageResolver> GetAsync(string key)
         {
             // This must return a null Task or it will throw a NullReferenceException.
