@@ -11,8 +11,6 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
-    // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware.
-
     public abstract class BaseFileContext
     {
         protected readonly HttpContext _context;

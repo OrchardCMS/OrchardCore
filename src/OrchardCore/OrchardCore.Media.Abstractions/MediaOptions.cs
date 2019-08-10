@@ -4,25 +4,15 @@ namespace OrchardCore.Media
 {
     public class MediaOptions
     {
+        private const string DefaultAssetsCachePath = "MediaCache";
+        private const string DefaultAssetsPath = "Media";
         private static readonly PathString DefaultAssetsRequestPath = new PathString("/media");
 
-        private static readonly string DefaultAssetsCachePath = "MediaCache";
-
         /// <summary>
-        /// The request path used to route asset files, defaults to /media
+        /// The accepted sizes for custom width and height.
         /// </summary>
-        public PathString AssetsRequestPath = DefaultAssetsRequestPath;
-
-        /// <summary>
-        /// Specify the type of cache to use when resizing media, defaults to the Physical disc cache.
-        /// </summary>
-
-        public CacheConfiguration CacheConfiguration = CacheConfiguration.Physical;
-
-        /// <summary>
-        /// Specify the folder to stored cached assets, defaults to MediaCache.
-        /// </summary>
-        public string AssetsCachePath = DefaultAssetsCachePath;
+        // Setting a default value will make the IShellConfiguration add to the default values, rather than replace.
+        public int[] SupportedSizes { get; set; }
 
         /// <summary>
         /// The default number of days for the media cache control header.
@@ -45,17 +35,30 @@ namespace OrchardCore.Media
         /// </summary>
         public string CdnBaseUrl { get; set; }
 
-        // Setting a default value here will make the IShellConfiguration add to the default values, rather than replace.
+        /// <summary>
+        /// Specify the type of cache to use when resizing media, defaults to the Physical disc cache.
+        /// </summary>
+        public CacheConfiguration CacheConfiguration = CacheConfiguration.Physical;
+
+        /// <summary>
+        /// The request path used to route asset files.
+        /// </summary>
+        public PathString AssetsRequestPath = DefaultAssetsRequestPath;
+
+        /// <summary>
+        /// The path in the tenant's App_Data folder containing the assets.
+        /// </summary>
+        public string AssetsPath = DefaultAssetsPath;
+
+        /// <summary>
+        /// The path in the tenant's App_Data folder containing the asset cache.
+        /// </summary>
+        public string AssetsCachePath = DefaultAssetsCachePath;
 
         /// <summary>
         /// The list of allowed file extensions.
         /// </summary>
+        // Setting a default value will make the IShellConfiguration add to the default values, rather than replace.
         public string[] AllowedFileExtensions { get; set; }
-
-        /// <summary>
-        /// The accepted sizes for custom width and height.
-        /// </summary>
-        public int[] SupportedSizes { get; set; }
-
     }
 }

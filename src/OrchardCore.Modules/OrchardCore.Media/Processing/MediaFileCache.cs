@@ -13,8 +13,6 @@ using SixLabors.ImageSharp.Web.Resolvers;
 
 namespace OrchardCore.Media.Processing
 {
-    // Adapted under the apache 2.0 license from ImageSharp.Web.
-
     /// <summary>
     /// A cache for media assets, per tenant.
     /// </summary>

@@ -10,8 +10,6 @@ using SixLabors.ImageSharp.Web;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
-    // Adapted under the apache 2.0 license from AspNetCore.StaticFileMiddleware, and ImageSharp.Web.
-
     /// <summary>
     /// Media file cache context to serve media assets from file system cache.
     /// </summary>

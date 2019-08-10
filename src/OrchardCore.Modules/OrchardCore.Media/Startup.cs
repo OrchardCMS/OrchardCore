@@ -48,11 +48,6 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        /// <summary>
-        /// The path in the tenant's App_Data folder containing the assets
-        /// </summary>
-        private const string AssetsPath = "Media";
-
         private readonly IShellConfiguration _shellConfiguration;
 
         static Startup()
@@ -73,15 +68,15 @@ namespace OrchardCore.Media
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+                var options = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
 
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, options.AssetsPath);
 
                 if (!Directory.Exists(mediaPath))
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
-                return new MediaFileProvider(options.Value.AssetsRequestPath, mediaPath);
+                return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
             // Register with strong service descriptor to facilitate removal by Media.Azure.
@@ -98,7 +93,7 @@ namespace OrchardCore.Media
                 var mediaFileStoreOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
                 var pathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
 
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings);
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaFileStoreOptions.Value.AssetsPath);
                 var fileStore = new FileSystemStore(mediaPath);
 
                 return new MediaFileStore(fileStore, pathProvider, mediaFileStoreOptions);
@@ -189,9 +184,9 @@ namespace OrchardCore.Media
             }
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings)
+        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
     }
 

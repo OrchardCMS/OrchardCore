@@ -179,21 +179,34 @@ The following configuration values are used by default and can be customized:
 
 ```json
     "OrchardCore.Media": {
+
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
-      // The number of days to store images in the browser cache
+      // The number of days to store images in the browser cache.
       "MaxBrowserCacheDays": 30,
 
-      // The number of days to store images in the image cache
+      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
       "MaxCacheDays": 365,
 
       // The maximum size of an uploaded file in bytes. 
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
 
-      // A Cdn base url that will be prefixed to the /media path when serving images from the Local MediaFileStore
+      // A Cdn base url that will be prefixed to the request path when serving images.
       "CdnBaseUrl": "https://your-cdn.com",
+
+      // Whether to use a physical disk cache for resized media, Physical or None. Use None when serving from a Cdn.
+      "CacheConfiguration": "Physical",
+
+      // The path used when serving media assets.
+      "AssetsRequestPath": "/media",
+
+      // The path in the tenant's App_Data folder containing the assets.
+      "AssetsPath": "Media",
+
+      // The path in the tenant's App_Data folder containing the asset cache.
+      "AssetsCachePath": "MediaCache",
 
       // The list of allowed file extensions
       "AllowedFileExtensions": [
