@@ -42,7 +42,7 @@ namespace OrchardCore.Queries.Services
                 .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
 
             _session.Save(existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -70,7 +70,7 @@ namespace OrchardCore.Queries.Services
             existing.Queries = existing.Queries.Remove(name).SetItem(query.Name, query);
 
             _session.Save(existing);
-            _signal.SignalToken(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -89,7 +89,7 @@ namespace OrchardCore.Queries.Services
                     queries = new QueriesDocument();
 
                     _session.Save(queries);
-                    _signal.SignalToken(QueriesDocumentCacheKey);
+                    _signal.DeferredSignalToken(QueriesDocumentCacheKey);
                 }
                 else
                 {

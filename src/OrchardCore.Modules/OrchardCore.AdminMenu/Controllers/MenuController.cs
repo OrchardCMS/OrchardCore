@@ -113,7 +113,6 @@ namespace OrchardCore.AdminMenu.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))

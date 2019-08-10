@@ -45,7 +45,7 @@ namespace OrchardCore.Layers.Services
                     layers = new LayersDocument();
 
                     _session.Save(layers);
-                    _signal.SignalToken(LayersCacheKey);
+                    _signal.DeferredSignalToken(LayersCacheKey);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace OrchardCore.Layers.Services
             existing.Layers = layers.Layers;
 
             _session.Save(existing);
-            _signal.SignalToken(LayersCacheKey);
+            _signal.DeferredSignalToken(LayersCacheKey);
         }
     }
 }

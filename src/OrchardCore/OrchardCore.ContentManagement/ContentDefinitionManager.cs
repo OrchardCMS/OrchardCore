@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -217,7 +218,7 @@ namespace OrchardCore.ContentManagement
 
         ContentTypeDefinition Build(ContentTypeDefinitionRecord source)
         {
-            if(source == null)
+            if (source == null)
             {
                 return null;
             }
@@ -271,11 +272,12 @@ namespace OrchardCore.ContentManagement
             int serial;
             if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
             {
+                var changeToken = _signal.GetToken(TypeHashCacheKey);
+
                 serial = _memoryCache.Set(
                     TypeHashCacheKey,
                     GetContentDefinitionRecord().Serial,
-                    _signal.GetToken(TypeHashCacheKey)
-                );
+                    changeToken);
             }
 
             return Task.FromResult(serial);
@@ -296,13 +298,17 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionRecord.Serial++;
             _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
 
-            _signal.SignalToken(TypeHashCacheKey);
+            // Invalidates caches after the session is committed.
+            ShellScope.RegisterBeforeDispose(scope =>
+            {
+                _signal.SignalToken(TypeHashCacheKey);
 
+                // Release cached values
+                _typeDefinitions.Clear();
+                _partDefinitions.Clear();
 
-            // Release cached values
-            _typeDefinitions.Clear();
-            _partDefinitions.Clear();
+                return Task.CompletedTask;
+            });
         }
-
     }
 }
