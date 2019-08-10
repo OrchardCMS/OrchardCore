@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
+using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
@@ -28,11 +29,12 @@ namespace OrchardCore.Media.Azure.Middleware
         private readonly ICacheHash _cacheHash;
         private readonly IRequestParser _requestParser;
         private readonly IEnumerable<IImageProvider> _imageProviders;
+        private readonly FormatUtilities _formatUtilities;
 
         private readonly PathString _assetsRequestPath;
         private readonly string[] _allowedFileExtensions;
-        private readonly uint _cachedNameLength;
-        private readonly int _maxBrowserCacheDays;
+
+        private readonly ImageSharpMiddlewareOptions _isOptions;
 
         /// <summary>
         /// The collection of known commands gathered from the processors.
@@ -47,9 +49,9 @@ namespace OrchardCore.Media.Azure.Middleware
             ICacheHash cacheHash,
             IRequestParser requestParser,
             IEnumerable<IImageProvider> imageProviders,
+            IOptions<ImageSharpMiddlewareOptions> isOptions,
             IEnumerable<IImageWebProcessor> processors,
             IOptions<MediaOptions> mediaOptions,
-            IOptions<ImageSharpMiddlewareOptions> isOptions,
             ILogger<MediaFileStoreMiddleware> logger
             )
         {
@@ -60,16 +62,18 @@ namespace OrchardCore.Media.Azure.Middleware
             _cacheHash = cacheHash;
             _requestParser = requestParser;
             _imageProviders = imageProviders;
+            _isOptions = isOptions.Value;
 
             foreach (var processor in processors)
             {
                 _isKnownCommands.AddRange(processor.Commands);
             }
 
+            _formatUtilities = new FormatUtilities(_isOptions.Configuration);
+
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
             _allowedFileExtensions = mediaOptions.Value.AllowedFileExtensions;
-            _cachedNameLength = isOptions.Value.CachedNameLength;
-            _maxBrowserCacheDays = isOptions.Value.MaxBrowserCacheDays;
+
             Logger = logger;
         }
 
@@ -92,15 +96,16 @@ namespace OrchardCore.Media.Azure.Middleware
             var validatePath = context.Request.Path.StartsWithSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
             if (!validatePath)
             {
-                Logger.LogDebug("Request path {0} does not match the assetsRequestPath {1}", subPath, _assetsRequestPath);
+                Logger.LogDebug("Request path {0} does not match the assets request path {1}", subPath, _assetsRequestPath);
                 await _next(context);
                 return;
             }
 
+            // This will return a 404 if the file extension is not supported.
             var fileExtension = GetExtension(subPath);
             if (!_allowedFileExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
             {
-                Logger.LogDebug("File extension not supported for requested file {0}", subPath);
+                Logger.LogDebug("File extension not supported for request path {0}", subPath);
                 await _next(context);
                 return;
             }
@@ -112,30 +117,33 @@ namespace OrchardCore.Media.Azure.Middleware
 
             // Create context that will try to serve file, if it exists in cache.
             var mediaProviderFileContext = new MediaFileCacheContext(context, Logger,
-                _mediaImageCache, _maxBrowserCacheDays, contentType, cacheKey);
+                _mediaImageCache, _formatUtilities, _isOptions.MaxBrowserCacheDays, contentType, cacheKey, fileExtension, subPath);
 
             if (await mediaProviderFileContext.LookupFileInfo())
             {
                 // If file exists in cache try to serve it.
+                Logger.LogDebug("Request path {0} found in cache with key {1}", subPath, cacheKey);
                 await mediaProviderFileContext.ServeFile(context, _next);
                 return;
             }
 
-            //  File was not in cache, test if ImageSharp should handle this request.
+            // File was not in cache, test if ImageSharp should handle this request.
             var provider = _imageProviders.FirstOrDefault(r => r.Match(context));
             if (provider?.IsValidRequest(context) == true)
             {
                 // Pass to ImageSharp middleware.
+                Logger.LogDebug("Request path {0} not found in image cache with key {1}, is valid for resizing, passing to ImageSharp middleware", subPath, cacheKey);
                 await _next(context);
                 return;
             }
 
             var mediaFileStoreContext = new MediaFileStoreContext(context, Logger, _mediaFileStore, _mediaImageCache,
-                _maxBrowserCacheDays, contentType, cacheKey, subPath, fileExtension);
+                _isOptions.MaxBrowserCacheDays, contentType, cacheKey, fileExtension, subPath);
 
             if (await mediaFileStoreContext.LookupFileStoreInfo())
             {
                 // If file exists in file store try to serve it.
+                Logger.LogDebug("Request path {0} found in file store, serving and caching with key {1}", subPath, cacheKey);
                 await mediaFileStoreContext.ServeFile(context, _next);
                 return;
             }
@@ -152,8 +160,10 @@ namespace OrchardCore.Media.Azure.Middleware
                 .Where(kvp => _isKnownCommands.Contains(kvp.Key))
                 .ToDictionary(p => p.Key, p => p.Value);
 
+            _isOptions.OnParseCommands?.Invoke(new ImageCommandContext(context, commands, CommandParser.Instance));
+
             var uri = GetUri(context, commands);
-            var key = _cacheHash.Create(uri, _cachedNameLength);
+            var key = _cacheHash.Create(uri, _isOptions.CachedNameLength);
             return key;
         }
 

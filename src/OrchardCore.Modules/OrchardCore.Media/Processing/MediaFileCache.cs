@@ -79,14 +79,24 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public async Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key)
+        public async Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key, string fileExtension)
         {
-            return (IMediaCacheFileResolver)await this.GetAsync(key);
+            // ImageSharp will cache a .jpeg file as .jpg and uses a lookup dictionary to map the file name back.
+            // To retreive files that are not images, we apply the request path extension to the cache key.
+            return (IMediaCacheFileResolver)await GetAsync(key + fileExtension);
         }
 
         /// <inheritdoc/>
         public async Task<IImageResolver> GetAsync(string key)
         {
+            // Remove extension to retrieve metadata, if extension has been applied.
+            var extension = String.Empty;
+            if (key.Contains("."))
+            {
+                extension = Path.GetExtension(key);
+                key = Path.GetFileNameWithoutExtension(key);
+            }
+
             string path = this.ToFilePath(key);
 
             IFileInfo metaFileInfo = this._fileProvider.GetFileInfo(this.ToMetaDataFilePath(path));
@@ -101,7 +111,16 @@ namespace OrchardCore.Media.Processing
                 metadata = await ImageMetaData.ReadAsync(stream).ConfigureAwait(false);
             }
 
-            IFileInfo fileInfo = this._fileProvider.GetFileInfo(this.ToImageFilePath(path, metadata));
+            // Apply extension back if supplied as part of cache key.
+            if (!String.IsNullOrEmpty(extension))
+            {
+                path = path + extension;
+            } else
+            {
+                path = this.ToImageFilePath(path, metadata);
+            }
+
+            IFileInfo fileInfo = this._fileProvider.GetFileInfo(path);
 
             // Check to see if the file exists.
             if (!fileInfo.Exists)
@@ -157,6 +176,7 @@ namespace OrchardCore.Media.Processing
         public async Task SetAsync(string key, Stream stream, ImageMetaData metadata)
         {
             string path = Path.Combine(_cachePath, this.ToFilePath(key));
+
             string imagePath = this.ToImageFilePath(path, metadata);
             string metaPath = this.ToMetaDataFilePath(path);
             string directory = Path.GetDirectoryName(path);
@@ -194,13 +214,14 @@ namespace OrchardCore.Media.Processing
         private string ToMetaDataFilePath(string path) => $"{path}.meta";
 
 
+        private string ToFilePath(string key) => key;
         /// <summary>
         /// Converts the key into a nested file path.
         /// </summary>
         /// <param name="key">The cache key.</param>
         /// <returns>The <see cref="string"/>.</returns>
-        private string ToFilePath(string key) // TODO: Avoid the allocation here.
-            => $"{_cachePath}/{string.Join("/", key.Substring(0, (int)_isOptions.CachedNameLength).ToCharArray())}/{key}";
+        //private string ToFilePath(string key) // TODO: Avoid the allocation here.
+        //    => $"{_cachePath}/{string.Join("/", key.Substring(0, (int)_isOptions.CachedNameLength).ToCharArray())}/{key}";
 
         private static string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string _assetsCachePath)
         {

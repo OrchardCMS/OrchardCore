@@ -18,6 +18,8 @@ namespace OrchardCore.Media.Azure.Middleware
         protected readonly string _contentType;
         protected readonly TimeSpan _maxBrowserCacheDays;
         protected readonly string _cacheKey;
+        protected readonly string _fileExtension;
+        protected readonly PathString _subPath;
 
         protected readonly RequestHeaders _requestHeaders;
         protected readonly ResponseHeaders _responseHeaders;
@@ -38,7 +40,9 @@ namespace OrchardCore.Media.Azure.Middleware
             ILogger logger,
             int maxBrowserCacheDays,
             string contentType,
-            string cacheKey
+            string cacheKey,
+            string fileExtension,
+            PathString subPath
             )
         {
             _context = context;
@@ -47,6 +51,8 @@ namespace OrchardCore.Media.Azure.Middleware
             _maxBrowserCacheDays = TimeSpan.FromDays(maxBrowserCacheDays);
             _contentType = contentType;
             _cacheKey = cacheKey;
+            _fileExtension = fileExtension;
+            _subPath = subPath;
             _requestHeaders = context.Request.GetTypedHeaders();
             _responseHeaders = context.Response.GetTypedHeaders();
             if (HttpMethods.IsHead(context.Request.Method))
@@ -171,7 +177,7 @@ namespace OrchardCore.Media.Azure.Middleware
         {
             ApplyResponseHeaders(statusCode);
 
-            //_logger.Handled(statusCode, SubPath);
+            Logger.LogDebug("Sending status code {0} for request path {1}", statusCode, _subPath);
             return Task.CompletedTask;
         }
 
@@ -191,7 +197,6 @@ namespace OrchardCore.Media.Azure.Middleware
                     try
                     {
                         await SendAsync();
-                        //_logger.FileServed(SubPath, PhysicalPath);
                         return;
                     }
                     catch (FileNotFoundException)
@@ -206,11 +211,11 @@ namespace OrchardCore.Media.Azure.Middleware
                     await next(context);
                     return;
                 case PreconditionState.NotModified:
-                    //_logger.FileNotModified(SubPath);
+                    Logger.LogDebug("File not modified for request path {0}", _subPath);
                     await SendStatusAsync(StatusCodes.Status304NotModified);
                     return;
                 case PreconditionState.PreconditionFailed:
-                    //_logger.PreconditionFailed(SubPath);
+                    Logger.LogDebug("Precondition failed for reqeuest path {0}", _subPath);
                     await SendStatusAsync(StatusCodes.Status412PreconditionFailed);
                     return;
                 default:

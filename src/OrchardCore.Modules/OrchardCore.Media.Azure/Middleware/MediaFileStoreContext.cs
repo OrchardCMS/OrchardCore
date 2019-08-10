@@ -18,8 +18,6 @@ namespace OrchardCore.Media.Azure.Middleware
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaImageCache _mediaImageCache;
-        private readonly PathString _subPath;
-        private readonly string _fileExtension;
 
         private IFileStoreEntry _fileStoreEntry;
         private ImageMetaData _imageMetadata;
@@ -32,42 +30,42 @@ namespace OrchardCore.Media.Azure.Middleware
             int maxBrowserCacheDays,
             string contentType,
             string cacheKey,
-            PathString subPath,
-            string fileExtension
+            string fileExtension,
+            PathString subPath
             ) : base
             (
                 context,
                 logger,
                 maxBrowserCacheDays,
                 contentType,
-                cacheKey
+                cacheKey,
+                fileExtension,
+                subPath
             )
         {
             _mediaFileStore = mediaFileStore;
             _mediaImageCache = mediaImageCache;
-            _subPath = subPath;
-            _fileExtension = fileExtension;
         }
 
         public async Task<bool> LookupFileStoreInfo()
         {
             _fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(_subPath.Value);
-            if (_fileStoreEntry != null)
-            {
-                _length = _fileStoreEntry.Length;
 
-                // Generate ImageSharp metadata now, so etag value will match when cached.
-                _imageMetadata = new ImageMetaData(DateTime.UtcNow, _contentType, _maxBrowserCacheDays);
-                DateTimeOffset last = _imageMetadata.LastWriteTimeUtc;
+            if (_fileStoreEntry == null)
+                return false;
 
-                // Truncate to the second.
-                _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, 0, last.Offset).ToUniversalTime();
+            _length = _fileStoreEntry.Length;
 
-                long etagHash = _lastModified.ToFileTime() ^ _length;
-                _etag = new EntityTagHeaderValue('\"' + Convert.ToString(etagHash, 16) + '\"');
-                return true;
-            }
-            return false;
+            // Generate ImageSharp metadata now, so etag value will match when cached.
+            _imageMetadata = new ImageMetaData(DateTime.UtcNow, _contentType, _maxBrowserCacheDays);
+            DateTimeOffset last = _imageMetadata.LastWriteTimeUtc;
+
+            // Truncate to the second.
+            _lastModified = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour, last.Minute, 0, last.Offset).ToUniversalTime();
+
+            long etagHash = _lastModified.ToFileTime() ^ _length;
+            _etag = new EntityTagHeaderValue('\"' + Convert.ToString(etagHash, 16) + '\"');
+            return true;
         }
 
         public async override Task SendAsync()
@@ -93,8 +91,7 @@ namespace OrchardCore.Media.Azure.Middleware
             }
             catch (OperationCanceledException ex)
             {
-                //TODO log correctly
-                Logger.LogInformation(ex.Message);
+                Logger.LogInformation(ex, "File store transmission cancelled for request path {0}", _subPath);
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
                 // However, if it was cancelled for any other reason we need to prevent empty responses.
                 _context.Abort();

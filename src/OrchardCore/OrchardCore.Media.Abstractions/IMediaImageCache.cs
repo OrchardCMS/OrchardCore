@@ -28,8 +28,9 @@ namespace OrchardCore.Media
         /// <summary>
         /// Get a media cache file from the cache.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">Cache key</param>
+        /// <param name="extension">Request file extension</param>
         /// <returns></returns>
-        Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key);
+        Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key, string fileExtension);
     }
 }

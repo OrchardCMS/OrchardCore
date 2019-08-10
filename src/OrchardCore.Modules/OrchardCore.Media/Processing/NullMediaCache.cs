@@ -29,7 +29,7 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key)
+        public Task<IMediaCacheFileResolver> GetMediaCacheFileAsync(string key, string fileExtension)
         {
             return Task.FromResult<IMediaCacheFileResolver>(null);
         }

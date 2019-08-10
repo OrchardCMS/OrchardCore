@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using SixLabors.ImageSharp.Web;
+using SixLabors.ImageSharp.Web.Helpers;
 
 namespace OrchardCore.Media.Azure.Middleware
 {
@@ -18,6 +20,7 @@ namespace OrchardCore.Media.Azure.Middleware
         private const int StreamCopyBufferSize = 64 * 1024;
 
         private readonly IMediaImageCache _mediaImageCache;
+        private readonly FormatUtilities _formatUtilities;
 
         private IMediaCacheFileResolver _mediaCacheFileResolver;
         private ImageMetaData _imageMetaData;
@@ -26,18 +29,24 @@ namespace OrchardCore.Media.Azure.Middleware
             HttpContext context,
             ILogger logger,
             IMediaImageCache mediaImageCache,
+            FormatUtilities formatUtilities,
             int maxBrowserCacheDays,
             string contentType,
-            string cacheKey
+            string cacheKey,
+            string fileExtension,
+            PathString subPath
             ) : base(
                 context,
                 logger,
                 maxBrowserCacheDays,
                 contentType,
-                cacheKey
+                cacheKey,
+                fileExtension,
+                subPath
                 )
         {
             _mediaImageCache = mediaImageCache;
+            _formatUtilities = formatUtilities;
         }
 
         public async Task<bool> LookupFileInfo()
@@ -52,8 +61,20 @@ namespace OrchardCore.Media.Azure.Middleware
             // The IFileStoreVersionProvider then becomes responsible for
             // gracefully expiring it's own memory cache of version hashes.
 
+            // When cached by ImageSharp .jpeg will be cached as .jpg, so resolve.
+            var fileExtension = String.Empty;
+            try
+            {
+                fileExtension = '.' + _formatUtilities.GetExtensionFromContentType(_contentType);
+            }
+            catch (KeyNotFoundException)
+            {
+                fileExtension = _fileExtension;
+            }
+
             // Resolve file through cache so we have correct value for the etag.
-            _mediaCacheFileResolver = await _mediaImageCache.GetMediaCacheFileAsync(_cacheKey);
+            _mediaCacheFileResolver = await _mediaImageCache.GetMediaCacheFileAsync(_cacheKey, fileExtension);
+
             if (_mediaCacheFileResolver == null)
                 return false;
 
@@ -91,10 +112,9 @@ namespace OrchardCore.Media.Azure.Middleware
                     await StreamCopyOperation.CopyToAsync(readStream, _response.Body, _length, StreamCopyBufferSize, _context.RequestAborted);
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                //TODO log correctly
-                //_logger.WriteCancelled(ex);
+                Logger.LogInformation(ex, "Cache transmission operation cancelled for request path {0}", _subPath);
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
                 // However, if it was cancelled for any other reason we need to prevent empty responses.
                 _context.Abort();
