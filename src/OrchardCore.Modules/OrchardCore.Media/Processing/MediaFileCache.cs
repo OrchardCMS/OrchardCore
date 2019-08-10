@@ -213,15 +213,13 @@ namespace OrchardCore.Media.Processing
         /// <returns>The <see cref="string"/>.</returns>
         private string ToMetaDataFilePath(string path) => $"{path}.meta";
 
-
-        private string ToFilePath(string key) => key;
         /// <summary>
         /// Converts the key into a nested file path.
         /// </summary>
         /// <param name="key">The cache key.</param>
         /// <returns>The <see cref="string"/>.</returns>
-        //private string ToFilePath(string key) // TODO: Avoid the allocation here.
-        //    => $"{_cachePath}/{string.Join("/", key.Substring(0, (int)_isOptions.CachedNameLength).ToCharArray())}/{key}";
+        private string ToFilePath(string key) // TODO: Avoid the allocation here.
+            => $"{string.Join("/", key.Substring(0, (int)_isOptions.CachedNameLength).ToCharArray())}/{key}";
 
         private static string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string _assetsCachePath)
         {
