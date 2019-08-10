@@ -5,6 +5,6 @@ namespace OrchardCore.FileStorage
 {
     public interface IFileStoreVersionProvider
     {
-        Task<string> AddFileVersionToPathAsync(PathString requestPathBase, string resolvedPath, string path);
+        Task<string> AddFileVersionToPathAsync(string resolvedPath, string path);
     }
 }

@@ -44,6 +44,7 @@ namespace OrchardCore.Media.Azure.Middleware
             )
         {
             _context = context;
+            _response = _context.Response;
             Logger = logger;
             _maxBrowserCacheDays = TimeSpan.FromDays(maxBrowserCacheDays);
             _contentType = contentType;

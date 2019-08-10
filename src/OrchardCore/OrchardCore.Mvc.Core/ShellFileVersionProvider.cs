@@ -151,8 +151,8 @@ namespace OrchardCore.Mvc
 
             foreach (var fileStoreVersionProvider in _fileStoreVersionProviders)
             {
-                // This will set cache if file is found
-                var versionedPath = fileStoreVersionProvider.AddFileVersionToPathAsync(requestPathBase, resolvedPath, path).GetAwaiter().GetResult();
+                // This will set cache if file is found.
+                var versionedPath = fileStoreVersionProvider.AddFileVersionToPathAsync(cacheKey, path).GetAwaiter().GetResult();
                 if (versionedPath != null)
                 {
                     return versionedPath;

@@ -18,8 +18,6 @@ namespace OrchardCore.Media.Azure.Services
         private readonly IMemoryCache _cache;
         private readonly MediaBlobStorageOptions _options;
 
-        //TODO Investigate using ISignalr from Media Controller when file is uploaded, deleted etc, to clear cache
-
         public MediaBlobFileStoreVersionProvider(
             IMediaFileStore mediaFileStore,
             IMemoryCache cache,
@@ -31,27 +29,32 @@ namespace OrchardCore.Media.Azure.Services
             _options = options.Value;
         }
 
-        public async Task<string> AddFileVersionToPathAsync(PathString requestPathBase, string resolvedPath, string path)
+        public async Task<string> AddFileVersionToPathAsync(string resolvedPath, string path)
         {
-            // Path has already been correctly parsed before here.
-            var mappedPath = _mediaFileStore.MapRequestPathToFileStorePath(requestPathBase + resolvedPath);
+            var cacheKey = resolvedPath;
 
-            var fileInfo = await _mediaFileStore.GetFileInfoAsync(mappedPath) as BlobFile;
+            // Path has already been correctly parsed before here.
+            resolvedPath = _mediaFileStore.MapPublicUrlToPath(resolvedPath);
+
+            var fileInfo = await _mediaFileStore.GetFileInfoAsync(resolvedPath) as BlobFile;
 
             //TODO test this without requestPathBase
             if (fileInfo != null)
             {
-                var value = fileInfo.FileHash;
-                //TODO expiry from configuration, and probably from ISignal
+                //TODO Consider expiring from Change Token from Media Admin Controller.
                 var cacheEntryOptions = new MemoryCacheEntryOptions();
-                cacheEntryOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));
-                cacheEntryOptions.SetSize(value.Length * sizeof(char));
-                //TODO Test
-                // Set to resolvedPath, so ShellFileVersionProvider can retrieve from cache
-                _cache.Set(requestPathBase + resolvedPath, value, cacheEntryOptions);
+                cacheEntryOptions.SetAbsoluteExpiration(
+                    TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120));
+
+                cacheEntryOptions.SetSize(fileInfo.FileHash.Length * sizeof(char));
+
+                // Set to cacheKey, so ShellFileVersionProvider can retrieve from cache.
+                _cache.Set(cacheKey, fileInfo.FileHash, cacheEntryOptions);
+
                 // Return actual path with query string
-                return QueryHelpers.AddQueryString(path, VersionKey, value);
+                return QueryHelpers.AddQueryString(path, VersionKey, fileInfo.FileHash);
             }
+
             return null;
         }
     }

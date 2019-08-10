@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Azure.Processing
             // Or the suggestion from Sebastien is a middleware cache in front of imagesharp. also sounds better
 
             // Path has already been correctly parsed before here.
-            var filePath = _mediaStore.MapRequestPathToFileStorePath(context.Request.PathBase + context.Request.Path.Value);
+            var filePath = _mediaStore.MapPublicUrlToPath(context.Request.PathBase + context.Request.Path.Value);
 
             // Check to see if the file exists.
             var file = await _mediaStore.GetFileInfoAsync(filePath);

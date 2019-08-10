@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services
 {
@@ -11,63 +10,57 @@ namespace OrchardCore.Media.Services
     {
         private readonly string _requestBaseUrl;
         private readonly string _cdnBaseUrl;
+
         public MediaFileStorePathProvider(
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IOptions<MediaOptions> mediaOptions
             )
         {
-            _requestBaseUrl = "/" + IMediaFileStorePathProviderHelpers.Combine(shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
+            _requestBaseUrl = "/" + IFileStoreExtensions.Combine(null, shellSettings.RequestUrlPrefix, mediaOptions.Value.AssetsRequestPath);
 
             var originalPathBase = httpContextAccessor
                 .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
 
             if (originalPathBase.HasValue)
             {
-                _requestBaseUrl = IMediaFileStorePathProviderHelpers.Combine(originalPathBase, _requestBaseUrl);
+                _requestBaseUrl = IFileStoreExtensions.Combine(null, originalPathBase, _requestBaseUrl);
             }
 
+            _requestBaseUrl = _requestBaseUrl.TrimEnd('/');
+
+            // Media options configuration ensures any trailing slash is removed.
             _cdnBaseUrl = mediaOptions.Value.CdnBaseUrl;
         }
 
         public string MapPathToPublicUrl(string path)
         {
-            //TODO fix extensions
-            return _cdnBaseUrl + _requestBaseUrl.TrimEnd('/') + "/" + IMediaFileStorePathProviderHelpers.NormalizePath(path);
+            return _cdnBaseUrl + _requestBaseUrl + "/" + IFileStoreExtensions.NormalizePath(null, path);
         }
-        public string MapRequestPathToFileStorePath(string requestPath)
+
+        public string MapPublicUrlToPath(string publicUrl)
         {
-            //Hmm maybe bring back what I wrote for the other one
-
-            //if (publicUrl.StartsWith(_cdnBaseUrl))
-            //{
-            //    var resolvedPath = publicUrl.Substring(_cdnBaseUrl.Length);
-            //    if (resolvedPath.StartsWith(_publicUrlBase))
-            //    {
-            //        return resolvedPath.Substring(_publicUrlBase.Length);
-            //    }
-            //    else
-            //    {
-            //        return resolvedPath;
-            //    }
-            //}
-            //else if (publicUrl.StartsWith(_publicUrlBase, StringComparison.OrdinalIgnoreCase))
-            //{
-            //    return publicUrl.Substring(_publicUrlBase.Length);
-            //}
-            //else
-            //{
-            //    throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
-            //}
-
-
-            //TODO make this MapSiteUrlToPath
-            if (!requestPath.StartsWith(_requestBaseUrl, StringComparison.OrdinalIgnoreCase))
+            // Services typically remove the cdn url before reaching this mapping, but double check here. 
+            if (publicUrl.StartsWith(_cdnBaseUrl, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentOutOfRangeException(nameof(requestPath), "The specified URL is not inside the URL scope of the file store.");
+                publicUrl = publicUrl.Substring(_cdnBaseUrl.Length);
+                if (publicUrl.StartsWith(_requestBaseUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    return publicUrl.Substring(_requestBaseUrl.Length);
+                }
+                else
+                {
+                    return publicUrl;
+                }
             }
-
-            return requestPath.Substring(_requestBaseUrl.Length);
+            else if (publicUrl.StartsWith(_requestBaseUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                return publicUrl.Substring(_requestBaseUrl.Length);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(publicUrl), "The specified URL is not inside the URL scope of the file store.");
+            }
         }
 
         public bool MatchCdnPath(string path)
