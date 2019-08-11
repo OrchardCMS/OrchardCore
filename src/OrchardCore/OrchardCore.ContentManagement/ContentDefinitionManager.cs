@@ -347,10 +347,10 @@ namespace OrchardCore.ContentManagement
             await _contentDefinitionStore.SaveContentDefinitionAsync(scopedRecord);
 
             // Cache invalidation after committing the session.
-            ShellScope.AddDeferredSignal(CacheKey);
+            _signal.DeferredSignalToken(CacheKey);
 
             // In case of multiple scoped updates, types and parts may need to be rebuilt while
-            // in the same scope, so we don't defer the release of the cached building results.
+            // in the same scope, so we don't defer the clearing of the related cached results.
             _typeDefinitions.Clear();
             _partDefinitions.Clear();
         }
