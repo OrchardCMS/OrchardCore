@@ -37,6 +37,11 @@ namespace OrchardCore.Contents.Indexing
                     IndexingConstants.DisplayTextKey,
                     context.ContentItem.DisplayText,
                     DocumentIndexOptions.Store);
+
+                context.DocumentIndex.Set(
+                    IndexingConstants.FullTextKey,
+                    context.ContentItem.DisplayText,
+                    DocumentIndexOptions.Analyze);
             }
         }
     }

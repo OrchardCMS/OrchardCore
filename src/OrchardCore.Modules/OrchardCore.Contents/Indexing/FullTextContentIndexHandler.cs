@@ -12,7 +12,6 @@ namespace OrchardCore.Contents.Indexing
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        public const string FullTextKey = "Content.ContentItem.FullText";
 
         public FullTextContentIndexHandler(
             IContentDefinitionManager contentDefinitionManager,
@@ -41,7 +40,7 @@ namespace OrchardCore.Contents.Indexing
                 var result = await _liquidTemplateManager.RenderAsync(settings.FullText, NullEncoder.Default, templateContext);
 
                 context.DocumentIndex.Set(
-                    FullTextKey,
+                    IndexingConstants.FullTextKey,
                     result,
                     DocumentIndexOptions.Analyze);
             }
