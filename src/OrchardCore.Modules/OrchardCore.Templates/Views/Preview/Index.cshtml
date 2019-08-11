@@ -3,9 +3,9 @@
     Title.AddSegment(T["Template Preview"]);
 }
 
-<style asp-name="bootstrap" use-cdn="true"></style>
-<script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
-<script asp-src="/OrchardCore.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
+<style asp-name="bootstrap"></style>
+<script asp-name="bootstrap" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
 
 <resources type="Header" />
 
@@ -85,8 +85,8 @@
 
     iframe.onload = function () {
         if (previewRendering) {
-            $(this.contentWindow).scrollTop(scrollTop);
             this.style.display = 'block';
+            $(this.contentWindow).scrollTop(scrollTop);
 
             if (iframe2 && iframe2.contentWindow) {
                 iframe2.style.display = 'none';
@@ -138,8 +138,8 @@
                         // Then, we use 2 frames to cancel the flicker that this deferring causes.
 
                         scrollTop = $(iframe.contentWindow).scrollTop();
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
                         iframe2.style.display = 'block';
+                        $(iframe2.contentWindow).scrollTop(scrollTop);
 
                         iframe.style.display = 'none';
                         iframe.contentWindow.document.open();

@@ -2,12 +2,10 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Title.Drivers;
-using OrchardCore.Title.Handlers;
 using OrchardCore.Title.Indexing;
 using OrchardCore.Title.Model;
 using OrchardCore.Title.ViewModels;
@@ -26,7 +24,6 @@ namespace OrchardCore.Title
             // Title Part
             services.AddScoped<IContentPartDisplayDriver, TitlePartDisplay>();
             services.AddSingleton<ContentPart, TitlePart>();
-            services.AddScoped<IContentPartHandler, TitlePartHandler>();
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();

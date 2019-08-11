@@ -68,14 +68,13 @@ namespace OrchardCore.Layers.Controllers
 			}
 
 			var layers = await _layerService.GetLayersAsync();
-			var widgets = await _layerService.GetLayerWidgetsAsync(c => c.Latest == true);
+			var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
 			var model = new LayersIndexViewModel { Layers = layers.Layers };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>()?.Zones ?? Array.Empty<string>();
-
+            model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
             model.Widgets = new Dictionary<string, List<dynamic>>();
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
@@ -219,7 +218,7 @@ namespace OrchardCore.Layers.Controllers
 				return NotFound();
 			}
 
-			var widgets = await _layerService.GetLayerWidgetsAsync(c => c.Latest == true);
+			var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
 			if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
 			{

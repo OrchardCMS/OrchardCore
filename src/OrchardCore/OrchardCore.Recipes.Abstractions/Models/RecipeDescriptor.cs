@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders;
 using System;
 
 namespace OrchardCore.Recipes.Models
@@ -15,6 +15,13 @@ namespace OrchardCore.Recipes.Models
         public DateTime? ExportUtc { get; set; }
         public string[] Categories { get; set; }
         public string[] Tags { get; set; }
+        public bool RequireNewScope { get; set; } = true;
+
+        /// <summary>
+        /// The path of the recipe file for the <see cref="RecipeDescriptor.FileProvider"/> property
+        /// </summary>
+        public string BasePath { get; set; }
         public IFileInfo RecipeFileInfo { get; set; }
+        public IFileProvider FileProvider { get; set; }
     }
 }

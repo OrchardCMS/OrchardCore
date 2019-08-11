@@ -1,30 +1,23 @@
-﻿@using OrchardCore.Mvc.Utilities;
-
-@{
-    var contentTypeClassName = ((string)Model.ContentItem.ContentType).HtmlClassify();
-    Model.Classes.Add(contentTypeClassName);
-
-    TagBuilder tag = Tag(Model, "article");
-}
-
-<article class="@String.Join(" ", Model.Classes.ToArray())">
+<div class="@String.Join(" ", Model.Classes.ToArray())">
     @if (Model.Header != null || Model.Meta != null)
     {
-    <header>
+    <div class="widget-header">
         @await DisplayAsync(Model.Header)
         @if (Model.Meta != null)
         {
-            <div class="metadata">
+            <div class="widget-metadata">
                 @await DisplayAsync(Model.Meta)
             </div>
         }
-    </header>
+    </div>
     }
+    <div class="widget-body">
     @await DisplayAsync(Model.Content)
+    </div>
     @if (Model.Footer != null)
     {
-    <footer>
+    <div class="widget-footer">
         @await DisplayAsync(Model.Footer)
-    </footer>
+    </div>
     }
-</article>
+</div>

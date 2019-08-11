@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Environment.Navigation;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
@@ -37,10 +35,13 @@ namespace OrchardCore.Navigation
                         return;
                     }
 
+                    var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                    var viewContext = viewContextAccessor.ViewContext;
+
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
+                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
                     var httpContext = httpContextAccessor.HttpContext;
 
                     if (httpContext != null)
@@ -63,7 +64,7 @@ namespace OrchardCore.Navigation
                     }
 
                     // TODO: Flag Selected menu item
-                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
+                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
                 });
 
             builder.Describe("NavigationItem")

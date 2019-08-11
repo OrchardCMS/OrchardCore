@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Layers.Deployment;
 using OrchardCore.Layers.Drivers;
 using OrchardCore.Layers.Handlers;

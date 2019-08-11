@@ -26,6 +26,13 @@ namespace OrchardCore.DisplayManagement
         protected async Task BindPlacementAsync(IBuildShapeContext context)
         {
             var theme = await _themeManager.GetThemeAsync();
+
+            // If there is no active theme, do nothing
+            if (theme == null)
+            {
+                return;
+            }
+
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
             context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => FindPlacementImpl(shapeTable, shapeType, differentiator, displayType, context);

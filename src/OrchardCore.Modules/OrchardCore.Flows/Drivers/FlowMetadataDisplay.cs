@@ -18,7 +18,7 @@ namespace OrchardCore.Flows.Drivers
                 return null;
             }
 
-            return Shape<FlowMetadata>("FlowMetadata_Edit", m =>
+            return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
             {
                 m.Alignment = flowMetadata.Alignment;
                 m.Size = flowMetadata.Size;

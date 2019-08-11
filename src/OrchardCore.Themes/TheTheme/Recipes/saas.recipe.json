@@ -3,7 +3,7 @@
   "displayName": "Software as a Service",
   "description": "Provides default SaaS features like managing multiple websites.",
   "author": "The Orchard Team",
-  "website": "http://orchardproject.net",
+  "website": "https://orchardproject.net",
   "version": "2.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
@@ -14,9 +14,7 @@
       "disable": [],
       "enable": [
         // SaaS
-        "OrchardCore.Mvc",
         "OrchardCore.Admin",
-        "OrchardCore.Commons",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
         "OrchardCore.HomeRoute",
@@ -47,7 +45,7 @@
       "HomeRoute": {
         "Action": "Index",
         "Controller": "Home",
-        "Area": "OrchardCore.Commons"
+        "Area": "TheTheme"
       }
     }
   ]

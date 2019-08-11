@@ -11,7 +11,10 @@ namespace OrchardCore.Nancy.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Add Nancy and support for modules
-            services.AddModules();
+            services
+                .AddOrchardCore()
+                .AddNancy()
+                ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -24,7 +27,7 @@ namespace OrchardCore.Nancy.Web
 
             app.UseStaticFiles();
 
-            app.UseModules();
+            app.UseOrchardCore();
         }
     }
 }

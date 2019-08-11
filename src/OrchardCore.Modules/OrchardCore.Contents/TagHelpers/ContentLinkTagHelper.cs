@@ -154,9 +154,9 @@ namespace OrchardCore.Contents.TagHelpers
             if (output.TagMode == TagMode.SelfClosing && metadata != null)
             {
                 output.TagMode = TagMode.StartTagAndEndTag;
-                if (!string.IsNullOrEmpty(metadata.DisplayText))
+                if (!string.IsNullOrEmpty(contentItem.DisplayText))
                 {
-                    output.Content.Append(metadata.DisplayText);
+                    output.Content.Append(contentItem.DisplayText);
                 }
                 else
                 {

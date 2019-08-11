@@ -27,7 +27,7 @@ namespace OrchardCore.Lucene.Settings
                 return null;
             }
 
-            return Shape<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
+            return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
             {
                 model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
             }).Location("Content");

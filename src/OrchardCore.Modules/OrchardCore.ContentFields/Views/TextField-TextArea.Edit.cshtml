@@ -1,0 +1,13 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Text" class="form-control content-preview-text"></textarea>
+    <span class="hint">@settings.Hint</span>
+</fieldset>

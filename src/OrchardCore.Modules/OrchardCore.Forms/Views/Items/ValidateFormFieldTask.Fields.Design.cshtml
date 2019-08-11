@@ -1,0 +1,6 @@
+@model ActivityViewModel<ValidateFormFieldTask>
+
+<header>
+    <h4><i class="fa fa-shield-alt"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate Form Field"])</h4>
+</header>
+<span>@T["Validate <em>{0}</em>", Model.Activity.FieldName]</span>

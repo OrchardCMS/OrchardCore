@@ -1,14 +1,14 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
-using Lucene.Net.Search;
-using OrchardCore.Lucene.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Lucene.Services;
+using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 
@@ -16,24 +16,28 @@ namespace OrchardCore.Lucene.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly ISearchQueryService _searchQueryService;
         private readonly IContentManager _contentManager;
 
-        private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
-
         public SearchController(
+              IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
+            ISearchQueryService searchQueryService,
             IContentManager contentManager,
             ILogger<SearchController> logger
             )
         {
+            _authorizationService = authorizationService;
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
+            _searchQueryService = searchQueryService;
             _contentManager = contentManager;
 
             Logger = logger;
@@ -43,6 +47,11 @@ namespace OrchardCore.Lucene.Controllers
 
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
+            {
+                return NotFound();
+            }
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -70,7 +79,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
-            if (luceneSettings == null)
+            if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
                 Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
 
@@ -87,27 +96,11 @@ namespace OrchardCore.Lucene.Controllers
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
-            var contentItemIds = new List<string>();
-
-            await _luceneIndexProvider.SearchAsync(indexName, searcher =>
-            {
-                // Fetch one more result than PageSize to generate "More" links
-                var collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
-
-                searcher.Search(query, collector);
-                var hits = collector.GetTopDocs(pager.GetStartIndex(), pager.PageSize + 1);
-
-                foreach (var hit in hits.ScoreDocs)
-                {
-                    var d = searcher.Doc(hit.Doc, IdSet);
-                    contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
-                }
-
-                return Task.CompletedTask;
-            });
+            int start = pager.GetStartIndex(), size = pager.PageSize, end = size + 1;// Fetch one more result than PageSize to generate "More" links
+            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, indexName, start, end);
 
             var contentItems = new List<ContentItem>();
-            foreach(var contentItemId in contentItemIds.Take(pager.PageSize))
+            foreach (var contentItemId in contentItemIds.Take(size))
             {
                 var contentItem = await _contentManager.GetAsync(contentItemId);
                 if (contentItem != null)
@@ -118,7 +111,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var model = new SearchIndexViewModel
             {
-                HasMoreResults = contentItemIds.Count > pager.PageSize,
+                HasMoreResults = contentItemIds.Count > size,
                 Query = q,
                 Pager = pager,
                 IndexName = id,

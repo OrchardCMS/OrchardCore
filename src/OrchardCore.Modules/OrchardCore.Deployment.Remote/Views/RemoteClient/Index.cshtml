@@ -1,6 +1,11 @@
-﻿@model RemoteClientIndexViewModel
+@model RemoteClientIndexViewModel
 
 <h1>@RenderTitleSegments(T["Remote Clients"])</h1>
+
+<div class="alert alert-info" role="alert">
+    @T["Url to use from client instances: <b>{0}</b>", Url.Action("Import", "ImportRemoteInstance", null, Context.Request.Scheme)]
+</div>
+
 
 <nav class="admin-toolbar">
     <ul class="navbar-nav">

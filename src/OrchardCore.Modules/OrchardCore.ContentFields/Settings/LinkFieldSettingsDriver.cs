@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Shape<LinkFieldSettings>("LinkFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
                 .Location("Content");
         }
 

@@ -33,7 +33,7 @@ namespace OrchardCore.Lists.Settings
                 return null;
             }
 
-            return Shape<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
+            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
                 model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;

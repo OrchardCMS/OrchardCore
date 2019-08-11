@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
         {
-            return Shape<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
+            return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
             {
                 var settings = contentPartDefinition.Settings.ToObject<ContentPartSettings>();
 

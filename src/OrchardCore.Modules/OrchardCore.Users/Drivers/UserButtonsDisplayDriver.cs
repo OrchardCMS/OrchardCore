@@ -9,7 +9,7 @@ namespace OrchardCore.Users.Drivers
     {
         public override IDisplayResult Edit(User user)
         {
-            return Shape("UserSaveButtons_Edit").Location("Actions");
+            return Dynamic("UserSaveButtons_Edit").Location("Actions");
         }
 
         public override Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)

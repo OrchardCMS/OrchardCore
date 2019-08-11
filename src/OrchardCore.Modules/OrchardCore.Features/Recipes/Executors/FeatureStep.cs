@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
@@ -24,46 +24,25 @@ namespace OrchardCore.Features.Recipes.Executors
             _shellFeatureManager = shellFeatureManager;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var step = context.Step.ToObject<FeatureStepModel>();
-
             var features = _extensionManager.GetFeatures();
 
-            foreach (var featureId in step.Disable)
+            var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
+            var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
+
+            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
             {
-                if (features.Any(x => x.Id == featureId))
-                {
-                    throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureId));
-                }
+                return _shellFeatureManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }
 
-            foreach (var featureId in step.Enable)
-            {
-                if (!features.Any(x => x.Id == featureId))
-                {
-                    throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureId));
-                }
-            }
-
-            if (step.Disable.Any())
-            {
-                var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
-            }
-
-            if (step.Enable.Any())
-            {
-                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
-            }
+            return Task.CompletedTask;
         }
 
         private class FeatureStepModel

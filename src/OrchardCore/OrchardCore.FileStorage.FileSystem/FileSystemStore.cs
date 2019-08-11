@@ -19,7 +19,7 @@ namespace OrchardCore.FileStorage.FileSystem
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             var physicalPath = GetPhysicalPath(path);
-            
+
             var fileInfo = new PhysicalFileInfo(new FileInfo(physicalPath));
 
             if (fileInfo.Exists)
@@ -40,19 +40,20 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.FromResult<IFileStoreEntry>(null);
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null)
+        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             var physicalPath = GetPhysicalPath(path);
+            var results = new List<IFileStoreEntry>();
 
             if (!Directory.Exists(physicalPath))
-                throw new FileStoreException($"Cannot get content of directory '{path}' because it does not exist.");
-
-            var results = new List<IFileStoreEntry>();
+            {
+                return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+            }
 
             // Add directories.
             results.AddRange(
                 Directory
-                    .GetDirectories(physicalPath)
+                    .GetDirectories(physicalPath, "*", includeSubDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                     .Select(f =>
                     {
                         var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
@@ -64,7 +65,7 @@ namespace OrchardCore.FileStorage.FileSystem
             // Add files.
             results.AddRange(
                 Directory
-                    .GetFiles(physicalPath)
+                    .GetFiles(physicalPath, "*", includeSubDirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
                     .Select(f =>
                     {
                         var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));

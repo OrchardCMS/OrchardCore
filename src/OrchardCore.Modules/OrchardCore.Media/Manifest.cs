@@ -3,7 +3,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Module(
     Name = "Media",
     Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
+    Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
 
@@ -11,6 +11,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media",
     Name = "Media",
     Description = "The media module adds media management support.",
-    Dependencies = "OrchardCore.ContentTypes, OrchardCore.Title",
+    Dependencies = new []
+    {
+        "OrchardCore.ContentTypes"
+    },
     Category = "Content Management"
 )]

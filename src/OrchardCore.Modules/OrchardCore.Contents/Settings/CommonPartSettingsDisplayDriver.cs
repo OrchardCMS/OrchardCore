@@ -32,7 +32,7 @@ namespace OrchardCore.Lists.Settings
                 return null;
             }
 
-            return Shape<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
+            return Initialize<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
                 model.DisplayDateEditor = settings.DisplayDateEditor;

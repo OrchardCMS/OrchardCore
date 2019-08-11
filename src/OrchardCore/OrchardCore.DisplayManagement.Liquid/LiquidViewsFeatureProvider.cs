@@ -12,6 +12,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
+        public const string DefaultLiquidViewName = "DefaultLiquidViewName";
+        public static string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
+        public static string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
+
         private static List<string> _sharedPaths;
         private static object _synLock = new object();
 
@@ -40,12 +44,18 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
+            feature.ViewDescriptors.Add(new CompiledViewDescriptor
+            {
+                RelativePath = DefaultRazorViewPath,
+                ViewAttribute = new RazorViewAttribute(DefaultLiquidViewPath, typeof(LiquidPage))
+            });
+
             foreach (var path in _sharedPaths)
             {
                 if (!Path.GetFileName(path).StartsWith("_"))
                 {
                     var viewPath = Path.ChangeExtension(path, RazorViewEngine.ViewExtension);
-                    feature.ViewDescriptors.Add( new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
+                    feature.ViewDescriptors.Add(new CompiledViewDescriptor { RelativePath = viewPath, ViewAttribute = new RazorViewAttribute(path, typeof(LiquidPage)) });
                 }
             }
         }

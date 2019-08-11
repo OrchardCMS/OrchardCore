@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,30 +23,35 @@ namespace OrchardCore.Settings.Controllers
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h)
+            IHtmlLocalizer<AdminController> h,
+            IStringLocalizer<AdminController> s
+            )
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = h;
+            S = s;
         }
 
         IHtmlLocalizer H { get; set; }
+        IStringLocalizer S { get; set; }
 
         public async Task<IActionResult> Index(string groupId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object) groupId))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
             {
                 return Unauthorized();
             }
 
             var site = await _siteService.GetSiteSettingsAsync();
 
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId);
+            var viewModel = new AdminIndexViewModel
+            {
+                GroupId = groupId,
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId)
+            };
 
             return View(viewModel);
         }
@@ -66,10 +72,11 @@ namespace OrchardCore.Settings.Controllers
 
             var site = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(cachedSite, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }), cachedSite.GetType()) as ISite;
 
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId);
+            var viewModel = new AdminIndexViewModel
+            {
+                GroupId = groupId,
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId)
+            };
 
             if (ModelState.IsValid)
             {

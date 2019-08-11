@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
@@ -24,9 +25,10 @@ namespace OrchardCore.Liquid
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
 
             // When accessing a property of a JObject instance
-            TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
+            TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
 
             // Prevent JTokens from being converted to an ArrayValue as they implement IEnumerable
             FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
@@ -45,6 +47,9 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
+            services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
+            services.AddLiquidFilter<LiquidFilter>("liquid");
+            services.AddLiquidFilter<JsonFilter>("json");
         }
     }
 

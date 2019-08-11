@@ -22,7 +22,7 @@ namespace OrchardCore.CustomSettings
         {
             var list = new List<Permission>();
 
-            foreach(var type in _customSettingsService.GetSettingsTypes())
+            foreach(var type in _customSettingsService.GetAllSettingsTypes())
             {
                 list.Add(CreatePermissionForType(type));
             }

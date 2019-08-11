@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
 
@@ -15,13 +16,24 @@ namespace OrchardCore.DisplayManagement.RazorPages
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
+        private IOrchardDisplayHelper _orchardHelper;
+
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
 
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = HttpContext.RequestServices.GetService<IDisplayHelper>();
             }
         }
 
@@ -100,6 +112,20 @@ namespace OrchardCore.DisplayManagement.RazorPages
             }
         }
 
+        public IOrchardDisplayHelper Orchard
+        {
+            get
+            {
+                if (_orchardHelper == null)
+                {
+                    EnsureDisplayHelper();
+                    _orchardHelper = new OrchardDisplayHelper(HttpContext, _displayHelper);
+                }
+
+                return _orchardHelper;
+            }
+        }
+
         private IPageTitleBuilder _pageTitleBuilder;
         public IPageTitleBuilder Title
         {
@@ -172,28 +198,6 @@ namespace OrchardCore.DisplayManagement.RazorPages
         public TagBuilder Tag(dynamic shape, string tag)
         {
             return Shape.GetTagBuilder(shape, tag);
-        }
-
-        /// <summary>
-        /// Renders a zone from the layout.
-        /// </summary>
-        /// <param name="name">The name of the zone to render.</param>
-        /// <param name="required">Whether the zone is required or not.</param>
-        public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            var zone = ThemeLayout[name];
-
-            if (required && zone != null && zone.Items.Count == 0)
-            {
-                throw new InvalidOperationException("Zone not found: " + name);
-            }
-
-            return DisplayAsync(zone);
         }
 
         public object OrDefault(object text, object other)

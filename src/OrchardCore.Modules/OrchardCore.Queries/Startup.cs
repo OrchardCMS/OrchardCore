@@ -1,12 +1,9 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using OrchardCore.Modules;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Liquid;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
@@ -15,6 +12,7 @@ using OrchardCore.Queries.Recipes;
 using OrchardCore.Queries.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Scripting;
 
 namespace OrchardCore.Queries
 {
@@ -37,16 +35,7 @@ namespace OrchardCore.Queries
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaRoute(
-                name: "Api.Queries.Query",
-                areaName: "OrchardCore.Queries",
-                template: "api/queries/{name}",
-                defaults: new { controller = "Api", action = "Query" }
-            );
+            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
         }
     }
 
@@ -56,6 +45,8 @@ namespace OrchardCore.Queries
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
+
             services.AddLiquidFilter<QueryFilter>("query");
         }
     }

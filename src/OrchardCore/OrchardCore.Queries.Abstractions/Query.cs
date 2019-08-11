@@ -17,5 +17,11 @@ namespace OrchardCore.Queries
         /// Gets the name of the source for this query.
         /// </summary>
         public string Source { get; }
+
+        /// <summary>
+        /// Gets or sets the retun schema of the query. 
+        /// This is used runtime determination of the results returned when Content Items are not returned.
+        /// </summary>
+        public string Schema { get; set; }
     }
 }

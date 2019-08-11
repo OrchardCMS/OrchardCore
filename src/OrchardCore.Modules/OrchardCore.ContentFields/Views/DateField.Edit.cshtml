@@ -1,0 +1,14 @@
+@model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
+@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<DateFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <div class="row col-md-6 col-lg-4">
+        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+        <input asp-for="Value" type="date" class="form-control content-preview-select" required="@settings.Required" />
+        <span class="hint">@settings.Hint</span>
+    </div>
+</fieldset>

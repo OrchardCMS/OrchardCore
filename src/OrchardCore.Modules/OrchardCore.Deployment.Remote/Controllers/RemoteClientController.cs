@@ -1,6 +1,8 @@
-﻿using System;
+using System;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -16,12 +18,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class RemoteClientController : Controller
     {
+        private readonly IDataProtector _dataProtector;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteClientService _service;
 
         public RemoteClientController(
+            IDataProtectionProvider dataProtectionProvider,
             RemoteClientService service,
             IAuthorizationService authorizationService,
             ISession session,
@@ -36,6 +40,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             H = htmlLocalizer;
             _notifier = notifier;
             _service = service;
+            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
 
         public IStringLocalizer S { get; set; }
@@ -113,7 +118,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 Id = remoteClient.Id,
                 ClientName = remoteClient.ClientName,
-                ApiKey = remoteClient.ApiKey,
+                ApiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey)),
             };
 
             return View(model);

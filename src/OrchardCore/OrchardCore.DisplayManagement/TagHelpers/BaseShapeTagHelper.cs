@@ -5,39 +5,36 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = new[] { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
-        private static readonly char[] Separators = new[] { ',', ' ' };
+        private static readonly string[] InternalProperties = { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration" };
+        private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
-        protected IDisplayHelperFactory _displayHelperFactory;
+        protected IDisplayHelper _displayHelper;
 
         public string Type { get; set; }
         public string Cache { get; set; }
-        public TimeSpan? Duration { get; set; }
+        public TimeSpan? FixedDuration { get; set; }
+        public TimeSpan? SlidingDuration { get; set; }
         public string Context { get; set; }
         public string Tag { get; set; }
-        public string Dependency { get; set; }
 
+        [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
+        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
         {
             _shapeFactory = shapeFactory;
-            _displayHelperFactory = displayHelperFactory;
+            _displayHelper = displayHelper;
         }
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
-
             // Extract all attributes from the tag helper to
             var properties = output.Attributes
                 .Where(x => !InternalProperties.Contains(x.Name))
@@ -59,22 +56,26 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 Context = Convert.ToString(output.Attributes["cache-context"].Value);
             }
 
-            if (string.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("cache-dependency"))
-            {
-                Dependency = Convert.ToString(output.Attributes["cache-dependency"].Value);
-            }
-
             if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
             {
                 Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
 
-            if (!Duration.HasValue && output.Attributes.ContainsName("cache-duration"))
+            if (!FixedDuration.HasValue && output.Attributes.ContainsName("cache-fixed-duration"))
             {
                 TimeSpan timespan;
-                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-duration"].Value), out timespan))
+                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-fixed-duration"].Value), out timespan))
                 {
-                    Duration = timespan;
+                    FixedDuration = timespan;
+                }
+            }
+
+            if (!SlidingDuration.HasValue && output.Attributes.ContainsName("cache-sliding-duration"))
+            {
+                TimeSpan timespan;
+                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-sliding-duration"].Value), out timespan))
+                {
+                    SlidingDuration = timespan;
                 }
             }
 
@@ -84,7 +85,17 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             {
                 shape.Id = Convert.ToString(output.Attributes["id"].Value);
             }
-            
+
+            if (output.Attributes.ContainsName("alternate"))
+            {
+                shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
+            }
+
+            if (output.Attributes.ContainsName("wrapper"))
+            {
+                shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
+            }
+
             tagHelperContext.Items.Add(typeof(IShape), shape);
 
             if (!string.IsNullOrWhiteSpace(Cache))
@@ -93,9 +104,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
                 metadata.Cache(Cache);
 
-                if (Duration.HasValue)
+                if (FixedDuration.HasValue)
                 {
-                    metadata.Cache().During(Duration.Value);
+                    metadata.Cache().WithExpiryAfter(FixedDuration.Value);
+                }
+
+                if (SlidingDuration.HasValue)
+                {
+                    metadata.Cache().WithExpirySliding(SlidingDuration.Value);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Context))
@@ -109,17 +125,11 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
-
-                if (!string.IsNullOrWhiteSpace(Dependency))
-                {
-                    var dependency = Dependency.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                    metadata.Cache().AddDependency(dependency);
-                }
             }
 
             await output.GetChildContentAsync();
 
-            output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
+            output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;

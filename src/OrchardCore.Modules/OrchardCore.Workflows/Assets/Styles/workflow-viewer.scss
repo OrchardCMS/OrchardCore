@@ -1,0 +1,12 @@
+@import './workflow-canvas.scss';
+
+.workflow-details {
+    label {
+        font-weight: bold;
+        display: block;
+    }
+
+    span {
+        display: block;
+    }
+}

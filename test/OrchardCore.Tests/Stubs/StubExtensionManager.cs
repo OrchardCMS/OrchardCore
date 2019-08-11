@@ -1,9 +1,10 @@
-﻿using OrchardCore.Environment.Extensions;
 using System;
-using OrchardCore.Environment.Extensions.Loaders;
-using OrchardCore.Environment.Extensions.Features;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Loaders;
 
 namespace OrchardCore.Tests.Stubs
 {
@@ -31,7 +32,7 @@ namespace OrchardCore.Tests.Stubs
 
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            throw new NotImplementedException();
+            return Enumerable.Empty<IFeatureInfo>();
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)

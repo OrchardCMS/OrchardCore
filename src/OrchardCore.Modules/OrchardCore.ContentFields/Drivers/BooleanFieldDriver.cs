@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Fields
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayBooleanFieldViewModel>("BooleanField", model =>
+            return Initialize<DisplayBooleanFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -24,9 +24,12 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
         {
-            return Shape<EditBooleanFieldViewModel>("BooleanField_Edit", model =>
+            return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Value = field.Value;
+                model.Value = (context.IsNew == false) ?
+                    field.Value :
+                    (bool)(context.PartFieldDefinition.Settings["DefaultValue"] ?? false);
+
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

@@ -1,15 +1,46 @@
-# Localization (OrchardCore.Localization)
+# Localization (`OrchardCore.Localization`)
 
 This module provides the infrastructure necessary to support the PO (Portable Object) localization file format.
 It also supports plural forms.
 
+## Online translations
+
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+
+The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
+
 ## PO files locations
 
-PO files are found via the following steps:
+PO files are found at these locations:
 
 - For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
-- Then all files matching `/App_Data/Localization/[CultureName].po`
+- All files matching `/App_Data/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
+- For each module and theme all files matching  
+    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
+    - `/App_Data/Localization/[ModuleId]-[CultureName].po`
+    - `/App_Data/Localization/[CultureName]/[ModuleId].po`
+
+`[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
+
+## Recipe Step
+Cultures can be added during recipes using the settings step. Here is a sample step:
+
+``` json
+{
+  "name": "settings",
+  "LocalizationSettings": {
+    "DefaultCulture":  "fr",
+    "SupportedCultures": [ "fr", "en" ]
+  }
+},
+```
+
+### Examples
+
+- `/App_Data/Localization/fr.po`
+- `/App_Data/Localization/fr-CA.po`
+- `/App_Data/Localization/es-MX.po`
 
 ## File format
 
@@ -17,10 +48,9 @@ This article explains how PO files are organized, including plural forms.
 
 <https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html>
 
-
 ## Translation contexts
 
-To prevent different PO files entries from overriding each other, entries define a context for each translation string.
+To prevent entries in different PO files from overriding each other, they define a context for each translation string.
 For instance two views could use the string named `Hello` but they might have different translation. It's then necessary to
 provide two entries and specify which _context_ is associated with each translation. In this case each view name is a context.
 
@@ -46,7 +76,7 @@ The context string must match the full name of the type the localizer is injecti
 
 #### Source
 
-```
+``` cs
 namespace MyNamespace
 {
     public class MyService : IMyService
@@ -94,7 +124,22 @@ msgstr[1] "[{0} livres]"
 - Import the `using Microsoft.Extensions.Localization` namespace.
 - Inject an instance of `IStringLocalizer` or `IViewLocalizer` (represented as the `T` variable in the following example).
 
-
-```
+``` cs
 T.Plural(count, "1 book", "{0} books")
+```
+
+### Extract translations to PO files
+
+In order to generate the .po files, you can use [this tool](https://github.com/lukaskabrt/PoExtractor).
+
+The simpler way to use it is to install it with this command:
+
+``` bash
+dotnet tool install --global PoExtractor.OrchardCore
+```
+
+Then, you will be able to run this command to generate the .po files:
+
+``` bash
+extractpo-oc C:\Path\OrchardCore C:\temp\OrchardCore --liquid
 ```

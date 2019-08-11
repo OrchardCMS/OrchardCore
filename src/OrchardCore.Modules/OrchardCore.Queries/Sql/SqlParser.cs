@@ -485,35 +485,41 @@ namespace OrchardCore.Queries.Sql
 
             _modes.Push(FormattingModes.FromClause);
             EvaluateAliasList(aliasList);
+            _modes.Pop();
 
             var joins = parseTreeNode.ChildNodes[2];
 
+            // process join statements
             if (joins.ChildNodes.Count != 0)
             {
-                var jointKindOpt = joins.ChildNodes[0];
-
-                if (jointKindOpt.ChildNodes.Count > 0)
+                foreach (var joinStatement in joins.ChildNodes)
                 {
-                    _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].Term.Name);
+                    _modes.Push(FormattingModes.FromClause);
+
+                    var jointKindOpt = joinStatement.ChildNodes[0];
+
+                    if (jointKindOpt.ChildNodes.Count > 0)
+                    {
+                        _builder.Append(" ").Append(jointKindOpt.ChildNodes[0].Term.Name);
+                    }
+
+                    _builder.Append(" JOIN ");
+
+                    EvaluateAliasList(joinStatement.ChildNodes[2]);
+
+                    _builder.Append(" ON ");
+                    _modes.Push(FormattingModes.SelectClause);
+
+                    EvaluateId(joinStatement.ChildNodes[4]);
+
+                    _builder.Append(" = ");
+
+                    EvaluateId(joinStatement.ChildNodes[6]);
+                    _modes.Pop();
                 }
-
-                _builder.Append(" JOIN ");
-
-                EvaluateAliasList(joins.ChildNodes[2]);
-
-                _builder.Append(" ON ");
-                _modes.Push(FormattingModes.SelectClause);
-
-                EvaluateId(joins.ChildNodes[4]);
-
-                _builder.Append(" = ");
-
-                EvaluateId(joins.ChildNodes[6]);
             }
 
             _from = _builder.ToString();
-
-            _modes.Pop();
         }
 
         private void EvaluateAliasList(ParseTreeNode aliasList)

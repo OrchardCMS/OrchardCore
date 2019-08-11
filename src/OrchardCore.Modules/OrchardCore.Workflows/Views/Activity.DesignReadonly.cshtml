@@ -1,0 +1,23 @@
+@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.Activities
+@{
+    var activityRecord = (ActivityRecord)Model.ActivityRecord;
+    var activity = (IActivity)Model.Activity;
+    var activityEvent = activity as IEvent;
+    var isEvent = activityEvent != null;
+    var isBlocking = (bool)Model.IsBlocking;
+    var activityType = isEvent ? "Event" : "Task";
+    var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
+    var cssClass = isBlocking ? "activity-blocking" : isEvent ? "activity-event" : "activity-task";
+}
+<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-type="@activityType">
+    @await DisplayAsync(Model.Content)
+    @if (isEvent)
+    {
+        <div class="clearfix">
+            <div class="float-right">
+                <i class="fa @activityTypeClass"></i>
+            </div>
+        </div>
+    }
+</div>

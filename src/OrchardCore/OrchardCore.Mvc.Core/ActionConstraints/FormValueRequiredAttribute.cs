@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 
@@ -15,7 +16,7 @@ namespace OrchardCore.Mvc.ActionConstraints
 
         public override bool IsValidForRequest(RouteContext routeContext, ActionDescriptor action)
         {
-            if(routeContext.HttpContext.Request.Method != "POST")
+            if (!HttpMethods.IsPost(routeContext.HttpContext.Request.Method))
             {
                 return false;
             }

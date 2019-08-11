@@ -1,0 +1,34 @@
+@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Markdown.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+}
+
+<script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
+<style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
+
+<fieldset class="form-group">
+    <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Markdown" class="form-control content-preview-text"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
+            forceSync: true,
+            toolbar: simplemdeToolbar,
+            autoDownloadFontAwesome :false
+        });
+
+        simplemde.codemirror.on('change', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>

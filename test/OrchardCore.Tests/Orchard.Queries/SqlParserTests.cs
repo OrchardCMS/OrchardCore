@@ -68,7 +68,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where a = false", "SELECT [a] WHERE [a] = 0;")]
         [InlineData("select a where a = 1", "SELECT [a] WHERE [a] = 1;")]
         [InlineData("select a where a = 1.234", "SELECT [a] WHERE [a] = 1.234;")]
-        [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = \"foo\";")]
+        [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = 'foo';")]
         [InlineData("select a where a between b and c", "SELECT [a] WHERE [a] BETWEEN [b] AND [c];")]
         [InlineData("select a where a not between b and c", "SELECT [a] WHERE [a] NOT BETWEEN [b] AND [c];")]
         [InlineData("select a where a = b or c = d", "SELECT [a] WHERE [a] = [b] OR [c] = [d];")]
@@ -86,8 +86,8 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         [Theory]
         [InlineData("select a where a = @b", "SELECT [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit", "SELECT TOP @limit [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP @limit [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
         public void ShouldParseParameters(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
@@ -107,6 +107,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [Theory]
         [InlineData("select a from b inner join c on b.b1 = c.c1", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1];")]
         [InlineData("select a from b as ba inner join c as ca on ba.b1 = ca.c1", "SELECT [a] FROM [tp_b] AS ba INNER JOIN [tp_c] AS ca ON ba.[b1] = ca.[c1];")]
+        [InlineData("select a from b inner join c on b.b1 = c.c1 left join d on d.a = d.b", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] LEFT JOIN [tp_d] ON [tp_d].[a] = [tp_d].[b];")]
         public void ShouldParseJoinClause(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
@@ -130,7 +131,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         }
 
         [Theory]
-        [InlineData("select a limit 100", "SELECT TOP 100 [a];")]
+        [InlineData("select a limit 100", "SELECT TOP (100) [a];")]
         [InlineData("select a limit 100 offset 10", "SELECT [a] OFFSET 10 ROWS FETCH NEXT 100 ROWS ONLY;")]
         [InlineData("select a offset 10", "SELECT [a] OFFSET 10 ROWS;")]
         public void ShouldParseLimitOffsetClause(string sql, string expectedSql)
@@ -168,7 +169,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             var result = SqlParser.TryParse("SEL a", _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
 
             Assert.False(result);
-            Assert.Equal(1, messages.Count());
+            Assert.Single(messages);
             Assert.Contains("at line:0, col:0", messages.First());
         }
 

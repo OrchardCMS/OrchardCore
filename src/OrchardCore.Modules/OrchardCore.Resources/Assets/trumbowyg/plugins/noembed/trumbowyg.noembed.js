@@ -37,6 +37,9 @@
             },
             ja: {
                 noembedError: 'エラー'
+            },
+            tr: {
+                noembedError: 'Hata'
             }
         },
 

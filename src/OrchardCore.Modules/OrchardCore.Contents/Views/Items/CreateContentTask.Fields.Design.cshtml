@@ -1,0 +1,7 @@
+@model ContentTaskViewModel<CreateContentTask>
+
+<header>
+    <h4><i class="fa fa-file-text-o"></i>@Model.Activity.GetTitleOrDefault(() => T["Create Content"])</h4>
+</header>
+
+<em>@Model.Activity.ContentType</em>

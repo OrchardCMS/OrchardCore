@@ -1,0 +1,23 @@
+@using System.Linq
+
+@{
+
+    var prefix = "icon-class-";
+
+    //extract icon classes from Model.Classes
+    var iconClasses = ((IEnumerable<string>)Model.Classes)
+                    .ToList()
+                    .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .Select(c => c.Substring(prefix.Length));
+
+    if (iconClasses.Any())
+    {
+        <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
+    }
+    else
+    {
+        <span class="icon icon-none">@*<i class="fas fa-ellipsis-v fa-xs"></i>*@</span>
+    }
+
+}
+<span class="title">@Model.Text</span>

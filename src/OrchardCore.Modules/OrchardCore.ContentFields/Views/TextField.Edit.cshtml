@@ -6,16 +6,11 @@
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
 }
 
-@{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "TextField_Editor";
-
-    if (!String.IsNullOrEmpty(settings.Editor))
+<fieldset class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <input asp-for="Text" class="form-control content-preview-text" />
+    @if (!String.IsNullOrEmpty(settings.Hint))
     {
-        shape.Metadata.Alternates.Add($"TextField_Editor__{settings.Editor}");
+        <span class="hint">@settings.Hint</span>
     }
-}
-
-@await DisplayAsync(Model)
+</fieldset>

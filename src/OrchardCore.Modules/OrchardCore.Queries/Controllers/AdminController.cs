@@ -181,6 +181,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 SourceName = query.Source,
                 Name = query.Name,
+                Schema = query.Schema,
                 Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
             };   
 

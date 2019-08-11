@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Shape<HtmlFieldSettings>("HtmlFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Initialize<HtmlFieldSettings>("HtmlFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
                 .Location("Content");
         }
 

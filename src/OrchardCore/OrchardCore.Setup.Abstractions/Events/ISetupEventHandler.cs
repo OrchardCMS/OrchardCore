@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Setup.Events
@@ -16,6 +16,7 @@ namespace OrchardCore.Setup.Events
             string dbProvider,
             string dbConnectionString,
             string dbTablePrefix,
+            string siteTimeZone,
             Action<string, string> reportError
             );
     }

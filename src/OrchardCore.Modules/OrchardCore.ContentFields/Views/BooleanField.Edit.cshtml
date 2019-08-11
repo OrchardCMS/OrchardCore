@@ -1,21 +1,19 @@
-﻿@model OrchardCore.ContentFields.ViewModels.EditBooleanFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.EditBooleanFieldViewModel
 @using OrchardCore.ContentFields.Settings;
 @using OrchardCore.ContentManagement.Metadata.Models
-
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
 }
 
-@{
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "BooleanField_Editor";
-
-    if (!String.IsNullOrEmpty(settings.Editor))
-    {
-        shape.Metadata.Alternates.Add($"BooleanField_Editor__{settings.Editor}");
-    }
-}
-
-@await DisplayAsync(Model)
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="Value" type="checkbox" class="custom-control-input content-preview-select" checked="@Model.Value" />
+        <label class="custom-control-label" asp-for="Value">
+            @(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)
+            @if (!String.IsNullOrEmpty(settings.Hint))
+            {
+                <span class="hint">— @settings.Hint</span>
+            }
+        </label>
+    </div>
+</fieldset>

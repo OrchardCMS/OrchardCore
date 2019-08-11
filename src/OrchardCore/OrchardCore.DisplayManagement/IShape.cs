@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement
 	/// </summary>
 	public interface IShape
 	{
-		ShapeMetadata Metadata { get; set; }
+		ShapeMetadata Metadata { get; }
 		string Id { get; set; }
 		IList<string> Classes { get; }
 		IDictionary<string, string> Attributes { get; }

@@ -1,3 +1,3 @@
-# Azure (OrchardCore.Azure)
+# Azure (`OrchardCore.Azure`)
 
 TBD

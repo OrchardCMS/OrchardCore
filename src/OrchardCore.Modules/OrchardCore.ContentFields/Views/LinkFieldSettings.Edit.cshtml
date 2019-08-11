@@ -3,12 +3,10 @@
 
 <div class="row">
     <fieldset class="form-group col-md-6">
-        <div class="form-check">
-            <label class="form-check-label">
-                <input asp-for="Required" type="checkbox" class="form-check-input" checked="@Model.Required" />
-                @T["Required"]
-                <span class="hint">@T["Whether the url is required."]</span>
-            </label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="Required" checked="@Model.Required" />
+            <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+            <span class="hint">— @T["Whether the url is required."]</span>
         </div>
     </fieldset>
     <fieldset class="form-group col-md-6">
@@ -28,8 +26,8 @@
         <span class="hint">@T["The hint text to display for the url on the editor."]</span>
     </fieldset>
     <fieldset class="form-group col-md-6">
-        <label asp-for="Hint">@T["Hint for the text"]</label>
-        <input asp-for="Hint" type="text" class="form-control" />
+        <label asp-for="HintLinkText">@T["Hint for the text"]</label>
+        <input asp-for="HintLinkText" type="text" class="form-control" />
         <span class="hint">@T["The hint text to display for the text of the link on the editor."]</span>
     </fieldset>
 </div>

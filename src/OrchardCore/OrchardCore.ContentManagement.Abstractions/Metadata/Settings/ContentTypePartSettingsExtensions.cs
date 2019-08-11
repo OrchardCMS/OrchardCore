@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Builders;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.ContentManagement.Metadata.Settings
 {
@@ -17,6 +17,11 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         public static ContentTypePartDefinitionBuilder WithPosition(this ContentTypePartDefinitionBuilder builder, string position)
         {
             return builder.WithSetting(nameof(ContentTypePartSettings.Position), position);
+        }
+
+        public static ContentTypePartDefinitionBuilder WithEditor(this ContentTypePartDefinitionBuilder builder, string editor)
+        {
+            return builder.WithSetting(nameof(ContentTypePartSettings.Editor), editor);
         }
     }
 }

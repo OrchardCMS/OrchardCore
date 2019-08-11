@@ -1,0 +1,11 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<InputPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    var elementId = formElementPart.Id;
+    var fieldName = formInputElementPart.Name;
+    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldValue = ViewData.ModelState.ContainsKey(fieldName) ? ViewData.ModelState[fieldName].AttemptedValue : Model.Value.DefaultValue;
+}
+<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="form-control" value="@fieldValue" placeholder="@Model.Value.Placeholder" />

@@ -4,7 +4,7 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
-using OrchardCore.DisplayManagement.Liquid.Ast;
+using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -66,7 +66,15 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var statements = context.CurrentBlock.Statements;
 
             var arguments = NamedHelperTag.BuildArguments(tag);
-            return new HelperStatement(new ArgumentsExpression(arguments), tag.Term.Name, statements);
+
+            var helper = tag.Term.Name;
+
+            if (helper.EndsWith("block") && helper.Length > "block".Length)
+            {
+                helper = helper.Substring(0, helper.Length - "block".Length);
+            }
+
+            return new HelperStatement(new ArgumentsExpression(arguments), helper, statements);
         }
 
         public static void RegisterDefaultArgument(string tagName, string argumentName)

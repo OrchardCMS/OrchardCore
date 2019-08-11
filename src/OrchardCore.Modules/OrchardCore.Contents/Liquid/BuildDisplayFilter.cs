@@ -6,13 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var obj = input.ToObjectValue();
 
@@ -35,13 +36,14 @@ namespace OrchardCore.Contents.Liquid
 
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
             {
-                throw new ArgumentException("Services missing while invoking 'build_display'");
+                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
             var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
+            var updateModelAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
 
-            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, null, displayType));
+            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType));
         }
     }
 }

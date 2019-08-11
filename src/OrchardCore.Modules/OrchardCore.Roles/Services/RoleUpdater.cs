@@ -76,11 +76,11 @@ namespace OrchardCore.Roles.Services
             {
                 if (providersForEnabledModule.Any())
                 {
-                    Logger.LogDebug($"Configuring default roles for module {feature.Id}");
+                    Logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
                 }
                 else
                 {
-                    Logger.LogDebug($"No default roles for module {feature.Id}");
+                    Logger.LogDebug("No default roles for feature '{FeatureName}'", feature.Id);
                 }
             }
 
@@ -97,7 +97,7 @@ namespace OrchardCore.Roles.Services
                     {
                         if (Logger.IsEnabled(LogLevel.Information))
                         {
-                            Logger.LogInformation($"Defining new role {stereotype.Name} for permission stereotype");
+                            Logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
                         }
 
                         role = new Role { RoleName = stereotype.Name };
@@ -121,7 +121,7 @@ namespace OrchardCore.Roles.Services
                         {
                             if (Logger.IsEnabled(LogLevel.Debug))
                             {
-                                Logger.LogInformation("Default role {0} granted permission {1}", stereotype.Name, permissionName);
+                                Logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", stereotype.Name, permissionName);
                             }
 
                             await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));

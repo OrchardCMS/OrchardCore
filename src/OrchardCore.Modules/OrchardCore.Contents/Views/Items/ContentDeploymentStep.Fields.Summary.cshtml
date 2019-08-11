@@ -1,0 +1,22 @@
+@model ShapeViewModel<ContentDeploymentStep>
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentTypes = Model.Value.ContentTypes;
+}
+
+<h5>@T["Content"]</h5>
+@if (contentTypes != null && contentTypes.Length > 0)
+{
+    @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions())
+    {
+        if (contentTypes.Contains(contentTypeDefinition.Name))
+        {
+            <span class="badge badge-info">@contentTypeDefinition.DisplayName</span>
+        }
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["Nothing here!"]</span>
+}

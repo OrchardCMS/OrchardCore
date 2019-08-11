@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;

@@ -1,0 +1,6 @@
+@model ActivityViewModel<IfElseTask>
+
+<header>
+    <h4><i class="fa fa-diamond"></i>@Model.Activity.GetTitleOrDefault(() => T["If/Else"])</h4>
+</header>
+<span>@T["Evaluate <em>{0}</em>", Model.Activity.Condition]</span>

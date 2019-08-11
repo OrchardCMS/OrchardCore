@@ -12,7 +12,7 @@ namespace OrchardCore.Lists.RemotePublishing
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Shape("ListPart_RemotePublishing", shape =>
+            return Dynamic("ListPart_RemotePublishing", shape =>
             {
                 shape.ContentItem = listPart.ContentItem;
             }).Location("Content");

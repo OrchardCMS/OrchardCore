@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting.JavaScript
 {
@@ -11,21 +11,14 @@ namespace OrchardCore.Scripting.JavaScript
     {
 		private readonly IMemoryCache _memoryCache;
 
-		public JavaScriptEngine(
-			IMemoryCache memoryCache,
-			IStringLocalizer<JavaScriptEngine> localizer)
+		public JavaScriptEngine(IMemoryCache memoryCache)
         {
 			_memoryCache = memoryCache;
-            S = localizer;
         }
-
-        IStringLocalizer S { get; }
-
-        public LocalizedString Name => S["JavaScript"];
 
         public string Prefix => "js";
 
-        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider)
+        public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
             var engine = new Engine();
             

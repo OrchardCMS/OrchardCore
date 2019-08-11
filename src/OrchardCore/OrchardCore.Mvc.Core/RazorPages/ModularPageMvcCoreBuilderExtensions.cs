@@ -1,7 +1,5 @@
-using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -10,22 +8,22 @@ namespace OrchardCore.Mvc.RazorPages
 {
     public static class ModularPageMvcCoreBuilderExtensions
     {
-        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder, IServiceProvider services)
+        public static IMvcCoreBuilder AddModularRazorPages(this IMvcCoreBuilder builder)
         {
-            builder.AddRazorPages(options =>
-            {
-                options.RootDirectory = "/";
-                var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-                options.Conventions.Add(new DefaultModularPageRouteModelConvention(httpContextAccessor));
-            });
+            builder.AddRazorPages();
+            builder.Services.AddModularRazorPages();
+            return builder;
+        }
 
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularPageRazorViewEngineOptionsSetup>());
+        internal static IServiceCollection AddModularRazorPages(this IServiceCollection services)
+        {
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<RazorPagesOptions>, ModularPageRazorPagesOptionsSetup>());
 
-            builder.Services.TryAddEnumerable(
+            services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
 
-            return builder;
+            return services;
         }
     }
 }

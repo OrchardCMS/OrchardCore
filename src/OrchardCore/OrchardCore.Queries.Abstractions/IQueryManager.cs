@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Queries
 {
@@ -36,5 +37,10 @@ namespace OrchardCore.Queries
         /// <param name="query">The query to execute.</param>
         /// <returns>The result of the query.</returns>
         Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+
+        /// <summary>
+        /// Returns a change token that is set when queries have changed.
+        /// </summary>
+        IChangeToken ChangeToken { get; }
     }
 }

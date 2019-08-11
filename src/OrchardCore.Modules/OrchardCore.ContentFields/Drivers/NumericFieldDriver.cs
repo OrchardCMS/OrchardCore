@@ -14,20 +14,16 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
-        private readonly CultureInfo _cultureInfo;
-
         public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {
             T = localizer;
-
-            _cultureInfo = CultureInfo.InvariantCulture; // Todo: Get CurrentCulture from site settings
         }
 
         public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(NumericField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayNumericFieldViewModel>("NumericField", model =>
+            return Initialize<DisplayNumericFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -39,10 +35,10 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Edit(NumericField field, BuildFieldEditorContext context)
         {
-            return Shape<EditNumericFieldViewModel>("NumericField_Edit", model =>
+            return Initialize<EditNumericFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
-                model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, _cultureInfo);
+                model.Value = context.IsNew ? settings.DefaultValue : Convert.ToString(field.Value, CultureInfo.CurrentUICulture);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -71,7 +67,7 @@ namespace OrchardCore.ContentFields.Fields
                         updater.ModelState.AddModelError(Prefix, T["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                 }
-                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, _cultureInfo, out value))
+                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out value))
                 {
                     updater.ModelState.AddModelError(Prefix, T["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }

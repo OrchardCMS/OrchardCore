@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
+using OrchardCore.DisplayManagement.TagHelpers;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Mvc
 {
@@ -19,16 +21,15 @@ namespace OrchardCore.Mvc
     {
         private static IEnumerable<string> _referencePaths;
         private static object _synLock = new object();
-
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private ShellBlueprint _shellBlueprint;
+        private IEnumerable<ITagHelpersProvider> _tagHelpers;
 
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
         /// <param name="assembly"></param>
-        public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
+        public ShellFeatureApplicationPart()
         {
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public override string Name
@@ -44,8 +45,28 @@ namespace OrchardCore.Mvc
         {
             get
             {
-                var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices?.GetRequiredService<ShellBlueprint>();
-                return shellBluePrint?.Dependencies.Keys.Select(type => IntrospectionExtensions.GetTypeInfo(type)) ?? Enumerable.Empty<TypeInfo>();
+                var services = ShellScope.Services;
+
+                // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
+                // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
+
+                if (services != null && _tagHelpers == null)
+                {
+                    lock (this)
+                    {
+                        if (_tagHelpers == null)
+                        {
+                            _shellBlueprint = services.GetRequiredService<ShellBlueprint>();
+                            _tagHelpers = services.GetServices<ITagHelpersProvider>();
+                        }
+                    }
+                }
+
+
+                return _shellBlueprint
+                    .Dependencies.Keys
+                    .Concat(_tagHelpers.SelectMany(p => p.GetTypes()))
+                    .Select(x => x.GetTypeInfo());
             }
         }
 

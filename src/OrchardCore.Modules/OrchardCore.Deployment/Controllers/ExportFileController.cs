@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,10 +7,12 @@ using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Admin;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
 {
+    [Admin]
     public class ExportFileController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;
@@ -48,7 +50,7 @@ namespace OrchardCore.Deployment.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = Path.Combine(Path.GetTempPath(), filename );
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename );
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);

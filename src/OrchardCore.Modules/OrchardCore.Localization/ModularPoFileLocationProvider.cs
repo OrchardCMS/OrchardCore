@@ -14,6 +14,7 @@ namespace OrchardCore.Localization
     {
         private const string PoFileExtension = ".po";
         private const string ExtensionDataFolder = "App_Data";
+        private const string CultureDelimiter = "-";
 
         private readonly IExtensionManager _extensionsManager;
         private readonly IFileProvider _fileProvider;
@@ -33,24 +34,38 @@ namespace OrchardCore.Localization
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
             _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
             _applicationDataContainer = shellOptions.Value.ShellsApplicationDataPath;
-            _shellDataContainer = Path.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
+            _shellDataContainer = PathExtensions.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
 
         public IEnumerable<IFileInfo> GetLocations(string cultureName)
         {
             var poFileName = cultureName + PoFileExtension;
+            var extensions = _extensionsManager.GetExtensions();
 
             // Load .po files in each extension folder first, based on the extensions order
-            foreach (var extension in _extensionsManager.GetExtensions())
+            foreach (var extension in extensions)
             {
-                yield return _fileProvider.GetFileInfo(Path.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
             }
 
             // Then load global .po file for the applications
-            yield return new PhysicalFileInfo(new FileInfo(Path.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
+            yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
 
-            // Finally load tenant-specific .po file
-            yield return new PhysicalFileInfo(new FileInfo(Path.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
+            // Load tenant-specific .po file
+            yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
+
+            // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
+            foreach (var extension in extensions)
+            {
+                // \src\OrchardCore.Cms.Web\App_Data/Localization/OrchardCore.Cms.Web/fr-CA.po
+                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id, poFileName)));
+
+                // \src\OrchardCore.Cms.Web\App_Data/Localization/OrchardCore.Cms.Web-fr-CA.po
+                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id + CultureDelimiter + poFileName)));
+
+                // \src\OrchardCore.Cms.Web\App_Data/Localization/fr-CA/OrchardCore.Cms.Web.po
+                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, cultureName, extension.Id + PoFileExtension)));
+            }
         }
     }
 }

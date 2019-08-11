@@ -1,0 +1,10 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<TextAreaPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    var elementId = formElementPart.Id;
+    var elementName = formInputElementPart.Name;
+    var id = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(elementName) ? Html.GenerateIdFromName(elementName) : default(string);
+}
+<textarea id="@id" name="@elementName" class="form-control" placeholder="@Model.Value.Placeholder">@Model.Value.DefaultValue?.Trim()</textarea>

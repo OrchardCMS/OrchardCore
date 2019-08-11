@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Menu.Drivers
 {
     public class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
     {
@@ -23,12 +23,12 @@ namespace OrchardCore.Lists.Drivers
         public override IDisplayResult Display(LinkMenuItemPart part, BuildPartDisplayContext context)
         {
             return Combine(
-                Shape("LinkMenuItemPart_Admin", shape =>
+                Dynamic("LinkMenuItemPart_Admin", shape =>
                 {
                     shape.MenuItemPart = part;
                 })
                 .Location("Admin", "Content:10"),
-                Shape("LinkMenuItemPart_Thumbnail", shape =>
+                Dynamic("LinkMenuItemPart_Thumbnail", shape =>
                 {
                     shape.MenuItemPart = part;
                 })
@@ -38,7 +38,7 @@ namespace OrchardCore.Lists.Drivers
 
         public override IDisplayResult Edit(LinkMenuItemPart part)
         {
-            return Shape<LinkMenuItemPartEditViewModel>("LinkMenuItemPart_Edit", model =>
+            return Initialize<LinkMenuItemPartEditViewModel>("LinkMenuItemPart_Edit", model =>
             {
                 model.Name = part.Name;
                 model.Url = part.Url;

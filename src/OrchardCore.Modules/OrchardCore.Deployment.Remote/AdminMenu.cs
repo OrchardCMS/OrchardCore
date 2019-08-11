@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Remote
 {
@@ -13,15 +14,15 @@ namespace OrchardCore.Deployment.Remote
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Content"], content => content
+                .Add(T["Configuration"], content => content
                     .Add(T["Import/Export"], import => import
                         .Add(T["Remote Instances"], "5.1", remote => remote
                             .Action("Index", "RemoteInstance", new { area = "OrchardCore.Deployment.Remote" })
@@ -35,6 +36,8 @@ namespace OrchardCore.Deployment.Remote
                         )
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

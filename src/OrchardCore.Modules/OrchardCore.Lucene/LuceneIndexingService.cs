@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene
@@ -31,8 +32,8 @@ namespace OrchardCore.Lucene
         public LuceneIndexingService(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            LuceneIndexingState indexingState, 
-            LuceneIndexManager indexManager, 
+            LuceneIndexingState indexingState,
+            LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
             ILogger<LuceneIndexingService> logger)
@@ -56,7 +57,7 @@ namespace OrchardCore.Lucene
             var allIndices = new Dictionary<string, int>();
 
             // Find the lowest task id to process
-            int lastTaskId = int.MaxValue;
+            var lastTaskId = int.MaxValue;
             foreach (var indexName in _indexManager.List())
             {
                 var taskId = _indexingState.GetLastTaskId(indexName);
@@ -64,26 +65,26 @@ namespace OrchardCore.Lucene
                 allIndices.Add(indexName, taskId);
             }
 
-            if (!allIndices.Any())
+            if (allIndices.Count == 0)
             {
                 return;
             }
 
-            IndexingTask[] batch;
-
-            var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
+            var batch = Array.Empty<IndexingTask>();
 
             do
             {
                 // Create a scope for the content manager
-                using (var scope = shellContext.EnterServiceScope())
+                var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
+
+                await shellScope.UsingAsync(async scope =>
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
                     if (!batch.Any())
                     {
-                        break;
+                        return;
                     }
 
                     foreach (var task in batch)
@@ -104,7 +105,13 @@ namespace OrchardCore.Lucene
                         if (task.Type == IndexingTaskTypes.Update)
                         {
                             var contentItem = await contentManager.GetAsync(task.ContentItemId);
-                            var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
+
+                            if (contentItem == null)
+                            {
+                                continue;
+                            }
+
+                            var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
 
                             // Update the document from the index if its lastIndexId is smaller than the current task id. 
                             await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
@@ -119,7 +126,6 @@ namespace OrchardCore.Lucene
                         }
                     }
 
-
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
@@ -133,7 +139,7 @@ namespace OrchardCore.Lucene
 
                     _indexingState.Update();
 
-                } 
+                });
             } while (batch.Length == BatchSize);
         }
 
@@ -161,7 +167,13 @@ namespace OrchardCore.Lucene
         public async Task<LuceneSettings> GetLuceneSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<LuceneSettings>();
+
+            if (siteSettings.Has<LuceneSettings>())
+            {
+                return siteSettings.As<LuceneSettings>();
+            }
+
+            return null;
         }
     }
 }

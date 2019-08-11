@@ -17,7 +17,7 @@ namespace OrchardCore.Templates.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
         {
-            return Shape<ContentSettingsViewModel>("TemplateSettings", model =>
+            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
                 var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
                 var partName = contentTypePartDefinition.Name;

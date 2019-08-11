@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -26,11 +27,11 @@ namespace OrchardCore.Liquid.Services
             _serviceProvider = serviceProvider;
         }
 
-        public Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
+        public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var errors = Enumerable.Empty<string>();
@@ -50,7 +51,13 @@ namespace OrchardCore.Liquid.Services
                 return parsed;
             });
 
-            return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+            await context.ContextualizeAsync(_serviceProvider);
+            await result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+        }
+
+        public bool Validate(string template, out IEnumerable<string> errors)
+        {
+            return LiquidViewTemplate.TryParse(template, out _, out errors);
         }
     }
 }

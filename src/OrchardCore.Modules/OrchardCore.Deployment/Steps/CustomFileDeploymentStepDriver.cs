@@ -12,14 +12,14 @@ namespace OrchardCore.Deployment.Steps
         {
             return 
                 Combine(
-                    Shape("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    Shape("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                    View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(CustomFileDeploymentStep step)
         {
-            return Shape<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
+            return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
             {
                 model.FileContent = step.FileContent;
                 model.FileName = step.FileName;

@@ -1,4 +1,4 @@
-# Lists (OrchardCore.Lists)
+# Lists (`OrchardCore.Lists`)
 
 ## Theming
 
@@ -10,30 +10,44 @@ These shapes are available for theming when a `ListPart` is attached to a conten
 | ------| ------------ |----------------- | ---------- |
 | `ListPart` | `Detail`, `DetailAdmin` | `Content:10` | `ListPartViewModel` |
 
-### ListPartViewModel
+### `ListPartViewModel`
 
 The following properties are available on the `ListPartViewModel` class.
 
 | Property | Type | Description |
 | --------- | ---- |------------ |
-| `ListPart` | `ListPart` | The `ListPart` instance |
-| `ContentItems` | `IEnumerable<ContentItem>` | The content items the part is made of |
-| `ContainedContentTypeDefinitions` | IEnumerable<ContentTypeDefinition> | The content types the list accepts |
-| `Context` | `BuildPartDisplayContext` | The current display context |
-| `Pager` | `dynamic` | The pager for the list |
+| `ListPart` | `ListPart` | The `ListPart` instance. |
+| `ContentItems` | `IEnumerable<ContentItem>` | The content items the part is made of. |
+| `ContainedContentTypeDefinitions` | `IEnumerable<ContentTypeDefinition>` | The content types the list accepts. |
+| `Context` | `BuildPartDisplayContext` | The current display context. |
+| `Pager` | `dynamic` | The pager for the list. |
 
-### ListPart
+### `ListPart`
 
 The following properties are available on the `ListPart` class.
 
 | Name | Type | Description |
 | -----| ---- |------------ |
-| `Content` | The raw content of the part |
-| `ContentItem` | The content item containing this part |
+| `Content` | The raw content of the part. |
+| `ContentItem` | The content item containing this part. |
 
-## CREDITS
+### Template
 
-### Trumbowyg
-<https://github.com/Alex-D/Trumbowyg>  
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
-License: MIT
+The following example is used to render the items of a `ListPart` and customize the pager.
+For instance it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
+
+```liquid
+{% for item in Model.ContentItems %}
+    {{ item | shape_build_display: "Summary" | shape_render }}
+{% endfor %}
+
+{% assign previousText = "Newer Posts" | t %}
+{% assign nextText = "Older Posts" | t %}
+{% assign previousClass = "previous" | t %}
+{% assign nextClass = "next" | t %}
+
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
+    previous_class: previousClass, next_class: nextClass %}
+
+{{ Model.Pager | shape_render }}
+```

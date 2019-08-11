@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -12,13 +13,13 @@ namespace OrchardCore.Templates.Services
 {
     public class TemplatesShapeBindingResolver : IShapeBindingResolver
     {
-        private TemplatesDocument _templatesDocument;
+        private readonly TemplatesDocument _templatesDocument;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TemplatesShapeBindingResolver(
-            TemplatesManager templatesManager, 
+            TemplatesManager templatesManager,
             ILiquidTemplateManager liquidTemplateManager,
             PreviewTemplatesProvider previewTemplatesProvider,
             IHttpContextAccessor httpContextAccessor)
@@ -47,7 +48,7 @@ namespace OrchardCore.Templates.Services
                     return true;
                 }
             }
-           
+
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {
                 shapeBinding = BuildShapeBinding(shapeType, template);
@@ -71,8 +72,8 @@ namespace OrchardCore.Templates.Services
                 BindingAsync = async displayContext =>
                 {
                     var context = new TemplateContext();
-                    context.Contextualize(displayContext);
-                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, context);
+                    await context.ContextualizeAsync(displayContext);
+                    var htmlContent = await _liquidTemplateManager.RenderAsync(template.Content, HtmlEncoder.Default, context);
                     return new HtmlString(htmlContent);
                 }
             };

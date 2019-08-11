@@ -19,6 +19,11 @@ namespace OrchardCore.Features.Models
         public bool IsEnabled { get; set; }
 
         /// <summary>
+        /// Boolean value indicating if the feature is always enabled.
+        /// </summary>
+        public bool IsAlwaysEnabled { get; set; }
+
+        /// <summary>
         /// Boolean value indicating if the feature needs a data update / migration.
         /// </summary>
         public bool NeedsUpdate { get; set; }

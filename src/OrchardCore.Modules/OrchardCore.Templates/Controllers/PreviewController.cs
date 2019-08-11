@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
 
@@ -16,19 +17,22 @@ namespace OrchardCore.Templates.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
+        private readonly string _homeUrl;
 
         public PreviewController(
             IContentManager contentManager,
             IContentAliasManager contentAliasManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IAuthorizationService authorizationService,
-            ISiteService siteService)
+            ISiteService siteService,
+            ShellSettings shellSettings)
         {
             _contentManager = contentManager;
             _contentAliasManager = contentAliasManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
+            _homeUrl = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/') + '/';
         }
 
         public IActionResult Index()
@@ -54,14 +58,17 @@ namespace OrchardCore.Templates.Controllers
 
             var alias = Request.Form["Alias"].ToString();
 
-            string contentItemId;
-            if (string.IsNullOrEmpty(alias) || alias == "/")
+            string contentItemId = string.Empty;
+
+            if (string.IsNullOrEmpty(alias) || alias == _homeUrl)
             {
                 var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 contentItemId = homeRoute["contentItemId"]?.ToString();
             }
             else
             {
+                var index = alias.IndexOf(_homeUrl);
+                alias = (index < 0) ? alias : alias.Substring(_homeUrl.Length);
                 contentItemId = await _contentAliasManager.GetContentItemIdAsync("slug:" + alias);
             }
 

@@ -11,8 +11,6 @@ namespace OrchardCore.DisplayManagement.Extensions
     {
         private readonly IExtensionInfo _extensionInfo;
 
-        private readonly string _baseTheme;
-
         public ThemeExtensionInfo(IExtensionInfo extensionInfo)
         {
             _extensionInfo = extensionInfo;
@@ -20,8 +18,9 @@ namespace OrchardCore.DisplayManagement.Extensions
             var themeInfo = _extensionInfo.Manifest.ModuleInfo as ThemeAttribute;
             var baseTheme = themeInfo?.BaseTheme;
 
-            if (baseTheme != null && baseTheme.Length != 0) {
-                _baseTheme = baseTheme.Trim().ToString();
+            if (baseTheme != null && baseTheme.Length != 0)
+            {
+                BaseTheme = baseTheme.Trim().ToString();
             }
         }
 
@@ -31,14 +30,16 @@ namespace OrchardCore.DisplayManagement.Extensions
         public IEnumerable<IFeatureInfo> Features => _extensionInfo.Features;
         public bool Exists => _extensionInfo.Exists;
 
-        public string BaseTheme => _baseTheme;
+        public string BaseTheme { get; }
 
-        public bool HasBaseTheme() {
-            return !string.IsNullOrWhiteSpace(_baseTheme);
+        public bool HasBaseTheme()
+        {
+            return !string.IsNullOrWhiteSpace(BaseTheme);
         }
 
-        public bool IsBaseThemeFeature(string featureId) {
-            return HasBaseTheme() && featureId == _baseTheme;
+        public bool IsBaseThemeFeature(string featureId)
+        {
+            return HasBaseTheme() && featureId == BaseTheme;
         }
     }
 }

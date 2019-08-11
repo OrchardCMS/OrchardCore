@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache
 {
-    public static class CacheContextManagerExtensions
+    public static class CacheContextEntryExtensions
     {
         public static string GetContextHash(this IEnumerable<CacheContextEntry> entries)
         {

@@ -1,7 +1,5 @@
 # Custom Settings (OrchardCore.CustomSettings)
 
-## Usage
-
 Custom Settings allows a site administrator to create a customized set of properties that are global to the web sites. These settings are 
 edited in the standard Settings section and can be protected with specific permissions.
 
@@ -20,11 +18,44 @@ Once created, open the Setting menu item and each of these sections should appea
 
 Each Custom Settings sections gets a dedicated permission to allow specific users to edit them.
 
-To edit this permission open the Roles editor and go to the OrchardCore.CustomSettings Feature group.
+To edit this permission open the Roles editor and go to the `OrchardCore.CustomSettings` Feature group.
 
-### Templates
+## Usage
 
-The Custom Settings like other settings are available in the `{{ Site.Properties }}` object.
+### Liquid
+
+The Custom Settings (like other settings) are available in the `{{ Site.Properties }}` object.
 Each section is made available using its name. 
 
-For instance the `BodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.BodyPart }}`.
+For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings` would be accessible using `{{ Site.Properties.BlogSettings.HtmlBodyPart }}`.
+
+### C#
+
+Custom Settings are a ContentItem, and by accessing it as a `ContentItem` you can access its parts and metadata.
+
+!!! note
+    You'll need to register your `ContentPart`s with Dependency Injection as demonstrated in the [ContentTypes documentation](../../OrchardCore.Modules.CMS/OrchardCore.ContentTypes/README/).
+
+Here is an example of getting the `HtmlBodyPart` of a custom settings section named `BlogSettings`:
+
+!!! warning
+    These types may be modified in the CMS. It's important to make sure these types will not be modified outside of the development cycle when consuming them in code.
+
+```csharp
+public class MyController : Controller
+{
+    private readonly ISiteService _siteService;
+    public MyController(ISiteService siteService)
+    {
+        _siteService = siteService;
+    }
+    public async Task<IActionResult> Index()
+    {
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var blogSettings = siteSettings.As<ContentItem>("BlogSettings");
+        var blogHtml = blogSettings.As<HtmlBodyPart>();
+
+        return View();
+    }
+}
+```

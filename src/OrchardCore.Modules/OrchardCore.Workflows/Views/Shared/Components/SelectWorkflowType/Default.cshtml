@@ -1,0 +1,10 @@
+@model SelectWorkflowTypeViewModel
+
+<select name="@Model.HtmlName" class="form-control">
+    <option value="">@T["-"]</option>
+    @for (var i = 0; i < Model.WorkflowTypeSelections.Count; i++)
+    {
+        var item = Model.WorkflowTypeSelections[i];
+        <option value="@item.WorkflowType.WorkflowTypeId" @if (item.IsSelected) { <text> selected="selected" </text> }>@item.WorkflowType.Name</option>
+    }
+</select>

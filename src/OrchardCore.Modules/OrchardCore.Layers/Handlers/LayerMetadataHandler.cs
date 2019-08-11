@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -44,21 +43,6 @@ namespace OrchardCore.Layers.Handlers
             {
                 _signal.SignalToken(LayerChangeToken);
             }
-        }
-
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
-        {
-            context.For<ContentItemMetadata>(metadata =>
-            {
-                var layerMetadata = context.ContentItem.As<LayerMetadata>();
-
-                if (layerMetadata != null && !string.IsNullOrEmpty(layerMetadata.Title))
-                {
-                    metadata.DisplayText = layerMetadata.Title;
-                }
-            });
-
-            return Task.CompletedTask;
         }
     }
 }

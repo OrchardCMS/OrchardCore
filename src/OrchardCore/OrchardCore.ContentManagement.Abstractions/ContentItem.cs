@@ -70,5 +70,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public string Author { get; set; }
 
+        /// <summary>
+        /// The text representing this content item.
+        /// </summary>
+        public string DisplayText { get; set; }
+
+        public override string ToString()
+        {
+            return string.IsNullOrWhiteSpace(DisplayText) ? $"{ContentType} ({ContentItemId})" : DisplayText;
+        }
     }
 }
