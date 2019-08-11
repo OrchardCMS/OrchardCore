@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement
 {
     public class ContentDefinitionManager : IContentDefinitionManager
     {
-        private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
+        private const string CacheKey = nameof(ContentDefinitionManager);
 
         private readonly ISignal _signal;
         private ContentDefinitionCache _cache;
@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
 
-        public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
+        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
 
         public ContentDefinitionManager(
             ISignal signal,
@@ -39,12 +39,13 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
         {
-            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition) || (_cache?.ChangeToken.HasChanged ?? true))
+            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition))
             {
                 typeDefinition = await BuildAsync((await GetContentDefinitionRecordAsync())
                     .ContentTypeDefinitionRecords
                     .FirstOrDefault(type => type.Name == name));
 
+                // Don't cache a value based on a stale definition.
                 if (!ScopedCache.ChangeToken.HasChanged)
                 {
                     _typeDefinitions[name] = typeDefinition;
@@ -56,12 +57,13 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentPartDefinition> GetPartDefinitionAsync(string name)
         {
-            if (!_partDefinitions.TryGetValue(name, out var partDefinition) || (_cache?.ChangeToken.HasChanged ?? true))
+            if (!_partDefinitions.TryGetValue(name, out var partDefinition))
             {
                 partDefinition = Build((await GetContentDefinitionRecordAsync())
                     .ContentPartDefinitionRecords
                     .FirstOrDefault(part => part.Name == name));
 
+                // Don't cache a value based on a stale definition.
                 if (!ScopedCache.ChangeToken.HasChanged)
                 {
                     _partDefinitions[name] = partDefinition;
@@ -323,10 +325,6 @@ namespace OrchardCore.ContentManagement
                 var changeToken = ChangeToken;
                 var record = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-                // Release cached values
-                _typeDefinitions.Clear();
-                _partDefinitions.Clear();
-
                 _cache = new ContentDefinitionCache()
                 {
                     ChangeToken = changeToken,
@@ -347,7 +345,14 @@ namespace OrchardCore.ContentManagement
             scopedRecord.Serial++;
 
             await _contentDefinitionStore.SaveContentDefinitionAsync(scopedRecord);
-            _signal.SignalToken(TypeHashCacheKey);
+
+            // Cache invalidation after committing the session.
+            _signal.DeferredSignalToken(CacheKey);
+
+            // In case of multiple scoped mutations, types / parts may need to be
+            // rebuilt while in the same scope, so we release cached results here.
+            _typeDefinitions.Clear();
+            _partDefinitions.Clear();
         }
     }
 }
