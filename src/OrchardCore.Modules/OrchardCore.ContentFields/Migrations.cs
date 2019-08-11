@@ -43,10 +43,6 @@ namespace OrchardCore.ContentFields
                 .CreateIndex("IDX_TextFieldIndex_Text", "Text")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
-                .CreateIndex("IDX_TextFieldIndex_BigText", "BigText")
-            );
-
             SchemaBuilder.CreateMapIndexTable(nameof(BooleanFieldIndex), table => table
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(255))

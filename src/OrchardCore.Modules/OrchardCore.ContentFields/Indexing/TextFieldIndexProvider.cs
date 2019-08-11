@@ -69,30 +69,25 @@ namespace OrchardCore.ContentFields.Indexing
 
                         if (!String.IsNullOrEmpty(field.Text))
                         {
-                            if (field.Text.Length > 4000)
+                            results.Add(new TextFieldIndex
                             {
-                                results.Add(new TextFieldIndex
-                                {
-                                    ContentType = contentItem.ContentType,
-                                    ContentPart = fieldDefinition.PartDefinition.Name,
-                                    ContentField = fieldDefinition.Name,
-                                    Published = contentItem.Published,
-                                    Latest = contentItem.Latest,
-                                    BigText = field.Text
-                                });
-                            }
-                            else
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                Published = contentItem.Published,
+                                Latest = contentItem.Latest,
+                                Text = field.Text.Substring(0, 4000)
+                            });
+
+                            results.Add(new TextFieldIndex
                             {
-                                results.Add(new TextFieldIndex
-                                {
-                                    ContentType = contentItem.ContentType,
-                                    ContentPart = fieldDefinition.PartDefinition.Name,
-                                    ContentField = fieldDefinition.Name,
-                                    Published = contentItem.Published,
-                                    Latest = contentItem.Latest,
-                                    Text = field.Text
-                                });
-                            }
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                Published = contentItem.Published,
+                                Latest = contentItem.Latest,
+                                BigText = field.Text
+                            });
                         }
                     }
 
