@@ -10,7 +10,7 @@ Attach this part to a content type to manage multiple localized versions of a co
 
 ## ContentCulturePicker Feature
 
-The ContentCulturePicker module helps you manage cultures for the frontend.
+The ContentCulturePicker feature helps you manage cultures for the frontend.
 
 Enabling this module results in
 
@@ -18,12 +18,28 @@ Enabling this module results in
     This Provider will set the thread culture based on the ContentItem that matches the current url.
 -   3 shapes (described below) are available to the frontend theme.
 
-The ContentculturePicker selects the url to redirect to like:
+The ContentculturePicker selects the url to redirect using the following rules
 
--   If the `ContentItem` has a related ContentItem for the selected culture, it redirects to that Item
--   OR If a HomePage is specified, finds the ContentItem that is set as the Homepage and attempt to find a Localization of this `ContentItem` for the current culture.
+-   If the `ContentItem` has a related ContentItem for the selected culture, it redirects to that Item.
+-   OR If a HomePage is specified, attempts to find a Localization of the Homepage `ContentItem` for the current culture.
+-   OR redirects to the current page.
 
--   OR a `NotFound()` page
+### Setting the cookie
+
+To disable setting the Culture cookie when switching cultures, a setting exists under the
+`Configuration/Settings/ContentCulturePicker` admin menu.
+
+#### Recipe Step
+The cookie can be set during recipes using the settings step. Here is a sample step:
+
+``` json
+{
+  "name": "settings",
+  "ContentCulturePickerSettings": {
+    "SetCookie": true
+  },
+},
+```
 
 ### Shapes
 

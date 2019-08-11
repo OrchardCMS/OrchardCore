@@ -9230,7 +9230,7 @@ html[dir], [dir] body {
 
 .ta-navbar-top {
   height: 49px;
-  z-index: 1020; }
+  z-index: 1000; }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #DEDEDE;
@@ -9597,7 +9597,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     margin: 0px auto; }
 
 .left-sidebar-compact #ta-left-sidebar {
-  z-index: 1020;
+  z-index: 1000;
   position: fixed;
   top: 49px;
   bottom: 0;
