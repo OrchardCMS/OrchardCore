@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -22,6 +21,7 @@ namespace OrchardCore.ContentManagement
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+        private IChangeToken _changeToken;
 
         public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
 
@@ -40,24 +40,38 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            return _typeDefinitions.GetOrAdd(name, n =>
+            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition))
             {
-                var contentTypeDefinitionRecord = GetContentDefinitionRecord()
+                typeDefinition = Build(GetContentDefinitionRecord()
                     .ContentTypeDefinitionRecords
-                    .FirstOrDefault(x => x.Name == name);
+                    .FirstOrDefault(type => type.Name == name));
 
-                return Build(contentTypeDefinitionRecord);
-            });
+                // Don't cache a value based on a stale definition.
+                if (!_changeToken.HasChanged)
+                {
+                    _typeDefinitions[name] = typeDefinition;
+                }
+            }
+
+            return typeDefinition;
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
-            return _partDefinitions.GetOrAdd(name, n =>
+            if (!_partDefinitions.TryGetValue(name, out var partDefinition))
             {
-                return Build(GetContentDefinitionRecord()
-                .ContentPartDefinitionRecords
-                .FirstOrDefault(x => x.Name == name));
-            });
+                partDefinition = Build(GetContentDefinitionRecord()
+                    .ContentPartDefinitionRecords
+                    .FirstOrDefault(part => part.Name == name));
+
+                // Don't cache a value based on a stale definition.
+                if (!_changeToken.HasChanged)
+                {
+                    _partDefinitions[name] = partDefinition;
+                }
+            }
+
+            return partDefinition;
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
@@ -171,9 +185,6 @@ namespace OrchardCore.ContentManagement
                 }
                 Apply(part, typePartRecord);
             }
-
-            // Persist changes
-            UpdateContentDefinitionRecord();
         }
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
@@ -290,6 +301,7 @@ namespace OrchardCore.ContentManagement
                 return _contentDefinitionRecord;
             }
 
+            _changeToken = ChangeToken;
             return _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
         }
 
@@ -298,17 +310,13 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionRecord.Serial++;
             _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
 
-            // Invalidates caches after the session is committed.
-            ShellScope.RegisterBeforeDispose(scope =>
-            {
-                _signal.SignalToken(TypeHashCacheKey);
+            // Cache invalidation after committing the session.
+            _signal.DeferredSignalToken(TypeHashCacheKey);
 
-                // Release cached values
-                _typeDefinitions.Clear();
-                _partDefinitions.Clear();
-
-                return Task.CompletedTask;
-            });
+            // In case of multiple scoped updates, types and parts may need to be rebuilt while
+            // in the same scope, so we don't defer the release of the cached building results.
+            _typeDefinitions.Clear();
+            _partDefinitions.Clear();
         }
     }
 }

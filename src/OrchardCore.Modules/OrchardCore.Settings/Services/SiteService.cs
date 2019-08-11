@@ -114,7 +114,7 @@ namespace OrchardCore.Settings.Services
             // Persists new data.
             Session.Save(existing);
 
-            // Invalidates the cache after the session is committed.
+            // Cache invalidation after committing the session.
             _signal.DeferredSignalToken(SiteCacheKey);
 
             return Task.CompletedTask;
