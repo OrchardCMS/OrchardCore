@@ -13,8 +13,8 @@ The following configuration values are used by default and can be customized:
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
       "BasePath": "some/base/path", 
-      // Public or private access to Azure Blob Container.
-      "AccessPermissions": "Public",
+      // Access permissions for Azure Blob Storage. Valid options: Off, Container, Blob. Defaults to Blob.
+      "AccessPermissions": "Blob",
       //"VersionHashCacheExpiryTime": 120 // If using Cache Busting, the time to expire the Blob ContentMD5 File Version Hash from memory cache, in minutes, defaults to 2 hours.
     
     },
