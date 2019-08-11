@@ -15,9 +15,12 @@ using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.ContentLocalization
@@ -45,8 +48,9 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
-
+            services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
