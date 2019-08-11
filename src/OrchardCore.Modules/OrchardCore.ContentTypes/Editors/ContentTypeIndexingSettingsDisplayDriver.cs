@@ -14,8 +14,8 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 var settings = contentTypeDefinition.Settings.ToObject<ContentTypeIndexingSettings>();
 
-                model.IsFullText = settings.IsFullText;
-                model.FullText = settings.FullText;
+                model.IsFullTextLiquid = settings.IsFullText;
+                model.FullTextLiquid = settings.FullText;
             }).Location("Content:6");
         }
 
@@ -25,8 +25,8 @@ namespace OrchardCore.ContentTypes.Editors
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Builder.IsFullText(model.IsFullText);
-                context.Builder.FullText(model.FullText);
+                context.Builder.IsFullText(model.IsFullTextLiquid);
+                context.Builder.FullText(model.FullTextLiquid);
             }
 
             return Edit(contentTypeDefinition, context.Updater);

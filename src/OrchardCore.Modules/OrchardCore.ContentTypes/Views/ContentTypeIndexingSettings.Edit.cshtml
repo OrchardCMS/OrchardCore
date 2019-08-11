@@ -12,23 +12,23 @@
 <h3 class="mb-3">@T["Indexing"]</h3>
 
 <div class="form-group custom-control custom-checkbox">
-    <input type="checkbox" class="custom-control-input" asp-for="IsFullText" data-toggle="collapse" data-target="#fulltext-template" checked="@Model.IsFullText" />
-    <label class="custom-control-label" asp-for="IsFullText">@T["FullText"]</label>
-    <span class="hint">— @T["Determines if this content type can use a customizable FullText index field."]</span>
+    <input type="checkbox" class="custom-control-input" asp-for="IsFullTextLiquid" data-toggle="collapse" data-target="#fulltext-template" checked="@Model.IsFullTextLiquid" />
+    <label class="custom-control-label" asp-for="IsFullTextLiquid">@T["Full-text (Liquid)"]</label>
+    <span class="hint">— @T["Determines if this content type can use a customizable full-text index field by using Liquid."]</span>
 </div>
 
 <fieldset class="form-group row collapse" id="fulltext-template">
     <div class="col">
-        <label asp-for="FullText">@T["Liquid pattern"]</label>
-        <textarea asp-for="FullText" type="text" class="form-control"></textarea>
-        <span class="hint">@T["The Liquid template used for a FullText search index field accessible in queries with: <code>Content.ContentItem.FullText</code>. Use the <code>Model</code> helper to reference the current element."]</span>
+        <label asp-for="FullTextLiquid">@T["Liquid pattern"]</label>
+        <textarea asp-for="FullTextLiquid" type="text" class="form-control"></textarea>
+        <span class="hint">@T["The Liquid template used for a full-text search index field accessible in queries with: <code>Content.ContentItem.FullText</code>. Use the <code>Model</code> helper to reference the current element."]</span>
     </div>
 </fieldset>
 
 <script at="Foot" depends-on="jquery">
     //<![CDATA[
     $(function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullText)'), {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullTextLiquid)'), {
             autoRefresh: true,
             lineNumbers: true,
             styleActiveLine: true,
