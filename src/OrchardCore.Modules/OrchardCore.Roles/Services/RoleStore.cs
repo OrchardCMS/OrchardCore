@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
@@ -66,7 +67,7 @@ namespace OrchardCore.Roles.Services
                     document = new RolesDocument();
 
                     _session.Save(document);
-                    _signal.DeferredSignalToken(Key);
+                    ShellScope.AddDeferredSignal(Key);
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace OrchardCore.Roles.Services
             roles.Serial++;
 
             _session.Save(roles);
-            _signal.DeferredSignalToken(Key);
+            ShellScope.AddDeferredSignal(Key);
         }
 
         #region IRoleStore<IRole>

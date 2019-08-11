@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Templates.Models;
 using YesSql;
 
@@ -39,7 +40,7 @@ namespace OrchardCore.Templates.Services
                     document = new TemplatesDocument();
 
                     _session.Save(document);
-                    _signal.DeferredSignalToken(CacheKey);
+                    ShellScope.AddDeferredSignal(CacheKey);
                 }
                 else
                 {
@@ -56,7 +57,7 @@ namespace OrchardCore.Templates.Services
             document.Templates = document.Templates.Remove(name);
 
             _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            ShellScope.AddDeferredSignal(CacheKey);
         }
 
         public async Task UpdateTemplateAsync(string name, Template template)
@@ -65,7 +66,7 @@ namespace OrchardCore.Templates.Services
             document.Templates = document.Templates.SetItem(name, template);
 
             _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            ShellScope.AddDeferredSignal(CacheKey);
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.BackgroundTasks.Services
@@ -40,7 +41,7 @@ namespace OrchardCore.BackgroundTasks.Services
                     document = new BackgroundTaskDocument();
 
                     _session.Save(document);
-                    _signal.DeferredSignalToken(CacheKey);
+                    ShellScope.AddDeferredSignal(CacheKey);
                 }
                 else
                 {
@@ -57,7 +58,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings = document.Settings.Remove(name);
 
             _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            ShellScope.AddDeferredSignal(CacheKey);
         }
 
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
@@ -66,7 +67,7 @@ namespace OrchardCore.BackgroundTasks.Services
             document.Settings = document.Settings.SetItem(name, settings);
 
             _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            ShellScope.AddDeferredSignal(CacheKey);
         }
     }
 }

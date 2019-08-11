@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -283,7 +284,7 @@ namespace OrchardCore.ContentManagement
             int serial;
             if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
             {
-                var changeToken = _signal.GetToken(TypeHashCacheKey);
+                var changeToken = ChangeToken;
 
                 serial = _memoryCache.Set(
                     TypeHashCacheKey,
@@ -311,7 +312,7 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
 
             // Cache invalidation after committing the session.
-            _signal.DeferredSignalToken(TypeHashCacheKey);
+            ShellScope.AddDeferredSignal(TypeHashCacheKey);
 
             // In case of multiple scoped updates, types and parts may need to be rebuilt while
             // in the same scope, so we don't defer the release of the cached building results.

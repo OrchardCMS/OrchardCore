@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Handlers
@@ -10,11 +10,8 @@ namespace OrchardCore.Layers.Handlers
     {
         public const string LayerChangeToken = "OrchardCore.Layers:LayerMetadata";
 
-        private readonly ISignal _signal;
-
-        public LayerMetadataHandler(ISignal signal)
+        public LayerMetadataHandler()
         {
-            _signal = signal;
         }
 
         public override Task PublishedAsync(PublishContentContext context)
@@ -41,7 +38,7 @@ namespace OrchardCore.Layers.Handlers
 
             if (layerMetadata != null)
             {
-                _signal.DeferredSignalToken(LayerChangeToken);
+                ShellScope.AddDeferredSignal(LayerChangeToken);
             }
         }
     }
