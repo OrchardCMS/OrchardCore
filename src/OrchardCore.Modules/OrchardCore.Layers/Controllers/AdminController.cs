@@ -11,7 +11,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
@@ -29,9 +29,11 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
+        private readonly ISignal _signal;
         private readonly INotifier _notifier;
 
         public AdminController(
+            ISignal signal,
             IAuthorizationService authorizationService,
             ISession session,
             ILayerService layerService,
@@ -43,6 +45,7 @@ namespace OrchardCore.Layers.Controllers
             INotifier notifier
             )
         {
+            _signal = signal;
             _authorizationService = authorizationService;
             _session = session;
             _layerService = layerService;
@@ -284,7 +287,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             // Clear the cache after the session is committed.
-            ShellScope.AddDeferredSignal(LayerMetadataHandler.LayerChangeToken);
+            _signal.DeferredSignalToken(LayerMetadataHandler.LayerChangeToken);
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

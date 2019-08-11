@@ -50,7 +50,7 @@ namespace OrchardCore.AdminMenu
             }
 
             Session.Save(adminMenuList);
-            ShellScope.AddDeferredSignal(AdminMenuCacheKey);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
         }
 
         public async Task<Models.AdminMenu> GetByIdAsync(string id)
@@ -71,7 +71,7 @@ namespace OrchardCore.AdminMenu
             var removed = length - adminMenuList.AdminMenu.Length;
 
             Session.Save(adminMenuList);
-            ShellScope.AddDeferredSignal(AdminMenuCacheKey);
+            _signal.DeferredSignalToken(AdminMenuCacheKey);
 
             return removed;
         }
@@ -92,7 +92,7 @@ namespace OrchardCore.AdminMenu
                     treeList = new AdminMenuList();
 
                     session.Save(treeList);
-                    ShellScope.AddDeferredSignal(AdminMenuCacheKey);
+                    _signal.DeferredSignalToken(AdminMenuCacheKey);
                 }
                 else
                 {

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Queries.Services
@@ -43,7 +42,7 @@ namespace OrchardCore.Queries.Services
                 .ToImmutableDictionary(StringComparer.OrdinalIgnoreCase);
 
             _session.Save(existing);
-            ShellScope.AddDeferredSignal(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -71,7 +70,7 @@ namespace OrchardCore.Queries.Services
             existing.Queries = existing.Queries.Remove(name).SetItem(query.Name, query);
 
             _session.Save(existing);
-            ShellScope.AddDeferredSignal(QueriesDocumentCacheKey);
+            _signal.DeferredSignalToken(QueriesDocumentCacheKey);
 
             return;
         }
@@ -90,7 +89,7 @@ namespace OrchardCore.Queries.Services
                     queries = new QueriesDocument();
 
                     _session.Save(queries);
-                    ShellScope.AddDeferredSignal(QueriesDocumentCacheKey);
+                    _signal.DeferredSignalToken(QueriesDocumentCacheKey);
                 }
                 else
                 {

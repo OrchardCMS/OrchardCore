@@ -74,7 +74,7 @@ namespace OrchardCore.Settings.Services
                     Session.Save(site);
 
                     // Invalidates the cache after the session is committed.
-                    ShellScope.AddDeferredSignal(SiteCacheKey);
+                    _signal.DeferredSignalToken(SiteCacheKey);
                 }
                 else
                 {
@@ -115,7 +115,7 @@ namespace OrchardCore.Settings.Services
             Session.Save(existing);
 
             // Cache invalidation after committing the session.
-            ShellScope.AddDeferredSignal(SiteCacheKey);
+            _signal.DeferredSignalToken(SiteCacheKey);
 
             return Task.CompletedTask;
         }

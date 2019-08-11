@@ -67,7 +67,7 @@ namespace OrchardCore.Roles.Services
                     document = new RolesDocument();
 
                     _session.Save(document);
-                    ShellScope.AddDeferredSignal(Key);
+                    _signal.DeferredSignalToken(Key);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace OrchardCore.Roles.Services
             roles.Serial++;
 
             _session.Save(roles);
-            ShellScope.AddDeferredSignal(Key);
+            _signal.DeferredSignalToken(Key);
         }
 
         #region IRoleStore<IRole>

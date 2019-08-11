@@ -179,7 +179,7 @@ namespace OrchardCore.Environment.Shell.Scope
         private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Add(callback);
 
         /// <summary>
-        /// Adds a Signal (if not already adedd) to be sent just after 'BeforeDisposeAsync()'.
+        /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
         /// </summary>
         private void DeferredSignal(string key) => _deferredSignals.Add(key);
 
@@ -194,7 +194,7 @@ namespace OrchardCore.Environment.Shell.Scope
         public static void RegisterBeforeDispose(Func<ShellScope, Task> callback) => Current?.BeforeDispose(callback);
 
         /// <summary>
-        /// Adds a Signal to be sent just before the current shell scope will be disposed.
+        /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
         /// </summary>
         public static void AddDeferredSignal(string key) => Current?.DeferredSignal(key);
 

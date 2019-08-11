@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
@@ -312,10 +311,10 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
 
             // Cache invalidation after committing the session.
-            ShellScope.AddDeferredSignal(TypeHashCacheKey);
+            _signal.DeferredSignalToken(TypeHashCacheKey);
 
             // In case of multiple scoped updates, types and parts may need to be rebuilt while
-            // in the same scope, so we don't defer the release of the cached building results.
+            // in the same scope, so we don't defer the clearing of the related cached results.
             _typeDefinitions.Clear();
             _partDefinitions.Clear();
         }

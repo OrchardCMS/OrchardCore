@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using YesSql;
@@ -46,7 +45,7 @@ namespace OrchardCore.Layers.Services
                     layers = new LayersDocument();
 
                     _session.Save(layers);
-                    ShellScope.AddDeferredSignal(LayersCacheKey);
+                    _signal.DeferredSignalToken(LayersCacheKey);
                 }
                 else
                 {
@@ -84,7 +83,7 @@ namespace OrchardCore.Layers.Services
             existing.Layers = layers.Layers;
 
             _session.Save(existing);
-            ShellScope.AddDeferredSignal(LayersCacheKey);
+            _signal.DeferredSignalToken(LayersCacheKey);
         }
     }
 }
