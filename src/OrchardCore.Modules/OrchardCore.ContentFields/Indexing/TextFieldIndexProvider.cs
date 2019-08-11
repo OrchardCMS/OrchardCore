@@ -76,7 +76,7 @@ namespace OrchardCore.ContentFields.Indexing
                                 ContentField = fieldDefinition.Name,
                                 Published = contentItem.Published,
                                 Latest = contentItem.Latest,
-                                Text = field.Text.Substring(0, 4000)
+                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000))
                             });
 
                             results.Add(new TextFieldIndex
