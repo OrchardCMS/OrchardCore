@@ -20,8 +20,8 @@ namespace OrchardCore.FileStorage.AzureBlob
         public string BasePath { get; set; }
 
         /// <summary>
-        /// Configures the public or private access permissions to the container, defaults to Public Blob.
+        /// The access permissions for Azure Blob Storage. Valid options: Off, Container, Blob. Defaults to Blob.
         /// </summary>
-        public BlobContainerPublicAccessType AccessPermissions { get; set; } = BlobContainerPublicAccessType.Blob;
+        public BlobContainerPublicAccessType PublicAccessType { get; set; } = BlobContainerPublicAccessType.Blob;
     }
 }

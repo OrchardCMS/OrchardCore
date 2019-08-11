@@ -54,7 +54,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 {
                     await _blobContainer.CreateIfNotExistsAsync();
                     await CreateBasePathIfNotExistsAsync();
-                    await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = _options.AccessPermissions });
+                    await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = _options.PublicAccessType });
                 }
                 catch (Exception ex)
                 {
