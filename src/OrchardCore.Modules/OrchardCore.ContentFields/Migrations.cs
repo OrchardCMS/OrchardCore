@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields
                 .Column<string>("Text", column => column.Nullable().WithLength(4000))
                 .Column<string>("BigText", column => column.Nullable().Unlimited())
             );
-
+             
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentType", "ContentType")
             );
