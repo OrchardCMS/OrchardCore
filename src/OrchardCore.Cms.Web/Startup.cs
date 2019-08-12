@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Cms.Web
 {
@@ -8,6 +9,10 @@ namespace OrchardCore.Cms.Web
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<LoggerFilterOptions>(
+                options => options.CaptureScopes = false
+            );
+
             services.AddOrchardCms();
         }
 
