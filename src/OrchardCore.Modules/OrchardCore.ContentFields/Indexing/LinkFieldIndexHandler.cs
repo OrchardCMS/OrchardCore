@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
-                if (field.Url != null && field.Text != null)
+                if (field.Url != null || field.Text != null)
                 {
                     context.DocumentIndex.Set(key, field.Url, options);
                     context.DocumentIndex.Set(key, field.Text, options);
