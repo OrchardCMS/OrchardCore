@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Indexing;
 
@@ -12,8 +12,15 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, field.Url, options);
-                context.DocumentIndex.Set(key, field.Text, options);
+                if (field.Url != null && field.Text != null)
+                {
+                    context.DocumentIndex.Set(key, field.Url, options);
+                    context.DocumentIndex.Set(key, field.Text, options);
+                }
+                else
+                {
+                    context.DocumentIndex.Set(key, "NULL", options);
+                }
             }
 
             return Task.CompletedTask;

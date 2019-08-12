@@ -19,7 +19,14 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, indexedValue, options);
+                if (indexedValue != null)
+                {
+                    context.DocumentIndex.Set(key, indexedValue, options);
+                }
+                else
+                {
+                    context.DocumentIndex.Set(key, "NULL", options);
+                }
             }
 
             return Task.CompletedTask;

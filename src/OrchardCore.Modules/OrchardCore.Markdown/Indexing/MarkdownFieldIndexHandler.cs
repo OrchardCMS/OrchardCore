@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Markdown.Fields;
 
@@ -12,7 +12,7 @@ namespace OrchardCore.Markdown.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, field.Markdown, options);
+                context.DocumentIndex.Set(key, field.Markdown ?? "NULL", options);
             }
 
             return Task.CompletedTask;
