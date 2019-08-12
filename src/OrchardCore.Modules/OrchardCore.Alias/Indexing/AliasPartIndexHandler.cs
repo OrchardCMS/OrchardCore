@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Alias.Models;
 using OrchardCore.Indexing;
 
@@ -12,7 +12,7 @@ namespace OrchardCore.Alias.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Alias, options);
+                context.DocumentIndex.Set(key, part.Alias ?? "NULL", options);
             }
 
             return Task.CompletedTask;

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Model;
 
@@ -15,7 +15,7 @@ namespace OrchardCore.Liquid.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Liquid, options);
+                context.DocumentIndex.Set(key, part.Liquid ?? "NULL", options);
             }
 
             return Task.CompletedTask;

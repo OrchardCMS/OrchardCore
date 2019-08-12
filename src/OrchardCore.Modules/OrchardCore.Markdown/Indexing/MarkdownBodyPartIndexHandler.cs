@@ -15,7 +15,7 @@ namespace OrchardCore.Markdown.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Markdown, options);
+                context.DocumentIndex.Set(key, part.Markdown ?? "NULL", options);
             }
 
             return Task.CompletedTask;

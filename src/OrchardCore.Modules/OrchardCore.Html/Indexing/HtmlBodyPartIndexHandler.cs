@@ -15,7 +15,7 @@ namespace OrchardCore.Html.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Html, options);
+                context.DocumentIndex.Set(key, part.Html ?? "NULL", options);
             }
 
             return Task.CompletedTask;

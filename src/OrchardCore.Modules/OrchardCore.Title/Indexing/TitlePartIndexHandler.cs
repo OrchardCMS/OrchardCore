@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Title.Model;
 
@@ -14,7 +14,7 @@ namespace OrchardCore.Title.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Title, options);
+                context.DocumentIndex.Set(key, part.Title ?? "NULL", options);
             }
 
             return Task.CompletedTask;

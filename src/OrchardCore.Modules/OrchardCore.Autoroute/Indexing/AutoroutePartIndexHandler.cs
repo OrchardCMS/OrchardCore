@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Autoroute.Model;
 using OrchardCore.Indexing;
 
@@ -15,7 +15,7 @@ namespace OrchardCore.Autoroute.Indexing
 
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, part.Path, options);
+                context.DocumentIndex.Set(key, part.Path ?? "NULL", options);
             }
 
             return Task.CompletedTask;

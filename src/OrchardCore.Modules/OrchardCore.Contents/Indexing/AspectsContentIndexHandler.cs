@@ -18,26 +18,20 @@ namespace OrchardCore.Contents.Indexing
         {
             var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
-            if (body != null)
-            {
-                context.DocumentIndex.Set(
-                    IndexingConstants.BodyAspectBodyKey,
-                    body.Body,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
-            }
+            context.DocumentIndex.Set(
+                IndexingConstants.BodyAspectBodyKey,
+                body.Body.ToString() ?? "NULL",
+                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-            if (context.ContentItem.DisplayText != null)
-            {
-                context.DocumentIndex.Set(
-                    IndexingConstants.DisplayTextAnalyzedKey,
-                    context.ContentItem.DisplayText,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextAnalyzedKey,
+                context.ContentItem.DisplayText ?? "NULL",
+                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Set(
-                    IndexingConstants.DisplayTextKey,
-                    context.ContentItem.DisplayText,
-                    DocumentIndexOptions.Store);
-            }
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextKey,
+                context.ContentItem.DisplayText ?? "NULL",
+                DocumentIndexOptions.Store);
         }
     }
 }
