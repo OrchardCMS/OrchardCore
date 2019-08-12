@@ -50,7 +50,7 @@ namespace OrchardCore.Taxonomies.Indexing
                 {
                     foreach (var contentItem in inheritedContentItems)
                     {
-                        context.DocumentIndex.Set(key + ".Inherited", contentItem.ContentItemId ?? "NULL", options);
+                        context.DocumentIndex.Set(key + ".Inherited", contentItem.ContentItemId, options);
                     }
                 }
                 else {
