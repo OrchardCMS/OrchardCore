@@ -114,7 +114,7 @@ namespace OrchardCore.Media.Azure.Middleware
             }
             catch (OperationCanceledException ex)
             {
-                Logger.LogInformation(ex, "Cache transmission operation cancelled for request path {0}", _subPath);
+                Logger.LogInformation(ex, "Cache transmission operation cancelled for request path {Path}", _subPath);
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
                 // However, if it was cancelled for any other reason we need to prevent empty responses.
                 _context.Abort();

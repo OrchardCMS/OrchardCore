@@ -96,7 +96,7 @@ namespace OrchardCore.Media.Azure.Middleware
             var validatePath = context.Request.Path.StartsWithSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
             if (!validatePath)
             {
-                Logger.LogDebug("Request path {0} does not match the assets request path {1}", subPath, _assetsRequestPath);
+                Logger.LogDebug("Request path {Path} does not match the assets request path {RequestPath}", subPath, _assetsRequestPath);
                 await _next(context);
                 return;
             }
@@ -105,7 +105,7 @@ namespace OrchardCore.Media.Azure.Middleware
             var fileExtension = GetExtension(subPath);
             if (!_allowedFileExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
             {
-                Logger.LogDebug("File extension not supported for request path {0}", subPath);
+                Logger.LogDebug("File extension not supported for request path {Path}", subPath);
                 await _next(context);
                 return;
             }
@@ -122,7 +122,7 @@ namespace OrchardCore.Media.Azure.Middleware
             if (await mediaProviderFileContext.LookupFileInfo())
             {
                 // If file exists in cache try to serve it.
-                Logger.LogDebug("Request path {0} found in cache with key {1}", subPath, cacheKey);
+                Logger.LogDebug("Request path {Path} found in cache with key {Cachekey}", subPath, cacheKey);
                 await mediaProviderFileContext.ServeFile(context, _next);
                 return;
             }
@@ -132,7 +132,7 @@ namespace OrchardCore.Media.Azure.Middleware
             if (provider?.IsValidRequest(context) == true)
             {
                 // Pass to ImageSharp middleware.
-                Logger.LogDebug("Request path {0} not found in image cache with key {1}, is valid for resizing, passing to ImageSharp middleware", subPath, cacheKey);
+                Logger.LogDebug("Request path {Path} not found in image cache with key {CacheKey}, is valid for resizing, passing to ImageSharp middleware", subPath, cacheKey);
                 await _next(context);
                 return;
             }
@@ -143,7 +143,7 @@ namespace OrchardCore.Media.Azure.Middleware
             if (await mediaFileStoreContext.LookupFileStoreInfo())
             {
                 // If file exists in file store try to serve it.
-                Logger.LogDebug("Request path {0} found in file store, serving and caching with key {1}", subPath, cacheKey);
+                Logger.LogDebug("Request path {Path} found in file store, serving and caching with key {CacheKey}", subPath, cacheKey);
                 await mediaFileStoreContext.ServeFile(context, _next);
                 return;
             }

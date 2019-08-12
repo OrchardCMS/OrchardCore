@@ -5,8 +5,4 @@
     <RootNamespace>OrchardCore.FileStorage</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http" />
-  </ItemGroup>
-
 </Project>

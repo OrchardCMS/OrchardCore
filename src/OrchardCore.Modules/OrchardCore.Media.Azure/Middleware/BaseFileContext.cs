@@ -177,7 +177,7 @@ namespace OrchardCore.Media.Azure.Middleware
         {
             ApplyResponseHeaders(statusCode);
 
-            Logger.LogDebug("Sending status code {0} for request path {1}", statusCode, _subPath);
+            Logger.LogDebug("Sending status code {StatusCode} for request path {Path}", statusCode, _subPath);
             return Task.CompletedTask;
         }
 
@@ -211,11 +211,11 @@ namespace OrchardCore.Media.Azure.Middleware
                     await next(context);
                     return;
                 case PreconditionState.NotModified:
-                    Logger.LogDebug("File not modified for request path {0}", _subPath);
+                    Logger.LogDebug("File not modified for request path {Path}", _subPath);
                     await SendStatusAsync(StatusCodes.Status304NotModified);
                     return;
                 case PreconditionState.PreconditionFailed:
-                    Logger.LogDebug("Precondition failed for reqeuest path {0}", _subPath);
+                    Logger.LogDebug("Precondition failed for request path {Path}", _subPath);
                     await SendStatusAsync(StatusCodes.Status412PreconditionFailed);
                     return;
                 default:

@@ -41,8 +41,7 @@ namespace OrchardCore.Media.Azure.Services
                 //TODO Consider expiring with a Change Token from Blob File Store.
                 // Or consider a graceful cache refresh.
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(
-                        TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime > 0 ? _options.VersionHashCacheExpiryTime : 120))
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(_options.VersionHashCacheExpiryTime))
                     .SetSize(fileInfo.FileHash.Length * sizeof(char));
 
                 // Set to cacheKey, so ShellFileVersionProvider can retrieve from cache.

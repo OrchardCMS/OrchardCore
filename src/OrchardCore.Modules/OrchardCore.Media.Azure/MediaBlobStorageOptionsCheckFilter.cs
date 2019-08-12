@@ -41,13 +41,13 @@ namespace OrchardCore.Media.Azure
 
             if (String.IsNullOrWhiteSpace(connectionString))
             {
-                logger.LogError($"Azure Media Storage is enabled but not active because {nameof(MediaBlobStorageOptions.ConnectionString)} is missing or empty in application configuration.");
+                logger.LogError("Azure Media Storage is enabled but not active because {ConnectionString} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ConnectionString));
                 optionsAreValid = false;
             }
 
             if (String.IsNullOrWhiteSpace(containerName))
             {
-                logger.LogError($"Azure Media Storage is enabled but not active because {nameof(MediaBlobStorageOptions.ContainerName)} is missing or empty in application configuration.");
+                logger.LogError("Azure Media Storage is enabled but not active because {ContainerName} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ContainerName));
                 optionsAreValid = false;
             }
 
