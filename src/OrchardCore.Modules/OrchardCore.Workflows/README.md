@@ -267,7 +267,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 - `OnWorkflowStartedAsync`
 - `OnWorkflowResumingAsync`
 - `OnWorkflowResumedAsync`
-- `OnActivityExecutingAsync
+- `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
 The `IEvent` interface adds the following member:
