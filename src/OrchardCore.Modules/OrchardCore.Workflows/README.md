@@ -92,17 +92,17 @@ This allows long-running workflow scenarios where only workflow instances associ
 
 ### Input
 
-When a workflow is executed, the caller can provide input to the workflow instance. This input is stored in the `Input` dictionary of the workfow execution context.
+When a workflow is executed, the caller can provide input to the workflow instance. This input is stored in the `Input` dictionary of the workflow execution context.
 This is analogous to providing arguments to a function.
 
 ### Output
 
-When a workflow executes, each activity can provide output values to the workflow instance. This output is stored in the `Output` dictionary of the workfow execution context.
+When a workflow executes, each activity can provide output values to the workflow instance. This output is stored in the `Output` dictionary of the workflow execution context.
 This is analogous to returning values from a function.
 
 ### Properties
 
-When a workflow executes, each activity can set property values to the workflow instance. These properties are stored in the `Properties` dictionary of the workfow execution context.
+When a workflow executes, each activity can set property values to the workflow instance. These properties are stored in the `Properties` dictionary of the workflow execution context.
 Each activity can set and access these properties, allowing a workflow to compute and retrieve information that can then be processed by other activities further down the chain.
 This is analogous to a function setting local variables.
 
