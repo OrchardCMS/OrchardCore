@@ -40,7 +40,6 @@ namespace OrchardCore.Taxonomies.Drivers
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
-            ;
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
