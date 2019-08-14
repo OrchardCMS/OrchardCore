@@ -1,9 +1,13 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentFields.Settings
+@using OrchardCore.Localization
+@inject IContentManager ContentManager
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<HtmlFieldSettings>();
+    var cultureAspect = await ContentManager.PopulateAspectAsync<CultureAspect>(Model.Field.ContentItem);
 }
 
 <script name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
@@ -20,6 +24,11 @@
 
 <script at="Foot">
     $(function () {
+        @if(cultureAspect.LanguageDirection == LanguageDirection.RTL)
+        {
+            <text>$('#@Html.IdFor(m => m.Html)').wrap("<div style='text-align:right'></div>");</text>
+        }
+
         $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
