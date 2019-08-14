@@ -18,10 +18,13 @@ namespace OrchardCore.Contents.Indexing
         {
             var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
-            context.DocumentIndex.Set(
-                IndexingConstants.BodyAspectBodyKey,
-                body.Body.ToString() ?? "NULL",
-                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            if (body != null)
+            {
+                context.DocumentIndex.Set(
+                    IndexingConstants.BodyAspectBodyKey,
+                    body.Body.ToString() ?? "NULL",
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            }
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextAnalyzedKey,
