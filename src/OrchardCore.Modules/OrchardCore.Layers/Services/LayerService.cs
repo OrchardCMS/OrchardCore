@@ -61,12 +61,19 @@ namespace OrchardCore.Layers.Services
 			return layers;
 		}
 
-		public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
+		public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
+            Expression<Func<ContentItemIndex, bool>> predicate)
 		{
-            var allWidgets = await _session
+            return await _session
                 .Query<ContentItem, LayerMetadataIndex>()
                 .With(predicate)
                 .ListAsync();
+        }
+
+        public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(
+            Expression<Func<ContentItemIndex, bool>> predicate)
+        {
+            var allWidgets = await GetLayerWidgetsAsync(predicate);
 
             return allWidgets
                 .Select(x => x.As<LayerMetadata>())
@@ -74,7 +81,7 @@ namespace OrchardCore.Layers.Services
                 .OrderBy(x => x.Position)
                 .ToList();
 
-		}
+        }
 
 		public async Task UpdateAsync(LayersDocument layers)
 		{

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {

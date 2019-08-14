@@ -1,70 +1,62 @@
 @model AdminIndexViewModel
-@inject ShellSettings ShellSettings
-@using Microsoft.AspNetCore.Http;
-@using OrchardCore.Data;
-@using OrchardCore.Environment.Shell.Models
-@using OrchardCore.Environment.Shell
 @using System.Collections.Generic
 @using System.Net
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Environment.Shell.Models
 
 @{
-    List<SelectListItem> tenantStates = new List<SelectListItem>() {
-new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
-new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
-new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
-new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
-};
+    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase.ToString();
 
-    List<SelectListItem> tenantSorts = new List<SelectListItem>() {
-new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
-new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
-};
+    List<SelectListItem> tenantStates = new List<SelectListItem>()
+    {
+        new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
+        new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
+        new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
+        new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
+    };
 
-    List<SelectListItem> tenantActions = new List<SelectListItem>() {
-new SelectListItem() { Text = T["Disable"].Value, Value = BulkAction.Disable.ToString() },
-new SelectListItem() { Text = T["Enable"].Value, Value = BulkAction.Enable.ToString() }
-};
+    List<SelectListItem> tenantSorts = new List<SelectListItem>()
+    {
+        new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
+        new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
+    };
+
+    List<SelectListItem> tenantActions = new List<SelectListItem>()
+    {
+        new SelectListItem() { Text = T["Disable"].Value, Value = BulkAction.Disable.ToString() },
+        new SelectListItem() { Text = T["Enable"].Value, Value = BulkAction.Enable.ToString() }
+    };
 }
 
-@functions {
-public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
+@functions
 {
-    ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
-    var requestHostInfo = Context.Request.Host;
-
-    var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
-    if (requestHostInfo.Port.HasValue)
+    public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry, string originalPathBase)
     {
-        tenantUrlHost += ":" + requestHostInfo.Port;
-    }
+        ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
+        var requestHostInfo = Context.Request.Host;
 
-    var pathBase = Context.Request.PathBase.Value ?? string.Empty;
-
-    if (!string.IsNullOrEmpty(ShellSettings.RequestUrlPrefix))
-    {
-        var prefix = "/" + ShellSettings.RequestUrlPrefix;
-
-        if (pathBase.EndsWith(prefix))
+        var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
+        if (requestHostInfo.Port.HasValue)
         {
-            pathBase = pathBase.Substring(0, pathBase.Length - prefix.Length);
+            tenantUrlHost += ":" + requestHostInfo.Port;
         }
+
+        var result = $"{Context.Request.Scheme}://{tenantUrlHost}{originalPathBase}";
+
+        if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+        {
+            result += "/" + tenantShellSettings.RequestUrlPrefix;
+        }
+
+        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        {
+            result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
+        }
+
+        return result;
     }
-
-    var result = $"{Context.Request.Scheme}://{tenantUrlHost}{pathBase}";
-
-    if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
-    {
-        result += "/" + tenantShellSettings.RequestUrlPrefix;
-    }
-
-    if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
-    {
-        result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
-    }
-
-    return result;
 }
-}
+
 <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Tenant"]</a>
 <h1>@RenderTitleSegments(T["Tenants"])</h1>
 <fieldset class="admin-toolbar container-fluid">
@@ -126,13 +118,13 @@ public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry)
                         }
                         @if (entry.ShellSettings.State == TenantState.Uninitialized)
                         {
-                            <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry)">@T["Setup"]</a>
+                            <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                     <h5>
-                        <a href="@GetTenantUrl(entry)">@entry.Name</a>
-                        <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
+                        <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
+                        <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:

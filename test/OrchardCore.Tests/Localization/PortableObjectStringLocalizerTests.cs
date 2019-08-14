@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -200,6 +201,25 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Theory]
+        [InlineData("zh-Hans", "球", 1, new string[] { "球" })]
+        [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
+        public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
+        {
+            var currentCulture = CultureInfo.GetCultureInfo(culture);
+            CultureInfo.CurrentUICulture = currentCulture;
+
+            // using DefaultPluralRuleProvider to test it returns correct rule
+            TryGetRuleFromDefaultPluralRuleProvider(currentCulture, out var rule);
+            Assert.NotNull(rule);
+
+            SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", null, translations), }, rule);
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
+            var translation = localizer.Plural(count, "ball", "{0} balls", count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
         [InlineData("míč", 1)]
         [InlineData("2 míče", 2)]
         [InlineData("5 míčů", 5)]
@@ -260,6 +280,29 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal(expected, translation);
         }
 
+        [Theory]
+        [InlineData(false, new[] { "مدونة", "منتج" })]
+        [InlineData(true, new[] { "مدونة", "منتج", "قائمة", "صفحة", "مقالة" })]
+        public void LocalizerReturnsGetAllStrings(bool includeParentCultures, string[] expected)
+        {
+            SetupDictionary("ar", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
+                new CultureDictionaryRecord("Menu", null, new[] { "قائمة" }),
+                new CultureDictionaryRecord("Page", null, new[] { "صفحة" }),
+                new CultureDictionaryRecord("Article", null, new[] { "مقالة" })
+            }, _arPluralRule);
+            SetupDictionary("ar-YE", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("Blog", null, new[] { "مدونة" }),
+                new CultureDictionaryRecord("Product", null, new[] { "منتج" })
+            }, _arPluralRule);
+
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);
+            CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
+            var translations = localizer.GetAllStrings(includeParentCultures).Select(l => l.Value).ToArray();
+
+            Assert.Equal(expected.Count(), translations.Count());
+        }
+
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
             SetupDictionary(cultureName, records, _csPluralRule);
@@ -271,6 +314,11 @@ namespace OrchardCore.Tests.Localization
             dictionary.MergeTranslations(records);
 
             _localizationManager.Setup(o => o.GetDictionary(It.Is<CultureInfo>(c => c.Name == cultureName))).Returns(dictionary);
+        }
+
+        private bool TryGetRuleFromDefaultPluralRuleProvider(CultureInfo culture, out PluralizationRuleDelegate rule)
+        {
+            return ((IPluralRuleProvider)new DefaultPluralRuleProvider()).TryGetRule(culture, out rule);
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -15,7 +14,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
-        protected IDisplayHelperFactory _displayHelperFactory;
+        protected IDisplayHelper _displayHelper;
 
         public string Type { get; set; }
         public string Cache { get; set; }
@@ -28,16 +27,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
+        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
         {
             _shapeFactory = shapeFactory;
-            _displayHelperFactory = displayHelperFactory;
+            _displayHelper = displayHelper;
         }
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
-
             // Extract all attributes from the tag helper to
             var properties = output.Attributes
                 .Where(x => !InternalProperties.Contains(x.Name))
@@ -132,7 +129,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             await output.GetChildContentAsync();
 
-            output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
+            output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;

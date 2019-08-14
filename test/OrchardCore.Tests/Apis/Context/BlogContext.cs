@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Apis.Context
                 .Query("blog", builder =>
                 {
                     builder
-                        .AddField("contentItemId");
+                        .WithField("contentItemId");
                 });
 
             BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();

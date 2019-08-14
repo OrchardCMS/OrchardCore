@@ -9,6 +9,6 @@ namespace OrchardCore.Apis.GraphQL
     /// </summary>
     public interface ISchemaFactory
     {
-        Task<ISchema> GetSchema();
+        Task<ISchema> GetSchemaAsync();
     }
 }

@@ -1,0 +1,6 @@
+<a asp-action="RedirectToLocalizedContent"
+   asp-controller="ContentculturePicker"
+   asp-route-area="OrchardCore.ContentLocalization"
+   asp-route-targetculture="@Model.Culture.Name"
+   asp-route-contentItemUrl="@Context.Request.Path"
+   class="dropdown-item">@Model.Culture.DisplayName</a>

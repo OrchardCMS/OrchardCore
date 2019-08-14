@@ -2,10 +2,10 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Diagnostics
 {
@@ -30,9 +30,9 @@ namespace OrchardCore.Diagnostics
             // c.f. https://docs.asp.net/en/latest/fundamentals/error-handling.html#id3
             app.UseStatusCodePagesWithReExecute("/Error", "?status={0}");
 
-            app.Use((context, next) =>
+            app.Use(async (context, next) =>
             {
-                var builder = next();
+                await next();
 
                 if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
                 {
@@ -46,8 +46,6 @@ namespace OrchardCore.Diagnostics
                         }
                     }
                 }
-
-                return builder;
             });
 
             routes.MapAreaRoute(

@@ -1,23 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Scripting
 {
     public class DefaultScriptingManager : IScriptingManager
     {
         private readonly IEnumerable<IScriptingEngine> _engines;
-        private readonly IServiceProvider _serviceProvider;
 
         public DefaultScriptingManager(
             IEnumerable<IScriptingEngine> engines,
-            IEnumerable<IGlobalMethodProvider> globalMethodProviders,
-            IServiceProvider serviceProvider)
+            IEnumerable<IGlobalMethodProvider> globalMethodProviders)
         {
             _engines = engines;
             GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders);
-            _serviceProvider = serviceProvider;
         }
 
         public IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
@@ -44,7 +41,7 @@ namespace OrchardCore.Scripting
             }
 
             var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
-            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), _serviceProvider, fileProvider, basePath);
+            var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, fileProvider, basePath);
             return engine.Evaluate(scope, script);
         }
 
