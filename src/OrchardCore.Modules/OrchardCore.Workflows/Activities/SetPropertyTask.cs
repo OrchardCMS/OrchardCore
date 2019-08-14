@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(SetPropertyTask);
+        public override LocalizedString DisplayText => T["SetPropertyTask"];
         public override LocalizedString Category => T["Primitives"];
 
         public string PropertyName

@@ -78,7 +78,36 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge badge-@statusCss">@entry.Workflow.Status</span>
+                                    @switch (entry.Workflow.Status)
+                                    {
+                                        case WorkflowStatus.Idle:
+                                            <span class="badge badge-@statusCss">@T["Idle"]</span>
+                                            break;
+                                        case WorkflowStatus.Starting:
+                                            <span class="badge badge-@statusCss">@T["Starting"]</span>
+                                            break;
+                                        case WorkflowStatus.Resuming:
+                                            <span class="badge badge-@statusCss">@T["Resuming"]</span>
+                                            break;
+                                        case WorkflowStatus.Executing:
+                                            <span class="badge badge-@statusCss">@T["Executing"]</span>
+                                            break;
+                                        case WorkflowStatus.Halted:
+                                            <span class="badge badge-@statusCss">@T["Halted"]</span>
+                                            break;
+                                        case WorkflowStatus.Finished:
+                                            <span class="badge badge-@statusCss">@T["Finished"]</span>
+                                            break;
+                                        case WorkflowStatus.Faulted:
+                                            <span class="badge badge-@statusCss">@T["Faulted"]</span>
+                                            break;
+                                        case WorkflowStatus.Aborted:
+                                            <span class="badge badge-@statusCss">@T["Aborted"]</span>
+                                            break;
+                                        default:
+                                            <span class="badge badge-@statusCss">@entry.Workflow.Status</span>
+                                            break;
+                                    }
                                 </div>
                             </div>
                         </div>

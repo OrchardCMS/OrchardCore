@@ -22,6 +22,7 @@ namespace OrchardCore.Workflows.Activities
 
         private IStringLocalizer T { get; }
         public override string Name => nameof(LogTask);
+        public override LocalizedString DisplayText => T["LogTask"];
         public override LocalizedString Category => T["Primitives"];
 
         public LogLevel LogLevel

@@ -23,6 +23,7 @@ namespace OrchardCore.Workflows.Activities
         
         private IStringLocalizer T { get; set; }
         public override string Name => nameof(NotifyTask);
+        public override LocalizedString DisplayText => T["NotifyTask"];
         public override LocalizedString Category => T["UI"];
 
         public NotifyType NotificationType

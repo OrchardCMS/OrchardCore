@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(WhileLoopTask);
+        public override LocalizedString DisplayText => T["WhileLoopTask"];
         public override LocalizedString Category => T["Control Flow"];
 
         /// <summary>

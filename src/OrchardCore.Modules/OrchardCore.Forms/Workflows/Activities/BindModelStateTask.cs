@@ -26,6 +26,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(BindModelStateTask);
+        public override LocalizedString DisplayText => T["BindModelStateTask"];
         public override LocalizedString Category => T["Validation"];
         private IStringLocalizer T { get; set; }
 

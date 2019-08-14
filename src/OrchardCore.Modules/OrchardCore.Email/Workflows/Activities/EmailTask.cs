@@ -32,6 +32,7 @@ namespace OrchardCore.Email.Workflows.Activities
 
         private IStringLocalizer T { get; }
         public override string Name => nameof(EmailTask);
+        public override LocalizedString DisplayText => T["EmailTask"];
         public override LocalizedString Category => T["Messaging"];
 
         public WorkflowExpression<string> Sender

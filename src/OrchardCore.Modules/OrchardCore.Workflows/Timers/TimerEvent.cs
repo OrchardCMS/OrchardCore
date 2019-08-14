@@ -23,6 +23,8 @@ namespace OrchardCore.Workflows.Timers
         private IStringLocalizer T { get; }
 
         public override string Name => EventName;
+        public override LocalizedString DisplayText => T["TimerEvent"];
+
         public override LocalizedString Category => T["Background"];
 
         public string CronExpression
