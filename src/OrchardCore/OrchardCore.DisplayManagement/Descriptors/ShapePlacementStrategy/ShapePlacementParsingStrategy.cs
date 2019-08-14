@@ -39,11 +39,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             foreach (var featureDescriptor in enabledFeatures)
             {
-                ProcessFeatureDescriptor(builder, featureDescriptor);
+                await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
             }
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that. 
             // Dont use JSON Deserializer directly.
@@ -58,8 +58,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     {
                         using (var jtr = new JsonTextReader(reader))
                         {
-                            JsonSerializer serializer = new JsonSerializer();
-                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
+                            var placementFile = (await JObject.LoadAsync(jtr)).ToObject<PlacementFile>();
                             ProcessPlacementFile(builder, featureDescriptor, placementFile);
                         }
                     }

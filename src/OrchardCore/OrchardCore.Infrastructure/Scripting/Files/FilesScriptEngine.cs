@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting.Files
 {
-    /// <summary>
-    /// Provides 
-    /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {
         public string Prefix => "file";
@@ -17,7 +15,7 @@ namespace OrchardCore.Scripting.Files
             return new FilesScriptScope(fileProvider, basePath);
         }
 
-        public object Evaluate(IScriptingScope scope, string script)
+        public async Task<object> EvaluateAsync(IScriptingScope scope, string script)
         {
             if (scope == null)
             {
@@ -42,11 +40,11 @@ namespace OrchardCore.Scripting.Files
                 {
                     using (var streamReader = new StreamReader(fileStream))
                     {
-                        return streamReader.ReadToEnd();
+                        return await streamReader.ReadToEndAsync();
                     }
                 }
             }
-            else if(script.StartsWith("base64('") && script.EndsWith("')"))
+            else if (script.StartsWith("base64('") && script.EndsWith("')"))
             {
                 var filePath = script.Substring(8, script.Length - 10);
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
@@ -59,7 +57,7 @@ namespace OrchardCore.Scripting.Files
                 {
                     using (var ms = new MemoryStream())
                     {
-                        fileStream.CopyTo(ms);
+                        await fileStream.CopyToAsync(ms);
                         return Convert.ToBase64String(ms.ToArray());
                     }
                 }

@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "variables",
-                Method = serviceprovider => (Func<string, object>) (name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
                     var value = variables[name].Value<string>();
 
@@ -22,7 +22,7 @@ namespace OrchardCore.Recipes
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
                         value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, null) ?? "").ToString();
+                        value = (ScriptingManager.EvaluateAsync(value, null, null, null).GetAwaiter().GetResult() ?? "").ToString();
                         variables[name] = new JValue(value);
                     }
 

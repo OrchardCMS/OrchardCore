@@ -106,7 +106,7 @@ namespace OrchardCore.Layers.Services
                         }
                         else
                         {
-                            display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
+                            display = Convert.ToBoolean(await engine.EvaluateAsync(scope, layer.Rule));
                         }
 
                         layersCache[layer.Rule] = display;
