@@ -1,14 +1,18 @@
 @model HtmlBodyPartViewModel
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
+@inject IContentManager ContentManager
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
+    var cultureAspect = await ContentManager.PopulateAspectAsync<CultureAspect>(Model.ContentItem);
 }
 
 <fieldset class="form-group">
     <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control content-preview-text"></textarea>
+    <textarea asp-for="Source" rows="5" class="form-control content-preview-text" dir="@cultureAspect.LanguageDirection"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </fieldset>
