@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Indexing
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,
-                    body.Body.ToString() ?? "NULL",
+                    body.Body ?? new HtmlString("NULL"),
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
