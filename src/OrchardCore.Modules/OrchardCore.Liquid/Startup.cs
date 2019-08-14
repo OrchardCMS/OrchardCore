@@ -48,6 +48,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
+            services.AddLiquidFilter<LiquidFilter>("liquid");
             services.AddLiquidFilter<JsonFilter>("json");
         }
     }

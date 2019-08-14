@@ -86,8 +86,8 @@ namespace OrchardCore.Tests.OrchardCore.Queries
 
         [Theory]
         [InlineData("select a where a = @b", "SELECT [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit", "SELECT TOP @limit [a] WHERE [a] = @b;")]
-        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP @limit [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
+        [InlineData("select a where a = @b limit @limit:10", "SELECT TOP (@limit) [a] WHERE [a] = @b;")]
         public void ShouldParseParameters(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
@@ -131,7 +131,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         }
 
         [Theory]
-        [InlineData("select a limit 100", "SELECT TOP 100 [a];")]
+        [InlineData("select a limit 100", "SELECT TOP (100) [a];")]
         [InlineData("select a limit 100 offset 10", "SELECT [a] OFFSET 10 ROWS FETCH NEXT 100 ROWS ONLY;")]
         [InlineData("select a offset 10", "SELECT [a] OFFSET 10 ROWS;")]
         public void ShouldParseLimitOffsetClause(string sql, string expectedSql)

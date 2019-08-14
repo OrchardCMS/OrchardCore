@@ -253,5 +253,28 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return zone.Add(item, position);
         }
+
+        public async Task<Shape> AddAsync(object item, string position = null)
+        {
+            if (item == null)
+            {
+                return (Shape)_parent;
+            }
+
+            dynamic parent = _parent;
+
+            dynamic zone = await _zoneFactory();
+            zone.Parent = _parent;
+            zone.ZoneName = _potentialZoneName;
+            parent[_potentialZoneName] = zone;
+
+            if (position == null)
+            {
+                return zone.Add(item);
+            }
+
+            return zone.Add(item, position);
+        }
     }
 }
+

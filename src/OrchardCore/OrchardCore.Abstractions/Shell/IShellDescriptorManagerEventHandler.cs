@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represent and event handler for shell descriptor.
+    /// Represent an event handler for shell descriptor.
     /// </summary>
     public interface IShellDescriptorManagerEventHandler
     {

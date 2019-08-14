@@ -61,12 +61,12 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowTypeCreatedContext(workflowType);
-                await _handlers.InvokeAsync(async x => await x.CreatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.CreatedAsync(context), _logger);
             }
             else
             {
                 var context = new WorkflowTypeUpdatedContext(workflowType);
-                await _handlers.InvokeAsync(async x => await x.UpdatedAsync(context), _logger);
+                await _handlers.InvokeAsync(x => x.UpdatedAsync(context), _logger);
             }
         }
 
@@ -85,7 +85,7 @@ namespace OrchardCore.Workflows.Services
             // Then delete the workflow type.
             _session.Delete(workflowType);
             var context = new WorkflowTypeDeletedContext(workflowType);
-            await _handlers.InvokeAsync(async x => await x.DeletedAsync(context), _logger);
+            await _handlers.InvokeAsync(x => x.DeletedAsync(context), _logger);
         }
     }
 }

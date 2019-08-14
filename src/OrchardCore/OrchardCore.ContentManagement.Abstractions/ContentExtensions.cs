@@ -161,6 +161,11 @@ namespace OrchardCore.ContentManagement
             // Replace the existing content element with the new one
             contentElement.Elements[name] = element;
 
+            if (element is ContentField)
+            {
+                contentElement.ContentItem.Elements.Clear();
+            }
+
             return contentElement;
         }
 

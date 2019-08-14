@@ -18,12 +18,22 @@ namespace OrchardCore.DisplayManagement.RazorPages
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
 
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
+
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = HttpContext.RequestServices.GetService<IDisplayHelper>();
             }
         }
 

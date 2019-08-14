@@ -58,6 +58,8 @@ namespace OrchardCore.ResourceManagement
             set { SetAttribute("href", value); }
         }
 
+        public bool AppendVersion { get; set; }
+
         public IHtmlContent GetTag()
         {
             if (!string.IsNullOrEmpty(Condition))

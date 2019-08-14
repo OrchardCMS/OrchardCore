@@ -21,9 +21,9 @@
 
 <script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
 <style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+<script asp-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.min.js" debug-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
     initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
