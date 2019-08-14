@@ -1,9 +1,13 @@
 @model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
 @using OrchardCore.Markdown.Settings;
+@inject IContentManager ContentManager
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+    var cultureAspect = await ContentManager.PopulateAspectAsync<CultureAspect>(Model.Field.ContentItem);
 }
 
 <script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
@@ -24,11 +28,17 @@
             element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
             forceSync: true,
             toolbar: simplemdeToolbar,
-            autoDownloadFontAwesome :false
+            autoDownloadFontAwesome: false
         });
 
         simplemde.codemirror.on('change', function () {
             $(document).trigger('contentpreview:render');
         });
+
+        @if(cultureAspect.LanguageDirection == LanguageDirection.RTL)
+        {
+            <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
+$('.CodeMirror').attr('style', 'text-align:right');</text>
+        }
     });
 </script>
