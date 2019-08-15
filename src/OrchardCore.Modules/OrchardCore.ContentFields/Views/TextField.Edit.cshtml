@@ -1,18 +1,16 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings
 @using OrchardCore.Localization
-@inject IContentManager ContentManager
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
-    var cultureAspect = await ContentManager.PopulateAspectAsync<CultureAspect>(Model.Field.ContentItem);
+    var culture = await Orchard.GetContentCulture(Model.Field.ContentItem);
 }
 
 <fieldset class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Text" class="form-control content-preview-text" dir="@cultureAspect.LanguageDirection" />
+    <input asp-for="Text" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>

@@ -1,14 +1,12 @@
 @model HtmlBodyPartViewModel
 @using OrchardCore.Html.ViewModels;
 @using OrchardCore.Html.Settings;
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization
-@inject IContentManager ContentManager
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
-    var cultureAspect = await ContentManager.PopulateAspectAsync<CultureAspect>(Model.ContentItem);
+    var culture = await Orchard.GetContentCulture(Model.ContentItem);
 }
 
 <script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
@@ -22,7 +20,7 @@
 
 <script at="Foot">
     $(function () {
-        @if(cultureAspect.LanguageDirection == LanguageDirection.RTL)
+        @if(culture.IsRightToLeft())
         {
             <text>$('#@Html.IdFor(m => m.Source)').wrap("<div style='text-align:right'></div>");</text>
         }

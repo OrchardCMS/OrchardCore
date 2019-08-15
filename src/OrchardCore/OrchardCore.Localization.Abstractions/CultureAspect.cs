@@ -10,14 +10,6 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets or sets the culture.
         /// </summary>
-        public CultureInfo Culture { get; set; }
-
-        /// <summary>
-        /// Gets the language direction of the <see cref="Culture"/>.
-        /// </summary>
-        public string LanguageDirection
-            => Culture.TextInfo.IsRightToLeft
-                ? Localization.LanguageDirection.RTL
-                : Localization.LanguageDirection.LTR;
+        public CultureInfo Culture { get; set; } = CultureInfo.InstalledUICulture;
     }
 }
