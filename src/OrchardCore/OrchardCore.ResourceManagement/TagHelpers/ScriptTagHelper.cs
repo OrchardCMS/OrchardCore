@@ -124,7 +124,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 foreach (var attribute in output.Attributes)
@@ -170,7 +170,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (AppendVersion.HasValue)
                 {
-                    setting.SetAppendVersion(AppendVersion);
+                    setting.ShouldAppendVersion(AppendVersion);
                 }
 
                 if (!String.IsNullOrEmpty(Version))
