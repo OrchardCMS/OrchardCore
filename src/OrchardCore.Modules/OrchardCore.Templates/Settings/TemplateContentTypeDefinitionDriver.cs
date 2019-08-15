@@ -9,9 +9,9 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentPartDefinitionDriver> S;
+        private readonly IStringLocalizer<TemplateContentTypeDefinitionDriver> S;
 
-        public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
+        public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentTypeDefinitionDriver> localizer)
         {
             S = localizer;
         }
