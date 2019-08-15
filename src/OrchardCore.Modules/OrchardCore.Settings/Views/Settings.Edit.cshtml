@@ -35,7 +35,7 @@
     </fieldset>
 </div>
 
-<h5 class="form-group">@T["Resource Settings"]<span class="hint"> — @T["Control settings for scripts and stylesheets"]</span></h5>
+<h5 class="form-group">@T["Resource Settings"]<span class="hint"> — @T["Settings for scripts and stylesheets"]</span></h5>
 <fieldset class="form-group" asp-validation-class-for="AppendVersion">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
@@ -53,10 +53,10 @@
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="CdnBaseUrl">
-    <label asp-for="CdnBaseUrl">@T["Host CDN (Content Delivery Network) base url"]</label>
+    <label asp-for="CdnBaseUrl">@T["Site CDN (Content Delivery Network) base url"]</label>
     <input asp-for="CdnBaseUrl" class="form-control" />
     <span asp-validation-for="CdnBaseUrl"></span>
-    <span class="hint">@T["A base CDN URL prefixed to this hosts, non framework, scripts and stylesheets, if empty no base CDN URL is applied, and it is disabled in Resource Debug Mode"]</span>
+    <span class="hint">@T["A base CDN URL prefixed to the sites, scripts and stylesheets, if empty no base CDN URL is applied, and it is disabled in Resource Debug Mode"]</span>
 </fieldset>
 
 <div class="row form-group">
