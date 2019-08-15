@@ -207,6 +207,23 @@ namespace OrchardCore.DisplayManagement.Liquid
             // Otherwise, we don't need the view engine for rendering.
             return template.RenderAsync(writer, encoder, templateContext);
         }
+
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
+            IServiceProvider services, TextEncoder encoder, TemplateContext templateContext)
+        {
+            foreach (var registration in options.FilterRegistrations)
+            {
+                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                {
+                    var type = registration.Value;
+                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
+                    return filter.ProcessAsync(input, arguments, ctx);
+                });
+            }
+
+            // Otherwise, we don't need the view engine for rendering.
+            return await template.RenderAsync(templateContext, encoder);
+        }
     }
 
     public static class TemplateContextExtensions
