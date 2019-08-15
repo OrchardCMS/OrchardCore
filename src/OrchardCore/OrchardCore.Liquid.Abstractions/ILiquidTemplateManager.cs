@@ -21,10 +21,13 @@ namespace OrchardCore.Liquid
 
         public static async Task<string> RenderAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, TemplateContext context)
         {
-            using (var sw = new StringWriter())
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                await manager.RenderAsync(template, sw, encoder, context);
-                return sw.ToString();
+                using (var sw = new StringWriter(sb.Builder))
+                {
+                    await manager.RenderAsync(template, sw, encoder, context);
+                    return sw.ToString();
+                }
             }
         }
     }
