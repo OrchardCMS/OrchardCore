@@ -27,12 +27,7 @@ namespace OrchardCore.ContentFields.Fields
                 templateContext.SetValue("ContentItem", field.ContentItem);
                 templateContext.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
 
-                using (var writer = new StringWriter())
-                {
-                    await _liquidTemplatemanager.RenderAsync(field.Html, writer, NullEncoder.Default, templateContext);
-                    model.Html = writer.ToString();
-                }
-
+                model.Html = await _liquidTemplatemanager.RenderAsync(field.Html, NullEncoder.Default, templateContext);
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
