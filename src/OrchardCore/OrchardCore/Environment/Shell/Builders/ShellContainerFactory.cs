@@ -89,7 +89,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 return shellSettings.ShellConfiguration;
             });
 
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
+            var moduleServiceProvider = GetProviderFromFactory(moduleServiceCollection);
 
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             (moduleServiceProvider as IDisposable).Dispose();
 
-            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            var shellServiceProvider = GetProviderFromFactory(tenantServiceCollection);
 
             // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
@@ -143,6 +143,21 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             return shellServiceProvider;
+        }
+
+        IServiceProvider GetProviderFromFactory(IServiceCollection collection)
+        {
+            var provider = collection.BuildServiceProvider(true);
+            var service = provider.GetService<IServiceFactoryAdapter>();
+            if (service == null)
+            {
+                return provider;
+            }
+
+            using (provider)
+            {
+                return service.CreateServiceProvider(service.CreateBuilder(collection));
+            }
         }
 
         private void EnsureApplicationFeature()
