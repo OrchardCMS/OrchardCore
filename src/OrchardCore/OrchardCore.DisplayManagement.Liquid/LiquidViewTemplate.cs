@@ -176,28 +176,13 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
             IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
-            foreach (var registration in options.FilterRegistrations)
-            {
-                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
-                {
-                    var type = registration.Value;
-                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
-                    return filter.ProcessAsync(input, arguments, ctx);
-                });
-            }
+            templateContext.AddAsyncFilters(options, services);
 
             // Check if a 'ViewContext' has been cached for rendering.
-            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
-                context is ViewContext viewContext &&
-                viewContext.View is RazorView razorView &&
-                razorView.RazorPage is LiquidPage liquidPage)
-            {
-                liquidPage.RenderAsync = output =>
-                {
-                    // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
-                };
+            var viewContext = templateContext.GetAmbientViewContext(encoder, template);
 
+            if (viewContext != null)
+            {
                 viewContext.Writer = writer;
 
                 // Use the view engine to render the liquid page.
@@ -211,28 +196,13 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
             IServiceProvider services, TextEncoder encoder, TemplateContext templateContext)
         {
-            foreach (var registration in options.FilterRegistrations)
-            {
-                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
-                {
-                    var type = registration.Value;
-                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
-                    return filter.ProcessAsync(input, arguments, ctx);
-                });
-            }
+            templateContext.AddAsyncFilters(options, services);
 
             // Check if a 'ViewContext' has been cached for rendering.
-            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
-                context is ViewContext viewContext &&
-                viewContext.View is RazorView razorView &&
-                razorView.RazorPage is LiquidPage liquidPage)
-            {
-                liquidPage.RenderAsync = output =>
-                {
-                    // Render the template through the default liquid page.
-                    return template.RenderAsync(output, encoder, templateContext);
-                };
+            var viewContext = templateContext.GetAmbientViewContext(encoder, template);
 
+            if (viewContext != null)
+            {
                 using (var writer = new StringWriter())
                 {
                     // Use the view engine to render the liquid page.
@@ -249,6 +219,40 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class TemplateContextExtensions
     {
+        internal static void AddAsyncFilters(this TemplateContext templateContext, LiquidOptions options, IServiceProvider services)
+        {
+            foreach (var registration in options.FilterRegistrations)
+            {
+                templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
+                {
+                    var type = registration.Value;
+                    var filter = services.GetRequiredService(registration.Value) as ILiquidFilter;
+                    return filter.ProcessAsync(input, arguments, ctx);
+                });
+            }
+        }
+
+        internal static ViewContext GetAmbientViewContext(this TemplateContext templateContext, TextEncoder encoder, LiquidViewTemplate template)
+        {
+            // Check if a 'ViewContext' has been cached for rendering.
+            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
+                context is ViewContext viewContext &&
+                viewContext.View is RazorView razorView &&
+                razorView.RazorPage is LiquidPage liquidPage)
+            {
+                liquidPage.RenderAsync = output =>
+                {
+                    // Render the template through the default liquid page.
+                    return template.RenderAsync(output, encoder, templateContext);
+                };
+
+                return viewContext;
+            }
+
+            // Otherwise, we don't need the view engine for rendering.
+            return null;
+        }
+
         public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))
