@@ -44,8 +44,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static LiquidViewTemplate()
         {
-            FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<Shape>(o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<ZoneHolding>(o => new ObjectValue(o));
 
             TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
             TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
