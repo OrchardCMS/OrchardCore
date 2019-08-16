@@ -56,7 +56,7 @@
     <label asp-for="CdnBaseUrl">@T["Site CDN (Content Delivery Network) base url"]</label>
     <input asp-for="CdnBaseUrl" class="form-control" />
     <span asp-validation-for="CdnBaseUrl"></span>
-    <span class="hint">@T["A base CDN URL prefixed to the sites, scripts and stylesheets, if empty no base CDN URL is applied, and it is disabled in Resource Debug Mode"]</span>
+    <span class="hint">@T["A base CDN URL prefixed to the local scripts and stylesheets. It is disabled if the value is empty or if the Resource Debug Mode is enabled, e.g. <em>https://cdn.mysite.com</em>"]</span>
 </fieldset>
 
 <div class="row form-group">
