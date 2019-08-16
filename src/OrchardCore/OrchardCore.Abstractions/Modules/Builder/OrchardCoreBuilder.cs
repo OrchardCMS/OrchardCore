@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return ConfigureServices((s, sp) => configure(s), order);
         }
-        
+
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
@@ -93,6 +93,17 @@ namespace Microsoft.Extensions.DependencyInjection
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder> configure, int order = 0)
         {
             return Configure((app, routes, sp) => configure(app), order);
+        }
+
+        public OrchardCoreBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
+        {
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof (factory));
+            }
+
+            ApplicationServices.AddTransient<IServiceFactoryAdapter>(f => new ServiceFactoryAdapter<TContainerBuilder>(factory));
+            return this;
         }
     }
 }
