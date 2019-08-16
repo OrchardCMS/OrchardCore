@@ -112,7 +112,6 @@ namespace OrchardCore.Lucene.Controllers
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
-                    ?.Select(x => new IndexedContentType { Name = x.Name, Options = { Drafted = x.Options.Drafted, Published = x.Options.Published } }).ToList()
             };
 
             return View(model);

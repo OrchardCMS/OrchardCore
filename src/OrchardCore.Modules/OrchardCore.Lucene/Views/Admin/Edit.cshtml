@@ -1,0 +1,72 @@
+@model AdminEditViewModel
+
+<h1>@RenderTitleSegments(T["Edit Index"])</h1>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post">
+
+    <div class="form-group" asp-validation-class-for="IndexName">
+        <label asp-for="IndexName">@T["Index Name"]</label>
+        <input asp-for="IndexName" class="form-control" autofocus />
+        <span asp-validation-for="IndexName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="IndexName">
+        <label asp-for="IndexedContentTypes">@T["Analyzer Name"]</label>
+        <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-control"></select>
+        <span asp-validation-for="AnalyzerName" class="text-danger"></span>
+    </div>
+
+    <label asp-for="IndexedContentTypes">@T["Indexed Content Types"]</label>
+    <div class="row">
+        <div class="form-group col-6 float-left">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <div class="custom-control custom-checkbox mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="input-group-append">
+                    <span class="input-group-text bg-secondary text-light">Select All</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="IndexName">
+        <ul class="list-group">
+            @for (var i = 0; i < Model.IndexedContentTypes.Count; i++)
+            {
+                <li class="list-group-item">
+                    <input type="hidden" asp-for="@Model.IndexedContentTypes[i].Name" />
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" asp-for="@Model.IndexedContentTypes[i].Selected">
+                        <label class="custom-control-label" asp-for="@Model.IndexedContentTypes[i].Selected">@Model.IndexedContentTypes[i].Name</label>
+                    </div>
+                </li>
+            }
+        </ul>
+
+
+        <span asp-validation-for="IndexedContentTypes" class="text-danger"></span>
+    </div>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
+<script type="text/javascript" at="Foot">
+    $(function () {
+        var selectAllCtrl = $("#select-all");
+        var contentItemsCheckboxes = $(":checkbox[name^='IndexedContentTypes']");
+
+        selectAllCtrl.click(function () {
+            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            bulkActionButton.attr("disabled", !this.checked);
+        });
+    })
+</script>
