@@ -221,6 +221,27 @@ namespace OrchardCore.DisplayManagement.Liquid
                 });
             }
 
+            // Check if a 'ViewContext' has been cached for rendering.
+            if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
+                context is ViewContext viewContext &&
+                viewContext.View is RazorView razorView &&
+                razorView.RazorPage is LiquidPage liquidPage)
+            {
+                liquidPage.RenderAsync = output =>
+                {
+                    // Render the template through the default liquid page.
+                    return template.RenderAsync(output, encoder, templateContext);
+                };
+
+                using (var writer = new StringWriter())
+                {
+                    // Use the view engine to render the liquid page.
+                    viewContext.Writer = writer;
+                    await viewContext.View.RenderAsync(viewContext);
+                    return writer.ToString();
+                }
+            }
+
             // Otherwise, we don't need the view engine for rendering.
             return await template.RenderAsync(templateContext, encoder);
         }
