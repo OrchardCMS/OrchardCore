@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -36,22 +35,8 @@ namespace OrchardCore.Facebook.Filters
                 {
                     if (settings.FBInit)
                     {
-                        var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
-                        if (string.IsNullOrWhiteSpace(settings.FBInitParams))
-                        {
-                            options = string.Concat(options, "}");
-                        }
-                        else
-                        {
-                            options = string.Concat(options, ",", settings.FBInitParams, "}");
-                        }
-                        var require = new RequireSettings() { Name = "fb", Type = "script", };
-                        var resource=_resourceManager.FindResource(require);
-
-                        _resourceManager.RegisterResource("script", "fb");
-
-                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fb.js"" type=""text/javascript""></script>"));
-                        _resourceManager.RegisterFootScript(new HtmlString(@"<script src=""/OrchardCore.Facebook/sdk/fbsdk.js"" type=""text/javascript""></script>"));
+                        var setting = _resourceManager.RegisterResource("script", "fb");
+                        setting.AtLocation(ResourceLocation.Foot);
                     }
                 }
             }

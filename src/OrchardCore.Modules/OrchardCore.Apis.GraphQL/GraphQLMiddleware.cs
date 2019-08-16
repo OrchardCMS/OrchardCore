@@ -72,7 +72,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
         {
-            var schema = await schemaService.GetSchema();
+            var schema = await schemaService.GetSchemaAsync();
 
             GraphQLRequest request = null;
 

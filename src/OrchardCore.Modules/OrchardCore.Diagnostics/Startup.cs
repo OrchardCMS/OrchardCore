@@ -52,7 +52,6 @@ namespace OrchardCore.Diagnostics
                     {
                         // Workaround of c.f. https://github.com/aspnet/AspNetCore/issues/11555
                         var endpointDataSource = context.RequestServices.GetRequiredService<EndpointDataSource>();
-
                         var routeValues = new RouteValueDictionary(new
                         {
                             area = "OrchardCore.Diagnostics",

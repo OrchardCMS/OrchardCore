@@ -2,28 +2,35 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Controllers
 {
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class ContentCulturePickerController : Controller, IUpdateModel
     {
+        private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
 
         public IHtmlLocalizer T { get; }
 
         public ContentCulturePickerController(
+             ISiteService siteService,
             IHtmlLocalizer<AdminController> localizer,
             ILocalizationService locationService,
             IContentCulturePickerService culturePickerService)
         {
+            _siteService = siteService;
             T = localizer;
             _locationService = locationService;
             _culturePickerService = culturePickerService;
@@ -46,7 +53,18 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 return LocalRedirect('~' + contentItemUrl);
             }
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
 
+            if (settings.SetCookie)
+            {
+                // Set the cookie to handle redirecting to a custom controller
+                Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+                Response.Cookies.Append(
+                    CookieRequestCultureProvider.DefaultCookieName,
+                    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
+                    new CookieOptions { Expires = DateTime.UtcNow.AddDays(14) }
+                );
+            }
             // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
             var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
             if (localizations.Any())
@@ -59,19 +77,23 @@ namespace OrchardCore.ContentLocalization.Controllers
                 }
             }
 
-            // Try to get the Homepage url for the culture
-            var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
-            if (homeLocalizations.Any())
+            if (settings.RedirectToHomepage)
             {
-                var localization = homeLocalizations.SingleOrDefault(h => String.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
-
-                if (localization != null)
+                // Try to get the Homepage for the current culture
+                var homeLocalizations = await _culturePickerService.GetLocalizationsFromRouteAsync("/");
+                if (homeLocalizations.Any())
                 {
-                    return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                    var localization = homeLocalizations.SingleOrDefault(h => String.Equals(h.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+
+                    if (localization != null)
+                    {
+                        return LocalRedirect(Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }));
+                    }
                 }
             }
 
-            return NotFound();
+            // Redirect to the same page by default
+            return LocalRedirect('~' + contentItemUrl);
         }
     }
 }

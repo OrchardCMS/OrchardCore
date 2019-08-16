@@ -87,7 +87,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(T["Could not create localized version the content item"]);
+                _notifier.Warning(T["Could not create localized version of the content item"]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
             }
         }
