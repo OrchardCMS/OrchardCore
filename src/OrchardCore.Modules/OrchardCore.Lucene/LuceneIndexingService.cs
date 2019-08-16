@@ -68,12 +68,13 @@ namespace OrchardCore.Lucene
                     allIndices.Add(indexSetting.Name, taskId);
                 }
             }
-            else {
+            else
+            {
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
             }
-            
+
             if (allIndices.Count == 0)
             {
                 return;
@@ -96,11 +97,11 @@ namespace OrchardCore.Lucene
                         return;
                     }
 
+                    var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                    var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+
                     foreach (var task in batch)
                     {
-                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-
                         foreach (var index in allIndices)
                         {
                             // TODO: ignore if this index is not configured for the content type

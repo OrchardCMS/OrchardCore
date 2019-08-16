@@ -58,7 +58,7 @@ namespace OrchardCore.Lucene
             _rootDirectory = Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettings = luceneIndexSettings;
-    }
+        }
 
         public void CreateIndex(string indexName)
         {
@@ -70,6 +70,22 @@ namespace OrchardCore.Lucene
             Write(indexName, writer =>
             {
                 writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
+
+                writer.Commit();
+
+                if (_indexPools.TryRemove(indexName, out var pool))
+                {
+                    pool.MakeDirty();
+                    pool.Release();
+                }
+            });
+        }
+
+        public void DeleteDocumentVersions(string indexName, IEnumerable<string> contentItemVersionIds)
+        {
+            Write(indexName, writer =>
+            {
+                writer.DeleteDocuments(contentItemVersionIds.Select(x => new Term("Content.ContentItem.ContentItemVersionId", x)).ToArray());
 
                 writer.Commit();
 
@@ -232,10 +248,6 @@ namespace OrchardCore.Lucene
                     case DocumentIndex.Types.Text:
                         if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                         {
-                            if (store == Field.Store.YES)
-                            {
-                                doc.Add(new TextField(entry.Name + ".Analyzed", Convert.ToString(entry.Value), Field.Store.NO));
-                            }
                             doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
                         }
                         else
