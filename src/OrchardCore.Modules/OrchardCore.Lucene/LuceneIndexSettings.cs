@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 
@@ -13,7 +15,8 @@ namespace OrchardCore.Lucene
     public class LuceneIndexSettings
     {
         private readonly string _indexSettingsFilename;
-        private readonly JObject _content;
+        private readonly List<IndexSettings> _indexSettings = new List<IndexSettings>();
+        //private readonly JObject _content;
 
         public LuceneIndexSettings(
             IOptions<ShellOptions> shellOptions,
@@ -30,48 +33,51 @@ namespace OrchardCore.Lucene
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
 
-                File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
+                _indexSettings.Add(new IndexSettings { IndexName = "default", AnalyzerName = "standardanalyzer" });
+
+                Update();
             }
 
-            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+            _indexSettings = JsonConvert.DeserializeObject<List<IndexSettings>>(File.ReadAllText(_indexSettingsFilename));
         }
 
         public IEnumerable<IndexSettings> List() {
-            return _content.ToObject<IEnumerable<IndexSettings>>();
+            return _indexSettings;
         }
 
         public string GetIndexAnalyzer(string indexName)
         {
-            JToken value;
-            if (_content.TryGetValue(indexName, out value))
+            var setting = _indexSettings.Where(x => x.IndexName == indexName).FirstOrDefault();
+            if (setting != null)
             {
-                return value.Value<string>();
+                return setting.AnalyzerName;
             }
             else
             {
                 lock (this)
                 {
-                    _content.Add(new JProperty(indexName, "standardanalyzer"));
+                    _indexSettings.Add(new IndexSettings { IndexName = "default", AnalyzerName = "standardanalyzer" });
                 }
 
                 return "standardanalyzer";
             }
         }
 
-        public void CreateIndex(string indexName, string analyzerName)
+        public void CreateIndex(IndexSettings settings)
         {
             lock (this)
             {
-                _content[indexName] = analyzerName;
+
+                _indexSettings.Add(settings);
                 Update();
             }
         }
 
-        public void DeleteIndex(string indexName)
+        public void DeleteIndex(IndexSettings settings)
         {
             lock (this)
             {
-                _content.Remove(indexName);
+                _indexSettings.Remove(settings);
                 Update();
             }
         }
@@ -80,7 +86,7 @@ namespace OrchardCore.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, JsonConvert.SerializeObject(_indexSettings, Formatting.Indented));
             }
         }
     }

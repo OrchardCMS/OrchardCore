@@ -12,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Lucene.Services;
@@ -30,8 +31,10 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneIndexSettings _luceneIndexSettings;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public AdminController(
+            IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
@@ -51,6 +54,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexSettings = luceneIndexSettings;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
             S = s;
             H = h;
@@ -83,7 +87,32 @@ namespace OrchardCore.Lucene.Controllers
                 IndexName = "",
                 AnalyzerName = "standardanalyzer",
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
-                .Select(x => new SelectListItem { Text = x.Name, Value = x.Name })
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                IndexedContentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                    .Select(x => new IndexedContentType { Name = x.Name }).ToList()
+            };
+
+            return View(model);
+        }
+
+        public async Task<ActionResult> Edit(string indexName)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Unauthorized();
+            }
+
+            var settings = _luceneIndexSettings.List().Where(s => s.IndexName == indexName).FirstOrDefault();
+
+
+            var model = new AdminEditViewModel
+            {
+                IndexName = settings.IndexName,
+                AnalyzerName = settings.AnalyzerName,
+                Analyzers = _luceneAnalyzerManager.GetAnalyzers()
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                IndexedContentTypes = settings.IndexedContentTypes
+                    ?.Select(x => new IndexedContentType { Name = x.Name, Options = { Drafted = x.Options.Drafted, Published = x.Options.Published } }).ToList()
             };
 
             return View(model);
@@ -113,8 +142,11 @@ namespace OrchardCore.Lucene.Controllers
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-                _luceneIndexSettings.CreateIndex(model.IndexName, model.AnalyzerName);
-                _luceneIndexingService.CreateIndex(model.IndexName, model.AnalyzerName);
+
+
+                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexedContentTypes = model.IndexedContentTypes };
+                _luceneIndexSettings.CreateIndex(settings);
+                _luceneIndexingService.CreateIndex(settings);
                 //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
@@ -186,7 +218,8 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                _luceneIndexingService.DeleteIndex(model.IndexName);
+                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexedContentTypes = model.IndexedContentTypes };
+                _luceneIndexingService.DeleteIndex(settings);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }

@@ -21,7 +21,26 @@ namespace OrchardCore.Lucene
 
     public class IndexSettings
     {
+        public string IndexName { get; set; }
+
+        public string AnalyzerName { get; set; }
+
+        public List<IndexedContentType> IndexedContentTypes { get; set; }
+    }
+
+    public class IndexedContentType
+    {
         public string Name { get; set; }
-        public string Analyzer { get; set; }
+
+        public bool Selected { get; set; }
+
+        public IndexContentTypeOptions Options { get; set; }
+    }
+
+    public class IndexContentTypeOptions
+    {
+        public bool Drafted { get; set; }
+
+        public bool Published { get; set; }
     }
 }

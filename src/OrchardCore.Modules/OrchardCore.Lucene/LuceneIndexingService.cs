@@ -63,9 +63,9 @@ namespace OrchardCore.Lucene
                 // Find the lowest task id to process
                 foreach (var indexSetting in _luceneIndexSettings.List())
                 {
-                    var taskId = _indexingState.GetLastTaskId(indexSetting.Name);
+                    var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
-                    allIndices.Add(indexSetting.Name, taskId);
+                    allIndices.Add(indexSetting.IndexName, taskId);
                 }
             }
             else
@@ -157,20 +157,20 @@ namespace OrchardCore.Lucene
         /// Creates a new index
         /// </summary>
         /// <returns></returns>
-        public void CreateIndex(string indexName, string analyzer)
+        public void CreateIndex(IndexSettings indexSettings)
         {
-            RebuildIndex(indexName);
-            _luceneIndexSettings.CreateIndex(indexName, analyzer);
+            RebuildIndex(indexSettings.IndexName);
+            _luceneIndexSettings.CreateIndex(indexSettings);
         }
 
         /// <summary>
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
-        public void DeleteIndex(string indexName)
+        public void DeleteIndex(IndexSettings indexSettings)
         {
-            _indexManager.DeleteIndex(indexName);
-            _luceneIndexSettings.DeleteIndex(indexName);
+            _indexManager.DeleteIndex(indexSettings.IndexName);
+            _luceneIndexSettings.DeleteIndex(indexSettings);
         }
 
         /// <summary>

@@ -7,9 +7,14 @@ namespace OrchardCore.Lucene.ViewModels
     public class AdminEditViewModel
     {
         public string IndexName { get; set; }
+
         public string AnalyzerName { get; set; }
 
+        public List<IndexedContentType> IndexedContentTypes { get; set; }
+
+        #region List to populate
         [BindNever]
         public IEnumerable<SelectListItem> Analyzers { get; set; }
+        #endregion
     }
 }
