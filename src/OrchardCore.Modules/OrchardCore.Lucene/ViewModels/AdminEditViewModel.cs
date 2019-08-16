@@ -10,7 +10,9 @@ namespace OrchardCore.Lucene.ViewModels
 
         public string AnalyzerName { get; set; }
 
-        public List<IndexedContentType> IndexedContentTypes { get; set; }
+        public bool IndexDrafted { get; set; }
+
+        public string[] IndexedContentTypes { get; set; }
 
         #region List to populate
         [BindNever]

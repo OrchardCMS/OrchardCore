@@ -89,7 +89,7 @@ namespace OrchardCore.Lucene.Controllers
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Select(x => new IndexedContentType { Name = x.Name }).ToList()
+                    .Select(x => x.Name).ToArray()
             };
 
             return View(model);
@@ -109,6 +109,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
+                IndexDrafted = settings.IndexDrafted,
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
@@ -117,8 +118,54 @@ namespace OrchardCore.Lucene.Controllers
             return View(model);
         }
 
+        [HttpPost, ActionName("Edit")]
+        public async Task<ActionResult> EditPost(AdminEditViewModel model, string[] indexedContentTypes)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Unauthorized();
+            }
+
+            ValidateModel(model);
+
+            if (_luceneIndexManager.Exists(model.IndexName))
+            {
+                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                // We call Rebuild in order to reset the index state cursor too in case the same index
+                // name was also used previously.
+
+                var settings = _luceneIndexSettings.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
+                settings.AnalyzerName = model.AnalyzerName;
+                settings.IndexDrafted = model.IndexDrafted;
+                settings.IndexedContentTypes = model.IndexedContentTypes;
+
+                //_luceneIndexSettings.CreateIndex(settings);
+                _luceneIndexingService.CreateIndex(settings);
+                //await _luceneIndexingService.ProcessContentItemsAsync();
+            }
+            catch (Exception e)
+            {
+                _notifier.Error(H["An error occurred while creating the index"]);
+                Logger.LogError(e, "An error occurred while creating an index");
+                return View(model);
+            }
+
+            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost, ActionName("Create")]
-        public async Task<ActionResult> CreatePOST(AdminEditViewModel model)
+        public async Task<ActionResult> CreatePOST(AdminEditViewModel model, string[] indexedContentTypes)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -143,8 +190,8 @@ namespace OrchardCore.Lucene.Controllers
                 // name was also used previously.
 
 
-                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexedContentTypes = model.IndexedContentTypes };
-                _luceneIndexSettings.CreateIndex(settings);
+                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexDrafted = model.IndexDrafted, IndexedContentTypes = indexedContentTypes };
+                //_luceneIndexSettings.CreateIndex(settings);
                 _luceneIndexingService.CreateIndex(settings);
                 //await _luceneIndexingService.ProcessContentItemsAsync();
             }
@@ -217,7 +264,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexedContentTypes = model.IndexedContentTypes };
+                var settings = _luceneIndexSettings.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 _luceneIndexingService.DeleteIndex(settings);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);

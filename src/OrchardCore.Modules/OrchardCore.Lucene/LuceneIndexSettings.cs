@@ -15,7 +15,7 @@ namespace OrchardCore.Lucene
     public class LuceneIndexSettings
     {
         private readonly string _indexSettingsFilename;
-        private readonly List<IndexSettings> _indexSettings = new List<IndexSettings>();
+        private readonly List<IndexSettings> _indexSettings;
         //private readonly JObject _content;
 
         public LuceneIndexSettings(
@@ -32,13 +32,13 @@ namespace OrchardCore.Lucene
             if (!File.Exists(_indexSettingsFilename))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
+                File.WriteAllText(_indexSettingsFilename, "");
+                //_indexSettings.Add(new IndexSettings { IndexName = "default", AnalyzerName = "standardanalyzer" });
 
-                _indexSettings.Add(new IndexSettings { IndexName = "default", AnalyzerName = "standardanalyzer" });
-
-                Update();
+                //Update();
             }
 
-            _indexSettings = JsonConvert.DeserializeObject<List<IndexSettings>>(File.ReadAllText(_indexSettingsFilename));
+            _indexSettings = JsonConvert.DeserializeObject<List<IndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<IndexSettings>();
         }
 
         public IEnumerable<IndexSettings> List() {
@@ -60,6 +60,16 @@ namespace OrchardCore.Lucene
                 }
 
                 return "standardanalyzer";
+            }
+        }
+
+        public void EditIndex(IndexSettings settings)
+        {
+            lock (this)
+            {
+                _indexSettings.Remove(settings);
+                _indexSettings.Add(settings);
+                Update();
             }
         }
 
