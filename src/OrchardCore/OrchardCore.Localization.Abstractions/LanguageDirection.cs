@@ -26,7 +26,7 @@ namespace OrchardCore.Localization
             => culture.TextInfo.IsRightToLeft ? RTL : LTR;
 
         /// <summary>
-        /// Gets whether the culture is support RTL or not.
+        /// Gets whether the culture is RTL or not.
         /// </summary>
         /// <param name="culture">The culture.</param>
         /// <returns></returns>

@@ -6,7 +6,7 @@
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
-    var culture = await Orchard.GetContentCulture(Model.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
 <fieldset class="form-group">

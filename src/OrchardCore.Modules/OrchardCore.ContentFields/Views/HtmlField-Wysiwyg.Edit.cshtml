@@ -5,7 +5,7 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<HtmlFieldSettings>();
-    var culture = await Orchard.GetContentCulture(Model.Field.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
 <script name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>

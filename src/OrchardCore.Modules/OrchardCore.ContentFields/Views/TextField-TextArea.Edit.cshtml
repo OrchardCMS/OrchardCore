@@ -5,7 +5,7 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<TextFieldSettings>();
-    var culture = await Orchard.GetContentCulture(Model.Field.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
 <fieldset class="form-group">

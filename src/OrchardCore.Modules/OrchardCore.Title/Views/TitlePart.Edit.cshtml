@@ -4,7 +4,7 @@
 @using OrchardCore.Title.ViewModels;
 
 @{
-    var culture = await Orchard.GetContentCulture(Model.TitlePart.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
 }
 
 <fieldset class="form-group" asp-validation-class-for="Title">

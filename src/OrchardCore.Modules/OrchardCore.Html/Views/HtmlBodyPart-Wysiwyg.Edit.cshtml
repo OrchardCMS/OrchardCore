@@ -6,7 +6,7 @@
 
 @{
     var settings = Model.TypePartDefinition.Settings.ToObject<HtmlBodyPartSettings>();
-    var culture = await Orchard.GetContentCulture(Model.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
 <script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
