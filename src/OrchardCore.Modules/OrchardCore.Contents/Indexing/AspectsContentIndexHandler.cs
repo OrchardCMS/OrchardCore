@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Indexing
 {
@@ -22,22 +24,30 @@ namespace OrchardCore.Contents.Indexing
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,
-                    body.Body,
+                    body.Body ?? new HtmlString("NULL"),
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
-            if (context.ContentItem.DisplayText != null)
-            {
-                context.DocumentIndex.Set(
-                    IndexingConstants.DisplayTextAnalyzedKey,
-                    context.ContentItem.DisplayText,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextAnalyzedKey,
+                context.ContentItem.DisplayText ?? "NULL",
+                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Set(
-                    IndexingConstants.DisplayTextKey,
-                    context.ContentItem.DisplayText,
-                    DocumentIndexOptions.Store);
-            }
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextKey,
+                context.ContentItem.DisplayText ?? "NULL",
+                DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextNormalizedKey,
+                context.ContentItem.DisplayText.ReplaceDiacritics() ?? "NULL",
+                DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
+                IndexingConstants.FullTextKey,
+                context.ContentItem.DisplayText ?? "NULL",
+                DocumentIndexOptions.Analyze);
         }
+
     }
 }

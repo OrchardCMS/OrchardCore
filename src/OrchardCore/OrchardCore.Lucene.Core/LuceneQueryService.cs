@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,6 +38,7 @@ namespace OrchardCore.Lucene
 
             string sortField = null;
             string sortOrder = null;
+            string sortType = null;
             var sortFields = new List<SortField>();
 
             if (sortProperty != null)
@@ -51,14 +52,29 @@ namespace OrchardCore.Lucene
                 {
                     sortField = ((JProperty)sortProperty.First).Name;
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
-                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
+                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                    var sortFieldType = SortFieldType.STRING;
+                    if (sortType != null)
+                    {
+                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                    }
+
+                    sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
                 }
                 else if (sortProperty.Type == JTokenType.Array)
                 {
-                    foreach (var item in sortProperty.Children()) {
+                    foreach (var item in sortProperty.Children())
+                    {
                         sortField = ((JProperty)item.First).Name;
                         sortOrder = ((JProperty)item.First).Value["order"].ToString();
-                        sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
+                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
+                        var sortFieldType = SortFieldType.STRING;
+                        if (sortType != null)
+                        {
+                            sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                        }
+
+                        sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
                     }
                 }
             }
