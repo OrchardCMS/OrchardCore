@@ -59,9 +59,16 @@ namespace OrchardCore.Lucene
             var lastTaskId = Int32.MaxValue;
             IEnumerable<IndexSettings> indexSettings = null;
 
+
             if (String.IsNullOrEmpty(indexName))
             {
                 indexSettings = _luceneIndexSettings.List();
+
+                if (indexSettings == null)
+                {
+                    return;
+                }
+
                 // Find the lowest task id to process
                 foreach (var indexSetting in indexSettings)
                 {
@@ -73,6 +80,12 @@ namespace OrchardCore.Lucene
             else
             {
                 indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == indexName);
+
+                if (indexSettings == null)
+                {
+                    return;
+                }
+
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
@@ -107,9 +120,24 @@ namespace OrchardCore.Lucene
 
                     foreach (var task in batch)
                     {
+                        var contentItem = contentItems.Where(x => x.ContentItemId == task.ContentItemId).FirstOrDefault();
+                        var ignore = false;
+
+                        if (contentItem == null)
+                        {
+                            continue;
+                        }
+
                         foreach (var index in allIndices)
                         {
-                            // TODO: ignore if this index is not configured for the content type
+                            var matchingIndexSettings = indexSettings.Where(x => x.IndexName == index.Key).FirstOrDefault();
+
+                            // Ignore if this index is not configured for the content type or if there is no content type setted to index
+                            if (matchingIndexSettings.IndexedContentTypes.Length == 0 || !matchingIndexSettings.IndexedContentTypes.Contains(contentItem.ContentType))
+                            {
+                                ignore = true;
+                                continue;
+                            }
 
                             if (index.Value < task.Id)
                             {
@@ -119,9 +147,8 @@ namespace OrchardCore.Lucene
 
                         if (task.Type == IndexingTaskTypes.Update)
                         {
-                            var contentItem = contentItems.Where(x => x.ContentItemId == task.ContentItemId).FirstOrDefault();
-
-                            if (contentItem == null)
+                            // Ignore if this index is not configured for the content type
+                            if (ignore)
                             {
                                 continue;
                             }
