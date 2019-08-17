@@ -4,10 +4,14 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 <section class="flow">
-    @foreach (var item in Model.BagPart.ContentItems)
-    {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Summary", Model.BuildPartDisplayContext.GroupId);
 
-        @await DisplayAsync(itemContent)
+    @{
+        var itemShapes = await Task.WhenAll(Model.BagPart.ContentItems.Select(bagItem => ContentItemDisplayManager.BuildDisplayAsync(bagItem, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Summary", Model.BuildPartDisplayContext.GroupId)));
+
+        foreach (dynamic itemContent in itemShapes)
+        {
+            @await DisplayAsync(itemContent)
+        }
     }
+
 </section>

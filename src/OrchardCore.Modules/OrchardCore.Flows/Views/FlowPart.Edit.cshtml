@@ -10,6 +10,8 @@
 @{
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var contentItemPrefixKeys = Model.FlowPart.Widgets.ToDictionary(contentItem => contentItem.ContentItemId, x => Guid.NewGuid().ToString("n"));
+    var widgetShapes = await Task.WhenAll(Model.FlowPart.Widgets.Select(widget => ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", contentItemPrefixKeys[widget.ContentItemId])));
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
@@ -17,26 +19,25 @@
 <fieldset class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
-        @foreach (var widget in Model.FlowPart.Widgets)
+        @foreach (dynamic widgetEditor in widgetShapes)
         {
-            var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+            if (widgetEditor.ContentItem is ContentItem widget)
+            {
+                <div class="widget-template">
+                    @{
+                        widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
+                        widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                        widgetEditor.TargetId = widgetTemplatePlaceholderId;
 
-                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
+                        widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
+                    }
+                    @await DisplayAsync(widgetEditor)
+                    @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
+                    <input type="hidden" asp-for="Prefixes" value="@contentItemPrefixKeys[widget.ContentItemId]"/>
+                    <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType"/>
 
-                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
-                }
-
-                @await DisplayAsync(widgetEditor)
-
-                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-            </div>
+                </div>
+            }
         }
     </div>
 
@@ -53,7 +54,8 @@
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name"
                    data-flowmetadata="true"
-                   href="javascript:;">@type.DisplayName</a>
+                   href="javascript:;">
+                    @type.DisplayName</a>
             }
         </div>
     </div>
@@ -62,14 +64,14 @@
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
+        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new {area = "OrchardCore.Flows"})"/>
 
         @foreach (var type in widgetContentTypes)
-        {
-            // Render a mock widget so that its resources are included in the page
-            var contentItem = await ContentManager.NewAsync(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
-        }
+         {
+             // Render a mock widget so that its resources are included in the page
+             var contentItem = await ContentManager.NewAsync(type.Name);
+             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
+         }
 
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>

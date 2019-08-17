@@ -6,20 +6,26 @@
 @model FlowPartViewModel
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
+@{
+    var widgetShapes = await Task.WhenAll(Model.FlowPart.Widgets.Select(widget => ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId)));
+}
+
 <section class="flow">
-    @foreach (var widget in Model.FlowPart.Widgets)
+    @foreach (dynamic widgetContent in widgetShapes)
     {
-        var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
-        var flowMetadata = widget.As<FlowMetadata>();
-
-        if (flowMetadata != null)
+        if (widgetContent.ContentItem is ContentItem widget)
         {
-            widgetContent.Classes.Add("widget");
-            widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
-            widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
-            widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
-        }
+            var flowMetadata = widget.As<FlowMetadata>();
 
-        @await DisplayAsync(widgetContent)
+            if (flowMetadata != null)
+            {
+                widgetContent.Classes.Add("widget");
+                widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
+                widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
+            }
+
+            @await DisplayAsync(widgetContent)
+        }
     }
 </section>
