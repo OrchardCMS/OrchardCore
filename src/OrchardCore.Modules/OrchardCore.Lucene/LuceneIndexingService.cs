@@ -57,11 +57,13 @@ namespace OrchardCore.Lucene
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndices = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
+            IEnumerable<IndexSettings> indexSettings = null;
 
             if (String.IsNullOrEmpty(indexName))
             {
+                indexSettings = _luceneIndexSettings.List();
                 // Find the lowest task id to process
-                foreach (var indexSetting in _luceneIndexSettings.List())
+                foreach (var indexSetting in indexSettings)
                 {
                     var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
@@ -70,6 +72,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
+                indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == indexName);
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndices.Add(indexName, taskId);
@@ -100,6 +103,8 @@ namespace OrchardCore.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
+                    var contentItems = await contentManager.GetAsync(batch.Select(x => x.ContentItemId));
+
                     foreach (var task in batch)
                     {
                         foreach (var index in allIndices)
@@ -114,7 +119,7 @@ namespace OrchardCore.Lucene
 
                         if (task.Type == IndexingTaskTypes.Update)
                         {
-                            var contentItem = await contentManager.GetAsync(task.ContentItemId);
+                            var contentItem = contentItems.Where(x => x.ContentItemId == task.ContentItemId).FirstOrDefault();
 
                             if (contentItem == null)
                             {
