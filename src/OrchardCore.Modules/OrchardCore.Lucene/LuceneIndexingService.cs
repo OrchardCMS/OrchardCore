@@ -159,8 +159,8 @@ namespace OrchardCore.Lucene
         /// <returns></returns>
         public void CreateIndex(IndexSettings indexSettings)
         {
-            RebuildIndex(indexSettings.IndexName);
             _luceneIndexSettings.CreateIndex(indexSettings);
+            RebuildIndex(indexSettings.IndexName);
         }
 
         /// <summary>
