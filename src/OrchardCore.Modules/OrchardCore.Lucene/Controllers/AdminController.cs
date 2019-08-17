@@ -128,9 +128,9 @@ namespace OrchardCore.Lucene.Controllers
 
             ValidateModel(model);
 
-            if (_luceneIndexManager.Exists(model.IndexName))
+            if (!_luceneIndexManager.Exists(model.IndexName))
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
+                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} doesn't exists."]);
             }
 
             if (!ModelState.IsValid)
@@ -149,7 +149,7 @@ namespace OrchardCore.Lucene.Controllers
                 settings.IndexedContentTypes = model.IndexedContentTypes;
 
                 //_luceneIndexSettings.CreateIndex(settings);
-                _luceneIndexingService.CreateIndex(settings);
+                _luceneIndexingService.EditIndex(settings);
                 //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
@@ -159,7 +159,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
+            _notifier.Success(H["Index <em>{0}</em> modified successfully", model.IndexName]);
 
             return RedirectToAction("Index");
         }

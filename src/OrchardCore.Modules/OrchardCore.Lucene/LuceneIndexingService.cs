@@ -164,6 +164,16 @@ namespace OrchardCore.Lucene
         }
 
         /// <summary>
+        /// Edit an existing index
+        /// </summary>
+        /// <returns></returns>
+        public void EditIndex(IndexSettings indexSettings)
+        {
+            _luceneIndexSettings.EditIndex(indexSettings);
+            RebuildIndex(indexSettings.IndexName);
+        }
+
+        /// <summary>
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
