@@ -26,8 +26,8 @@ namespace OrchardCore.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
     {
-        private readonly IEnumerable<IContentHandler> _contentHandlers;
-        private readonly IEnumerable<IContentDisplayHandler> _handlers;
+        private readonly IContentHandler[] _contentHandlers;
+        private readonly IContentDisplayHandler[] _handlers;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
@@ -45,8 +45,8 @@ namespace OrchardCore.ContentManagement.Display
             ILayoutAccessor layoutAccessor
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
-            _handlers = handlers;
-            _contentHandlers = contentHandlers;
+            _handlers = handlers as IContentDisplayHandler[] ?? handlers.ToArray();
+            _contentHandlers = contentHandlers as IContentHandler[] ?? contentHandlers.ToArray();
             _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
@@ -172,7 +172,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await _contentHandlers.InvokeAsync(handler => handler.UpdatingAsync(updateContentContext), Logger);
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
-            await _contentHandlers.Reverse().InvokeAsync(handler => handler.UpdatedAsync(updateContentContext), Logger);
+            await _contentHandlers.InvokeReversedAsync(handler => handler.UpdatedAsync(updateContentContext), Logger);
 
             return context.Shape;
         }
