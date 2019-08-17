@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+using YesSql;
+
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
-using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -21,9 +22,7 @@ namespace OrchardCore.ContentLocalization
         private readonly ILocalizationService _localizationService;
         private readonly ILogger<DefaultContentLocalizationManager> _logger;
         private readonly Entities.IIdGenerator _iidGenerator;
-
-        public IEnumerable<IContentLocalizationHandler> Handlers { get; private set; }
-        public IEnumerable<IContentLocalizationHandler> ReversedHandlers { get; private set; }
+        private readonly IContentLocalizationHandler[] _handlers;
 
         public DefaultContentLocalizationManager(
             IContentManager contentManager,
@@ -36,11 +35,13 @@ namespace OrchardCore.ContentLocalization
             _contentManager = contentManager;
             _session = session;
             _localizationService = localizationService;
-            Handlers = handlers;
+            _handlers = handlers as IContentLocalizationHandler[] ?? handlers.ToArray();
             _iidGenerator = iidGenerator;
-            ReversedHandlers = handlers.Reverse().ToArray();
             _logger = logger;
         }
+
+        public IEnumerable<IContentLocalizationHandler> Handlers => _handlers;
+        public IEnumerable<IContentLocalizationHandler> ReversedHandlers => _handlers.Reverse();
 
         public async Task<ContentItem> GetContentItem(string localizationSet, string culture)
         {
@@ -94,8 +95,8 @@ namespace OrchardCore.ContentLocalization
 
             var context = new LocalizationContentContext(content, localizationPart.LocalizationSet, targetCulture);
 
-            await Handlers.InvokeAsync(handler => handler.LocalizingAsync(context), _logger);
-            await ReversedHandlers.InvokeAsync(handler => handler.LocalizedAsync(context), _logger);
+            await _handlers.InvokeAsync(handler => handler.LocalizingAsync(context), _logger);
+            await _handlers.InvokeReversedAsync(handler => handler.LocalizedAsync(context), _logger);
 
             _session.Save(cloned);
             return cloned;

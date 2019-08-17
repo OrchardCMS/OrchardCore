@@ -84,6 +84,43 @@ namespace OrchardCore.Modules
             }
         }
 
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async Task InvokeAsync<TEvents>(this TEvents[] events, Func<TEvents, Task> dispatch, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async Task InvokeReversedAsync<TEvents>(this TEvents[] events, Func<TEvents, Task> dispatch, ILogger logger)
+        {
+            for (var i = events.Length - 1; i >= 0; i--)
+            {
+                var sink = events[i];
+                try
+                {
+                    await dispatch(sink);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
         public static async Task<IEnumerable<TResult>> InvokeAsync<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, Task<TResult>> dispatch, ILogger logger)
         {
             var results = new List<TResult>();
