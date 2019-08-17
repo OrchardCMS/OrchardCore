@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Mvc.Utilities
@@ -377,6 +378,48 @@ namespace OrchardCore.Mvc.Utilities
         {
             int place = source.LastIndexOf(find);
             return source.Remove(place, find.Length).Insert(place, replace);
+        }
+
+        public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
+        {
+            attribute = attribute.Trim();
+            foreach (var c in attribute)
+            {
+                if (c == upperAfterDelimiter)
+                {
+                    return DoPascalCase(attribute, upperAfterDelimiter);
+                }
+            }
+
+            // no need
+            return attribute;
+        }
+
+        private static string DoPascalCase(string attribute, char upperAfterDelimiter)
+        {
+            var nextIsUpper = true;
+            var result = new StringBuilder(attribute.Length);
+            foreach (var c in attribute)
+            {
+                if (c == upperAfterDelimiter)
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(Char.ToUpperInvariant(c));
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
     }
 }
