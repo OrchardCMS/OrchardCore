@@ -711,7 +711,37 @@
     {
       // Create the indices before the content items so they are indexed automatically.
       "name": "lucene-index",
-      "Indices": [ "Search" ]
+      "Indices": [
+        {
+          "IndexName": "Search",
+          "AnalyzerName": "standardanalyzer",
+          "IndexDrafted": true,
+          "IndexedContentTypes": [
+            "Article",
+            "Blockquote",
+            "Blog",
+            "BlogPost",
+            "Button",
+            "Container",
+            "Form",
+            "ImageWidget",
+            "Image",
+            "Input",
+            "Label",
+            "LinkMenuItem",
+            "LiquidWidget",
+            "LiquidPage",
+            "Menu",
+            "Page",
+            "Paragraph",
+            "RawHtml",
+            "Select",
+            "TextArea",
+            "Validation",
+            "ValidationSummary"
+          ]
+        }
+      ]
     },
     {
       "name": "content",

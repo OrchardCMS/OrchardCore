@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,11 +11,16 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexStep : IRecipeStepHandler
     {
+        private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexManager _luceneIndexManager;
 
-        public LuceneIndexStep(LuceneIndexManager luceneIndexManager)
+        public LuceneIndexStep(
+            LuceneIndexingService luceneIndexingService,
+            LuceneIndexManager luceneIndexManager
+            )
         {
             _luceneIndexManager = luceneIndexManager;
+            _luceneIndexingService = luceneIndexingService;
         }
 
         public Task ExecuteAsync(RecipeExecutionContext context)
@@ -24,22 +30,17 @@ namespace OrchardCore.Lucene.Recipes
                 return Task.CompletedTask;
             }
 
-            var model = context.Step.ToObject<LuceneIndexModel>();
+            var indexSettingsList = context.Step["Indices"].ToObject<IEnumerable<IndexSettings>>();
 
-            foreach(var index in model.Indices)
+            foreach(var indexSettings in indexSettingsList)
             {
-                if (!_luceneIndexManager.Exists(index))
+                if (!_luceneIndexManager.Exists(indexSettings.IndexName))
                 {
-                    _luceneIndexManager.CreateIndex(index);
+                    _luceneIndexingService.CreateIndex(indexSettings);
                 }
             }
 
             return Task.CompletedTask;
-        }
-
-        private class LuceneIndexModel
-        {
-            public string[] Indices { get; set; }
         }
     }
 }
