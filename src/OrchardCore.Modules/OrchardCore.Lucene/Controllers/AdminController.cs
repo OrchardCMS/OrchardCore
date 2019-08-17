@@ -221,7 +221,7 @@ namespace OrchardCore.Lucene.Controllers
             }
 
             _luceneIndexingService.ResetIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync();
+            await _luceneIndexingService.ProcessContentItemsAsync(id);
 
             _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
 
