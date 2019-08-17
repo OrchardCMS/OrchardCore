@@ -24,12 +24,12 @@ namespace OrchardCore.Lucene
             builder
                 .Add(T["Configuration"], "10", configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Site"], "10", import => import
+                    .Add(T["Queries"], "4", import => import
                         .Add(T["Lucene Indices"], "7", indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
-                        .Add(T["Lucene Queries"], "8", queries => queries
+                        .Add(T["Lucene Query [test]"], "8", queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())))
