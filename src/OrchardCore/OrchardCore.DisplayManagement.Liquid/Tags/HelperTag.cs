@@ -105,9 +105,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                         }
                     }
 
-                    output.Flush();
-                    content = output.ToString();
+                    await output.FlushAsync();
                 }
+
+                content = sb.Builder.ToString();
             }
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));

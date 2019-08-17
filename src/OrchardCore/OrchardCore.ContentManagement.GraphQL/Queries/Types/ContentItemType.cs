@@ -47,11 +47,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                     var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
 
-                    using (var sw = new StringWriter())
+                    using (var sb = StringBuilderPool.GetInstance())
                     {
-                        var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                        htmlContent.WriteTo(sw, HtmlEncoder.Default);
-                        return sw.ToString();
+                        using (var sw = new StringWriter(sb.Builder))
+                        {
+                            var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                            htmlContent.WriteTo(sw, HtmlEncoder.Default);
+
+                            await sw.FlushAsync();
+                            return sw.ToString();
+                        }
                     }
                 });
 

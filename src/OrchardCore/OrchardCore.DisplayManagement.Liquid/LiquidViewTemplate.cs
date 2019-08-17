@@ -201,12 +201,18 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext != null)
             {
-                using (var writer = new StringWriter())
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    // Use the view engine to render the liquid page.
-                    viewContext.Writer = writer;
-                    await viewContext.View.RenderAsync(viewContext);
-                    return writer.ToString();
+                    using (var writer = new StringWriter())
+                    {
+                        // Use the view engine to render the liquid page.
+                        viewContext.Writer = writer;
+                        await viewContext.View.RenderAsync(viewContext);
+
+                        await writer.FlushAsync();
+                    }
+
+                    return sb.Builder.ToString();
                 }
             }
 

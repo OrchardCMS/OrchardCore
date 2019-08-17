@@ -97,26 +97,30 @@ namespace OrchardCore.DisplayManagement.Razor
             var actionContext = GetActionContext();
             var view = FindView(actionContext, viewName, viewEngine);
 
-            using (var output = new StringWriter())
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                var viewContext = new ViewContext(
-                    actionContext,
-                    view,
-                    new ViewDataDictionary(
-                        metadataProvider: new EmptyModelMetadataProvider(),
-                        modelState: new ModelStateDictionary())
-                    {
-                        Model = model
-                    },
-                    new TempDataDictionary(
-                        actionContext.HttpContext,
-                        _tempDataProvider),
-                    output,
-                    new HtmlHelperOptions());
+                using (var output = new StringWriter(sb.Builder))
+                {
+                    var viewContext = new ViewContext(
+                        actionContext,
+                        view,
+                        new ViewDataDictionary(
+                            metadataProvider: new EmptyModelMetadataProvider(),
+                            modelState: new ModelStateDictionary())
+                        {
+                            Model = model
+                        },
+                        new TempDataDictionary(
+                            actionContext.HttpContext,
+                            _tempDataProvider),
+                        output,
+                        new HtmlHelperOptions());
 
-                await view.RenderAsync(viewContext);
+                    await view.RenderAsync(viewContext);
+                    await output.FlushAsync();
+                }
 
-                return output.ToString();
+                return sb.Builder.ToString();
             }
         }
 
