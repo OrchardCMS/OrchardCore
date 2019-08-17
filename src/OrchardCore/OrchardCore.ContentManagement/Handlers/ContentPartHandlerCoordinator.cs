@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
@@ -13,7 +16,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
     public class ContentPartHandlerCoordinator : ContentHandlerBase
     {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
-        private readonly IEnumerable<IContentPartHandler> _partHandlers;
+        private readonly IContentPartHandler[] _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
 
@@ -26,7 +29,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
         {
             _contentPartFactory = contentPartFactory;
             _contentFieldFactory = contentFieldFactory;
-            _partHandlers = partHandlers;
+            _partHandlers = partHandlers as IContentPartHandler[] ?? partHandlers.ToArray();
             _contentDefinitionManager = contentDefinitionManager;
 
             Logger = logger;
@@ -66,9 +69,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, partName) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.ActivatedAsync(context, part), Logger);
                 }
@@ -86,9 +88,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.CreatingAsync(context, part), Logger);
                 }
@@ -106,9 +106,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.CreatedAsync(context, part), Logger);
                 }
@@ -142,9 +140,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.InitializedAsync(context, part), Logger);
                 }
@@ -155,7 +151,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
         {
             // This method is called on Get()
             // Adds all the missing parts to a content item based on the content type definition.
-            // A part is missing if the content type is changed and an old content item is loaded, 
+            // A part is missing if the content type is changed and an old content item is loaded,
             // like edited.
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
@@ -204,9 +200,7 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.LoadedAsync(context, part), Logger);
                 }
@@ -223,9 +217,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.PublishingAsync(context, part), Logger);
                 }
@@ -242,9 +235,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.PublishedAsync(context, part), Logger);
                 }
@@ -261,9 +253,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.RemovingAsync(context, part), Logger);
                 }
@@ -280,9 +271,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.RemovedAsync(context, part), Logger);
                 }
@@ -299,9 +289,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.UnpublishingAsync(context, part), Logger);
                 }
@@ -318,9 +307,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.UnpublishedAsync(context, part), Logger);
                 }
@@ -337,9 +325,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.UpdatingAsync(context, part), Logger);
                 }
@@ -356,9 +343,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
                 }
@@ -417,9 +403,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.GetContentItemAspectAsync(context, part), Logger);
                 }
@@ -435,9 +420,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.ClonedAsync(context, part), Logger);
                 }
@@ -453,9 +437,8 @@ namespace OrchardCore.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.CloningAsync(context, part), Logger);
                 }

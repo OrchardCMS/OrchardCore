@@ -1,31 +1,32 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
-    class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
+    public class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
     {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
-        private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
+        private readonly IContentLocalizationPartHandler[] _partHandlers;
         private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentLocalizationPartHandlerCoordinator> _logger;
 
         public ContentLocalizationPartHandlerCoordinator(
-
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentLocalizationPartHandler> partHandlers,
             ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
-            ILogger<ContentLocalizationPartHandlerCoordinator> logger
-        )
+            ILogger<ContentLocalizationPartHandlerCoordinator> logger)
         {
             _contentPartFactory = contentPartFactory;
-            _partHandlers = partHandlers;
+            _partHandlers = partHandlers as IContentLocalizationPartHandler[] ?? partHandlers.ToArray();
             _contentFieldFactory = contentFieldFactory;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
@@ -41,9 +42,8 @@ namespace OrchardCore.ContentLocalization.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.LocalizingAsync(context, part), _logger);
                 }
@@ -60,9 +60,8 @@ namespace OrchardCore.ContentLocalization.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync(handler => handler.LocalizedAsync(context, part), _logger);
                 }
