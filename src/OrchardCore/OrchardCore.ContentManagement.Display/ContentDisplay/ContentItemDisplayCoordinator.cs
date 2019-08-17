@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,9 +18,9 @@ namespace OrchardCore.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayCoordinator : IContentDisplayHandler
     {
-        private readonly IEnumerable<IContentDisplayDriver> _displayDrivers;
-        private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
-        private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
+        private readonly IContentDisplayDriver[] _displayDrivers;
+        private readonly IContentFieldDisplayDriver[] _fieldDisplayDrivers;
+        private readonly IContentPartDisplayDriver[] _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
@@ -33,9 +34,9 @@ namespace OrchardCore.ContentManagement.Display
         {
             _contentPartFactory = contentPartFactory;
             _contentDefinitionManager = contentDefinitionManager;
-            _displayDrivers = displayDrivers;
-            _fieldDisplayDrivers = fieldDisplayDrivers;
-            _partDisplayDrivers = partDisplayDrivers;
+            _displayDrivers = displayDrivers as IContentDisplayDriver[] ?? displayDrivers.ToArray();
+            _fieldDisplayDrivers = fieldDisplayDrivers as IContentFieldDisplayDriver[] ?? fieldDisplayDrivers.ToArray();
+            _partDisplayDrivers = partDisplayDrivers as IContentPartDisplayDriver[] ?? partDisplayDrivers.ToArray();
             Logger = logger;
         }
 
@@ -94,7 +95,7 @@ namespace OrchardCore.ContentManagement.Display
                     var tempContext = context;
 
                     // Create a custom ContentPart shape that will hold the fields for dynamic content part (not implicit parts)
-                    // This allows its fields to be grouped and templated 
+                    // This allows its fields to be grouped and templated
 
                     if (part.GetType() == typeof(ContentPart) && contentTypePartDefinition.PartDefinition.Name != contentTypePartDefinition.ContentTypeDefinition.Name)
                     {
