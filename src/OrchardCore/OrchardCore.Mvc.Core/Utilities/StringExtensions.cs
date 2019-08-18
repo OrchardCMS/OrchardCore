@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -393,7 +392,7 @@ namespace OrchardCore.Mvc.Utilities
             if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
             {
                 result = ToPascalCase(attribute, '_');
-                _underscorePascalCaseIndex = _underscorePascalCaseIndex.Add(attribute, result);
+                _underscorePascalCaseIndex = _underscorePascalCaseIndex.SetItem(attribute, result);
             }
 
             return result;
@@ -407,7 +406,7 @@ namespace OrchardCore.Mvc.Utilities
             if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
             {
                 result = ToPascalCase(attribute, '-');
-                _dashPascalCaseIndex = _dashPascalCaseIndex.Add(attribute, result);
+                _dashPascalCaseIndex = _dashPascalCaseIndex.SetItem(attribute, result);
             }
 
             return result;
