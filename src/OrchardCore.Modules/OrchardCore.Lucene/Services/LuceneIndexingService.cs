@@ -155,12 +155,9 @@ namespace OrchardCore.Lucene
                                 // Update the document from the index if its lastIndexId is smaller than the current task id. 
                                 await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
 
-                                foreach (var index in allIndices)
+                                if (currentIndexTask.Value < task.Id)
                                 {
-                                    if (index.Value < task.Id)
-                                    {
-                                        _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
-                                    }
+                                    _indexManager.StoreDocuments(currentIndexTask.Key, new DocumentIndex[] { context.DocumentIndex });
                                 }
                             }
                         }
