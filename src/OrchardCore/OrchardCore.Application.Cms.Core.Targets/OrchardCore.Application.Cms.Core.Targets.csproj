@@ -91,7 +91,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Widgets\OrchardCore.Widgets.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.XmlRpc\OrchardCore.XmlRpc.csproj" PrivateAssets="none" />
-    
+
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
   </ItemGroup>
 
