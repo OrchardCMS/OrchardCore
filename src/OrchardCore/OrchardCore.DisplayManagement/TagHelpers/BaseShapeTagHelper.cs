@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             {
                 if (!InternalProperties.Contains(pair.Name))
                 {
-                    properties[pair.Name.ToPascalCase('-')] = pair.Value.ToString();
+                    properties[pair.Name.ToPascalCaseDash()] = pair.Value.ToString();
                 }
             }
 

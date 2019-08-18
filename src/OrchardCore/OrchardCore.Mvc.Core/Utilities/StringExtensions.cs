@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -380,6 +381,59 @@ namespace OrchardCore.Mvc.Utilities
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
+        private static Dictionary<string, string> _underscorePascalCaseIndex = new Dictionary<string, string>();
+        private static Dictionary<string, string> _dashPascalCaseIndex = new Dictionary<string, string>();
+        private static object _synLock = new object();
+
+        /// <summary>
+        /// Converts a liquid attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseUnderscore(this string attribute)
+        {
+            if (_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                return result;
+            }
+
+            lock (_synLock)
+            {
+                result = ToPascalCase(attribute, '_');
+
+                // Clone the dictionary as the existing one can be used by other threads
+
+                _underscorePascalCaseIndex = new Dictionary<string, string>(_underscorePascalCaseIndex);
+                _underscorePascalCaseIndex.Add(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts an html attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseDash(this string attribute)
+        {
+            if (_dashPascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                return result;
+            }
+
+            lock (_synLock)
+            {
+                result = ToPascalCase(attribute, '-');
+
+                // Clone the dictionary as the existing one can be used by other threads
+
+                _dashPascalCaseIndex = new Dictionary<string, string>(_dashPascalCaseIndex);
+                _dashPascalCaseIndex.Add(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts a string to pascal case.
+        /// </summary>
         public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
             var nextIsUpper = true;
