@@ -376,8 +376,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Cms.Core.Targets", "src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.csproj", "{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Lucene.FrenchAnalyzer", "src\OrchardCore.Modules\OrchardCore.Lucene.FrenchAnalyzer\OrchardCore.Lucene.FrenchAnalyzer.csproj", "{351B838D-6829-4A1B-9B54-5FA7287AE68E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1004,10 +1002,6 @@ Global
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{351B838D-6829-4A1B-9B54-5FA7287AE68E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{351B838D-6829-4A1B-9B54-5FA7287AE68E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{351B838D-6829-4A1B-9B54-5FA7287AE68E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{351B838D-6829-4A1B-9B54-5FA7287AE68E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1185,7 +1179,6 @@ Global
 		{E8594DF8-5E41-4D24-B7DE-3AD0C1D035BA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{72B9B2A0-1166-4744-AB08-8704DD9CC8AC} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2} = {3398AB60-2DB7-464C-B211-C4120BE75582}
-		{351B838D-6829-4A1B-9B54-5FA7287AE68E} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
