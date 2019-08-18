@@ -180,7 +180,13 @@ Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\
     1. Add Snap-In 'Certificates' for Computer Account
     2. Right-Click relevant certificate and select All Tasks, Manage Private Keys
     3. Add the relevant identity (e.g. IIS AppPool\PoolName)
-    4. Check Allow Read
+        + Add        
+        + Advanced
+        + Locations: Choose iis server machine name
+        + Find Now
+        + Search Results: Choose your iisServerMachineName\IIS_IUSRS (just one example)
+        + OK
+    4. Check Allow Read under Permissions
 + `WinHttpCertCfg.exe` (grants Full Control)
     1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
 

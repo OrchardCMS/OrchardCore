@@ -44,8 +44,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         static LiquidViewTemplate()
         {
-            FluidValue.TypeMappings.Add(typeof(Shape), o => new ObjectValue(o));
-            FluidValue.TypeMappings.Add(typeof(ZoneHolding), o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<Shape>(o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<ZoneHolding>(o => new ObjectValue(o));
 
             TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
             TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
@@ -176,6 +176,51 @@ namespace OrchardCore.DisplayManagement.Liquid
         public static Task RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
             IServiceProvider services, TextWriter writer, TextEncoder encoder, TemplateContext templateContext)
         {
+            templateContext.AddAsyncFilters(options, services);
+
+            // Check if a 'ViewContext' has been cached for rendering.
+            var viewContext = templateContext.GetAmbientViewContext(encoder, template);
+
+            if (viewContext != null)
+            {
+                viewContext.Writer = writer;
+
+                // Use the view engine to render the liquid page.
+                return viewContext.View.RenderAsync(viewContext);
+            }
+
+            // Otherwise, we don't need the view engine for rendering.
+            return template.RenderAsync(writer, encoder, templateContext);
+        }
+
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, LiquidOptions options,
+            IServiceProvider services, TextEncoder encoder, TemplateContext templateContext)
+        {
+            templateContext.AddAsyncFilters(options, services);
+
+            // Check if a 'ViewContext' has been cached for rendering.
+            var viewContext = templateContext.GetAmbientViewContext(encoder, template);
+
+            if (viewContext != null)
+            {
+                using (var writer = new StringWriter())
+                {
+                    // Use the view engine to render the liquid page.
+                    viewContext.Writer = writer;
+                    await viewContext.View.RenderAsync(viewContext);
+                    return writer.ToString();
+                }
+            }
+
+            // Otherwise, we don't need the view engine for rendering.
+            return await template.RenderAsync(templateContext, encoder);
+        }
+    }
+
+    public static class TemplateContextExtensions
+    {
+        internal static void AddAsyncFilters(this TemplateContext templateContext, LiquidOptions options, IServiceProvider services)
+        {
             foreach (var registration in options.FilterRegistrations)
             {
                 templateContext.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>
@@ -185,7 +230,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return filter.ProcessAsync(input, arguments, ctx);
                 });
             }
+        }
 
+        internal static ViewContext GetAmbientViewContext(this TemplateContext templateContext, TextEncoder encoder, LiquidViewTemplate template)
+        {
             // Check if a 'ViewContext' has been cached for rendering.
             if (templateContext.AmbientValues.TryGetValue("ViewContext", out var context) &&
                 context is ViewContext viewContext &&
@@ -198,19 +246,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return template.RenderAsync(output, encoder, templateContext);
                 };
 
-                viewContext.Writer = writer;
-
-                // Use the view engine to render the liquid page.
-                return viewContext.View.RenderAsync(viewContext);
+                return viewContext;
             }
 
             // Otherwise, we don't need the view engine for rendering.
-            return template.RenderAsync(writer, encoder, templateContext);
+            return null;
         }
-    }
 
-    public static class TemplateContextExtensions
-    {
         public static async Task ContextualizeAsync(this TemplateContext context, IServiceProvider services)
         {
             if (!context.AmbientValues.ContainsKey("Services"))

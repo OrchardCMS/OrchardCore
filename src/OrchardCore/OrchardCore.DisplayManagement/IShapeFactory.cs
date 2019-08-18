@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement
         {
             return factory.CreateAsync(shapeType, Arguments.From(model));
         }
-        
+
         private static IShape CreateShape(Type baseType)
         {
             // Don't generate a proxy for shape types
@@ -95,10 +95,10 @@ namespace OrchardCore.DisplayManagement
             });
         }
 
-        public static Task<IShape> CreateAsync(this IShapeFactory factory, string shapeType, INamedEnumerable<object> parameters = null)
+        public static Task<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters = null)
         {
-            return factory.CreateAsync(shapeType, NewShape, null, createdContext => {
-
+            return factory.CreateAsync(shapeType, NewShape, null, createdContext =>
+            {
                 var shape = (Shape)createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy
