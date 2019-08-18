@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Taxonomies.Indexing;
 
@@ -29,9 +30,9 @@ namespace OrchardCore.Taxonomies
             SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("ContentType", column => column.WithLength(255))
-                .Column<string>("ContentPart", column => column.WithLength(255))
-                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
+                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
             );
 
