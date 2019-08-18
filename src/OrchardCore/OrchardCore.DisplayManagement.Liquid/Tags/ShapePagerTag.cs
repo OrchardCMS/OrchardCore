@@ -35,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     foreach (var name in arguments.Names)
                     {
                         var argument = arguments[name];
-                        var propertyName = name.ToPascalCase('_');
+                        var propertyName = name.ToPascalCaseUnderscore();
 
                         if (_properties.Contains(propertyName))
                         {
