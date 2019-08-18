@@ -94,7 +94,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             foreach (var name in arguments.Names)
             {
-                var propertyName = name.ToPascalCase('_');
+                var propertyName = name.ToPascalCaseUnderscore();
 
                 var found = false;
 

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
@@ -47,7 +45,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             {
                 if (!InternalProperties.Contains(pair.Name))
                 {
-                    properties[pair.Name.ToPascalCase('-')] = pair.Value.ToString();
+                    properties[pair.Name.ToPascalCaseDash()] = pair.Value.ToString();
                 }
             }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
@@ -380,24 +381,44 @@ namespace OrchardCore.Mvc.Utilities
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
-        public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
+        private static ImmutableDictionary<string, string> _underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+        private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+
+        /// <summary>
+        /// Converts a liquid attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseUnderscore(this string attribute)
         {
-            attribute = attribute.Trim();
-            foreach (var c in attribute)
+            if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
             {
-                if (c == upperAfterDelimiter)
-                {
-                    return DoPascalCase(attribute, upperAfterDelimiter);
-                }
+                result = ToPascalCase(attribute, '_');
+                _underscorePascalCaseIndex = _underscorePascalCaseIndex.SetItem(attribute, result);
             }
 
-            // no need
-            return attribute;
+            return result;
         }
 
-        private static string DoPascalCase(string attribute, char upperAfterDelimiter)
+        /// <summary>
+        /// Converts an html attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseDash(this string attribute)
+        {
+            if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                result = ToPascalCase(attribute, '-');
+                _dashPascalCaseIndex = _dashPascalCaseIndex.SetItem(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts a string to pascal case.
+        /// </summary>
+        public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
             var nextIsUpper = true;
+            attribute = attribute.Trim();
             var result = new StringBuilder(attribute.Length);
             foreach (var c in attribute)
             {

@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             foreach (var name in arguments.Names)
             {
-                properties.Add(name.ToPascalCase('_'), arguments[name].ToObjectValue());
+                properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
             }
 
             return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
