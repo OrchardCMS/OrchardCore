@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 

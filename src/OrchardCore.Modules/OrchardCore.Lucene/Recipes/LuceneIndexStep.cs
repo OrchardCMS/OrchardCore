@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {

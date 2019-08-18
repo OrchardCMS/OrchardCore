@@ -22,6 +22,7 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {
