@@ -63,6 +63,22 @@ namespace OrchardCore.Media
         {
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
+            // Register a media cache file provider.
+            services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
+            {
+                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                var mediaCachePath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsCachePath);
+
+                if (!Directory.Exists(mediaCachePath))
+                {
+                    Directory.CreateDirectory(mediaCachePath);
+                }
+                return new MediaFileProvider(mediaOptions.AssetsRequestPath, mediaCachePath);
+            });
+
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -101,6 +117,8 @@ namespace OrchardCore.Media
             services.TryAddEnumerable(ServiceDescriptor.Singleton<ICdnPathProvider, IMediaFileStorePathProvider>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStorePathProvider>()));
 
+            services.AddScoped<IMediaCacheManager, MediaCacheManager>();
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -117,13 +135,10 @@ namespace OrchardCore.Media
             // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            //TODO consider.
-            services.AddSingleton<IMediaImageCache, MediaFileCache>();
-
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
                 .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache(serviceProvider => serviceProvider.GetRequiredService<IMediaImageCache>())
+                .SetCache<MediaFileCache>()
                 .SetCacheHash<CacheHash>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ResizeWebProcessor>()
@@ -150,14 +165,12 @@ namespace OrchardCore.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
-
+            var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+            var mediaFileStoreCacheProvider = serviceProvider.GetService<IMediaFileStoreCacheProvider>();
 
-            var mediaCacheFileProvider = serviceProvider.GetService<IMediaCacheFileProvider>();
-
-            // FileStore middleware before ImageSharp, but only if a remote storage module has registered it.
-            if (mediaCacheFileProvider != null)
+            // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
+            if (mediaFileStoreCacheProvider != null)
             {
                 app.UseMiddleware<MediaFileStoreResolverMiddleware>();
             }

@@ -49,27 +49,13 @@ namespace OrchardCore.Media.Azure
                     services.Remove(staticFileProviderDescriptor);
                 }
 
-                // Register a media cache file provider.
-                services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
-                {
-                    var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-
-                    var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-                    var mediaPath = GetMediaCachePath(shellOptions.Value, shellSettings, blobStorageOptions.AssetsCachePath);
-
-                    if (!Directory.Exists(mediaPath))
-                    {
-                        Directory.CreateDirectory(mediaPath);
-                    }
-                    return new MediaBlobFileProvider(mediaOptions.AssetsRequestPath, mediaPath);
-                });
-
                 // Replace the default media file provider with the media cache file provider.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
                     serviceProvider.GetRequiredService<IMediaCacheFileProvider>()));
+
+                // Register the media cache file provider as a file store cache provider.
+                services.AddSingleton<IMediaFileStoreCacheProvider>(serviceProvider =>
+                    (IMediaFileStoreCacheProvider)serviceProvider.GetRequiredService<IMediaCacheFileProvider>());
 
                 // Replace the default media file store with a blob file store.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
@@ -83,7 +69,6 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider, mediaOptions);
                 }));
 
-
                 // Add blob file store version provider.
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>());
             }
@@ -92,11 +77,6 @@ namespace OrchardCore.Media.Azure
             {
                 options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
             });
-        }
-
-        private string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsCachePath)
-        {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsCachePath);
         }
     }
 }

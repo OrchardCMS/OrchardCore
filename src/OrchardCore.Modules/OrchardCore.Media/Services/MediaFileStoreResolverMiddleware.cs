@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Services
 
         private readonly RequestDelegate _next;
         private readonly ILogger<MediaFileStoreResolverMiddleware> _logger;
-        private readonly IMediaCacheFileProvider _mediaCacheFileProvider;
+        private readonly IMediaFileStoreCacheProvider _mediaFileStoreCacheProvider;
         private readonly IMediaFileStore _mediaFileStore;
 
         private readonly PathString _assetsRequestPath;
@@ -32,14 +32,14 @@ namespace OrchardCore.Media.Services
         public MediaFileStoreResolverMiddleware(
             RequestDelegate next,
             ILogger<MediaFileStoreResolverMiddleware> logger,
-            IMediaCacheFileProvider mediaCacheFileProvider,
+            IMediaFileStoreCacheProvider mediaFileStoreCacheProvider,
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> mediaOptions
             )
         {
             _next = next;
             _logger = logger;
-            _mediaCacheFileProvider = mediaCacheFileProvider;
+            _mediaFileStoreCacheProvider = mediaFileStoreCacheProvider;
             _mediaFileStore = mediaFileStore;
 
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
@@ -80,7 +80,7 @@ namespace OrchardCore.Media.Services
             }
 
 
-            var fileInfo = _mediaCacheFileProvider.GetFileInfo(subPath);
+            var fileInfo = _mediaFileStoreCacheProvider.GetFileInfo(subPath);
             if (fileInfo.Exists)
             {
                 // TODO Consider how to provide a graceful cache period on this, 
@@ -123,7 +123,8 @@ namespace OrchardCore.Media.Services
                     {
                         using (var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry))
                         {
-                            var cachePath = _mediaCacheFileProvider.BuildFilePath(fileStoreEntry.Path);
+                            // File store semantics include a leading slash.
+                            var cachePath = Path.Combine(_mediaFileStoreCacheProvider.Root, fileStoreEntry.Path.Substring(1));
                             var directory = Path.GetDirectoryName(cachePath);
 
                             if (!Directory.Exists(directory))
@@ -131,7 +132,7 @@ namespace OrchardCore.Media.Services
                                 Directory.CreateDirectory(directory);
                             }
 
-                            using (var fileStream = File.Create(_mediaCacheFileProvider.BuildFilePath(fileStoreEntry.Path)))
+                            using (var fileStream = File.Create(cachePath))
                             {
                                 await stream.CopyToAsync(fileStream, StreamCopyBufferSize, context.RequestAborted);
                             }

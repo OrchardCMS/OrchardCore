@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly IMediaImageCache _mediaImageCache;
+        private readonly IMediaCacheManager _mediaCacheManager;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
@@ -33,7 +33,7 @@ namespace OrchardCore.Media.Controllers
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
-            IMediaImageCache mediaImageCache,
+            IMediaCacheManager mediaCacheManager,
             INotifier notifier,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
@@ -44,7 +44,7 @@ namespace OrchardCore.Media.Controllers
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _mediaImageCache = mediaImageCache;
+            _mediaCacheManager = mediaCacheManager;
             _notifier = notifier;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
@@ -73,16 +73,22 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClearMediaCache()
+        public async Task<IActionResult> PurgeMediaCache()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
             {
                 return Unauthorized();
             }
 
-            await _mediaImageCache.ClearMediaCacheAsync();
-
-            _notifier.Error(H["Media cache cleared."]);
+            var hasErrors = await _mediaCacheManager.ClearMediaCacheAsync();
+            if (hasErrors)
+            {
+                _notifier.Error(H["Media cache purged, with errors."]);
+            }
+            else
+            {
+                _notifier.Information(H["Media cache purged."]);
+            }
 
             return RedirectToAction("MediaCache");
         }

@@ -3,12 +3,12 @@
 <p class="alert alert-secondary">@T["Media is configured via appsettings.json."]</p>
 
 <form asp-action="MediaCache">
-    @* the form is necessary to generate and antiforgery token for the clear action *@
+    @* the form is necessary to generate and antiforgery token for the purge action *@
 
             <ul class="list-group">
                 <li class="list-group-item">
-                    <a asp-action="ClearMediaCache"
-                       class="btn btn-danger" data-title="@T["Clear Media Cache"]" data-message="Are you sure you want to clear the entire media cache?" itemprop="RemoveUrl UnsafeUrl">@T["Clear Media Cache"]</a>
+                    <a asp-action="PurgeMediaCache"
+                       class="btn btn-danger" data-title="@T["Purge Media Cache"]" data-message="Are you sure you want to purge the entire media cache?" itemprop="RemoveUrl UnsafeUrl">@T["Purge Media Cache"]</a>
                 </li>
              
             </ul>
