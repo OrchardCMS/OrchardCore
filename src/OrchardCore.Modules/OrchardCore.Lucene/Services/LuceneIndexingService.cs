@@ -56,7 +56,7 @@ namespace OrchardCore.Lucene
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
-            var allIndices = new Dictionary<string, int>();
+            var allIndicesStatus = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
             IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
@@ -75,7 +75,7 @@ namespace OrchardCore.Lucene
                 {
                     var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
-                    allIndices.Add(indexSetting.IndexName, taskId);
+                    allIndicesStatus.Add(indexSetting.IndexName, taskId);
                 }
             }
             else
@@ -89,10 +89,10 @@ namespace OrchardCore.Lucene
 
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
-                allIndices.Add(indexName, taskId);
+                allIndicesStatus.Add(indexName, taskId);
             }
 
-            if (allIndices.Count == 0)
+            if (allIndicesStatus.Count == 0)
             {
                 return;
             }
@@ -141,7 +141,7 @@ namespace OrchardCore.Lucene
                                 continue;
                             }
 
-                            var currentIndexTask = allIndices.Where(x => x.Key == indexSettings.IndexName).FirstOrDefault();
+                            var currentIndexTask = allIndicesStatus.Where(x => x.Key == indexSettings.IndexName).FirstOrDefault();
 
                             if (currentIndexTask.Value < task.Id)
                             {
@@ -166,7 +166,7 @@ namespace OrchardCore.Lucene
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
-                    foreach (var index in allIndices)
+                    foreach (var index in allIndicesStatus)
                     {
                         if (index.Value < lastTaskId)
                         {
