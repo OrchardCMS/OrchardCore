@@ -38,6 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<ILiquidTemplateEventHandler, CultureLiquidTemplateEventHandler>();
 
                 services.AddLiquidFilter<AppendVersionFilter>("append_version");
+                services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
             });
 
             return builder;

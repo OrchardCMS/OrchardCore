@@ -38,24 +38,35 @@ namespace OrchardCore.Lucene
 
             string sortField = null;
             string sortOrder = null;
+            var sortFields = new List<SortField>();
 
             if (sortProperty != null)
             {
                 if (sortProperty.Type == JTokenType.String)
                 {
                     sortField = sortProperty.ToString();
+                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
                 }
                 else if (sortProperty.Type == JTokenType.Object)
                 {
                     sortField = ((JProperty)sortProperty.First).Name;
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
+                }
+                else if (sortProperty.Type == JTokenType.Array)
+                {
+                    foreach (var item in sortProperty.Children()) {
+                        sortField = ((JProperty)item.First).Name;
+                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
+                        sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
+                    }
                 }
             }
 
             TopDocs docs = context.IndexSearcher.Search(
                 query,
                 size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
+                sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
             );
 
             if (from > 0)
