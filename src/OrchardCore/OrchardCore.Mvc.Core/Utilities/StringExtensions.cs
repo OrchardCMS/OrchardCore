@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Runtime.InteropServices.ComTypes;
@@ -381,28 +382,18 @@ namespace OrchardCore.Mvc.Utilities
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
-        private static Dictionary<string, string> _underscorePascalCaseIndex = new Dictionary<string, string>();
-        private static Dictionary<string, string> _dashPascalCaseIndex = new Dictionary<string, string>();
-        private static object _synLock = new object();
+        private static ImmutableDictionary<string, string> _underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+        private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
 
         /// <summary>
         /// Converts a liquid attribute to pascal case
         /// </summary>
         public static string ToPascalCaseUnderscore(this string attribute)
         {
-            if (_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
-            {
-                return result;
-            }
-
-            lock (_synLock)
+            if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
             {
                 result = ToPascalCase(attribute, '_');
-
-                // Clone the dictionary as the existing one can be used by other threads
-
-                _underscorePascalCaseIndex = new Dictionary<string, string>(_underscorePascalCaseIndex);
-                _underscorePascalCaseIndex.Add(attribute, result);
+                _underscorePascalCaseIndex = _underscorePascalCaseIndex.Add(attribute, result);
             }
 
             return result;
@@ -413,19 +404,10 @@ namespace OrchardCore.Mvc.Utilities
         /// </summary>
         public static string ToPascalCaseDash(this string attribute)
         {
-            if (_dashPascalCaseIndex.TryGetValue(attribute, out var result))
-            {
-                return result;
-            }
-
-            lock (_synLock)
+            if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
             {
                 result = ToPascalCase(attribute, '-');
-
-                // Clone the dictionary as the existing one can be used by other threads
-
-                _dashPascalCaseIndex = new Dictionary<string, string>(_dashPascalCaseIndex);
-                _dashPascalCaseIndex.Add(attribute, result);
+                _dashPascalCaseIndex = _dashPascalCaseIndex.Add(attribute, result);
             }
 
             return result;
