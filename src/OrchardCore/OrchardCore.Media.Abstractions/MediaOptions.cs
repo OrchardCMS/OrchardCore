@@ -38,11 +38,6 @@ namespace OrchardCore.Media
         public string CdnBaseUrl { get; set; }
 
         /// <summary>
-        /// Specify the type of cache to use when resizing media, defaults to the Physical disc cache.
-        /// </summary>
-        public CacheConfiguration CacheConfiguration { get; set; }
-
-        /// <summary>
         /// The request path used to route asset files.
         /// </summary>
         public PathString AssetsRequestPath { get; set; }

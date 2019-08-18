@@ -1,22 +1,19 @@
-using System;
+using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
-using OrchardCore.Media.Azure.Middleware;
 using OrchardCore.Media.Azure.Processing;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace OrchardCore.Media.Azure
 {
@@ -53,9 +50,29 @@ namespace OrchardCore.Media.Azure
                     services.Remove(staticFileProviderDescriptor);
                 }
 
-                // Remove the IMediaFileProvider as we no longer need to serve media from the StaticFileMiddleware.
-                services.RemoveAll<IMediaFileProvider>();
+                // Register a media cache file provider.
+                services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
+                {
+                    var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
 
+                    var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+                    var mediaPath = GetMediaCachePath(shellOptions.Value, shellSettings, blobStorageOptions.AssetsCachePath);
+
+                    if (!Directory.Exists(mediaPath))
+                    {
+                        Directory.CreateDirectory(mediaPath);
+                    }
+                    return new MediaBlobFileProvider(mediaOptions.AssetsRequestPath, mediaPath);
+                });
+
+                // Replace the default media file provider with the media cache file provider.
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
+                    serviceProvider.GetRequiredService<IMediaCacheFileProvider>()));
+
+                // Replace the default media file store with a blob file store.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
@@ -80,18 +97,10 @@ namespace OrchardCore.Media.Azure
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        // TODO to extension on IMediaFileProvider
+        private string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
-            // Only use middleware if options are valid, and services replaced.
-            var mediaBlobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(mediaBlobStorageOptions.ConnectionString, mediaBlobStorageOptions.ContainerName, _logger))
-            {
-                // Media filestore middleware before ImageSharp.
-                app.UseMiddleware<MediaFileStoreMiddleware>();
-
-                // ImageSharp after the media filestore middleware.
-                app.UseImageSharp();
-            }
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
     }
 }

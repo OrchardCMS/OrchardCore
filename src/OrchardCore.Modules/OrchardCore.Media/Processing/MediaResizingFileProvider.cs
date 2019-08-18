@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Helpers;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -15,18 +17,18 @@ namespace OrchardCore.Media.Processing
 {
     public class MediaResizingFileProvider : IImageProvider
     {
-        private readonly IMediaFileResolverFactory _mediafileResolveFactory;
+        private readonly IMediaFileProvider _mediaFileProvider;
         private readonly FormatUtilities _formatUtilities;
         private readonly int[] _supportedSizes;
         private readonly PathString _assetsRequestPath;
 
         public MediaResizingFileProvider(
-            IMediaFileResolverFactory mediaFileResolverFactory,
+            IMediaFileProvider mediaFileProvider,
             IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
             IOptions<MediaOptions> mediaOptions
             )
         {
-            _mediafileResolveFactory = mediaFileResolverFactory;
+            _mediaFileProvider = mediaFileProvider;
             _formatUtilities = new FormatUtilities(imageSharpOptions.Value.Configuration);
             _supportedSizes = mediaOptions.Value.SupportedSizes;
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
@@ -81,9 +83,22 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <inheritdoc/>
-        public async Task<IImageResolver> GetAsync(HttpContext context)
+        public Task<IImageResolver> GetAsync(HttpContext context)
         {
-            return await _mediafileResolveFactory.GetAsync(context);
+            // Remove assets request path.
+            var path = context.Request.Path.Value.Substring(_mediaFileProvider.VirtualPathBase.Value.Length);
+
+            var fileInfo = _mediaFileProvider.GetFileInfo(path);
+
+            // Check to see if the file exists.
+            if (!fileInfo.Exists)
+            {
+                return Task.FromResult<IImageResolver>(null);
+            }
+
+            // We don't care about the content type nor cache control max age here.
+            var metadata = new ImageMetaData(fileInfo.LastModified.UtcDateTime);
+            return Task.FromResult<IImageResolver>(new PhysicalFileSystemResolver(fileInfo, metadata));
         }
     }
 }

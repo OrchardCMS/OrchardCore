@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Configuration
     {
         private readonly string _container;
 
-        public ShellConfigurationSources(IOptions<ShellOptions> shellOptions)
+        public ShellConfigurationSources(IHostingEnvironment hostingEnvironment, IOptions<ShellOptions> shellOptions)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);

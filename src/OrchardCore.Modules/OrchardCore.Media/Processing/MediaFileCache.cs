@@ -43,6 +43,7 @@ namespace OrchardCore.Media.Processing
             _isOptions = isOptions.Value;
             _formatUtilies = new FormatUtilities(_isOptions.Configuration);
 
+            //TODO the is-cache should be in it's own folder.
             _cachePath = GetMediaCachePath(shellOptions.Value, shellSettings, mediaOptions.Value.AssetsCachePath);
 
             if (!Directory.Exists(_cachePath))

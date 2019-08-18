@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -121,16 +120,7 @@ namespace OrchardCore.Media
             // Add MediaFileResolverFactory, which creates ImageSharp image resolvers. 
             services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
 
-            // Add an IMediaFileCache, which ImageSharp will share.
-            if (_shellConfiguration.GetSection("OrchardCore.Media")
-                .GetValue<CacheConfiguration>(nameof(MediaOptions.CacheConfiguration)) == CacheConfiguration.None)
-            {
-                services.TryAddSingleton<IMediaImageCache, NullMediaCache>();
-            }
-            else
-            {
-                services.TryAddSingleton<IMediaImageCache, MediaFileCache>();
-            }
+            services.AddSingleton<IMediaImageCache, MediaFileCache>();
 
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
@@ -164,22 +154,26 @@ namespace OrchardCore.Media
         {
             var mediaFileProvider = serviceProvider.GetService<IMediaFileProvider>();
 
-            // The MediaFileProvider maybe removed by Media.Azure, and the ImageSharp middleware reordered.
-            if (mediaFileProvider != null)
+            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+
+            var mediaCacheFileProvider = serviceProvider.GetService<IMediaCacheFileProvider>();
+
+            // FileStore middleware before ImageSharp, but only if a remote storage module has registered it.
+            if (mediaCacheFileProvider != null)
             {
-                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-
-                // ImageSharp before the static file provider.
-                app.UseImageSharp();
-
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    // The tenant's prefix is already implied by the infrastructure.
-                    RequestPath = mediaOptions.Value.AssetsRequestPath,
-                    FileProvider = mediaFileProvider,
-                    ServeUnknownFileTypes = true,
-                });
+                app.UseMiddleware<MediaFileStoreResolverMiddleware>();
             }
+
+            // ImageSharp before the static file provider.
+            app.UseImageSharp();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                // The tenant's prefix is already implied by the infrastructure.
+                RequestPath = mediaOptions.Value.AssetsRequestPath,
+                FileProvider = mediaFileProvider,
+                ServeUnknownFileTypes = true,
+            });
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
