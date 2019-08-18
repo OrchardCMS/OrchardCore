@@ -383,22 +383,7 @@ namespace OrchardCore.Mvc.Utilities
         public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
             attribute = attribute.Trim();
-
-            foreach (var c in attribute)
-            {
-                if (c == upperAfterDelimiter)
-                {
-                    return DoPascalCase(attribute, upperAfterDelimiter);
-                }
-            }
-
-            attribute = Char.ToUpperInvariant(attribute[0]) + attribute.Substring(1);
-            //var result = new StringBuilder(attribute.Length);
-            //result.Append(Char.ToUpperInvariant(attribute[0]));
-            //result.Append(attribute, 1, attribute.Length - 1);
-
-            // no need
-            return attribute;// result.ToString();
+            return DoPascalCase(attribute, upperAfterDelimiter);
         }
 
         private static string DoPascalCase(string attribute, char upperAfterDelimiter)
