@@ -27,9 +27,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
-            var queries = await queryManager.ListQueriesAsync();
 
             var changeToken = queryManager.ChangeToken;
+            var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<LuceneQuery>())
             {
