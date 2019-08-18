@@ -199,7 +199,6 @@ namespace OrchardCore.Lucene
         public void EditIndex(IndexSettings indexSettings)
         {
             _luceneIndexSettings.EditIndex(indexSettings);
-            RebuildIndex(indexSettings.IndexName);
         }
 
         /// <summary>
