@@ -117,9 +117,7 @@ namespace OrchardCore.Media
             // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            // Add MediaFileResolverFactory, which creates ImageSharp image resolvers. 
-            services.TryAddSingleton<IMediaFileResolverFactory, MediaFileResolverFactory>();
-
+            //TODO consider.
             services.AddSingleton<IMediaImageCache, MediaFileCache>();
 
             services.AddImageSharpCore()

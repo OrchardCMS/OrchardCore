@@ -10,7 +10,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
-using OrchardCore.Media.Azure.Processing;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
@@ -84,10 +83,8 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaFileStorePathProvider, mediaOptions);
                 }));
 
-                // Replace MediaFileResolverFactory with blob implementation.
-                services.Replace(ServiceDescriptor.Singleton<IMediaFileResolverFactory, MediaBlobFileResolverFactory>());
 
-                // Add Azure Blob FileStoreVersionProvider.
+                // Add blob file store version provider.
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>());
             }
 
@@ -97,10 +94,9 @@ namespace OrchardCore.Media.Azure
             });
         }
 
-        // TODO to extension on IMediaFileProvider
-        private string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+        private string GetMediaCachePath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsCachePath)
         {
-            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsCachePath);
         }
     }
 }
