@@ -141,11 +141,11 @@ namespace OrchardCore.Lucene
                                 continue;
                             }
 
-                            var currentIndexTask = allIndicesStatus.Where(x => x.Key == indexSettings.IndexName).FirstOrDefault();
+                            var currentIndexStatus = allIndicesStatus.Where(x => x.Key == indexSettings.IndexName).FirstOrDefault();
 
-                            if (currentIndexTask.Value < task.Id)
+                            if (currentIndexStatus.Value < task.Id)
                             {
-                                _indexManager.DeleteDocuments(currentIndexTask.Key, new string[] { task.ContentItemId });
+                                _indexManager.DeleteDocuments(currentIndexStatus.Key, new string[] { task.ContentItemId });
                             }
 
                             if (task.Type == IndexingTaskTypes.Update)
@@ -155,9 +155,9 @@ namespace OrchardCore.Lucene
                                 // Update the document from the index if its lastIndexId is smaller than the current task id. 
                                 await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
 
-                                if (currentIndexTask.Value < task.Id)
+                                if (currentIndexStatus.Value < task.Id)
                                 {
-                                    _indexManager.StoreDocuments(currentIndexTask.Key, new DocumentIndex[] { context.DocumentIndex });
+                                    _indexManager.StoreDocuments(currentIndexStatus.Key, new DocumentIndex[] { context.DocumentIndex });
                                 }
                             }
                         }
@@ -166,11 +166,11 @@ namespace OrchardCore.Lucene
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
-                    foreach (var index in allIndicesStatus)
+                    foreach (var indexStatus in allIndicesStatus)
                     {
-                        if (index.Value < lastTaskId)
+                        if (indexStatus.Value < lastTaskId)
                         {
-                            _indexingState.SetLastTaskId(index.Key, lastTaskId);
+                            _indexingState.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
 
