@@ -24,7 +24,7 @@ namespace OrchardCore.Lucene
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly LuceneIndexingState _indexingState;
-        private readonly LuceneIndexSettings _luceneIndexSettings;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
@@ -33,7 +33,7 @@ namespace OrchardCore.Lucene
             IShellHost shellHost,
             ShellSettings shellSettings,
             LuceneIndexingState indexingState,
-            LuceneIndexSettings luceneIndexSettings,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
@@ -42,7 +42,7 @@ namespace OrchardCore.Lucene
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _indexingState = indexingState;
-            _luceneIndexSettings = luceneIndexSettings;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
@@ -57,12 +57,12 @@ namespace OrchardCore.Lucene
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndices = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
-            IEnumerable<IndexSettings> indexSettingsList = null;
+            IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettings.List();
+                indexSettingsList = _luceneIndexSettingsService.List();
 
                 if (indexSettingsList == null)
                 {
@@ -79,7 +79,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettings.List().Where(x => x.IndexName == indexName);
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
 
                 if (indexSettingsList == null)
                 {
@@ -186,9 +186,9 @@ namespace OrchardCore.Lucene
         /// Creates a new index
         /// </summary>
         /// <returns></returns>
-        public void CreateIndex(IndexSettings indexSettings)
+        public void CreateIndex(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettings.CreateIndex(indexSettings);
+            _luceneIndexSettingsService.CreateIndex(indexSettings);
             RebuildIndex(indexSettings.IndexName);
         }
 
@@ -196,19 +196,19 @@ namespace OrchardCore.Lucene
         /// Edit an existing index
         /// </summary>
         /// <returns></returns>
-        public void EditIndex(IndexSettings indexSettings)
+        public void EditIndex(LuceneIndexSettings indexSettings)
         {
-            _luceneIndexSettings.EditIndex(indexSettings);
+            _luceneIndexSettingsService.EditIndex(indexSettings);
         }
 
         /// <summary>
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
-        public void DeleteIndex(IndexSettings indexSettings)
+        public void DeleteIndex(LuceneIndexSettings indexSettings)
         {
             _indexManager.DeleteIndex(indexSettings.IndexName);
-            _luceneIndexSettings.DeleteIndex(indexSettings);
+            _luceneIndexSettingsService.DeleteIndex(indexSettings);
         }
 
         /// <summary>

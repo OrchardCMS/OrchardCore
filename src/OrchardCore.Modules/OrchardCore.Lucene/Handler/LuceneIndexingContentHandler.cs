@@ -12,18 +12,18 @@ namespace OrchardCore.Lucene.Handlers
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
         private readonly LuceneIndexManager _luceneIndexManager;
-        private readonly LuceneIndexSettings _luceneIndexSettings;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<LuceneIndexingContentHandler> _logger;
 
         public LuceneIndexingContentHandler(
             LuceneIndexManager luceneIndexManager,
-            LuceneIndexSettings luceneIndexSettings,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             IServiceProvider serviceProvider,
             ILogger<LuceneIndexingContentHandler> logger)
         {
             _luceneIndexManager = luceneIndexManager;
-            _luceneIndexSettings = luceneIndexSettings;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
@@ -37,7 +37,7 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
@@ -55,7 +55,7 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     _luceneIndexManager.StoreDocuments(index, new DocumentIndex[] { buildIndexContext.DocumentIndex });
@@ -72,7 +72,7 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     if (indexSettings.IndexLatest)
@@ -93,7 +93,7 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     if (indexSettings.IndexLatest)
@@ -112,7 +112,7 @@ namespace OrchardCore.Lucene.Handlers
         {
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });
@@ -131,7 +131,7 @@ namespace OrchardCore.Lucene.Handlers
 
             foreach (var index in _luceneIndexManager.List())
             {
-                var indexSettings = _luceneIndexSettings.List().Where(x => x.IndexName == index).FirstOrDefault();
+                var indexSettings = _luceneIndexSettingsService.List().Where(x => x.IndexName == index).FirstOrDefault();
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                 {
                     _luceneIndexManager.DeleteDocuments(index, new string[] { context.ContentItem.ContentItemId });

@@ -16,10 +16,10 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Gets the list of indices and their settings.
         /// </summary>
-        public Dictionary<string, IndexSettings> IndexSettings { get; } = new Dictionary<string, IndexSettings>();
+        public Dictionary<string, LuceneIndexSettings> IndexSettings { get; } = new Dictionary<string, LuceneIndexSettings>();
     }
 
-    public class IndexSettings
+    public class LuceneIndexSettings
     {
         public string IndexName { get; set; }
 

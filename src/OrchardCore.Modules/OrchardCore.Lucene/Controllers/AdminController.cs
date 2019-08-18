@@ -28,7 +28,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly LuceneIndexSettings _luceneIndexSettings;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -39,7 +39,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            LuceneIndexSettings luceneIndexSettings,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
@@ -51,7 +51,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
-            _luceneIndexSettings = luceneIndexSettings;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -82,7 +82,7 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            var model = new AdminEditViewModel
+            var model = new LuceneIndexSettingsViewModel
             {
                 IndexName = "",
                 AnalyzerName = "standardanalyzer",
@@ -102,9 +102,9 @@ namespace OrchardCore.Lucene.Controllers
                 return Unauthorized();
             }
 
-            var settings = _luceneIndexSettings.List().Where(s => s.IndexName == indexName).FirstOrDefault();
+            var settings = _luceneIndexSettingsService.List().Where(s => s.IndexName == indexName).FirstOrDefault();
 
-            var model = new AdminEditViewModel
+            var model = new LuceneIndexSettingsViewModel
             {
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
@@ -118,7 +118,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost, ActionName("Edit")]
-        public async Task<ActionResult> EditPost(AdminEditViewModel model, string[] indexedContentTypes)
+        public async Task<ActionResult> EditPost(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -129,7 +129,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (!_luceneIndexManager.Exists(model.IndexName))
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} doesn't exists."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists."]);
             }
 
             if (!ModelState.IsValid)
@@ -139,7 +139,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = _luceneIndexSettings.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
+                var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 settings.AnalyzerName = model.AnalyzerName;
                 settings.IndexLatest = model.IndexLatest;
                 settings.IndexedContentTypes = model.IndexedContentTypes;
@@ -161,7 +161,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost, ActionName("Create")]
-        public async Task<ActionResult> CreatePOST(AdminEditViewModel model, string[] indexedContentTypes)
+        public async Task<ActionResult> CreatePOST(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -172,7 +172,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (_luceneIndexManager.Exists(model.IndexName))
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists."]);
             }
 
             if (!ModelState.IsValid)
@@ -182,7 +182,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
+                var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
                 _luceneIndexingService.CreateIndex(settings);
@@ -242,7 +242,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(AdminEditViewModel model)
+        public async Task<ActionResult> Delete(LuceneIndexSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -256,7 +256,7 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                var settings = _luceneIndexSettings.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
+                var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 _luceneIndexingService.DeleteIndex(settings);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
@@ -319,7 +319,7 @@ namespace OrchardCore.Lucene.Controllers
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettings.GetIndexAnalyzer(model.IndexName));
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
                 var templateContext = new TemplateContext();
@@ -351,15 +351,15 @@ namespace OrchardCore.Lucene.Controllers
             return View(model);
         }
 
-        private void ValidateModel(AdminEditViewModel model)
+        private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
             if (String.IsNullOrWhiteSpace(model.IndexName))
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["The index name is required."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }
             else if (model.IndexName.ToSafeName() != model.IndexName)
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["The index name contains unallowed chars."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
             }
         }
     }

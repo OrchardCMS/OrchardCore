@@ -12,12 +12,12 @@ namespace OrchardCore.Lucene
     /// This class persists the indexing state, a cursor, on the filesystem alongside the index itself.
     /// This state has to be on the filesystem as each node has its own local storage for the index.
     /// </summary>
-    public class LuceneIndexSettings
+    public class LuceneIndexSettingsService
     {
         private readonly string _indexSettingsFilename;
-        private readonly List<IndexSettings> _indexSettings;
+        private readonly List<LuceneIndexSettings> _indexSettings;
 
-        public LuceneIndexSettings(
+        public LuceneIndexSettingsService(
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings
             )
@@ -34,10 +34,10 @@ namespace OrchardCore.Lucene
                 File.WriteAllText(_indexSettingsFilename, "");
             }
 
-            _indexSettings = JsonConvert.DeserializeObject<List<IndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<IndexSettings>();
+            _indexSettings = JsonConvert.DeserializeObject<List<LuceneIndexSettings>>(File.ReadAllText(_indexSettingsFilename)) ?? new List<LuceneIndexSettings>();
         }
 
-        public IEnumerable<IndexSettings> List() {
+        public IEnumerable<LuceneIndexSettings> List() {
             return _indexSettings;
         }
 
@@ -52,7 +52,7 @@ namespace OrchardCore.Lucene
             return null;
         }
 
-        public void EditIndex(IndexSettings settings)
+        public void EditIndex(LuceneIndexSettings settings)
         {
             lock (this)
             {
@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene
             }
         }
 
-        public void CreateIndex(IndexSettings settings)
+        public void CreateIndex(LuceneIndexSettings settings)
         {
             lock (this)
             {
@@ -72,7 +72,7 @@ namespace OrchardCore.Lucene
             }
         }
 
-        public void DeleteIndex(IndexSettings settings)
+        public void DeleteIndex(LuceneIndexSettings settings)
         {
             lock (this)
             {

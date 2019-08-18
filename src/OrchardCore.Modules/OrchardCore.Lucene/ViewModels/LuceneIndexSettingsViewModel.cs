@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Lucene.ViewModels
 {
-    public class AdminEditViewModel
+    public class LuceneIndexSettingsViewModel
     {
         public string IndexName { get; set; }
 

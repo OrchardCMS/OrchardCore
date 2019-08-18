@@ -36,7 +36,7 @@ namespace OrchardCore.Lucene
         private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly LuceneIndexSettings _luceneIndexSettings;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private static object _synLock = new object();
 
         public LuceneIndexManager(
@@ -45,7 +45,7 @@ namespace OrchardCore.Lucene
             ShellSettings shellSettings,
             ILogger<LuceneIndexManager> logger,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            LuceneIndexSettings luceneIndexSettings
+            LuceneIndexSettingsService luceneIndexSettingsService
             )
         {
             _clock = clock;
@@ -57,7 +57,7 @@ namespace OrchardCore.Lucene
 
             _rootDirectory = Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
-            _luceneIndexSettings = luceneIndexSettings;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
         public void CreateIndex(string indexName)
@@ -289,7 +289,7 @@ namespace OrchardCore.Lucene
                     if (!_writers.TryGetValue(indexName, out writer))
                     {
                         var directory = CreateDirectory(indexName);
-                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettings.GetIndexAnalyzer(indexName));
+                        var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(indexName));
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,

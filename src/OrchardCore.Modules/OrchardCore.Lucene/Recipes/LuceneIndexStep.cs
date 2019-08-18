@@ -30,7 +30,7 @@ namespace OrchardCore.Lucene.Recipes
                 return Task.CompletedTask;
             }
 
-            var indexSettingsList = context.Step["Indices"].ToObject<IEnumerable<IndexSettings>>();
+            var indexSettingsList = context.Step["Indices"].ToObject<IEnumerable<LuceneIndexSettings>>();
 
             foreach(var indexSettings in indexSettingsList)
             {
