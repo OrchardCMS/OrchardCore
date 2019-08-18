@@ -196,9 +196,6 @@ The following configuration values are used by default and can be customized:
       // A Cdn base url that will be prefixed to the request path when serving images.
       "CdnBaseUrl": "https://your-cdn.com",
 
-      // Whether to use a physical disk cache for resized media, Physical or None. Use None when serving from a Cdn.
-      "CacheConfiguration": "Physical",
-
       // The path used when serving media assets.
       "AssetsRequestPath": "/media",
 

@@ -20,19 +20,3 @@ The following configuration values are used by default and can be customized:
     },
 
 ```
-
-## CREDITS
-
-### ImageSharp
-
-<https://sixlabors.com/projects/imagesharp/>
-
-Copyright 2012 James South
-Licensed under the Apache License, Version 2.0
-
-### AspNetCore 
-
-<https://github.com/aspnet/AspNetCore>
-
-Copyright (c) .NET Foundation. All rights reserved.
-Licensed under the Apache License, Version 2.0.
