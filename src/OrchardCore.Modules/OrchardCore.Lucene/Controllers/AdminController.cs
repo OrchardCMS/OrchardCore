@@ -104,12 +104,11 @@ namespace OrchardCore.Lucene.Controllers
 
             var settings = _luceneIndexSettings.List().Where(s => s.IndexName == indexName).FirstOrDefault();
 
-
             var model = new AdminEditViewModel
             {
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
-                IndexDrafted = settings.IndexDrafted,
+                IndexLatest = settings.IndexLatest,
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
@@ -140,17 +139,14 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
-                // We call Rebuild in order to reset the index state cursor too in case the same index
-                // name was also used previously.
-
                 var settings = _luceneIndexSettings.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 settings.AnalyzerName = model.AnalyzerName;
-                settings.IndexDrafted = model.IndexDrafted;
+                settings.IndexLatest = model.IndexLatest;
                 settings.IndexedContentTypes = model.IndexedContentTypes;
 
-                //_luceneIndexSettings.CreateIndex(settings);
+                // We call Rebuild in order to reset the index state cursor too in case the same index
+                // name was also used previously.
                 _luceneIndexingService.EditIndex(settings);
-                //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
             {
@@ -186,14 +182,10 @@ namespace OrchardCore.Lucene.Controllers
 
             try
             {
+                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes };
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
-
-
-                var settings = new IndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexDrafted = model.IndexDrafted, IndexedContentTypes = indexedContentTypes };
-                //_luceneIndexSettings.CreateIndex(settings);
                 _luceneIndexingService.CreateIndex(settings);
-                //await _luceneIndexingService.ProcessContentItemsAsync();
             }
             catch (Exception e)
             {

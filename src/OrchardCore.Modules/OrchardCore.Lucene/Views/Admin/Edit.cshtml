@@ -19,17 +19,18 @@
 
     <fieldset class="form-group">
         <label asp-for="IndexedContentTypes">@T["Content Types"]</label>
-        <span class="hint">@T["The content types to index. Choose at least one."]</span>
+        <span class="hint">— @T["The content types to index. Choose at least one."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })
     </fieldset>
 
     <div class="form-group" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index options"]</label>
         <div class="custom-control custom-checkbox">
-            <input type="checkbox" asp-for="IndexDrafted" class="custom-control-input">
-            <label class="custom-control-label" asp-for="IndexDrafted">@T["Include drafts"]</label>
+            <input type="checkbox" asp-for="IndexLatest" class="custom-control-input">
+            <label class="custom-control-label" asp-for="IndexLatest">@T["Index draft (latest)"]</label>
+            <span class="hint">— @T["Whether we index the published content item or draft (latest)."]</span>
         </div>
-        <span asp-validation-for="IndexDrafted" class="text-danger"></span>
+        <span asp-validation-for="IndexLatest" class="text-danger"></span>
     </div>
 
     <fieldset>

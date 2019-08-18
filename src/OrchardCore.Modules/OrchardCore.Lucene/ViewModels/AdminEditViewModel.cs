@@ -10,7 +10,7 @@ namespace OrchardCore.Lucene.ViewModels
 
         public string AnalyzerName { get; set; }
 
-        public bool IndexDrafted { get; set; }
+        public bool IndexLatest { get; set; }
 
         public string[] IndexedContentTypes { get; set; }
 
