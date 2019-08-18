@@ -22,10 +22,6 @@ namespace OrchardCore.Indexing
             return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Update);
         }
 
-        //public override Task VersionedAsync(VersionContentContext context) {
-        //    return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Update);
-        //}
-
         public override Task PublishedAsync(PublishContentContext context)
         {
             return _indexingTaskManager.CreateTaskAsync(context.ContentItem, IndexingTaskTypes.Update);
