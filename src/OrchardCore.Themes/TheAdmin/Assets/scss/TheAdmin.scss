@@ -11,6 +11,8 @@
 @import "codemirror.scss";
 
 $top-nav-height: 49px;
+$top-nav-height-pc:72px;
+$top-nav-height-mobile: 112px;
 $footer-height: 40px;
 $left-navigation-width: 260px;
 $left-navigation-width-when-compact: 48px;
@@ -77,46 +79,16 @@ body {
 }
 
 
-.ta-navbar-brand {
-    @extend .navbar-brand;
-    overflow: hidden;
-    width: 230px;
-    height: 42px;
-    margin-left: 11px;
-    margin-right: 24px;
-    padding-left: 36px;
-    padding-top: 10px;
+.brand-name {
+    margin-left: 25px;
+}
+
+.brand-logo {
     background-image: url(../logo.png);
     background-repeat: no-repeat;
-    background-position: left center;
     background-size: 28px auto;
-    white-space: nowrap;
-    font-size: 14px;
-    transition: width 0.2s ease-in-out;
-
-    span:first-child {
-        margin-left: 5px;
-    }
-
-    span:last-child {
-        font-weight: bold;
-        color: rgba(0,120,212,1);
-    }
+    background-position-y: center;
 }
-
-
-// When left-sidebar is compact nav brand is compacted too.
-// It displays logo only, not text.
-.left-sidebar-compact .ta-navbar-brand {
-    width: 30px;
-    height: 42px;
-
-    span {
-        display: none;
-    }
-}
-
-
 
 // Layout 2 : ta-content
 // -----------------------------
@@ -150,118 +122,839 @@ body {
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
 
-body:not(.left-sidebar-compact) {
-    #ta-left-sidebar {
-        background-color: #EAEAEA;
-        z-index: 7;
-        position: fixed;
-        top: $top-nav-height;
-        bottom: 0;
-        left: 0px;
-        width: $left-navigation-width;
-        color: $gray-800;
-        border-right: $border-content;
-        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-        font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-        // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
-            .chevron {
-                transform: rotate(90deg);
-                transition-duration: 0.2s;
+@media(min-width: 576px) {
+    body:not(.left-sidebar-compact) {
+        #ta-left-sidebar {
+            background-color: #EAEAEA;
+            z-index: 7;
+            position: fixed;
+            top: $top-nav-height-pc;
+            bottom: 0;
+            left: 0px;
+            width: $left-navigation-width;
+            color: $gray-800;
+            border-right: $border-content;
+            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+            font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            // Rotate the chevron's icon when the menu is active
+            label[aria-expanded="true"] {
+                .chevron {
+                    transform: rotate(90deg);
+                    transition-duration: 0.2s;
+                }
             }
-        }
 
-        label[aria-expanded="false"] {
-            .chevron {
-                transition-duration: 0.2s;
+            label[aria-expanded="false"] {
+                .chevron {
+                    transition-duration: 0.2s;
+                }
             }
-        }
 
-        .collapse {
-            display: none;
-        }
+            .collapse {
+                display: none;
+            }
 
-        .collapse.show {
-            display: block;
-        }
+            .collapse.show {
+                display: block;
+            }
 
-        .chevron {
-            position: absolute;
-            top: 38%;
-            left: 100%;
-            margin-left: -25px;
-        }
+            .chevron {
+                position: absolute;
+                top: 38%;
+                left: 100%;
+                margin-left: -25px;
+            }
 
-        label, a {
-            position: relative;
-            display: block;
-            margin: 0;
-        }
-
-        #left-nav {
-            position: relative;
-            height: calc(100% - 50px);
-
-            ul {
+            label, a {
+                position: relative;
+                display: block;
                 margin: 0;
-                padding: 0;
-                white-space: nowrap;
             }
 
-            > ul {
+            #left-nav {
+                position: relative;
+                height: calc(100% - 50px);
 
-                li {
-                    position: relative;
+                ul {
                     margin: 0;
                     padding: 0;
-                    display: list-item;
-                    list-style: none;
-
-                    .item-label {
-                        cursor: pointer;
-                    }
+                    white-space: nowrap;
                 }
 
-                > li {
-                    line-height: 3em;
-                    width: $left-navigation-width;
-                    transition: width 0.2s ease-in-out;
-                    background-color: #EAEAEA;
+                > ul {
 
-                    &:first-child:after {
+                    li {
+                        position: relative;
+                        margin: 0;
+                        padding: 0;
+                        display: list-item;
+                        list-style: none;
+
+                        .item-label {
+                            cursor: pointer;
+                        }
+                    }
+
+                    > li {
+                        line-height: 3em;
+                        width: $left-navigation-width;
+                        transition: width 0.2s ease-in-out;
+                        background-color: #EAEAEA;
+
+                        &:first-child:after {
+                            content: "";
+                            width: 92%;
+                            height: 1px;
+                            background: rgba(0, 0, 0, 0.1);
+                            display: block;
+                            margin: 0px auto 4px auto;
+                            position: absolute;
+                            left: 10px;
+                        }
+                    }
+
+                    > li > ul > li {
+                        line-height: 2.5em;
+                    }
+                    // first level menu items that have no items and are active
+                    > li.active:not(.has-items)::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
                         content: "";
-                        width: 92%;
-                        height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
-                        display: block;
-                        margin: 0px auto 4px auto;
+                        left: 0;
                         position: absolute;
-                        left: 10px;
+                        top: 0;
+                    }
+                    // changing the padding of the icons on the first level to match
+                    // the padding when leftbar is collapsed. Avoid small movement
+                    // when switching between the two states
+                    &.menu-admin {
+                        margin-bottom: 40px;
+
+                        .item-label {
+                            padding-left: 0px !important;
+                            display: flex;
+
+                            > span.icon {
+                                padding: 0 5px;
+                                flex-shrink: 0;
+                                font-size: 22px;
+                                width: $left-navigation-width-when-compact;
+
+                                svg {
+                                    width: 35px;
+                                }
+                            }
+
+                            > span.title {
+                                flex-grow: 1;
+                                font-size: 14px;
+                                width: calc(100% - 48px - 45px);
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                        }
+
+                        > li > .item-label > .collapse-icon {
+                            color: rgba(255, 0, 0, 0);
+                            display: flex;
+                            justify-content: center;
+                        }
                     }
                 }
 
-                > li > ul > li {
-                    line-height: 2.5em;
+                ul li .item-label, li a:hover, li a:active, li a:visited {
+                    color: $gray-700;
+                    text-decoration: none;
+                    padding-left: $link-padding-left;
                 }
-                // first level menu items that have no items and are active
-                > li.active:not(.has-items)::before {
-                    border-left: 3px solid;
-                    border-left-color: #0078D4;
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
+
+                .btn-nostyle {
+                    background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    width: 45px;
+                    outline: none;
                 }
-                // changing the padding of the icons on the first level to match
-                // the padding when leftbar is collapsed. Avoid small movement
-                // when switching between the two states
-                &.menu-admin {
-                    margin-bottom: 40px;
+                //for accessibility testing
+                /*.btn-nostyle:focus, .btn-nostyle:active {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }*/
+            }
+
+
+            li.has-items .item-label,
+            li.has-items a:hover,
+            li.has-items a:active,
+            li.has-items a:visited {
+                padding-left: $link-padding-left - 4px;
+            }
+
+            li .item-label:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            li > ul > li.active > .item-label {
+                background: rgba(0, 0, 0, 0.1);
+                color: rgba(0,0,0,.9) !important;
+                font-weight: 600;
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.active > ul > li.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: #0078D4;
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.has-items.active > .item-label {
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.has-items.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > .item-label {
+                background-color: rgba(0, 0, 0, 0.05);
+                font-weight: 600;
+            }
+
+            li.active > .item-label:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            li .active::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.05);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li .active .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li {
+                > .item-label {
+                    background: rgba(0,0,0,0.05);
+                    color: $gray-700 !important;
+
+                    > span.icon {
+                        font-size: 16px !important;
+                    }
+                }
+            }
+
+            li.active ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li ul > li {
+                background: rgba(0,0,0,.1);
+            }
+            // third level indent
+            li ul > li ul > li > a {
+                color: black;
+                padding-left: 3 * $link-padding-left !important;
+            }
+
+            li ul > li ul > .active > a {
+                padding-left: (3 * $link-padding-left - 4) !important;
+            }
+
+            .footer {
+                background-color: #EAEAEA !important;
+                position: relative;
+                z-index: 1;
+            }
+
+            .footer:before {
+                content: "";
+                width: 92%;
+                height: 1px;
+                background: rgba(0, 0, 0, 0.1);
+                display: block;
+                margin: 0px auto;
+            }
+        }
+    }
+}
+
+@media(max-width: 576px) {
+    body:not(.left-sidebar-compact) {
+        #ta-left-sidebar {
+            background-color: #EAEAEA;
+            z-index: 7;
+            position: fixed;
+            top: $top-nav-height-mobile;
+            bottom: 0;
+            left: 0px;
+            width: $left-navigation-width;
+            color: $gray-800;
+            border-right: $border-content;
+            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+            font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            // Rotate the chevron's icon when the menu is active
+            label[aria-expanded="true"] {
+                .chevron {
+                    transform: rotate(90deg);
+                    transition-duration: 0.2s;
+                }
+            }
+
+            label[aria-expanded="false"] {
+                .chevron {
+                    transition-duration: 0.2s;
+                }
+            }
+
+            .collapse {
+                display: none;
+            }
+
+            .collapse.show {
+                display: block;
+            }
+
+            .chevron {
+                position: absolute;
+                top: 38%;
+                left: 100%;
+                margin-left: -25px;
+            }
+
+            label, a {
+                position: relative;
+                display: block;
+                margin: 0;
+            }
+
+            #left-nav {
+                position: relative;
+                height: calc(100% - 50px);
+
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    white-space: nowrap;
+                }
+
+                > ul {
+
+                    li {
+                        position: relative;
+                        margin: 0;
+                        padding: 0;
+                        display: list-item;
+                        list-style: none;
+
+                        .item-label {
+                            cursor: pointer;
+                        }
+                    }
+
+                    > li {
+                        line-height: 3em;
+                        width: $left-navigation-width;
+                        transition: width 0.2s ease-in-out;
+                        background-color: #EAEAEA;
+
+                        &:first-child:after {
+                            content: "";
+                            width: 92%;
+                            height: 1px;
+                            background: rgba(0, 0, 0, 0.1);
+                            display: block;
+                            margin: 0px auto 4px auto;
+                            position: absolute;
+                            left: 10px;
+                        }
+                    }
+
+                    > li > ul > li {
+                        line-height: 2.5em;
+                    }
+                    // first level menu items that have no items and are active
+                    > li.active:not(.has-items)::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+                    // changing the padding of the icons on the first level to match
+                    // the padding when leftbar is collapsed. Avoid small movement
+                    // when switching between the two states
+                    &.menu-admin {
+                        margin-bottom: 40px;
+
+                        .item-label {
+                            padding-left: 0px !important;
+                            display: flex;
+
+                            > span.icon {
+                                padding: 0 5px;
+                                flex-shrink: 0;
+                                font-size: 22px;
+                                width: $left-navigation-width-when-compact;
+
+                                svg {
+                                    width: 35px;
+                                }
+                            }
+
+                            > span.title {
+                                flex-grow: 1;
+                                font-size: 14px;
+                                width: calc(100% - 48px - 45px);
+                                overflow: hidden;
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                            }
+                        }
+
+                        > li > .item-label > .collapse-icon {
+                            color: rgba(255, 0, 0, 0);
+                            display: flex;
+                            justify-content: center;
+                        }
+                    }
+                }
+
+                ul li .item-label, li a:hover, li a:active, li a:visited {
+                    color: $gray-700;
+                    text-decoration: none;
+                    padding-left: $link-padding-left;
+                }
+
+                .btn-nostyle {
+                    background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    width: 45px;
+                    outline: none;
+                }
+                //for accessibility testing
+                /*.btn-nostyle:focus, .btn-nostyle:active {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }*/
+            }
+
+
+            li.has-items .item-label,
+            li.has-items a:hover,
+            li.has-items a:active,
+            li.has-items a:visited {
+                padding-left: $link-padding-left - 4px;
+            }
+
+            li .item-label:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            li > ul > li.active > .item-label {
+                background: rgba(0, 0, 0, 0.1);
+                color: rgba(0,0,0,.9) !important;
+                font-weight: 600;
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.active > ul > li.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: #0078D4;
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.has-items.active > .item-label {
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.has-items.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > .item-label {
+                background-color: rgba(0, 0, 0, 0.05);
+                font-weight: 600;
+            }
+
+            li.active > .item-label:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            li .active::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.05);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li .active .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,0.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li {
+                > .item-label {
+                    background: rgba(0,0,0,0.05);
+                    color: $gray-700 !important;
+
+                    > span.icon {
+                        font-size: 16px !important;
+                    }
+                }
+            }
+
+            li.active ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li ul > li {
+                background: rgba(0,0,0,.1);
+            }
+            // third level indent
+            li ul > li ul > li > a {
+                color: black;
+                padding-left: 3 * $link-padding-left !important;
+            }
+
+            li ul > li ul > .active > a {
+                padding-left: (3 * $link-padding-left - 4) !important;
+            }
+
+            .footer {
+                background-color: #EAEAEA !important;
+                position: relative;
+                z-index: 1;
+            }
+
+            .footer:before {
+                content: "";
+                width: 92%;
+                height: 1px;
+                background: rgba(0, 0, 0, 0.1);
+                display: block;
+                margin: 0px auto;
+            }
+        }
+    }
+}
+
+// Layout 4 : ta-left-sidebar when compacted
+// -----------------------------------------
+.left-sidebar-compact {
+    @media(min-width: 576px) {
+        #ta-left-sidebar {
+            background-color: #EAEAEA;
+            z-index: $zindex-sticky;
+            position: fixed;
+            top: $top-nav-height-pc;
+            bottom: 0;
+            left: 0px;
+            width: $left-navigation-width-when-compact;
+            color: $gray-800;
+            border-right: $border-content;
+            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+            font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+
+            label[aria-expanded="false"] {
+                .chevron {
+                    transition-duration: 0.2s;
+                }
+            }
+
+            .collapse {
+                display: none;
+            }
+
+            .collapse.show {
+                display: block;
+            }
+
+            .chevron {
+                position: absolute;
+                top: 38%;
+                left: 100%;
+                margin-left: -25px;
+            }
+
+            label, a {
+                position: relative;
+                display: block;
+                margin: 0;
+            }
+
+            #left-nav {
+                position: relative;
+                height: calc(100% - 50px);
+
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    white-space: nowrap;
+                    background-color: $gray-100;
+                }
+
+                > ul {
+
+                    li {
+                        position: relative;
+                        margin: 0;
+                        padding: 0;
+                        display: list-item;
+                        list-style: none;
+
+                        .item-label {
+                            cursor: pointer;
+                        }
+                    }
+
+                    > li {
+                        line-height: 3em;
+                        width: $left-navigation-width-when-compact - 1;
+                        transition: width 0.2s ease-in-out;
+                        background-color: #EAEAEA;
+
+                        &:first-child > span.title:after {
+                            content: "";
+                            width: 75%;
+                            height: 1px;
+                            background: rgba(0,0,0,.1);
+                            display: block;
+                            margin: 0px auto 4px auto;
+                        }
+                    }
+
+                    > li > ul > li {
+                        line-height: 2.5em;
+                    }
+                    // changing the padding of the icons on the first level to match
+                    // the padding when leftbar is collapsed. Avoid small movement
+                    // when switching between the two states
+                    &.menu-admin {
+                        margin-bottom: 40px;
+                    }
 
                     .item-label {
                         padding-left: 0px !important;
                         display: flex;
+
+                        > span.icon {
+                            padding: 0 5px;
+                            flex-shrink: 0;
+                            font-size: 16px;
+
+                            svg {
+                                width: 27px;
+                            }
+                        }
+
+                        > span.icon-none {
+                            flex-shrink: 0;
+                            font-size: 16px;
+                            width: 37px;
+                        }
+
+                        > span.title {
+                            flex-grow: 1;
+                            font-size: 14px;
+                            width: calc(100% - 48px);
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+                    }
+
+                    > li > .item-label > .collapse-icon {
+                        color: rgba(255, 0, 0, 0);
+                        display: flex;
+                        justify-content: center;
+                    }
+
+
+                    > li > .item-label {
+                        .icon:hover {
+                            background-color: rgba(0, 0, 0, 0.1);
+                        }
+
+                        .title:hover {
+                            color: $gray-100;
+                            background-color: rgba(0, 0, 0, 0.1);
+                        }
+                    }
+
+                    > li.active:not(.has-items) > .item-label::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+
+                    > li .item-label:hover:not(:first-child) {
+                        color: $gray-100;
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+                    // formatting of icons
+                    > li > .item-label > span.icon {
+                        display: inline-block !important;
+                        color: $gray-700;
+                        background-color: #EAEAEA;
+                        width: $left-navigation-width-when-compact;
+                    }
+
+                    > li.has-items.active > .item-label::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+
+                    > li.has-items.visible {
+                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        z-index: 1;
+                    }
+
+                    li .active > .item-label:hover {
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+
+                    > li {
+                        overflow: hidden;
+
+                        span.title {
+                            display: none;
+                        }
+                    }
+
+                    > li.visible {
+                        overflow: visible;
+                        width: $left-navigation-width-when-compact + $left-navigation-width;
+                        transition: none;
+
+                        span.title, span.icon {
+                            display: block;
+                        }
+                    }
+
+                    > li > ul {
+                        position: absolute;
+                        left: $left-navigation-width-when-compact;
+                        width: $left-navigation-width;
+                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        max-height: 250px;
+                        z-index: -1;
+                    }
+
+                    > li > ul li .item-label:hover {
+                        background-color: rgba(0, 0, 0, 0.05);
+                    }
+
+                    > li > .item-label {
+                        background-color: $gray-100;
+                        color: $gray-700;
+                        padding-left: 0px !important;
+                        display: flex;
+
+                        .title {
+                            padding: 0 20px;
+
+                            &:hover {
+                                background-color: $gray-100 !important;
+                                color: $gray-700;
+                            }
+                        }
 
                         > span.icon {
                             padding: 0 5px;
@@ -277,7 +970,297 @@ body:not(.left-sidebar-compact) {
                         > span.title {
                             flex-grow: 1;
                             font-size: 14px;
-                            width: calc(100% - 48px - 45px);
+                            font-weight: bold;
+                            width: calc(100% - 48px);
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+
+                        > span.title:after {
+                            content: "";
+                            height: 1px;
+                            background: rgba(0, 0, 0, 0.1);
+                            display: block;
+                            margin: 0px auto;
+                            position: absolute;
+                            width: 75%;
+                            left: 63px;
+                        }
+                    }
+                    // first level menu items that have no items and are active
+                    > li.active:not(.has-items)::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+
+                    > li > label {
+                        .btn-nostyle {
+                            display: none;
+                        }
+                    }
+                }
+
+                ul li .item-label, li a:hover, li a:active, li a:visited {
+                    text-decoration: none;
+                    padding-left: $link-padding-left;
+                }
+
+                .btn-nostyle {
+                    background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    width: 45px;
+                    outline: none;
+                }
+                //for accessibility testing
+                /*.btn-nostyle:focus, .btn-nostyle:active {
+                background-color: rgba(0, 0, 0, 0.3);
+                color: white;
+            }*/
+            }
+
+            li.has-items .item-label,
+            li.has-items a:hover,
+            li.has-items a:active,
+            li.has-items a:visited {
+                padding-left: $link-padding-left - 4px;
+            }
+
+            li > ul > li.active > .item-label {
+                background: rgba(0, 0, 0, 0.05);
+                color: rgba(0,0,0,.9) !important;
+                font-weight: 600;
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.active > ul > li.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: #0078D4;
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.has-items.active > .item-label {
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
+
+            li.has-items.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li.active > .item-label {
+                background-color: rgba(0, 0, 0, 0.1);
+                font-weight: 600;
+            }
+
+            li .active::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li .active .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li > .item-label {
+                color: $gray-700 !important;
+            }
+
+            li.active ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+
+            li ul > li ul > li {
+                background: rgba(0,0,0,.1);
+            }
+            // third level indent
+            li ul > li ul > li > a {
+                color: black;
+                padding-left: 3 * $link-padding-left !important;
+            }
+
+            li ul > li ul > .active > a {
+                padding-left: (3 * $link-padding-left - 4) !important;
+            }
+
+            .footer {
+                background-color: #EAEAEA !important;
+                position: relative;
+                z-index: 1;
+            }
+
+            .footer:before {
+                content: "";
+                width: 60%;
+                height: 1px;
+                background: rgba(0,0,0,.1);
+                display: block;
+                margin: 0px auto;
+            }
+        }
+    }
+
+    @media(max-width: 576px) {
+        #ta-left-sidebar {
+            background-color: #EAEAEA;
+            z-index: $zindex-sticky;
+            position: fixed;
+            top: $top-nav-height-mobile;
+            bottom: 0;
+            left: 0px;
+            width: $left-navigation-width-when-compact;
+            color: $gray-800;
+            border-right: $border-content;
+            transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+            font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+
+            label[aria-expanded="false"] {
+                .chevron {
+                    transition-duration: 0.2s;
+                }
+            }
+
+            .collapse {
+                display: none;
+            }
+
+            .collapse.show {
+                display: block;
+            }
+
+            .chevron {
+                position: absolute;
+                top: 38%;
+                left: 100%;
+                margin-left: -25px;
+            }
+
+            label, a {
+                position: relative;
+                display: block;
+                margin: 0;
+            }
+
+            #left-nav {
+                position: relative;
+                height: calc(100% - 50px);
+
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    white-space: nowrap;
+                    background-color: $gray-100;
+                }
+
+                > ul {
+
+                    li {
+                        position: relative;
+                        margin: 0;
+                        padding: 0;
+                        display: list-item;
+                        list-style: none;
+
+                        .item-label {
+                            cursor: pointer;
+                        }
+                    }
+
+                    > li {
+                        line-height: 3em;
+                        width: $left-navigation-width-when-compact - 1;
+                        transition: width 0.2s ease-in-out;
+                        background-color: #EAEAEA;
+
+                        &:first-child > span.title:after {
+                            content: "";
+                            width: 75%;
+                            height: 1px;
+                            background: rgba(0,0,0,.1);
+                            display: block;
+                            margin: 0px auto 4px auto;
+                        }
+                    }
+
+                    > li > ul > li {
+                        line-height: 2.5em;
+                    }
+                    // changing the padding of the icons on the first level to match
+                    // the padding when leftbar is collapsed. Avoid small movement
+                    // when switching between the two states
+                    &.menu-admin {
+                        margin-bottom: 40px;
+                    }
+
+                    .item-label {
+                        padding-left: 0px !important;
+                        display: flex;
+
+                        > span.icon {
+                            padding: 0 5px;
+                            flex-shrink: 0;
+                            font-size: 16px;
+
+                            svg {
+                                width: 27px;
+                            }
+                        }
+
+                        > span.icon-none {
+                            flex-shrink: 0;
+                            font-size: 16px;
+                            width: 37px;
+                        }
+
+                        > span.title {
+                            flex-grow: 1;
+                            font-size: 14px;
+                            width: calc(100% - 48px);
                             overflow: hidden;
                             white-space: nowrap;
                             text-overflow: ellipsis;
@@ -289,583 +1272,296 @@ body:not(.left-sidebar-compact) {
                         display: flex;
                         justify-content: center;
                     }
-                }
-            }
-
-            ul li .item-label, li a:hover, li a:active, li a:visited {
-                color: $gray-700;
-                text-decoration: none;
-                padding-left: $link-padding-left;
-            }
-
-            .btn-nostyle {
-                background: none;
-                color: inherit;
-                border: none;
-                padding: 0;
-                font: inherit;
-                cursor: pointer;
-                width: 45px;
-                outline: none;
-            }
-            //for accessibility testing
-            /*.btn-nostyle:focus, .btn-nostyle:active {
-                background-color: rgba(0, 0, 0, 0.3);
-                color: white;
-            }*/
-        }
 
 
-        li.has-items .item-label,
-        li.has-items a:hover,
-        li.has-items a:active,
-        li.has-items a:visited {
-            padding-left: $link-padding-left - 4px;
-        }
+                    > li > .item-label {
+                        .icon:hover {
+                            background-color: rgba(0, 0, 0, 0.1);
+                        }
 
-        li .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        li > ul > li.active > .item-label {
-            background: rgba(0, 0, 0, 0.1);
-            color: rgba(0,0,0,.9) !important;
-            font-weight: 600;
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
-
-        li.active > ul > li.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: #0078D4;
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > ul > li > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.has-items.active > .item-label {
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
-
-        li.has-items.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,0.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > .item-label {
-            background-color: rgba(0, 0, 0, 0.05);
-            font-weight: 600;
-        }
-
-        li.active > .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        li .active::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,0.05);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li .active .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,0.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li ul > li {
-            > .item-label {
-                background: rgba(0,0,0,0.05);
-                color: $gray-700 !important;
-
-                > span.icon {
-                    font-size: 16px !important;
-                }
-            }
-        }
-
-        li.active ul > li > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li ul > li ul > li {
-            background: rgba(0,0,0,.1);
-        }
-        // third level indent
-        li ul > li ul > li > a {
-            color: black;
-            padding-left: 3 * $link-padding-left !important;
-        }
-
-        li ul > li ul > .active > a {
-            padding-left: (3 * $link-padding-left - 4) !important;
-        }
-
-        .footer {
-            background-color: #EAEAEA !important;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer:before {
-            content: "";
-            width: 92%;
-            height: 1px;
-            background: rgba(0, 0, 0, 0.1);
-            display: block;
-            margin: 0px auto;
-        }
-    }
-}
-// Layout 4 : ta-left-sidebar when compacted
-// -----------------------------------------
-.left-sidebar-compact {
-
-    #ta-left-sidebar {
-        background-color: #EAEAEA;
-        z-index: $zindex-sticky;
-        position: fixed;
-        top: $top-nav-height;
-        bottom: 0;
-        left: 0px;
-        width: $left-navigation-width-when-compact;
-        color: $gray-800;
-        border-right: $border-content;
-        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-        font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-
-        label[aria-expanded="false"] {
-            .chevron {
-                transition-duration: 0.2s;
-            }
-        }
-
-        .collapse {
-            display: none;
-        }
-
-        .collapse.show {
-            display: block;
-        }
-
-        .chevron {
-            position: absolute;
-            top: 38%;
-            left: 100%;
-            margin-left: -25px;
-        }
-
-        label, a {
-            position: relative;
-            display: block;
-            margin: 0;
-        }
-
-        #left-nav {
-            position: relative;
-            height: calc(100% - 50px);
-
-            ul {
-                margin: 0;
-                padding: 0;
-                white-space: nowrap;
-                background-color: $gray-100;
-            }
-
-            > ul {
-
-                li {
-                    position: relative;
-                    margin: 0;
-                    padding: 0;
-                    display: list-item;
-                    list-style: none;
-
-                    .item-label {
-                        cursor: pointer;
-                    }
-                }
-
-                > li {
-                    line-height: 3em;
-                    width: $left-navigation-width-when-compact - 1;
-                    transition: width 0.2s ease-in-out;
-                    background-color: #EAEAEA;
-
-                    &:first-child > span.title:after {
-                        content: "";
-                        width: 75%;
-                        height: 1px;
-                        background: rgba(0,0,0,.1);
-                        display: block;
-                        margin: 0px auto 4px auto;
-                    }
-                }
-
-                > li > ul > li {
-                    line-height: 2.5em;
-                }
-                // changing the padding of the icons on the first level to match
-                // the padding when leftbar is collapsed. Avoid small movement
-                // when switching between the two states
-                &.menu-admin {
-                    margin-bottom: 40px;
-                }
-
-                .item-label {
-                    padding-left: 0px !important;
-                    display: flex;
-
-                    > span.icon {
-                        padding: 0 5px;
-                        flex-shrink: 0;
-                        font-size: 16px;
-
-                        svg {
-                            width: 27px;
+                        .title:hover {
+                            color: $gray-100;
+                            background-color: rgba(0, 0, 0, 0.1);
                         }
                     }
 
-                    > span.icon-none {
-                        flex-shrink: 0;
-                        font-size: 16px;
-                        width: 37px;
+                    > li.active:not(.has-items) > .item-label::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
                     }
 
-                    > span.title {
-                        flex-grow: 1;
-                        font-size: 14px;
-                        width: calc(100% - 48px);
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                    }
-                }
-
-                > li > .item-label > .collapse-icon {
-                    color: rgba(255, 0, 0, 0);
-                    display: flex;
-                    justify-content: center;
-                }
-
-
-                > li > .item-label {
-                    .icon:hover {
-                        background-color: rgba(0, 0, 0, 0.1);
-                    }
-
-                    .title:hover {
+                    > li .item-label:hover:not(:first-child) {
                         color: $gray-100;
                         background-color: rgba(0, 0, 0, 0.1);
                     }
-                }
-
-                > li.active:not(.has-items) > .item-label::before {
-                    border-left: 3px solid;
-                    border-left-color: #0078D4;
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-
-                > li .item-label:hover:not(:first-child) {
-                    color: $gray-100;
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-                // formatting of icons
-                > li > .item-label > span.icon {
-                    display: inline-block !important;
-                    color: $gray-700;
-                    background-color: #EAEAEA;
-                    width: $left-navigation-width-when-compact;
-                }
-
-                > li.has-items.active > .item-label::before {
-                    border-left: 3px solid;
-                    border-left-color: #0078D4;
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-
-                > li.has-items.visible {
-                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    z-index: 1;
-                }
-
-                li .active > .item-label:hover {
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-
-                > li {
-                    overflow: hidden;
-
-                    span.title {
-                        display: none;
-                    }
-                }
-
-                > li.visible {
-                    overflow: visible;
-                    width: $left-navigation-width-when-compact + $left-navigation-width;
-                    transition: none;
-
-                    span.title, span.icon {
-                        display: block;
-                    }
-                }
-
-                > li > ul {
-                    position: absolute;
-                    left: $left-navigation-width-when-compact;
-                    width: $left-navigation-width;
-                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-                    max-height: 250px;
-                    z-index: -1;
-                }
-
-                > li > ul li .item-label:hover {
-                    background-color: rgba(0, 0, 0, 0.05);
-                }
-
-                > li > .item-label {
-                    background-color: $gray-100;
-                    color: $gray-700;
-                    padding-left: 0px !important;
-                    display: flex;
-
-                    .title {
-                        padding: 0 20px;
-
-                        &:hover {
-                            background-color: $gray-100 !important;
-                            color: $gray-700;
-                        }
-                    }
-
-                    > span.icon {
-                        padding: 0 5px;
-                        flex-shrink: 0;
-                        font-size: 22px;
+                    // formatting of icons
+                    > li > .item-label > span.icon {
+                        display: inline-block !important;
+                        color: $gray-700;
+                        background-color: #EAEAEA;
                         width: $left-navigation-width-when-compact;
+                    }
 
-                        svg {
-                            width: 35px;
+                    > li.has-items.active > .item-label::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+
+                    > li.has-items.visible {
+                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        z-index: 1;
+                    }
+
+                    li .active > .item-label:hover {
+                        background-color: rgba(0, 0, 0, 0.1);
+                    }
+
+                    > li {
+                        overflow: hidden;
+
+                        span.title {
+                            display: none;
                         }
                     }
 
-                    > span.title {
-                        flex-grow: 1;
-                        font-size: 14px;
-                        font-weight: bold;
-                        width: calc(100% - 48px);
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
+                    > li.visible {
+                        overflow: visible;
+                        width: $left-navigation-width-when-compact + $left-navigation-width;
+                        transition: none;
+
+                        span.title, span.icon {
+                            display: block;
+                        }
                     }
 
-                    > span.title:after {
-                        content: "";
-                        height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
-                        display: block;
-                        margin: 0px auto;
+                    > li > ul {
                         position: absolute;
-                        width: 75%;
-                        left: 63px;
+                        left: $left-navigation-width-when-compact;
+                        width: $left-navigation-width;
+                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        max-height: 250px;
+                        z-index: -1;
+                    }
+
+                    > li > ul li .item-label:hover {
+                        background-color: rgba(0, 0, 0, 0.05);
+                    }
+
+                    > li > .item-label {
+                        background-color: $gray-100;
+                        color: $gray-700;
+                        padding-left: 0px !important;
+                        display: flex;
+
+                        .title {
+                            padding: 0 20px;
+
+                            &:hover {
+                                background-color: $gray-100 !important;
+                                color: $gray-700;
+                            }
+                        }
+
+                        > span.icon {
+                            padding: 0 5px;
+                            flex-shrink: 0;
+                            font-size: 22px;
+                            width: $left-navigation-width-when-compact;
+
+                            svg {
+                                width: 35px;
+                            }
+                        }
+
+                        > span.title {
+                            flex-grow: 1;
+                            font-size: 14px;
+                            font-weight: bold;
+                            width: calc(100% - 48px);
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+
+                        > span.title:after {
+                            content: "";
+                            height: 1px;
+                            background: rgba(0, 0, 0, 0.1);
+                            display: block;
+                            margin: 0px auto;
+                            position: absolute;
+                            width: 75%;
+                            left: 63px;
+                        }
+                    }
+                    // first level menu items that have no items and are active
+                    > li.active:not(.has-items)::before {
+                        border-left: 3px solid;
+                        border-left-color: #0078D4;
+                        bottom: 0;
+                        content: "";
+                        left: 0;
+                        position: absolute;
+                        top: 0;
+                    }
+
+                    > li > label {
+                        .btn-nostyle {
+                            display: none;
+                        }
                     }
                 }
-                // first level menu items that have no items and are active
-                > li.active:not(.has-items)::before {
-                    border-left: 3px solid;
-                    border-left-color: #0078D4;
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
+
+                ul li .item-label, li a:hover, li a:active, li a:visited {
+                    text-decoration: none;
+                    padding-left: $link-padding-left;
                 }
 
-                > li > label {
-                    .btn-nostyle {
-                        display: none;
-                    }
+                .btn-nostyle {
+                    background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    width: 45px;
+                    outline: none;
                 }
-            }
-
-            ul li .item-label, li a:hover, li a:active, li a:visited {
-                text-decoration: none;
-                padding-left: $link-padding-left;
-            }
-
-            .btn-nostyle {
-                background: none;
-                color: inherit;
-                border: none;
-                padding: 0;
-                font: inherit;
-                cursor: pointer;
-                width: 45px;
-                outline: none;
-            }
-            //for accessibility testing
-            /*.btn-nostyle:focus, .btn-nostyle:active {
+                //for accessibility testing
+                /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
             }*/
-        }
+            }
 
-        li.has-items .item-label,
-        li.has-items a:hover,
-        li.has-items a:active,
-        li.has-items a:visited {
-            padding-left: $link-padding-left - 4px;
-        }
+            li.has-items .item-label,
+            li.has-items a:hover,
+            li.has-items a:active,
+            li.has-items a:visited {
+                padding-left: $link-padding-left - 4px;
+            }
 
-        li > ul > li.active > .item-label {
-            background: rgba(0, 0, 0, 0.05);
-            color: rgba(0,0,0,.9) !important;
-            font-weight: 600;
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
+            li > ul > li.active > .item-label {
+                background: rgba(0, 0, 0, 0.05);
+                color: rgba(0,0,0,.9) !important;
+                font-weight: 600;
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
 
-        li.active > ul > li.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: #0078D4;
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li.active > ul > li.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: #0078D4;
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li.active > ul > li > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li.active > ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li.has-items.active > .item-label {
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
+            li.has-items.active > .item-label {
+                padding-left: (2 * $link-padding-left + 16) !important;
+            }
 
-        li.has-items.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li.has-items.active > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li.active > .item-label {
-            background-color: rgba(0, 0, 0, 0.1);
-            font-weight: 600;
-        }
+            li.active > .item-label {
+                background-color: rgba(0, 0, 0, 0.1);
+                font-weight: 600;
+            }
 
-        li .active::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li .active::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.1);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li .active .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li .active .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li ul > li > .item-label {
-            color: $gray-700 !important;
-        }
+            li ul > li > .item-label {
+                color: $gray-700 !important;
+            }
 
-        li.active ul > li > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0,0,0,.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
+            li.active ul > li > .item-label::before {
+                border-left: 3px solid;
+                border-left-color: rgba(0,0,0,.2);
+                bottom: 0;
+                content: "";
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
 
-        li ul > li ul > li {
-            background: rgba(0,0,0,.1);
-        }
-        // third level indent
-        li ul > li ul > li > a {
-            color: black;
-            padding-left: 3 * $link-padding-left !important;
-        }
+            li ul > li ul > li {
+                background: rgba(0,0,0,.1);
+            }
+            // third level indent
+            li ul > li ul > li > a {
+                color: black;
+                padding-left: 3 * $link-padding-left !important;
+            }
 
-        li ul > li ul > .active > a {
-            padding-left: (3 * $link-padding-left - 4) !important;
-        }
+            li ul > li ul > .active > a {
+                padding-left: (3 * $link-padding-left - 4) !important;
+            }
 
-        .footer {
-            background-color: #EAEAEA !important;
-            position: relative;
-            z-index: 1;
-        }
+            .footer {
+                background-color: #EAEAEA !important;
+                position: relative;
+                z-index: 1;
+            }
 
-        .footer:before {
-            content: "";
-            width: 60%;
-            height: 1px;
-            background: rgba(0,0,0,.1);
-            display: block;
-            margin: 0px auto;
+            .footer:before {
+                content: "";
+                width: 60%;
+                height: 1px;
+                background: rgba(0,0,0,.1);
+                display: block;
+                margin: 0px auto;
+            }
         }
     }
 }

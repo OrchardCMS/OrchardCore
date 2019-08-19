@@ -23,21 +23,15 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <div class="mr-auto">
-                    @await RenderSectionAsync("NavbarTop", required: false)
-                </div>
-                <ul class="nav navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
-                    </li>
-                </ul>
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
-                    <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
+        <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <a class="p-2 text-dark brand-logo my-0 mr-md-auto font-weight-normal" href="@Url.Content("~/")"><h5 class="my-0 mr-md-auto font-weight-normal brand-name">Orchard Core</h5></a>
+            <nav class="my-2 my-md-0 mr-md-3">
+                @await RenderSectionAsync("NavbarTop", required: false)
+                <a class="p-2 text-dark"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
+                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" style="display:inline">
+                    <a class="p-2 text-dark" href="#" onclick="this.parentElement.submit();"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</a>
                 </form>
-            </div>
+            </nav>
         </div>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
