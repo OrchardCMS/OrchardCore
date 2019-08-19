@@ -24,30 +24,29 @@ namespace OrchardCore.Contents.Indexing
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,
-                    body.Body ?? new HtmlString("NULL"),
+                    body.Body,
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextAnalyzedKey,
-                context.ContentItem.DisplayText ?? "NULL",
+                context.ContentItem.DisplayText,
                 DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextKey,
-                context.ContentItem.DisplayText ?? "NULL",
+                context.ContentItem.DisplayText,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,
-                context.ContentItem.DisplayText.ReplaceDiacritics() ?? "NULL",
+                context.ContentItem.DisplayText.ReplaceDiacritics(),
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.FullTextKey,
-                context.ContentItem.DisplayText ?? "NULL",
+                context.ContentItem.DisplayText,
                 DocumentIndexOptions.Analyze);
-        }
 
     }
 }
