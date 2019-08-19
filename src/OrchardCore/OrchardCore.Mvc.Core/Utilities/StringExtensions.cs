@@ -258,7 +258,7 @@ namespace OrchardCore.Mvc.Utilities
                 }
             }
 
-            return stringBuilder.ToString().ToLower();
+            return stringBuilder.ToString();
         }
 
         public static string Strip(this string subject, params char[] stripped)

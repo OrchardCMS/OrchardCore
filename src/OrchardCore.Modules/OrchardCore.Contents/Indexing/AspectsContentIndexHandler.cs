@@ -40,7 +40,7 @@ namespace OrchardCore.Contents.Indexing
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,
-                context.ContentItem.DisplayText.ReplaceDiacritics(),
+                context.ContentItem.DisplayText.ReplaceDiacritics().ToLower(),
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
