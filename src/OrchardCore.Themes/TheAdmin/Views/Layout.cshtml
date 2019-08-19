@@ -24,7 +24,7 @@
 <body class="preload">
     <div class="ta-wrapper">
         <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-            <a class="p-2 text-dark brand-logo my-0 mr-md-auto font-weight-normal" href="@Url.Content("~/")"><h5 class="my-0 mr-md-auto font-weight-normal brand-name">Orchard Core</h5></a>
+            <a class="p-2 text-dark brand-logo my-0 mr-md-auto font-weight-normal" href="@Url.Content("~/")"><h5 class="my-0 mr-md-auto font-weight-normal brand-name">@Site.SiteName</h5></a>
             <nav class="my-2 my-md-0 mr-md-3">
                 @await RenderSectionAsync("NavbarTop", required: false)
                 <a class="p-2 text-dark"><i class="fa fa-user" aria-hidden="true"></i> @User.Identity.Name</a>
