@@ -158,7 +158,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType.IsAssignableFrom(typeof(IUrlHelper)))
+                typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                 var viewContext = viewContextAccessor.ViewContext;
