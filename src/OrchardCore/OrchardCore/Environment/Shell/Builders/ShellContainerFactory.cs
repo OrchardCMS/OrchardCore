@@ -116,7 +116,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
 
-            (moduleServiceProvider as IDisposable).Dispose();
+            (moduleServiceProvider as IDisposable)?.Dispose();
 
             var shellServiceProvider = GetProviderFromFactory(tenantServiceCollection);
 

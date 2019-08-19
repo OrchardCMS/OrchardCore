@@ -95,6 +95,12 @@ namespace Microsoft.Extensions.DependencyInjection
             return Configure((app, routes, sp) => configure(app), order);
         }
 
+        /// <summary>
+        /// This method replaces the default ServiceProvider factory, enables replacing of default IoC container
+        /// </summary>
+        /// <param name="factory">The factory configuration method</param>
+        /// <typeparam name="TContainerBuilder">IoC container builder type</typeparam>
+        /// <exception cref="ArgumentNullException"></exception>
         public OrchardCoreBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
         {
             if (factory == null)

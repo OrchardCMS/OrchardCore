@@ -24,6 +24,7 @@ namespace OrchardCore.Tests.Shell
         {
             var applicationServices = new ServiceCollection();
             applicationServices.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            applicationServices.AddSingleton<IServiceFactoryAdapter>(new ServiceFactoryAdapter<IServiceCollection>(new TestServiceProviderFactory()));
 
             applicationServices.AddSingleton<ITestSingleton, TestSingleton>();
             applicationServices.AddTransient<ITestTransient, TestTransient>();
@@ -133,6 +134,16 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
+        [Fact]
+        public void CanReplaceDefaultServiceProvider()
+        {
+            var shellBlueprint = CreateBlueprint();
+
+            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint);
+            // Check that the default service has been replaced with the custom service and that the feature info is correct.
+            Assert.IsType<TestServiceProvider>(container);
+        }
+
         private ShellBlueprint CreateBlueprint()
         {
             return new ShellBlueprint
@@ -211,6 +222,40 @@ namespace OrchardCore.Tests.Shell
                 services.AddSingleton<ITwoHostSingletonsOfTheSameType, ShellSingletonOfTheSametype>();
                 services.AddTransient<ITwoHostSingletonsOfTheSameType, ShellTransientOfTheSametype>();
                 services.AddScoped<ITwoHostSingletonsOfTheSameType, ShellScopedOfTheSametype>();
+            }
+        }
+
+        private class TestServiceProviderFactory : IServiceProviderFactory<IServiceCollection>
+        {
+            public IServiceCollection CreateBuilder(IServiceCollection services)
+            {
+                return services;
+            }
+
+            public IServiceProvider CreateServiceProvider(IServiceCollection containerBuilder)
+            {
+                return new TestServiceProvider(containerBuilder.BuildServiceProvider());
+            }
+        }
+
+        private class TestServiceProvider : IServiceProvider, IDisposable
+        {
+            private IServiceProvider innnerProvider;
+
+            public TestServiceProvider(IServiceProvider provider)
+            {
+                innnerProvider = provider;
+            }
+
+            public object GetService(Type serviceType)
+            {
+                return innnerProvider.GetService(serviceType);
+            }
+
+            public void Dispose()
+            {
+                var disposable = innnerProvider as IDisposable;
+                disposable?.Dispose();
             }
         }
     }
