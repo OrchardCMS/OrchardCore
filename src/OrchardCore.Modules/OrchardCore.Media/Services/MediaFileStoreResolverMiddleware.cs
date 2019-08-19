@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +26,7 @@ namespace OrchardCore.Media.Services
         private readonly IMediaFileStore _mediaFileStore;
 
         private readonly PathString _assetsRequestPath;
-        private readonly string[] _allowedFileExtensions;
+        private readonly HashSet<string> _allowedFileExtensions;
 
         public MediaFileStoreResolverMiddleware(
             RequestDelegate next,
@@ -69,10 +68,9 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            // TODO optional.
             // This will not cache the file if the file extension is not supported.
             var fileExtension = GetExtension(subPath);
-            if (!_allowedFileExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
+            if (!_allowedFileExtensions.Contains(fileExtension))
             {
                 _logger.LogDebug("File extension not supported for request path {Path}", subPath);
                 await _next(context);

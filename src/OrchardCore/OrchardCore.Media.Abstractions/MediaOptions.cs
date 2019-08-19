@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Media
@@ -14,7 +15,7 @@ namespace OrchardCore.Media
         /// The list of allowed file extensions.
         /// </summary>
         // Setting a default value will make the IShellConfiguration add to the default values, rather than replace.
-        public string[] AllowedFileExtensions { get; set; }
+        public HashSet<string> AllowedFileExtensions { get; set; }
 
         /// <summary>
         /// The default number of days for the media cache control header.

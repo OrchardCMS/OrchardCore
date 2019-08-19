@@ -19,7 +19,7 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly string[] _allowedFileExtensions;
+        private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;

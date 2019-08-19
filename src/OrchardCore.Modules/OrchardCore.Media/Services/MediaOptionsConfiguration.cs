@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -45,7 +46,7 @@ namespace OrchardCore.Media.Services
         };
 
         private const int DefaultMaxBrowserCacheDays = 30;
-        private const int DefaultMaxCacheDays  = 365;
+        private const int DefaultMaxCacheDays = 365;
         private const int DefaultMaxFileSize = 30_000_000;
 
         private const string DefaultAssetsCachePath = "MediaCache";
@@ -63,10 +64,14 @@ namespace OrchardCore.Media.Services
         {
             var section = _shellConfiguration.GetSection("OrchardCore.Media");
 
-            // Because IShellConfiguration treats arrays as key value pairs, we replace the array value, rather than letting
-            // Configure merge the default array with the appsettings value.
-            options.SupportedSizes = section.GetSection("SupportedSizes").Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSupportedSizes;
-            options.AllowedFileExtensions = section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions;
+            // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
+            // rather than letting Configure merge the default array with the appsettings value.
+            options.SupportedSizes = section.GetSection("SupportedSizes")
+                .Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSupportedSizes;
+
+            options.AllowedFileExtensions = new HashSet<string>(
+                section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions,
+                StringComparer.OrdinalIgnoreCase);
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
