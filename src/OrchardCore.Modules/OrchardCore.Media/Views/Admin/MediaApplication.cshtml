@@ -1,5 +1,23 @@
+@using Microsoft.Extensions.Configuration
+@using OrchardCore.Environment.Shell.Configuration
+
+@inject  IShellConfiguration ShellConfiguration
+
 @{
     Layout = null;
+}
+
+@functions{
+    public int MaxSizeLimit
+    {
+        get
+        {
+            var section = ShellConfiguration.GetSection("OrchardCore.Media");
+            var maxFileSize = section.GetValue("MaxFileSize", 30_000_000);
+
+            return maxFileSize;
+        }
+    }
 }
 
 <div id="mediaApp" style="display:none;" v-on:dragover="handleScrollWhileDrag($event)">
@@ -14,7 +32,7 @@
 
 
     <div id="mediaContainer" class="align-items-stretch">
-        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak >
+        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                 </folder>
@@ -157,6 +175,8 @@
 <input type="hidden" id="t-pager-page-label" value="@T["Page:"]" />
 <input type="hidden" id="t-pager-total-label" value="@T["Total items:"]" />
 
+@*Strings for mediaApp*@
+<input type="hidden" id="maxSizeLimit" value="@MaxSizeLimit" />
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">

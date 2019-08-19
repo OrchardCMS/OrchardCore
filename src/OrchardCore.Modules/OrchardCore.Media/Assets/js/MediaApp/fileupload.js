@@ -12,6 +12,21 @@ $(document).on('mediaApp:ready', function () {
                 { name: '__RequestVerificationToken', value: antiForgeryToken },
             ]
         },
+        change: function (e, data) {
+            const maxSizeLimit = parseInt($('#maxSizeLimit').val());
+            var exceededFilesList = [];
+
+            $.each(data.files, function (index, file) {
+                if (file.size > maxSizeLimit) {
+                    exceededFilesList.push(index);
+                    mediaApp.errors.push(`The file '${file.name}' exceeds the limit.`);
+                }
+            });
+
+            for (var i = 0; i < exceededFilesList.length; i++) {
+                data.files.splice(i, 1);
+            }
+        },
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
                 if (!file.error) {
