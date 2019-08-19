@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -157,7 +158,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
+                parameter.ParameterType.IsAssignableFrom(typeof(IUrlHelper)))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                 var viewContext = viewContextAccessor.ViewContext;
