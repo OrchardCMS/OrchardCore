@@ -20,7 +20,6 @@ namespace OrchardCore.ContentFields.Fields
             })
             .Location("Content")
             .Location("SummaryAdmin", "");
-            ;
         }
 
         public override IDisplayResult Edit(DateField field, BuildFieldEditorContext context)

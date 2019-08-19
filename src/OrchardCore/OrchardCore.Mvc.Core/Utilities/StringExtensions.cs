@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Mvc.Utilities
@@ -378,6 +379,68 @@ namespace OrchardCore.Mvc.Utilities
         {
             int place = source.LastIndexOf(find);
             return source.Remove(place, find.Length).Insert(place, replace);
+        }
+
+        private static ImmutableDictionary<string, string> _underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+        private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+
+        /// <summary>
+        /// Converts a liquid attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseUnderscore(this string attribute)
+        {
+            if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                result = ToPascalCase(attribute, '_');
+                _underscorePascalCaseIndex = _underscorePascalCaseIndex.SetItem(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts an html attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseDash(this string attribute)
+        {
+            if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                result = ToPascalCase(attribute, '-');
+                _dashPascalCaseIndex = _dashPascalCaseIndex.SetItem(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts a string to pascal case.
+        /// </summary>
+        public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
+        {
+            var nextIsUpper = true;
+            attribute = attribute.Trim();
+            var result = new StringBuilder(attribute.Length);
+            foreach (var c in attribute)
+            {
+                if (c == upperAfterDelimiter)
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(Char.ToUpperInvariant(c));
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
     }
 }
