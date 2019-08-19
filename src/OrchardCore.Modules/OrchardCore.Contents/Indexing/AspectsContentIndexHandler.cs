@@ -47,6 +47,6 @@ namespace OrchardCore.Contents.Indexing
                 IndexingConstants.FullTextKey,
                 context.ContentItem.DisplayText,
                 DocumentIndexOptions.Analyze);
-
+        }
     }
 }
