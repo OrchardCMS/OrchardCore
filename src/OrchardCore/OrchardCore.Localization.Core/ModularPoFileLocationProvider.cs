@@ -9,7 +9,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 
-namespace OrchardCore.Setup
+namespace OrchardCore.Localization.Core
 {
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {

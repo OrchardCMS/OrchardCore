@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization.Core;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;

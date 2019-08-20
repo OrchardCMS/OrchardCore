@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Core;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Setup
