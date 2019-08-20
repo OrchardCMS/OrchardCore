@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media
@@ -10,18 +8,23 @@ namespace OrchardCore.Media
     public class MediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
-        private readonly IMediaFileStorePathProvider _pathProvider;
+        private readonly string _requestBasePath;
+        private readonly string _cdnBaseUrl;
 
-        public MediaFileStore(IFileStore fileStore,
-            IMediaFileStorePathProvider pathProvider,
-            IOptions<MediaOptions> mediaOptions)
+        public MediaFileStore(
+            IFileStore fileStore,
+            string requestBaseUrl,
+            string cdnBaseUrl)
         {
             _fileStore = fileStore;
-            _pathProvider = pathProvider;
-            VirtualPathBase = mediaOptions.Value.AssetsRequestPath;
+
+            // Ensure trailing slash removed.
+            _requestBasePath = requestBaseUrl.TrimEnd('/'); ;
+
+            // Media options configuration ensures any trailing slash is removed.
+            _cdnBaseUrl = cdnBaseUrl;
         }
 
-        public PathString VirtualPathBase { get; }
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
@@ -81,25 +84,9 @@ namespace OrchardCore.Media
         {
             return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
         }
-
         public string MapPathToPublicUrl(string path)
         {
-            return _pathProvider.MapPathToPublicUrl(path);
-        }
-
-        public string MapPublicUrlToPath(string publicUrl)
-        {
-            return _pathProvider.MapPublicUrlToPath(publicUrl);
-        }
-
-        public bool MatchCdnPath(string path)
-        {
-            return _pathProvider.MatchCdnPath(path);
-        }
-
-        public string RemoveCdnPath(string path)
-        {
-            return _pathProvider.RemoveCdnPath(path);
+            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
         }
     }
 }

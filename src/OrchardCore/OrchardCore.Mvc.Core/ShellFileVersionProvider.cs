@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
-using OrchardCore.FileStorage;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 
@@ -24,22 +23,16 @@ namespace OrchardCore.Mvc
         private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
 
         private readonly IEnumerable<IFileProvider> _fileProviders;
-        private readonly IEnumerable<ICdnPathProvider> _cdnPathProviders;
-        private readonly IEnumerable<IFileStoreVersionProvider> _fileStoreVersionProviders;
         private readonly IMemoryCache _cache;
 
         public ShellFileVersionProvider(
             IEnumerable<IStaticFileProvider> staticFileProviders,
-            IEnumerable<ICdnPathProvider> cdnPathProviders,
-            IEnumerable<IFileStoreVersionProvider> fileStoreVersionProviders,
             IHostingEnvironment environment,
             IMemoryCache cache
             )
         {
             _fileProviders = staticFileProviders
                 .Concat(new[] { environment.WebRootFileProvider });
-            _cdnPathProviders = cdnPathProviders;
-            _fileStoreVersionProviders = fileStoreVersionProviders;
             _cache = cache;
         }
 
@@ -60,22 +53,8 @@ namespace OrchardCore.Mvc
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
             {
-                // Check and remove CdnBaseUrl from resolvedPath.
-                var hasResolvedCdnPath = false;
-                foreach (var cdnPathProvider in _cdnPathProviders)
-                {
-                    if (cdnPathProvider.MatchCdnPath(resolvedPath))
-                    {
-                        resolvedPath = cdnPathProvider.RemoveCdnPath(resolvedPath);
-                        hasResolvedCdnPath = true;
-                        break;
-                    }
-                }
                 // Don't append version if the path is absolute.
-                if (!hasResolvedCdnPath)
-                {
-                    return path;
-                }
+                return path;
             }
 
             // Try to get the hash from the tenant level cache.
@@ -144,16 +123,6 @@ namespace OrchardCore.Mvc
                     }
 
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
-                }
-            }
-
-            foreach (var fileStoreVersionProvider in _fileStoreVersionProviders)
-            {
-                // This will set cache if file is found.
-                var versionedPath = fileStoreVersionProvider.AddFileVersionToPathAsync(cacheKey, path).GetAwaiter().GetResult();
-                if (versionedPath != null)
-                {
-                    return versionedPath;
                 }
             }
 

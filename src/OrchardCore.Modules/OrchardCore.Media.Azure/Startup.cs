@@ -1,5 +1,5 @@
 using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +10,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
-using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
-using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Media.Azure
 {
@@ -32,23 +30,13 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MediaBlobStorageOptions>(_configuration.GetSection("OrchardCore.Media.Azure"));
+            services.Configure<MediaBlobStorageOptions>(x => _configuration.GetSection("OrchardCore.Media.Azure"));
 
             // Only replace default implementation if options are valid.
             var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-                // Remove this specific IStaticFileProvider as we do not need to provide this to the ShellFileVersionProvider.
-                var staticFileProviderDescriptor = services.FirstOrDefault(descriptor =>
-                    descriptor.ServiceType == typeof(IStaticFileProvider) &&
-                    descriptor.ImplementationFactory.Method.ReturnType == typeof(IMediaFileProvider));
-
-                if (staticFileProviderDescriptor != null)
-                {
-                    services.Remove(staticFileProviderDescriptor);
-                }
-
                 // Replace the default media file provider with the media cache file provider.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
                     serviceProvider.GetRequiredService<IMediaCacheFileProvider>()));
@@ -61,22 +49,38 @@ namespace OrchardCore.Media.Azure
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
                     var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+                    var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-                    var mediaFileStorePathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
-                    return new MediaFileStore(fileStore, mediaFileStorePathProvider, mediaOptions);
-                }));
 
-                // Add blob file store version provider.
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IFileStoreVersionProvider, MediaBlobFileStoreVersionProvider>());
+                    var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
+
+                    var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
+
+                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                        .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                    if (originalPathBase.HasValue)
+                    {
+                        mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                    }
+
+                    return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                }));
             }
 
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
             });
+        }
+
+        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+        {
+            return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
     }
 }

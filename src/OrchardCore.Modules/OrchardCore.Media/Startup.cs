@@ -3,6 +3,7 @@ using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,23 +100,27 @@ namespace OrchardCore.Media
                 serviceProvider.GetRequiredService<IMediaFileProvider>()
             ));
 
-            services.AddSingleton<IMediaFileStorePathProvider, MediaFileStorePathProvider>();
-
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var mediaFileStoreOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-                var pathProvider = serviceProvider.GetRequiredService<IMediaFileStorePathProvider>();
+                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
 
-                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaFileStoreOptions.Value.AssetsPath);
+                var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
                 var fileStore = new FileSystemStore(mediaPath);
 
-                return new MediaFileStore(fileStore, pathProvider, mediaFileStoreOptions);
-            });
+                var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<ICdnPathProvider, IMediaFileStorePathProvider>(serviceProvider =>
-                serviceProvider.GetRequiredService<IMediaFileStorePathProvider>()));
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
+                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+
+                if (originalPathBase.HasValue)
+                {
+                    mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
+                }
+
+                return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+            });
 
             services.AddScoped<IMediaCacheManager, MediaCacheManager>();
 
