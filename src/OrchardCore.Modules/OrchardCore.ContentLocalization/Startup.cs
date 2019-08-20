@@ -36,6 +36,7 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -56,7 +57,6 @@ namespace OrchardCore.ContentLocalization
                 options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
             });
 
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         }
 
