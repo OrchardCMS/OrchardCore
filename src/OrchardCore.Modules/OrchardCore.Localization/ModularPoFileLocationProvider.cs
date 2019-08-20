@@ -50,9 +50,10 @@ namespace OrchardCore.Localization
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, _resourcesContainer, poFileName));
             }
 
-            // Then load global .po file for the applications from the App_Data folder
+            // Load global .po file for the applications from the App_Data folder
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
-            // Then load global .po files in the Localization folder outside of App_Data
+            
+            // Load global .po files in the Localization folder
             yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, poFileName));
 
             // Load tenant-specific .po file
