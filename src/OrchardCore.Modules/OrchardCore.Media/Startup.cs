@@ -143,7 +143,7 @@ namespace OrchardCore.Media
             services.AddImageSharpCore()
                 .SetRequestParser<QueryCollectionRequestParser>()
                 .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache<MediaFileCache>()
+                .SetCache<PhysicalFileSystemCache>()
                 .SetCacheHash<CacheHash>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ResizeWebProcessor>()
