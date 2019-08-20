@@ -18,6 +18,7 @@ namespace OrchardCore.Lucene
     {
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -26,6 +27,7 @@ namespace OrchardCore.Lucene
         public LuceneQuerySource(
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
@@ -33,6 +35,7 @@ namespace OrchardCore.Lucene
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
@@ -66,7 +69,7 @@ namespace OrchardCore.Lucene
                 var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(_luceneIndexSettingsService.GetIndexAnalyzer(luceneQuery.Index));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
 
