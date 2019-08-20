@@ -17,7 +17,7 @@ PO files are found at these locations:
 - All files matching `/App_Data/Localization/[CultureName].po` or `/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
 - For each module and theme all files matching  
-    - `/App_Data/Localization/[ModuleId]/[CultureName].po` 
+    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
     - `/App_Data/Localization/[ModuleId]-[CultureName].po`
     - `/App_Data/Localization/[CultureName]/[ModuleId].po`
     - `/Localization/[ModuleId]/[CultureName].po` 
