@@ -41,28 +41,34 @@ namespace OrchardCore.Settings.Services
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
                 var session = GetSession();
-
-                var changeToken = ChangeToken;
                 site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
                 {
-                    site = new SiteSettings
+                    lock (_memoryCache)
                     {
-                        SiteSalt = Guid.NewGuid().ToString("N"),
-                        SiteName = "My Orchard Project Application",
-                        PageSize = 10,
-                        MaxPageSize = 100,
-                        MaxPagedCount = 0,
-                        TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                    };
+                        if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
+                        {
+                            site = new SiteSettings
+                            {
+                                SiteSalt = Guid.NewGuid().ToString("N"),
+                                SiteName = "My Orchard Project Application",
+                                PageSize = 10,
+                                MaxPageSize = 100,
+                                MaxPagedCount = 0,
+                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                            };
 
-                    session.Save(site);
-                    _signal.SignalToken(SiteCacheKey);
+                            session.Save(site);
+                            _memoryCache.Set(SiteCacheKey, site);
+                            _signal.SignalToken(SiteCacheKey);
+                        }
+                    }
                 }
                 else
                 {
-                    _memoryCache.Set(SiteCacheKey, site, changeToken);
+                    _memoryCache.Set(SiteCacheKey, site);
+                    _signal.SignalToken(SiteCacheKey);
                 }
             }
 
@@ -93,6 +99,8 @@ namespace OrchardCore.Settings.Services
             existing.AppendVersion = site.AppendVersion;
 
             session.Save(existing);
+
+            _memoryCache.Set(SiteCacheKey, site);
             _signal.SignalToken(SiteCacheKey);
 
             return;

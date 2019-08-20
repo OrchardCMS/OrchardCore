@@ -1,79 +1,60 @@
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
     public class FileContentDefinitionStore : IContentDefinitionStore
     {
         private readonly IOptions<ShellOptions> _shellOptions;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly ShellSettings _shellSettings;
 
-        public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions)
+        public FileContentDefinitionStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {
             _shellOptions = shellOptions;
+            _shellSettings = shellSettings;
         }
 
-        public async Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
+        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            var fileName = GetFilename();
 
-            if (!File.Exists(fileName))
+            ContentDefinitionRecord result;
+
+            if (!File.Exists(Filename))
             {
-                var contentDefinitionRecord = new ContentDefinitionRecord();
-                await SaveContentDefinitionAsync(contentDefinitionRecord);
-                return contentDefinitionRecord;
+                result = new ContentDefinitionRecord();
             }
-
-            await _semaphore.WaitAsync();
-
-            try
+            else
             {
-                using (var file = File.OpenText(fileName))
+                using (var file = File.OpenText(Filename))
                 {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        return (await JObject.LoadAsync(reader)).ToObject<ContentDefinitionRecord>();
-                    }
+                    var serializer = new JsonSerializer();
+                    result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
                 }
             }
 
-            finally
-            {
-                _semaphore.Release();
-            }
+            return Task.FromResult(result);
         }
 
-        public async Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
+        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            await _semaphore.WaitAsync();
-
-            try
+            using (var file = File.CreateText(Filename))
             {
-                using (var file = File.CreateText(GetFilename()))
-                {
-                    using (var writer = new JsonTextWriter(file))
-                    {
-                        await JObject.FromObject(contentDefinitionRecord).WriteToAsync(writer);
-                    }
-                }
+                var serializer = new JsonSerializer();
+                serializer.Formatting = Formatting.Indented;
+                serializer.Serialize(file, contentDefinitionRecord);
             }
 
-            finally
-            {
-                _semaphore.Release();
-            }
+            return Task.CompletedTask;
         }
 
-        private string GetFilename() => PathExtensions.Combine(
-            _shellOptions.Value.ShellsApplicationDataPath,
-            _shellOptions.Value.ShellsContainerName,
-            ShellScope.Context.Settings.Name, "ContentDefinition.json");
+        private string Filename => PathExtensions.Combine(
+                _shellOptions.Value.ShellsApplicationDataPath,
+                _shellOptions.Value.ShellsContainerName,
+                _shellSettings.Name, "ContentDefinition.json");
+
     }
 }

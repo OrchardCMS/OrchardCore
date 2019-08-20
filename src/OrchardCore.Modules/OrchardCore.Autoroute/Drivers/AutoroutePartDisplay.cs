@@ -68,13 +68,13 @@ namespace OrchardCore.Autoroute.Drivers
                     model.IsHomepage = true;
                 }
 
-                model.Settings = await GetSettingsAsync(autoroutePart);
+                model.Settings = GetSettings(autoroutePart);
             });
         }
 
-        private async Task<AutoroutePartSettings> GetSettingsAsync(AutoroutePart autoroutePart)
+        private AutoroutePartSettings GetSettings(AutoroutePart autoroutePart)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(autoroutePart.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(autoroutePart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
             return contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
         }
@@ -85,7 +85,7 @@ namespace OrchardCore.Autoroute.Drivers
 
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath);
 
-            var settings = await GetSettingsAsync(model);
+            var settings = GetSettings(model);
 
             if (settings.AllowCustomPath)
             {

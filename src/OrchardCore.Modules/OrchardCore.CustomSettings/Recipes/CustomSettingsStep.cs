@@ -40,7 +40,7 @@ namespace OrchardCore.CustomSettings.Recipes
             var customSettingsNames = (from customSettings in customSettingsList
                                        select customSettings.Name).ToArray();
 
-            var customSettingsTypes = (await _customSettingsService.GetSettingsTypesAsync(customSettingsNames)).ToArray();
+            var customSettingsTypes = _customSettingsService.GetSettingsTypes(customSettingsNames).ToArray();
 
             foreach (var customSettingsType in customSettingsTypes)
             {

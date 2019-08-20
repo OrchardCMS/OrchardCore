@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -16,9 +15,9 @@ namespace OrchardCore.Autoroute
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("AutoroutePart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("AutoroutePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a custom url for your content item."));
 

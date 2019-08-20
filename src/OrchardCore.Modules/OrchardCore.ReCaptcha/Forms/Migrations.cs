@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -14,20 +13,20 @@ namespace OrchardCore.ReCaptcha.Forms
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
             // NoCaptcha
-            //await _contentDefinitionManager.AlterPartDefinitionAsync("NoCaptchaPart", part => part
+            //_contentDefinitionManager.AlterPartDefinition("NoCaptchaPart", part => part
             //    .WithDescription("Provides captcha properties."));
 
-            //await _contentDefinitionManager.AlterTypeDefinitionAsync("NoCaptcha", type => type
+            //_contentDefinitionManager.AlterTypeDefinition("NoCaptcha", type => type
             //    .WithPart("NoCaptchaPart")
             //    .Stereotype("Widget"));
 
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ReCaptchaPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("ReCaptchaPart", part => part
                 .WithDescription("Provides captcha properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("ReCaptcha", type => type
+            _contentDefinitionManager.AlterTypeDefinition("ReCaptcha", type => type
                 .WithPart("ReCaptchaPart")
                 .Stereotype("Widget"));
 

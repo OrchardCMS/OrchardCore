@@ -31,8 +31,8 @@ namespace OrchardCore.Lists.Services
                 // Show list content items 
                 if (viewModel.ShowListContentTypes)
                 {
-                    var listableTypes = (await _contentDefinitionManager
-                        .ListTypeDefinitionsAsync())
+                    var listableTypes = _contentDefinitionManager
+                        .ListTypeDefinitions()
                         .Where(x =>
                             x.Parts.Any(p =>
                                 p.PartDefinition.Name == nameof(ListPart)))

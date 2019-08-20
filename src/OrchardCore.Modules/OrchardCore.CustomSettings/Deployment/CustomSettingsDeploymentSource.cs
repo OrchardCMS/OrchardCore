@@ -27,8 +27,8 @@ namespace OrchardCore.CustomSettings.Deployment
             var settingsList = new List<JProperty> { new JProperty("name", "custom-settings") };
 
             var settingsTypes = customSettingsStep.IncludeAll
-                ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-                : (await _customSettingsService.GetSettingsTypesAsync(customSettingsStep.SettingsTypeNames)).ToArray();
+                ? _customSettingsService.GetAllSettingsTypes().ToArray()
+                : _customSettingsService.GetSettingsTypes(customSettingsStep.SettingsTypeNames).ToArray();
 
             foreach (var settingsType in settingsTypes)
             {

@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.Drivers
 
                         model.ListPart = listPart;
                         model.ContentItems = (await QueryListItemsAsync(listPart, pager, true)).ToArray();
-                        model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(listPart);
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
@@ -60,7 +60,7 @@ namespace OrchardCore.Lists.Drivers
 
                         model.ListPart = listPart;
                         model.ContentItems = (await QueryListItemsAsync(listPart, pager, false)).ToArray();
-                        model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(listPart);
+                        model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
@@ -70,7 +70,7 @@ namespace OrchardCore.Lists.Drivers
 
         private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, ListPart part)
         {
-            var settings = await GetSettingsAsync(part);
+            var settings = GetSettings(part);
             PagerSlimParameters pagerParameters = new PagerSlimParameters();
             await updater.TryUpdateModelAsync(pagerParameters);
 
@@ -203,22 +203,16 @@ namespace OrchardCore.Lists.Drivers
             }
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPart listPart)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPart listPart)
         {
-            var settings = await GetSettingsAsync(listPart);
+            var settings = GetSettings(listPart);
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-
-            var typeDefinitions = new List<ContentTypeDefinition>();
-            foreach (var contentType in contentTypes)
-            {
-                typeDefinitions.Add(await _contentDefinitionManager.GetTypeDefinitionAsync(contentType));
-            }
-            return typeDefinitions;
+            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
 
-        private async Task<ListPartSettings> GetSettingsAsync(ListPart listPart)
+        private ListPartSettings GetSettings(ListPart listPart)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(listPart.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
             return contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
         }

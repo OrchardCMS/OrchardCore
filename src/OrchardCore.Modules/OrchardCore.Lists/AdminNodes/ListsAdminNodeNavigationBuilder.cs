@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.AdminNodes
                 return;
             }
 
-            _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType);
+            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
 
             if (_node.AddContentTypeAsParent)
             {

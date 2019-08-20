@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using Newtonsoft.Json.Linq;
 using YesSql;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Title
 {
@@ -28,9 +28,9 @@ namespace OrchardCore.Title
             _logger = logger;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("TitlePart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("TitlePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Title for your content item.")
                 .WithDefaultPosition("0")
@@ -39,7 +39,7 @@ namespace OrchardCore.Title
             return 2;
         }
 
-        public async Task<int> UpdateFrom1Async()
+        public async Task<int> UpdateFrom1()
         {
             // This code can be removed in RC
             // We are patching all content item versions by moving the Title to DisplayText

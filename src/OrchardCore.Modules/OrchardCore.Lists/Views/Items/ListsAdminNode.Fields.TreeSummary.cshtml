@@ -3,7 +3,7 @@
 
 @{
 
-    var displayName = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.Value.ContentType);
+    var displayName = ContentDefinitionManager.GetTypeDefinition(Model.Value.ContentType);
 }
 
 <div class="@(Model.Value.Enabled ? "" : "disabled")">

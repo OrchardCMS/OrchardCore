@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Contents
@@ -14,9 +13,9 @@ namespace OrchardCore.Contents
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("CommonPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("CommonPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an editor for the common properties of a content item."));
 

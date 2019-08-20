@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using OrchardCore.Admin;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Admin;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -32,7 +32,7 @@ namespace OrchardCore.Content.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
+            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.Settings.ToObject<ContentPickerFieldSettings>();

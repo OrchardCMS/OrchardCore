@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
@@ -7,7 +7,7 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     {
         public ContentPartDefinitionRecord()
         {
-            ContentPartFieldDefinitionRecords = ImmutableArray.Create<ContentPartFieldDefinitionRecord>();
+            ContentPartFieldDefinitionRecords = new List<ContentPartFieldDefinitionRecord>();
             Settings = new JObject();
         }
 
@@ -19,16 +19,6 @@ namespace OrchardCore.ContentManagement.Metadata.Records
         /// </summary>
         public JObject Settings { get; set; }
 
-        public ImmutableArray<ContentPartFieldDefinitionRecord> ContentPartFieldDefinitionRecords { get; set; }
-
-        public ContentPartDefinitionRecord Clone()
-        {
-            return new ContentPartDefinitionRecord()
-            {
-                Name = Name,
-                Settings = new JObject(Settings),
-                ContentPartFieldDefinitionRecords = ContentPartFieldDefinitionRecords
-            };
-        }
+        public IList<ContentPartFieldDefinitionRecord> ContentPartFieldDefinitionRecords { get; set; }
     }
 }

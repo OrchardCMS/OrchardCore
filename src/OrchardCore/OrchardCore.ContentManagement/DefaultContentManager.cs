@@ -49,7 +49,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
             if (contentTypeDefinition == null)
             {
                 contentTypeDefinition = new ContentTypeDefinitionBuilder().Named(contentType).Build();
@@ -179,7 +179,7 @@ namespace OrchardCore.ContentManagement
                 if (contentItem.Published)
                 {
                     // We save the previous version further because this call might do a session query.
-                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
                     if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))

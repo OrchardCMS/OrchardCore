@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Widgets
@@ -14,9 +13,9 @@ namespace OrchardCore.Widgets
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("WidgetsListPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("WidgetsListPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to add widgets per content items.")
                 );

@@ -7,16 +7,14 @@
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
 
-    var dynamicParts = new List<dynamic>();
-    foreach (var part in Model.TypeDefinition.Parts)
-    {
-        var defaultPosition = (await ContentDefinitionManager.GetPartDefinitionAsync(part.PartDefinition.Name))?.DefaultPosition() ?? "5";
-        dynamicParts.Add(new { Part = part, Order = int.Parse(part.Settings["Position"]?.ToString() ?? defaultPosition) });
-    }
-
-    var orderedParts = dynamicParts
+    var orderedParts = Model.TypeDefinition.Parts
+        .Select(part =>
+        {
+            var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
+            return new { Part = part, Order = int.Parse(part.Settings["Position"]?.ToString() ?? defaultPosition) };
+        })
         .OrderBy(x => x.Order)
-        .Select(x => (ContentTypePartDefinition)x.Part);
+        .Select(x => x.Part);
 
     var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.Settings["Position"]?.ToString() ?? "0") })

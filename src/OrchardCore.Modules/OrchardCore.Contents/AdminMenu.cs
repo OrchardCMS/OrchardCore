@@ -34,7 +34,7 @@ namespace OrchardCore.Contents
                 return;
             }
 
-            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
 
             builder.Add(T["Content"], "1.4", content => content
                 .AddClass("content").Id("content")

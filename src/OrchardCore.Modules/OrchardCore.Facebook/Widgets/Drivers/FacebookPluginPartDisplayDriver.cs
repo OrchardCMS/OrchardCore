@@ -1,6 +1,5 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using OrchardCore.Facebook.Widgets.Models;
+using OrchardCore.Facebook.Widgets.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -8,10 +7,13 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Facebook.Widgets.Models;
-using OrchardCore.Facebook.Widgets.Settings;
-using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Settings;
+using OrchardCore.Mvc.ModelBinding;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Facebook.Widgets.Settings;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
@@ -41,14 +43,14 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         public override IDisplayResult Display(FacebookPluginPart part)
         {
             return Combine(
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModelAsync(m, part))
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
                     .Location("Detail", "Content:10"),
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModelAsync(m, part))
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
                     .Location("Summary", "Content:10")
             );
         }
 
-        private async Task BuildViewModelAsync(FacebookPluginPartViewModel model, FacebookPluginPart part)
+        private void BuildViewModel(FacebookPluginPartViewModel model, FacebookPluginPart part)
         {
             if (model == null)
             {
@@ -56,29 +58,29 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
-            model.Settings = await GetFacebookPluginPartSettingsAsync(part);
+            model.Settings = GetFacebookPluginPartSettings(part);
             model.Liquid = part.Liquid;
             model.ContentItem = part.ContentItem;
         }
 
         public override IDisplayResult Edit(FacebookPluginPart part)
         {
-            return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", async model =>
+            return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", model =>
             {
-                model.Settings = await GetFacebookPluginPartSettingsAsync(part);
+                model.Settings = GetFacebookPluginPartSettings(part);
                 model.FacebookPluginPart = part;
                 model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
             });
         }
 
-        private async Task<FacebookPluginPartSettings> GetFacebookPluginPartSettingsAsync(FacebookPluginPart part)
+        private FacebookPluginPartSettings GetFacebookPluginPartSettings(FacebookPluginPart part)
         {
             if (part == null)
             {
                 throw new ArgumentNullException(nameof(part));
             }
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }

@@ -20,14 +20,15 @@ namespace OrchardCore.Markdown.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, MarkdownBodyPart part)
         {
-            return context.ForAsync<BodyAspect>(async bodyAspect =>
+            return context.ForAsync<BodyAspect>(bodyAspect =>
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownBodyPart));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
                 var html = Markdig.Markdown.ToHtml(part.Markdown ?? "");
 
                 bodyAspect.Body = new HtmlString(html);
+                return Task.CompletedTask;
             });
         }
     }

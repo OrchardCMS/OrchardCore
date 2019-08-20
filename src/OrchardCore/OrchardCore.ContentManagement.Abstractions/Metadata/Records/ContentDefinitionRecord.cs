@@ -1,5 +1,5 @@
-using System.Collections.Immutable;
-using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
@@ -7,29 +7,13 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     {
         public ContentDefinitionRecord()
         {
-            ContentTypeDefinitionRecords = ImmutableArray.Create<ContentTypeDefinitionRecord>();
-            ContentPartDefinitionRecords = ImmutableArray.Create<ContentPartDefinitionRecord>();
+            ContentTypeDefinitionRecords = new List<ContentTypeDefinitionRecord>();
+            ContentPartDefinitionRecords = new List<ContentPartDefinitionRecord>();
         }
 
         public int Id { get; set; }
-        public ImmutableArray<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
-        public ImmutableArray<ContentPartDefinitionRecord> ContentPartDefinitionRecords { get; set; }
+        public IList<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
+        public IList<ContentPartDefinitionRecord> ContentPartDefinitionRecords { get; set; }
         public int Serial { get; set; }
-
-        public ContentDefinitionRecord Clone()
-        {
-            return new ContentDefinitionRecord()
-            {
-                ContentTypeDefinitionRecords = ContentTypeDefinitionRecords
-                    .Select(type => type.Clone())
-                    .ToImmutableArray(),
-
-                ContentPartDefinitionRecords = ContentPartDefinitionRecords
-                    .Select(part => part.Clone())
-                    .ToImmutableArray(),
-
-                Serial = Serial
-            };
-        }
     }
 }

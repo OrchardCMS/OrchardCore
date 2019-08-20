@@ -20,14 +20,14 @@ namespace OrchardCore.CustomSettings
 
         public IStringLocalizer T { get; set; }
 
-        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+            foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 builder
                     .Add(T["Configuration"], configuration => configuration
@@ -39,6 +39,8 @@ namespace OrchardCore.CustomSettings
                                 .LocalNav()
                             )));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

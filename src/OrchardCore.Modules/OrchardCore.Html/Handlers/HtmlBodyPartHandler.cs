@@ -20,14 +20,15 @@ namespace OrchardCore.Html.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, HtmlBodyPart part)
         {
-            return context.ForAsync<BodyAspect>(async bodyAspect =>
+            return context.ForAsync<BodyAspect>(bodyAspect =>
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(HtmlBodyPart));
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
                 var body = part.Html;
 
                 bodyAspect.Body = new HtmlString(body);
+                return Task.CompletedTask;
             });
         }
     }

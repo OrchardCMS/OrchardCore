@@ -47,11 +47,11 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
         {
-            return Initialize<BagPartEditViewModel>("BagPart_Edit", async m =>
+            return Initialize<BagPartEditViewModel>("BagPart_Edit", m =>
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
             });
         }
 
@@ -75,18 +75,10 @@ namespace OrchardCore.Flows.Drivers
             return Edit(part, context);
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
-
-            var typeDefinitions = new List<ContentTypeDefinition>();
-
-            foreach (var contentType in settings.ContainedContentTypes)
-            {
-                typeDefinitions.Add(await _contentDefinitionManager.GetTypeDefinitionAsync(contentType));
-            }
-
-            return typeDefinitions;
+            return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }
 }

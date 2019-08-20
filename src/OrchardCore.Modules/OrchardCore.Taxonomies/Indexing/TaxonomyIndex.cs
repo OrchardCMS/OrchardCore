@@ -55,7 +55,7 @@ namespace OrchardCore.Taxonomies.Indexing
 
                     // Search for Taxonomy fields
                     var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinitionAsync(contentItem.ContentType).GetAwaiter().GetResult()
+                        .GetTypeDefinition(contentItem.ContentType)
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)))
                         .ToArray();
 

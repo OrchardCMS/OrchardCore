@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Indexing;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Indexing
 {
@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Indexing
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {

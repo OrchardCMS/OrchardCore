@@ -29,9 +29,9 @@ namespace OrchardCore.Html
         }
 
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
@@ -43,20 +43,20 @@ namespace OrchardCore.Html
             return 3;
         }
 
-        public async Task<int> UpdateFrom3Async()
+        public async Task<int> UpdateFrom3()
         {
             // This code can be removed in RC
 
             // Update content type definitions
-            foreach (var contentType in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            foreach (var contentType in _contentDefinitionManager.ListTypeDefinitions())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {
-                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
+                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
                 }
             }
 
-            await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart");
+            _contentDefinitionManager.DeletePartDefinition("BodyPart");
 
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site

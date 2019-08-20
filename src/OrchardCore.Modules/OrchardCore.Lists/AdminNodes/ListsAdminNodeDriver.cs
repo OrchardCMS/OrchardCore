@@ -30,10 +30,10 @@ namespace OrchardCore.Lists.AdminNodes
 
         public override IDisplayResult Edit(ListsAdminNode treeNode)
         {
-            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
+            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", model =>
             {
                 model.ContentType = treeNode.ContentType;
-                model.ContentTypes = await GetContenTypesSelectListAsync();
+                model.ContentTypes = GetContenTypesSelectList();
                 model.IconForContentItems = treeNode.IconForContentItems;
                 model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
                 model.IconForParentLink = treeNode.IconForParentLink;
@@ -58,9 +58,9 @@ namespace OrchardCore.Lists.AdminNodes
         }
 
 
-        private async Task<List<SelectListItem>> GetContenTypesSelectListAsync()
+        private List<SelectListItem> GetContenTypesSelectList()
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            return _contentDefinitionManager.ListTypeDefinitions()
                 .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(typeof(ListPart).Name, StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(ctd => ctd.DisplayName)
                 .Select(ctd => new SelectListItem { Value = ctd.Name, Text = ctd.DisplayName })

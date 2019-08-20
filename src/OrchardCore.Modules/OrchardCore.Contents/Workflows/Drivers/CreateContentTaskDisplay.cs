@@ -1,7 +1,7 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
@@ -17,9 +17,9 @@ namespace OrchardCore.Contents.Workflows.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        protected override async Task EditActivityAsync(CreateContentTask activity, CreateContentTaskViewModel model)
+        protected override void EditActivity(CreateContentTask activity, CreateContentTaskViewModel model)
         {
-            model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            model.AvailableContentTypes = _contentDefinitionManager.ListTypeDefinitions()
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
                 .ToList();
 

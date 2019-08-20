@@ -77,7 +77,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
@@ -177,7 +177,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
@@ -235,7 +235,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {

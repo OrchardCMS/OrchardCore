@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Markdown
@@ -14,9 +13,9 @@ namespace OrchardCore.Markdown
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("MarkdownBodyPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("MarkdownBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 

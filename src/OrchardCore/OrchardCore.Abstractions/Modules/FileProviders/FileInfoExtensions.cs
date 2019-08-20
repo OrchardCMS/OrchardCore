@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Modules.FileProviders
@@ -19,28 +18,6 @@ namespace OrchardCore.Modules.FileProviders
                     {
                         string line;
                         while ((line = sr.ReadLine()) != null)
-                        {
-                            lines.Add(line);
-                        }
-                    }
-                }
-            }
-
-            return lines;
-        }
-
-        public static async Task<IEnumerable<string>> ReadAllLinesAsync(this IFileInfo fileInfo)
-        {
-            var lines = new List<string>();
-
-            if (fileInfo?.Exists ?? false)
-            {
-                using (var reader = fileInfo.CreateReadStream())
-                {
-                    using (var sr = new StreamReader(reader))
-                    {
-                        string line;
-                        while ((line = await sr.ReadLineAsync()) != null)
                         {
                             lines.Add(line);
                         }

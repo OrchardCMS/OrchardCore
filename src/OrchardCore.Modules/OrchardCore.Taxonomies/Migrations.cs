@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -15,9 +14,9 @@ namespace OrchardCore.Taxonomies
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Taxonomy", menu => menu
+            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", menu => menu
                 .Draftable()
                 .Versionable()
                 .Creatable()

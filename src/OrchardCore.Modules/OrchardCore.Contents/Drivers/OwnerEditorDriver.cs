@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var settings = await GetSettingsAsync(part);
+            var settings = GetSettings(part);
 
             if (settings.DisplayOwnerEditor)
             {
@@ -68,7 +68,7 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var settings = await GetSettingsAsync(part);
+            var settings = GetSettings(part);
 
             if (!settings.DisplayOwnerEditor)
             {
@@ -107,9 +107,9 @@ namespace OrchardCore.Contents.Drivers
             return await EditAsync(part, context);
         }
 
-        public async Task<CommonPartSettings> GetSettingsAsync(CommonPart part)
+        public CommonPartSettings GetSettings(CommonPart part)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart", StringComparison.Ordinal));
             return contentTypePartDefinition.GetSettings<CommonPartSettings>();
         }

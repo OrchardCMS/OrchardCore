@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Lists.Indexes;
 
@@ -15,9 +14,9 @@ namespace OrchardCore.Lists
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("ListPart", builder => builder
                 .Attachable()
                 .WithDescription("Add a list behavior."));
 

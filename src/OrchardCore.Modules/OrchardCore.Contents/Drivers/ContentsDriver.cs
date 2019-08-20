@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -20,14 +19,14 @@ namespace OrchardCore.Contents.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, IUpdateModel updater)
+        public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
 
             var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before");
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentType);
 
             if (contentTypeDefinition != null)
             {
@@ -56,9 +55,9 @@ namespace OrchardCore.Contents.Drivers
             );
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {

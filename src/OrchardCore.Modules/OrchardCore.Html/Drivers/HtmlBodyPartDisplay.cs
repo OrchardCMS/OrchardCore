@@ -54,7 +54,7 @@ namespace OrchardCore.Html.Drivers
 
         private async Task BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart HtmlBodyPart, ContentTypePartDefinition definition)
         {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(HtmlBodyPart.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(HtmlBodyPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.Name == nameof(HtmlBodyPart));
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 

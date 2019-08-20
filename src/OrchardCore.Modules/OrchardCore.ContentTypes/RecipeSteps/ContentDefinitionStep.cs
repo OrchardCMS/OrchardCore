@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -20,35 +20,37 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var step = context.Step.ToObject<ContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {
-                var newType = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType.Name)
+                var newType = _contentDefinitionManager.GetTypeDefinition(contentType.Name)
                     ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
 
-                await UpdateContentTypeAsync(newType, contentType);
+                UpdateContentType(newType, contentType);
             }
 
             foreach (var contentPart in step.ContentParts)
             {
-                var newPart = await _contentDefinitionManager.GetPartDefinitionAsync(contentPart.Name)
+                var newPart = _contentDefinitionManager.GetPartDefinition(contentPart.Name)
                     ?? new ContentPartDefinition(contentPart.Name);
 
-                await UpdateContentPartAsync(newPart, contentPart);
+                UpdateContentPart(newPart, contentPart);
             }
+
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateContentTypeAsync(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
+        private void UpdateContentType(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
         {
-            await _contentDefinitionManager.AlterTypeDefinitionAsync(type.Name, builder =>
+            _contentDefinitionManager.AlterTypeDefinition(type.Name, builder =>
             {
                 if (!String.IsNullOrEmpty(record.DisplayName))
                 {
@@ -63,9 +65,9 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private async Task UpdateContentPartAsync(ContentPartDefinition part, ContentPartDefinitionRecord record)
+        private void UpdateContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record)
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync(part.Name, builder =>
+            _contentDefinitionManager.AlterPartDefinition(part.Name, builder =>
             {
                 builder.MergeSettings(record.Settings);
 

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings
 {
-    public class Permissions : IAsyncPermissionProvider
+    public class Permissions : IPermissionProvider
     {
         private static readonly Permission ManageCustomSettings = new Permission("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
 
@@ -19,17 +18,11 @@ namespace OrchardCore.CustomSettings
             _customSettingsService = customSettingsService;
         }
 
-        // Sync version for backward compatibility.
         public IEnumerable<Permission> GetPermissions()
-        {
-            return GetPermissionsAsync().GetAwaiter().GetResult();
-        }
-
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             var list = new List<Permission>();
 
-            foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
+            foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 list.Add(CreatePermissionForType(type));
             }

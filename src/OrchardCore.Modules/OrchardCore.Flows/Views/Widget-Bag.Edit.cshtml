@@ -2,7 +2,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentType = (await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)).DisplayName;
+    var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
 }
 
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">

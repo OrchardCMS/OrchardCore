@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -14,90 +13,90 @@ namespace OrchardCore.Forms
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
             // Form
-            await _contentDefinitionManager.AlterPartDefinitionAsync("FormPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("FormPart", part => part
                 .Attachable()
                 .WithDescription("Turns your content item into a form."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
                 .WithPart("TitlePart")
                 .WithPart("FormPart")
                 .WithPart("FlowPart")
                 .Stereotype("Widget"));
 
             // FormElement
-            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
                 .WithDescription("Provides attributes common to all form elements."));
 
             // FormInputElement
-            await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
                 .WithDescription("Provides attributes common to all input form elements."));
 
             // Label
-            await _contentDefinitionManager.AlterPartDefinitionAsync("LabelPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("LabelPart", part => part
                 .WithDescription("Provides label properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Label", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
                 .WithPart("TitlePart")
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
 
             // Input
-            await _contentDefinitionManager.AlterPartDefinitionAsync("InputPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
                 .WithDescription("Provides input field properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Input", type => type
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("InputPart")
                 .Stereotype("Widget"));
 
             // TextArea
-            await _contentDefinitionManager.AlterPartDefinitionAsync("TextAreaPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("TextAreaPart", part => part
                 .WithDescription("Provides text area properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
+            _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("TextAreaPart")
                 .Stereotype("Widget"));
 
             // Select
-            await _contentDefinitionManager.AlterPartDefinitionAsync("SelectPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("SelectPart", part => part
                 .WithDescription("Provides select field properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Select", type => type
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("SelectPart")
                 .Stereotype("Widget"));
 
             // Button
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ButtonPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("ButtonPart", part => part
                 .WithDescription("Provides button properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Button", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Button", type => type
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("ButtonPart")
                 .Stereotype("Widget"));
 
             // Validation Summary
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationSummaryPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
                 .WithDescription("Displays a validation summary."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("ValidationSummary", type => type
+            _contentDefinitionManager.AlterTypeDefinition("ValidationSummary", type => type
                 .WithPart("ValidationSummaryPart")
                 .Stereotype("Widget"));
 
             // Validation
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationPart", part => part
+            _contentDefinitionManager.AlterPartDefinition("ValidationPart", part => part
                 .WithDescription("Displays a field validation error."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Validation", type => type
+            _contentDefinitionManager.AlterTypeDefinition("Validation", type => type
                 .WithPart("ValidationPart")
                 .Stereotype("Widget"));
 

@@ -108,7 +108,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.Options.SelectedContentType);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
 
@@ -321,13 +321,15 @@ namespace OrchardCore.Contents.Controllers
         public Task<IActionResult> CreatePOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-            return CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
+            return CreatePOST(id, returnUrl, stayOnSamePage, contentItem =>
             {
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content draft has been saved."]
                     : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+
+                return Task.CompletedTask;
             });
         }
 
@@ -349,7 +351,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content has been published."]
@@ -437,13 +439,15 @@ namespace OrchardCore.Contents.Controllers
         public Task<IActionResult> EditPOST(string contentItemId, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-            return EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+            return EditPOST(contentItemId, returnUrl, stayOnSamePage, contentItem =>
             {
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content draft has been saved."]
                     : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+
+                return Task.CompletedTask;
             });
         }
 
@@ -468,7 +472,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content has been published."]
@@ -573,7 +577,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem != null)
             {
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 await _contentManager.DiscardDraftAsync(contentItem);
 
@@ -597,7 +601,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem != null)
             {
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 await _contentManager.RemoveAsync(contentItem);
 
@@ -625,7 +629,7 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentManager.PublishAsync(contentItem);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
@@ -655,7 +659,7 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentManager.UnpublishAsync(contentItem);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
@@ -672,7 +676,7 @@ namespace OrchardCore.Contents.Controllers
         private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
         {
             var creatable = new List<ContentTypeDefinition>();
-            foreach (var ctd in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
                 if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
                 {
@@ -689,7 +693,7 @@ namespace OrchardCore.Contents.Controllers
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
         {
             var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
                 if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
                 {

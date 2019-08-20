@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
 using YesSql.Indexes;
-using OrchardCore.ContentManagement.Metadata.Records;
 
 namespace OrchardCore.ContentManagement
 {
@@ -16,10 +15,9 @@ namespace OrchardCore.ContentManagement
     {
         public static IServiceCollection AddContentManagement(this IServiceCollection services)
         {
-            services.AddScoped<ContentDefinitionCache>();
             services.AddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
-            services.AddSingleton<IContentDefinitionManager, ContentDefinitionManager>();
-            services.AddSingleton<IContentDefinitionStore, DatabaseContentDefinitionStore>();
+            services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
+            services.TryAddScoped<IContentDefinitionStore, DatabaseContentDefinitionStore>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
             services.AddSingleton<IIndexProvider, ContentItemIndexProvider>();
@@ -38,7 +36,7 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddFileContentDefinitionStore(this IServiceCollection services)
         {
             services.RemoveAll<IContentDefinitionStore>();
-            services.AddSingleton<IContentDefinitionStore, FileContentDefinitionStore>();
+            services.TryAddScoped<IContentDefinitionStore, FileContentDefinitionStore>();
 
             return services;
         }

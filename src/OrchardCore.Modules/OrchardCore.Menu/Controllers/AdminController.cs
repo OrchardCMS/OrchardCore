@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
@@ -77,7 +77,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
@@ -179,7 +179,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
@@ -234,7 +234,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
             if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {

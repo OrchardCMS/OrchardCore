@@ -2,8 +2,8 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -33,14 +33,14 @@ namespace OrchardCore.Flows.Settings
                 return null;
             }
 
-            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
+            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
             {
                 model.BagPartSettings = contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }

@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Liquid
@@ -14,9 +13,9 @@ namespace OrchardCore.Liquid
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task<int> CreateAsync()
+        public int Create()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("LiquidPart", builder => builder
+            _contentDefinitionManager.AlterPartDefinition("LiquidPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Liquid formatted body for your content item."));
 
