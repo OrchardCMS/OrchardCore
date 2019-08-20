@@ -20,9 +20,9 @@ namespace OrchardCore.Tests.Stubs
             _defaultShapeTable = defaultShapeTable;
         }
 
-        public Task<ShapeTable> GetShapeTableAsync(string themeId)
+        public ShapeTable GetShapeTable(string themeId)
         {
-            return Task.FromResult((ShapeTable)_defaultShapeTable);
+            return _defaultShapeTable;
         }
     }
 

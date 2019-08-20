@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -48,7 +47,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             _memoryCache = memoryCache;
         }
 
-        public async Task<ShapeTable> GetShapeTableAsync(string themeId)
+        public ShapeTable GetShapeTable(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
 
@@ -65,22 +64,22 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    var strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
-                    {
                         continue;
-                    }
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-                    await bindingStrategy.DiscoverAsync(builder);
+                    bindingStrategy.Discover(builder);
                     var builtAlterations = builder.BuildAlterations();
 
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledAndOrderedFeatureIds = (await _shellFeaturesManager
-                    .GetEnabledFeaturesAsync())
+                var enabledAndOrderedFeatureIds = _shellFeaturesManager
+                    .GetEnabledFeaturesAsync()
+                    .GetAwaiter()
+                    .GetResult()
                     .Select(f => f.Id)
                     .ToList();
 

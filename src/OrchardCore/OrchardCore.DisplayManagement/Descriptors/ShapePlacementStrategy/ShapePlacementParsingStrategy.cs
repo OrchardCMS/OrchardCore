@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
@@ -20,30 +20,33 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly ILogger _logger;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
+            ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
+            _logger = logger;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
             _placementParseMatchProviders = placementParseMatchProviders;
         }
 
-        public async Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
-            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
             {
-                await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
+                ProcessFeatureDescriptor(builder, featureDescriptor);
             }
         }
 
-        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that. 
             // Dont use JSON Deserializer directly.
@@ -58,7 +61,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     {
                         using (var jtr = new JsonTextReader(reader))
                         {
-                            var placementFile = (await JObject.LoadAsync(jtr)).ToObject<PlacementFile>();
+                            JsonSerializer serializer = new JsonSerializer();
+                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
                             ProcessPlacementFile(builder, featureDescriptor, placementFile);
                         }
                     }

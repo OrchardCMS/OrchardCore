@@ -29,11 +29,10 @@ namespace OrchardCore.Facebook.Widgets.Services
             model.ContentItem = part.ContentItem;
         }
 
-        public Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("FacebookPluginPart").OnProcessing(BuildViewModelAsync);
             builder.Describe("FacebookPluginPart_Summary").OnProcessing(BuildViewModelAsync);
-            return Task.CompletedTask;
         }
     }
 }

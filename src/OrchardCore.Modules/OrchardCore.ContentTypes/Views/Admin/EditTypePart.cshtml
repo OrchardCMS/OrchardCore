@@ -8,7 +8,7 @@
 @{
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
     var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 

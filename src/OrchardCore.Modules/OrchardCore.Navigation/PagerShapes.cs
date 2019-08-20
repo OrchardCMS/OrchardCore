@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -27,7 +27,7 @@ namespace OrchardCore.Navigation
 
         public IStringLocalizer T { get; set; }
 
-        public Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Pager")
                 .OnCreated(created =>
@@ -137,8 +137,6 @@ namespace OrchardCore.Navigation
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
                     }
                 });
-
-            return Task.CompletedTask;
         }
 
         private string EncodeAlternateElement(string alternateElement)

@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -11,7 +10,7 @@ namespace OrchardCore.Menu
 {
     public class MenuShapes : IShapeTableProvider
     {
-        public Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
                 .OnProcessing(async context =>
@@ -174,8 +173,6 @@ namespace OrchardCore.Menu
                         menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
-
-            return Task.CompletedTask;
         }
 
         /// <summary>

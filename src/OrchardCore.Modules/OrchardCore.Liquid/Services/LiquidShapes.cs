@@ -22,19 +22,18 @@ namespace OrchardCore.Liquid.Services
             templateContext.SetValue("ContentItem", liquidPart.ContentItem);
             templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
             await templateContext.ContextualizeAsync(shapeDisplayContext.DisplayContext);
-            
-            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid,  HtmlEncoder.Default, templateContext);
+
+            model.Html = await liquidTemplateManager.RenderAsync(liquidPart.Liquid, HtmlEncoder.Default, templateContext);
 
             model.Liquid = liquidPart.Liquid;
             model.LiquidPart = liquidPart;
             model.ContentItem = liquidPart.ContentItem;
         }
 
-        public Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
             builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
-            return Task.CompletedTask;
         }
     }
 }

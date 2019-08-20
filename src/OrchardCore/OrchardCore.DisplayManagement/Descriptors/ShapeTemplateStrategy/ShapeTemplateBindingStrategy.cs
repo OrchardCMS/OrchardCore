@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +16,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
+        private readonly string _shellName;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
@@ -27,6 +27,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
+            ShellSettings shellSettings,
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
@@ -34,6 +35,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
             ILogger<DefaultShapeTableManager> logger)
         {
+            _shellName = shellSettings.Name;
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
@@ -49,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
         }
 
-        public async Task DiscoverAsync(ShapeTableBuilder builder)
+        public void Discover(ShapeTableBuilder builder)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -60,7 +62,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
 
             var activeExtensions = Once(enabledFeatures);
