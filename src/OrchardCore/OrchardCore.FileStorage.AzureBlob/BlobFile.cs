@@ -42,8 +42,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public bool IsDirectory => false;
 
-        public string FileHash => _blobReference.Properties.ContentMD5;
-
         public CloudBlockBlob BlobReference => _blobReference;
     }
 }
