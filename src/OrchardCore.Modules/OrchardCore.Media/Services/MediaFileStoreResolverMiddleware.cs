@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -15,14 +14,11 @@ namespace OrchardCore.Media.Services
     /// </summary>
     public class MediaFileStoreResolverMiddleware
     {
-        // Use default stream copy buffer size to stay in gen0 garbage collection;
-        private const int StreamCopyBufferSize = 81920;
-
         private static readonly ConcurrentDictionary<string, Lazy<Task>> _writeTasks = new ConcurrentDictionary<string, Lazy<Task>>();
 
         private readonly RequestDelegate _next;
         private readonly ILogger<MediaFileStoreResolverMiddleware> _logger;
-        private readonly IMediaFileStoreCacheProvider _mediaFileStoreCacheProvider;
+        private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly IMediaFileStore _mediaFileStore;
 
         private readonly PathString _assetsRequestPath;
@@ -31,14 +27,14 @@ namespace OrchardCore.Media.Services
         public MediaFileStoreResolverMiddleware(
             RequestDelegate next,
             ILogger<MediaFileStoreResolverMiddleware> logger,
-            IMediaFileStoreCacheProvider mediaFileStoreCacheProvider,
+            IMediaFileStoreCache mediaFileStoreCache,
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> mediaOptions
             )
         {
             _next = next;
             _logger = logger;
-            _mediaFileStoreCacheProvider = mediaFileStoreCacheProvider;
+            _mediaFileStoreCache = mediaFileStoreCache;
             _mediaFileStore = mediaFileStore;
 
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
@@ -78,26 +74,9 @@ namespace OrchardCore.Media.Services
             }
 
 
-            var fileInfo = _mediaFileStoreCacheProvider.GetFileInfo(subPath);
-            if (fileInfo.Exists)
+            var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPath);
+            if (isFileCached)
             {
-                // TODO Consider how to provide a graceful cache period on this, 
-                // so we do not serve a file from cache, if it has been deleted from Blob storage.
-                // One idea: Treat this cache like any other Cdn cache. Cache bust it.
-                // We would need another memory cache here of file hashes for cached files.
-                // We could then compare the cached file hash with the file hash
-                // from the IFileStoreVersionProvider to see if the hash is the same.
-                // If it is not, then remove the file from the disc cache.
-                // The IFileStoreVersionProvider then becomes responsible for
-                // gracefully expiring it's own memory cache of version hashes.
-                // However heavy on memory cache, for a large quantity of files, and requires much 
-                // initial creation of sha hashes.
-
-                // Date comparison is also an option, with the IFileStoreVersionProvider also caching
-                // last modified dates, and matching here. Not sure the dates will match however.
-
-                // More thinking to be done.
-
                 // When multiple requests occur for the same file the download 
                 // may already be in progress so we wait for it to complete.
                 if (_writeTasks.TryGetValue(subPath, out var writeTask))
@@ -121,19 +100,7 @@ namespace OrchardCore.Media.Services
                     {
                         using (var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry))
                         {
-                            // File store semantics include a leading slash.
-                            var cachePath = Path.Combine(_mediaFileStoreCacheProvider.Root, fileStoreEntry.Path.Substring(1));
-                            var directory = Path.GetDirectoryName(cachePath);
-
-                            if (!Directory.Exists(directory))
-                            {
-                                Directory.CreateDirectory(directory);
-                            }
-
-                            using (var fileStream = File.Create(cachePath))
-                            {
-                                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, context.RequestAborted);
-                            }
+                            await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted);
                         }
                     }
                 }

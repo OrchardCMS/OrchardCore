@@ -65,6 +65,15 @@ namespace OrchardCore.Media
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
             // Register a media cache file provider.
+
+            //TODO so this basically does nothing, but still exists if blob doesn't register it as an IMediaFileStoreCache?
+            // TODO regardless it needs to move to wwwroot, so hosting environment
+            // NOTE TO SELF This is only registered to
+            // a) provide the ICacheManager with something. So that needs to go provider based
+            // b) so that blob storage can activate it as an IMediaFileStoreCache
+            //    which is just a cheeky way of keeping it in this project without blob having to reference it
+            //    so that another provider like S3 can use it. We need to split this better. it's a bit too tightly coupled now
+            // probably another MediaCacheFileProvider in the abstractions project.
             services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
             {
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
@@ -172,10 +181,10 @@ namespace OrchardCore.Media
         {
             var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
-            var mediaFileStoreCacheProvider = serviceProvider.GetService<IMediaFileStoreCacheProvider>();
+            var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
             // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
-            if (mediaFileStoreCacheProvider != null)
+            if (mediaFileStoreCache != null)
             {
                 app.UseMiddleware<MediaFileStoreResolverMiddleware>();
             }

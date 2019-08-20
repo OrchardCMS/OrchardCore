@@ -5,6 +5,5 @@ namespace OrchardCore.Media
     /// </summary>
     public interface IMediaCacheFileProvider : IMediaFileProvider
     {
-        string Root { get; }
     }
 }
