@@ -46,10 +46,14 @@ namespace OrchardCore.Localization
             foreach (var extension in extensions)
             {
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
+                // Localization folder out of App_Data
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, _resourcesContainer, poFileName));
             }
 
-            // Then load global .po file for the applications
+            // Then load global .po file for the applications from the App_Data folder
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
+            // Then load global .po files in the Localization folder outside of App_Data
+            yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, poFileName));
 
             // Load tenant-specific .po file
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
@@ -57,14 +61,21 @@ namespace OrchardCore.Localization
             // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
             foreach (var extension in extensions)
             {
-                // \src\OrchardCore.Cms.Web\App_Data/Localization/OrchardCore.Cms.Web/fr-CA.po
+                // \src\OrchardCore.Cms.Web\App_Data\Localization\OrchardCore.Cms.Web\fr-CA.po
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id, poFileName)));
 
-                // \src\OrchardCore.Cms.Web\App_Data/Localization/OrchardCore.Cms.Web-fr-CA.po
+                // \src\OrchardCore.Cms.Web\App_Data\Localization\OrchardCore.Cms.Web-fr-CA.po
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id + CultureDelimiter + poFileName)));
 
-                // \src\OrchardCore.Cms.Web\App_Data/Localization/fr-CA/OrchardCore.Cms.Web.po
+                // \src\OrchardCore.Cms.Web\App_Data\Localization\fr-CA\OrchardCore.Cms.Web.po
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, cultureName, extension.Id + PoFileExtension)));
+
+                // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web\fr-CA.po
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id, poFileName));
+                // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web-fr-CA.po
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
+                // \src\OrchardCore.Cms.Web\Localization\fr-CA\OrchardCore.Cms.Web.po
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension));
             }
         }
     }
