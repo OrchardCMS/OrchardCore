@@ -88,6 +88,7 @@ body {
     background-repeat: no-repeat;
     background-size: 28px auto;
     background-position-y: center;
+    text-decoration: none;
 }
 
 // Layout 2 : ta-content
@@ -96,7 +97,6 @@ body {
 .ta-content {
     padding: 15px;
     margin-left: $left-navigation-width;
-    margin-top: $top-nav-height;
     margin-bottom: $footer-height;
     transition: margin-left 0.2s ease-in-out;
 
