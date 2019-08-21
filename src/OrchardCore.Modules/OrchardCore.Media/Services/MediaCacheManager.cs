@@ -9,6 +9,15 @@ namespace OrchardCore.Media.Services
     {
         private readonly ILogger<MediaCacheManager> _logger;
         private readonly IMediaCacheFileProvider _mediaCacheFileProvider;
+
+        //TODO change this to IEnumerable IMediaFileStoreCache (Provider) and collected instances for UI display.
+        // so (simplified) IMediaFileStoreCache as parent, with children of supported IMediaCachePurgeProvider
+        // i.e. Azure Blob Cache (H5)
+        // provides children of
+        // 1) Required : Purge All
+        // 2) Optional : Purge by date / purge by name / whatever UI the optionals provide.
+
+        // Plus this the last place that DEPENDS on IMediaCacheFileProvider which may not be registered now.
         public MediaCacheManager(
             ILogger<MediaCacheManager> logger,
             IMediaCacheFileProvider mediaCacheFileProvider

@@ -64,31 +64,6 @@ namespace OrchardCore.Media
         {
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
-            // Register a media cache file provider.
-
-            //TODO so this basically does nothing, but still exists if blob doesn't register it as an IMediaFileStoreCache?
-            // TODO regardless it needs to move to wwwroot, so hosting environment
-            // NOTE TO SELF This is only registered to
-            // a) provide the ICacheManager with something. So that needs to go provider based
-            // b) so that blob storage can activate it as an IMediaFileStoreCache
-            //    which is just a cheeky way of keeping it in this project without blob having to reference it
-            //    so that another provider like S3 can use it. We need to split this better. it's a bit too tightly coupled now
-            // probably another MediaCacheFileProvider in the abstractions project.
-            services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
-            {
-                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-                var mediaCachePath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsCachePath);
-
-                if (!Directory.Exists(mediaCachePath))
-                {
-                    Directory.CreateDirectory(mediaCachePath);
-                }
-                return new MediaFileProvider(mediaOptions.AssetsRequestPath, mediaCachePath);
-            });
-
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
             {
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
@@ -104,10 +79,9 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
-            // Register with strong service descriptor to facilitate removal by Media.Azure.
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
+            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileProvider>()
-            ));
+            );
 
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
