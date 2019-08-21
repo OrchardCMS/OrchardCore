@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
 
         public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
         {
-            
+
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))
@@ -29,10 +29,13 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                using (var file = File.OpenText(Filename))
+                lock (this)
                 {
-                    var serializer = new JsonSerializer();
-                    result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
+                    using (var file = File.OpenText(Filename))
+                    {
+                        var serializer = new JsonSerializer();
+                        result = (ContentDefinitionRecord)serializer.Deserialize(file, typeof(ContentDefinitionRecord));
+                    }
                 }
             }
 
@@ -41,20 +44,22 @@ namespace OrchardCore.ContentManagement
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
-            using (var file = File.CreateText(Filename))
+            lock (this)
             {
-                var serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, contentDefinitionRecord);
+                using (var file = File.CreateText(Filename))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Formatting = Formatting.Indented;
+                    serializer.Serialize(file, contentDefinitionRecord);
+                }
             }
 
             return Task.CompletedTask;
         }
 
         private string Filename => PathExtensions.Combine(
-                _shellOptions.Value.ShellsApplicationDataPath,
-                _shellOptions.Value.ShellsContainerName,
-                _shellSettings.Name, "ContentDefinition.json");
-
+            _shellOptions.Value.ShellsApplicationDataPath,
+            _shellOptions.Value.ShellsContainerName,
+            _shellSettings.Name, "ContentDefinition.json");
     }
 }

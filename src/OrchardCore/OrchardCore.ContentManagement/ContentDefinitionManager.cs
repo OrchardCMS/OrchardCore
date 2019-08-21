@@ -2,76 +2,62 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.ContentManagement
 {
     public class ContentDefinitionManager : IContentDefinitionManager
     {
-        private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
+        private const string CacheKey = nameof(ContentDefinitionManager);
 
-        private ContentDefinitionRecord _contentDefinitionRecord;
-        private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
+        private ContentDefinitionCache _cache;
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
         private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
-        private IChangeToken _changeToken;
 
-        public IChangeToken ChangeToken => _signal.GetToken(TypeHashCacheKey);
+        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
 
         public ContentDefinitionManager(
-            IMemoryCache memoryCache,
             ISignal signal,
             IContentDefinitionStore contentDefinitionStore)
         {
             _signal = signal;
             _contentDefinitionStore = contentDefinitionStore;
-            _memoryCache = memoryCache;
 
-            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
-            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
+            _typeDefinitions = new ConcurrentDictionary<string, ContentTypeDefinition>();
+            _partDefinitions = new ConcurrentDictionary<string, ContentPartDefinition>();
         }
+
+        private ContentDefinitionCache ScopedCache => ShellScope.Services.GetRequiredService<ContentDefinitionCache>();
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            if (!_typeDefinitions.TryGetValue(name, out var typeDefinition))
+            return _typeDefinitions.GetOrAdd(name, n =>
             {
-                typeDefinition = Build(GetContentDefinitionRecord()
+                var contentTypeDefinitionRecord = GetContentDefinitionRecord()
                     .ContentTypeDefinitionRecords
-                    .FirstOrDefault(type => type.Name == name));
+                    .FirstOrDefault(x => x.Name == name);
 
-                // Don't cache a value based on a stale definition.
-                if (!_changeToken.HasChanged)
-                {
-                    _typeDefinitions[name] = typeDefinition;
-                }
-            }
-
-            return typeDefinition;
+                return Build(contentTypeDefinitionRecord);
+            });
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
-            if (!_partDefinitions.TryGetValue(name, out var partDefinition))
+            return _partDefinitions.GetOrAdd(name, n =>
             {
-                partDefinition = Build(GetContentDefinitionRecord()
-                    .ContentPartDefinitionRecords
-                    .FirstOrDefault(part => part.Name == name));
-
-                // Don't cache a value based on a stale definition.
-                if (!_changeToken.HasChanged)
-                {
-                    _partDefinitions[name] = partDefinition;
-                }
-            }
-
-            return partDefinition;
+                return Build(GetContentDefinitionRecord()
+                .ContentPartDefinitionRecords
+                .FirstOrDefault(x => x.Name == name));
+            });
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
@@ -103,7 +89,8 @@ namespace OrchardCore.ContentManagement
             // deletes the content type record associated
             if (record != null)
             {
-                GetContentDefinitionRecord().ContentTypeDefinitionRecords.Remove(record);
+                var definition = GetContentDefinitionRecord();
+                definition.ContentTypeDefinitionRecords = definition.ContentTypeDefinitionRecords.Remove(record);
                 UpdateContentDefinitionRecord();
             }
         }
@@ -123,7 +110,8 @@ namespace OrchardCore.ContentManagement
 
             if (record != null)
             {
-                GetContentDefinitionRecord().ContentPartDefinitionRecords.Remove(record);
+                var definition = GetContentDefinitionRecord();
+                definition.ContentPartDefinitionRecords = definition.ContentPartDefinitionRecords.Remove(record);
                 UpdateContentDefinitionRecord();
             }
         }
@@ -133,8 +121,9 @@ namespace OrchardCore.ContentManagement
             var result = GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == contentTypeDefinition.Name);
             if (result == null)
             {
+                var definition = GetContentDefinitionRecord();
                 result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
-                GetContentDefinitionRecord().ContentTypeDefinitionRecords.Add(result);
+                definition.ContentTypeDefinitionRecords = definition.ContentTypeDefinitionRecords.Add(result);
             }
             return result;
         }
@@ -144,15 +133,11 @@ namespace OrchardCore.ContentManagement
             var result = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == contentPartDefinition.Name);
             if (result == null)
             {
+                var definition = GetContentDefinitionRecord();
                 result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
-                GetContentDefinitionRecord().ContentPartDefinitionRecords.Add(result);
+                definition.ContentPartDefinitionRecords = definition.ContentPartDefinitionRecords.Add(result);
             }
             return result;
-        }
-
-        private ContentFieldDefinitionRecord Acquire(ContentFieldDefinition contentFieldDefinition)
-        {
-            return new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
         }
 
         private void Apply(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
@@ -161,29 +146,34 @@ namespace OrchardCore.ContentManagement
             record.Settings = model.Settings;
 
             var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(typePartDefinitionRecord => !model.Parts.Any(part => typePartDefinitionRecord.Name == part.Name))
+                .Where(typePartDefinitionRecord => !model.Parts.Any(typePart => typePartDefinitionRecord.Name == typePart.Name))
                 .ToList();
 
             foreach (var remove in toRemove)
             {
-                record.ContentTypePartDefinitionRecords.Remove(remove);
+                record.ContentTypePartDefinitionRecords = record.ContentTypePartDefinitionRecords.Remove(remove);
             }
 
             foreach (var part in model.Parts)
             {
-                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.Name == part.Name);
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(typePart => typePart.Name == part.Name);
+
+                var newTypePartRecord = new ContentTypePartDefinitionRecord
+                {
+                    PartName = typePartRecord?.PartName ?? part.PartDefinition.Name,
+                    Name = typePartRecord?.Name ?? part.Name
+                };
+
+                Apply(part, newTypePartRecord);
+
                 if (typePartRecord == null)
                 {
-                    typePartRecord = new ContentTypePartDefinitionRecord
-                    {
-                        PartName = part.PartDefinition.Name,
-                        Name = part.Name,
-                        Settings = part.Settings
-                    };
-
-                    record.ContentTypePartDefinitionRecords.Add(typePartRecord);
+                    record.ContentTypePartDefinitionRecords = record.ContentTypePartDefinitionRecords.Add(newTypePartRecord);
                 }
-                Apply(part, typePartRecord);
+                else
+                {
+                    record.ContentTypePartDefinitionRecords = record.ContentTypePartDefinitionRecords.Replace(typePartRecord, newTypePartRecord);
+                }
             }
         }
 
@@ -202,23 +192,29 @@ namespace OrchardCore.ContentManagement
 
             foreach (var remove in toRemove)
             {
-                record.ContentPartFieldDefinitionRecords.Remove(remove);
+                record.ContentPartFieldDefinitionRecords = record.ContentPartFieldDefinitionRecords.Remove(remove);
             }
 
             foreach (var field in model.Fields)
             {
-                var fieldName = field.Name;
-                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => r.Name == fieldName);
+                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => r.Name == field.Name);
+
+                var newPartFieldRecord = new ContentPartFieldDefinitionRecord
+                {
+                    FieldName = partFieldRecord?.FieldName ?? field.FieldDefinition.Name,
+                    Name = partFieldRecord?.Name ?? field.Name
+                };
+
+                Apply(field, newPartFieldRecord);
+
                 if (partFieldRecord == null)
                 {
-                    partFieldRecord = new ContentPartFieldDefinitionRecord
-                    {
-                        FieldName = field.FieldDefinition.Name,
-                        Name = field.Name
-                    };
-                    record.ContentPartFieldDefinitionRecords.Add(partFieldRecord);
+                    record.ContentPartFieldDefinitionRecords = record.ContentPartFieldDefinitionRecords.Add(newPartFieldRecord);
                 }
-                Apply(field, partFieldRecord);
+                else
+                {
+                    record.ContentPartFieldDefinitionRecords = record.ContentPartFieldDefinitionRecords.Replace(partFieldRecord, newPartFieldRecord);
+                }
             }
         }
 
@@ -234,10 +230,16 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
+            var typePartDefinitions = new List<ContentTypePartDefinition>();
+            foreach (var typePartDefinition in source.ContentTypePartDefinitionRecords)
+            {
+                typePartDefinitions.Add(Build(typePartDefinition));
+            }
+
             var contentTypeDefinition = new ContentTypeDefinition(
                 source.Name,
                 source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(Build),
+                typePartDefinitions,
                 source.Settings);
 
             return contentTypeDefinition;
@@ -249,7 +251,7 @@ namespace OrchardCore.ContentManagement
 
             return source == null ? null : new ContentTypePartDefinition(
                 source.Name,
-                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
+                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new JObject()),
                 source.Settings);
         }
 
@@ -277,41 +279,48 @@ namespace OrchardCore.ContentManagement
 
         public Task<int> GetTypesHashAsync()
         {
-            // The serial number is stored in local cache in order to prevent
-            // loading the record if it's not necessary
-
-            int serial;
-            if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
-            {
-                var changeToken = ChangeToken;
-
-                serial = _memoryCache.Set(
-                    TypeHashCacheKey,
-                    GetContentDefinitionRecord().Serial,
-                    changeToken);
-            }
-
-            return Task.FromResult(serial);
+            return Task.FromResult(GetContentDefinitionRecord().Serial);
         }
 
         private ContentDefinitionRecord GetContentDefinitionRecord()
         {
-            if (_contentDefinitionRecord != null)
+            var scopedCache = ScopedCache;
+
+            if (scopedCache.ContentDefinitionRecord != null)
             {
-                return _contentDefinitionRecord;
+                return scopedCache.ContentDefinitionRecord;
             }
 
-            _changeToken = ChangeToken;
-            return _contentDefinitionRecord = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+            var cache = _cache;
+
+            if (cache?.ChangeToken.HasChanged ?? true)
+            {
+                var changeToken = ChangeToken;
+                var record = _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
+
+                _cache = new ContentDefinitionCache()
+                {
+                    ChangeToken = changeToken,
+                    ContentDefinitionRecord = record.Clone()
+                };
+
+                scopedCache.ChangeToken = changeToken;
+                return scopedCache.ContentDefinitionRecord = record;
+            }
+
+            scopedCache.ChangeToken = cache.ChangeToken;
+            return scopedCache.ContentDefinitionRecord = cache.ContentDefinitionRecord.Clone();
         }
 
         private void UpdateContentDefinitionRecord()
         {
-            _contentDefinitionRecord.Serial++;
-            _contentDefinitionStore.SaveContentDefinitionAsync(_contentDefinitionRecord).GetAwaiter().GetResult();
+            var scopedRecord = ScopedCache.ContentDefinitionRecord;
+            scopedRecord.Serial++;
 
-            // Cache invalidation after committing the session.
-            _signal.DeferredSignalToken(TypeHashCacheKey);
+            _contentDefinitionStore.SaveContentDefinitionAsync(scopedRecord).GetAwaiter().GetResult();
+
+            // Cache invalidation e.g after committing the session.
+            _signal.DeferredSignalToken(CacheKey);
 
             // In case of multiple scoped updates, types and parts may need to be rebuilt while
             // in the same scope, so we don't defer the clearing of the related cached results.
