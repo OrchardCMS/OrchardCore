@@ -707,49 +707,6 @@ body.trumbowyg-body-fullscreen {
 [dir] .trumbowyg-dark .trumbowyg-overlay {
   background-color: rgba(15, 15, 15, 0.6); }
 
-.trumbowyg-dropdown-foreColor,
-.trumbowyg-dropdown-backColor {
-  width: 276px; }
-
-[dir] .trumbowyg-dropdown-foreColor, [dir] .trumbowyg-dropdown-backColor {
-  padding: 7px 5px; }
-  .trumbowyg-dropdown-foreColor svg,
-  .trumbowyg-dropdown-backColor svg {
-    display: none !important; }
-  .trumbowyg-dropdown-foreColor button,
-  .trumbowyg-dropdown-backColor button {
-    display: block;
-    position: relative;
-    text-indent: -9999px;
-    height: 20px;
-    width: 20px; }
-  [dir] .trumbowyg-dropdown-foreColor button, [dir] .trumbowyg-dropdown-backColor button {
-    border: 1px solid #333;
-    padding: 0;
-    margin: 2px; }
-  [dir=ltr] .trumbowyg-dropdown-foreColor button, [dir=ltr] .trumbowyg-dropdown-backColor button {
-  float: left; }
-  [dir=rtl] .trumbowyg-dropdown-foreColor button, [dir=rtl] .trumbowyg-dropdown-backColor button {
-    float: right; }
-    .trumbowyg-dropdown-foreColor button:hover::after, .trumbowyg-dropdown-foreColor button:focus::after,
-    .trumbowyg-dropdown-backColor button:hover::after,
-    .trumbowyg-dropdown-backColor button:focus::after {
-      content: " ";
-      display: block;
-      position: absolute;
-      top: -5px;
-      height: 27px;
-      width: 27px;
-      z-index: 10; }
-    [dir] .trumbowyg-dropdown-foreColor button:hover::after, [dir] .trumbowyg-dropdown-foreColor button:focus::after, [dir] .trumbowyg-dropdown-backColor button:hover::after, [dir] .trumbowyg-dropdown-backColor button:focus::after {
-      background: inherit;
-      border: 1px solid #FFF;
-      box-shadow: #000 0 0 2px; }
-    [dir=ltr] .trumbowyg-dropdown-foreColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-foreColor button:focus::after, [dir=ltr] .trumbowyg-dropdown-backColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-backColor button:focus::after {
-  left: -5px; }
-    [dir=rtl] .trumbowyg-dropdown-foreColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor button:focus::after {
-      right: -5px; }
-
 .trumbowyg-dropdown-emoji {
   width: 265px;
   height: 200px;
@@ -802,6 +759,49 @@ body.trumbowyg-body-fullscreen {
   width: 22px;
   height: 22px;
   display: inline-block; }
+
+.trumbowyg-dropdown-foreColor,
+.trumbowyg-dropdown-backColor {
+  width: 276px; }
+
+[dir] .trumbowyg-dropdown-foreColor, [dir] .trumbowyg-dropdown-backColor {
+  padding: 7px 5px; }
+  .trumbowyg-dropdown-foreColor svg,
+  .trumbowyg-dropdown-backColor svg {
+    display: none !important; }
+  .trumbowyg-dropdown-foreColor button,
+  .trumbowyg-dropdown-backColor button {
+    display: block;
+    position: relative;
+    text-indent: -9999px;
+    height: 20px;
+    width: 20px; }
+  [dir] .trumbowyg-dropdown-foreColor button, [dir] .trumbowyg-dropdown-backColor button {
+    border: 1px solid #333;
+    padding: 0;
+    margin: 2px; }
+  [dir=ltr] .trumbowyg-dropdown-foreColor button, [dir=ltr] .trumbowyg-dropdown-backColor button {
+  float: left; }
+  [dir=rtl] .trumbowyg-dropdown-foreColor button, [dir=rtl] .trumbowyg-dropdown-backColor button {
+    float: right; }
+    .trumbowyg-dropdown-foreColor button:hover::after, .trumbowyg-dropdown-foreColor button:focus::after,
+    .trumbowyg-dropdown-backColor button:hover::after,
+    .trumbowyg-dropdown-backColor button:focus::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: -5px;
+      height: 27px;
+      width: 27px;
+      z-index: 10; }
+    [dir] .trumbowyg-dropdown-foreColor button:hover::after, [dir] .trumbowyg-dropdown-foreColor button:focus::after, [dir] .trumbowyg-dropdown-backColor button:hover::after, [dir] .trumbowyg-dropdown-backColor button:focus::after {
+      background: inherit;
+      border: 1px solid #FFF;
+      box-shadow: #000 0 0 2px; }
+    [dir=ltr] .trumbowyg-dropdown-foreColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-foreColor button:focus::after, [dir=ltr] .trumbowyg-dropdown-backColor button:hover::after, [dir=ltr] .trumbowyg-dropdown-backColor button:focus::after {
+  left: -5px; }
+    [dir=rtl] .trumbowyg-dropdown-foreColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor button:focus::after {
+      right: -5px; }
 
 [dir] .trumbowyg-highlight-form-group {
   margin: 15px 10px; }
