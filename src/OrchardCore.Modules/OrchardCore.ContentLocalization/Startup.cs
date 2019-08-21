@@ -36,6 +36,7 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
+            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
             services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
@@ -56,8 +57,6 @@ namespace OrchardCore.ContentLocalization
             {
                 options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
             });
-
-            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
