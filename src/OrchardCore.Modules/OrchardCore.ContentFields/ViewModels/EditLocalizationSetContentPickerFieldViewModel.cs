@@ -6,16 +6,14 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.ViewModels
 {
-    public class EditContentPickerFieldViewModel
+    public class EditLocalizationSetContentPickerFieldViewModel
     {
-        public string ContentItemIds { get; set; }
-        public ContentPickerField Field { get; set; }
+        public string LocalizationSets { get; set; }
+        public LocalizationSetContentPickerField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
         [BindNever]
         public IList<VueMultiselectItemViewModel> SelectedItems { get; set; }
     }
-
-
 }
