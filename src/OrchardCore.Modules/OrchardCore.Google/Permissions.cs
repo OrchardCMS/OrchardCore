@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google
@@ -11,10 +13,14 @@ namespace OrchardCore.Google
         public static readonly Permission ManageGoogleAnalytics
             = new Permission(nameof(ManageGoogleAnalytics), "Manage Google Analytics settings");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageGoogleAuthentication;
-            yield return ManageGoogleAnalytics;
+            return Task.FromResult(new[]
+            {
+                ManageGoogleAuthentication,
+                ManageGoogleAnalytics
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

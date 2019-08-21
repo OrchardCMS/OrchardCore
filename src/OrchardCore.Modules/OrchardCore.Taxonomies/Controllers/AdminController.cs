@@ -116,7 +116,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 if (parentTaxonomyItem == null)
                 {
                     return NotFound();
-                } 
+                }
 
                 var taxonomyItems = parentTaxonomyItem?.Terms as JArray;
 

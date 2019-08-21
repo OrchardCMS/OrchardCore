@@ -1,7 +1,7 @@
 @model OrchardCore.Users.ViewModels.ExternalLoginViewModel
 
 @{ 
-    ThemeLayout.Metadata.Alternates.Add("Layout__Login");
+    ViewLayout = "Layout__Login";
 }
 
 <form asp-controller="Account" asp-action="ExternalLoginConfirmation" asp-route-returnurl="@ViewData["ReturnUrl"]" asp-route-loginprovider="@ViewData["LoginProvider"]" method="post" class="form-horizontal">

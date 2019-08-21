@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Taxonomies
@@ -7,9 +9,9 @@ namespace OrchardCore.Taxonomies
     {
         public static readonly Permission ManageTaxonomies = new Permission("ManageTaxonomy", "Manage taxonomies");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageTaxonomies };
+            return Task.FromResult(new[] { ManageTaxonomies }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
