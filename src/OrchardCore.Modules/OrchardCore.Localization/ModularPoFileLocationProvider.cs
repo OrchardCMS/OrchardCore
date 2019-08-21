@@ -45,16 +45,10 @@ namespace OrchardCore.Localization
             // Load .po files in each extension folder first, based on the extensions order
             foreach (var extension in extensions)
             {
-                // From [Extension]/App_Data/Localization
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, ExtensionDataFolder, _resourcesContainer, poFileName));
-                
                 // From [Extension]/Localization
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(extension.SubPath, _resourcesContainer, poFileName));
             }
 
-            // Load global .po file from /App_Data/Localization
-            yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, poFileName)));
-            
             // Load global .po files from /Localization
             yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, poFileName));
 
@@ -64,15 +58,6 @@ namespace OrchardCore.Localization
             // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
             foreach (var extension in extensions)
             {
-                // \src\OrchardCore.Cms.Web\App_Data\Localization\OrchardCore.Cms.Web\fr-CA.po
-                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id, poFileName)));
-
-                // \src\OrchardCore.Cms.Web\App_Data\Localization\OrchardCore.Cms.Web-fr-CA.po
-                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, extension.Id + CultureDelimiter + poFileName)));
-
-                // \src\OrchardCore.Cms.Web\App_Data\Localization\fr-CA\OrchardCore.Cms.Web.po
-                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_applicationDataContainer, _resourcesContainer, cultureName, extension.Id + PoFileExtension)));
-
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web\fr-CA.po
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id, poFileName));
                 
