@@ -13,13 +13,10 @@ The localization files for the different cultures are available on [Crowdin](htt
 
 PO files are found at these locations:
 
-- For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po` or `[ModuleLocation]/Localization/[CultureName].po`
-- All files matching `/App_Data/Localization/[CultureName].po` or `/Localization/[CultureName].po`
+- For each module and theme all files matching `[ModuleLocation]/Localization/[CultureName].po`
+- All files matching `/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
 - For each module and theme all files matching  
-    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
-    - `/App_Data/Localization/[ModuleId]-[CultureName].po`
-    - `/App_Data/Localization/[CultureName]/[ModuleId].po`
     - `/Localization/[ModuleId]/[CultureName].po` 
     - `/Localization/[ModuleId]-[CultureName].po`
     - `/Localization/[CultureName]/[ModuleId].po`
@@ -44,9 +41,9 @@ Cultures can be added during recipes using the settings step. Here is a sample s
 
 ### Examples
 
-- `/App_Data/Localization/fr.po`
-- `/App_Data/Localization/fr-CA.po`
-- `/App_Data/Localization/es-MX.po`
+- `/Localization/fr.po`
+- `/Localization/fr-CA.po`
+- `/Localization/es-MX.po`
 
 ## File format
 
