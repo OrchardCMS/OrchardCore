@@ -24,10 +24,10 @@ For this guide we will download the French language.
 
 ## Extracting the localization files
 
-The zip file that you downloaded needs to be extracted in the `App_Data/Localization` folder of your Orchard Core CMS website.
+The zip file that you downloaded needs to be extracted in the `Localization` folder of your Orchard Core CMS website.
 
-- Create a folder named `Localization` under `[your_site_root]/App_Data` where `your_site_root` is the location of your website.
-- Extract the file `fr.zip` in `App_Data/Localization`
+- Create a folder named `[your_site_root]/Localization` where `your_site_root` is the location of your website.
+- Extract the file `fr.zip` in `Localization`
 
 The result should look like this:
 

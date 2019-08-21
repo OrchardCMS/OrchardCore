@@ -13,15 +13,18 @@ The localization files for the different cultures are available on [Crowdin](htt
 
 PO files are found at these locations:
 
-- For each module and theme all files matching `[ModuleLocation]/App_Data/Localization/[CultureName].po`
-- All files matching `/App_Data/Localization/[CultureName].po`
+- For each module and theme all files matching `[ModuleLocation]/Localization/[CultureName].po`
+- All files matching `/Localization/[CultureName].po`
 - For each tenant all files matching `/App_Data/Sites/[TenantName]/Localization/[CultureName].po`
 - For each module and theme all files matching  
-    - `/App_Data/Localization/[ModuleId]/[CultureName].po`
-    - `/App_Data/Localization/[ModuleId]-[CultureName].po`
-    - `/App_Data/Localization/[CultureName]/[ModuleId].po`
+    - `/Localization/[ModuleId]/[CultureName].po` 
+    - `/Localization/[ModuleId]-[CultureName].po`
+    - `/Localization/[CultureName]/[ModuleId].po`
 
 `[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
+
+It is suggested to put your localization files in the `/Localization/` folder if you are using docker. 
+Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing files.
 
 ## Recipe Step
 Cultures can be added during recipes using the settings step. Here is a sample step:
@@ -38,9 +41,9 @@ Cultures can be added during recipes using the settings step. Here is a sample s
 
 ### Examples
 
-- `/App_Data/Localization/fr.po`
-- `/App_Data/Localization/fr-CA.po`
-- `/App_Data/Localization/es-MX.po`
+- `/Localization/fr.po`
+- `/Localization/fr-CA.po`
+- `/Localization/es-MX.po`
 
 ## File format
 
