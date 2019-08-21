@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "variables",
-                Method = serviceprovider => (Func<string, object>) (name =>
+                Method = serviceprovider => (Func<string, object>)(name =>
                 {
                     var value = variables[name].Value<string>();
 

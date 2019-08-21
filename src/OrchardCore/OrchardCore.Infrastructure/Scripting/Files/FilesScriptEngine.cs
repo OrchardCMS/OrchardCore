@@ -46,7 +46,7 @@ namespace OrchardCore.Scripting.Files
                     }
                 }
             }
-            else if(script.StartsWith("base64('") && script.EndsWith("')"))
+            else if (script.StartsWith("base64('") && script.EndsWith("')"))
             {
                 var filePath = script.Substring(8, script.Length - 10);
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
