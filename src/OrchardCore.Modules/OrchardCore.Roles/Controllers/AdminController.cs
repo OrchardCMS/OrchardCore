@@ -243,9 +243,7 @@ namespace OrchardCore.Roles.Controllers
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
                 var featureName = feature.Id;
 
-                var permissions = permissionProvider is IAsyncPermissionProvider asyncProvider
-                    ? await asyncProvider.GetPermissionsAsync()
-                    : permissionProvider.GetPermissions();
+                var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)
                 {

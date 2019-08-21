@@ -9,16 +9,8 @@ namespace OrchardCore.Security.Permissions
     /// </summary>
     public interface IPermissionProvider
     {
-        IEnumerable<Permission> GetPermissions();
-        IEnumerable<PermissionStereotype> GetDefaultStereotypes();
-    }
-
-    /// <summary>
-    /// Async version of <see cref="IPermissionProvider"/>.
-    /// </summary>
-    public interface IAsyncPermissionProvider : IPermissionProvider
-    {
         Task<IEnumerable<Permission>> GetPermissionsAsync();
+        IEnumerable<PermissionStereotype> GetDefaultStereotypes();
     }
 
     public class PermissionStereotype

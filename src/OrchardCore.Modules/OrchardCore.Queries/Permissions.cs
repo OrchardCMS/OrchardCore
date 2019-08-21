@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries
 {
-    public class Permissions : IAsyncPermissionProvider
+    public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageQueries = new Permission("ManageQueries", "Manage queries");
         public static readonly Permission ExecuteApiAll = new Permission("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
@@ -17,12 +17,6 @@ namespace OrchardCore.Queries
         public Permissions(IQueryManager queryManager)
         {
             _queryManager = queryManager;
-        }
-
-        // Sync version for backward compatibility.
-        public IEnumerable<Permission> GetPermissions()
-        {
-            return GetPermissionsAsync().GetAwaiter().GetResult();
         }
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()

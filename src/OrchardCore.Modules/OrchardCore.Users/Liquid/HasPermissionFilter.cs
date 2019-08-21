@@ -32,16 +32,16 @@ namespace OrchardCore.Users.Liquid
 
             Permission permission = null;
 
-            foreach (var item in permissionProviders)
+            foreach (var provider in permissionProviders)
             {
-                var permissions = item is IAsyncPermissionProvider asyncItem
-                    ? await asyncItem.GetPermissionsAsync()
-                    : item.GetPermissions();
+                var permissions = await provider.GetPermissionsAsync();
 
                 permission = permissions.FirstOrDefault(p => p.Name == permissionName);
 
                 if (permission != null)
+                {
                     break;
+                }
             }
 
             if (permission is Permission && input.ToObjectValue() is ClaimsPrincipal principal)

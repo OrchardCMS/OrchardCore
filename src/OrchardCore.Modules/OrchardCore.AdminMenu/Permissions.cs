@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
 {
-    public class Permissions : IAsyncPermissionProvider
+    public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
 
@@ -18,12 +18,6 @@ namespace OrchardCore.AdminMenu
         public Permissions(IAdminMenuService adminMenuService)
         {
             _adminMenuService = adminMenuService;
-        }
-
-        // Sync version for backward compatibility.
-        public IEnumerable<Permission> GetPermissions()
-        {
-            return GetPermissionsAsync().GetAwaiter().GetResult();
         }
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()

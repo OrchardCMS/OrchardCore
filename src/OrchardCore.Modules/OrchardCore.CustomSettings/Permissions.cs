@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Security.Permissions;
@@ -18,7 +19,7 @@ namespace OrchardCore.CustomSettings
             _customSettingsService = customSettingsService;
         }
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             var list = new List<Permission>();
 
@@ -27,7 +28,7 @@ namespace OrchardCore.CustomSettings
                 list.Add(CreatePermissionForType(type));
             }
 
-            return list;
+            return Task.FromResult(list.AsEnumerable());
         }
 
         public static string CreatePermissionName(string name)
