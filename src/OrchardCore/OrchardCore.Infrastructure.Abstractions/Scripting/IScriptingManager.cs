@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting
@@ -24,7 +23,7 @@ namespace OrchardCore.Scripting
         /// <param name="fileProvider">An optional <see cref="IFileProvider"/> instance.</param>
         /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
         /// <returns>The result of the script if any.</returns>
-        Task<object> EvaluateAsync(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
+        object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
 
         /// <summary>
         /// The list of available method providers for this <see cref="IScriptingManager"/>

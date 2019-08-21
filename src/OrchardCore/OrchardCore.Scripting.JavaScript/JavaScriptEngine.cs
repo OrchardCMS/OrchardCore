@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Esprima;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
@@ -31,7 +30,7 @@ namespace OrchardCore.Scripting.JavaScript
             return new JavaScriptScope(engine, serviceProvider);
         }
 
-        public Task<object> EvaluateAsync(IScriptingScope scope, string script)
+        public object Evaluate(IScriptingScope scope, string script)
         {
             if (scope == null)
             {
@@ -53,7 +52,17 @@ namespace OrchardCore.Scripting.JavaScript
 
             var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();
 
-            return Task.FromResult(result);
+            return result;
+        }
+    }
+
+    public class MethodProxy
+    {
+        public IList<object> Arguments { get; set; }
+        public Func<IServiceProvider, IList<object>, object> Callback { get; set; }
+        public object Invoke()
+        {
+            return Callback(null, Arguments);
         }
     }
 }

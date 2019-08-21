@@ -162,7 +162,7 @@ namespace OrchardCore.Recipes.Services
                 scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
 
                 // Substitutes the script elements by their actual values
-                await EvaluateScriptNodesAsync(recipeStep, scriptingManager);
+                EvaluateScriptNodes(recipeStep, scriptingManager);
 
                 foreach (var recipeStepHandler in recipeStepHandlers)
                 {
@@ -188,7 +188,7 @@ namespace OrchardCore.Recipes.Services
         /// <summary>
         /// Traverse all the nodes of the recipe steps and replaces their value if they are scripted.
         /// </summary>
-        private Task EvaluateScriptNodesAsync(RecipeExecutionContext context, IScriptingManager scriptingManager)
+        private void EvaluateScriptNodes(RecipeExecutionContext context, IScriptingManager scriptingManager)
         {
             if (_variablesMethodProvider != null)
             {
@@ -196,13 +196,13 @@ namespace OrchardCore.Recipes.Services
                 scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
             }
 
-            return EvaluateJsonTreeAsync(scriptingManager, context, context.Step);
+            EvaluateJsonTree(scriptingManager, context, context.Step);
         }
 
         /// <summary>
         /// Traverse all the nodes of the json document and replaces their value if they are scripted.
         /// </summary>
-        private async Task EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JToken node)
+        private void EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JToken node)
         {
             switch (node.Type)
             {
@@ -210,13 +210,13 @@ namespace OrchardCore.Recipes.Services
                     var array = (JArray)node;
                     for (var i = 0; i < array.Count; i++)
                     {
-                        await EvaluateJsonTreeAsync(scriptingManager, context, array[i]);
+                        EvaluateJsonTree(scriptingManager, context, array[i]);
                     }
                     break;
                 case JTokenType.Object:
                     foreach (var property in (JObject)node)
                     {
-                        await EvaluateJsonTreeAsync(scriptingManager, context, property.Value);
+                        EvaluateJsonTree(scriptingManager, context, property.Value);
                     }
                     break;
 
@@ -228,7 +228,7 @@ namespace OrchardCore.Recipes.Services
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
                         value = value.Trim('[', ']');
-                        value = (await scriptingManager.EvaluateAsync(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();
+                        value = (scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, null) ?? "").ToString();
                         ((JValue)node).Value = value;
                     }
                     break;
