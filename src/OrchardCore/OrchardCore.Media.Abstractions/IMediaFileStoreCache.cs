@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media

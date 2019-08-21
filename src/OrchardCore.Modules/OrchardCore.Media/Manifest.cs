@@ -17,3 +17,11 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.MediaCache",
+    Name = "Media Cache Management",
+    Description = "The media cache module adds management of media caches.",
+    Dependencies = new[] { "OrchardCore.Media" },
+    Category = "Content Management"
+)]

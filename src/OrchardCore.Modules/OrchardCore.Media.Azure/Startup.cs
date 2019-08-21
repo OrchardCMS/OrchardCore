@@ -65,6 +65,7 @@ namespace OrchardCore.Media.Azure
                     var mediaBlobOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<MediaBlobFileCacheProvider>>();
 
                     var mediaCachePath = GetMediaCachePath(hostingEnvironment, shellSettings, mediaBlobOptions.AssetsCachePath);
 
@@ -73,7 +74,7 @@ namespace OrchardCore.Media.Azure
                         Directory.CreateDirectory(mediaCachePath);
                     }
 
-                    return new MediaBlobFileProvider(mediaOptions.AssetsRequestPath, mediaCachePath);
+                    return new MediaBlobFileCacheProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
 
                 // Replace the default media file provider with the media cache file provider.
