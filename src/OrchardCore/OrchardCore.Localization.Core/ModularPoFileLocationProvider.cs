@@ -33,7 +33,7 @@ namespace OrchardCore.Localization.Core
             _extensionsManager = extensionsManager;
 
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
-            _resourcesContainer = localizationOptions.Value.ResourcesPath; // Localization
+            _resourcesContainer = localizationOptions.Value.ResourcesPath;
             _applicationDataContainer = shellOptions.Value.ShellsApplicationDataPath;
             _shellDataContainer = PathExtensions.Combine(_applicationDataContainer, shellOptions.Value.ShellsContainerName, shellSettings.Name);
         }
