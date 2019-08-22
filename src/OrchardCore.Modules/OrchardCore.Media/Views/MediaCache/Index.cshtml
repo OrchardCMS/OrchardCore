@@ -2,16 +2,24 @@
 <h1>@RenderTitleSegments(T["Media Cache"])</h1>
 
 <form>
-    @* the form is necessary to generate and antiforgery token for the purge action *@
-
-    <ul class="list-group">
-        <li class="list-group-item">
-            @{
-                foreach (var item in Model.Items)
-                {
-                    @await DisplayAsync(item);
+    @if (Model.Items.Any())
+    {
+        @* the form is necessary to generate and antiforgery token for the purge action *@
+        <ul class="list-group">
+            <li class="list-group-item">
+                @{
+                    foreach (var item in Model.Items)
+                    {
+                        @await DisplayAsync(item);
+                    }
                 }
-            }
-        </li>
-    </ul>
+            </li>
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong>"]
+        </div>
+    }
 </form>
