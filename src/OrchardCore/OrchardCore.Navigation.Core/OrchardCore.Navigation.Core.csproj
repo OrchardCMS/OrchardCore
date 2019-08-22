@@ -17,7 +17,6 @@
   <ItemGroup>
     <!-- Remove these references once Microsoft.AspNetCore.Mvc.Core doesn't depend on Microsoft.Extensions.DependencyModel 2.1.0 -->
     <PackageReference Include="System.Collections" />
-    <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="System.Diagnostics.Debug" />
     <PackageReference Include="System.Globalization" />
     <PackageReference Include="System.IO" />

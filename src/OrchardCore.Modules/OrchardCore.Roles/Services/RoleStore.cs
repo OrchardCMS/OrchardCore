@@ -225,7 +225,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+            ((Role)role).RoleClaims = ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
             return Task.CompletedTask;
         }
@@ -252,7 +252,7 @@ namespace OrchardCore.Roles.Services
                 throw new ArgumentNullException(nameof(claim));
             }
 
-            ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+            ((Role)role).RoleClaims = ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 
             return Task.CompletedTask;
         }
