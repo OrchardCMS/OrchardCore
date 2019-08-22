@@ -189,11 +189,6 @@ namespace OrchardCore.Lucene
                             ? Field.Store.YES
                             : Field.Store.NO;
 
-                if (entry.Value == null)
-                {
-                    continue;
-                }
-
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
@@ -202,32 +197,60 @@ namespace OrchardCore.Lucene
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value is DateTimeOffset)
+                        if (entry.Value != null)
                         {
-                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            if (entry.Value is DateTimeOffset)
+                            {
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
-                        break;
-
-                    case DocumentIndex.Types.Number:
-                        doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
-                        break;
-
-                    case DocumentIndex.Types.Text:
-                        if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                        if (entry.Value != null)
                         {
-                            doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
+                            doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
+                        }
+
+                        break;
+
+                    case DocumentIndex.Types.Number:
+                        if (entry.Value != null)
+                        {
+                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(entry.Name, "NULL", store));
+                        }
+                        break;
+
+                    case DocumentIndex.Types.Text:
+                        if (!String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        {
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            {
+                                doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
+                            }
+                        }
+                        else {
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
                 }

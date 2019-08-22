@@ -193,7 +193,7 @@ wwwroot
 .template.config/
 /OrchardCore.sln.GhostDoc.xml
 
-# =========================
-# hcoc specifics
+# Rider
+/.idea
 # =========================
 .idea

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentLocalization
@@ -9,13 +11,14 @@ namespace OrchardCore.ContentLocalization
         public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
         public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[]
+            return Task.FromResult(new[]
             {
                 LocalizeContent,
                 LocalizeOwnContent,
-            };
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

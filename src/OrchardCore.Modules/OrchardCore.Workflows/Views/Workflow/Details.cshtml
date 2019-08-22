@@ -1,6 +1,7 @@
 @model WorkflowViewModel
 @using OrchardCore.Workflows.Models;
 @using OrchardCore.Workflows.ViewModels;
+@inject OrchardCore.Modules.ILocalClock LocalClock
 
 <h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
 
@@ -38,7 +39,7 @@
                     </div>
                     <div class="col">
                         <label>@T["Created"]</label>
-                        <span>@Model.Workflow.CreatedUtc</span>
+                        <span>@await LocalClock.ConvertToLocalAsync(Model.Workflow.CreatedUtc)</span>
                     </div>
                     <div class="col">
                         <label>@T["Status"]</label>
