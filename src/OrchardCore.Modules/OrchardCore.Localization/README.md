@@ -26,6 +26,21 @@ PO files are found at these locations:
 It is suggested to put your localization files in the `/Localization/` folder if you are using docker. 
 Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing files.
 
+### Publishing Localization files
+
+The PO files need to be included in the publish output directory. 
+Add the following configurations to your `[Web Project].csproj` file to include them as Content.
+
+``` xml
+  <ItemGroup>
+    <Content Include="Localization\**" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+```
+
+
+
 ## Recipe Step
 Cultures can be added during recipes using the settings step. Here is a sample step:
 
