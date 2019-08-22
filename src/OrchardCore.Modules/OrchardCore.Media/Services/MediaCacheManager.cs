@@ -1,42 +1,39 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services
 {
-
-    [Feature("OrchardCore.Media.MediaCache")]
     public class MediaCacheManager : IMediaCacheManager
     {
-        //private readonly ILogger<MediaCacheManager> _logger;
-        private readonly IEnumerable<IMediaFileStoreCache> _mediaFileStoreCaches;
+        private readonly IEnumerable<IMediaCacheManagementProvider> _mediaCacheManagementProviders;
 
-        //TODO change this to IEnumerable IMediaFileStoreCache (Provider) and collected instances for UI display.
-        // so (simplified) IMediaFileStoreCache as parent, with children of supported IMediaCachePurgeProvider
-        // i.e. Azure Blob Cache (H5)
-        // provides children of
-        // 1) Required : Purge All
-        // 2) Optional : Purge by date / purge by name / whatever UI the optionals provide.
-
-        // Plus this the last place that DEPENDS on IMediaCacheFileProvider which may not be registered now.
         public MediaCacheManager(
-            //ILogger<MediaCacheManager> logger,
-            IEnumerable<IMediaFileStoreCache> mediaFileStoreCaches
+            IEnumerable<IMediaCacheManagementProvider> mediaCacheManagementProviders
             )
         {
-            //_logger = logger;
-            // TODO So This should inject enumerables. of storecache
-            _mediaFileStoreCaches = mediaFileStoreCaches;
+            _mediaCacheManagementProviders = mediaCacheManagementProviders;
         }
 
-        public Task<bool> ClearMediaCacheAsync()
+        public Task<bool> ClearMediaCacheAsync(string cacheName)
         {
-            return _mediaFileStoreCaches.FirstOrDefault().ClearCacheAsync();
+            var provider = _mediaCacheManagementProviders.FirstOrDefault(x => x.Name == cacheName);
+            if (provider != null)
+            {
+                return provider.ClearCacheAsync();
+            }
+
+            return Task.FromResult(true);
         }
 
+        public IEnumerable<dynamic> GetCaches()
+        {
+            var caches = new List<dynamic>();
+            foreach (var provider in _mediaCacheManagementProviders)
+            {
+                caches.Add(provider.GetDisplayModel());
+            }
+            return caches;
+        }
     }
 }

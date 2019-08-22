@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Azure.Models;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure.Services
 {
     public class MediaBlobFileCacheProvider : PhysicalFileProvider, IMediaFileProvider, IMediaCacheFileProvider, IMediaFileStoreCache
     {
