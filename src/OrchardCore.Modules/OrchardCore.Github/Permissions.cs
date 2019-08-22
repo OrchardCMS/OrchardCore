@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Github
+namespace OrchardCore.GitHub
 {
     public class Permissions : IPermissionProvider
     {

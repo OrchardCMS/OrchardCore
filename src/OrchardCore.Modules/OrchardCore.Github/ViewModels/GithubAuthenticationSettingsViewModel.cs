@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Github.ViewModels
+namespace OrchardCore.GitHub.ViewModels
 {
-    public class GithubAuthenticationSettingsViewModel
+    public class GitHubAuthenticationSettingsViewModel
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "API key is required")]
         public string ClientID { get; set; }

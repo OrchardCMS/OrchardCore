@@ -1,4 +1,4 @@
-# Github (OrchardCore.Github)
+# Github (OrchardCore.GitHub)
 
 This module adds Github Authentication to OrchardCore.
 

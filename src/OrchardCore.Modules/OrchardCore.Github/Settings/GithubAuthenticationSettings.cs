@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Github.Settings
+namespace OrchardCore.GitHub.Settings
 {
-    public class GithubAuthenticationSettings
+    public class GitHubAuthenticationSettings
     {
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }

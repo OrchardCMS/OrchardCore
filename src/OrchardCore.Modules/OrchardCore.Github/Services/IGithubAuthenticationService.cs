@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using OrchardCore.Github.Settings;
+using OrchardCore.GitHub.Settings;
 
-namespace OrchardCore.Github.Services
+namespace OrchardCore.GitHub.Services
 {
-    public interface IGithubAuthenticationService
+    public interface IGitHubAuthenticationService
     {
-        Task<GithubAuthenticationSettings> GetSettingsAsync();
-        Task UpdateSettingsAsync(GithubAuthenticationSettings settings);
-        IEnumerable<ValidationResult> ValidateSettings(GithubAuthenticationSettings settings);
+        Task<GitHubAuthenticationSettings> GetSettingsAsync();
+        Task UpdateSettingsAsync(GitHubAuthenticationSettings settings);
+        IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings);
     }
 }

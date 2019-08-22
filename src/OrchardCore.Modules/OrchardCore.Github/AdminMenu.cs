@@ -6,9 +6,9 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Github
+namespace OrchardCore.GitHub
 {
-    [Feature(GithubConstants.Features.GithubAuthentication)]
+    [Feature(GitHubConstants.Features.GithubAuthentication)]
     public class AdminMenuGithubLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
@@ -30,7 +30,7 @@ namespace OrchardCore.Github
                 builder.Add(T["GitHub"], "15", settings => settings
                         .AddClass("github").Id("github")
                         .Add(T["GitHub Authentication"], "10", client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GithubConstants.Features.GithubAuthentication })
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GithubAuthentication })
                             .Permission(Permissions.ManageGithubAuthentication)
                             .LocalNav())
                     );

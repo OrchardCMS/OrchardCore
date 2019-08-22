@@ -1,27 +1,27 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Github.Services;
-using OrchardCore.Github.Settings;
+using OrchardCore.GitHub.Services;
+using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Github.Recipes
+namespace OrchardCore.GitHub.Recipes
 {
     /// <summary>
     /// This recipe step sets Github Account settings.
     /// </summary>
-    public class GithubAuthenticationSettingsStep : IRecipeStepHandler
+    public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly IGithubAuthenticationService _githubAuthenticationService;
+        private readonly IGitHubAuthenticationService _githubAuthenticationService;
 
-        public GithubAuthenticationSettingsStep(IGithubAuthenticationService githubLoginService)
+        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
         {
             _githubAuthenticationService = githubLoginService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(GithubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

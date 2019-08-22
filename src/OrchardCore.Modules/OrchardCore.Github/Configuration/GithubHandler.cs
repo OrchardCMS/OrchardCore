@@ -10,11 +10,11 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Github.Configuration
+namespace OrchardCore.GitHub.Configuration
 {
-    public class GithubHandler : OAuthHandler<GithubOptions>
+    public class GitHubHandler : OAuthHandler<GitHubOptions>
     {
-        public GithubHandler(IOptionsMonitor<GithubOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         { }
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Github.Configuration
             var response = await Backchannel.SendAsync(request, Context.RequestAborted);
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException($"An error occurred when retrieving Github user information ({response.StatusCode}). Please check if the authentication information is correct in the corresponding Github Application.");
+                throw new HttpRequestException($"An error occurred when retrieving GitHub user information ({response.StatusCode}). Please check if the authentication information is correct in the corresponding GitHub Application.");
             }
 
             var payload = JObject.Parse(await response.Content.ReadAsStringAsync());

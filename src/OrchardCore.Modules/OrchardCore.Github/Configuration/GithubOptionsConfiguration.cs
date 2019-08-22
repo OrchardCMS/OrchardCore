@@ -7,24 +7,23 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
-using OrchardCore.Github.Services;
-using OrchardCore.Github.Settings;
+using OrchardCore.GitHub.Services;
+using OrchardCore.GitHub.Settings;
 
-namespace OrchardCore.Github.Configuration
+namespace OrchardCore.GitHub.Configuration
 {
-    public class GithubOptionsConfiguration :
+    public class GitHubOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<GithubOptions>
+        IConfigureNamedOptions<GitHubOptions>
     {
-        private readonly IGithubAuthenticationService _githubAuthenticationService;
+        private readonly IGitHubAuthenticationService _githubAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GithubOptionsConfiguration> _logger;
+        private readonly ILogger<GitHubOptionsConfiguration> _logger;
 
-        public GithubOptionsConfiguration(
-            IGithubAuthenticationService githubAuthenticationService,
+        public GitHubOptionsConfiguration(
+            IGitHubAuthenticationService githubAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GithubOptionsConfiguration> logger)
+            ILogger<GitHubOptionsConfiguration> logger)
         {
             _githubAuthenticationService = githubAuthenticationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -43,17 +42,17 @@ namespace OrchardCore.Github.Configuration
                 return;
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(GithubDefaults.AuthenticationScheme, builder =>
+            options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Github";
-                builder.HandlerType = typeof(GithubHandler);
+                builder.HandlerType = typeof(GitHubHandler);
             });
         }
 
-        public void Configure(string name, GithubOptions options)
+        public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GithubDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }
@@ -64,7 +63,7 @@ namespace OrchardCore.Github.Configuration
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(GithubConstants.Features.GithubAuthentication).Unprotect(loginSettings.ClientSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GithubAuthentication).Unprotect(loginSettings.ClientSecret);
             }
             catch
             {
@@ -77,9 +76,9 @@ namespace OrchardCore.Github.Configuration
             }
         }
 
-        public void Configure(GithubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<GithubAuthenticationSettings> GetGithubAuthenticationSettingsAsync()
+        private async Task<GitHubAuthenticationSettings> GetGithubAuthenticationSettingsAsync()
         {
             var settings = await _githubAuthenticationService.GetSettingsAsync();
             if ((_githubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))

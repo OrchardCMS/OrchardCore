@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -49,7 +49,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Feeds\OrchardCore.Feeds.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Flows\OrchardCore.Flows.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Forms\OrchardCore.Forms.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Github\OrchardCore.Github.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Github\OrchardCore.GitHub.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Google\OrchardCore.Google.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.HealthChecks\OrchardCore.HealthChecks.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.HomeRoute\OrchardCore.HomeRoute.csproj" PrivateAssets="none" />

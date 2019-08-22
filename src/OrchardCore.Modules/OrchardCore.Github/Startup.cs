@@ -4,14 +4,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
-using OrchardCore.Github.Configuration;
-using OrchardCore.Github.Drivers;
-using OrchardCore.Github.Services;
+using OrchardCore.GitHub.Configuration;
+using OrchardCore.GitHub.Drivers;
+using OrchardCore.GitHub.Services;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Github
+namespace OrchardCore.GitHub
 {
     public class Startup : StartupBase
     {
@@ -21,22 +21,22 @@ namespace OrchardCore.Github
         }
     }
 
-    [Feature(GithubConstants.Features.GithubAuthentication)]
+    [Feature(GitHubConstants.Features.GithubAuthentication)]
     public class GithubLoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IGithubAuthenticationService, GithubAuthenticationService>();
-            services.AddScoped<IDisplayDriver<ISite>, GithubAuthenticationSettingsDisplayDriver>();
+            services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
+            services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGithubLogin>();
             // Register the options initializers required by the Github Handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GithubOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<GithubOptions>, GithubOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GitHubOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<GitHubOptions>, GitHubOptionsConfiguration>(),
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<GithubOptions>, OAuthPostConfigureOptions<GithubOptions,GithubHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions,GitHubHandler>>()
             });
         }
     }

@@ -1,5 +1,5 @@
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Github;
+using OrchardCore.GitHub;
 
 [assembly: Module(
     Name = "Github",
@@ -10,7 +10,7 @@ using OrchardCore.Github;
 )]
 
 [assembly: Feature(
-    Id = GithubConstants.Features.GithubAuthentication,
+    Id = GitHubConstants.Features.GithubAuthentication,
     Name = "Github Authentication",
     Category = "Github",
     Description = "Authenticates users with their Github Account."
