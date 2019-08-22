@@ -6,6 +6,6 @@ namespace OrchardCore.Media.ViewModels
 {
     public class MediaCacheViewModel
     {
-        public IDictionary<string, dynamic> Items { get; set; }
+        public IList<dynamic> Items { get; set; }
     }
 }

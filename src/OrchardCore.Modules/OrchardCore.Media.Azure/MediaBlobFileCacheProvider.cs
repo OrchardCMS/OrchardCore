@@ -32,6 +32,8 @@ namespace OrchardCore.Media.Azure
 
         public PathString VirtualPathBase { get; }
 
+        // TODO should this be abstracted out into a mediacachemanagerprovider. Argument for yes, is that then other
+        // cache's could plug into the same place. i.e. a varnish cache signaler. meh. maybe
         public dynamic GetDisplayModel()
         {
             return new MediaBlobFileCache();
