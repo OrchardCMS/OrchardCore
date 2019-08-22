@@ -7,6 +7,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Azure.Models;
 
 namespace OrchardCore.Media.Azure
 {
@@ -30,6 +31,11 @@ namespace OrchardCore.Media.Azure
         }
 
         public PathString VirtualPathBase { get; }
+
+        public dynamic GetDisplayModel()
+        {
+            return new MediaBlobFileCache();
+        }
 
         public Task<bool> IsCachedAsync(string path)
         {

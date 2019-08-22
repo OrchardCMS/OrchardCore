@@ -8,5 +8,6 @@ namespace OrchardCore.Media
     /// </summary>
     public interface IMediaFileStoreCache : IFileStoreCache
     {
+        dynamic GetDisplayModel();
     }
 }
