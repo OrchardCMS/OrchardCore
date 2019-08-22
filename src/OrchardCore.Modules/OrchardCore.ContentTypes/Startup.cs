@@ -40,24 +40,38 @@ namespace OrchardCore.ContentTypes
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "EditField",
+                name: "ContentTypes.EditField",
                 areaName: "OrchardCore.ContentTypes",
                 template: "Admin/ContentParts/{id}/Fields/{name}/Edit",
                 defaults: new { controller = "Admin", action = "EditField" }
             );
 
             routes.MapAreaRoute(
-                name: "EditTypePart",
+                name: "ContentTypes.EditTypePart",
                 areaName: "OrchardCore.ContentTypes",
                 template: "Admin/ContentTypes/{id}/ContentParts/{name}/Edit",
                 defaults: new { controller = "Admin", action = "EditTypePart" }
             );
 
             routes.MapAreaRoute(
-                name: "RemovePart",
+                name: "ContentTypes.RemovePart",
                 areaName: "OrchardCore.ContentTypes",
                 template: "Admin/ContentTypes/{id}/ContentParts/{name}/Remove",
                 defaults: new { controller = "Admin", action = "RemovePart" }
+            );
+
+            routes.MapAreaRoute(
+                name: "ContentTypes.List",
+                areaName: "OrchardCore.ContentTypes",
+                template: "Admin/OrchardCore.ContentTypes/Admin/List",
+                defaults: new { controller = "Admin", action = "List" }
+            );
+
+            routes.MapAreaRoute(
+                name: "ContentTypes.ListParts",
+                areaName: "OrchardCore.ContentTypes",
+                template: "Admin/OrchardCore.ContentTypes/Admin/ListParts",
+                defaults: new { controller = "Admin", action = "ListParts" }
             );
         }
     }

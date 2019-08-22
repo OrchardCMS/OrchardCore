@@ -1,3 +1,6 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
@@ -33,6 +36,16 @@ namespace OrchardCore.Templates
             services.AddTransient<IDeploymentSource, AllTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllTemplatesDeploymentStepDriver>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Templates",
+                areaName: "OrchardCore.Templates",
+                template: "Admin/OrchardCore.Templates/Template/Index",
+                defaults: new { controller = "Template", action = "Index"}
+            );
         }
     }
 }

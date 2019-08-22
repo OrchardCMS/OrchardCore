@@ -42,22 +42,6 @@ namespace OrchardCore.Users
             _tenantName = shellSettings.Name;
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaRoute(
-                name: "Login",
-                areaName: "OrchardCore.Users",
-                template: LoginPath,
-                defaults: new { controller = "Account", action = "Login" }
-            );
-            routes.MapAreaRoute(
-                name: "ChangePassword",
-                areaName: "OrchardCore.Users",
-                template: ChangePasswordPath,
-                defaults: new { controller = "Account", action = "ChangePassword" }
-            );
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSecurity();
@@ -124,6 +108,28 @@ namespace OrchardCore.Users
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Users.Login",
+                areaName: "OrchardCore.Users",
+                template: LoginPath,
+                defaults: new { controller = "Account", action = "Login" }
+            );
+            routes.MapAreaRoute(
+                name: "Users.ChangePassword",
+                areaName: "OrchardCore.Users",
+                template: ChangePasswordPath,
+                defaults: new { controller = "Account", action = "ChangePassword" }
+            );
+            routes.MapAreaRoute(
+                name: "Users",
+                areaName: "OrchardCore.Users",
+                template: "Admin/OrchardCore.Users/Admin/Index",
+                defaults: new { controller = "Admin", action = "Index" }
+            );
+        }
     }
 
     [RequireFeatures("OrchardCore.Liquid")]
@@ -152,7 +158,7 @@ namespace OrchardCore.Users
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "Register",
+                name: "Users.Register",
                 areaName: "OrchardCore.Users",
                 template: RegisterPath,
                 defaults: new { controller = "Registration", action = "Register" }
@@ -182,25 +188,25 @@ namespace OrchardCore.Users
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "ForgotPassword",
+                name: "Users.ForgotPassword",
                 areaName: "OrchardCore.Users",
                 template: ForgotPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPassword" }
             );
             routes.MapAreaRoute(
-                name: "ForgotPasswordConfirmation",
+                name: "Users.ForgotPasswordConfirmation",
                 areaName: "OrchardCore.Users",
                 template: ForgotPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ForgotPasswordConfirmation" }
             );
             routes.MapAreaRoute(
-                name: "ResetPassword",
+                name: "Users.ResetPassword",
                 areaName: "OrchardCore.Users",
                 template: ResetPasswordPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPassword" }
             );
             routes.MapAreaRoute(
-                name: "ResetPasswordConfirmation",
+                name: "Users.ResetPasswordConfirmation",
                 areaName: "OrchardCore.Users",
                 template: ResetPasswordConfirmationPath,
                 defaults: new { controller = "ResetPassword", action = "ResetPasswordConfirmation" }

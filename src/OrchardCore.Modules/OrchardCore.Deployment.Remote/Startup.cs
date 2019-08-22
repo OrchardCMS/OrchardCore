@@ -22,10 +22,17 @@ namespace OrchardCore.Deployment
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "DeploymentImport",
+                name: "Deployment.Remote.RemoteInstances",
                 areaName: "OrchardCore.Deployment.Remote",
-                template: "Deployment/Import",
-                defaults: new { controller = "ImportRemoteInstance", action = "Import" }
+                template: "Admin/OrchardCore.Deployment.Remote/RemoteInstance/Index",
+                defaults: new { controller = "RemoteInstance", action = "Index" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Deployment.Remote.RemoteClients",
+                areaName: "OrchardCore.Deployment.Remote",
+                template: "Admin/OrchardCore.Deployment.Remote/RemoteClient/Index",
+                defaults: new { controller = "RemoteClient", action = "Index" }
             );
         }
     }

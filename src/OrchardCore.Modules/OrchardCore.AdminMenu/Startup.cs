@@ -52,6 +52,12 @@ namespace OrchardCore.AdminMenu
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "AdminMenu",
+                areaName: "OrchardCore.AdminMenu",
+                template: "Admin/OrchardCore.AdminMenu/Admin/List",
+                defaults: new { controller = "Menu", action = "List" }
+            );
         }
     }
 }

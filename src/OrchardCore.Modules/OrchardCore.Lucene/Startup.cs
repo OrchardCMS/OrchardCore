@@ -64,8 +64,22 @@ namespace OrchardCore.Lucene
             routes.MapAreaRoute(
                 name: "Lucene.Search",
                 areaName: "OrchardCore.Lucene",
-                template: "Search/{id?}",
+                template: "Admin/OrchardCore.Lucene/Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Lucene.Indicies",
+                areaName: "OrchardCore.Lucene",
+                template: "Admin/OrchardCore.Lucene/Admin/Index",
+                defaults: new { controller = "Admin", action = "Index"}
+            );
+
+            routes.MapAreaRoute(
+                name: "Lucene.Queries",
+                areaName: "OrchardCore.Lucene",
+                template: "Admin/OrchardCore.Lucene/Admin/Query",
+                defaults: new { controller = "Admin", action = "Query" }
             );
         }
     }

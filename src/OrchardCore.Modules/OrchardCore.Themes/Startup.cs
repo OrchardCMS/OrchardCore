@@ -36,6 +36,12 @@ namespace OrchardCore.Themes
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "Themes.ActiveThemes",
+                areaName: "OrchardCore.Themes",
+                template: "Admin/OrchardCore.Themes/Admin/Index",
+                defaults: new { controller = "Admin", action = "Index" }
+            );
         }
     }
 }

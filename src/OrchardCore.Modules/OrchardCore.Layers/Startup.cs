@@ -55,6 +55,13 @@ namespace OrchardCore.Layers
         {
             var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
             scriptingManager.GlobalMethodProviders.Add(new DefaultLayersMethodProvider());
+
+            routes.MapAreaRoute(
+                name: "Layers",
+                areaName: "OrchardCore.Layers",
+                template: "Admin/OrchardCore.Layers/Admin/Index",
+                defaults: new { controller = "Admin", action = "Index" }
+            );
         }
     }
 }

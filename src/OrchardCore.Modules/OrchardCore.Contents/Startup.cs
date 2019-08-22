@@ -92,21 +92,21 @@ namespace OrchardCore.Contents
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "DisplayContentItem",
+                name: "Contents.DisplayContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Contents/ContentItems/{contentItemId}",
                 defaults: new { controller = "Item", action = "Display" }
             );
 
             routes.MapAreaRoute(
-                name: "PreviewContentItem",
+                name: "Contents.PreviewContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Contents/ContentItems/{contentItemId}/Preview",
                 defaults: new { controller = "Item", action = "Preview" }
             );
 
             routes.MapAreaRoute(
-                name: "PreviewContentItemVersion",
+                name: "Contents.PreviewContentItemVersion",
                 areaName: "OrchardCore.Contents",
                 template: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
                 defaults: new { controller = "Item", action = "Preview" }
@@ -114,28 +114,28 @@ namespace OrchardCore.Contents
 
             // Admin
             routes.MapAreaRoute(
-                name: "EditContentItem",
+                name: "Contents.EditContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Admin/Contents/ContentItems/{contentItemId}/Edit",
                 defaults: new { controller = "Admin", action = "Edit" }
             );
 
             routes.MapAreaRoute(
-                name: "CreateContentItem",
+                name: "Contents.CreateContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Admin/Contents/ContentTypes/{id}/Create",
                 defaults: new { controller = "Admin", action = "Create" }
             );
 
             routes.MapAreaRoute(
-                name: "AdminContentItem",
+                name: "Contents.AdminContentItem",
                 areaName: "OrchardCore.Contents",
                 template: "Admin/Contents/ContentItems/{contentItemId}/Display",
                 defaults: new { controller = "Admin", action = "Display" }
             );
 
             routes.MapAreaRoute(
-                name: "ListContentItems",
+                name: "Contents.ListContentItems",
                 areaName: "OrchardCore.Contents",
                 template: "Admin/Contents/ContentItems/{contentTypeId?}",
                 defaults: new { controller = "Admin", action = "List" }

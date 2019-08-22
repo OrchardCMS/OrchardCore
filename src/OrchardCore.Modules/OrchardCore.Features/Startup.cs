@@ -34,6 +34,12 @@ namespace OrchardCore.Features
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "Features",
+                areaName: "OrchardCore.Features",
+                template: "Admin/OrchardCore.Features/Admin/Features",
+                defaults: new { controller = "Admin", action = "Features" }
+            );
         }
     }
 }

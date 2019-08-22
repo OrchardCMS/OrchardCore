@@ -50,17 +50,31 @@ namespace OrchardCore.Deployment
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "DeleteStep",
+                name: "Deployment.DeleteStep",
                 areaName: "OrchardCore.Deployment",
-                template: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
+                template: "Admin/Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
                 defaults: new { controller = "Step", action = "Delete" }
             );
 
             routes.MapAreaRoute(
-                name: "ExecutePlan",
+                name: "Deployment.ExecutePlan",
                 areaName: "OrchardCore.Deployment",
-                template: "Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
+                template: "Admin/Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
                 defaults: new { controller = "DeploymentPlan", action = "Execute" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Deployment.DeploymentPlans",
+                areaName: "OrchardCore.Deployment",
+                template: "Admin/OrchardCore.Deployment/DeploymentPlan/Index",
+                defaults: new { controller = "DeploymentPlan", action = "Index" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Deployment.PackageImport",
+                areaName: "OrchardCore.Deployment",
+                template: "Admin/OrchardCore.Deployment/Import/Index",
+                defaults: new { controller = "Import", action = "Index" }
             );
         }
     }
