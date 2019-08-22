@@ -8,13 +8,13 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub
 {
-    [Feature(GitHubConstants.Features.GithubAuthentication)]
-    public class AdminMenuGithubLogin : INavigationProvider
+    [Feature(GitHubConstants.Features.GitHubAuthentication)]
+    public class AdminMenuGitHubLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuGithubLogin(
-            IStringLocalizer<AdminMenuGithubLogin> localizer,
+        public AdminMenuGitHubLogin(
+            IStringLocalizer<AdminMenuGitHubLogin> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;
@@ -30,8 +30,8 @@ namespace OrchardCore.GitHub
                 builder.Add(T["GitHub"], "15", settings => settings
                         .AddClass("github").Id("github")
                         .Add(T["GitHub Authentication"], "10", client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GithubAuthentication })
-                            .Permission(Permissions.ManageGithubAuthentication)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
+                            .Permission(Permissions.ManageGitHubAuthentication)
                             .LocalNav())
                     );
             }

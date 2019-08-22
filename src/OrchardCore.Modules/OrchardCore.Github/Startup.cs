@@ -21,15 +21,15 @@ namespace OrchardCore.GitHub
         }
     }
 
-    [Feature(GitHubConstants.Features.GithubAuthentication)]
-    public class GithubLoginStartup : StartupBase
+    [Feature(GitHubConstants.Features.GitHubAuthentication)]
+    public class GitHubLoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuGithubLogin>();
-            // Register the options initializers required by the Github Handler.
+            services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
+            // Register the options initializers required by the GitHub Handler.
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:

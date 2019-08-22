@@ -32,7 +32,7 @@ namespace OrchardCore.GitHub.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetGithubAuthenticationSettingsAsync().GetAwaiter().GetResult();
+            var settings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
             {
                 return;
@@ -44,7 +44,7 @@ namespace OrchardCore.GitHub.Configuration
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
             {
-                builder.DisplayName = "Github";
+                builder.DisplayName = "GitHub";
                 builder.HandlerType = typeof(GitHubHandler);
             });
         }
@@ -57,13 +57,13 @@ namespace OrchardCore.GitHub.Configuration
                 return;
             }
 
-            var loginSettings = GetGithubAuthenticationSettingsAsync().GetAwaiter().GetResult();
+            var loginSettings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
 
             options.ClientId = loginSettings?.ClientID ?? string.Empty;
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GithubAuthentication).Unprotect(loginSettings.ClientSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(loginSettings.ClientSecret);
             }
             catch
             {
@@ -78,7 +78,7 @@ namespace OrchardCore.GitHub.Configuration
 
         public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<GitHubAuthenticationSettings> GetGithubAuthenticationSettingsAsync()
+        private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
         {
             var settings = await _githubAuthenticationService.GetSettingsAsync();
             if ((_githubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))

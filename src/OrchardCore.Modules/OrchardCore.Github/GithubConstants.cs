@@ -4,7 +4,7 @@ namespace OrchardCore.GitHub
     {
         public static class Features
         {
-            public const string GithubAuthentication = "OrchardCore.GitHub.Authentication";
+            public const string GitHubAuthentication = "OrchardCore.GitHub.Authentication";
         }
     }
 }

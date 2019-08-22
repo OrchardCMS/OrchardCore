@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.GitHub.Recipes
 {
     /// <summary>
-    /// This recipe step sets Github Account settings.
+    /// This recipe step sets GitHub Account settings.
     /// </summary>
     public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
@@ -25,7 +25,7 @@ namespace OrchardCore.GitHub.Recipes
             {
                 return;
             }
-            var model = context.Step.ToObject<GithubLoginSettingsStepModel>();
+            var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
             var settings = await _githubAuthenticationService.GetSettingsAsync();
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;
@@ -34,7 +34,7 @@ namespace OrchardCore.GitHub.Recipes
         }
     }
 
-    public class GithubLoginSettingsStepModel
+    public class GitHubLoginSettingsStepModel
     {
         public string ConsumerKey { get; set; }
         public string ConsumerSecret { get; set; }
