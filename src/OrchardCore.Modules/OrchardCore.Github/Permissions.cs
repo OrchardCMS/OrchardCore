@@ -12,7 +12,7 @@ namespace OrchardCore.GitHub
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ManageGithubAuthentication }.AsEnumerable());
+            return Task.FromResult(new[] { ManageGitHubAuthentication }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
