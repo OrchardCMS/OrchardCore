@@ -8,11 +8,10 @@ namespace OrchardCore.Media
         public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
         public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMedia", "Manage Own Media", new[] { ManageMedia });
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
-        public static readonly Permission ManageMediaCache = new Permission("ManageMediaCache", "Manage Media Cache Folder");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder, ManageMediaCache };
+            return new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -22,7 +21,7 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder, ManageMediaCache }
+                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder }
                 },
                 new PermissionStereotype
                 {
@@ -43,6 +42,29 @@ namespace OrchardCore.Media
                     Name = "Contributor",
                     Permissions = new[] { ManageOwnMedia }
                 },
+            };
+        }
+    }
+
+
+    public class MediaCacheManagementPermissions : IPermissionProvider
+    {
+        public static readonly Permission ManageMediaCache = new Permission("ManageMediaCache", "Manage Media Cache Folder");
+
+        public IEnumerable<Permission> GetPermissions()
+        {
+            return new[] { ManageMediaCache };
+        }
+
+        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        {
+            return new[]
+            {
+                new PermissionStereotype
+                {
+                    Name = "Administrator",
+                    Permissions = new[] { ManageMediaCache }
+                }
             };
         }
     }

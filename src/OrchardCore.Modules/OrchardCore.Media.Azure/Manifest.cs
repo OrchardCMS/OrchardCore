@@ -19,6 +19,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media.Azure.MediaCache",
     Name = "Azure Media Storage Cache Management",
     Description = "Enables management of the Media Cache used to cache files retrieved from Microsoft Azure Blob Storage.",
-    Dependencies = new[] { "OrchardCore.Media.Azure.Storage" },
+    Dependencies = new[] { "OrchardCore.Media.Azure.Storage", "OrchardCore.Media.MediaCache" },
     Category = "Hosting"
 )]

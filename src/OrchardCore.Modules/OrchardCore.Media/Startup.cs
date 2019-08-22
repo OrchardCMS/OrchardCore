@@ -49,16 +49,9 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private readonly IShellConfiguration _shellConfiguration;
-
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-        }
-
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -106,8 +99,6 @@ namespace OrchardCore.Media
                 return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
             });
 
-            services.AddScoped<IMediaCacheManager, MediaCacheManager>();
-
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -150,9 +141,6 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
-
-            // TODO move to feature
-            services.AddScoped<IDisplayManager<MediaFileCache>, DisplayManager<MediaFileCache>>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -195,4 +183,17 @@ namespace OrchardCore.Media
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
         }
     }
+
+    [Feature("OrchardCore.Media.MediaCache")]
+    public class MediaCacheManagementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, MediaCacheManagementPermissions>();
+            services.AddScoped<IMediaCacheManager, MediaCacheManager>();
+            services.AddScoped<IDisplayManager<MediaFileCache>, DisplayManager<MediaFileCache>>();
+            services.AddScoped<INavigationProvider, MediaCacheManagementAdminMenu>();
+        }
+    }
+
 }

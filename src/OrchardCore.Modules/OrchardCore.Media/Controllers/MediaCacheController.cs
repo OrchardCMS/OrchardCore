@@ -39,7 +39,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaCacheManagementPermissions.ManageMediaCache))
             {
                 return Unauthorized();
             }
@@ -63,7 +63,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> Purge(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaCacheManagementPermissions.ManageMediaCache))
             {
                 return Unauthorized();
             }
@@ -76,7 +76,7 @@ namespace OrchardCore.Media.Controllers
             }
             else
             {
-                _notifier.Information(H[$"Media cache purged."]);
+                _notifier.Information(H["Media cache purged."]);
             }
 
             return RedirectToAction("Index");
