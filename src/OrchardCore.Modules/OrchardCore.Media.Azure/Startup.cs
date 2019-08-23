@@ -14,6 +14,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Azure.Drivers;
+using OrchardCore.Media.Azure.Models;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
 
@@ -42,6 +43,18 @@ namespace OrchardCore.Media.Azure
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
+
+                //TODO so this basically does nothing, but still exists if blob doesn't register it as an IMediaFileStoreCache?
+                // TODO regardless it needs to move to wwwroot, so hosting environment
+                // NOTE TO SELF This is only registered to
+                // a) provide the ICacheManager with something. So that needs to go provider based
+                // b) so that blob storage can activate it as an IMediaFileStoreCache
+                //    which is just a cheeky way of keeping it in this project without blob having to reference it
+                //    so that another provider like S3 can use it. We need to split this better. it's a bit too tightly coupled now
+                // probably another MediaCacheFileProvider in the abstractions project.
+
+                // NOTE Mostly done, just see IMediaCacheManager for last required dependency.
+
                 // Register the media blob file cache provider.
                 services.AddSingleton(serviceProvider =>
                 {
@@ -105,6 +118,11 @@ namespace OrchardCore.Media.Azure
 
                     return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
+
+                // TODO Feature
+                services.AddSingleton<IMediaCacheManagementProvider, MediaBlobCacheManagementProvider>();
+
+                services.AddScoped<IDisplayDriver<MediaFileCache>, MediaBlobFileCacheDriver>();
             }
 
             services.Configure<MvcOptions>((options) =>
@@ -121,17 +139,6 @@ namespace OrchardCore.Media.Azure
         private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
-        }
-    }
-
-
-    [Feature("OrchardCore.Media.Azure.MediaCache")]
-    public class MediaCacheStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<MediaFileCache>, MediaBlobFileCacheDriver>();
-            services.AddSingleton<IMediaCacheManagementProvider, MediaBlobCacheManagementProvider>();
         }
     }
 }

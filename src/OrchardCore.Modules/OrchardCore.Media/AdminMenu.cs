@@ -29,31 +29,11 @@ namespace OrchardCore.Media
                         .LocalNav()
                     ));
 
-            return Task.CompletedTask;
-        }
-    }
-
-
-    public class MediaCacheManagementAdminMenu : INavigationProvider
-    {
-        public MediaCacheManagementAdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public IStringLocalizer S { get; set; }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
+            //TODO move to feature
             builder.Add(S["Configuration"], content => content
                 .Add(S["Media Cache"], "1", contentItems => contentItems
                     .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
-                    .Permission(MediaCacheManagementPermissions.ManageMediaCache)
+                    .Permission(Permissions.ManageMediaCache)
                     .LocalNav())
                 );
 
