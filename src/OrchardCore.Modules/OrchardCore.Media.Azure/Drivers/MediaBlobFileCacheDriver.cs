@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,7 +17,7 @@ namespace OrchardCore.Media.Azure.Drivers
 
         private Task BuildViewModelAsync(MediaBlobFileCacheViewModel m, MediaBlobFileCache fileCache)
         {
-            m.Name = fileCache.Name;
+            m.TypeName = fileCache.GetType().Name;
             return Task.CompletedTask;
         }
     }
