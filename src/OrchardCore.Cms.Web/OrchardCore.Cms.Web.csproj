@@ -2,6 +2,9 @@
 
   <Import Project="..\OrchardCore.Build\Dependencies.props" />
 
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
+
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
@@ -32,6 +35,7 @@
   <!-- Necessary as we reference the Project and not the Package -->
   <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.targets" />
   <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
+
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
