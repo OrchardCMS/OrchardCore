@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure
@@ -7,9 +9,9 @@ namespace OrchardCore.Media.Azure
     {
         public static readonly Permission ManageAzureAssetCache = new Permission("ManageAzureAssetCache", "Manage Azure Storage Asset Cache Folder");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageAzureAssetCache };
+            return Task.FromResult(new[] { ManageAzureAssetCache }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
