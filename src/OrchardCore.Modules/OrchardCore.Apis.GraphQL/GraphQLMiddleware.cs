@@ -76,7 +76,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
         {
-            var schema = await schemaService.GetSchema();
+            var schema = await schemaService.GetSchemaAsync();
 
             GraphQLRequest request = null;
 
@@ -127,7 +127,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
                 catch (Exception e)
                 {
-                    await WriteErrorAsync(context, "An error occured while processing the GraphQL query", e);
+                    await WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
                     return;
                 }
             }
@@ -196,7 +196,7 @@ namespace OrchardCore.Apis.GraphQL
                 errorResult.Errors.Add(new ExecutionError(message, e));
             }
 
-            context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
 
             await _writer.WriteAsync(context.Response.Body, errorResult);

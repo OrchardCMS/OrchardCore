@@ -63,7 +63,7 @@ namespace OrchardCore.Navigation
             Merge(menuItems);
 
             // Remove unauthorized menu items
-            menuItems = Authorize(menuItems, actionContext.HttpContext.User);
+            menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href
             menuItems = ComputeHref(menuItems, actionContext);
@@ -234,7 +234,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// Updates the items by checking for permissions
         /// </summary>
-        private List<MenuItem> Authorize(IEnumerable<MenuItem> items, ClaimsPrincipal user)
+        private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
 
@@ -253,7 +253,7 @@ namespace OrchardCore.Navigation
                 {
                     foreach (var permission in item.Permissions)
                     {
-                        if (_authorizationService.AuthorizeAsync(user, permission, item.Resource).GetAwaiter().GetResult())
+                        if (await _authorizationService.AuthorizeAsync(user, permission, item.Resource))
                         {
                             filtered.Add(item);
                         }
@@ -263,7 +263,7 @@ namespace OrchardCore.Navigation
                 // Process child items
                 var oldItems = item.Items;
 
-                item.Items = Authorize(item.Items, user).ToList();
+                item.Items = (await AuthorizeAsync(item.Items, user)).ToList();
             }
 
             return filtered;

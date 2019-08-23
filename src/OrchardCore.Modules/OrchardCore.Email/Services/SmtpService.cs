@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MailKit.Net.Smtp;
 using MimeKit;
+using MailKit.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace OrchardCore.Email.Services
 {
@@ -37,27 +40,23 @@ namespace OrchardCore.Email.Services
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
-            var mimeMessage = FromMailMessage(message);         
+            var mimeMessage = FromMailMessage(message);
             try
             {
-                using (var client = new SmtpClient())
+                switch (_options.DeliveryMethod)
                 {
-                    switch(_options.DeliveryMethod)
-                    {
-                        case SmtpDeliveryMethod.Network:
-                            await SendOnlineMessage(mimeMessage, client);
-                            break;
-                        case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                            await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
-                            break;
-                        default:
-                            throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
+                    case SmtpDeliveryMethod.Network:
+                        await SendOnlineMessage(mimeMessage);
+                        break;
+                    case SmtpDeliveryMethod.SpecifiedPickupDirectory:
+                        await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
+                        break;
+                    default:
+                        throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
 
-                    }
-                    client.Disconnect(true);
-
-                    return SmtpResult.Success;
                 }
+
+                return SmtpResult.Success;
             }
             catch (Exception ex)
             {
@@ -67,12 +66,15 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
+
             var mimeMessage = new MimeMessage
             {
                 Sender = (message.From == null
                     ? new MailboxAddress(_options.DefaultSender)
                     : new MailboxAddress(message.From))
             };
+
+            mimeMessage.From.Add(mimeMessage.Sender);
 
             if (message.To != null)
             {
@@ -121,23 +123,69 @@ namespace OrchardCore.Email.Services
             return mimeMessage;
         }
 
-        private async Task SendOnlineMessage(MimeMessage message, SmtpClient client)
+        private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            await client.ConnectAsync(_options.Host, _options.Port, _options.EnableSsl);    
-            var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
-            if (_options.RequireCredentials)
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            _logger.LogError(string.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
+                "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} ",
+                "is considered invalid with {SslPolicyErrors} policy errors"),
+                certificate.Subject, certificate.Issuer, certificate.GetCertHashString(),
+                certificate.GetExpirationDateString(), sslPolicyErrors);
+
+            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
             {
-                if (_options.UseDefaultCredentials)
+                foreach (var chainStatus in chain.ChainStatus)
                 {
-                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
-                    await client.AuthenticateAsync(String.Empty, String.Empty);
-                }
-                else if (!String.IsNullOrWhiteSpace(_options.UserName))
-                {
-                    await client.AuthenticateAsync(_options.UserName, _options.Password);
+                    _logger.LogError("Status: {Status} - {StatusInformation}", chainStatus.Status, chainStatus.StatusInformation);
                 }
             }
-            await client.SendAsync(message);
+
+            return false;
+        }
+        private async Task SendOnlineMessage(MimeMessage message)
+        {
+            var secureSocketOptions = SecureSocketOptions.Auto;
+
+            if (!_options.AutoSelectEncryption)
+            {
+                switch (_options.EncryptionMethod)
+                {
+                    case SmtpEncryptionMethod.None:
+                        secureSocketOptions = SecureSocketOptions.None;
+                        break;
+                    case SmtpEncryptionMethod.SSLTLS:
+                        secureSocketOptions = SecureSocketOptions.SslOnConnect;
+                        break;
+                    case SmtpEncryptionMethod.STARTTLS:
+                        secureSocketOptions = SecureSocketOptions.StartTls;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            using (var client = new SmtpClient())
+            {
+                client.ServerCertificateValidationCallback = CertificateValidationCallback;
+                await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+                var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
+                if (_options.RequireCredentials)
+                {
+                    if (_options.UseDefaultCredentials)
+                    {
+                        // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
+                        await client.AuthenticateAsync(String.Empty, String.Empty);
+                    }
+                    else if (!String.IsNullOrWhiteSpace(_options.UserName))
+                    {
+                        await client.AuthenticateAsync(_options.UserName, _options.Password);
+                    }
+                }
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
         }
 
         private async Task SendOfflineMessage(MimeMessage message, string pickupDirectory)

@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
-using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Deployment
 {
@@ -32,27 +30,19 @@ namespace OrchardCore.CustomSettings.Deployment
                 ? _customSettingsService.GetAllSettingsTypes().ToArray()
                 : _customSettingsService.GetSettingsTypes(customSettingsStep.SettingsTypeNames).ToArray();
 
-            var settingsPermissionsTasks =
-                (from settingsType in settingsTypes
-                 select _customSettingsService.CanUserCreateSettingsAsync(settingsType)).ToArray();
-
-            await Task.WhenAll(settingsPermissionsTasks);
-
-            if (settingsPermissionsTasks.Any(t => !t.Result))
+            foreach (var settingsType in settingsTypes)
             {
-                return;
+                if (!await _customSettingsService.CanUserCreateSettingsAsync(settingsType))
+                {
+                    return;
+                }
             }
 
-            var settingsTasks =
-                (from settingsType in settingsTypes
-                 select _customSettingsService.GetSettingsAsync(settingsType)).ToArray();
-
-            await Task.WhenAll(settingsTasks);
-
-            settingsList.AddRange(
-                from settingsTask in settingsTasks
-                let settings = settingsTask.Result
-                select new JProperty(settings.ContentType, JObject.FromObject(settings)));
+            foreach (var settingsType in settingsTypes)
+            {
+                var settings = await _customSettingsService.GetSettingsAsync(settingsType);
+                settingsList.Add(new JProperty(settings.ContentType, JObject.FromObject(settings)));
+            }
 
             // Adding custom settings
             result.Steps.Add(new JObject(settingsList.ToArray()));

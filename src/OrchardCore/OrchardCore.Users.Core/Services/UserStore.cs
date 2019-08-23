@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,7 @@ using YesSql;
 namespace OrchardCore.Users.Services
 {
     public class UserStore :
-        IUserStore<IUser>,
+        IUserClaimStore<IUser>,
         IUserRoleStore<IUser>,
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
@@ -65,7 +66,7 @@ namespace OrchardCore.Users.Services
                 await _session.CommitAsync();
 
                 var context = new CreateUserContext(user);
-                await Handlers.InvokeAsync(async handler => await handler.CreatedAsync(context), _logger);
+                await Handlers.InvokeAsync(handler => handler.CreatedAsync(context), _logger);
             }
             catch
             {
@@ -441,6 +442,77 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
+        #endregion
+
+        #region IUserClaimStore<IUser>
+        public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult<IList<Claim>>(((User)user).UserClaims.Select(x => x.ToClaim()).ToList());
+        }
+
+        public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claims == null)
+                throw new ArgumentNullException(nameof(claims));
+
+            foreach (var claim in claims)
+            {
+                ((User)user).UserClaims.Add(new UserClaim{ClaimType = claim.Type, ClaimValue = claim.Value});
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claim == null)
+                throw new ArgumentNullException(nameof(claim));
+            if (newClaim == null)
+                throw new ArgumentNullException(nameof(newClaim));
+
+            foreach (var userClaim in ((User) user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
+            {
+                userClaim.ClaimValue = newClaim.Value;
+                userClaim.ClaimType = newClaim.Type;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+            if (claims == null)
+                throw new ArgumentNullException(nameof(claims));
+
+            foreach (var claim in claims)
+            {
+                foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
+                    ((User)user).UserClaims.Remove(userClaim);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+        {
+            if (claim == null)
+                throw new ArgumentNullException(nameof(claim));
+            
+            var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
+
+            return users.Cast<IUser>().ToList();
+        }
         #endregion
     }
 }

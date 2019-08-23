@@ -48,6 +48,7 @@ nav:
         - Html: OrchardCore.Modules/OrchardCore.Html/README.md
         - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
+        - Content Localization: OrchardCore.Modules/OrchardCore.ContentLocalization/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md
         - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
@@ -68,10 +69,11 @@ nav:
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
         - Admin Menu: OrchardCore.Modules/OrchardCore.AdminMenu/README.md
     - Core Modules:
+        - Configuration: OrchardCore/OrchardCore/Environment/Shell/README.md
         - Data: OrchardCore/OrchardCore.Data/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
-        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md 
+        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Entities;

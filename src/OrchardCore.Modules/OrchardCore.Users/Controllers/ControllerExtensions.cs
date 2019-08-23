@@ -1,17 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -27,28 +23,14 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var options = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<MvcViewOptions>>();
-            var displayManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IHtmlDisplay>();
             var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
-            // Just use the current context to get a view and then create a view context.
-            var view = options.Value.ViewEngines
-                    .Select(x => x.FindView(
-                        controller.ControllerContext,
-                        controller.ControllerContext.ActionDescriptor.ActionName,
-                        false)).FirstOrDefault()?.View;
-
-            var displayContext = new DisplayContext()
-            {
-                ServiceProvider = controller.ControllerContext.HttpContext.RequestServices,
-                Value = model,
-                ViewContext = new ViewContext(controller.ControllerContext, view, controller.ViewData, controller.TempData, new StringWriter(), new HtmlHelperOptions())
-            };
+            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
 
             var body = string.Empty;
 
             using (var sw = new StringWriter())
             {
-                var htmlContent = await displayManager.ExecuteAsync(displayContext);
+                var htmlContent = await displayHelper.ShapeExecuteAsync(model);
                 htmlContent.WriteTo(sw, HtmlEncoder.Default);
                 body = sw.ToString();
             }

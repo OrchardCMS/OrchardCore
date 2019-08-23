@@ -90,7 +90,7 @@ namespace OrchardCore.Tests.Workflows
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
             var globalMethodProviders = new IGlobalMethodProvider[0];
-            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders, serviceProvider);
+            var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
             return new JavaScriptWorkflowScriptEvaluator(
                 scriptingManager,

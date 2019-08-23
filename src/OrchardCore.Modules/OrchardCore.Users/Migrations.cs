@@ -27,5 +27,13 @@ namespace OrchardCore.Users
                 .Column<string>("ProviderKey"));
             return 2;
         }
+
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.CreateMapIndexTable(nameof(UserByClaimIndex), table => table
+                .Column<string>(nameof(UserByClaimIndex.ClaimType))
+                .Column<string>(nameof(UserByClaimIndex.ClaimValue)));
+            return 3;
+        }
     }
 }

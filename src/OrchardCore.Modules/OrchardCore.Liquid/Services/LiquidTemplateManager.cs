@@ -27,13 +27,34 @@ namespace OrchardCore.Liquid.Services
             _serviceProvider = serviceProvider;
         }
 
-        public Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
+        public async Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
-                return Task.CompletedTask;
+                return;
             }
 
+            var result = GetCachedTemplate(source);
+
+            await context.ContextualizeAsync(_serviceProvider);
+            await result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+        }
+
+        public async Task<string> RenderAsync(string source, TextEncoder encoder, TemplateContext context)
+        {
+            if (String.IsNullOrWhiteSpace(source))
+            {
+                return null;
+            }
+
+            var result = GetCachedTemplate(source);
+
+            await context.ContextualizeAsync(_serviceProvider);
+            return await result.RenderAsync(_liquidOptions, _serviceProvider, encoder, context);
+        }
+
+        private LiquidViewTemplate GetCachedTemplate(string source)
+        {
             var errors = Enumerable.Empty<string>();
 
             var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
@@ -50,8 +71,7 @@ namespace OrchardCore.Liquid.Services
                 e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
                 return parsed;
             });
-
-            return result.RenderAsync(_liquidOptions, _serviceProvider, textWriter, encoder, context);
+            return result;
         }
 
         public bool Validate(string template, out IEnumerable<string> errors)

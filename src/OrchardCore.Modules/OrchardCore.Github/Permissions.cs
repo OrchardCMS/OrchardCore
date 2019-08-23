@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Github
@@ -8,9 +10,9 @@ namespace OrchardCore.Github
         public static readonly Permission ManageGithubAuthentication
             = new Permission(nameof(ManageGithubAuthentication), "Manage Github Authentication settings");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageGithubAuthentication;
+            return Task.FromResult(new[] { ManageGithubAuthentication }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

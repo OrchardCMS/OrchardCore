@@ -1,0 +1,15 @@
+@using System.Globalization
+
+<ul>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
+        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+            @foreach (var culture in ((IEnumerable<CultureInfo>)Model.SupportedCultures).Where(entry => !string.Equals(entry.Name, Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                @await DisplayAsync(await New.ContentCulturePickerLink(
+                   Culture: culture
+                ))
+            }
+        </div>
+    </li>
+</ul>

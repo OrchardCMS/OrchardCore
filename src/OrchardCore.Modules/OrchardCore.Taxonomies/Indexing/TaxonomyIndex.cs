@@ -61,7 +61,7 @@ namespace OrchardCore.Taxonomies.Indexing
 
                     // This type doesn't have any TaxonomyField, ignore it
                     if (fieldDefinitions.Length == 0)
-                    {                        
+                    {
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }
