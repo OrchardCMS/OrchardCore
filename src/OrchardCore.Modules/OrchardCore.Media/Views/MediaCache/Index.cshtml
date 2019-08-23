@@ -1,17 +1,27 @@
 @model OrchardCore.Media.ViewModels.MediaCacheViewModel
 <h1>@RenderTitleSegments(T["Media Cache"])</h1>
 
-<form>
+<p class="alert alert-secondary">@T["Media is configured via appsettings.json."]</p>
+
+<form asp-action="MediaCache">
     @* the form is necessary to generate and antiforgery token for the purge action *@
 
-    <ul class="list-group">
-        <li class="list-group-item">
-            @{
-                foreach (var item in Model.Items)
-                {
-                    @await DisplayAsync(item);
-                }
-            }
-        </li>
-    </ul>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    @{
+                        @* TODO key is for the call back, not display *@
+                        foreach (var item in Model.Items)
+                        {
+
+                            @await DisplayAsync(item.Value);
+                        }
+                    }
+
+                    <p>and this bit below goes into the shape partial view but the key is used to send an identifier to the controller (probably)</p>
+                    <a asp-action="PurgeMediaCache"
+                       class="btn btn-danger" data-title="@T["Purge Media Cache"]" data-message="Are you sure you want to purge the entire media cache?" itemprop="RemoveUrl UnsafeUrl">@T["Purge Media Cache"]</a>
+                </li>
+             
+            </ul>
+ 
 </form>

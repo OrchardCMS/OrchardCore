@@ -114,8 +114,8 @@ namespace OrchardCore.Media.Azure
                     return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
 
-                // TODO Feature
-                services.AddScoped<IDisplayDriver<MediaFileCache>, MediaBlobFileCacheDriver>();
+
+                services.AddScoped<IDisplayDriver<FileCache>, MediaBlobFileCacheDriver>();
             }
 
             services.Configure<MvcOptions>((options) =>

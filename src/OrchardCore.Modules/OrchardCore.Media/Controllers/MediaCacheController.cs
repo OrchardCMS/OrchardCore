@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 
@@ -21,15 +21,16 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<MediaCacheController> H;
-        private readonly IDisplayManager<MediaFileCache> _displayManager;
-        private readonly IEnumerable<IMediaFileStoreCache> _mediaFileStoreCaches;
+        private readonly IDisplayManager<FileCache> _displayManager;
+        IEnumerable<IMediaFileStoreCache> _mediaFileStoreCaches;
 
         public MediaCacheController(
             IMediaCacheManager mediaCacheManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IDisplayManager<MediaFileCache> displayManager,
+            IDisplayManager<FileCache> displayManager,
             IHtmlLocalizer<MediaCacheController> htmlLocalizer,
+
             IEnumerable<IMediaFileStoreCache> mediaFileStoreCaches
             )
         {
@@ -49,13 +50,14 @@ namespace OrchardCore.Media.Controllers
                 return Unauthorized();
             }
 
-            var items = new List<dynamic>();
+            var items = new Dictionary<string,dynamic>();
 
             foreach (var cache in _mediaFileStoreCaches)
             {
                 var displayModel = cache.GetDisplayModel();
                 dynamic item = await _displayManager.BuildDisplayAsync(displayModel, this, "SummaryAdmin");
-                items.Add( item);
+                //TODO displayModel.Name
+                items.Add("test", item);
             }
 
             var model = new MediaCacheViewModel
@@ -67,34 +69,24 @@ namespace OrchardCore.Media.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Purge(string id)
+        public async Task<IActionResult> PurgeMediaCache()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
             {
                 return Unauthorized();
             }
 
-            var cache = _mediaFileStoreCaches.FirstOrDefault(x => x.GetDisplayModel().GetType().Name == id);
-
-            var hasErrors = false;
-            if (cache != null)
-            {
-                hasErrors = await cache.ClearCacheAsync();
-            } else
-            {
-                hasErrors = true;
-            }
-
+            var hasErrors = await _mediaCacheManager.ClearMediaCacheAsync();
             if (hasErrors)
             {
                 _notifier.Error(H["Media cache purged, with errors."]);
             }
             else
             {
-                _notifier.Information(H[$"Media cache purged for {id}."]);
+                _notifier.Information(H["Media cache purged."]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("MediaCache");
         }
 
     }

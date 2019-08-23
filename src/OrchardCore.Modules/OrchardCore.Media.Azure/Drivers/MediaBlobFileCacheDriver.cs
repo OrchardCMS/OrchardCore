@@ -1,24 +1,22 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.FileStorage;
 using OrchardCore.Media.Azure.Models;
-using OrchardCore.Media.Azure.ViewModel;
 
 namespace OrchardCore.Media.Azure.Drivers
 {
-    public class MediaBlobFileCacheDriver : DisplayDriver<MediaFileCache, MediaBlobFileCache>
+    public class MediaBlobFileCacheDriver : DisplayDriver<FileCache, MediaBlobFileCache>
     {
         public override IDisplayResult Display(MediaBlobFileCache fileCache)
         {
-            return Initialize<MediaBlobFileCacheViewModel>("MediaBlobFileCache_SummaryAdmin", m => BuildViewModelAsync(m, fileCache))
-                .Location("SummaryAdmin", "Content");
-        }
-
-        private Task BuildViewModelAsync(MediaBlobFileCacheViewModel m, MediaBlobFileCache fileCache)
-        {
-            m.TypeName = fileCache.GetType().Name;
-            return Task.CompletedTask;
+            return View("MediaBlobFileCache_SummaryAdmin", fileCache).Location("SummaryAdmin", "Content");
+            //return Combine(
+            //    View("LinkAdminNode_Fields_TreeSummary", fileCache).Location("TreeSummary", "Content"),
+            //    View("LinkAdminNode_Fields_TreeThumbnail", fileCache).Location("TreeThumbnail", "Content")
+            //);
         }
     }
 }

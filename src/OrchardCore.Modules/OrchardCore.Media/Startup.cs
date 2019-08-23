@@ -63,6 +63,8 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDisplayManager<FileCache>, DisplayManager<FileCache>>();
+
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
@@ -150,9 +152,6 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
-
-            // TODO move to feature
-            services.AddScoped<IDisplayManager<MediaFileCache>, DisplayManager<MediaFileCache>>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
