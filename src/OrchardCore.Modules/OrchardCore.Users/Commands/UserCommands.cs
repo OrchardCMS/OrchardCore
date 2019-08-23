@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -39,7 +40,7 @@ namespace OrchardCore.Users.Commands
 
             var valid = true;
 
-            await _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames, EmailConfirmed = true }, Password, (key, message) =>
+            await _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, RoleNames = roleNames.ToImmutableArray(), EmailConfirmed = true }, Password, (key, message) =>
             {
                 valid = false;
                 Context.Output.WriteLine(message);

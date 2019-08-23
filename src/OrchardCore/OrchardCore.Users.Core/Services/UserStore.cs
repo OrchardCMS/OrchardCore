@@ -329,7 +329,7 @@ namespace OrchardCore.Users.Services
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
-            ((User)user).RoleNames.Add(roleName);
+            ((User)user).RoleNames = ((User)user).RoleNames.Add(roleName);
         }
 
         public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
@@ -347,7 +347,7 @@ namespace OrchardCore.Users.Services
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
-            ((User)user).RoleNames.Remove(roleName);
+            ((User)user).RoleNames = ((User)user).RoleNames.Remove(roleName);
         }
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
@@ -401,9 +401,11 @@ namespace OrchardCore.Users.Services
             }
 
             if (((User)user).LoginInfos.Any(i => i.LoginProvider == login.LoginProvider))
+            {
                 throw new InvalidOperationException($"Provider {login.LoginProvider} is already linked for {user.UserName}");
+            }
 
-            ((User)user).LoginInfos.Add(login);
+            ((User)user).LoginInfos = ((User)user).LoginInfos.Add(login);
 
             return Task.CompletedTask;
         }
@@ -430,15 +432,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var externalLogins = ((User)user).LoginInfos;
-            if (externalLogins != null)
+            var item = ((User)user).LoginInfos.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
+            if (item != null)
             {
-                var item = externalLogins.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
-                if (item != null)
-                {
-                    externalLogins.Remove(item);
-                }
+                ((User)user).LoginInfos = ((User)user).LoginInfos.Remove(item);
             }
+
             return Task.CompletedTask;
         }
 
@@ -458,13 +457,18 @@ namespace OrchardCore.Users.Services
         public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if (user == null)
+            {
                 throw new ArgumentNullException(nameof(user));
+            }
+
             if (claims == null)
+            {
                 throw new ArgumentNullException(nameof(claims));
+            }
 
             foreach (var claim in claims)
             {
-                ((User)user).UserClaims.Add(new UserClaim{ClaimType = claim.Type, ClaimValue = claim.Value});
+                ((User)user).UserClaims = ((User)user).UserClaims.Add(new UserClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
             }
 
             return Task.CompletedTask;
@@ -473,16 +477,24 @@ namespace OrchardCore.Users.Services
         public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
         {
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (claim == null)
-                throw new ArgumentNullException(nameof(claim));
-            if (newClaim == null)
-                throw new ArgumentNullException(nameof(newClaim));
-
-            foreach (var userClaim in ((User) user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
             {
-                userClaim.ClaimValue = newClaim.Value;
-                userClaim.ClaimType = newClaim.Type;
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            if (newClaim == null)
+            {
+
+                throw new ArgumentNullException(nameof(newClaim));
+            }
+
+            foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
+            {
+                ((User)user).UserClaims = ((User)user).UserClaims.Replace(userClaim, new UserClaim { ClaimType = newClaim.Type, ClaimValue = newClaim.Value });
             }
 
             return Task.CompletedTask;
@@ -491,14 +503,21 @@ namespace OrchardCore.Users.Services
         public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if (user == null)
+            {
                 throw new ArgumentNullException(nameof(user));
+            }
+
             if (claims == null)
+            {
                 throw new ArgumentNullException(nameof(claims));
+            }
 
             foreach (var claim in claims)
             {
                 foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
-                    ((User)user).UserClaims.Remove(userClaim);
+                {
+                    ((User)user).UserClaims = ((User)user).UserClaims.Remove(userClaim);
+                }
             }
 
             return Task.CompletedTask;
@@ -507,8 +526,10 @@ namespace OrchardCore.Users.Services
         public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
             if (claim == null)
+            {
                 throw new ArgumentNullException(nameof(claim));
-            
+            }
+
             var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
 
             return users.Cast<IUser>().ToList();
