@@ -23,24 +23,33 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly IMediaCacheManager _mediaCacheManager;
+        private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IStringLocalizer<AdminController> T;
+        private readonly IHtmlLocalizer<AdminController> H;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
+            IMediaCacheManager mediaCacheManager,
+            INotifier notifier,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
-            IStringLocalizer<AdminController> stringLocalizer
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer
             )
         {
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
+            _mediaCacheManager = mediaCacheManager;
+            _notifier = notifier;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _logger = logger;
             T = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<IActionResult> Index()
@@ -51,6 +60,37 @@ namespace OrchardCore.Media.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> MediaCache()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            {
+                return Unauthorized();
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PurgeMediaCache()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaCache))
+            {
+                return Unauthorized();
+            }
+
+            var hasErrors = await _mediaCacheManager.ClearMediaCacheAsync();
+            if (hasErrors)
+            {
+                _notifier.Error(H["Media cache purged, with errors."]);
+            }
+            else
+            {
+                _notifier.Information(H["Media cache purged."]);
+            }
+
+            return RedirectToAction("MediaCache");
         }
 
         public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)

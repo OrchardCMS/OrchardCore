@@ -1,31 +1,25 @@
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
-using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Azure
 {
-    public class MediaBlobFileCacheProvider : PhysicalFileProvider, IMediaFileProvider, IMediaCacheFileProvider, IMediaFileStoreCache
+    public class MediaBlobFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaCacheFileProvider, IMediaFileStoreCache
     {
         // Use default stream copy buffer size to stay in gen0 garbage collection;
         private const int StreamCopyBufferSize = 81920;
 
-        private readonly ILogger<MediaBlobFileCacheProvider> _logger;
-
-        public MediaBlobFileCacheProvider(ILogger<MediaBlobFileCacheProvider> logger, PathString virtualPathBase, string root) : base(root)
+        public MediaBlobFileProvider(PathString virtualPathBase, string root) : base(root)
         {
-            _logger = logger;
             VirtualPathBase = virtualPathBase;
         }
 
-        public MediaBlobFileCacheProvider(ILogger<MediaBlobFileCacheProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        public MediaBlobFileProvider(PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
         {
-            _logger = logger;
             VirtualPathBase = virtualPathBase;
         }
 
@@ -71,44 +65,6 @@ namespace OrchardCore.Media.Azure
             {
                 await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
             }
-        }
-
-
-        public Task<bool> ClearCacheAsync()
-        {
-            var purgedWithErrors = false;
-
-            //TODO consider a clear cache items older than xxx days option from the ui,
-            // or a background task to do the same.
-            var folders = GetDirectoryContents(String.Empty);
-            foreach (var fileInfo in folders)
-            {
-                if (fileInfo.IsDirectory)
-                {
-                    try
-                    {
-                        Directory.Delete(fileInfo.PhysicalPath, true);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
-                        purgedWithErrors = true;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        File.Delete(fileInfo.PhysicalPath);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
-                        purgedWithErrors = true;
-                    }
-                }
-            }
-            return Task.FromResult(purgedWithErrors);
         }
     }
 }

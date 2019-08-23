@@ -11,6 +11,5 @@ namespace OrchardCore.FileStorage
     {
         Task<bool> IsCachedAsync(string path);
         Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken);
-        Task<bool> ClearCacheAsync();
     }
 }
