@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 
@@ -15,7 +14,7 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
-        private readonly string _pathBase;
+        private readonly string _resourcePath;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
@@ -30,7 +29,6 @@ namespace OrchardCore.ResourceManagement
         private readonly IOptions<ResourceManagementOptions> _options;
 
         public ResourceManager(
-            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IResourceManifestProvider> resourceProviders,
             IResourceManifestState resourceManifestState,
             IOptions<ResourceManagementOptions> options,
@@ -38,10 +36,9 @@ namespace OrchardCore.ResourceManagement
         {
             _resourceManifestState = resourceManifestState;
             _options = options;
-            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            _resourcePath = options.Value.ResourcePath;
             _providers = resourceProviders;
             _fileVersionProvider = fileVersionProvider;
-
             _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
             _localScripts = new HashSet<string>();
         }
@@ -120,12 +117,12 @@ namespace OrchardCore.ResourceManagement
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _pathBase + resourcePath.Substring(1);
+                resourcePath = _resourcePath + resourcePath.Substring(1);
             }
 
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourceDebugPath = _pathBase + resourceDebugPath.Substring(1);
+                resourceDebugPath = _resourcePath + resourceDebugPath.Substring(1);
             }
 
             return RegisterResource(resourceType, GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
@@ -421,12 +418,12 @@ namespace OrchardCore.ResourceManagement
 
             if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
             {
-                link.Href = _pathBase + href.Substring(1);
+                link.Href = _resourcePath + href.Substring(1);
             }
 
             if (link.AppendVersion)
             {
-                link.Href = _fileVersionProvider.AddFileVersionToPath(_pathBase, link.Href);
+                link.Href = _fileVersionProvider.AddFileVersionToPath(_resourcePath, link.Href);
             }
 
             _links.Add(link);
@@ -526,7 +523,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_resourcePath));
             }
         }
 
@@ -545,7 +542,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_resourcePath));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
@@ -576,7 +573,7 @@ namespace OrchardCore.ResourceManagement
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                builder.AppendHtml(context.GetHtmlContent(_resourcePath));
             }
 
             foreach (var context in GetRegisteredFootScripts())
@@ -609,7 +606,7 @@ namespace OrchardCore.ResourceManagement
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_pathBase));
+                    builder.AppendHtml(context.GetHtmlContent(_resourcePath));
                 }
             }
         }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
@@ -9,11 +10,13 @@ namespace OrchardCore.Resources
     {
         private readonly ISiteService _siteService;
         private readonly IHostingEnvironment _env;
+        private readonly string _pathBase;
 
-        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostingEnvironment env)
+        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _siteService = siteService;
             _env = env;
+            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         public void Configure(ResourceManagementOptions options)
@@ -36,10 +39,9 @@ namespace OrchardCore.Resources
             }
 
             options.UseCdn = settings.UseCdn;
-
             options.CdnBaseUrl = settings.CdnBaseUrl;
-
             options.AppendVersion = settings.AppendVersion;
+            options.ResourcePath = _pathBase;
         }
     }
 }

@@ -10,6 +10,8 @@ namespace OrchardCore.ResourceManagement
 
         public string Culture { get; set; }
 
+        public string ResourcePath { get; set; }
+
         public bool AppendVersion { get; set; } = true;
     }
 }
