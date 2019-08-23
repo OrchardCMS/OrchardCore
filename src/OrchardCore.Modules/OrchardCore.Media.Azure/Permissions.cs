@@ -5,11 +5,11 @@ namespace OrchardCore.Media.Azure
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAzureMediaCache = new Permission("ManageAzureMediaCache", "Manage Azure Media Cache Folder");
+        public static readonly Permission ManageAzureAssetCache = new Permission("ManageAzureAssetCache", "Manage Azure Storage Asset Cache Folder");
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] { ManageAzureMediaCache };
+            return new[] { ManageAzureAssetCache };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -19,7 +19,7 @@ namespace OrchardCore.Media.Azure
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAzureMediaCache }
+                    Permissions = new[] { ManageAzureAssetCache }
                 }
             };
         }

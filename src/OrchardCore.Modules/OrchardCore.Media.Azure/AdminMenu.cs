@@ -22,9 +22,9 @@ namespace OrchardCore.Media.Azure
             }
 
             builder.Add(S["Configuration"], content => content
-                .Add(S["Media Cache"], "1", contentItems => contentItems
+                .Add(S["Azure Asset Cache"], "1", contentItems => contentItems
                     .Action("Index", "Admin", new { area = "OrchardCore.Media.Azure" })
-                    .Permission(Permissions.ManageAzureMediaCache)
+                    .Permission(Permissions.ManageAzureAssetCache)
                     .LocalNav())
                 );
 

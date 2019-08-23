@@ -30,7 +30,7 @@ namespace OrchardCore.Media.Azure.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureMediaCache))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureAssetCache))
             {
                 return Unauthorized();
             }
@@ -41,7 +41,7 @@ namespace OrchardCore.Media.Azure.Controllers
         [HttpPost]
         public async Task<IActionResult> Purge()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureMediaCache))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureAssetCache))
             {
                 return Unauthorized();
             }
@@ -49,11 +49,11 @@ namespace OrchardCore.Media.Azure.Controllers
             var hasErrors = await _mediaFileStoreCache.PurgeAsync();
             if (hasErrors)
             {
-                _notifier.Error(H["Azure media storage cache purged, with errors."]);
+                _notifier.Error(H["Azure storage asset cache purged, with errors."]);
             }
             else
             {
-                _notifier.Information(H["Azure media storage cache purged."]);
+                _notifier.Information(H["Azure storage asset cache purged."]);
             }
 
             return RedirectToAction("Index");
