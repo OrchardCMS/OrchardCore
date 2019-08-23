@@ -12,7 +12,7 @@
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
 
-    <ResolvedFileToPublish Include="Localization\**">
+    <ResolvedFileToPublish Include="Localization\**" Exclude="Localization\is-cache\**">
       <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
