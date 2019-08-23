@@ -16,7 +16,6 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
@@ -48,16 +47,9 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private readonly IShellConfiguration _shellConfiguration;
-
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-        }
-
-        public Startup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -104,8 +96,6 @@ namespace OrchardCore.Media
 
                 return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
             });
-
-            services.AddScoped<IMediaCacheManager, MediaCacheManager>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();

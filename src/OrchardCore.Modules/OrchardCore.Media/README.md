@@ -202,9 +202,6 @@ The following configuration values are used by default and can be customized:
       // The path in the tenant's App_Data folder containing the assets.
       "AssetsPath": "Media",
 
-      // The path in the tenant's App_Data folder containing the asset cache.
-      "AssetsCachePath": "MediaCache",
-
       // The list of allowed file extensions
       "AllowedFileExtensions": [
 

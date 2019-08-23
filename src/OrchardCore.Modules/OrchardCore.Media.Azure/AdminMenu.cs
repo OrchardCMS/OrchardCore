@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media.Azure
 {
     public class AdminMenu : INavigationProvider
     {
@@ -21,13 +21,12 @@ namespace OrchardCore.Media
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Content"], content => content
-                    .Add(S["Assets"], "3", layers => layers
-                        .Permission(Permissions.ManageOwnMedia)
-                        .Action("Index", "Admin", new { area = "OrchardCore.Media" })
-                        .LocalNav()
-                    ));
+            builder.Add(S["Configuration"], content => content
+                .Add(S["Media Cache"], "1", contentItems => contentItems
+                    .Action("Index", "Admin", new { area = "OrchardCore.Media.Azure" })
+                    .Permission(Permissions.ManageAzureMediaCache)
+                    .LocalNav())
+                );
 
             return Task.CompletedTask;
         }

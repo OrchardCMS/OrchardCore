@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media
@@ -7,5 +8,6 @@ namespace OrchardCore.Media
     /// </summary>
     public interface IMediaFileStoreCache : IFileStoreCache
     {
+        Task<bool> PurgeAsync();
     }
 }

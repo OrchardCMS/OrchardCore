@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,7 +14,10 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure
 {
@@ -39,18 +44,6 @@ namespace OrchardCore.Media.Azure
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
-
-                //TODO so this basically does nothing, but still exists if blob doesn't register it as an IMediaFileStoreCache?
-                // TODO regardless it needs to move to wwwroot, so hosting environment
-                // NOTE TO SELF This is only registered to
-                // a) provide the ICacheManager with something. So that needs to go provider based
-                // b) so that blob storage can activate it as an IMediaFileStoreCache
-                //    which is just a cheeky way of keeping it in this project without blob having to reference it
-                //    so that another provider like S3 can use it. We need to split this better. it's a bit too tightly coupled now
-                // probably another MediaCacheFileProvider in the abstractions project.
-
-                // NOTE Mostly done, just see IMediaCacheManager for last required dependency.
-
                 // Register a media cache file provider.
                 services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
                 {
@@ -65,6 +58,7 @@ namespace OrchardCore.Media.Azure
                     var mediaBlobOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<MediaBlobFileProvider>>();
 
                     var mediaCachePath = GetMediaCachePath(hostingEnvironment, shellSettings, mediaBlobOptions.AssetsCachePath);
 
@@ -73,7 +67,7 @@ namespace OrchardCore.Media.Azure
                         Directory.CreateDirectory(mediaCachePath);
                     }
 
-                    return new MediaBlobFileProvider(mediaOptions.AssetsRequestPath, mediaCachePath);
+                    return new MediaBlobFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
 
                 // Replace the default media file provider with the media cache file provider.
@@ -109,6 +103,9 @@ namespace OrchardCore.Media.Azure
 
                     return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
+
+                services.AddScoped<IPermissionProvider, Permissions>();
+                services.AddScoped<INavigationProvider, AdminMenu>();
             }
 
             services.Configure<MvcOptions>((options) =>
@@ -125,6 +122,11 @@ namespace OrchardCore.Media.Azure
         private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            base.Configure(app, routes, serviceProvider);
         }
     }
 }
