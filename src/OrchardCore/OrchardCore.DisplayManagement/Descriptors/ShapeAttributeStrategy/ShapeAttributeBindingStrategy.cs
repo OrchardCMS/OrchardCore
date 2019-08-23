@@ -83,12 +83,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             ShapeAttributeOccurrence attributeOccurrence,
             ShapeDescriptor descriptor)
         {
-			return context =>
-			{
-				var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
-				// oversimplification for the sake of evolving
-				return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
-			};
+            return context =>
+            {
+                var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+                // oversimplification for the sake of evolving
+                return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
+            };
         }
 
         private static Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)

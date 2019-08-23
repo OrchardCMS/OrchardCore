@@ -576,7 +576,7 @@ namespace OrchardCore.ContentTypes.Controllers
             else
             {
                 return RedirectToAction("EditField", new { id, viewModel.Name });
-            }            
+            }
         }
 
         public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
