@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.targets" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
