@@ -14,7 +14,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -63,8 +62,6 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayManager<FileCache>, DisplayManager<FileCache>>();
-
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>

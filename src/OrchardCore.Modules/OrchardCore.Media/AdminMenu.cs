@@ -29,10 +29,9 @@ namespace OrchardCore.Media
                         .LocalNav()
                     ));
 
-            //TODO move to feature
             builder.Add(S["Configuration"], content => content
                 .Add(S["Media Cache"], "1", contentItems => contentItems
-                    .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
+                    .Action("MediaCache", "Admin", new { area = "OrchardCore.Media" })
                     .Permission(Permissions.ManageMediaCache)
                     .LocalNav())
                 );

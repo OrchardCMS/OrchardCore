@@ -13,7 +13,7 @@ namespace OrchardCore.Media.Services
     public class MediaCacheManager : IMediaCacheManager
     {
         //private readonly ILogger<MediaCacheManager> _logger;
-        private readonly IEnumerable<IMediaFileStoreCache> _mediaFileStoreCaches;
+        private readonly IMediaFileStoreCache _mediaFileStoreCache;
 
         //TODO change this to IEnumerable IMediaFileStoreCache (Provider) and collected instances for UI display.
         // so (simplified) IMediaFileStoreCache as parent, with children of supported IMediaCachePurgeProvider
@@ -30,13 +30,12 @@ namespace OrchardCore.Media.Services
         {
             //_logger = logger;
             // TODO So This should inject enumerables. of storecache
-            _mediaFileStoreCaches = mediaFileStoreCaches;
+            _mediaFileStoreCache = mediaFileStoreCaches.FirstOrDefault();
         }
 
         public Task<bool> ClearMediaCacheAsync()
         {
-            return _mediaFileStoreCaches.FirstOrDefault().ClearCacheAsync();
+            return _mediaFileStoreCache.ClearCacheAsync();
         }
-
     }
 }

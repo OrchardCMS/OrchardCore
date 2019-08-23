@@ -8,13 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
-using OrchardCore.Media.Azure.Drivers;
-using OrchardCore.Media.Azure.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
@@ -113,9 +110,6 @@ namespace OrchardCore.Media.Azure
 
                     return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
-
-
-                services.AddScoped<IDisplayDriver<FileCache>, MediaBlobFileCacheDriver>();
             }
 
             services.Configure<MvcOptions>((options) =>
