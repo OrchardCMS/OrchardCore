@@ -203,7 +203,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 using (var sb = StringBuilderPool.GetInstance())
                 {
-                    using (var writer = new StringWriter())
+                    using (var writer = new StringWriter(sb.Builder))
                     {
                         // Use the view engine to render the liquid page.
                         viewContext.Writer = writer;
