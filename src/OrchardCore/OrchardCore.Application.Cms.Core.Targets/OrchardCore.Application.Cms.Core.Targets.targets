@@ -19,12 +19,10 @@
 
   <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
     <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
-    <Message Text="Testing: MakeWebRootFolder" Importance="high" />
   </Target>
 
   <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
     <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
-    <Message Text="Testing: MakeLocalizationFolder" Importance="high" />
   </Target>
 
 </Project>
