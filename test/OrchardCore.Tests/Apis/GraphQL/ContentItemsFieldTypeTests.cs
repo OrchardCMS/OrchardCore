@@ -27,19 +27,25 @@ namespace OrchardCore.Tests.Apis.GraphQL
         protected IStore _prefixedStore;
         protected string _prefix;
         protected string _tempFilename;
+        private Task _initializeTask;
 
         public ContentItemsFieldTypeTests()
+        {
+            _initializeTask = InitializeAsync();
+        }
+
+        private async Task InitializeAsync()
         {
             var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
             _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            _store = StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename))).GetAwaiter().GetResult();
+            _store = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
 
             _prefix = "tp";
-            _prefixedStore = StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_")).GetAwaiter().GetResult();
+            _prefixedStore = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
-            CreateTables(_store);
-            CreateTables(_prefixedStore);
+            await CreateTablesAsync(_store);
+            await CreateTablesAsync(_prefixedStore);
         }
 
         public void Dispose()
@@ -63,11 +69,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        private void CreateTables(IStore store)
+        private async Task CreateTablesAsync(IStore store)
         {
             using (var session = store.CreateSession())
             {
-                var builder = new SchemaBuilder(store.Configuration, session.DemandAsync().GetAwaiter().GetResult());
+                var builder = new SchemaBuilder(store.Configuration, await session.DemandAsync());
 
                 builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -96,10 +102,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             store.RegisterIndexes<ContentItemIndexProvider>();
         }
 
-
         [Fact]
         public async Task ShouldFilterByContentItemIndex()
         {
+            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -146,6 +152,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterByContentItemIndexWhenSqlTablePrefixIsUsed()
         {
+            await _initializeTask;
             _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -197,6 +204,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
         {
+            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -249,6 +257,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
         {
+            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
             _store.RegisterIndexes<AnimalTraitsIndexProvider>();
 
@@ -307,6 +316,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
         {
+            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -356,6 +366,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
         {
+            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())

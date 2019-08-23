@@ -5,9 +5,9 @@ using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.Indexes
 {
-    public class ListPartContentIndexHandler : IContentItemIndexHandler
+    public class ContainedPartContentIndexHandler : IContentItemIndexHandler
     {
-        public const string ParentKey = "Content.ContentItem.Parent";
+        public const string ParentKey = "Content.ContentItem.ListContentItemId";
 
         public Task BuildIndexAsync(BuildIndexContext context)
         {

@@ -49,8 +49,14 @@ namespace OrchardCore.Feeds.Controllers
 
             context.Builder = bestFormatterMatch.FeedBuilder;
 
-            var bestQueryMatch = _feedQueryProviders
-                .Select(provider => provider.Match(context))
+            var queryMatches = new List<FeedQueryMatch>();
+
+            foreach (var provider in _feedQueryProviders)
+            {
+                queryMatches.Add(await provider.MatchAsync(context));
+            }
+
+            var bestQueryMatch = queryMatches
                 .Where(match => match != null && match.FeedQuery != null)
                 .OrderByDescending(match => match.Priority)
                 .FirstOrDefault();

@@ -48,7 +48,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
                     shape.Activity = activity;
 
                     return shape;
-                    
+
                 }).Location("Design", "Content")
             );
         }

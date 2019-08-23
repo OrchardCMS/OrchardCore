@@ -47,7 +47,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentPartHandler, ListPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentItemIndexHandler, ListPartContentIndexHandler>();
+            services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
 
             // Feeds
             // TODO: Create feature

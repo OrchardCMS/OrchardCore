@@ -1,16 +1,20 @@
 using System;
-using System.Linq;
-using System.Text;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly string[] InternalProperties = { "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration" };
+        private static readonly HashSet<string> InternalProperties = new HashSet<string>
+        {
+            "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
+        };
+
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
@@ -36,10 +40,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
             // Extract all attributes from the tag helper to
-            var properties = output.Attributes
-                .Where(x => !InternalProperties.Contains(x.Name))
-                .ToDictionary(x => LowerKebabToPascalCase(x.Name), x => (object)x.Value.ToString())
-                ;
+            var properties = new Dictionary<string, string>();
+            foreach (var pair in output.Attributes)
+            {
+                if (!InternalProperties.Contains(pair.Name))
+                {
+                    properties[pair.Name.ToPascalCaseDash()] = pair.Value.ToString();
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(Type))
             {
@@ -133,38 +141,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;
-        }
-
-        /// <summary>
-        /// Converts foo-bar to FooBar
-        /// </summary>
-        private static string LowerKebabToPascalCase(string attribute)
-        {
-            attribute = attribute.Trim();
-            bool nextIsUpper = true;
-            var result = new StringBuilder();
-            for (int i = 0; i < attribute.Length; i++)
-            {
-                var c = attribute[i];
-                if (c == '-')
-                {
-                    nextIsUpper = true;
-                    continue;
-                }
-
-                if (nextIsUpper)
-                {
-                    result.Append(c.ToString().ToUpper());
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
-            }
-
-            return result.ToString();
         }
     }
 }

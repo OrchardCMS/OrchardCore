@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Localization
@@ -7,9 +9,9 @@ namespace OrchardCore.Localization
     {
         public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            yield return ManageCultures;
+            return Task.FromResult(new[] { ManageCultures }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
