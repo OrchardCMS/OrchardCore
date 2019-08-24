@@ -3,7 +3,7 @@
   <Import Project="..\..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\..\..\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
