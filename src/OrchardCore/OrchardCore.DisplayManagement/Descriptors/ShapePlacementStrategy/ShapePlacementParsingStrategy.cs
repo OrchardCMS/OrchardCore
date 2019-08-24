@@ -81,7 +81,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     var matches = filter.Filters.ToList();
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-                    
+
                     if (matches.Any())
                     {
                         predicate = matches.Aggregate(predicate, BuildPredicate);

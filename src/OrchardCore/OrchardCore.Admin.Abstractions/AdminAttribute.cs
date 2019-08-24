@@ -13,6 +13,12 @@ namespace OrchardCore.Admin
     /// </summary>
     public class AdminAttribute : ActionFilterAttribute
     {
+        public AdminAttribute()
+        {
+            // Ordered to call 'Apply' before any global filter, with a default order of 0, might call 'IsApplied'.
+            Order = -1000;
+        }
+
         public override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             Apply(context.HttpContext);

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -56,7 +55,7 @@ namespace OrchardCore.Media.Filters
 
             var width = arguments["width"].Or(arguments.At(0));
             var height = arguments["height"].Or(arguments.At(1));
-            var mode = arguments["mode"];
+            var mode = arguments["mode"].Or(arguments.At(2));
 
             if (!width.IsNil())
             {

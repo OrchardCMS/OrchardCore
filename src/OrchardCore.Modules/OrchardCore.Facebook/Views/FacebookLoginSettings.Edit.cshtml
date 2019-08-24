@@ -1,15 +1,15 @@
-@using OrchardCore.Facebook.ViewModels;
+@using OrchardCore.Facebook.Login.ViewModels;
 @model FacebookLoginSettingsViewModel;
 
-@*<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>*@
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <h3>@T["Login Settings"]</h3>
 
-<fieldset class="form-group" asp-validation-class-for="CallbackPath">
+<div class="form-group" asp-validation-class-for="CallbackPath">
     <label>@T["CallbackPath"]</label>
     <input asp-for="CallbackPath" class="form-control" placeholder="/signin-facebook"/>
     <span asp-validation-for="CallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
-</fieldset>
+</div>
 
 

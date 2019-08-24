@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
@@ -72,6 +73,20 @@ namespace OrchardCore.Contents
 
             services.AddTagHelpers<ContentLinkTagHelper>();
 
+            services.Configure<AutorouteOptions>(options =>
+            {
+                if (options.GlobalRouteValues.Count == 0)
+                {
+                    options.GlobalRouteValues = new RouteValueDictionary
+                    {
+                        {"Area", "OrchardCore.Contents"},
+                        {"Controller", "Item"},
+                        {"Action", "Display"}
+                    };
+
+                    options.ContentItemIdKey = "contentItemId";
+                }
+            });
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -122,7 +137,7 @@ namespace OrchardCore.Contents
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
-                template: "Admin/Contents/ContentItems/{typeId?}",
+                template: "Admin/Contents/ContentItems/{contentTypeId?}",
                 defaults: new { controller = "Admin", action = "List" }
             );
         }
@@ -165,7 +180,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
         }
-     }
+    }
 
     [Feature("OrchardCore.Contents.FileContentDefinition")]
     public class FileContentDefinitionStartup : StartupBase

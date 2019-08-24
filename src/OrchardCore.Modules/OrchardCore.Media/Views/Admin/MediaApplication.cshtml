@@ -108,7 +108,7 @@
 
 
             </div>
-            <div class="media-container-footer pt-2">
+            <div v-show="filteredMediaItems.length > 0" class="media-container-footer pt-2">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
 
@@ -134,6 +134,7 @@
 <input type="hidden" id="sameFolderMessage" value="@T["The media is already on this folder"]" />
 <input type="hidden" id="t-edit-button" value="@T["Edit"]" />
 <input type="hidden" id="t-delete-button" value="@T["Delete"]" />
+<input type="hidden" id="t-view-button" value="@T["View"]" />
 
 
 @*Localizable Strings for uploadListcomponent*@

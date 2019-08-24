@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -10,50 +11,66 @@ namespace OrchardCore.Contents.Security
 {
     public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+        private readonly IServiceProvider _serviceProvider;
+
+        public ContentTypeAuthorizationHandler(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             if (context.HasSucceeded)
             {
                 // This handler is not revoking any pre-existing grants.
-                return Task.CompletedTask;
+                return;
             }
 
             if (context.Resource == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var contentItem = context.Resource as ContentItem;
+
+            Permission permission = null;
 
             if (contentItem != null)
             {
                 if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
-                    requirement.Permission = GetOwnerVariation(requirement.Permission);
+                    permission = GetOwnerVariation(requirement.Permission);
                 }
             }
 
-            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(requirement.Permission);
+            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(permission ?? requirement.Permission);
 
-            if (contentTypePermission == null)
+            if (contentTypePermission != null)
             {
-                return Task.CompletedTask;
+                // The resource can be a content type name
+                var contentType = contentItem != null
+                    ? contentItem.ContentType
+                    : Convert.ToString(context.Resource.ToString())
+                    ;
+
+                if (!String.IsNullOrEmpty(contentType))
+                {
+                    permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
+                }
             }
 
-            // The resource can be a content type name
-            var contentType = contentItem != null
-                ? contentItem.ContentType
-                : Convert.ToString(context.Resource.ToString())
-                ;
-
-            if (String.IsNullOrEmpty(contentType))
+            if (permission == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            requirement.Permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
+            // Lazy load to prevent circular dependencies
+            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
-            return Task.CompletedTask;
+            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            {
+                context.Succeed(requirement);
+            }
         }
 
         private static Permission GetOwnerVariation(Permission permission)

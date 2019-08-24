@@ -65,6 +65,13 @@ The Admin Menu that OrchardCore provides out of the box it's built broadly speak
 ## Deployment Plan Step and Recipe Step 
 The module provides an Admin Menu Deployment Step. So an admin user can expend some time configuring a custom admin menu, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
 
+## Permissions 
+There are two kind of permissions associated with the module: 
+
+1. Manage Admin Menus. It its about being able to create edit and delete admin menus from the admin.
+
+2. View Admin Menus. It enables the possibility to show or hide an admin menu per role. You can do that from the standard Edit Roles page
+
 
 ## Developing Custom Admin Node Types
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
@@ -43,6 +43,8 @@ namespace OrchardCore.Lucene.QueryProviders
                 switch (property.Value.Type)
                 {
                     case JTokenType.Object:
+
+                        boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
 
                         break;
                     case JTokenType.Array:

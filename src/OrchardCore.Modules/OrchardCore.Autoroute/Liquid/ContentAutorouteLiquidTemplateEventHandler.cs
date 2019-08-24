@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Liquid

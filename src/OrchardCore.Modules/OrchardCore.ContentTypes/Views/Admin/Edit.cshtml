@@ -42,10 +42,10 @@
                     <li class="list-group-item"  style="cursor: move;">
                         <div class="properties">
                             <div class="related">
-                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name"  class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
+                            @field.DisplayName() <span class="hint">— @field.FieldDefinition.Name.CamelFriendly()</span>
                         </div>
                         <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
                     </li>
@@ -54,7 +54,7 @@
         </ul>
     </fieldset>
     <fieldset class="form-group">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </fieldset>
     <fieldset class="form-group">
         <h3>@T["Parts"]</h3>
@@ -70,7 +70,7 @@
                         {
                             @if (!String.IsNullOrEmpty(part.Description()))
                             {
-                                <span class="hint">@T["— {0}", part.Description()]</span>
+                                <span class="hint">— @part.Description()</span>
                             }
 
                             <div class="related">
@@ -80,7 +80,7 @@
                         }
                         else
                         {
-                            <span class="hint">@T["— {0}", "Contains the fields for the current type"]</span>
+                            <span class="hint">— @T["Contains the fields for the current type"]</span>
                         }
                     </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />

@@ -26,6 +26,18 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
+  <Target Name="EnsureRazorSdk" BeforeTargets="BeforeBuild">
+    <Error
+      Condition="'@(RazorGenerate)' != '' and '$(ResolvedRazorCompileToolset)' != 'RazorSdk'"
+      Text="The 'Microsoft.NET.Sdk.Razor' SDK is required on Themes and Modules for Razor files to be precompiled." />
+  </Target>
+
+  <Target Name="NoWarnOnRazorViewImportedTypeConflicts" BeforeTargets="RazorCoreCompile">
+    <PropertyGroup>
+      <NoWarn>$(NoWarn);0436</NoWarn>
+    </PropertyGroup>
+  </Target>
+
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
@@ -54,7 +66,7 @@
 
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
-        <_Parameter1>$(MSBuildProjectName)</_Parameter1>
+        <_Parameter1>$(AssemblyName)</_Parameter1>
         <_Parameter2>$(ModuleType)</_Parameter2>
       </AssemblyAttribute>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
@@ -72,9 +84,9 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="GetModuleProject" Returns="@(ModuleProject)">
+  <Target Name="GetModuleProjectName" Returns="@(ModuleProjectName)">
     <ItemGroup>
-      <ModuleProject Include="$(MSBuildProjectFullPath)" />
+      <ModuleProjectName Include="$(AssemblyName)" />
     </ItemGroup>
   </Target>
 

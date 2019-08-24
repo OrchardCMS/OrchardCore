@@ -1,14 +1,15 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.RazorPages
 {
@@ -17,13 +18,24 @@ namespace OrchardCore.DisplayManagement.RazorPages
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
+        private ISite _site;
+
+        public override ViewContext ViewContext
+        {
+            get => base.ViewContext;
+            set
+            {
+                // We make the ViewContext available to other sub-systems that need it.
+                var viewContextAccessor = value.HttpContext.RequestServices.GetService<ViewContextAccessor>();
+                base.ViewContext = viewContextAccessor.ViewContext = value;
+            }
+        }
 
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
-                _displayHelper = _factory.CreateHelper(ViewContext);
+                _displayHelper = HttpContext.RequestServices.GetService<IDisplayHelper>();
             }
         }
 
@@ -76,32 +88,6 @@ namespace OrchardCore.DisplayManagement.RazorPages
             return (Task<IHtmlContent>)_displayHelper(shape);
         }
 
-        private dynamic _themeLayout;
-        public dynamic ThemeLayout
-        {
-            get
-            {
-                if (_themeLayout == null)
-                {
-                    var layoutAccessor = HttpContext.RequestServices.GetService<ILayoutAccessor>();
-
-                    if (layoutAccessor == null)
-                    {
-                        throw new InvalidOperationException("Could not find a valid layout accessor");
-                    }
-
-                    _themeLayout = layoutAccessor.GetLayoutAsync().GetAwaiter().GetResult();
-                }
-
-                return _themeLayout;
-            }
-
-            set
-            {
-                _themeLayout = value;
-            }
-        }
-
         public IOrchardDisplayHelper Orchard
         {
             get
@@ -113,6 +99,61 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 }
 
                 return _orchardHelper;
+            }
+        }
+
+        private dynamic _themeLayout;
+        public dynamic ThemeLayout
+        {
+            get
+            {
+                if (_themeLayout == null)
+                {
+                    _themeLayout = HttpContext.Features.Get<RazorViewFeature>()?.ThemeLayout;
+                }
+
+                return _themeLayout;
+            }
+
+            set
+            {
+                _themeLayout = value;
+            }
+        }
+
+        public string ViewLayout
+        {
+            get
+            {
+                if (ThemeLayout is IShape layout)
+                {
+                    if (layout.Metadata.Alternates.Count > 0)
+                    {
+                        return layout.Metadata.Alternates.Last();
+                    }
+
+                    return layout.Metadata.Type;
+                }
+
+                return String.Empty;
+            }
+
+            set
+            {
+                if (ThemeLayout is IShape layout)
+                {
+                    if (layout.Metadata.Alternates.Contains(value))
+                    {
+                        if (layout.Metadata.Alternates.Last() == value)
+                        {
+                            return;
+                        }
+
+                        layout.Metadata.Alternates.Remove(value);
+                    }
+
+                    layout.Metadata.Alternates.Add(value);
+                }
             }
         }
 
@@ -204,5 +245,21 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// Returns the full path of the current request.
         /// </summary>
         public string FullRequestPath => HttpContext.Request.PathBase + HttpContext.Request.Path + HttpContext.Request.QueryString;
+
+        /// <summary>
+        /// Gets the <see cref="ISite"/> instance.
+        /// </summary>
+        public ISite Site
+        {
+            get
+            {
+                if (_site == null)
+                {
+                    _site = HttpContext.Features.Get<RazorViewFeature>()?.Site;
+                }
+
+                return _site;
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using OrchardCore.Modules;
@@ -37,11 +38,13 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly CloudBlobClient _blobClient;
         private readonly CloudBlobContainer _blobContainer;
         private readonly Task _verifyContainerTask;
+        private readonly IContentTypeProvider _contentTypeProvider;
 
-        public BlobFileStore(BlobStorageOptions options, IClock clock)
+        public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
         {
             _options = options;
             _clock = clock;
+            _contentTypeProvider = contentTypeProvider;
             _storageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
             _blobClient = _storageAccount.CreateCloudBlobClient();
             _blobContainer = _blobClient.GetContainerReference(_options.ContainerName);
@@ -267,6 +270,10 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (!overwrite && await blob.ExistsAsync())
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+            
+            _contentTypeProvider.TryGetContentType(path, out var contentType);
+
+            blob.Properties.ContentType = contentType ?? "application/octet-stream";
 
             await blob.UploadFromStreamAsync(inputStream);
         }

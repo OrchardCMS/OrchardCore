@@ -94,7 +94,7 @@ namespace OrchardCore.Lucene
                 }
 
                 _timestamps.TryRemove(indexName, out var timestamp);
-                
+
                 var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
@@ -189,11 +189,6 @@ namespace OrchardCore.Lucene
                             ? Field.Store.YES
                             : Field.Store.NO;
 
-                if (entry.Value == null)
-                {
-                    continue;
-                }
-
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
@@ -202,32 +197,60 @@ namespace OrchardCore.Lucene
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value is DateTimeOffset)
+                        if (entry.Value != null)
                         {
-                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            if (entry.Value is DateTimeOffset)
+                            {
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            }
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
-                        break;
-
-                    case DocumentIndex.Types.Number:
-                        doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
-                        break;
-
-                    case DocumentIndex.Types.Text:
-                        if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                        if (entry.Value != null)
                         {
-                            doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
+                            doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
+                            doc.Add(new StringField(entry.Name, "NULL", store));
+                        }
+
+                        break;
+
+                    case DocumentIndex.Types.Number:
+                        if (entry.Value != null)
+                        {
+                            doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(entry.Name, "NULL", store));
+                        }
+                        break;
+
+                    case DocumentIndex.Types.Text:
+                        if (!String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        {
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            {
+                                doc.Add(new TextField(entry.Name, Convert.ToString(entry.Value), store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
+                            }
+                        }
+                        else {
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
                 }
@@ -267,10 +290,21 @@ namespace OrchardCore.Lucene
                         var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
-                            OpenMode = OpenMode.CREATE_OR_APPEND
+                            OpenMode = OpenMode.CREATE_OR_APPEND,
+                            WriteLockTimeout = Lock.LOCK_POLL_INTERVAL * 3
                         };
 
-                        writer = _writers[indexName] = new IndexWriterWrapper(directory, config);
+                        writer = new IndexWriterWrapper(directory, config);
+
+                        if (close)
+                        {
+                            action?.Invoke(writer);
+                            writer.Dispose();
+                            _timestamps[indexName] = _clock.UtcNow;
+                            return;
+                        }
+
+                        _writers[indexName] = writer;
                     }
                 }
             }
@@ -281,19 +315,6 @@ namespace OrchardCore.Lucene
             }
 
             action?.Invoke(writer);
-
-            if (close && !writer.IsClosing)
-            {
-                lock (this)
-                {
-                    if (!writer.IsClosing)
-                    {
-                        writer.IsClosing = true;
-                        writer.Dispose();
-                        _writers.TryRemove(indexName, out writer);
-                    }
-                }
-            }
 
             _timestamps[indexName] = _clock.UtcNow;
         }

@@ -22,6 +22,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -79,6 +80,7 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserEmailStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -100,6 +102,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
@@ -124,6 +127,19 @@ namespace OrchardCore.Users
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
     }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
+            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
+            services.AddLiquidFilter<HasClaimFilter>("has_claim");
+            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
+        }
+    }
+
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase

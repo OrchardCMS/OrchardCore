@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -16,7 +16,6 @@ namespace OrchardCore.Settings.Services
     public class SiteService : ISiteService
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISignal _signal;
         private readonly IClock _clock;
         private const string SiteCacheKey = "SiteService";
@@ -24,13 +23,11 @@ namespace OrchardCore.Settings.Services
         public SiteService(
             ISignal signal,
             IMemoryCache memoryCache,
-            IHttpContextAccessor httpContextAccessor,
             IClock clock)
         {
             _signal = signal;
             _clock = clock;
             _memoryCache = memoryCache;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheritdoc/>
@@ -44,7 +41,6 @@ namespace OrchardCore.Settings.Services
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
                 var session = GetSession();
-
                 site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
@@ -61,7 +57,6 @@ namespace OrchardCore.Settings.Services
                                 MaxPageSize = 100,
                                 MaxPagedCount = 0,
                                 TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                                Culture = ""
                             };
 
                             session.Save(site);
@@ -89,8 +84,6 @@ namespace OrchardCore.Settings.Services
 
             existing.BaseUrl = site.BaseUrl;
             existing.Calendar = site.Calendar;
-            existing.Culture = site.Culture;
-            existing.SupportedCultures = site.SupportedCultures;
             existing.HomeRoute = site.HomeRoute;
             existing.MaxPagedCount = site.MaxPagedCount;
             existing.MaxPageSize = site.MaxPageSize;
@@ -102,6 +95,8 @@ namespace OrchardCore.Settings.Services
             existing.SuperUser = site.SuperUser;
             existing.TimeZoneId = site.TimeZoneId;
             existing.UseCdn = site.UseCdn;
+            existing.CdnBaseUrl = site.CdnBaseUrl;
+            existing.AppendVersion = site.AppendVersion;
 
             session.Save(existing);
 
@@ -111,9 +106,9 @@ namespace OrchardCore.Settings.Services
             return;
         }
 
-        private YesSql.ISession GetSession()
+        private ISession GetSession()
         {
-            return _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+            return ShellScope.Services.GetService<ISession>();
         }
     }
 }

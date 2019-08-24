@@ -95,6 +95,10 @@ Resizes the image until the shortest side reaches the given dimension. Upscaling
 
 Stretches the resized image to fit the bounds of its container.
 
+##### `crop`
+
+Resizes the image using the same functionality as `max` then removes any image area falling outside the bounds of its container.
+
 ### Input
 
 `{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop' }}`
@@ -102,6 +106,18 @@ Stretches the resized image to fit the bounds of its container.
 ### Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
+
+### `append_version`
+
+Appends a version hash for an asset. Can be piped together with the other media filters.
+
+#### Input
+
+`{{ 'animals/kittens.jpg' | asset_url | append_version | img_tag }}`
+
+#### Output
+
+`<img src="~/media/animals/kittens.jpg?v=Ailxbj_jQtYc9LRXKa21DygRzmQqc3OfN1XxSaQ3UWE" />`
 
 ## Razor Helpers
 
@@ -113,15 +129,38 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
+To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
+
+or with resizing options as well, noting that the version hash is based on the source image
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, appendVersion: true)`
+
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`. 
+
+`asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
 
 `<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
 
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+
+### Razor append version
+`asp-append-version` support is available on the OrchardCore tag helpers and MVC tag helpers.
+
+`<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
+
+Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+
+`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." asp-append-version="true" />`
+
+Or when using the MVC tag helpers and the image is resolved from static assets, i.e. wwwroot
+
+`<img src="/favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
