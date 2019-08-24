@@ -6,5 +6,7 @@ namespace OrchardCore.Users.Models
         public bool UsersMustValidateEmail { get; set; }
         public bool UseSiteTheme { get; set; }
         public bool NoPasswordForExternalUsers { get; set; }
+        public bool NoUsernameForExternalUsers { get; set; }
+        public bool NoEmailForExternalUsers { get; set; }
     }
 }

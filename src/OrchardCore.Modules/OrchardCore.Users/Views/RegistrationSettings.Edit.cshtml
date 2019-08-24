@@ -8,14 +8,7 @@
         <span class="hint">— @T["Display a link to allow the users to register on the site."]</span>
     </div>
 </fieldset>
-<fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
-        <span asp-validation-for="NoPasswordForExternalUsers"></span>
-        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create password for external users"]</label>
-        <span class="hint">@T["— {0}", "When a new user logins with an external provider, he is not required to provide a local password."]</span>
-    </div>
-</fieldset>
+
 <fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UsersMustValidateEmail" data-toggle="collapse" data-target="#warnEmailValidation" />
@@ -31,6 +24,33 @@
         <span asp-validation-for="UseSiteTheme"></span>
         <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for registration page"]</label>
         <span class="hint">— @T["Requires an active site theme."]</span>
+    </div>
+</fieldset>
+
+<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings for external authentication providers"]</span></h5>
+
+<fieldset class="form-group" asp-validation-class-for="NoUsernameForExternalUsers">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" />
+        <span asp-validation-for="NoUsernameForExternalUsers"></span>
+        <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Automatically import the username for external users"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local username."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" />
+        <span asp-validation-for="NoEmailForExternalUsers"></span>
+        <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Automatically import the email for external users"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local email address."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" />
+        <span asp-validation-for="NoPasswordForExternalUsers"></span>
+        <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create password for external users"]</label>
+        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
     </div>
 </fieldset>
 

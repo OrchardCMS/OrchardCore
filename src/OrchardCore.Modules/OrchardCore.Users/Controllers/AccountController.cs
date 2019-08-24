@@ -92,9 +92,9 @@ namespace OrchardCore.Users.Controllers
         {
             SignInResult signInResult = new SignInResult();
 
-            bool external = info is object;
+            bool external = info != null;
 
-            if (external && model is object)
+            if (external && model != null)
             {
                 throw new ArgumentException("You must supply LoginViewModel or ExternalLoginInfo to verify login!");
             }
@@ -281,10 +281,47 @@ namespace OrchardCore.Users.Controllers
                         string message = T["Site does not allow user registration."];
                         _logger.LogInformation(message);
                         ModelState.AddModelError("", message);
+
                         return View(nameof(Login));
                     }
+
                     model.NoPassword = registrationSettings.NoPasswordForExternalUsers;
+                    model.NoEmail = registrationSettings.NoEmailForExternalUsers;
+                    model.NoUsername = registrationSettings.NoUsernameForExternalUsers;
+
+                    // The user doesn't exist, if we don't request any information we can create the account locally instead of redirecting to the ExternalLoginConfirmation
+                    var noInformationRequired = model.NoPassword && model.NoEmail && model.NoUsername;
+
+                    if (noInformationRequired)
+                    {
+
+                        var user = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, T["Confirm your account"], _logger);
+
+                        // If the registration was successfull we can link the external provider and redirect the user
+                        if (user != null)
+                        {
+                            var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                            if (identityResult.Succeeded)
+                            {
+                                _logger.LogInformation(3, "User account linked to {Name} provider.", info.LoginProvider);
+
+                                // We have created/linked to the local user, so we must verify the login. If it does not succeed,
+                                // the user is not allowed to login
+                                if ((await VerifyLogin(null, info, returnUrl)).SignInResult.Succeeded)
+                                {
+                                    return RedirectToLocal(returnUrl);
+                                }
+                                else
+                                {
+                                    return View(nameof(Login));
+                                }
+                            }
+
+                            AddErrors(identityResult);
+                        }
+                    }
                 }
+
                 ViewData["LoginProvider"] = info.LoginProvider;
                 return View("ExternalLogin", model);
             }
@@ -408,21 +445,21 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                _logger.LogError($"Unexpected error occurred loading external login info for user '{user.UserName}'.");
+                _logger.LogError("Unexpected error occurred loading external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
             if (!result.Succeeded)
             {
-                _logger.LogError($"Unexpected error occurred adding external login info for user '{user.UserName}'.");
+                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
@@ -440,14 +477,14 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                _logger.LogError($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
                 return RedirectToAction(nameof(Login));
             }
 
             var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
             if (!result.Succeeded)
             {
-                _logger.LogError($"Unexpected error occurred adding external login info for user '{user.UserName}'.");
+                _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
                 return RedirectToAction(nameof(Login));
             }
 
