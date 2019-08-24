@@ -47,9 +47,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                mockSmtpService,
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
@@ -81,9 +78,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                mockSmtpService,
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IDisplayHelper>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
