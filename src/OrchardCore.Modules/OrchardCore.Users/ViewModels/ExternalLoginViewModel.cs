@@ -6,13 +6,13 @@ namespace OrchardCore.Users.ViewModels
 {
     public class ExternalLoginViewModel : IValidatableObject
     {
+        public bool NoUsername { get; set; }
+        public bool NoEmail { get; set; }
         public bool NoPassword { get; set; }
         public bool IsExistingUser { get; set; }
 
-        [Required]
         public string UserName { get; set; }
 
-        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -24,6 +24,16 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (string.IsNullOrWhiteSpace(Email) && (!NoEmail || IsExistingUser))
+            {
+                yield return new ValidationResult("Email is required!", new[] { "Email" });
+            }
+
+            if (string.IsNullOrWhiteSpace(UserName) && (!NoUsername || IsExistingUser))
+            {
+                yield return new ValidationResult("Username is required!", new[] { "UserName" });
+            }
+
             if (string.IsNullOrWhiteSpace(Password) && (!NoPassword || IsExistingUser))
             {
                 yield return new ValidationResult("Password is required!", new[] { "Password" });

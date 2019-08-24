@@ -85,8 +85,10 @@ namespace OrchardCore.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
 
             // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, T["Confirm your account"], _logger) is object)
+            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
+            {
                 return RedirectToLocal(returnUrl);
+            }
               
             // If we got this far, something failed, redisplay form
             return View(model);
