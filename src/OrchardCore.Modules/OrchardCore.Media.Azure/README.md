@@ -15,7 +15,8 @@ The following configuration values are used by default and can be customized:
       "BasePath": "some/base/path", 
       // Access permissions for Azure Blob Storage. Valid options: Off, Container, Blob. Defaults to Blob.
       "PublicAccessType": "Blob",
-      // The path in the wwwroot folder containing the Azure Media Blob asset cache, auto prefixed by tenant.
+      // The path in the wwwroot folder containing the Azure Media Blob asset cache.
+      // The tenants name will be appended to this folder path.
       "AssetsCachePath": "ab-media"
     },
 

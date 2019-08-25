@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<MediaBlobFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, shellSettings, mediaBlobOptions.AssetsCachePath);
+                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, mediaBlobOptions.AssetsCachePath, shellSettings);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
@@ -119,9 +119,9 @@ namespace OrchardCore.Media.Azure
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
 
-        private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
+        private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
         {
-            return PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+            return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
