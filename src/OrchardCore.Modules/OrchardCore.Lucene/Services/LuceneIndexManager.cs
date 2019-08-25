@@ -264,7 +264,7 @@ namespace OrchardCore.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (!String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
                             {
@@ -275,8 +275,16 @@ namespace OrchardCore.Lucene
                                 doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value), store));
                             }
                         }
-                        else {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                        else
+                        {
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Analyze))
+                            {
+                                doc.Add(new TextField(entry.Name, "NULL", store));
+                            }
+                            else
+                            {
+                                doc.Add(new StringField(entry.Name, "NULL", store));
+                            }
                         }
                         break;
                 }
