@@ -23,7 +23,7 @@ namespace OrchardCore.Alias
                 .WithDescription("Provides a way to define custom aliases for content items."));
 
             SchemaBuilder.CreateMapIndexTable(nameof(AliasPartIndex), table => table
-                .Column<string>("Alias", col => col.WithLength(64))
+                .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
@@ -32,22 +32,6 @@ namespace OrchardCore.Alias
             );
 
             return 1;
-        }
-
-        public int UpdateFrom1()
-        {
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .DropIndex("IDX_AliasPartIndex_Alias")
-            );
-
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .AlterColumn("Alias", cmd => cmd.WithLength(AliasPartDisplayDriver.MaxAliasLength))
-            );
-
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias")
-            );
-            return 2;
         }
     }
 }

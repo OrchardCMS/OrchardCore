@@ -16,8 +16,9 @@ namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-        // To match the length of the Autoroute Part
+        // Match the AutoRoutePart Length
         public const int MaxAliasLength = 1024;
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly IStringLocalizer<AliasPartDisplayDriver> T;
