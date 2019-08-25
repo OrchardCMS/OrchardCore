@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Services
     /// </summary>
     public class MediaFileStoreResolverMiddleware
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task>> _writeTasks = new ConcurrentDictionary<string, Lazy<Task>>();
+        private static readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>();
 
         private readonly RequestDelegate _next;
         private readonly ILogger<MediaFileStoreResolverMiddleware> _logger;
@@ -79,7 +79,7 @@ namespace OrchardCore.Media.Services
             {
                 // When multiple requests occur for the same file the download 
                 // may already be in progress so we wait for it to complete.
-                if (_writeTasks.TryGetValue(subPath, out var writeTask))
+                if (Workers.TryGetValue(subPath, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -90,7 +90,7 @@ namespace OrchardCore.Media.Services
 
             // When multiple requests occure for the same file we use a Lazy<Task>
             // to initialize the file store request once.
-            await _writeTasks.GetOrAdd(subPath, x => new Lazy<Task>(async () =>
+            await Workers.GetOrAdd(subPath, x => new Lazy<Task>(async () =>
             {
                 try
                 {
@@ -113,7 +113,7 @@ namespace OrchardCore.Media.Services
                 }
                 finally
                 {
-                    _writeTasks.TryRemove(subPath, out var writeTask);
+                    Workers.TryRemove(subPath, out var writeTask);
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
