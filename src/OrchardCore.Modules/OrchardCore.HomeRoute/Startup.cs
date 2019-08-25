@@ -14,11 +14,17 @@ namespace OrchardCore.HomeRoute
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            // c.f. https://github.com/aspnet/AspNetCore/issues/12915
+            //services.AddSingleton<HomeRouteTransformer>();
+
             services.AddSingleton<IShellRouteValuesAddressScheme, HomeRouteValuesAddressScheme>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            // c.f. https://github.com/aspnet/AspNetCore/issues/12915
+            //routes.MapDynamicControllerRoute<HomeRouteTransformer>("");
+
             app.UseMiddleware<HomeRouteMiddleware>();
         }
     }
