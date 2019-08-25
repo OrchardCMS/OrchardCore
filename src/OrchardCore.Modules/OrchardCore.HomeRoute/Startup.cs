@@ -10,9 +10,10 @@ namespace OrchardCore.HomeRoute
 {
     public class Startup : StartupBase
     {
+        public override int Order => -150;
+
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<HomeRoute>();
             services.AddSingleton<IShellRouteValuesAddressScheme, HomeRouteValuesAddressScheme>();
         }
 

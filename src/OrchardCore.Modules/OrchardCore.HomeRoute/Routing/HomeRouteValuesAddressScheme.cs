@@ -4,17 +4,21 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Routing;
+using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute.Routing
 {
     internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
-        private readonly HomeRoute _homeRoute;
+        private readonly ISiteService _siteService;
+        private RouteValueDictionary _routeValues;
+        private IChangeToken _changeToken;
 
-        public HomeRouteValuesAddressScheme(HomeRoute homeRoute)
+        public HomeRouteValuesAddressScheme(ISiteService siteService)
         {
-            _homeRoute = homeRoute;
+            _siteService = siteService;
         }
 
         public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
@@ -24,16 +28,7 @@ namespace OrchardCore.HomeRoute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            string contentItemId = address.ExplicitValues["contentItemId"]?.ToString();
-
-            if (string.IsNullOrEmpty(contentItemId))
-            {
-                return Enumerable.Empty<Endpoint>();
-            }
-
-            var routeValues = _homeRoute.GetValuesAsync().GetAwaiter().GetResult();
-
-            if (Match(address.ExplicitValues, routeValues))
+            if (Match(address.ExplicitValues))
             {
                 var endpoint = new RouteEndpoint
                 (
@@ -50,13 +45,24 @@ namespace OrchardCore.HomeRoute.Routing
             return Enumerable.Empty<Endpoint>();
         }
 
-        private bool Match(RouteValueDictionary explicitValues, RouteValueDictionary routeValues)
+        private bool Match(RouteValueDictionary explicitValues)
         {
-            return
-                String.Equals(explicitValues["area"]?.ToString(), routeValues["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(explicitValues["controller"]?.ToString(), routeValues["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(explicitValues["action"]?.ToString(), routeValues["action"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(explicitValues["contentItemId"]?.ToString(), routeValues["contentItemId"]?.ToString(), StringComparison.OrdinalIgnoreCase);
+            if (_changeToken?.HasChanged ?? true)
+            {
+                var changeToken = _siteService.ChangeToken;
+                _routeValues = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+                _changeToken = changeToken;
+            }
+
+            foreach (var entry in _routeValues)
+            {
+                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -17,8 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
@@ -94,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public async Task<string> RenderViewToStringAsync(string viewName, object model, IRazorViewEngine viewEngine)
         {
-            var actionContext = GetActionContext();
+            var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
 
             using (var sb = StringBuilderPool.GetInstance())
@@ -146,12 +144,22 @@ namespace OrchardCore.DisplayManagement.Razor
             throw new InvalidOperationException(errorMessage);
         }
 
-        private ActionContext GetActionContext()
+        private async Task<ActionContext> GetActionContextAsync()
         {
             var routeData = new RouteData();
             routeData.Routers.Add(new RouteCollection());
 
-            return new ActionContext(_httpContextAccessor.HttpContext, routeData, new ActionDescriptor());
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnResultExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

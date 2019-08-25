@@ -60,7 +60,7 @@ namespace OrchardCore.Diagnostics
                         });
 
                         var endpoint = endpointDataSource.Endpoints
-                            .Where(e => e.Match(routeValues))
+                            .Where(e => e.MatchControllerRoute(routeValues))
                             .FirstOrDefault();
 
                         if (endpoint != null)

@@ -7,7 +7,7 @@ namespace OrchardCore.Mvc.Routing
 {
     public static class EndpointExtensions
     {
-        public static bool Match(this Endpoint endpoint, RouteValueDictionary routeValues)
+        public static bool MatchControllerRoute(this Endpoint endpoint, RouteValueDictionary routeValues)
         {
             var descriptor = endpoint.Metadata.GetMetadata<ControllerActionDescriptor>();
 
@@ -16,10 +16,15 @@ namespace OrchardCore.Mvc.Routing
                 return false;
             }
 
-            return
-                String.Equals(descriptor.RouteValues["area"], routeValues["area"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(descriptor.ControllerName, routeValues["controller"]?.ToString(), StringComparison.OrdinalIgnoreCase) &&
-                String.Equals(descriptor.ActionName, routeValues["action"]?.ToString(), StringComparison.OrdinalIgnoreCase);
+            foreach (var entry in descriptor.RouteValues)
+            {
+                if (!String.Equals(routeValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

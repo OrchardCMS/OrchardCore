@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,7 +7,7 @@
   <!-- Add a ".targets" file in the package specific to the "Cms" bundle -->
   <ItemGroup>
     <None Include="OrchardCore.Application.Cms.Core.Targets.targets" Pack="true">
-      <PackagePath>build\netstandard2.0\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
+      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 

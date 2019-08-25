@@ -33,6 +33,8 @@ namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+        public override int ConfigureOrder => -100;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<AutoroutePartViewModel>();
@@ -64,7 +66,6 @@ namespace OrchardCore.Autoroute
                 });
             });
 
-            services.AddScoped<AutoRoute>();
             services.AddSingleton<IShellRouteValuesAddressScheme, AutoRouteValuesAddressScheme>();
         }
 
