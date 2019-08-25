@@ -312,13 +312,16 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+            if (ModelState.IsValid)
             {
-                _notifier.Success(TH["Password updated correctly."]);
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                return RedirectToAction(nameof(Index));
+                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+                {
+                    _notifier.Success(TH["Password updated correctly."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return View(model);
