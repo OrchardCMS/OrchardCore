@@ -35,6 +35,8 @@ namespace OrchardCore.Lucene
         {
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
+            services.AddSingleton<LuceneIndexManager>();
+            services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
@@ -42,8 +44,7 @@ namespace OrchardCore.Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
+
 
             services.Configure<LuceneOptions>(o =>
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
