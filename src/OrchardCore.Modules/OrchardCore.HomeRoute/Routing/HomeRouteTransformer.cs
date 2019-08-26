@@ -18,12 +18,12 @@ namespace OrchardCore.HomeRoute.Routing
             _siteService = siteService;
         }
 
-        public override ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
+        public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
             if (_changeToken?.HasChanged ?? true)
             {
                 var changeToken = _siteService.ChangeToken;
-                _routeValues = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+                _routeValues = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 _changeToken = changeToken;
             }
 
@@ -37,7 +37,7 @@ namespace OrchardCore.HomeRoute.Routing
                 }
             }
 
-            return new ValueTask<RouteValueDictionary>(routeValues);
+            return routeValues;
         }
     }
 }
