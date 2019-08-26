@@ -7,7 +7,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute.Routing
 {
-    // c.f. https://github.com/aspnet/AspNetCore/issues/12915
     public class HomeRouteTransformer : DynamicRouteValueTransformer
     {
         private readonly ISiteService _siteService;
@@ -28,21 +27,17 @@ namespace OrchardCore.HomeRoute.Routing
                 _changeToken = changeToken;
             }
 
-            if (values == null)
-            {
-                return new ValueTask<RouteValueDictionary>(new RouteValueDictionary(_routeValues));
-            }
-            else
-            {
-                var routeValues = new RouteValueDictionary(values);
+            var routeValues = new RouteValueDictionary(_routeValues);
 
-                foreach (var entry in _routeValues)
+            if (values != null)
+            {
+                foreach (var entry in values)
                 {
-                    routeValues[entry.Key] = entry.Value;
+                    routeValues.TryAdd(entry.Key, entry.Value);
                 }
-
-                return new ValueTask<RouteValueDictionary>(routeValues);
             }
+
+            return new ValueTask<RouteValueDictionary>(routeValues);
         }
     }
 }
