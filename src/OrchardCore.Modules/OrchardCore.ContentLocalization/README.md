@@ -45,7 +45,7 @@ The cookie can be set during recipes using the settings step. Here is a sample s
 #### `ContentCulturePicker`
 
 The `ContentCulturePicker` shape loads data for the ContentCulturePickerContainer shape. 
-You should always render this shape. in your theme. `{% shape "ContentCulturePicker" %}`
+You should always render this shape in your theme. `{% shape "ContentCulturePicker" %}`
 
 #### `ContentCulturePickerContainer`
 
