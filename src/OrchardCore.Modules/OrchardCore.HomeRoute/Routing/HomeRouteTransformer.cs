@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute.Routing
@@ -10,8 +9,6 @@ namespace OrchardCore.HomeRoute.Routing
     public class HomeRouteTransformer : DynamicRouteValueTransformer
     {
         private readonly ISiteService _siteService;
-        private RouteValueDictionary _routeValues;
-        private IChangeToken _changeToken;
 
         public HomeRouteTransformer(ISiteService siteService)
         {
@@ -20,14 +17,7 @@ namespace OrchardCore.HomeRoute.Routing
 
         public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            if (_changeToken?.HasChanged ?? true)
-            {
-                var changeToken = _siteService.ChangeToken;
-                _routeValues = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
-                _changeToken = changeToken;
-            }
-
-            var routeValues = new RouteValueDictionary(_routeValues);
+            var routeValues = new RouteValueDictionary((await _siteService.GetSiteSettingsAsync()).HomeRoute);
 
             if (values != null)
             {

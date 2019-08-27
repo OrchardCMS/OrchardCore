@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 
@@ -13,8 +12,6 @@ namespace OrchardCore.HomeRoute.Routing
     internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly ISiteService _siteService;
-        private RouteValueDictionary _routeValues;
-        private IChangeToken _changeToken;
 
         public HomeRouteValuesAddressScheme(ISiteService siteService)
         {
@@ -47,14 +44,9 @@ namespace OrchardCore.HomeRoute.Routing
 
         private bool Match(RouteValueDictionary explicitValues)
         {
-            if (_changeToken?.HasChanged ?? true)
-            {
-                var changeToken = _siteService.ChangeToken;
-                _routeValues = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
-                _changeToken = changeToken;
-            }
+            var routeValues = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
 
-            foreach (var entry in _routeValues)
+            foreach (var entry in routeValues)
             {
                 if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
