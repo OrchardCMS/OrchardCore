@@ -31,5 +31,5 @@ So in the Dockerfile, you can write something like:
 A failed readiness probe says: The application is OK but not yet ready to serve traffic.
 
 ## Reference
-https://devblogs.microsoft.com/aspnet/asp-net-core-2-2-0-preview1-healthcheck/
-https://howchoo.com/g/zwjhogrkywe/how-to-add-a-health-check-to-your-docker-container
+<https://devblogs.microsoft.com/aspnet/asp-net-core-2-2-0-preview1-healthcheck/>
+<https://howchoo.com/g/zwjhogrkywe/how-to-add-a-health-check-to-your-docker-container>
