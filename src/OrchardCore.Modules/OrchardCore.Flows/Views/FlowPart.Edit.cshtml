@@ -1,5 +1,6 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Flows.ViewModels;
+@using OrchardCore.ContentManagement;
 
 @model FlowPartEditViewModel
 
@@ -15,15 +16,40 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder row " style="min-height:50px;">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
             var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+            dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
 
+            var metadata = ((ContentItem)widgetEditor.ContentItem).As<OrchardCore.Flows.Models.FlowMetadata>();
+
+            var colSize = 100;
+            switch (metadata.Size)
+            {
+                case 25:
+                    colSize = 3;
+                    break;
+                case 33:
+                    colSize = 4;
+                    break;
+                case 50:
+                    colSize = 6;
+                    break;
+                case 66:
+                    colSize = 8;
+                    break;
+                case 75:
+                    colSize = 9;
+                    break;
+                default:
+                    colSize = 12;
+                    break;
+
+            }
+            <div class="widget-template col-@colSize">
+                @{
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
                     widgetEditor.TargetId = widgetTemplatePlaceholderId;
@@ -76,12 +102,84 @@
     }
 
     <script at="Foot">
+        var oldList, newList, item, lastOver, sourceId, destId;      
         $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
-            cursor: "move",
+            cursor: "move",            
+            
+            toleranceElement: '> div',
+            connectWith: '.widget-template-placeholder',
+            start: function (event, ui) {
+                item = ui.item;
+                lastOver = item.parent();
+                lastOver.toggleClass('highlight'); 
+                sourceId = item.parent().attr('id');
+                ui.placeholder.height(ui.helper.outerHeight());
+            },
             stop: function (event, ui) {
+                lastOver.toggleClass('highlight');
+         
+                destId = item.parent().attr('id');
+
+                if (destId !== sourceId) {
+
+                    var inputs = item.children('input');
+
+                    var destination = $('#' + destId).closest('.widget-template')                    
+                    var source = $('#' + sourceId).closest('.widget-template');
+
+                    var sourceGuid = sourceId.substring(0, sourceId.indexOf('_') + 1);
+                    
+                    var sourceNameGuid = source.children("input[name*='Prefixes']").val() + '.';
+                    
+                    if (destination.length > 0) {
+
+                        var destGuid = destId.substring(0, destId.indexOf('_') + 1);
+
+                        var destNameGuid = destination.children("input[name*='Prefixes']").val() + '.';
+
+                        if (source.length) {
+                       
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                            });
+
+                        } else {
+
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', destGuid + $(this).attr('id'));
+                                $(this).attr('name', destNameGuid  + $(this).attr('name'));
+                            });
+                        }
+
+                    }
+                    else if (source.length > 0) {
+                    
+                        inputs.each(function (index, item) {
+                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
+                            $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
+                        });
+                    }
+
+                }                               
+
                 $(document).trigger('contentpreview:render');
+            },            
+            change: function (event, ui) {
+                if (ui.sender) newList = ui.placeholder.parent().parent();
+            },
+            update: function (event, ui) {
+                
+            },
+            over: function (event, ui) {
+                
+                if (lastOver[0] != this) {
+                    lastOver.toggleClass('highlight');
+                    lastOver = $(this);
+                    $(this).toggleClass('highlight');
+                }
             }
-        });
+        });          
     </script>
 </fieldset>

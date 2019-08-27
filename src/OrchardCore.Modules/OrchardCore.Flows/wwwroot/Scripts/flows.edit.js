@@ -1,6 +1,6 @@
 var createEditorUrl = $('#buildEditorUrl').attr("value");
 var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
-    return '<div class="widget-template">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
+    return '<div class="widget-template col-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
 };
 function guid() {
     function s4() {
@@ -66,8 +66,39 @@ $(function () {
         });
     });
 
-    $(document).on('change', '.widget-editor-footer label', function () {
-        $(document).trigger('contentpreview:render');
+    $(document).on('change', '.widget-editor-footer label, .widget-editor-header label', function () {
+
+        var $tmpl = $(this).closest('.widget-template');
+        var $radio = $(this).find("input:first-child");
+        if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Size') > 0) {
+            var $radiSize = $(this).find("input:first-child").val();
+            var classList = $tmpl.attr('class').split(' ');
+            $.each(classList, function (id, item) {
+                if (item.indexOf('col-') === 0) $tmpl.removeClass(item);                
+            });
+            if ($radiSize === '25')
+                $tmpl.addClass('col-3');
+            else if ($radiSize === '33')
+                $tmpl.addClass('col-4');
+            else if ($radiSize === '50')
+                $tmpl.addClass('col-6');
+            else if ($radiSize === '66')
+                $tmpl.addClass('col-8');
+            else if ($radiSize === '75')
+                $tmpl.addClass('col-9');
+            else
+                $tmpl.addClass('col-12');
+
+            var dropdown = $(this).closest('.dropdown-menu');
+            dropdown.prev('button').text($radiSize + '%');
+        } else if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Alignment') > 0) {            
+            var svg = $(this).find('svg')[0].outerHTML;
+            var alignDropdown = $(this).closest('.dropdown-menu');            
+            var $btn = alignDropdown.prev('button');
+            $btn.html(svg );
+       
+        }
+        $(document).trigger('contentpreview:render');        
     });
 
     $(document).on('click', '.widget-editor-btn-toggle', function () {

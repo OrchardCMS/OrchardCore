@@ -13,3 +13,14 @@
 .widget-editor:not(.collapsed) > .widget-editor-header .widget-editor-btn-expand, .collapsed > .widget-editor-header .widget-editor-btn-collapse {
     display: none;
 }
+
+.widget-template-placeholder.highlight {
+    border: 3px dashed orange;
+}
+
+.ui-sortable-placeholder {
+    background-color: lightyellow;
+    visibility: visible !important;
+    border: 2px solid rgba(255, 255, 0, 0.125);
+    border-radius: 0.25rem;
+}
