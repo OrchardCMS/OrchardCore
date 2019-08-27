@@ -17,12 +17,12 @@ namespace OrchardCore.DynamicCache.Liquid
         private static readonly char[] SplitChars = new [] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
-        public CacheStatement(ArgumentsExpression arguments, IList<Statement> statements = null) : base(statements)
+        public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
         }
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {

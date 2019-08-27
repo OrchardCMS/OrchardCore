@@ -16,7 +16,7 @@ namespace OrchardCore.Liquid.Filters
             _contentManager = contentManager;
         }
 
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 

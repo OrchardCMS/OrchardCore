@@ -24,7 +24,6 @@ namespace OrchardCore.Features.Controllers
     {
         private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
@@ -42,7 +41,6 @@ namespace OrchardCore.Features.Controllers
         {
             _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
@@ -61,6 +59,7 @@ namespace OrchardCore.Features.Controllers
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync();
 
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
@@ -74,6 +73,7 @@ namespace OrchardCore.Features.Controllers
                 {
                     Descriptor = moduleFeatureInfo,
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
+                    IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),
@@ -91,15 +91,14 @@ namespace OrchardCore.Features.Controllers
         }
 
         [HttpPost, ActionName("Features")]
-        [FormValueRequired("submit.BulkExecute")]
-        public async Task<ActionResult> FeaturesPOST(FeaturesBulkAction bulkAction, IList<string> featureIds, bool? force)
+        public async Task<ActionResult> FeaturesPOST(BulkActionViewModel model, bool? force)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Unauthorized();
             }
 
-            if (featureIds == null || !featureIds.Any())
+            if (model.FeatureIds == null || !model.FeatureIds.Any())
             {
                 ModelState.AddModelError("featureIds", T["Please select one or more features."].ToString());
             }
@@ -108,13 +107,13 @@ namespace OrchardCore.Features.Controllers
             {
                 var availableFeatures = _extensionManager.GetFeatures();
                 var features = availableFeatures.Where(feature => FeatureIsAllowed(feature)).ToList();
-                var selectedFeatures = features.Where(x => featureIds.Contains(x.Id)).ToList();
+                var selectedFeatures = features.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
                 var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesEnabled = allEnabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
+                var idFeaturesEnabled = allEnabledFeatures.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
                 var allDisabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync(); // DisabledFeaturesAsync //features.Where(x => !x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesDisabled = allDisabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
+                var idFeaturesDisabled = allDisabledFeatures.Where(x => model.FeatureIds.Contains(x.Id)).ToList();
 
-                switch (bulkAction)
+                switch (model.BulkAction)
                 {
                     case FeaturesBulkAction.None:
                         break;
@@ -148,24 +147,6 @@ namespace OrchardCore.Features.Controllers
                             var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
-                        break;
-                    case FeaturesBulkAction.Update:
-                        //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
-                        //var selectedFeaturesThatNeedUpdate = selectedFeatures.Where(x => featuresThatNeedUpdate.Contains(x.Id));
-
-                        //foreach (var feature in selectedFeaturesThatNeedUpdate)
-                        //{
-                        //    var id = feature.Descriptor.Id;
-                        //    try
-                        //    {
-                        //        _dataMigrationManager.Update(id);
-                        //        _notifier.Success(T["The feature {0} was updated successfully", id]);
-                        //    }
-                        //    catch (Exception exception)
-                        //    {
-                        //        _notifier.Error(T["An error occurred while updating the feature {0}: {1}", id, exception.Message]);
-                        //    }
-                        //}
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

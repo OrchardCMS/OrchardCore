@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -50,6 +51,13 @@ namespace OrchardCore.Environment.Shell.Builders
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
+            tenantServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            {
+                // Resolve it lazily as it's constructed lazily
+                var shellSettings = sp.GetRequiredService<ShellSettings>();
+                return shellSettings.ShellConfiguration;
+            });
+
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
 
@@ -74,6 +82,12 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
+            moduleServiceCollection.AddSingleton<IShellConfiguration>(sp =>
+            {
+                // Resolve it lazily as it's constructed lazily
+                var shellSettings = sp.GetRequiredService<ShellSettings>();
+                return shellSettings.ShellConfiguration;
+            });
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
 
@@ -113,17 +127,11 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
-                    if (serviceDescriptor.ImplementationType != null)
+                    var type = serviceDescriptor.GetImplementationType();
+
+                    if (type != null)
                     {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationType, featureServiceCollection.Key);
-                    }
-                    else if (serviceDescriptor.ImplementationInstance != null)
-                    {
-                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationInstance.GetType(), featureServiceCollection.Key);
-                    }
-                    else
-                    {
-                        // Factory, we can't know which type will be returned
+                        typeFeatureProvider.TryAdd(type, featureServiceCollection.Key);
                     }
                 }
             }

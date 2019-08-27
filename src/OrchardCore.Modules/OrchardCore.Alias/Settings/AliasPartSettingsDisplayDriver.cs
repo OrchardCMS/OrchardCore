@@ -5,11 +5,23 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Alias.Models;
+using OrchardCore.Liquid;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Alias.Settings
 {
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
+        private readonly ILiquidTemplateManager _templateManager;
+
+        public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
+        {
+            _templateManager = templateManager;
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; private set; }
+
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
@@ -37,7 +49,14 @@ namespace OrchardCore.Alias.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern))
             {
-                context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern });
+                if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+                {
+                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+                else
+                {
+                    context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern });
+                }
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

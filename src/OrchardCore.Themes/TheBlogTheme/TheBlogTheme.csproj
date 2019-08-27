@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,17 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <EmbeddedResource Remove="**\*.less;**\*.scss;" />
     <EmbeddedResource Remove="wwwroot\about.html" />
     <EmbeddedResource Remove="wwwroot\contact.html" />
     <EmbeddedResource Remove="wwwroot\gulpfile.js" />

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
@@ -12,6 +13,7 @@ namespace OrchardCore.Layers.Services
         private readonly GlobalMethod _isAnonymous;
         private readonly GlobalMethod _isAuthenticated;
         private readonly GlobalMethod _url;
+        private readonly GlobalMethod _culture;
 
         private readonly GlobalMethod[] _allMethods;
 
@@ -20,9 +22,9 @@ namespace OrchardCore.Layers.Services
             _isHomepage = new GlobalMethod
             {
                 Name = "isHomepage",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path;
                     return requestPath == "/" || string.IsNullOrEmpty(requestPath);
                 })
@@ -31,19 +33,19 @@ namespace OrchardCore.Layers.Services
             _isAnonymous = new GlobalMethod
             {
                 Name = "isAnonymous",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     return !httpContext.User?.Identity.IsAuthenticated;
                 })
             };
-            
+
             _isAuthenticated = new GlobalMethod
             {
                 Name = "isAuthenticated",
-                Method = serviceprovider => (Func<string, object>)(name =>
+                Method = serviceProvider => (Func<string, object>)(name =>
                 {
-                    var httpContext = serviceprovider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     return httpContext.User?.Identity.IsAuthenticated;
                 })
             };
@@ -66,11 +68,23 @@ namespace OrchardCore.Layers.Services
 
                     return url.EndsWith("*")
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
-                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase); ;
+                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
                 })
             };
-            
-            _allMethods = new [] { _isAnonymous, _isAuthenticated, _isHomepage, _url };
+
+            _culture = new GlobalMethod
+            {
+                Name = "culture",
+                Method = serviceProvider => (Func<string, object>)(culture =>
+                {
+                    var currentCulture = CultureInfo.CurrentCulture;
+
+                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
+                })
+            };
+
+            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

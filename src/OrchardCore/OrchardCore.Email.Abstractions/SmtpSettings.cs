@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email
@@ -20,10 +19,10 @@ namespace OrchardCore.Email
         public string Host { get; set; }
         [Range(0, 65535)]
         public int Port { get; set; } = 25;
-        public bool EnableSsl { get; set; }
+        public bool AutoSelectEncryption { get; set; }
         public bool RequireCredentials { get; set; }
         public bool UseDefaultCredentials { get; set; }
-
+        public SmtpEncryptionMethod EncryptionMethod { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
 
@@ -38,8 +37,6 @@ namespace OrchardCore.Email
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
                     }
-                    break;
-                case SmtpDeliveryMethod.PickupDirectoryFromIis:
                     break;
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                     if (String.IsNullOrEmpty(PickupDirectoryLocation))

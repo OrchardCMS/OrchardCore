@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -71,12 +72,18 @@ namespace OrchardCore.Contents.Controllers
 
         public ILogger Logger { get; set; }
 
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string typeId = "")
+        [HttpGet]
+        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
+
+            if (!string.IsNullOrEmpty(model.Options.DisplayText))
+            {
+                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.Options.DisplayText));
+            }
 
             switch (model.Options.ContentsStatus)
             {
@@ -94,22 +101,20 @@ namespace OrchardCore.Contents.Controllers
                     break;
             }
 
-            if (typeId != "")
+            if (contentTypeId != "")
             {
-                model.Id = typeId;
+                model.Options.SelectedContentType = contentTypeId;
             }
 
-            if (!string.IsNullOrEmpty(model.TypeName))
+            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
                     return NotFound();
 
-                model.TypeDisplayName = contentTypeDefinition.ToString();
-
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
+                query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
             }
             else
             {
@@ -149,11 +154,6 @@ namespace OrchardCore.Contents.Controllers
             //    query = query.Where<CommonPartRecord>(cr => cr.OwnerId == Services.WorkContext.CurrentUser.Id);
             //}
 
-            model.Options.SelectedFilter = model.TypeName;
-            model.Options.FilterOptions = (await GetListableTypesAsync())
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
             //model.Options.Cultures = _cultureManager.ListCultures();
 
             // Invoke any service that could alter the query
@@ -163,144 +163,136 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            //We prepare the pager
+            var routeData = new RouteData();
+            routeData.Values.Add("DisplayText", model.Options.DisplayText);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
+            //We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
-            var viewModel = (await New.ViewModel())
-                .ContentItems(contentItemSummaries)
-                .Pager(pagerShape)
-                .Options(model.Options)
-                .TypeDisplayName(model.TypeDisplayName ?? "");
+            //We populate the SelectLists
+            model.Options.ContentStatuses = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["latest"].Value, Value = ContentsStatus.Latest.ToString() },
+                new SelectListItem() { Text = T["owned by me"].Value, Value = ContentsStatus.Owner.ToString() },
+                new SelectListItem() { Text = T["published"].Value, Value = ContentsStatus.Published.ToString() },
+                new SelectListItem() { Text = T["unpublished"].Value, Value = ContentsStatus.Draft.ToString() },
+                new SelectListItem() { Text = T["all versions"].Value, Value = ContentsStatus.AllVersions.ToString() }
+            };
+
+            model.Options.ContentSorts = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["recently created"].Value, Value = ContentsOrder.Created.ToString() },
+                new SelectListItem() { Text = T["recently modified"].Value, Value = ContentsOrder.Modified.ToString() },
+                new SelectListItem() { Text = T["recently published"].Value, Value = ContentsOrder.Published.ToString() },
+                new SelectListItem() { Text = T["title"].Value, Value = ContentsOrder.Title.ToString() }
+            };
+
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = T["Publish Now"].Value, Value = ContentsBulkAction.PublishNow.ToString() },
+                new SelectListItem() { Text = T["Unpublish"].Value, Value = ContentsBulkAction.Unpublish.ToString() },
+                new SelectListItem() { Text = T["Delete"].Value, Value = ContentsBulkAction.Remove.ToString() }
+            };
+
+            var ContentTypeOptions = (await GetListableTypesAsync())
+                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                .ToList().OrderBy(kvp => kvp.Value);
+
+            model.Options.ContentTypeOptions = new List<SelectListItem>();
+            model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = T["All content types"].Value, Value = "" });
+            foreach (var option in ContentTypeOptions)
+            {
+                model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+            }
+
+            var viewModel = new ListContentsViewModel
+            {
+                ContentItems = contentItemSummaries,
+                Pager = pagerShape,
+                Options = model.Options
+            };
 
             return View(viewModel);
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult ListFilterPOST(ListContentsViewModel model)
         {
-            var creatable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        creatable.Add(ctd);
-                    }
-                }
-            }
-            return creatable;
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.SelectedCulture", model.Options.SelectedCulture },
+                { "Options.OrderBy", model.Options.OrderBy },
+                { "Options.ContentsStatus", model.Options.ContentsStatus },
+                { "Options.SelectedContentType", model.Options.SelectedContentType },
+                { "Options.DisplayText", model.Options.DisplayText }
+            });
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> ListPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            if (itemIds?.Count() > 0)
             {
-                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ListAsync();
+                switch (options.BulkAction)
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.PublishNow:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't publish selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
+
+                            await _contentManager.PublishAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully published."]);
+                        break;
+                    case ContentsBulkAction.Unpublish:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't unpublish selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
+
+                            await _contentManager.UnpublishAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully unpublished."]);
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, item))
+                            {
+                                _notifier.Warning(T["Couldn't remove selected content."]);
+                                _session.Cancel();
+                                return Unauthorized();
+                            }
+
+                            await _contentManager.RemoveAsync(item);
+                        }
+                        _notifier.Success(T["Content successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
-            return listable;
+
+            return RedirectToAction("List");
         }
-
-        //[HttpPost, ActionName("List")]
-        //[Mvc.FormValueRequired("submit.Filter")]
-        //public ActionResult ListFilterPOST(ContentOptions options)
-        //{
-        //    var routeValues = ControllerContext.RouteData.Values;
-        //    if (options != null)
-        //    {
-        //        routeValues["Options.SelectedCulture"] = options.SelectedCulture; //todo: don't hard-code the key
-        //        routeValues["Options.OrderBy"] = options.OrderBy; //todo: don't hard-code the key
-        //        routeValues["Options.ContentsStatus"] = options.ContentsStatus; //todo: don't hard-code the key
-        //        if (GetListableTypes(false).Any(ctd => string.Equals(ctd.Name, options.SelectedFilter, StringComparison.OrdinalIgnoreCase)))
-        //        {
-        //            routeValues["id"] = options.SelectedFilter;
-        //        }
-        //        else {
-        //            routeValues.Remove("id");
-        //        }
-        //    }
-
-        //    return RedirectToAction("List", routeValues);
-        //}
-
-        //[HttpPost, ActionName("List")]
-        //[Mvc.FormValueRequired("submit.BulkEdit")]
-        //public ActionResult ListPOST(ContentOptions options, IEnumerable<int> itemIds, string returnUrl)
-        //{
-        //    if (itemIds != null)
-        //    {
-        //        var checkedContentItems = _contentManager.GetMany<ContentItem>(itemIds, VersionOptions.Latest, QueryHints.Empty);
-        //        switch (options.BulkAction)
-        //        {
-        //            case ContentsBulkAction.None:
-        //                break;
-        //            case ContentsBulkAction.PublishNow:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't publish selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
-
-        //                    _contentManager.Publish(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully published."));
-        //                break;
-        //            case ContentsBulkAction.Unpublish:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't unpublish selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
-
-        //                    _contentManager.Unpublish(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully unpublished."));
-        //                break;
-        //            case ContentsBulkAction.Remove:
-        //                foreach (var item in checkedContentItems)
-        //                {
-        //                    if (!await _authorizationService.Authorize(User, Permissions.DeleteContent, item, T("Couldn't remove selected content.")))
-        //                    {
-        //                        _transactionManager.Cancel();
-        //                        return Unauthorized();
-        //                    }
-
-        //                    _contentManager.Remove(item);
-        //                }
-        //                Services.Notifier.Information(T("Content successfully removed."));
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException();
-        //        }
-        //    }
-
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
-
-        //ActionResult ListableTypeList(int? containerId)
-        //{
-        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
-
-        //    return View("ListableTypeList", viewModel);
-        //}
 
         public async Task<IActionResult> Create(string id)
         {
@@ -310,6 +302,9 @@ namespace OrchardCore.Contents.Controllers
             }
 
             var contentItem = await _contentManager.NewAsync(id);
+
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -367,6 +362,9 @@ namespace OrchardCore.Contents.Controllers
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.NewAsync(id);
+
+            // Set the current user as the owner to check for ownership permissions on creation
+            contentItem.Owner = User.Identity.Name;
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -455,7 +453,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix ="submit.Publish")] string submitPublish, string returnUrl)
+        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
         {
             var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
 
@@ -518,7 +516,7 @@ namespace OrchardCore.Contents.Controllers
             // executed some query which would flush the saved entities inside the above UpdateEditorAsync.            
             _session.Save(contentItem);
 
-            await conditionallyPublish(contentItem);           
+            await conditionallyPublish(contentItem);
 
             if (returnUrl == null)
             {
@@ -534,32 +532,33 @@ namespace OrchardCore.Contents.Controllers
             }
         }
 
-        //[HttpPost]
-        //public ActionResult Clone(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.GetLatest(id);
+        [HttpPost]
+        public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-        //    if (contentItem == null)
-        //        return NotFound();
+            if (contentItem == null)
+                return NotFound();
 
-        //    if (!await _authorizationService.Authorize(User, Permissions.EditContent, contentItem, T("Couldn't clone content")))
-        //        return Unauthorized();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
+            {
+                return Unauthorized();
+            }
 
-        //    try
-        //    {
-        //        Services.ContentManager.Clone(contentItem);
-        //    }
-        //    catch (InvalidOperationException)
-        //    {
-        //        Services.Notifier.Warning(T("Could not clone the content item."));
-        //        return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //    }
+            try
+            {
+                await _contentManager.CloneAsync(contentItem);
+            }
+            catch (InvalidOperationException)
+            {
+                _notifier.Warning(T["Could not clone the content item."]);
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            }
 
-        //    Services.Notifier.Information(T("Successfully cloned. The clone was saved as a draft."));
+            _notifier.Information(T["Successfully cloned. The clone was saved as a draft."]);
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
-
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
         [HttpPost]
         public async Task<IActionResult> DiscardDraft(string contentItemId, string returnUrl)
@@ -673,5 +672,46 @@ namespace OrchardCore.Contents.Controllers
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
         }
+
+        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
+        {
+            var creatable = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    if (authorized)
+                    {
+                        creatable.Add(ctd);
+                    }
+                }
+            }
+            return creatable;
+        }
+
+        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
+        {
+            var listable = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    if (authorized)
+                    {
+                        listable.Add(ctd);
+                    }
+                }
+            }
+            return listable;
+        }
+
+        //ActionResult ListableTypeList(int? containerId)
+        //{
+        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
+
+        //    return View("ListableTypeList", viewModel);
+        //}
     }
 }

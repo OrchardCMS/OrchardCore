@@ -4,7 +4,7 @@
 
 Queries are made up of three areas, the `type`, `arguments` and `return values`, an example would be;
 
-```json
+```
 {
   blog {
     displayText
@@ -14,7 +14,7 @@ Queries are made up of three areas, the `type`, `arguments` and `return values`,
 
 In this example, the `blog` is the type, and the `displayText` is the return value. You could expand this, to add an argument. An argument is used for filtering a query, for example;
 
-```json
+```
 {
   blog(contentItemId: "4k5df0kadp9asy1n2ejzs1rz4r") {
     displayText
@@ -103,7 +103,7 @@ The main thing to take away from this class is that all Input Types must inherit
 
 When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below;
 
-```json
+```
 {
   blog(autoroutePart: { path: "somewhere" }) {
     displayText
@@ -116,27 +116,28 @@ Next we want in implement a filter. The filter takes the input from the class we
 ```c#
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 {
-    public override IQuery<ContentItem> PreQuery(IQuery<ContentItem> query, ResolveFieldContext context)
+    public override Task<IQuery<ContentItem>> PreQueryAsync(IQuery<ContentItem> query, ResolveFieldContext context)
     {
         if (!context.HasArgument("autoroutePart"))
         {
-            return query;
+            return Task.FromResult(query);
         }
 
         var part = context.GetArgument<AutoroutePart>("autoroutePart");
 
         if (part == null)
         {
-            return query;
+            return Task.FromResult(query);
         }
 
         var autorouteQuery = query.With<AutoroutePartIndex>();
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return autorouteQuery.Where(index => index.Path == part.Path);
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
         }
-        return query;
+
+        return Task.FromResult(query);
     }
 }
 ```
@@ -147,7 +148,7 @@ The first thing we notice is
 
 Shown in the example above, we have an autoroutePart argument, this is registered when we register an input type. From there we can deserialize and perform the query;
 
-```json
+```
 {
   blog(autoroutePart: { path: "somewhere" }) {
     displayText
@@ -156,6 +157,55 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 ```
 
 Done.
+
+## Querying related content items
+
+One of the features of Content Items, is that they can be related to other Content Items.
+
+Imagine we have the following Content Types: Movie (with name and ReleaseYear as text fields) and Person with a FavoriteMovies field (content picker field of Movie).
+
+### Get the related content items GraphQL query
+
+Now, if we would want to get the Favorite Movies of the Person items we query, the following query will throw an error:
+
+```
+{
+  person {
+    name
+    favoriteMovies { 
+      contentItems {
+      	name
+        releaseYear
+      }
+    }
+  }
+}
+```
+
+The error will complain that ```name``` and ```releaseYear``` are not fields of a Content Item.
+
+The ´inline fragment´ the error hints about, is a construct to tell the query parser what it is supposed to do with these generic items, and have them treated as a ´Movie´ type instead of as a generic ´Content Item´.
+
+**Notice** the ```... on Movie``` fragment, that tells the GraphQL parser to treat the discovered object as ´Movie´.
+
+The following query gives us the results we want:
+
+```
+{
+  person {
+    name
+    favoriteMovies {
+      contentItems {
+        ... on Movie {
+          name
+          releaseYear
+        }
+      }
+    }
+  }
+}
+```
+
 
 ## More Info
 

@@ -15,7 +15,6 @@ beforeAll(async () => {
     basePath = orchard.run('../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll');
     browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
     page = await browser.newPage();
-
 });
 
 afterAll(async () => {
@@ -24,6 +23,8 @@ afterAll(async () => {
     }
 
     orchard.stop();
+    orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
+    orchard.printLog();
 });
 
 describe('ASP.NET MVC', () => {

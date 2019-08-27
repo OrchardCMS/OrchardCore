@@ -5,7 +5,7 @@
         <input type="checkbox" class="custom-control-input" asp-for="UsersCanRegister" />
         <span asp-validation-for="UsersCanRegister"></span>
         <label class="custom-control-label" asp-for="UsersCanRegister">@T["Users can create new accounts on the site"]</label>
-        <span class="hint">@T["— {0}", "Display a link to allow the users to register on the site."]</span>
+        <span class="hint">— @T["Display a link to allow the users to register on the site."]</span>
     </div>
 </fieldset>
 <fieldset class="form-group" asp-validation-class-for="UsersMustValidateEmail">
@@ -13,7 +13,15 @@
         <input type="checkbox" class="custom-control-input" asp-for="UsersMustValidateEmail" data-toggle="collapse" data-target="#warnEmailValidation" />
         <span asp-validation-for="UsersMustValidateEmail"></span>
         <label class="custom-control-label" asp-for="UsersMustValidateEmail">@T["Users must verify their email address"]</label>
-        <span class="hint">@T["— {0}", "The users whose email address has not been confirmed will not be able to login."]</span>
+        <span class="hint">— @T["The users whose email address has not been confirmed will not be able to login."]</span>
     </div>
 </fieldset>
-<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login."]</div>
+<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
+<fieldset class="form-group" asp-validation-class-for="UseSiteTheme">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
+        <span asp-validation-for="UseSiteTheme"></span>
+        <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for registration page"]</label>
+        <span class="hint">— @T["Requires an active site theme."]</span>
+    </div>
+</fieldset>

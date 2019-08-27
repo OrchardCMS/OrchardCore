@@ -1,12 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
-using OrchardCore.Recipes.Models;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
-using YesSql.Indexes;
 
 namespace OrchardCore.Recipes
 {
@@ -19,11 +16,7 @@ namespace OrchardCore.Recipes
         {
             services.AddRecipes();
 
-            services.AddScoped<IRecipeResultStore, RecipeResultStore>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddSingleton<IIndexProvider, RecipeResultIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<CommandStep>();
             services.AddRecipeExecutionStep<RecipesStep>();

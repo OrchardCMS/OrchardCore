@@ -5,13 +5,14 @@ ol.media-items-grid {
 
     &.row {
         margin-left: 0;
+        margin-right: 0;
     }
 
     li {
         margin-bottom: 16px;
         cursor: pointer;
-        margin-left: 0.9em;
-        margin-right: 0.7em;
+        margin-left: 0;
+        margin-right: 1.9em;
         border-radius: 0;
 
         .inline-media-button {

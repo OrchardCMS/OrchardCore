@@ -30,7 +30,13 @@ namespace OrchardCore.Users
                             .Action("Index", "Admin", "OrchardCore.Users")
                             .Permission(Permissions.ManageUsers)
                             .LocalNav()
-                         )));
+                         ))
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Login"], T["Login"], registration => registration
+                            .Permission(Permissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        )));
 
             return Task.CompletedTask;
         }
@@ -39,7 +45,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        public RegistrationAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             T = localizer;
         }
@@ -69,7 +75,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        public ResetPasswordAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {
             T = localizer;
         }

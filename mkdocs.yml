@@ -32,6 +32,13 @@ nav:
     - Getting started:
         - Create a CMS Web application: docs/getting-started/README.md
         - Create a Theme: docs/getting-started/theme.md
+    - Guides:
+        - Index: docs/guides/README.md
+        - Creating a Modular ASP.NET Core Application: docs/guides/create-modular-application-mvc/index.md
+        - Running Code on Startup: docs/guides/run-code-on-startup/index.md
+        - Creating an Orchard Core CMS website: docs/guides/create-cms-application/index.md
+        - Adding a Menu Item to the Admin Navigation: docs/guides/add-admin-menu/index.md
+        - Installing Localization Files: docs/guides/install-localization-files/index.md
     - Code Generation Templates: docs/templates/README.md
     - Orchard Core Modules: OrchardCore/OrchardCore/Modules/README.md
     - CMS Modules:
@@ -41,6 +48,7 @@ nav:
         - Html: OrchardCore.Modules/OrchardCore.Html/README.md
         - Contents: OrchardCore.Modules/OrchardCore.Contents/README.md
         - Content Fields: OrchardCore.Modules/OrchardCore.ContentFields/README.md
+        - Content Localization: OrchardCore.Modules/OrchardCore.ContentLocalization/README.md
         - Content Preview: OrchardCore.Modules/OrchardCore.ContentPreview/README.md
         - Content Types: OrchardCore.Modules/OrchardCore.ContentTypes/README.md
         - Lists: OrchardCore.Modules/OrchardCore.Lists/README.md
@@ -61,9 +69,11 @@ nav:
         - Forms: OrchardCore.Modules/OrchardCore.Forms/README.md
         - Admin Menu: OrchardCore.Modules/OrchardCore.AdminMenu/README.md
     - Core Modules:
+        - Configuration: OrchardCore/OrchardCore/Environment/Shell/README.md
+        - Data: OrchardCore/OrchardCore.Data/README.md
         - Dynamic Cache: OrchardCore.Modules/OrchardCore.DynamicCache/README.md
         - GraphQL: OrchardCore.Modules/OrchardCore.Apis.GraphQL/README.md
-        - Health Check: OrchardCore.Modules/OrchardCore.HealthChecks/README.md
+        - GraphQL queries: OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/README.md
         - Localization: OrchardCore.Modules/OrchardCore.Localization/README.md
         - Logging Serilog: OrchardCore/OrchardCore.Logging.Serilog/readme.md
         - OpenId: OrchardCore.Modules/OrchardCore.OpenId/README.md
@@ -80,3 +90,5 @@ nav:
         - Microsoft: OrchardCore.Modules/OrchardCore.Microsoft.Authentication/README.md
         - Facebook: OrchardCore.Modules/OrchardCore.Facebook/README.md
         - Twitter: OrchardCore.Modules/OrchardCore.Twitter/README.md
+        - Github: OrchardCore.Modules/OrchardCore.Github/README.md
+        - Google: OrchardCore.Modules/OrchardCore.Google/README.md

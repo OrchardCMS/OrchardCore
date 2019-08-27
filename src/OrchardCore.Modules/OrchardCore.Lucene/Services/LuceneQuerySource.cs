@@ -62,7 +62,7 @@ namespace OrchardCore.Lucene
                     }
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, templateContext);
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, System.Text.Encodings.Web.JavaScriptEncoder.Default, templateContext);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);

@@ -1,11 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.Html.Model;
-using OrchardCore.Html.Settings;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
+using OrchardCore.Html.Model;
+using OrchardCore.Html.Settings;
 
 namespace OrchardCore.Html.Handlers
 {
@@ -20,7 +20,7 @@ namespace OrchardCore.Html.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, HtmlBodyPart part)
         {
-            context.For<BodyAspect>(bodyAspect =>
+            return context.ForAsync<BodyAspect>(bodyAspect =>
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(HtmlBodyPart));
@@ -28,9 +28,8 @@ namespace OrchardCore.Html.Handlers
                 var body = part.Html;
 
                 bodyAspect.Body = new HtmlString(body);
+                return Task.CompletedTask;
             });
-
-            return Task.CompletedTask;
         }
     }
 }

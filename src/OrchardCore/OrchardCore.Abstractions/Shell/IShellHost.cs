@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
     public interface IShellHost
     {
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are created and available to process requests. 
+        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests. 
         /// </summary>
         Task InitializeAsync();
 
@@ -20,24 +20,10 @@ namespace OrchardCore.Environment.Shell
         Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
+        /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
-        Task<IServiceScope> GetScopeAsync(ShellSettings settings);
-
-        /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services and
-        /// replaces <see cref="HttpContext.RequestServices"/> with it.
-        /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
-        /// <remarks>
-        /// Disposing the returned <see cref="IServiceScope"/> instance restores the previous state.
-        /// </remarks>
-        Task<(IServiceScope Scope, ShellContext ShellContext)> GetScopeAndContextAsync(ShellSettings settings);
+        Task<ShellScope> GetScopeAsync(ShellSettings settings);
         
         /// <summary>
         /// Updates an existing shell configuration.
@@ -59,10 +45,12 @@ namespace OrchardCore.Environment.Shell
         Task<ShellContext> CreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
-        /// Lists all available <see cref="ShellContext"/> instances. 
+        /// Lists all available <see cref="ShellContext"/> instances.
+        /// A shell might have been released or not yet built, if so 'shell.Released' is true and
+        /// 'shell.CreateScope()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
         /// </summary>
         /// <remarks>A shell might not be listed if it hasn't been created yet, for instance if it has been removed and not yet recreated.</remarks>
-        Task<IEnumerable<ShellContext>> ListShellContextsAsync();
+        IEnumerable<ShellContext> ListShellContexts();
 
         /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.

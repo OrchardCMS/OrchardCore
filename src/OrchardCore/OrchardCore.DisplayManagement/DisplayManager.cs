@@ -15,7 +15,6 @@ namespace OrchardCore.DisplayManagement
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
         public DisplayManager(
@@ -29,7 +28,6 @@ namespace OrchardCore.DisplayManagement
         {
             _shapeTableManager = shapeTableManager;
             _shapeFactory = shapeFactory;
-            _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
             _drivers = drivers;
 

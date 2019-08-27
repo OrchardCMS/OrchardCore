@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class HelperTag : ArgumentsTag
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
             return new HelperStatement(new ArgumentsExpression(arguments)).WriteToAsync(writer, encoder, context);
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
     public class HelperBlock : ArgumentsBlock
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, List<Statement> statements)
         {
             return new HelperStatement(new ArgumentsExpression(arguments), null, statements).WriteToAsync(writer, encoder, context);
         }
@@ -40,13 +40,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         private readonly ArgumentsExpression _arguments;
         private readonly string _helper;
 
-        public HelperStatement(ArgumentsExpression arguments, string helper = null, IList<Statement> statements = null) : base(statements)
+        public HelperStatement(ArgumentsExpression arguments, string helper = null, List<Statement> statements = null) : base(statements)
         {
             _arguments = arguments;
             _helper = helper;
         }
 
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
             {
@@ -55,10 +55,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var services = servicesValue as IServiceProvider;
 
-            if (!context.AmbientValues.TryGetValue("ViewContext", out var viewContext))
-            {
-                throw new ArgumentException("ViewContext missing while invoking 'helper'");
-            }
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var helper = _helper ?? arguments["helper_name"].Or(arguments.At(0)).ToStringValue();

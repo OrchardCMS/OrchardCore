@@ -11,7 +11,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheBlock : ArgumentsBlock
     {
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, IList<Statement> statements)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments, List<Statement> statements)
         {
             var exp = new ArgumentsExpression(arguments);
             var sta = new CacheStatement(exp, statements);

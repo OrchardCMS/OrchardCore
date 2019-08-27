@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using OrchardCore.Modules;
@@ -37,11 +38,13 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly CloudBlobClient _blobClient;
         private readonly CloudBlobContainer _blobContainer;
         private readonly Task _verifyContainerTask;
+        private readonly IContentTypeProvider _contentTypeProvider;
 
-        public BlobFileStore(BlobStorageOptions options, IClock clock)
+        public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
         {
             _options = options;
             _clock = clock;
+            _contentTypeProvider = contentTypeProvider;
             _storageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
             _blobClient = _storageAccount.CreateCloudBlobClient();
             _blobContainer = _blobClient.GetContainerReference(_options.ContainerName);
@@ -88,11 +91,10 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             await _verifyContainerTask;
 
-            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+            var blobDirectory = GetBlobDirectoryReference(path);
 
-            if (await placeholderBlob.ExistsAsync())
+            if (path == string.Empty || await BlobDirectoryExists(blobDirectory))
             {
-                var blobDirectory = GetBlobDirectoryReference(path);
                 return new BlobDirectory(path, _clock.UtcNow);
             }
             return null;
@@ -268,6 +270,10 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             if (!overwrite && await blob.ExistsAsync())
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+            
+            _contentTypeProvider.TryGetContentType(path, out var contentType);
+
+            blob.Properties.ContentType = contentType ?? "application/octet-stream";
 
             await blob.UploadFromStreamAsync(inputStream);
         }
@@ -297,6 +303,21 @@ namespace OrchardCore.FileStorage.AzureBlob
             // listing directories.
             await placeholderBlob.UploadTextAsync(
                 "This is a directory marker file created by Orchard Core. It is safe to delete it.");
+        }
+
+        private async Task<bool> BlobDirectoryExists(CloudBlobDirectory blobDirectory)
+        {
+            // CloudBlobDirectory exists if it has at least one blob
+            BlobContinuationToken continuationToken = null;
+            var segment = await blobDirectory.ListBlobsSegmentedAsync(
+                useFlatBlobListing: false,
+                blobListingDetails: BlobListingDetails.None,
+                maxResults: 1,
+                currentToken: continuationToken,
+                options: null,
+                operationContext: null);
+
+            return segment.Results.Any();
         }
 
         private async Task CreateBasePathIfNotExistsAsync()

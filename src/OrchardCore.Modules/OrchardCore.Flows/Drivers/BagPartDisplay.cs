@@ -55,7 +55,7 @@ namespace OrchardCore.Flows.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BagPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var model = new BagPartEditViewModel { BagPart = part };

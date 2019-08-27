@@ -39,7 +39,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowAuthorizationCodeFlow" data-toggle="collapse" data-target="#AllowAuthorizationCodeFlowRecommendedHint" checked="@Model.AllowAuthorizationCodeFlow">
             <label class="custom-control-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
+            <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
         </div>
         <div id="AllowAuthorizationCodeFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code', client_id, client_secret,  scope ('openid, profile, roles)')</div>
     </fieldset>
@@ -48,7 +48,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowImplicitFlow" data-toggle="collapse" data-target="#AllowImplicitFlowRecommendedHint" checked="@Model.AllowImplicitFlow">
             <label class="custom-control-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+            <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
         </div>
         <div id="AllowImplicitFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'id_token token', client_id, client_secret, redirect_uri ='', nonce,  scope ('openid, profile, roles')</div>
     </fieldset>
@@ -57,7 +57,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow" data-toggle="collapse" data-target="#AllowPasswordFlowRecommendedHint" checked="@Model.AllowPasswordFlow">
             <label class="custom-control-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-            <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+            <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
         </div>
         <div id="AllowPasswordFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'password', client_id, client_secret, username, password,  scope ('openid, profile, roles)')</div>
     </fieldset>
@@ -66,7 +66,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowClientCredentialsFlow" data-toggle="collapse" data-target="#AllowClientCredentialsFlowRecommendedHint" checked="@Model.AllowClientCredentialsFlow">
             <label class="custom-control-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-            <span class="hint">@T["— {0}", "More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+            <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
         </div>
         <div id="AllowClientCredentialsFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'client_credentials', client_id, client_secret,  scope ('openid, profile, roles')</div>
     </fieldset>
@@ -75,7 +75,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowRefreshTokenFlow" data-toggle="collapse" data-target="#AllowRefreshTokenFlowRecommendedHint" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow) ? null : "")>
             <label class="custom-control-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-            <span class="hint">@T["— {0}", "More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+            <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
         </div>
         <div id="AllowRefreshTokenFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'refresh_token', client_id, client_secret, refresh_token</div>
     </fieldset>
@@ -85,6 +85,9 @@
             <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
             <input asp-for="RedirectUris" class="form-control" autofocus />
             <span asp-validation-for="RedirectUris" class="text-danger"></span>
+        </div>
+        <div class="hint">
+            @T["Space delimited list of redirect URIs."]
         </div>
         <fieldset class="form-group collapse" id="AllowLogoutEndpointFieldSet">
             <fieldset class="form-group">
@@ -98,6 +101,9 @@
                     <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
+                </div>
+                <div class="hint">
+                    @T["Space delimited list of logout redirect URIs."]
                 </div>
             </div>
         </fieldset>

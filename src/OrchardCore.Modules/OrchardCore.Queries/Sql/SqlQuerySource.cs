@@ -46,16 +46,17 @@ namespace OrchardCore.Queries.Sql
                 }
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
+
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
-            
+
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 return new object[0];
             }
-                        
+
             if (sqlQuery.ReturnDocuments)
             {
                 IEnumerable<int> documentIds;

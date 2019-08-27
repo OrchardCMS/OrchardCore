@@ -8,7 +8,7 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
-    string text = Model.Field.Text;
+    string text = Model.Text;
     switch (settings.LinkTextMode)
     {
         case LinkTextMode.Static:
@@ -18,20 +18,20 @@
             }
             else
             {
-                text = Model.Field.Url;
+                text = Model.Url;
             }
             break;
         case LinkTextMode.Url:
-            text = Model.Field.Url;
+            text = Model.Url;
             break;
         case LinkTextMode.Optional:
             if (String.IsNullOrWhiteSpace(text))
             {
-                text = Model.Field.Url;
+                text = Model.Url;
             }
             break;
     }
 }
 <div class="field field-type-linkfield field-name-@name">
-    <a href="@Model.Field.Url">@text</a>
+    <a href="@Model.Url">@text</a>
 </div>

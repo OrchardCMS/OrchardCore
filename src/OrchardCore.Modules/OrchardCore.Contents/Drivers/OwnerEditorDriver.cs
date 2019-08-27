@@ -59,7 +59,7 @@ namespace OrchardCore.Contents.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 

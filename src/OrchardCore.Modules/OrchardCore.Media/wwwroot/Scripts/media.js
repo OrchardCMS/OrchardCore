@@ -3,6 +3,607 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+// <upload> component
+Vue.component('upload', {
+    template: '\
+        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
+            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
+            <div> \
+               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
+               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
+            </div> \
+        </div> \
+        ',
+    props: {
+        model: Object
+    },
+    mounted: function () {
+        var self = this;
+        $('#fileupload').bind('fileuploadprogress', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }            
+            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
+        });
+
+        $('#fileupload').bind('fileuploaddone', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            if (data.result.files[0].error) {
+                self.handleFailure(data.files[0].name, data.result.files[0].error);
+            } else {  
+                bus.$emit('removalRequest', self.model);
+            }
+        });
+
+        $('#fileupload').bind('fileuploadfail', function (e, data) {
+            if (data.files[0].name !== self.model.name) {
+                return;
+            }
+            self.handleFailure(data.files[0].name , data.textStatus);            
+        });
+    },
+    methods: {
+        handleFailure: function (fileName, message) {
+            if (fileName !== this.model.name) {
+                return;
+            }
+            this.model.errorMessage = message;
+            bus.$emit('ErrorOnUpload', this.model);
+        },
+        dismissWarning: function () {
+            bus.$emit('removalRequest', this.model);
+        }
+    }
+});
+
+// <upload-list> component
+Vue.component('uploadList', {
+    template: '\
+        <div class="upload-list" v-show="files.length > 0"> \
+            <div class="header" @click="expanded = !expanded"> \
+                <span> {{ T.uploads }} </span> \
+                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
+                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
+                    <div class="toggle-button"> \
+                    <div v-show="expanded"> \
+                        <i class="fa fa-chevron-down"></i> \
+                    </div> \
+                    <div v-show="!expanded"> \
+                        <i class="fa fa-chevron-up"></i> \
+                    </div> \
+                </div> \
+            </div> \
+            <div class="card-body" v-show="expanded"> \
+                <div class="d-flex flex-wrap"> \
+                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
+                </div > \
+            </div> \
+        </div> \
+        ',
+    data: function () {
+        return {
+            files: [],
+            T: {},
+            expanded: false,
+            pendingCount: 0,
+            errorCount: 0
+        }
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.uploads = $('#t-uploads').val();
+        self.T.errors = $('#t-errors').val();
+        self.T.clearErrors = $('#t-clear-errors').val();
+    },
+    computed: {
+        fileCount: function () {
+            return this.files.length;
+        }
+    },
+    mounted: function () {
+        var self = this;
+
+        $('#fileupload').bind('fileuploadadd', function (e, data) {
+            if (!data.files) { 
+                return;
+            }
+            data.files.forEach(function (newFile) {                
+                var alreadyInList = self.files.some(function (f) {
+                    return f.name == newFile.name;
+                });
+
+                if (!alreadyInList) {
+                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
+                } else {
+                    console.error('A file with the same name is already on the queue:' + newFile.name);
+                }         
+            });            
+        });
+
+        bus.$on('removalRequest', function (fileUpload) {
+            self.files.forEach(function (item, index, array) {
+                if (item.name == fileUpload.name) {
+                    array.splice(index, 1);
+                }
+            });
+        });
+
+        bus.$on('ErrorOnUpload', function (fileUpload) {
+            self.updateCount();
+        });
+    },
+    methods: {
+        updateCount: function () {
+            this.errorCount = this.files.filter(function (item) {
+                return item.errorMessage != '';
+            }).length;
+            this.pendingCount = this.files.length - this.errorCount;
+            if (this.files.length < 1) {
+                this.expanded = false;
+            }
+        },
+        clearErrors: function () {            
+            this.files = this.files.filter(function (item) {
+                return item.errorMessage == '';
+            });
+        }
+    },
+    watch: {
+        files: function () {
+            this.updateCount();
+        }
+    }
+});
+
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
+    
+    var target = $(document.getElementById($(el).data('for')));
+    var initialPaths = target.data("init");
+
+    var mediaFieldEditor = $(el);
+    var mediaFieldApp;
+
+    mediaFieldApps.push(mediaFieldApp = new Vue({
+        el: mediaFieldEditor.get(0),
+        data: {
+            mediaItems: [],
+            selectedMedia: null,
+            smallThumbs: false
+        },
+        created: function () {
+            var self = this;
+
+            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+        },
+        computed: {
+            paths: {
+                get: function () {
+                    var mediaPaths = [];
+                    this.mediaItems.forEach(function (x) {
+                        if (x.mediaPath === 'not-found') {
+                            return;
+                        }
+                        mediaPaths.push({ Path: x.mediaPath, IsRemoved: x.isRemoved, IsNew: x.isNew });
+                    });
+                    return JSON.stringify(mediaPaths);
+                },
+                set: function (values) {
+                    var self = this;
+                    var mediaPaths = values || [];
+                    var signal = $.Deferred();
+                    mediaPaths.forEach(function (x, i) {
+                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
+                        promise = $.when(signal).done(function () {
+                            $.ajax({
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                                method: 'GET',
+                                success: function (data) {
+                                    data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
+                                    self.mediaItems.splice( i, 1, data);
+                                },
+                                error: function (error) {
+                                    console.log(JSON.stringify(error));
+                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                }
+                            });
+                        });
+                    });
+
+                    signal.resolve();
+                }
+            },
+            fileSize: function () {
+                return Math.round(this.selectedMedia.size / 1024);
+            },
+            canAddMedia: function () {
+                return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs
+                    };
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
+            }
+        },
+        mounted: function () {
+            var self = this;
+
+            self.paths = initialPaths;
+
+            self.$on('selectAndDeleteMediaRequested', function (media) {
+                self.selectAndDeleteMedia(media);
+            });
+
+            self.$on('selectMediaRequested', function (media) {
+                self.selectMedia(media);
+            });
+            
+            var selector = '#' + idOfUploadButton;
+
+            $(document).bind('drop dragover', function (e) {
+                e.preventDefault();
+            });
+
+            
+            var editorId = mediaFieldEditor.attr('id');
+
+            $(selector).fileupload({
+                limitConcurrentUploads: 20,
+                dropZone: $('#' + editorId),
+                dataType: 'json',
+                url: uploadAction,
+                add: function (e, data) {
+                    var count = data.files.length;
+                    var i;
+                    for (i = 0; i < count; i++) {
+                        data.files[i].uploadName =
+                            self.getUniqueId() + data.files[i].name;
+                    }
+                    data.submit();
+                },
+                formData: function () {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                    return [
+                        { name: 'path', value: tempUploadFolder },
+                        { name: '__RequestVerificationToken', value: antiForgeryToken }
+                    ];
+                },
+                done: function (e, data) {
+                    var newMediaItems = [];
+                    if (data.result.files.length > 0) {
+                        for (var i = 0; i < data.result.files.length; i++) {
+                            data.result.files[i].isNew = true;
+                            newMediaItems.push(data.result.files[i]);
+                        }
+                    }
+
+                    if (newMediaItems.length > 1 && allowMultiple === false) {
+                        alert($('#onlyOneItemMessage').val());
+                        mediaFieldApp.mediaItems.push(newMediaItems[0]);
+                    } else {
+                        mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('error on upload!!');
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+        },
+        methods: {
+            selectMedia: function (media) {
+                this.selectedMedia = media;
+            },
+            getUniqueId: function () {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                });
+            },
+            removeSelected: function (event) {
+                var removed = {};
+                if (this.selectedMedia) {
+                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
+                    if (index > -1) {
+                        removed = this.mediaItems[index];
+                        removed.isRemoved = true;
+                        this.mediaItems.splice([index], 1, removed);
+                        //this.mediaItems.splice(index, 1);
+                    }
+                }
+                else {
+                    // The remove button can also remove a unique media item
+                    if (this.mediaItems.length === 1) {
+                        removed = this.mediaItems[index];
+                        removed.isRemoved = true;
+                        this.mediaItems.splice(0, 1, removed);                        
+                        //this.mediaItems.splice(0, 1);
+                    }
+                }
+                this.selectedMedia = null;
+            },
+            selectAndDeleteMedia: function (media) {
+                var self = this;
+                self.selectedMedia = media;
+                // setTimeout because sometimes 
+                // removeSelected was called even before the media was set.
+                setTimeout(function () {                    
+                    self.removeSelected();    
+                }, 100);
+            }
+        },
+        watch: {
+            mediaItems: function () {
+                // Trigger preview rendering
+                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            },
+            currentPrefs: function (newPrefs) {
+                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+            }
+        }
+    }));
+}
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
+
+    var target = $(document.getElementById($(el).data('for')));
+    var initialPaths = target.data("init");
+
+    var mediaFieldEditor = $(el);
+    var mediaFieldApp;
+
+    mediaFieldApps.push(mediaFieldApp = new Vue({
+        el: mediaFieldEditor.get(0),
+        data: {
+            mediaItems: [],
+            selectedMedia: null,
+            smallThumbs: false
+        },
+        created: function () {
+            var self = this;
+
+            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+        },
+        computed: {
+            paths: {
+                get: function () {
+                    var mediaPaths = [];
+                    this.mediaItems.forEach(function (x) {
+                        if (x.mediaPath === 'not-found') {
+                            return;
+                        }
+                        mediaPaths.push({ Path: x.mediaPath });
+                    });
+                    return JSON.stringify(mediaPaths);                    
+                },
+                set: function (values) {
+                    var self = this;
+                    var mediaPaths = values || [];
+                    var signal = $.Deferred();
+                    mediaPaths.forEach(function (x, i) {
+                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        promise = $.when(signal).done(function () {
+                            $.ajax({
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                                method: 'GET',
+                                success: function (data) {
+                                    data.vuekey = data.name + i.toString();
+                                    self.mediaItems.splice( i, 1, data);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                }
+                            });
+                        });
+                    });
+
+                    signal.resolve();
+                }
+            },
+            fileSize: function () {
+                return Math.round(this.selectedMedia.size / 1024);
+            },
+            canAddMedia: function () {
+                return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
+            },
+            thumbSize: function () {
+                return this.smallThumbs ? 120 : 240;
+            },
+            currentPrefs: {
+                get: function () {
+                    return {
+                        smallThumbs: this.smallThumbs
+                    };
+                },
+                set: function (newPrefs) {
+                    if (!newPrefs) {
+                        return;
+                    }
+                    this.smallThumbs = newPrefs.smallThumbs;
+                }
+            }
+
+        },
+        mounted: function () {
+            var self = this;
+
+            self.paths = initialPaths;
+
+            self.$on('selectAndDeleteMediaRequested', function (media) {
+                self.selectAndDeleteMedia(media);
+            });
+
+            self.$on('selectMediaRequested', function (media) {
+                self.selectMedia(media);
+            });
+
+            self.$on('filesUploaded', function (files) {                
+                self.addMediaFiles(files);                
+            });
+        },
+        methods: {
+            selectMedia: function (media) {
+                this.selectedMedia = media;
+            },
+            showModal: function (event) {
+                var self = this;
+                if (self.canAddMedia) {
+                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
+                    $("#mediaApp").show();
+                    var modal = $(modalBodyElement).modal();
+                    $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
+                        self.addMediaFiles(mediaApp.selectedMedias);
+
+                        // we don't want the included medias to be still selected the next time we open the modal.
+                        mediaApp.selectedMedias = [];
+
+                        modal.modal('hide');
+                        return true;
+                    });
+                }
+            },
+            addMediaFiles: function (files) {
+                if ((files.length > 1) && (allowMultiple === false)) {
+                    alert($('#onlyOneItemMessage').val());
+                    mediaFieldApp.mediaItems.push(files[0]);
+                } else {
+                    mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+                }
+            },
+            removeSelected: function (event) {
+                if (this.selectedMedia) {
+                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
+                    if (index > -1) {
+                        this.mediaItems.splice(index, 1);
+                    }
+                }
+                else {
+                    // The remove button can also remove a unique media item
+                    if (this.mediaItems.length === 1) {
+                        this.mediaItems.splice(0, 1);
+                    }
+                }
+                this.selectedMedia = null;
+            },
+            selectAndDeleteMedia: function (media) {
+                var self = this;
+                self.selectedMedia = media;
+                // setTimeout because sometimes 
+                // removeSelected was called even before the media was set.
+                setTimeout(function () {                    
+                    self.removeSelected();    
+                }, 100);
+            }
+        },
+        watch: {
+            mediaItems: function () {
+                // Trigger preview rendering
+                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+            },
+            currentPrefs: function (newPrefs) {
+                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+            }
+        }
+    }));
+}
+// different media field editors will add themselves to this array
+var mediaFieldApps = [];
+
+// <media-field-thumbs-container> component 
+// different media field editors share this component to present the thumbs.
+Vue.component('mediaFieldThumbsContainer', {
+    template: '\
+       <div id="mediaContainerMain" v-cloak>\
+         <div v-if="mediaItems.length < 1" class="card text-center">\
+             <div class= "card-body" >\
+                <span class="hint">{{T.noImages}}</span>\
+             </div>\
+         </div>\
+         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
+            <li v-for="media in mediaItems"\
+                :key="media.vuekey" \
+                class="media-container-main-list-item card"\
+                :style="{width: thumbSize + 2 + \'px\'}"\
+                :class="{selected: selectedMedia == media}"\
+                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
+                    <div v-if="media.mediaPath!== \'not-found\'">\
+                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
+                            <img v-if="media.mime.startsWith(\'image\')" \
+                            :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                            :data-mime="media.mime"\
+                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
+                            <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
+                         </div>\
+                         <div class="media-container-main-item-title card-body">\
+                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
+                         </div>\
+                    </div>\
+                    <div v-else>\
+                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
+                            <i class="fa fa-ban text-danger d-block"></i>\
+                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
+                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
+                        </div>\
+                        <div class="media-container-main-item-title card-body">\
+                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button"\
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
+                        </div>\
+                   </div>\
+            </li>\
+         </draggable>\
+       </div>\
+    ',
+    data: function () {
+        return {
+            T: {}
+        };
+    },
+    props: {
+        mediaItems: Array,
+        selectedMedia: Object,
+        thumbSize: Number
+    },
+    created: function () {
+
+        var self = this;
+
+        // retrieving localized strings from view
+        self.T.mediaNotFound = $('#t-media-not-found').val();
+        self.T.discardWarning = $('#t-discard-warning').val();
+        self.T.noImages = $('#t-no-images').val();
+    },
+    methods: {
+        selectAndDeleteMedia: function (media) {            
+            this.$parent.$emit('selectAndDeleteMediaRequested', media);
+        },
+        selectMedia: function (media) {
+            this.$parent.$emit('selectMediaRequested', media);
+        }
+
+    }
+});
+
 var initialized;
 var mediaApp;
 
@@ -49,7 +650,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     gridView: false,
                     mediaFilter: '',
                     sortBy: '',
-                    sortAsc: true
+                    sortAsc: true,
+                    itemsInPage: []
                 },
                 created: function () {
                     var self = this;
@@ -119,7 +721,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });
 
 
-                    
+                    // handler for pager events
+                    bus.$on('pagerEvent', function (itemsInPage) {
+                        self.itemsInPage = itemsInPage;
+                        self.selectedMedias = [];
+                    });                                                          
 
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
@@ -173,7 +779,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 120 : 240 ;
+                        return this.smallThumbs ? 160 : 240 ;
                     },
                     currentPrefs: {
                         get: function () {
@@ -550,7 +1156,7 @@ Vue.component('folder', {
                 v-on:dragover.prevent.stop="handleDragOver($event);" \
                 v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
             <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
-                <a href="javascript:;" :style="{ paddingLeft: padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
+                <a href="javascript:;" :style="{ padding' + (document.dir == "ltr" ? "Left" : "Right") + ':padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
                   <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
                   <div class="folder-name">{{model.name}}</div>\
                     <div class="btn-group folder-actions" >\
@@ -729,6 +1335,354 @@ Vue.component('folder', {
             });
         }
 
+    }
+});
+
+// <media-items-grid> component
+Vue.component('mediaItemsGrid', {
+    template: '\
+        <ol class="row media-items-grid">\
+                <li v-for="media in filteredMediaItems" \
+                    :key="media.name" \
+                    class="media-item media-container-main-list-item card" \
+                    :style="{width: thumbSize + 2 + \'px\'}" \
+                    :class="{selected: isMediaSelected(media)}" \
+                    v-on:click.stop="toggleSelectionOfMedia(media)" \
+                    draggable="true" v-on:dragstart="dragStart(media, $event)"> \
+                    <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
+                        <img v-if="media.mime.startsWith(\'image\')" \
+                                :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" \
+                                :data-mime="media.mime" \
+                                :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
+                        <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
+                    </div> \
+                <div class="media-container-main-item-title card-body"> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
+                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
+                        <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
+                    </div> \
+                 </li> \
+        </ol>\
+        \
+        ',
+    data: function () {
+        return {
+            T: {}
+        }
+    },
+    props: {
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        thumbSize: Number
+    },
+    created: function () {
+        var self = this;
+        // retrieving localized strings from view
+        self.T.editButton = $('#t-edit-button').val();
+        self.T.deleteButton = $('#t-delete-button').val();
+    },
+    methods: {
+        isMediaSelected: function (media) {
+            var result = this.selectedMedias.some(function (element, index, array) {
+                return element.url.toLowerCase() === media.url.toLowerCase();
+            });
+            return result;
+        },
+
+        toggleSelectionOfMedia: function (media) {
+            bus.$emit('mediaToggleRequested', media);
+        },
+        renameMedia: function (media) {
+            bus.$emit('renameMediaRequested', media);            
+        },
+        deleteMedia: function (media) {
+            bus.$emit('deleteMediaRequested', media);
+        },
+        dragStart: function (media, e) {
+            bus.$emit('mediaDragStartRequested', media, e);
+        }
+    }
+});
+
+// <media-items-table> component
+Vue.component('mediaItemsTable', {
+    template: '\
+        <table class="table media-items-table"> \
+            <thead> \
+                <tr class="header-row"> \
+                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
+                    <th scope="col" v-on:click="changeSort(\'name\')"> \
+                       {{ T.nameHeader }} \
+                         <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                    </th> \
+                    <th scope="col" v-on:click="changeSort(\'size\')"> \
+                        <span class="optional-col"> \
+                            {{ T.sizeHeader }} \
+                         <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                        </span> \
+                    </th> \
+                    <th scope="col" v-on:click="changeSort(\'mime\')"> \
+                        <span class="optional-col"> \
+                           {{ T.typeHeader }} \
+                         <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                        </span> \
+                    </th> \
+                </tr>\
+            </thead>\
+            <tbody> \
+                    <tr v-for="media in filteredMediaItems" \
+                          class="media-item" \
+                          :class="{selected: isMediaSelected(media)}" \
+                          v-on:click.stop="toggleSelectionOfMedia(media)" \
+                          draggable="true" v-on:dragstart="dragStart(media, $event)" \
+                          :key="media.name"> \
+                             <td class="thumbnail-column"> \
+                                <div class="img-wrapper"> \
+                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
+                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
+                                </div> \
+                            </td> \
+                            <td> \
+                                <div class="media-name-cell"> \
+                                   <span class="break-word"> {{ media.name }} </span>\
+                                    <div class="buttons-container"> \
+                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
+                                        <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
+                                        <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a> \
+                                    </div> \
+                                </div> \
+                            </td> \
+                            <td> \
+                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
+                            </td> \
+                            <td> \
+                                <div class="text-col optional-col">{{ media.mime }}</div> \
+                            </td> \
+                   </tr>\
+            </tbody>\
+        </table> \
+        ',
+    data: function () {
+        return {
+            T: {}
+        }
+    },
+    props: {
+        sortBy: String,
+        sortAsc: Boolean,
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        thumbSize: Number
+    },
+    created: function () {
+        var self = this;
+        self.T.imageHeader = $('#t-image-header').val();
+        self.T.nameHeader = $('#t-name-header').val();
+        self.T.sizeHeader = $('#t-size-header').val();
+        self.T.typeHeader = $('#t-type-header').val();
+        self.T.editButton = $('#t-edit-button').val();
+        self.T.deleteButton = $('#t-delete-button').val();
+        self.T.viewButton = $('#t-view-button').val();
+    },
+    methods: {
+        isMediaSelected: function (media) {
+            var result = this.selectedMedias.some(function (element, index, array) {
+                return element.url.toLowerCase() === media.url.toLowerCase();
+            });
+            return result;
+        },
+
+        changeSort: function (newSort) {
+            bus.$emit('sortChangeRequested', newSort);
+        },
+
+        toggleSelectionOfMedia: function (media) {
+            bus.$emit('mediaToggleRequested', media);
+        },
+        renameMedia: function (media) {
+            bus.$emit('renameMediaRequested', media);            
+        },
+        deleteMedia: function (media) {
+            bus.$emit('deleteMediaRequested', media);
+        },
+        dragStart: function (media, e) {
+            bus.$emit('mediaDragStartRequested', media, e);
+        }
+    }
+});
+
+// This component receives a list of all the items, unpaged.
+// As the user interacts with the pager, it raises events with the items in the current page.
+// It's the parent's responsibility to listen for these events and display the received items
+// <pager> component
+Vue.component('pager', {
+    template: '\
+        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">\
+            <ul class= "pagination  pagination-sm"> \
+                <li class="page-item media-first-button" :class="{disabled : !canDoFirst}"> \
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoPrev}"> \
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a> \
+                </li> \
+                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
+                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
+                        {{link}} \
+                        <span v-if="current == link -1" class="sr-only">(current)</span>\
+                    </a> \
+                </li> \
+                <li class="page-item" :class="{disabled : !canDoNext}"> \
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a> \
+                </li> \
+                <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a> \
+                </li> \
+                <li class="page-item ml-4 page-size-info">\
+                    <div style="display: flex;">\
+                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>\
+                        <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
+                            <option v-for="option in pageSizeOptions" v-bind:value="option"> \
+                                {{option}} \
+                            </option> \
+                        </select> \
+                    </div>\
+                </li> \
+                <li class="page-item ml-4 page-info"> \
+                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span> \
+                </li> \
+                <li class="page-item ml-4 total-info"> \
+                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span> \
+                </li> \
+            </ul> \
+        </nav>\
+        ',
+    props: {
+        sourceItems: Array
+    },
+    data: function () {
+        return {
+            pageSize: 5,
+            pageSizeOptions: [5, 10, 30, 50, 100],
+            current: 0,
+            T: {}
+        };
+    },
+    created: function () {
+        var self = this;
+
+        // retrieving localized strings from view
+        self.T.pagerFirstButton = $('#t-pager-first-button').val();
+        self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
+        self.T.pagerNextButton = $('#t-pager-next-button').val();
+        self.T.pagerLastButton = $('#t-pager-last-button').val();
+        self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
+        self.T.pagerPageLabel = $('#t-pager-page-label').val();
+        self.T.pagerTotalLabel = $('#t-pager-total-label').val();        
+    },
+    methods: {
+        next: function () {
+            this.current = this.current + 1;
+        },
+        previous: function () {
+            this.current = this.current - 1;
+        },
+        goFirst: function () {
+            this.current = 0;
+        },
+        goLast: function () {
+            this.current = this.totalPages - 1;
+        },
+        goTo: function (targetPage) {
+            this.current = targetPage;
+        }
+    },
+    computed: {
+        total: function () {
+            return this.sourceItems ? this.sourceItems.length : 0;
+        },
+        totalPages: function () {
+            var pages = Math.ceil(this.total / this.pageSize);
+            return pages > 0 ? pages : 1;
+        },
+        isLastPage: function () {
+            return this.current + 1 >= this.totalPages;
+        },
+        isFirstPage: function () {
+            return this.current === 0;
+        },
+        canDoNext: function () {
+            return !this.isLastPage;
+        },
+        canDoPrev: function () {
+            return !this.isFirstPage;
+        },
+        canDoFirst: function () {
+            return !this.isFirstPage;
+        },
+        canDoLast: function () {
+            return !this.isLastPage;
+        },
+        // this computed is only to have a central place where we detect changes and leverage Vue JS reactivity to raise our event.
+        // That event will be handled by the parent media app to display the items in the page.
+        // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
+        itemsInCurrentPage: function () {
+            var start = this.pageSize * this.current;
+            var end = start + this.pageSize;
+            var result = this.sourceItems.slice(start, end);
+            bus.$emit('pagerEvent', result);
+            return result;
+        },
+        pageLinks: function () {
+
+            var links = [];
+
+            links.push(this.current + 1);
+
+            // Add 2 items before current
+            var beforeCurrent = this.current > 0 ? this.current : -1;
+            links.unshift(beforeCurrent);
+
+            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
+            links.unshift(beforeBeforeCurrent);
+
+
+            // Add 2 items after current
+            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
+            links.push(afterCurrent);
+
+            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
+            links.push(afterAfterCurrent);
+
+            return links;
+        }
+    },
+    watch: {
+        sourceItems: function () {
+            this.current = 0; // resetting current page after receiving a new list of unpaged items
+        },
+        pageSize: function () {
+            this.current = 0;
+        }
+    }
+});
+
+// <sort-indicator> component
+Vue.component('sortIndicator', {
+    template: '\
+        <div v-show="isActive" class="sort-indicator"> \
+            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
+            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
+        </div> \
+        ',
+    props: {
+        colname: String,
+        selectedcolname: String,
+        asc: Boolean
+    },
+    computed: {
+        isActive: function () {
+            return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
+        }
     }
 });
 
@@ -2439,493 +3393,3 @@ Vue.component('folder', {
     });
 
 }));
-
-var mediaFieldApps = [];
-
-function initializeMediaFieldEditor(el, modalBodyElement, mediaItemUrl, allowMultiple) {
-    var target = $(document.getElementById($(el).data('for')));
-    var initialPaths = target.data("init");
-
-    var mediaFieldEditor = $(el);
-    var mediaFieldApp;
-
-    mediaFieldApps.push(mediaFieldApp = new Vue({
-        el: mediaFieldEditor.get(0),
-        data: {
-            mediaItems: [],
-            selectedMedia: null,
-            smallThumbs: false
-        },
-        created: function () {
-            var self = this;
-
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
-        },
-        computed: {
-            paths: {
-                get: function () {
-                    var mediaPaths = [];
-                    this.mediaItems.forEach(function (x) {
-                        if (x.mediaPath === 'not-found') {
-                            return;
-                        }
-                        mediaPaths.push(x.mediaPath);
-                    });
-                    return JSON.stringify(mediaPaths);
-                },
-                set: function (values) {
-                    var self = this;
-                    var mediaPaths = values || [];
-                    var signal = $.Deferred();
-                    mediaPaths.forEach(function (x, i) {
-                        self.mediaItems.push({ name: ' ' + x, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
-
-                        promise = $.when(signal).done(function () {
-                            $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x),
-                                method: 'GET',
-                                success: function (data) {
-                                    self.mediaItems.splice( i, 1, data);
-                                },
-                                error: function (error) {
-                                    console.log(JSON.stringify(error));
-                                    self.mediaItems.splice(i, 1, { name: x, mime: '', mediaPath: 'not-found' });
-                                }
-                            });
-                        });
-                    });
-
-                    signal.resolve();
-                }
-            },
-            fileSize: function () {
-                return Math.round(this.selectedMedia.size / 1024);
-            },
-            canAddMedia: function () {
-                return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
-            },
-            canRemoveMedia: function () {
-                return this.selectedMedia || this.mediaItems.length === 1;
-            },
-            thumbSize: function () {
-                return this.smallThumbs ? 120 : 240;
-            },
-            currentPrefs: {
-                get: function () {
-                    return {
-                        smallThumbs: this.smallThumbs                        
-                    }
-                },
-                set: function (newPrefs) {
-                    if (!newPrefs) {
-                        return;
-                    }
-                    this.smallThumbs = newPrefs.smallThumbs;
-                }
-            }
-
-        },
-        mounted: function () {
-            this.paths = initialPaths;
-        },
-        methods: {
-            selectMedia: function (media) {
-                this.selectedMedia = media;
-            },
-            showModal: function (event) {
-                if (this.canAddMedia) {
-                    $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
-                    $("#mediaApp").show();
-                    var modal = $(modalBodyElement).modal();
-                    $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-                        if ((mediaApp.selectedMedias.length > 1) && (allowMultiple === false)) {
-                            alert($('#onlyOneItemMessage').val());
-                            mediaFieldApp.mediaItems.push(mediaApp.selectedMedias[0]);
-                        } else {
-                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(mediaApp.selectedMedias);
-                        }
-                        // we don't want the included medias to be still selected the next time we open the modal.
-                        mediaApp.selectedMedias = [];
-
-                        modal.modal('hide');
-                        return true;
-                    });
-                }
-            },
-            removeSelected: function (event) {
-                if (this.selectedMedia) {
-                    var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
-                    if (index > -1) {
-                        this.mediaItems.splice(index, 1);
-                    }
-                }
-                else {
-                    // The remove button can also remove a unique media item
-                    if (this.mediaItems.length === 1) {
-                        this.mediaItems.splice(0, 1);
-                    }
-                }
-                this.selectedMedia = null;
-            },
-            selectAndDeleteMedia: function (media) {
-                var self = this;
-                self.selectedMedia = media;
-                // setTimeout because sometimes 
-                // removeSelected was called even before the media was set.
-                setTimeout(function () {                    
-                    self.removeSelected();    
-                }, 100);
-            }
-        },
-        watch: {
-            mediaItems: function () {
-                // Trigger preview rendering
-                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
-            },
-            currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
-            }
-        }
-    }));
-}
-// <media-items-grid> component
-Vue.component('mediaItemsGrid', {
-    template: '\
-        <ol class="row media-items-grid">\
-                <li v-for="media in filteredMediaItems" \
-                    :key="media.name" \
-                    class="media-item media-container-main-list-item card" \
-                    :style="{width: thumbSize + 2 + \'px\'}" \
-                    :class="{selected: isMediaSelected(media)}" \
-                    v-on:click.stop="toggleSelectionOfMedia(media)" \
-                    draggable="true" v-on:dragstart="dragStart(media, $event)"> \
-                    <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
-                            <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" :style="{ maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\' }"/> \
-                    </div> \
-                    <div class="media-container-main-item-title card-body"> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button mr-4" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
-                        <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
-                    </div> \
-                 </li> \
-        </ol>\
-        \
-        ',
-    data: function () {
-        return {
-            T: {}
-        }
-    },
-    props: {
-        filteredMediaItems: Array,
-        selectedMedias: Array,
-        thumbSize: Number
-    },
-    created: function () {
-        var self = this;
-        // retrieving localized strings from view
-        self.T.editButton = $('#t-edit-button').val();
-        self.T.deleteButton = $('#t-delete-button').val();
-    },
-    methods: {
-        isMediaSelected: function (media) {
-            var result = this.selectedMedias.some(function (element, index, array) {
-                return element.url.toLowerCase() === media.url.toLowerCase();
-            });
-            return result;
-        },
-
-        toggleSelectionOfMedia: function (media) {
-            bus.$emit('mediaToggleRequested', media);
-        },
-        renameMedia: function (media) {
-            bus.$emit('renameMediaRequested', media);            
-        },
-        deleteMedia: function (media) {
-            bus.$emit('deleteMediaRequested', media);
-        },
-        dragStart: function (media, e) {
-            bus.$emit('mediaDragStartRequested', media, e);
-        }
-    }
-});
-
-// <media-items-table> component
-Vue.component('mediaItemsTable', {
-    template: '\
-        <table class="table media-items-table"> \
-            <thead> \
-                <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
-                    <th scope="col" v-on:click="changeSort(\'name\')"> \
-                       {{ T.nameHeader }} \
-                         <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                    </th> \
-                    <th scope="col" v-on:click="changeSort(\'size\')"> \
-                        <span class="optional-col"> \
-                            {{ T.sizeHeader }} \
-                         <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                        </span> \
-                    </th> \
-                    <th scope="col" v-on:click="changeSort(\'mime\')"> \
-                        <span class="optional-col"> \
-                           {{ T.typeHeader }} \
-                         <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                        </span> \
-                    </th> \
-                </tr>\
-            </thead>\
-            <tbody> \
-                    <tr v-for="media in filteredMediaItems" \
-                          class="media-item" \
-                          :class="{selected: isMediaSelected(media)}" \
-                          v-on:click.stop="toggleSelectionOfMedia(media)" \
-                          draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name"> \
-                             <td class="thumbnail-column"> \
-                                <div class="img-wrapper"> \
-                                    <img draggable="false" :src="media.url + \'?width=\' + thumbSize + \'&height=\' + thumbSize" /> \
-                                </div> \
-                            </td> \
-                            <td> \
-                                <div class="media-name-cell"> \
-                                   <span class="break-word"> {{ media.name }} </span>\
-                                    <div class="buttons-container"> \
-                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
-                                        <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
-                                    </div> \
-                                </div> \
-                            </td> \
-                            <td> \
-                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
-                            </td> \
-                            <td> \
-                                <div class="text-col optional-col">{{ media.mime }}</div> \
-                            </td> \
-                   </tr>\
-            </tbody>\
-        </table> \
-        ',
-    data: function () {
-        return {
-            T: {}
-        }
-    },
-    props: {
-        sortBy: String,
-        sortAsc: Boolean,
-        filteredMediaItems: Array,
-        selectedMedias: Array,
-        thumbSize: Number
-    },
-    created: function () {
-        var self = this;
-        self.T.imageHeader = $('#t-image-header').val();
-        self.T.nameHeader = $('#t-name-header').val();
-        self.T.sizeHeader = $('#t-size-header').val();
-        self.T.typeHeader = $('#t-type-header').val();
-        self.T.editButton = $('#t-edit-button').val();
-        self.T.deleteButton = $('#t-delete-button').val();
-    },
-    methods: {
-        isMediaSelected: function (media) {
-            var result = this.selectedMedias.some(function (element, index, array) {
-                return element.url.toLowerCase() === media.url.toLowerCase();
-            });
-            return result;
-        },
-
-        changeSort: function (newSort) {
-            bus.$emit('sortChangeRequested', newSort);
-        },
-
-        toggleSelectionOfMedia: function (media) {
-            bus.$emit('mediaToggleRequested', media);
-        },
-        renameMedia: function (media) {
-            bus.$emit('renameMediaRequested', media);            
-        },
-        deleteMedia: function (media) {
-            bus.$emit('deleteMediaRequested', media);
-        },
-        dragStart: function (media, e) {
-            bus.$emit('mediaDragStartRequested', media, e);
-        }
-    }
-});
-
-// <sort-indicator> component
-Vue.component('sortIndicator', {
-    template: '\
-        <div v-show="isActive" class="sort-indicator"> \
-            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
-            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
-        </div> \
-        ',
-    props: {
-        colname: String,
-        selectedcolname: String,
-        asc: Boolean
-    },
-    computed: {
-        isActive: function () {
-            return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
-        }
-    }
-});
-
-// <upload> component
-Vue.component('upload', {
-    template: '\
-        <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
-            <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
-            <div> \
-               <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
-               <span v-if="model.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage }} </span> \
-            </div> \
-        </div> \
-        ',
-    props: {
-        model: Object
-    },
-    mounted: function () {
-        var self = this;
-        $('#fileupload').bind('fileuploadprogress', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }            
-            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
-        });
-
-        $('#fileupload').bind('fileuploaddone', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }
-            if (data.result.files[0].error) {
-                self.handleFailure(data.files[0].name, data.result.files[0].error);
-            } else {  
-                bus.$emit('removalRequest', self.model);
-            }
-        });
-
-        $('#fileupload').bind('fileuploadfail', function (e, data) {
-            if (data.files[0].name !== self.model.name) {
-                return;
-            }
-            self.handleFailure(data.files[0].name , data.textStatus);            
-        });
-    },
-    methods: {
-        handleFailure: function (fileName, message) {
-            if (fileName !== this.model.name) {
-                return;
-            }
-            this.model.errorMessage = message;
-            bus.$emit('ErrorOnUpload', this.model);
-        },
-        dismissWarning: function () {
-            bus.$emit('removalRequest', this.model);
-        }
-    }
-});
-
-// <upload-list> component
-Vue.component('uploadList', {
-    template: '\
-        <div class="upload-list" v-show="files.length > 0"> \
-            <div class="header" @click="expanded = !expanded"> \
-                <span> {{ T.uploads }} </span> \
-                <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span> \
-                <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
-                    <div class="toggle-button"> \
-                    <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down"></i> \
-                    </div> \
-                    <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up"></i> \
-                    </div> \
-                </div> \
-            </div> \
-            <div class="card-body" v-show="expanded"> \
-                <div class="d-flex flex-wrap"> \
-                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
-                </div > \
-            </div> \
-        </div> \
-        ',
-    data: function () {
-        return {
-            files: [],
-            T: {},
-            expanded: false,
-            pendingCount: 0,
-            errorCount: 0
-        }
-    },
-    created: function () {
-        var self = this;
-        // retrieving localized strings from view
-        self.T.uploads = $('#t-uploads').val();
-        self.T.errors = $('#t-errors').val();
-        self.T.clearErrors = $('#t-clear-errors').val();
-    },
-    computed: {
-        fileCount: function () {
-            return this.files.length;
-        }
-    },
-    mounted: function () {
-        var self = this;
-
-        $('#fileupload').bind('fileuploadadd', function (e, data) {
-            if (!data.files) { 
-                return;
-            }
-            data.files.forEach(function (newFile) {                
-                var alreadyInList = self.files.some(function (f) {
-                    return f.name == newFile.name;
-                });
-
-                if (!alreadyInList) {
-                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
-                } else {
-                    console.error('A file with the same name is already on the queue:' + newFile.name);
-                }         
-            });            
-        });
-
-        bus.$on('removalRequest', function (fileUpload) {
-            self.files.forEach(function (item, index, array) {
-                if (item.name == fileUpload.name) {
-                    array.splice(index, 1);
-                }
-            });
-        });
-
-        bus.$on('ErrorOnUpload', function (fileUpload) {
-            self.updateCount();
-        });
-    },
-    methods: {
-        updateCount: function () {
-            this.errorCount = this.files.filter(function (item) {
-                return item.errorMessage != '';
-            }).length;
-            this.pendingCount = this.files.length - this.errorCount;
-            if (this.files.length < 1) {
-                this.expanded = false;
-            }
-        },
-        clearErrors: function () {            
-            this.files = this.files.filter(function (item) {
-                return item.errorMessage == '';
-            });
-        }
-    },
-    watch: {
-        files: function () {
-            this.updateCount();
-        }
-    }
-});

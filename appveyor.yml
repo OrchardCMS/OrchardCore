@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Windows Server 2019
 
 # Do not build feature branch with open Pull Requests
 skip_branch_with_pr: true
@@ -6,6 +6,13 @@ branches:
   only:
     - master
     - dev
+
+# Do not build if there are only documentation changes
+skip_commits:
+  files:
+    - '**/*.md'
+    - mkdocs.yml
+    - src/docs/**/*
 
 environment:
   global:
@@ -82,19 +89,21 @@ after_deploy:
     if ($IsMasterBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
+      Get-ChildItem -path ".\App_Data\" | Remove-Item -Recurse -Confirm:$false -Force
       dotnet publish -c Release --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-beta3 .
-      docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+      echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }
 
     if ($IsDevBranch)
     {
       cd $env:APPVEYOR_BUILD_FOLDER\src\OrchardCore.Cms.Web
+      Get-ChildItem -path ".\App_Data\" | Remove-Item -Recurse -Confirm:$false -Force
       dotnet publish -c Release  --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
       docker build -t orchardproject/orchardcore-cms-windows:dev .
-      docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+      echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }

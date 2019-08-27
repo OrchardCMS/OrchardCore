@@ -2,5 +2,5 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 <div>
-    @Model.PartFieldDefinition.DisplayName(): @String.Join(", ", Model.Field.Paths)
+    @Model.PartFieldDefinition.DisplayName(): @String.Join(", ", Model.Paths ?? Array.Empty<string>())
 </div>
