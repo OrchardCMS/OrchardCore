@@ -66,6 +66,7 @@ namespace OrchardCore.Autoroute
                 });
             });
 
+            services.AddSingleton<AutoRouteTransformer>();
             services.AddSingleton<IShellRouteValuesAddressScheme, AutoRouteValuesAddressScheme>();
         }
 
@@ -77,7 +78,7 @@ namespace OrchardCore.Autoroute
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
 
-            app.UseMiddleware<AutoRouteMiddleware>();
+            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{**slug}");
         }
     }
 }
