@@ -117,8 +117,12 @@ namespace OrchardCore.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    if (indexName != null) {
+                    if (indexName != null)
+                    {
                         indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
+                    }
+                    else {
+                        indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
                     }
 
                     foreach (var indexSettings in indexSettingsList)

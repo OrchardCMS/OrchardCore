@@ -23,14 +23,24 @@
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })
     </fieldset>
 
-    <div class="form-group" asp-validation-class-for="IndexName">
-        <label asp-for="IndexName">@T["Index options"]</label>
+    <div class="form-group" asp-validation-class-for="IndexLatest">
+        <label asp-for="IndexLatest">@T["Index options"]</label>
         <div class="custom-control custom-checkbox">
             <input type="checkbox" asp-for="IndexLatest" class="custom-control-input">
             <label class="custom-control-label" asp-for="IndexLatest">@T["Index draft (latest)"]</label>
             <span class="hint">— @T["Whether we index the published content item or draft (latest)."]</span>
         </div>
         <span asp-validation-for="IndexLatest" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="IndexInBackgroundTask">
+        <label asp-for="IndexInBackgroundTask">@T["Index options"]</label>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" asp-for="IndexInBackgroundTask" class="custom-control-input">
+            <label class="custom-control-label" asp-for="IndexInBackgroundTask">@T["Index in a background task with Lucene worker feature (when feature enabled)"]</label>
+            <span class="hint">— @T["Whether we process the index in a background task or not."]</span>
+        </div>
+        <span asp-validation-for="IndexInBackgroundTask" class="text-danger"></span>
     </div>
 
     <fieldset>

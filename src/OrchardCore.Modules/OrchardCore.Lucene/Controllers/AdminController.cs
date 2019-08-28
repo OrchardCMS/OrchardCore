@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
@@ -33,8 +35,10 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
 
         public AdminController(
+            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
@@ -48,6 +52,7 @@ namespace OrchardCore.Lucene.Controllers
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
         {
+            _contentManager = contentManager;
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
@@ -110,6 +115,7 @@ namespace OrchardCore.Lucene.Controllers
                 IndexName = settings.IndexName,
                 AnalyzerName = settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
+                IndexInBackgroundTask = settings.IndexInBackgroundTask,
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
                 IndexedContentTypes = settings.IndexedContentTypes
@@ -143,6 +149,7 @@ namespace OrchardCore.Lucene.Controllers
                 var settings = _luceneIndexSettingsService.List().Where(x => x.IndexName == model.IndexName).FirstOrDefault();
                 settings.AnalyzerName = model.AnalyzerName;
                 settings.IndexLatest = model.IndexLatest;
+                settings.IndexInBackgroundTask = model.IndexInBackgroundTask;
                 settings.IndexedContentTypes = model.IndexedContentTypes;
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
@@ -337,7 +344,9 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
                     var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+
+                    model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    model.Count = docs.Count;
                 }
                 catch (Exception e)
                 {
@@ -350,6 +359,16 @@ namespace OrchardCore.Lucene.Controllers
             });
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> IndexAction(AdminQueryViewModel model, string action, string contentItemId, string contentItemVersionId) {
+            _luceneIndexManager.DeleteDocuments(model.IndexName, new string[] { contentItemId });
+            _luceneIndexManager.DeleteDocumentVersions(model.IndexName, new string[] { contentItemVersionId });
+            //_luceneIndexManager.StoreDocuments(model.IndexName, );
+            //var contentItem = await _contentManager.GetAsync(new string[] { contentItemId });
+
+            return await Query(model);
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)

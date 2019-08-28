@@ -8,6 +8,8 @@ namespace OrchardCore.Lucene.Model
 
         public bool IndexLatest { get; set; }
 
+        public bool IndexInBackgroundTask { get; set; }
+
         public string[] IndexedContentTypes { get; set; }
     }
 }
