@@ -117,6 +117,10 @@ namespace OrchardCore.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
+                    if (indexName != null) {
+                        indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
+                    }
+
                     foreach (var indexSettings in indexSettingsList)
                     {
                         if (indexSettings.IndexedContentTypes.Length == 0)
@@ -125,6 +129,7 @@ namespace OrchardCore.Lucene
                         }
 
                         var contentItems = await contentManager.GetAsync(batch.Select(x => x.ContentItemId), indexSettings.IndexLatest);
+                        contentItems = contentItems.Where(x => indexSettings.IndexedContentTypes.Contains(x.ContentType));
 
                         foreach (var task in batch)
                         {
