@@ -8,24 +8,24 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
-    public class ContentCulturePickerUrlFilter : ILiquidFilter
+    public class SwitchCultureUrlFilter : ILiquidFilter
     {
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelperObj))
             {
-                throw new ArgumentException("UrlHelper missing while invoking 'content_culture_picker_url'");
+                throw new ArgumentException("UrlHelper missing while invoking 'switch_culture_url'");
             }
             var request = (HttpRequest)ctx.GetValue("Request")?.ToObjectValue();
             if (request == null)
             {
-                throw new ArgumentException("HttpRequest missing while invoking 'content_culture_picker_url'");
+                throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
             }
 
             var targetCulture = input.ToStringValue();
             var urlHelper = (IUrlHelper)urlHelperObj;
-            var url = urlHelper.Action("RedirectToLocalizedContent",
-                "ContentculturePicker",
+
+            var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
                 new
                 {
                     area = "OrchardCore.ContentLocalization",
