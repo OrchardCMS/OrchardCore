@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.HomeRoute
@@ -48,7 +49,20 @@ namespace OrchardCore.HomeRoute
                 }
             }
 
-            return new VirtualPathData(_target, "/");
+            var path = "/";
+
+            if (context.Values.Count > homeRoute.Count)
+            {
+                foreach (var entry in context.Values)
+                {
+                    if (!homeRoute.ContainsKey(entry.Key))
+                    {
+                        path = QueryHelpers.AddQueryString(path, entry.Key, entry.Value.ToString());
+                    }
+                }
+            }
+
+            return new VirtualPathData(_target, path);
         }
     }
 }
