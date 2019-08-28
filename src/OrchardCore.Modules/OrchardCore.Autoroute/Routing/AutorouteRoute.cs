@@ -55,7 +55,7 @@ namespace OrchardCore.Autoroute.Routing
                 {
                     foreach (var entry in context.Values)
                     {
-                        if (entry.Key == _options.ContentItemIdKey)
+                        if (String.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
