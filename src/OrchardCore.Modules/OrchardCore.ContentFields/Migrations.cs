@@ -10,21 +10,21 @@ namespace OrchardCore.ContentFields
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable(nameof(TextFieldIndex), table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
                 .Column<string>("Text", column => column.Nullable().WithLength(4000))
                 .Column<string>("BigText", column => column.Nullable().Unlimited())
             );
-            
+
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_TextFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentPart", "ContentPart")
+                .CreateIndex("IDX_TextFieldIndex_ContentType", "ContentType")
             );
 
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
@@ -44,20 +44,20 @@ namespace OrchardCore.ContentFields
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(BooleanFieldIndex), table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
                 .Column<bool>("Boolean", column => column.Nullable())
             );
 
             SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_BooleanFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentPart", "ContentPart")
+                .CreateIndex("IDX_BooleanFieldIndex_ContentType", "ContentType")
             );
 
             SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
@@ -75,22 +75,23 @@ namespace OrchardCore.ContentFields
             SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
                 .CreateIndex("IDX_BooleanFieldIndex_Boolean", "Boolean")
             );
-            
+
             SchemaBuilder.CreateMapIndexTable(nameof(NumericFieldIndex), table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
                 .Column<decimal>("Numeric", column => column.Nullable())
             );
 
             SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_NumericFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentPart", "ContentPart")
+                .CreateIndex("IDX_NumericFieldIndex_ContentType", "ContentType")
             );
 
             SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
@@ -110,20 +111,20 @@ namespace OrchardCore.ContentFields
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(DateTimeFieldIndex), table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
                 .Column<DateTime>("DateTime", column => column.Nullable())
             );
 
             SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_DateTimeFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentPart", "ContentPart")
+                .CreateIndex("IDX_DateTimeFieldIndex_ContentType", "ContentType")
             );
 
             SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
@@ -143,20 +144,20 @@ namespace OrchardCore.ContentFields
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(DateFieldIndex), table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
                 .Column<DateTime>("Date", column => column.Nullable())
             );
 
             SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_DateFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentPart", "ContentPart")
+                .CreateIndex("IDX_DateFieldIndex_ContentType", "ContentType")
             );
 
             SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
@@ -176,20 +177,20 @@ namespace OrchardCore.ContentFields
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(ContentPickerFieldIndex), table => table
-                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
                 .Column<string>("ContentItemId", column => column.WithLength(26))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentField", column => column.WithLength(255))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
+                .Column<string>("SelectedContentItemId", column => column.WithLength(255))
+            );
+
+            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemId", "ContentItemId")
             );
 
             SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentPart", "ContentPart")
             );
 
             SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
@@ -205,7 +206,7 @@ namespace OrchardCore.ContentFields
             );
 
             SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_ContentPickerFieldIndex_SelectedContentItemId", "SelectedContentItemId")
             );
 
             return 1;
