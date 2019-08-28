@@ -121,7 +121,8 @@ namespace OrchardCore.Lucene
                     {
                         indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
                     }
-                    else {
+                    else
+                    {
                         indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
                     }
 
