@@ -35,10 +35,8 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManager _contentManager;
 
         public AdminController(
-            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
@@ -52,7 +50,6 @@ namespace OrchardCore.Lucene.Controllers
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
         {
-            _contentManager = contentManager;
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
@@ -344,9 +341,7 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
                     var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-
-                    model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                    model.Count = docs.Count;
+                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
                 }
                 catch (Exception e)
                 {
@@ -359,16 +354,6 @@ namespace OrchardCore.Lucene.Controllers
             });
 
             return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> IndexAction(AdminQueryViewModel model, string action, string contentItemId, string contentItemVersionId) {
-            _luceneIndexManager.DeleteDocuments(model.IndexName, new string[] { contentItemId });
-            _luceneIndexManager.DeleteDocumentVersions(model.IndexName, new string[] { contentItemVersionId });
-            //_luceneIndexManager.StoreDocuments(model.IndexName, );
-            //var contentItem = await _contentManager.GetAsync(new string[] { contentItemId });
-
-            return await Query(model);
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
