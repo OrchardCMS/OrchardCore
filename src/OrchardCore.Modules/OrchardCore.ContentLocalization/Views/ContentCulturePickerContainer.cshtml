@@ -1,14 +1,19 @@
-@using System.Globalization
-
+@{ 
+    var otherCultures = ((IEnumerable<CultureViewModel>)Model.SupportedCultures).Where(entry => !string.Equals(entry.Name, Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase));
+}
 <ul>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in ((IEnumerable<CultureInfo>)Model.SupportedCultures).Where(entry => !string.Equals(entry.Name, Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase)))
+            @foreach (var culture in otherCultures)
             {
-                @await DisplayAsync(await New.ContentCulturePickerLink(
-                   Culture: culture
-                ))
+                <a asp-action="RedirectToLocalizedContent"
+                   asp-controller="ContentculturePicker"
+                   asp-route-area="OrchardCore.ContentLocalization"
+                   asp-route-targetculture="@culture.Name"
+                   asp-route-contentItemUrl="@Context.Request.Path"
+                   class="dropdown-item">@culture.DisplayName</a>
+
             }
         </div>
     </li>

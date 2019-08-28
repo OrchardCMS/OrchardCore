@@ -9,6 +9,11 @@
 }
 
 @await DisplayAsync(await New.ContentCulturePickerContainer(
-    CurrentCulture: currentCulture,
-    SupportedCultures: supportedCultures.Select(c => CultureInfo.GetCultureInfo(c))
-))
+    CurrentCulture: new CultureViewModel() { Name = currentCulture.Name, DisplayName = currentCulture.DisplayName },
+    SupportedCultures: supportedCultures.Select(c =>
+        {
+            var x = CultureInfo.GetCultureInfo(c);
+            return new CultureViewModel() { Name = x.Name, DisplayName = x.DisplayName };
+        }
+    )
+));
