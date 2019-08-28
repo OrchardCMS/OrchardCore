@@ -54,6 +54,10 @@ In addition you can specify a `Tenant` setting by using the Tenant Name, in this
 }
 ```
 
+### `ORCHARD_APP_DATA` Environment Variable
+
+The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable. Paths can be relative to the application path (./App_Data), absolute (/path/from/root), or fully qualified (D:\Path\To\App_Data). If the folder does not exist the application will attempt to create it.
+
 ### `IShellConfiguration` in the Global Tenant Configuration `App_Data/appsettings.json`
 
 These settings can also be located in an `App_Data/appsettings.json` folder (not created by default), and any settings specified there will override settings from the `Startup` Project.
