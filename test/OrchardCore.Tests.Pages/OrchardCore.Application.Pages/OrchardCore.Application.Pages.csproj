@@ -2,6 +2,9 @@
 
   <Import Project="..\..\..\src\OrchardCore.Build\Dependencies.props" />
 
+  <!-- Necessary as we reference the Project and not the Package -->
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
+
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <TieredCompilation>true</TieredCompilation>
@@ -10,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Folder Include="Localization\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,8 +27,9 @@
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.targets" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
+
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
