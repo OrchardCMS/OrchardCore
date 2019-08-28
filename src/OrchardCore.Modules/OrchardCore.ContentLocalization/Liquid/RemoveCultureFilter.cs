@@ -15,13 +15,12 @@ namespace OrchardCore.ContentLocalization.Liquid
             var cultureName = arguments["cultureName"]?.ToStringValue();
             if (string.IsNullOrEmpty(cultureName))
             {
-                throw new ArgumentException("(remove_culture_by_name) You must supply a cultureName argument");
+                throw new ArgumentException("You must supply a cultureName argument while invoking 'remove_culture'");
             }
-            
 
             if (input == null || input.Type != FluidValues.Array)
             {
-                throw new ArgumentException("(remove_culture_by_name) Input must be a list of CultureInfo objects");
+                throw new ArgumentException("Input must be a list of CultureViewModel objects for 'remove_culture'");
             }
 
             var cultures = input.Enumerate().Select(x=>(CultureViewModel)x.ToObjectValue()).ToList();
