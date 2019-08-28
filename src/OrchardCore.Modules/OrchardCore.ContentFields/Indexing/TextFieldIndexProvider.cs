@@ -71,21 +71,12 @@ namespace OrchardCore.ContentFields.Indexing
                         {
                             results.Add(new TextFieldIndex
                             {
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Published = contentItem.Published,
                                 Latest = contentItem.Latest,
-                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000))
-                            });
-
-                            results.Add(new TextFieldIndex
-                            {
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
                                 Published = contentItem.Published,
-                                Latest = contentItem.Latest,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentType = contentItem.ContentType,
+                                ContentField = fieldDefinition.Name,
+                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000)),
                                 BigText = field.Text
                             });
                         }

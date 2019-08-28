@@ -68,8 +68,10 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new BooleanFieldIndex
                         {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
                             ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
                             Boolean = field.Value
                         });

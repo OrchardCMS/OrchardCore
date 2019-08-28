@@ -68,11 +68,11 @@ namespace OrchardCore.ContentFields.Indexing
 
                         results.Add(new DateTimeFieldIndex
                         {
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Published = contentItem.Published,
                             Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentType = contentItem.ContentType,
+                            ContentField = fieldDefinition.Name,
                             DateTime = field.Value
                         });
                     }

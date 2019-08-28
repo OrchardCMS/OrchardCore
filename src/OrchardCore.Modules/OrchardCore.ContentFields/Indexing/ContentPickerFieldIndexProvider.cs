@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Indexing
 {
     public class ContentPickerFieldIndex : ContentFieldIndex
     {
-        public string ContentItemId { get; set; }
+        public string SelectedContentItemId { get; set; }
     }
 
     public class ContentPickerFieldIndexProvider : ContentFieldIndexProvider
@@ -71,12 +71,12 @@ namespace OrchardCore.ContentFields.Indexing
                         {
                             results.Add(new ContentPickerFieldIndex
                             {
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Published = contentItem.Published,
                                 Latest = contentItem.Latest,
-                                ContentItemId = contentItemId
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentType = contentItem.ContentType,
+                                ContentField = fieldDefinition.Name,
+                                SelectedContentItemId = contentItemId
                             });
                         }
                     }
