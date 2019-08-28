@@ -31,6 +31,11 @@ namespace OrchardCore.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
+                    if (_paths.TryGetValue(entry.ContentItemId, out var previousPath))
+                    {
+                        _contentItemIds.Remove(previousPath);
+                    }
+
                     var requestPath = "/" + entry.Path.TrimStart('/');
                     _paths[entry.ContentItemId] = requestPath;
                     _contentItemIds[requestPath] = entry.ContentItemId;

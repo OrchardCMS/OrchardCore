@@ -11,9 +11,9 @@
     <PackageManagement Include="AspNet.Security.OpenIdConnect.Primitives" Version="2.0.0" />
     <PackageManagement Include="Castle.Core" Version="4.4.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9571" />
+    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9578" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-1525" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-1598" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
@@ -24,7 +24,7 @@
     <PackageManagement Include="Moq" Version="4.10.1" />
     <PackageManagement Include="Nancy" Version="2.0.0-clinteastwood" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
-    <PackageManagement Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageManagement Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.8.1" />
     <PackageManagement Include="NodaTime" Version="2.4.5" />
     <PackageManagement Include="OpenIddict" Version="2.0.0" />
@@ -40,12 +40,12 @@
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1350" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1350" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1350" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1350" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1350" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1350" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1393" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1393" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1393" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1393" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1393" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1393" />
   </ItemGroup>
 
 </Project>

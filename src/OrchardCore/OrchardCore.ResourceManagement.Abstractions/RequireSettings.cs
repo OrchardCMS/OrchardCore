@@ -37,6 +37,7 @@ namespace OrchardCore.ResourceManagement
             DebugMode = options.DebugMode;
             Culture = options.Culture;
             CdnBaseUrl = options.CdnBaseUrl;
+            AppendVersion = options.AppendVersion;
         }
 
         public bool HasAttributes
@@ -130,7 +131,7 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings SetAppendVersion(bool? appendVersion)
+        public RequireSettings ShouldAppendVersion(bool? appendVersion)
         {
             AppendVersion = appendVersion;
             return this;
@@ -201,7 +202,7 @@ namespace OrchardCore.ResourceManagement
                 .UseCulture(Culture).UseCulture(other.Culture)
                 .UseCondition(Condition).UseCondition(other.Condition)
                 .UseVersion(Version).UseVersion(other.Version)
-                .SetAppendVersion(AppendVersion).SetAppendVersion(other.AppendVersion)
+                .ShouldAppendVersion(AppendVersion).ShouldAppendVersion(other.AppendVersion)
                 .Define(InlineDefinition).Define(other.InlineDefinition);
             settings._attributes = MergeAttributes(other);
             return settings;

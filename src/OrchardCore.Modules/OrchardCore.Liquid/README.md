@@ -137,6 +137,26 @@ Output
 landing-page
 ```
 
+### `liquid`
+
+Renders a liquid string template.
+
+Input
+
+```liquid
+{{ Model.ContentItem.Content.Paragraph.Content.Html | liquid }}
+```
+
+In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value.
+
+Output
+
+```
+<p> <img src="/blog/media/kitten.jpg" /> </p>
+```
+
+Optionally you can pass a class for model binding.
+
 ### `markdownify`
 
 Converts a Markdown string to HTML.
@@ -620,6 +640,27 @@ Example
 ```liquid
 {% antiforgerytoken %}
 ```
+
+## Razor Helpers
+
+### `LiquidToHtmlAsync`
+
+To render a liquid string template as `IHtmlContent` within Razor use the `LiquidToHtmlAsync` helper extension method on the view's base `Orchard` property, e.g.:
+
+Input
+```
+@await Orchard.LiquidToHtmlAsync((string)Model.ContentItem.Content.Paragraph.Content.Html)
+```
+
+In this example we assume that `Model.ContentItem.Content.Paragraph.Content` represents an `HtmlField`, and `Html` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
+
+Output
+
+```
+<p> <img src="/media/kitten.jpg" /> </p>
+```
+
+Optionally you can pass a class for model binding.
 
 ## CREDITS
 

@@ -1,10 +1,11 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Security.Permissions;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security
 {
@@ -41,19 +42,23 @@ namespace OrchardCore.Contents.Security
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             // manage rights only for Securable types
             var securableTypes = _contentDefinitionManager.ListTypeDefinitions()
                 .Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Securable);
 
+            var result = new List<Permission>();
+
             foreach (var typeDefinition in securableTypes)
             {
                 foreach (var permissionTemplate in PermissionTemplates.Values)
                 {
-                    yield return CreateDynamicPermission(permissionTemplate, typeDefinition);
+                    result.Add(CreateDynamicPermission(permissionTemplate, typeDefinition));
                 }
             }
+
+            return Task.FromResult(result.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

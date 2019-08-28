@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Security.Permissions
 {
@@ -8,7 +9,7 @@ namespace OrchardCore.Security.Permissions
     /// </summary>
     public interface IPermissionProvider
     {
-        IEnumerable<Permission> GetPermissions();
+        Task<IEnumerable<Permission>> GetPermissionsAsync();
         IEnumerable<PermissionStereotype> GetDefaultStereotypes();
     }
 
