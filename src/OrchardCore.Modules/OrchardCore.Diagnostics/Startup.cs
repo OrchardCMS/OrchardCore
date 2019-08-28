@@ -2,13 +2,12 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Routing;
-using OrchardCore.Routing;
 
 namespace OrchardCore.Diagnostics
 {
@@ -52,21 +51,12 @@ namespace OrchardCore.Diagnostics
                     {
                         // Workaround of c.f. https://github.com/aspnet/AspNetCore/issues/11555
                         var endpointDataSource = context.RequestServices.GetRequiredService<EndpointDataSource>();
-                        var routeValues = new RouteValueDictionary(new
-                        {
-                            area = "OrchardCore.Diagnostics",
-                            controller = "Diagnostics",
-                            action = "Error"
-                        });
 
                         var endpoint = endpointDataSource.Endpoints
-                            .Where(e => e.MatchControllerRoute(routeValues))
+                            .Where(e => e.Metadata.GetMetadata<RouteNameMetadata>().RouteName == "Diagnostics.Error")
                             .FirstOrDefault();
 
-                        if (endpoint != null)
-                        {
-                            endpoint.Select(context, routeValues);
-                        }
+                        context.SetEndpoint(endpoint);
                     }
                 }
             });
