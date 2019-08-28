@@ -25,12 +25,27 @@ namespace OrchardCore.HomeRoute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            if (Match(address.ExplicitValues))
+            var homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+
+            if (Match(homeRoute, address.ExplicitValues))
             {
+                var routeValues = new RouteValueDictionary(address.ExplicitValues);
+
+                if (address.ExplicitValues.Count > homeRoute.Count)
+                {
+                    foreach (var entry in address.ExplicitValues)
+                    {
+                        if (!homeRoute.ContainsKey(entry.Key))
+                        {
+                            routeValues.Remove(entry.Key);
+                        }
+                    }
+                }
+
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(String.Empty, address.ExplicitValues, null),
+                    RoutePatternFactory.Parse(String.Empty, routeValues, null),
                     0,
                     null,
                     null
@@ -42,10 +57,8 @@ namespace OrchardCore.HomeRoute.Routing
             return Enumerable.Empty<Endpoint>();
         }
 
-        private bool Match(RouteValueDictionary explicitValues)
+        private bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)
         {
-            var routeValues = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
-
             foreach (var entry in routeValues)
             {
                 if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))

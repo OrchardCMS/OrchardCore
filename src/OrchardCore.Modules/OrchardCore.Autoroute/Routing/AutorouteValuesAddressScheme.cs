@@ -37,10 +37,28 @@ namespace OrchardCore.Autoroute.Routing
 
             if (Match(address.ExplicitValues))
             {
+                var routeValues = new RouteValueDictionary(address.ExplicitValues);
+
+                if (address.ExplicitValues.Count > _options.GlobalRouteValues.Count + 1)
+                {
+                    foreach (var entry in address.ExplicitValues)
+                    {
+                        if (String.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        if (!_options.GlobalRouteValues.ContainsKey(entry.Key))
+                        {
+                            routeValues.Remove(entry.Key);
+                        }
+                    }
+                }
+
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(path, address.ExplicitValues, null),
+                    RoutePatternFactory.Parse(path, routeValues, null),
                     0,
                     null,
                     null
