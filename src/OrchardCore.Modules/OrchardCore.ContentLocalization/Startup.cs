@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
@@ -85,17 +86,17 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
+
     [RequireFeatures("OrchardCore.Liquid")]
     public class LocalizationLiquidStartup : StartupBase
     {
         static LocalizationLiquidStartup()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
         }
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddLiquidFilter<RemoveCultureFilter>("remove_culture");
-            services.AddLiquidFilter<ContentCulturePickerUrlFilter>("content_culture_picker_url");
+            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
     }
 }

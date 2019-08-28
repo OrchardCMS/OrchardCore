@@ -60,14 +60,15 @@ You should override this shape in your theme.
 ##### ContentCulturePickerContainer Example
 
 ```liquid
-{% assign otherCultures = Model.SupportedCultures | remove_culture: cultureName: Model.CurrentCulture.Name %}
 <ul>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            {% for culture in otherCultures %}
-                <a class="dropdown-item" href="{{culture.Name | content_culture_picker_url}}">{{culture.DisplayName}}</a
-            {% endfor %}
+        {% for culture in Model.SupportedCultures %}
+            {% if culture.Name != Model.CurrentCulture.Name  %}
+            <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
+            {% endif %}
+        {% endfor %}
         </div>
     </li>
 </ul>
@@ -75,21 +76,20 @@ You should override this shape in your theme.
 ```
 
 ```razor
-@{ 
-    var otherCultures = ((IEnumerable<CultureViewModel>)Model.SupportedCultures).Where(entry => !string.Equals(entry.Name, Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase));
-}
 <ul>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
         <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in otherCultures)
+            @foreach (var culture in Model.SupportedCultures)
             {
-                <a asp-action="RedirectToLocalizedContent"
-                   asp-controller="ContentculturePicker"
-                   asp-route-area="OrchardCore.ContentLocalization"
-                   asp-route-targetculture="@culture.Name"
-                   asp-route-contentItemUrl="@Context.Request.Path"
-                   class="dropdown-item">@culture.DisplayName</a>
+                if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    <a asp-route="RedirectToLocalizedContent"
+                       asp-route-area="OrchardCore.ContentLocalization"
+                       asp-route-targetculture="@culture.Name"
+                       asp-route-contentItemUrl="@Context.Request.Path"
+                       class="dropdown-item">@culture.DisplayName</a>
+                }
             }
         </div>
     </li>
@@ -98,33 +98,14 @@ You should override this shape in your theme.
 
 ## Liquid filters
 
-### `remove_culture`
+### `switch_culture_url`
 
-Removes a culture from a list of CultureViewModel. Assuming the following model:
-
-```text
-SupportedCultures = [{Name="fr", DisplayName="Français"}, {Name="en", DisplayName="English"}]
-Currentculture = {Name="fr", DisplayName="Français"}
-```
-
-Input
-```liquid
-{{ Model.SupportedCultures | remove_culture: cultureName: Model.CurrentCulture.Name }}
-```
-
-Output
-
-```text
-[ {Name="en", DisplayName="English"}]
-```
-### `content_culture_picker_url`
-
-Returns the URL of the `ContentCulturePicker` Action method.
+Returns the URL of the Action that switches cultures.
 
 Input
 
 ```liquid
-{{ Model.Culture.Name | content_culture_picker_url }}
+{{ Model.Culture.Name | switch_culture_url }}
 ```
 
 Output
