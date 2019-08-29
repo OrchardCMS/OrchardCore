@@ -161,7 +161,8 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
-                _.ComplexityConfiguration = new ComplexityConfiguration {
+                _.ComplexityConfiguration = new ComplexityConfiguration
+                {
                     MaxDepth = _settings.MaxDepth,
                     MaxComplexity = _settings.MaxComplexity,
                     FieldImpact = _settings.FieldImpact
