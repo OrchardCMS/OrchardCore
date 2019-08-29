@@ -53,16 +53,16 @@ namespace OrchardCore.Media.Azure
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                    var logger = serviceProvider.GetRequiredService<ILogger<MediaFileStoreCacheFileProvider>>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, MediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
+                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
                         Directory.CreateDirectory(mediaCachePath);
                     }
 
-                    return new MediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
+                    return new DefaultMediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
 
                 // Replace the default media file provider with the media cache file provider.
@@ -96,7 +96,7 @@ namespace OrchardCore.Media.Azure
                         mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
                     }
 
-                    return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
             }
 

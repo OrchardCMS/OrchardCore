@@ -10,7 +10,7 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class MediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
+    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
     {
         /// <summary>
         /// The path in the wwwroot folder containing any asset cache.
@@ -18,18 +18,18 @@ namespace OrchardCore.Media.Core
         /// </summary>
         public static readonly string AssetsCachePath = "ms-cache";
 
-        // Use default stream copy buffer size to stay in gen0 garbage collection;
+        // Use default stream copy buffer size to stay in gen0 garbage collection.
         private const int StreamCopyBufferSize = 81920;
 
-        private readonly ILogger<MediaFileStoreCacheFileProvider> _logger;
+        private readonly ILogger<DefaultMediaFileStoreCacheFileProvider> _logger;
 
-        public MediaFileStoreCacheFileProvider(ILogger<MediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
+        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;
         }
 
-        public MediaFileStoreCacheFileProvider(ILogger<MediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;

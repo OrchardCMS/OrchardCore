@@ -5,13 +5,13 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class MediaFileStore : IMediaFileStore
+    public class DefaultMediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
         private readonly string _requestBasePath;
         private readonly string _cdnBaseUrl;
 
-        public MediaFileStore(
+        public DefaultMediaFileStore(
             IFileStore fileStore,
             string requestBaseUrl,
             string cdnBaseUrl)

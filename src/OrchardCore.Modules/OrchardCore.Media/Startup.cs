@@ -95,7 +95,7 @@ namespace OrchardCore.Media
                     mediaUrlBase = fileStore.Combine(originalPathBase, mediaUrlBase);
                 }
 
-                return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
+                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
