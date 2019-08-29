@@ -12,6 +12,12 @@ namespace OrchardCore.Media.Core
 {
     public class MediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
     {
+        /// <summary>
+        /// The path in the wwwroot folder containing any asset cache.
+        /// The tenants name will be appended to this folder path.
+        /// </summary>
+        public static readonly string AssetsCachePath = "ms-cache";
+
         // Use default stream copy buffer size to stay in gen0 garbage collection;
         private const int StreamCopyBufferSize = 81920;
 

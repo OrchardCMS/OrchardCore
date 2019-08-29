@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<MediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, MediaOptions.AssetsCachePath, shellSettings);
+                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, MediaFileStoreCacheFileProvider.AssetsCachePath, shellSettings);
 
                     if (!Directory.Exists(mediaCachePath))
                     {

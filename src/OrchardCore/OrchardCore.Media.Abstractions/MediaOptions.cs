@@ -47,11 +47,5 @@ namespace OrchardCore.Media
         /// The path in the tenant's App_Data folder containing the assets.
         /// </summary>
         public string AssetsPath { get; set; }
-
-        /// <summary>
-        /// The path in the wwwroot folder containing the asset cache.
-        /// The tenants name will be appended to this folder path.
-        /// </summary>
-        public static string AssetsCachePath { get; set; } = "store-cache";
     }
 }
