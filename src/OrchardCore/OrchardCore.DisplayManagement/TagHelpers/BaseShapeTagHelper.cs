@@ -15,6 +15,9 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             "id", "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
         };
 
+        protected const string PropertyPrefix = "prop-";
+        protected IDictionary<string, string> _properties;
+
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
@@ -37,15 +40,35 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             _displayHelper = displayHelper;
         }
 
+        /// <summary>
+        /// Additional properties for the shape.
+        /// </summary>
+        [HtmlAttributeName(DictionaryAttributePrefix = PropertyPrefix)]
+        public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-            // Extract all attributes from the tag helper to
-            var properties = new Dictionary<string, string>();
+            var properties = new Dictionary<string, object>();
+
+            // These prefixed properties are bound with their original type and not converted as IHtmlContent
+            foreach(var property in Properties)
+            {
+                var normalizedName = property.Key.ToPascalCaseDash();
+                properties.Add(normalizedName, property.Value);
+            }
+
+            // Extract all other attributes from the tag helper, which are passed as IHtmlContent
             foreach (var pair in output.Attributes)
             {
+                // Check it's not a reserved property name
                 if (!InternalProperties.Contains(pair.Name))
                 {
-                    properties[pair.Name.ToPascalCaseDash()] = pair.Value.ToString();
+                    var normalizedName = pair.Name.ToPascalCaseDash();
+
+                    if (!properties.ContainsKey(normalizedName))
+                    {
+                        properties.Add(normalizedName, pair.Value.ToString());
+                    }
                 }
             }
 
