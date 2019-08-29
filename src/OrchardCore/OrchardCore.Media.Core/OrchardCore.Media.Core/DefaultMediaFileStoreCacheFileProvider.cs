@@ -13,8 +13,8 @@ namespace OrchardCore.Media.Core
     public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
     {
         /// <summary>
-        /// The path in the wwwroot folder containing any asset cache.
-        /// The tenants name will be appended to this folder path.
+        /// The path in the wwwroot folder containing the asset cache.
+        /// The tenants name will be appended to this path.
         /// </summary>
         public static readonly string AssetsCachePath = "ms-cache";
 
