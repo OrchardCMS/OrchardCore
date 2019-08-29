@@ -52,22 +52,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
             else
             {
-                return GenerateTitleUsingFormat(siteSettings.PageTitleFormat);
+                var result = await _liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext());
+                return new HtmlString(result);
             }
-        }
-
-        private IHtmlContent GenerateTitleUsingFormat(string pageTitleFormat)
-        {
-            var htmlContentBuilder = new HtmlContentBuilder();
-
-            // Need to parse the title format somehow
-            //var templateContext = new TemplateContext();
-
-            //var test = await _liquidTemplateManager.RenderAsync(pageTitleFormat, NullEncoder.Default, templateContext);
-
-            htmlContentBuilder.AppendHtml(pageTitleFormat);
-
-            return htmlContentBuilder;
         }
     }
 }
