@@ -4,8 +4,12 @@ namespace OrchardCore.ResourceManagement
     {
         public bool UseCdn { get; set; } = true;
 
+        public string CdnBaseUrl { get; set; }
+
         public bool DebugMode { get; set; } = false;
 
         public string Culture { get; set; }
+
+        public bool AppendVersion { get; set; } = true;
     }
 }

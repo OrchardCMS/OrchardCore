@@ -7,7 +7,7 @@ namespace OrchardCore.ContentLocalization
     public interface IContentLocalizationManager
     {
         /// <summary>
-        /// Gets the list of items for the localizationSet
+        /// Get the list of items for the localizationSet
         /// </summary>
         /// <returns>List of all items matching a localizationSet</returns>
         Task<IEnumerable<ContentItem>> GetItemsForSet(string localizationSet);

@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -38,8 +39,9 @@ namespace OrchardCore.Media.Azure
                 {
                     var options = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var clock = serviceProvider.GetRequiredService<IClock>();
+                    var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
 
-                    var fileStore = new BlobFileStore(options, clock);
+                    var fileStore = new BlobFileStore(options, clock, contentTypeProvider);
 
                     var mediaBaseUri = fileStore.BaseUri;
                     if (!String.IsNullOrEmpty(options.PublicHostName))

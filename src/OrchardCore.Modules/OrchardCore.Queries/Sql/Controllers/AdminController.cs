@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IStringLocalizer<AdminController> _stringLocalizer;
 
         public AdminController(
-            IAuthorizationService authorizationService, 
+            IAuthorizationService authorizationService,
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer)
@@ -62,7 +62,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             {
                 model.Parameters = "{ }";
             }
-            
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -96,7 +96,7 @@ namespace OrchardCore.Queries.Sql.Controllers
                 }
                 catch(Exception e)
                 {
-                    ModelState.AddModelError("", _stringLocalizer["An error occured while executing the SQL query: {0}", e.Message]);
+                    ModelState.AddModelError("", _stringLocalizer["An error occurred while executing the SQL query: {0}", e.Message]);
                 }
             }
             else

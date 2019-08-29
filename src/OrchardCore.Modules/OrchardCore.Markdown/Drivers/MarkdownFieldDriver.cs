@@ -28,12 +28,8 @@ namespace OrchardCore.Markdown.Drivers
                 templateContext.SetValue("ContentItem", field.ContentItem);
                 templateContext.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
 
-                using (var writer = new StringWriter())
-                {
-                    await _liquidTemplatemanager.RenderAsync(field.Markdown, writer, System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
-                    model.Markdown = writer.ToString();
-                    model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
-                }
+                model.Markdown = await _liquidTemplatemanager.RenderAsync(field.Markdown,  System.Text.Encodings.Web.HtmlEncoder.Default, templateContext);
+                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
 
                 model.Field = field;
                 model.Part = context.ContentPart;

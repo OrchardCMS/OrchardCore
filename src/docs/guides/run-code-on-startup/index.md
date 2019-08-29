@@ -3,7 +3,7 @@
 The `Startup` classes are used to initialize the services and piece of middleware. 
 They are called when a tenant is initialized.
 
-The interface `OrchardCore.ModulesIModularTenantEvents` provides a way to define user code that will 
+The interface `OrchardCore.Modules.IModularTenantEvents` provides a way to define user code that will 
 be executed when the tenant is first hit (tentant activation).
 
 All tenants are lazy-loaded, meaning that when the app starts the event handlers are 
@@ -13,7 +13,6 @@ In the following example the class `MyStartupTaskService` inherits from `Modular
 to implement `IModularTenantEvents`.
 
 ```csharp
-
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -30,9 +29,9 @@ public class MyStartupTaskService : ModularTenantEvents
 
     public override Task ActivatingAsync()
     {
-        _logger.LogInfo("A tenant has been activated.");
+        _logger.LogInformation("A tenant has been activated.");
 
-        return Task.CompletedTask
+        return Task.CompletedTask;
     }
 }
 ```
@@ -43,5 +42,13 @@ Then this class is registered on the `ConfigureServices()` method of the module'
 services.AddScoped<IModularTenantEvents, MyStartupTaskService>();
 ```
 
-> NB: `ActivatingAsync` events are invoked in the order of their registration, which is derived from
-the modules dependency graph. The `ActivatedAsync` events are invoked in the reverse order.
+!!! note
+    `ActivatingAsync` events are invoked in the order of their registration, which is derived from
+    the modules dependency graph. The `ActivatedAsync` events are invoked in the reverse order.
+
+When ran from the terminal, you should see output like the following after the first request is processed:
+
+```
+info: MyStartupTaskService[0]
+      A tenant has been activated.
+```

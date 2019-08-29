@@ -1,5 +1,9 @@
 {
   "private": true,
+  "scripts": {
+    "build": "gulp build",
+    "watch": " gulp watch"
+  },
   "devDependencies": {
     "es6-promise": "4.2.6",
     "file-system": "2.2.2",

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media
@@ -9,30 +11,36 @@ namespace OrchardCore.Media
         public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMedia", "Manage Own Media", new[] { ManageMedia });
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder };
+            return Task.FromResult(new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
-                new PermissionStereotype {
+            return new[]
+            {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
                     Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
                     Permissions = new[] { ManageMedia }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
                     Permissions = new[] { ManageOwnMedia }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
                     Permissions = new[] { ManageOwnMedia }
                 },

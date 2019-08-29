@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="WindowsAzure.Storage" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" />
   </ItemGroup>
 
   <ItemGroup>
