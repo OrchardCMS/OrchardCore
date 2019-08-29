@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return User.Identity.IsAuthenticated ? Forbid() : Challenge();
+                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
             {
-                return User.Identity.IsAuthenticated ? Forbid() : Challenge();
+                return User.Identity.IsAuthenticated ? (IActionResult)Forbid() : Challenge();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
