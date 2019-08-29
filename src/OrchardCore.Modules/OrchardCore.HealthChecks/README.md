@@ -1,14 +1,15 @@
 # Health Check (OrchardCore.HealthChecks)
 
-This module provides health check for the website.
+This module provides health checks for the tenant of Orchardcore application.
 
 ## Purpose
 
 Health checks are used by a container orchestrator or load balancer to quickly determine if a system is responding to requests normally. A container orchestrator might respond to a failing health check by halting a rolling deployment, or restarting a container. A load balancer might respond to a health check by routing traffic away from the failing instance of the service.
 
 
-## Liveness probe
+## Liveness Probe
 Liveness probe say: The application has crashed. You should shut it down and restart.
+
 ### Configuration in Docker
 Liveness probe can be used in Docker, which will be the most basic health check, and sufficient for many applications.
 
@@ -27,7 +28,7 @@ So in the Dockerfile, you can write something like:
         else {return 1};
     } catch { return 1 }```
 
-## Readiness probe
+## Readiness Probe
 A failed readiness probe says: The application is OK but not yet ready to serve traffic.
 
 ## Reference
