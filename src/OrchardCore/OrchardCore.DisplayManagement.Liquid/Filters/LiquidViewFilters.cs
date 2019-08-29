@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -57,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             foreach (var name in arguments.Names)
             {
-                properties.Add(LowerKebabToPascalCase(name), arguments[name].ToObjectValue());
+                properties.Add(name.ToPascalCaseUnderscore(), arguments[name].ToObjectValue());
             }
 
             return FluidValue.Create(await ((IShapeFactory)shapeFactory).CreateAsync(type, Arguments.From(properties)));
@@ -91,45 +92,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             }
 
             return NilValue.Instance;
-        }
-
-        public static ValueTask<FluidValue> ShapeTab(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (input.ToObjectValue() is IShape shape)
-            {
-                shape.Metadata.Tab = arguments["tab"].Or(arguments.At(0)).ToStringValue();
-            }
-
-            return new ValueTask<FluidValue>(input);
-        }
-
-        public static string LowerKebabToPascalCase(string attribute)
-        {
-            attribute = attribute.Trim();
-            var nextIsUpper = true;
-            var result = new StringBuilder();
-            for (int i = 0; i < attribute.Length; i++)
-            {
-                var c = attribute[i];
-                if (c == '_')
-                {
-                    nextIsUpper = true;
-                    continue;
-                }
-
-                if (nextIsUpper)
-                {
-                    result.Append(c.ToString().ToUpper());
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
-            }
-
-            return result.ToString();
         }
     }
 }

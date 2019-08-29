@@ -104,6 +104,23 @@ or, to display the UTC value before is it converted:
 }
 ```
 
+You can also render the content item as shapes: 
+
+```liquid
+{% assign contentItems = Model.ContentItemIds | content_item_id %}
+{% for contentItem in contentItems %}
+    {{ contentItem | shape_build_display: "Detail" | shape_render }}
+{% endfor %}
+```
+
+```razor
+@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+{
+    @await Orchard.DisplayAsync(contentItem, "Detail")
+}
+```
+
+
 ## Creating Custom Fields
 
 ### What to extend

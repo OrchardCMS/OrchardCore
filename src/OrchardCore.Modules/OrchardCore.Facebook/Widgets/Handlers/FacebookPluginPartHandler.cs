@@ -19,11 +19,11 @@ namespace OrchardCore.Facebook.Widgets.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, FacebookPluginPart part)
         {
-            context.For<BodyAspect>(bodyAspect =>
+            return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
                 try
                 {
-                    var result = _liquidTemplateManager.RenderAsync(part.Liquid, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext()).GetAwaiter().GetResult();
+                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, System.Text.Encodings.Web.HtmlEncoder.Default, new TemplateContext());
                     bodyAspect.Body = new HtmlString(result);
                 }
                 catch
@@ -31,8 +31,6 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                     bodyAspect.Body = HtmlString.Empty;
                 }
             });
-
-            return Task.CompletedTask;
         }
     }
 }

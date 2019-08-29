@@ -2,7 +2,6 @@
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Contents.ViewModels;
 @inject IContentManager ContentManager
-@inject OrchardCore.Environment.Shell.ShellSettings ShellSettings
 
 @{
     var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
@@ -14,8 +13,7 @@
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
 
-    var tenantPrefix = ("/" + ShellSettings.RequestUrlPrefix ?? string.Empty).TrimEnd('/');
-    var formActionWithoutTypeName = tenantPrefix + "/Admin/Contents/ContentItems";
+    var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
 }
 
 <h1>@RenderTitleSegments(pageTitle)</h1>

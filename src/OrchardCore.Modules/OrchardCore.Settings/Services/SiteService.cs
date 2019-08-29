@@ -41,7 +41,6 @@ namespace OrchardCore.Settings.Services
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
                 var session = GetSession();
-
                 site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
 
                 if (site == null)
@@ -98,6 +97,8 @@ namespace OrchardCore.Settings.Services
             existing.SuperUser = site.SuperUser;
             existing.TimeZoneId = site.TimeZoneId;
             existing.UseCdn = site.UseCdn;
+            existing.CdnBaseUrl = site.CdnBaseUrl;
+            existing.AppendVersion = site.AppendVersion;
 
             session.Save(existing);
 

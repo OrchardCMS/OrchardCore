@@ -13,7 +13,7 @@ namespace OrchardCore.ContentLocalization.Indexing
             foreach (var key in context.Keys)
             {
                 context.DocumentIndex.Set(key + ".LocalizationSet", part.LocalizationSet, options);
-                context.DocumentIndex.Set(key + ".Culture", part.Culture.ToLowerInvariant(), options);
+                context.DocumentIndex.Set(key + ".Culture", part.Culture?.ToLowerInvariant(), options);
             }
 
             return Task.CompletedTask;

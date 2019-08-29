@@ -92,9 +92,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 using (var requestContent = new MultipartFormDataContent())
                 {
                     requestContent.Add(new StreamContent(
-                        new FileStream(archiveFileName, 
+                        new FileStream(archiveFileName,
                         FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                    ), 
+                    ),
                         nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
@@ -108,7 +108,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 }
                 else
                 {
-                    _notifier.Error(H["An error occured while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    _notifier.Error(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
                 }
             }
             finally

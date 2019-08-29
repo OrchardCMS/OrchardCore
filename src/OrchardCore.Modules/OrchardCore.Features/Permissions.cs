@@ -1,5 +1,7 @@
-﻿using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Features
 {
@@ -7,12 +9,13 @@ namespace OrchardCore.Features
     {
         public static readonly Permission ManageFeatures = new Permission("ManageFeatures") { Description = "Manage Features" };
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] 
+            return Task.FromResult(new[]
             {
                 ManageFeatures
-            };
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

@@ -6,6 +6,25 @@ The `Resources` module provides commonly used resources like JavaScript librarie
 so any module can describe what resources are necessary on any page or component. When the full page is rendered all the required
 resources are computed and custom `<script>` and `<link>` tags are rendered accordingly. You can also register custom `<meta>` tags.
 
+
+## Resource Settings
+
+Resource Settings are configured through the site admin.
+
+#### UseCdn
+
+Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as jQuery, from the configured CDN.
+
+#### ResourceDebugMode
+
+When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.
+This will also disabled the CdnBaseUrl prepending.
+
+#### CdnBaseUrl
+
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
+be disabled in `ResourceDebugMode` 
+
 ## Named Resources
 
 Named resources are well-known scripts and stylesheets that are described in a module. They have a name, a type (script, stylesheet) 
@@ -13,15 +32,18 @@ and optionally a version. The `OrchardCore.Resources` modules provides some comm
 
 | Name | Type | Versions | Dependencies |
 | ---- | ---- | -------- | ------------ |
-| jQuery | Script | 1.12.4 | - |
-| jQuery | Script | 2.2.4 | - |
 | jQuery | Script | 3.3.1 | - |
-| Popper | Script | 1.14.3 | - |
-| Bootstrap | Script | 3.4.0, 4.1.3 | jQuery, Popper |
-| Bootstrap | Style | 3.4.0, 4.1.3 | - |
+| jQuery.slim | Script | 3.3.1 | - |
 | jQuery-ui | Script | 1.12.1 | jQuery |
-| font-awesome | Style | 4.7.0, 5.5.0 | - |
 | jQuery-ui-i18n | Script | 1.7.2 | jQuery-ui |
+| popper | Script | 1.15.0 | - |
+| bootstrap | Script | 3.4.0, 4.3.1 | jQuery, Popper |
+| bootstrap | Style | 3.4.0, 4.3.1 | - |
+| codemirror | Script | 5.4.2 | - |
+| codemirror | Style | 5.4.2 | - |
+| font-awesome | Style | 4.7.0, 5.7.2 | - |
+| font-awesome | Script | 5.7.2 | - |
+| font-awesome-v4-shims | Script | 5.7.2 | - |
 
 ## Usage
 
@@ -60,6 +82,15 @@ settings.UseVersion("3.3");
 ```
 
 This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+
+##### Append a version
+
+```csharp
+settings.UseAppendVersion(true);
+```
+
+This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and 
+appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk` 
 
 #### Register custom script
 
@@ -132,6 +163,18 @@ the latest one is always used.
 
 ```razor
 <script asp-name="bootstrap" version="3"></script>
+```
+
+##### Append a Version Hash
+
+You can append a version hash that will be calculated, and calculation cached, and appended in the format ?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk
+
+```liquid
+{% script name:"bootstrap", append_version:"true" %}
+```
+
+```razor
+<script asp-name="bootstrap" asp-append-version="true"></script>
 ```
 
 ##### Specify location

@@ -70,3 +70,35 @@ Executing a GraphQL query requires the issuer to have the `ExecuteGraphQL` permi
 cookie and OAuth 2.0 authentication. This means it's compatible with the OpenId module and supports JSON Web Token (JWT).
 
 By default anonymous users are not able to execute a GraphQL query.
+
+## Configuration
+
+It's possible to configure graphql options for exposing exceptions and max depth, max complexity and field impact.
+
+Configuration is done via the standard shell configuration, as follows.
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore.Apis.GraphQL": {
+      "ExposeExceptions": true,
+      "MaxDepth": 10, 
+      "MaxComplexity": 100, 
+      "FieldImpact": 2.0 
+    }
+  }
+}
+```
+*ExposeExceptions (bool, Default: false for production, true for development)*
+
+If set to true stack traces are exposed to graphql clients
+
+*MaxDepth (int?, Default: 10)*
+
+Enforces the total maximum nesting across all queries in a request.
+
+*MaxComplexity (int?, Default: null)*
+
+*FieldImpact (double?, Default: null)*
+
+For more information on MaxDepth, MaxComplexity, FieldImpact & protecting against malicious queries view the graphql-dot-net documentation at https://graphql-dotnet.github.io/docs/getting-started/malicious-queries/ 

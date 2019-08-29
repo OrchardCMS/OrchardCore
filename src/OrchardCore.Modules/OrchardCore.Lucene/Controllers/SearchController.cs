@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -15,6 +16,7 @@ namespace OrchardCore.Lucene.Controllers
 {
     public class SearchController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
@@ -22,6 +24,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentManager _contentManager;
 
         public SearchController(
+              IAuthorizationService authorizationService,
             ISiteService siteService,
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
@@ -30,6 +33,7 @@ namespace OrchardCore.Lucene.Controllers
             ILogger<SearchController> logger
             )
         {
+            _authorizationService = authorizationService;
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
@@ -43,6 +47,11 @@ namespace OrchardCore.Lucene.Controllers
 
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneSearch))
+            {
+                return NotFound();
+            }
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 

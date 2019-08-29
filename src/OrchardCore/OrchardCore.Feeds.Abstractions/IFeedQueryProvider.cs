@@ -1,10 +1,11 @@
-﻿using OrchardCore.Feeds.Models;
+using System.Threading.Tasks;
+using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds
 {
     public interface IFeedQueryProvider
     {
-        FeedQueryMatch Match(FeedContext context);
+        Task<FeedQueryMatch> MatchAsync(FeedContext context);
     }
 
     public class FeedQueryMatch

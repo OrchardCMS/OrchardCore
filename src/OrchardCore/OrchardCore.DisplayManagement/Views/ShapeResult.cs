@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DisplayManagement.Views
@@ -54,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Views
             if (String.IsNullOrEmpty(_defaultLocation))
             {
                 _defaultLocation = context.DefaultZone;
-            }            
+            }
 
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
@@ -86,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 placement.DefaultPosition = context.DefaultPosition;
             }
-            
+
 
             // If there are no placement or it's explicitely noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
@@ -188,9 +189,11 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            if (String.IsNullOrEmpty(position))
+            position = !String.IsNullOrEmpty(position) ? position : null;
+
+            if (parentShape is ZoneOnDemand zoneOnDemand)
             {
-                parentShape.Add(newShape);
+                await zoneOnDemand.AddAsync(newShape, position);
             }
             else
             {

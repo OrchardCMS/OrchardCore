@@ -7,7 +7,7 @@ namespace OrchardCore.ContentLocalization.Records
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -35,6 +35,14 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             return 1;
+        }
+
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
+
+            return 2;
         }
     }
 }

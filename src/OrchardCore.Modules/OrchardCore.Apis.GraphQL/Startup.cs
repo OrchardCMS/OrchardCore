@@ -31,8 +31,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, SerialDocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
-
-            services.AddScoped<ISchemaFactory, SchemaService>();
+            services.AddSingleton<ISchemaFactory, SchemaService>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
@@ -52,7 +51,10 @@ namespace OrchardCore.Apis.GraphQL
                     User = ctx.User,
                     ServiceProvider = ctx.RequestServices,
                 },
-                ExposeExceptions = exposeExceptions
+                ExposeExceptions = exposeExceptions,
+                MaxDepth = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 10,
+                MaxComplexity = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.MaxComplexity)}"),
+                FieldImpact = _configuration.GetValue<int?>($"OrchardCore.Apis.GraphQL:{nameof(GraphQLSettings.FieldImpact)}")
             });
         }
     }

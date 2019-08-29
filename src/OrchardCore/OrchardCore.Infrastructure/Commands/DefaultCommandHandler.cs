@@ -83,6 +83,19 @@ namespace OrchardCore.Environment.Commands
             }
 
             this.Context = context;
+
+            if (context.CommandDescriptor.MethodInfo.ReturnType == typeof(Task<string>))
+            {
+                var taskResult = await (Task<string>)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
+                await context.Output.WriteAsync(taskResult);
+                return;
+            }
+            else if (typeof(Task).IsAssignableFrom(context.CommandDescriptor.MethodInfo.ReturnType))
+            {
+                await (Task)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
+                return;
+            }
+
             var result = context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
             if (result is string)
             {

@@ -24,13 +24,15 @@ namespace OrchardCore.ContentManagement
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
+        private readonly IClock _clock;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> handlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
-            ILogger<DefaultContentManager> logger)
+            ILogger<DefaultContentManager> logger,
+            IClock clock)
         {
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
@@ -39,6 +41,7 @@ namespace OrchardCore.ContentManagement
             _idGenerator = idGenerator;
             _contentManagerSession = new DefaultContentManagerSession();
             _logger = logger;
+            _clock = clock;
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -175,9 +178,7 @@ namespace OrchardCore.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
+                    // We save the previous version further because this call might do a session query.
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
@@ -187,6 +188,9 @@ namespace OrchardCore.ContentManagement
                     }
                     else
                     {
+                        // Save the previous version
+                        _session.Save(contentItem);
+
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }
@@ -307,6 +311,7 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync(handler => handler.UnpublishingAsync(context), _logger);
 
             publishedItem.Published = false;
+            publishedItem.ModifiedUtc = _clock.UtcNow;
 
             _session.Save(publishedItem);
 
