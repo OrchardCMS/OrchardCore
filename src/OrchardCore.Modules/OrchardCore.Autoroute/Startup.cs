@@ -78,7 +78,8 @@ namespace OrchardCore.Autoroute
             var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
 
-            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{**slug}");
+            // The 1st segment prevents the transformer to be executed for the home.
+            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
         }
     }
 }
