@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
@@ -9,10 +9,10 @@ namespace OrchardCore.Resources
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private readonly ISiteService _siteService;
-        private readonly IHostingEnvironment _env;
+        private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostingEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _siteService = siteService;
             _env = env;
