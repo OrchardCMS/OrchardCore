@@ -8,22 +8,22 @@ using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media.Azure.Services
+namespace OrchardCore.Media.Core
 {
-    public class MediaBlobFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaCacheFileProvider, IMediaFileStoreCache
+    public class MediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
     {
         // Use default stream copy buffer size to stay in gen0 garbage collection;
         private const int StreamCopyBufferSize = 81920;
 
-        private readonly ILogger<MediaBlobFileProvider> _logger;
+        private readonly ILogger<MediaFileStoreCacheFileProvider> _logger;
 
-        public MediaBlobFileProvider(ILogger<MediaBlobFileProvider> logger, PathString virtualPathBase, string root) : base(root)
+        public MediaFileStoreCacheFileProvider(ILogger<MediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;
         }
 
-        public MediaBlobFileProvider(ILogger<MediaBlobFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        public MediaFileStoreCacheFileProvider(ILogger<MediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;
@@ -58,7 +58,7 @@ namespace OrchardCore.Media.Azure.Services
 
         public Task<bool> PurgeAsync()
         {
-            var purgedWithErrors = false;
+            var hasErrors = false;
             var folders = GetDirectoryContents(String.Empty);
             foreach (var fileInfo in folders)
             {
@@ -71,7 +71,7 @@ namespace OrchardCore.Media.Azure.Services
                     catch (IOException ex)
                     {
                         _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
-                        purgedWithErrors = true;
+                        hasErrors = true;
                     }
                 }
                 else
@@ -83,11 +83,12 @@ namespace OrchardCore.Media.Azure.Services
                     catch (IOException ex)
                     {
                         _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
-                        purgedWithErrors = true;
+                        hasErrors = true;
                     }
                 }
             }
-            return Task.FromResult(purgedWithErrors);
+
+            return Task.FromResult(hasErrors);
         }
     }
 }

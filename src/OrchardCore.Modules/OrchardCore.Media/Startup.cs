@@ -19,6 +19,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Fields;
@@ -168,6 +169,16 @@ namespace OrchardCore.Media
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
+        }
+    }
+
+    [Feature("OrchardCore.Media.Cache")]
+    public class MediaCacheStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, MediaCachePermissions>();
+            services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
         }
     }
 

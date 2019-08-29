@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,10 +12,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
-using OrchardCore.Media.Azure.Services;
+using OrchardCore.Media.Core;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure
 {
@@ -45,7 +41,7 @@ namespace OrchardCore.Media.Azure
             if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
             {
                 // Register a media cache file provider.
-                services.AddSingleton<IMediaCacheFileProvider>(serviceProvider =>
+                services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
                 {
                     var hostingEnvironment = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
@@ -55,28 +51,27 @@ namespace OrchardCore.Media.Azure
                     }
 
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                    var mediaBlobOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
                     var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                    var logger = serviceProvider.GetRequiredService<ILogger<MediaBlobFileProvider>>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<MediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, mediaBlobOptions.AssetsCachePath, shellSettings);
+                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, MediaOptions.AssetsCachePath, shellSettings);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
                         Directory.CreateDirectory(mediaCachePath);
                     }
 
-                    return new MediaBlobFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
+                    return new MediaFileStoreCacheFileProvider(logger, mediaOptions.AssetsRequestPath, mediaCachePath);
                 });
 
                 // Replace the default media file provider with the media cache file provider.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
-                    serviceProvider.GetRequiredService<IMediaCacheFileProvider>()));
+                    serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
 
                 // Register the media cache file provider as a file store cache provider.
                 services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
-                    (IMediaFileStoreCache)serviceProvider.GetRequiredService<IMediaCacheFileProvider>());
+                    (IMediaFileStoreCache)serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
                 // Replace the default media file store with a blob file store.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
@@ -103,9 +98,6 @@ namespace OrchardCore.Media.Azure
 
                     return new MediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
-
-                services.AddScoped<IPermissionProvider, Permissions>();
-                services.AddScoped<INavigationProvider, AdminMenu>();
             }
 
             services.Configure<MvcOptions>((options) =>
@@ -122,11 +114,6 @@ namespace OrchardCore.Media.Azure
         private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
-        }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            base.Configure(app, routes, serviceProvider);
         }
     }
 }

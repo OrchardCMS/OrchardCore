@@ -2,24 +2,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure.Controllers
 {
-    [Feature("OrchardCore.Media.Azure.Storage")]
-    public class AdminController : Controller
+    [Feature("OrchardCore.Media.Cache")]
+    [Admin]
+    public class MediaCacheController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer<MediaCacheController> H;
 
-        public AdminController(
+        public MediaCacheController(
             IAuthorizationService authorizationService,
             IMediaFileStoreCache mediaFileStoreCache,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IHtmlLocalizer<MediaCacheController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
@@ -30,7 +32,7 @@ namespace OrchardCore.Media.Azure.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureAssetCache))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
             {
                 return Unauthorized();
             }
@@ -41,7 +43,7 @@ namespace OrchardCore.Media.Azure.Controllers
         [HttpPost]
         public async Task<IActionResult> Purge()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAzureAssetCache))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
             {
                 return Unauthorized();
             }
@@ -49,11 +51,11 @@ namespace OrchardCore.Media.Azure.Controllers
             var hasErrors = await _mediaFileStoreCache.PurgeAsync();
             if (hasErrors)
             {
-                _notifier.Error(H["Azure storage asset cache purged, with errors."]);
+                _notifier.Error(H["Asset cache purged, with errors."]);
             }
             else
             {
-                _notifier.Information(H["Azure storage asset cache purged."]);
+                _notifier.Information(H["Asset cache purged."]);
             }
 
             return RedirectToAction("Index");

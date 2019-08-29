@@ -73,7 +73,6 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPath);
             if (isFileCached)
             {

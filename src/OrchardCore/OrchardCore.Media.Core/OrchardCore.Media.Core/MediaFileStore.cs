@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media.Core
 {
     public class MediaFileStore : IMediaFileStore
     {
@@ -84,6 +84,7 @@ namespace OrchardCore.Media
         {
             return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
         }
+
         public string MapPathToPublicUrl(string path)
         {
             return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
