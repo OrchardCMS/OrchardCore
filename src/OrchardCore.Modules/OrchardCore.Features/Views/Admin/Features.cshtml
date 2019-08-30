@@ -32,7 +32,7 @@
         </div>
     </div>
     @{
-        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
+        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
         foreach (var featureGroup in featureGroups)
         {
             if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
