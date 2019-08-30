@@ -1,7 +1,7 @@
 using System;
-using OrchardCore.Data.Migration;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data.Migration;
 
 namespace OrchardCore.ContentFields
 {

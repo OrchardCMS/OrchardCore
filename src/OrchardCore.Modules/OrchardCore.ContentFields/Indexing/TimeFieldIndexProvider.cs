@@ -37,7 +37,8 @@ namespace OrchardCore.ContentFields.Indexing
                         return null;
                     }
 
-                    if (!contentItem.Latest && !contentItem.Published) {
+                    if (!contentItem.Latest && !contentItem.Published)
+                    {
                         return null;
                     }
 
