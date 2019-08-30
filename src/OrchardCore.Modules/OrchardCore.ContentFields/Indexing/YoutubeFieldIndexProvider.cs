@@ -79,6 +79,7 @@ namespace OrchardCore.ContentFields.Indexing
                                 Latest = contentItem.Latest,
                                 Published = contentItem.Published,
                                 ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
