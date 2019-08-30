@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Setup
@@ -25,9 +27,8 @@ namespace OrchardCore.Setup
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddPortableObjectLocalization(options => options.ResourcesPath = "Localization")
-                .WithModules();
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
             services.AddSetup();
         }

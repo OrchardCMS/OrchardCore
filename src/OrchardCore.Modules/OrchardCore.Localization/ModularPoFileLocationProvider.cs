@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
@@ -9,12 +8,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Localization.Core
+namespace OrchardCore.Localization
 {
     public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     {
         private const string PoFileExtension = ".po";
-        private const string ExtensionDataFolder = "App_Data";
         private const string CultureDelimiter = "-";
 
         private readonly IExtensionManager _extensionsManager;

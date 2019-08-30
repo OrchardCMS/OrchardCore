@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
@@ -25,9 +26,8 @@ namespace OrchardCore.Localization
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
-            services
-                .AddPortableObjectLocalization(options => options.ResourcesPath = "Localization")
-                .WithModules();
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
-using OrchardCore.Localization.Core;
 using OrchardCore.Localization.PortableObject;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -42,8 +41,5 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
-
-        public static IServiceCollection WithModules(this IServiceCollection services)
-            => services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
     }
 }
