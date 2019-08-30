@@ -10,25 +10,26 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    public class DateFieldIndex : ContentFieldIndex
+    public class YoutubeFieldIndex : ContentFieldIndex
     {
-        public DateTime? Date { get; set; }
+        public string EmbeddedAddress { get; set; }
+        public string RawAddress { get; set; }
     }
 
-    public class DateFieldIndexProvider : ContentFieldIndexProvider
+    public class YoutubeFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public DateFieldIndexProvider(IServiceProvider serviceProvider)
+        public YoutubeFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context.For<YoutubeFieldIndex>()
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
@@ -37,16 +38,20 @@ namespace OrchardCore.ContentFields.Indexing
                         return null;
                     }
 
+                    if (!contentItem.Latest && !contentItem.Published) {
+                        return null;
+                    }
+
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for Text fields
+                    // Search for Time fields
                     var fieldDefinitions = _contentDefinitionManager
                         .GetTypeDefinition(contentItem.ContentType)
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(YoutubeField)))
                         .ToArray();
 
-                    var results = new List<DateFieldIndex>();
+                    var results = new List<YoutubeFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -64,19 +69,22 @@ namespace OrchardCore.ContentFields.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<DateField>();
+                        var field = jField.ToObject<YoutubeField>();
 
-                        results.Add(new DateFieldIndex
+                        if (!String.IsNullOrEmpty(field.EmbeddedAddress))
                         {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Date = field.Value
-                        });
+                            results.Add(new YoutubeFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                EmbeddedAddress = field.EmbeddedAddress.Substring(0, Math.Min(field.EmbeddedAddress.Length, 4000)),
+                                RawAddress = field.RawAddress.Substring(0, Math.Min(field.RawAddress.Length, 4000)),
+                            });
+                        }
                     }
 
                     return results;

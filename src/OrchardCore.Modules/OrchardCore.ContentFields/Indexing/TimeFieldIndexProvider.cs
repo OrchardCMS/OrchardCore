@@ -10,25 +10,25 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    public class DateFieldIndex : ContentFieldIndex
+    public class TimeFieldIndex : ContentFieldIndex
     {
-        public DateTime? Date { get; set; }
+        public TimeSpan? Time { get; set; }
     }
 
-    public class DateFieldIndexProvider : ContentFieldIndexProvider
+    public class TimeFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public DateFieldIndexProvider(IServiceProvider serviceProvider)
+        public TimeFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context.For<TimeFieldIndex>()
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
@@ -37,16 +37,20 @@ namespace OrchardCore.ContentFields.Indexing
                         return null;
                     }
 
+                    if (!contentItem.Latest && !contentItem.Published) {
+                        return null;
+                    }
+
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for Text fields
+                    // Search for Time fields
                     var fieldDefinitions = _contentDefinitionManager
                         .GetTypeDefinition(contentItem.ContentType)
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TimeField)))
                         .ToArray();
 
-                    var results = new List<DateFieldIndex>();
+                    var results = new List<TimeFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -64,19 +68,21 @@ namespace OrchardCore.ContentFields.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<DateField>();
+                        var field = jField.ToObject<TimeField>();
 
-                        results.Add(new DateFieldIndex
+                        if (field.Value != null)
                         {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Date = field.Value
-                        });
+                            results.Add(new TimeFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                Time = field.Value
+                            });
+                        }
                     }
 
                     return results;

@@ -10,30 +10,34 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    public class DateFieldIndex : ContentFieldIndex
+    public class HtmlFieldIndex : ContentFieldIndex
     {
-        public DateTime? Date { get; set; }
+        public string Html { get; set; }
     }
 
-    public class DateFieldIndexProvider : ContentFieldIndexProvider
+    public class HtmlFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public DateFieldIndexProvider(IServiceProvider serviceProvider)
+        public HtmlFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context.For<HtmlFieldIndex>()
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
+                        return null;
+                    }
+
+                    if (!contentItem.Latest && !contentItem.Published) {
                         return null;
                     }
 
@@ -43,10 +47,10 @@ namespace OrchardCore.ContentFields.Indexing
                     // Search for Text fields
                     var fieldDefinitions = _contentDefinitionManager
                         .GetTypeDefinition(contentItem.ContentType)
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(HtmlField)))
                         .ToArray();
 
-                    var results = new List<DateFieldIndex>();
+                    var results = new List<HtmlFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -64,19 +68,22 @@ namespace OrchardCore.ContentFields.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<DateField>();
+                        var field = jField.ToObject<HtmlField>();
 
-                        results.Add(new DateFieldIndex
+                        if (!String.IsNullOrEmpty(field.Html))
                         {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Date = field.Value
-                        });
+                            results.Add(new HtmlFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                Html = field.Html
+                            });
+                        }
                     }
 
                     return results;

@@ -38,6 +38,10 @@ namespace OrchardCore.ContentFields.Indexing
                         return null;
                     }
 
+                    if (!contentItem.Latest && !contentItem.Published) {
+                        return null;
+                    }
+
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -74,7 +78,9 @@ namespace OrchardCore.ContentFields.Indexing
                                 Latest = contentItem.Latest,
                                 Published = contentItem.Published,
                                 ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
                                 Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000)),
                                 BigText = field.Text

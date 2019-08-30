@@ -10,30 +10,35 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing
 {
-    public class DateFieldIndex : ContentFieldIndex
+    public class LinkFieldIndex : ContentFieldIndex
     {
-        public DateTime? Date { get; set; }
+        public string Url { get; set; }
+        public string Text { get; set; }
     }
 
-    public class DateFieldIndexProvider : ContentFieldIndexProvider
+    public class LinkFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public DateFieldIndexProvider(IServiceProvider serviceProvider)
+        public LinkFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context.For<LinkFieldIndex>()
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
+                        return null;
+                    }
+
+                    if (!contentItem.Latest && !contentItem.Published) {
                         return null;
                     }
 
@@ -43,10 +48,10 @@ namespace OrchardCore.ContentFields.Indexing
                     // Search for Text fields
                     var fieldDefinitions = _contentDefinitionManager
                         .GetTypeDefinition(contentItem.ContentType)
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(LinkField)))
                         .ToArray();
 
-                    var results = new List<DateFieldIndex>();
+                    var results = new List<LinkFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -64,19 +69,23 @@ namespace OrchardCore.ContentFields.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<DateField>();
+                        var field = jField.ToObject<LinkField>();
 
-                        results.Add(new DateFieldIndex
+                        if (!String.IsNullOrEmpty(field.Text))
                         {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Date = field.Value
-                        });
+                            results.Add(new LinkFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = fieldDefinition.PartDefinition.Name,
+                                ContentField = fieldDefinition.Name,
+                                Url = field.Url.Substring(0, Math.Min(field.Url.Length, 4000)),
+                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000))
+                            });
+                        }
                     }
 
                     return results;
