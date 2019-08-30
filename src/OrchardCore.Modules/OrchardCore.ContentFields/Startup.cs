@@ -118,7 +118,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, YoutubeFieldIndexProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
