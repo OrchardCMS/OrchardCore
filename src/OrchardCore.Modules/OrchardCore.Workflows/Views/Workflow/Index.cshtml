@@ -78,8 +78,7 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge badge-@statusCss">
-                                        @switch (entry.Workflow.Status)
+                                    <span class="badge badge-@statusCss">@switch (entry.Workflow.Status)
                                         {
                                             case WorkflowStatus.Idle:
                                                 @T["Idle"]
@@ -108,8 +107,7 @@
                                             default:
                                                 @entry.Workflow.Status
                                                 break;
-                                        }
-                                    </span>
+                                        }</span>
                                  </div>
                             </div>
                         </div>
