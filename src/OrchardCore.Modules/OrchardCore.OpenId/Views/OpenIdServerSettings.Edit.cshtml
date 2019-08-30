@@ -156,6 +156,8 @@
     }
 </fieldset>
 
+<h3>Tokens</h3>
+
 <fieldset class="form-group" asp-validation-class-for="UseRollingTokens">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseRollingTokens">
@@ -173,6 +175,28 @@
         }
     </select>
     <span asp-validation-for="AccessTokenFormat"></span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="IncludeLegacyMicrosoftClaimsInToken">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IncludeLegacyMicrosoftClaimsInToken">
+        <label class="custom-control-label" asp-for="IncludeLegacyMicrosoftClaimsInToken">@T["Include Legacy MicrosoftClaims in the Token."]</label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="IncludePermissionsInToken">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IncludePermissionsInToken">
+        <label class="custom-control-label" asp-for="IncludePermissionsInToken">@T["Include OrchardCore Permissions in the Token."]</label>
+        <span class="hint">— @T["Warning, this will increase tokensize significantly."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="IncludeRolesInToken">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="IncludeRolesInToken">
+        <label class="custom-control-label" asp-for="IncludeRolesInToken">@T["Include OrchardCore Roles in the Token."]</label>
+    </div>
 </fieldset>
 
 <script at="Foot" type="text/javascript">
