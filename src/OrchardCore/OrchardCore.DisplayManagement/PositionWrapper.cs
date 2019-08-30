@@ -19,6 +19,8 @@ namespace OrchardCore.DisplayManagement
 
 		public IDictionary<string, string> Attributes { get; }
 
+        public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
+
 		public PositionWrapper(IHtmlContent value, string position)
         {
             _value = value;

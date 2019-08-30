@@ -36,5 +36,8 @@ namespace OrchardCore.DisplayManagement.Views
 
         private Dictionary<string, string> _attributes;
         public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
+
+        private Dictionary<object, object> _properties;
+        public IDictionary<object, object> Properties => _properties = _properties ?? new Dictionary<object, object>();
     }
 }

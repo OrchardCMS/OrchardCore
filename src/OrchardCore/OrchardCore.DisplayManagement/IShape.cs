@@ -14,5 +14,6 @@ namespace OrchardCore.DisplayManagement
 		string Id { get; set; }
 		IList<string> Classes { get; }
 		IDictionary<string, string> Attributes { get; }
+        IDictionary<object, object> Properties { get; }
 	}
 }
