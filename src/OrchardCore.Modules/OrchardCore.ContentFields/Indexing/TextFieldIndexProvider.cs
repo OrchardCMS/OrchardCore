@@ -72,21 +72,18 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<TextField>();
 
-                        if (!String.IsNullOrEmpty(field.Text))
+                        results.Add(new TextFieldIndex
                         {
-                            results.Add(new TextFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000)),
-                                BigText = field.Text
-                            });
-                        }
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
+                            Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000)),
+                            BigText = field.Text
+                        });
                     }
 
                     return results;

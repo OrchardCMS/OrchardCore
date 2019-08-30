@@ -72,21 +72,18 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<LinkField>();
 
-                        if (!String.IsNullOrEmpty(field.Text))
+                        results.Add(new LinkFieldIndex
                         {
-                            results.Add(new LinkFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Url = field.Url.Substring(0, Math.Min(field.Url.Length, 4000)),
-                                Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000))
-                            });
-                        }
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
+                            Url = field.Url.Substring(0, Math.Min(field.Url.Length, 4000)),
+                            Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000))
+                        });
                     }
 
                     return results;

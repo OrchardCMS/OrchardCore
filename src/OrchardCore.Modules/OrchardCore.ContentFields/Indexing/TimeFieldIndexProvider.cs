@@ -71,20 +71,17 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<TimeField>();
 
-                        if (field.Value != null)
+                        results.Add(new TimeFieldIndex
                         {
-                            results.Add(new TimeFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Time = field.Value
-                            });
-                        }
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
+                            Time = field.Value
+                        });
                     }
 
                     return results;

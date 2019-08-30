@@ -71,20 +71,17 @@ namespace OrchardCore.ContentFields.Indexing
 
                         var field = jField.ToObject<HtmlField>();
 
-                        if (!String.IsNullOrEmpty(field.Html))
+                        results.Add(new HtmlFieldIndex
                         {
-                            results.Add(new HtmlFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                Html = field.Html
-                            });
-                        }
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = fieldDefinition.PartDefinition.Name,
+                            ContentField = fieldDefinition.Name,
+                            Html = field.Html
+                        });
                     }
 
                     return results;
