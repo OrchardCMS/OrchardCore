@@ -1,7 +1,10 @@
 var createEditorUrl = $('#buildEditorUrl').attr("value");
 var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
-    return '<div class="widget-template col-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
+    return '<div class="widget-template col-md-12">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
 };
+//variables used in FlowPart.Edit sortable
+var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId; 
+
 function guid() {
     function s4() {
         return Math
@@ -74,20 +77,20 @@ $(function () {
             var $radiSize = $(this).find("input:first-child").val();
             var classList = $tmpl.attr('class').split(' ');
             $.each(classList, function (id, item) {
-                if (item.indexOf('col-') === 0) $tmpl.removeClass(item);                
+                if (item.indexOf('col-md-') === 0) $tmpl.removeClass(item);                
             });
             if ($radiSize === '25')
-                $tmpl.addClass('col-3');
+                $tmpl.addClass('col-md-3');
             else if ($radiSize === '33')
-                $tmpl.addClass('col-4');
+                $tmpl.addClass('col-md-4');
             else if ($radiSize === '50')
-                $tmpl.addClass('col-6');
+                $tmpl.addClass('col-md-6');
             else if ($radiSize === '66')
-                $tmpl.addClass('col-8');
+                $tmpl.addClass('col-md-8');
             else if ($radiSize === '75')
-                $tmpl.addClass('col-9');
+                $tmpl.addClass('col-md-9');
             else
-                $tmpl.addClass('col-12');
+                $tmpl.addClass('col-md-12');
 
             var dropdown = $(this).closest('.dropdown-menu');
             dropdown.prev('button').text($radiSize + '%');

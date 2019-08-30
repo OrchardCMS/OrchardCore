@@ -5,7 +5,7 @@
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa fa-align-left" aria-hidden="true"></i> 
     </button>
-    <div class="dropdown-menu">
+    <div class="dropdown-menu btn-group-toggle">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
             <input asp-for="Alignment" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> Left
         </label>
@@ -23,9 +23,9 @@
 
 <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" role="group">
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        @Model.Size%
+        @T[Model.Size + "%"]
     </button>
-    <div class="dropdown-menu">
+    <div class="dropdown-menu btn-group-toggle">
         <label class="btn btn-secondary dropdown-item @(Model.Size == 25 ? "active" : null)">
             <input asp-for="Size" type="radio" autocomplete="off" value="25">@T["25%"]
         </label>
