@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
+using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
@@ -17,6 +19,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -81,6 +84,19 @@ namespace OrchardCore.ContentLocalization
                 LocalizationSet = i.LocalizationSet,
                 Culture = i.Culture.ToLowerInvariant()
             }));
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LocalizationLiquidStartup : StartupBase
+    {
+        static LocalizationLiquidStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
+        }
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
     }
 }

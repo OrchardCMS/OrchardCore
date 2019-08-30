@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Http;
+using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -165,6 +166,11 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
+                _.ComplexityConfiguration = new ComplexityConfiguration {
+                    MaxDepth = _settings.MaxDepth,
+                    MaxComplexity = _settings.MaxComplexity,
+                    FieldImpact = _settings.FieldImpact
+                };
             });
 
             var httpResult = result.Errors?.Count > 0

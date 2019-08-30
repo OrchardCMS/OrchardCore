@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
@@ -139,7 +141,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
                 var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -190,7 +192,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
                 var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -237,7 +239,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ cats: { name: \"doug\" } }");
                 var cats = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -301,7 +303,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci2);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ animals: { name: \"doug\", isScary: true } }");
                 var animals = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -353,7 +355,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ animal: { name: \"doug\" } }");
                 var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -414,7 +416,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema());
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()));
 
                 context.Arguments["where"] = JObject.Parse("{ name: \"doug\" }");
                 var dogs = await ((AsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);

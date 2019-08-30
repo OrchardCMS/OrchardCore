@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
@@ -36,13 +38,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        public ContentItemsFieldType(string contentItemName, ISchema schema)
+        public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor)
         {
             Name = "ContentItems";
 
             Type = typeof(ListGraphType<ContentItemType>);
 
-            var whereInput = new ContentItemWhereInput(contentItemName);
+            var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor);
             var orderByInput = new ContentItemOrderByInput(contentItemName);
 
             Arguments = new QueryArguments(
