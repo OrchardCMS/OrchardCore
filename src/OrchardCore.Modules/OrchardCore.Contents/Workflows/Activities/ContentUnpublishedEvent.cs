@@ -11,6 +11,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentUnpublishedEvent);
-        public override LocalizedString DisplayText => T["ContentUnpublishedEvent"];
+        public override LocalizedString DisplayText => T["Content Unpublished Event"];
     }
 }
