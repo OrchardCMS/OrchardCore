@@ -38,7 +38,7 @@ namespace OrchardCore.Media.Azure
             // Only replace default implementation if options are valid.
             var connectionString = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
             var containerName = _configuration[$"OrchardCore.Media.Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
-            if (MediaBlobStorageOptionsCheckFilter.CheckOptions(connectionString, containerName, _logger))
+            if (CheckOptions(connectionString, containerName, _logger))
             {
                 // Register a media cache file provider.
                 services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
@@ -99,11 +99,6 @@ namespace OrchardCore.Media.Azure
                     return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl);
                 }));
             }
-
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(MediaBlobStorageOptionsCheckFilter));
-            });
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
@@ -114,6 +109,25 @@ namespace OrchardCore.Media.Azure
         private string GetMediaCachePath(IHostingEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
         {
             return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
+        }
+
+        private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
+        {
+            var optionsAreValid = true;
+
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                logger.LogError("Azure Media Storage is enabled but not active because the {ConnectionString} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ConnectionString));
+                optionsAreValid = false;
+            }
+
+            if (String.IsNullOrWhiteSpace(containerName))
+            {
+                logger.LogError("Azure Media Storage is enabled but not active because the {ContainerName} is missing or empty in application configuration.", nameof(MediaBlobStorageOptions.ContainerName));
+                optionsAreValid = false;
+            }
+
+            return optionsAreValid;
         }
     }
 }
