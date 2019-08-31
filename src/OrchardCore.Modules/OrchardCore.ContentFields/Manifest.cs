@@ -20,6 +20,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentFields.Indexing.SQL",
     Name = "Content Fields Indexing (SQL)",
     Category = "Content Management",
-    Description = "Content Fields module adds common content fields to be used with your custom types.",
+    Description = "Content Fields Indexing module adds database indexing for content fields.",
     Dependencies = new[] { "OrchardCore.ContentTypes" }
 )]
