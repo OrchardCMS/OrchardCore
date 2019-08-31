@@ -85,16 +85,12 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
-
     [RequireFeatures("OrchardCore.Liquid")]
-    public class LocalizationLiquidStartup : StartupBase
+    public class LiquidStartup : StartupBase
     {
-        static LocalizationLiquidStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
-        }
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
             services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
     }

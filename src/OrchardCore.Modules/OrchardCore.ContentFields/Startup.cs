@@ -112,8 +112,29 @@ namespace OrchardCore.ContentFields
             routes.MapAreaRoute(
                 name: "ContentPicker",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentPicker",
-                defaults: new { controller = "ContentPicker", action = "List" }
+                template: "ContentFields/SearchContentItems",
+                defaults: new { controller = "ContentPickerAdmin", action = "SearchContentItems" }
+            );
+        }
+    }
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class LocalizationSetContentPickerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<ContentField, LocalizationSetContentPickerField>();
+            services.AddScoped<IContentFieldDisplayDriver, LocalizationSetContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "SearchLocalizationSets",
+                areaName: "OrchardCore.ContentFields",
+                template: "ContentFields/SearchLocalizationSets",
+                defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
             );
         }
     }
