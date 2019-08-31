@@ -190,7 +190,7 @@ WHERE ContentType = "Acme" AND ContentField = "Country"
 In our Liquid template we will now retreive these records.
 
 ```liquid
-{% assign allCountries = Queries.TextFieldQuery | query %}
+{% assign allCountries = Queries.AllCountries | query %}
 {% for country in allCountries %}
 {{ country.Text }}
 {% endfor %}
