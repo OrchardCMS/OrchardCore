@@ -5,7 +5,10 @@
 This modules provides database indexing for content fields.
 
 ## Available Tables
-* Note that types listed are SQL Server data types.
+* Note that types listed are SQL Server data types. 
+
+    *SQLite doesn't have a length limit on text fields.*
+
 
 ### **BooleanFieldIndex** :
 
