@@ -34,7 +34,7 @@ namespace OrchardCore.Media
         public int MaxFileSize { get; set; }
 
         /// <summary>
-        /// A Cdn base url which will be prefixed to all media paths.
+        /// A CDN base url that will be prefixed to the request path when serving images.
         /// </summary>
         public string CdnBaseUrl { get; set; }
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Media
         public PathString AssetsRequestPath { get; set; }
 
         /// <summary>
-        /// The path in the tenant's App_Data folder containing the assets.
+        /// The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
         /// </summary>
         public string AssetsPath { get; set; }
     }

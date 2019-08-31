@@ -193,13 +193,13 @@ The following configuration values are used by default and can be customized:
       // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
       "MaxFileSize": 30000000,
 
-      // A Cdn base url that will be prefixed to the request path when serving images.
+      // A CDN base url that will be prefixed to the request path when serving images.
       "CdnBaseUrl": "https://your-cdn.com",
 
       // The path used when serving media assets.
       "AssetsRequestPath": "/media",
 
-      // The path in the tenant's App_Data folder containing the assets.
+      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
       "AssetsPath": "Media",
 
       // The list of allowed file extensions
