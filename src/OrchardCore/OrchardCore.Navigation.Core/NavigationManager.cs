@@ -203,10 +203,7 @@ namespace OrchardCore.Navigation
                 url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (!string.IsNullOrEmpty(url) &&
-                actionContext?.HttpContext != null &&
-                url[0] != '/' && url[0] != '#' &&
-                !Schemes.Any(scheme => url.StartsWith(scheme + ":")))
+            if (!string.IsNullOrEmpty(url) && url[0] != '/' && url[0] != '#' && !Schemes.Any(scheme => url.StartsWith(scheme + ":")))
             {
                 if (url.StartsWith("~/"))
                 {
