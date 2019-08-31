@@ -1,9 +1,8 @@
 using System;
-using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.ContentFields
+namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class Migrations : DataMigration
     {

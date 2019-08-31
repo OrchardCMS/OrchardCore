@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.Content.Controllers
+namespace OrchardCore.ContentFields.Controllers
 {
     [Admin]
     public class ContentPickerController : Controller

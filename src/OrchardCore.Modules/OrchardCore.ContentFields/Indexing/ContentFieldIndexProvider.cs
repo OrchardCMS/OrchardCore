@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentFields.Indexing
+namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public abstract class ContentFieldIndex : MapIndex
     {

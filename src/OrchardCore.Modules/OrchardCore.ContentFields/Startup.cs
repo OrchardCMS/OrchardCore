@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
@@ -107,17 +108,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
-
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -128,6 +118,24 @@ namespace OrchardCore.ContentFields
                 template: "ContentPicker",
                 defaults: new { controller = "ContentPicker", action = "List" }
             );
+        }
+    }
+
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
+    public class IndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
         }
     }
 }

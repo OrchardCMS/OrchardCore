@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentFields.Indexing
+namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class HtmlFieldIndex : ContentFieldIndex
     {
