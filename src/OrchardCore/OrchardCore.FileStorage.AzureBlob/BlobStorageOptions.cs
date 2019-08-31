@@ -18,10 +18,5 @@ namespace OrchardCore.FileStorage.AzureBlob
         /// The base directory path to use inside the container for this stores contents.
         /// </summary>
         public string BasePath { get; set; }
-
-        /// <summary>
-        /// The access permissions for Azure Blob Storage. Valid options: Off, Container, Blob. Defaults to Blob.
-        /// </summary>
-        public BlobContainerPublicAccessType PublicAccessType { get; set; } = BlobContainerPublicAccessType.Blob;
     }
 }

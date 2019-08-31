@@ -12,9 +12,7 @@ The following configuration values are used by default and can be customized:
       // Set to the Azure Blob container name.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
-      "BasePath": "some/base/path", 
-      // Access permissions for Azure Blob Storage. Valid options: Off, Container, Blob. Defaults to Blob.
-      "PublicAccessType": "Blob"
+      "BasePath": "some/base/path"
     },
 
 ```

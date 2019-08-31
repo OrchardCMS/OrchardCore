@@ -27,6 +27,12 @@ namespace OrchardCore.FileStorage.AzureBlob
     /// simulate "creating" a directory (which cannot technically be done in blob storage) this provider creates
     /// a marker file inside the directory, which makes the directory "exist" and appear when listing contents
     /// subsequently. This marker file is ignored (excluded) when listing directory contents.
+    ///
+    /// Note that the Blob Container is not created automatically, and existence of the Container is not verified.
+    /// 
+    /// Create the Blob Container before enabling a Blob File Store.
+    /// 
+    /// Azure Blog Storage will create the BasePath inside the container during the upload of the first file.
     /// </remarks>
     public class BlobFileStore : IFileStore
     {
@@ -37,7 +43,6 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly CloudStorageAccount _storageAccount;
         private readonly CloudBlobClient _blobClient;
         private readonly CloudBlobContainer _blobContainer;
-        private readonly Task _verifyContainerTask;
         private readonly IContentTypeProvider _contentTypeProvider;
 
         public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
@@ -48,19 +53,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             _storageAccount = CloudStorageAccount.Parse(_options.ConnectionString);
             _blobClient = _storageAccount.CreateCloudBlobClient();
             _blobContainer = _blobClient.GetContainerReference(_options.ContainerName);
-            _verifyContainerTask = Task.Run(async () =>
-            {
-                try
-                {
-                    await _blobContainer.CreateIfNotExistsAsync();
-                    await CreateBasePathIfNotExistsAsync();
-                    await _blobContainer.SetPermissionsAsync(new BlobContainerPermissions() { PublicAccess = _options.PublicAccessType });
-                }
-                catch (Exception ex)
-                {
-                    throw new FileStoreException($"Error while creating or setting permissions on container {_options.ContainerName}.", ex);
-                }
-            });
         }
 
         public Uri BaseUri
@@ -75,8 +67,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
-            await _verifyContainerTask;
-
             var blob = GetBlobReference(path);
 
             if (!await blob.ExistsAsync())
@@ -89,8 +79,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
         {
-            await _verifyContainerTask;
-
             var blobDirectory = GetBlobDirectoryReference(path);
 
             if (path == string.Empty || await BlobDirectoryExists(blobDirectory))
@@ -102,8 +90,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = "", bool includeSubDirectories = false)
         {
-            await _verifyContainerTask;
-
             var blobDirectory = GetBlobDirectoryReference(path);
 
             BlobContinuationToken continuationToken = null;
@@ -151,8 +137,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<bool> TryCreateDirectoryAsync(string path)
         {
-            await _verifyContainerTask;
-
             // Since directories are only created implicitly when creating blobs, we
             // simply pretend like we created the directory, unless there is already
             // a blob with the same path.
@@ -169,8 +153,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
-            await _verifyContainerTask;
-
             var blob = GetBlobReference(path);
 
             return await blob.DeleteIfExistsAsync();
@@ -180,8 +162,6 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             if (String.IsNullOrEmpty(path))
                 throw new FileStoreException("Cannot delete the root directory.");
-
-            await _verifyContainerTask;
 
             var blobDirectory = GetBlobDirectoryReference(path);
 
@@ -217,8 +197,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task MoveFileAsync(string oldPath, string newPath)
         {
-            await _verifyContainerTask;
-
             await CopyFileAsync(oldPath, newPath);
             await TryDeleteFileAsync(oldPath);
         }
@@ -227,8 +205,6 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             if (srcPath == dstPath)
                 throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
-
-            await _verifyContainerTask;
 
             var oldBlob = GetBlobReference(srcPath);
             var newBlob = GetBlobReference(dstPath);
@@ -250,8 +226,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<Stream> GetFileStreamAsync(string path)
         {
-            await _verifyContainerTask;
-
             var blob = GetBlobReference(path);
 
             if (!await blob.ExistsAsync())
@@ -264,8 +238,6 @@ namespace OrchardCore.FileStorage.AzureBlob
         // as Azure Storage Library will perform these actions on OpenReadAsync(). 
         public async Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
-            await _verifyContainerTask;
-
             var blobFile = fileStoreEntry as BlobFile;
             if (blobFile == null || blobFile.BlobReference == null)
                 throw new FileStoreException("Cannot get file stream because the file does not exist.");
@@ -275,8 +247,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
         {
-            await _verifyContainerTask;
-
             var blob = GetBlobReference(path);
 
             if (!overwrite && await blob.ExistsAsync())
@@ -329,19 +299,6 @@ namespace OrchardCore.FileStorage.AzureBlob
                 operationContext: null);
 
             return segment.Results.Any();
-        }
-
-        private async Task CreateBasePathIfNotExistsAsync()
-        {
-            if (string.IsNullOrEmpty(_options.BasePath))
-                return;
-
-            var path = string.Empty;
-            var blob = GetBlobReference(path);
-            if (await blob.ExistsAsync())
-                return;
-
-            await CreateDirectoryAsync(path);
         }
     }
 }
