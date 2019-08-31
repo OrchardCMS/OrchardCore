@@ -81,7 +81,7 @@ namespace OrchardCore.ContentFields.Indexing
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
-                            Text = field.Text.Substring(0, Math.Min(field.Text.Length, 4000)),
+                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, 4000)),
                             BigText = field.Text
                         });
                     }
