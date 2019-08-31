@@ -187,7 +187,7 @@ SELECT * FROM TextFieldIndex
 WHERE ContentType = "Acme" AND ContentField = "Country"
 ```
 
-In our Liquid template we will now retreive these records.
+In our Liquid template we will now retrieve these records.
 
 ```liquid
 {% assign allCountries = Queries.AllCountries | query %}
