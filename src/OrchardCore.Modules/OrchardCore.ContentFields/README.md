@@ -105,10 +105,26 @@ or, to display the UTC value before is it converted:
 }
 ```
 
+Or to render the referenced content item:
+
+```liquid
+{% assign contentItems = Model.ContentItemIds | content_item_id %}
+{% for contentItem in contentItems %}
+    {{ contentItem | shape_build_display: "Detail" | shape_render }}
+{% endfor %}
+```
+
+```razor
+@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+{
+    @await Orchard.DisplayAsync(contentItem, "Detail")
+}
+```
+
 ### `LocalizationSetContentPickerField`
 
-This field allows you to store the `LocalizationSet` of a `ContentItem`. 
-This simplifies getting a ContentItem of the correct culture on the frontend.
+This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item. 
+This simplifies getting a content item of the correct culture on the frontend.
 
 The following example use the `localization_set` liquid filter which returns a single ContentItem 
 per set based on the request culture.

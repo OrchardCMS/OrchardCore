@@ -50,7 +50,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     Description = T["Represents a {0}.", typeDefinition.DisplayName]
                 };
 
-                var query = new ContentItemsFieldType(typeDefinition.Name, schema)
+                var query = new ContentItemsFieldType(typeDefinition.Name, schema, _optionsAccessor)
                 {
                     Name = typeDefinition.Name,
                     Description = T["Represents a {0}.", typeDefinition.DisplayName],

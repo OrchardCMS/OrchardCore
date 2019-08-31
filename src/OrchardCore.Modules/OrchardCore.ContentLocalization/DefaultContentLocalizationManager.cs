@@ -100,7 +100,7 @@ namespace OrchardCore.ContentLocalization
             clonedPart.LocalizationSet = localizationPart.LocalizationSet;
             clonedPart.Apply();
 
-            var context = new LocalizationContentContext(content, localizationPart.LocalizationSet, targetCulture);
+            var context = new LocalizationContentContext(cloned, content, localizationPart.LocalizationSet, targetCulture);
 
             await Handlers.InvokeAsync(handler => handler.LocalizingAsync(context), _logger);
             await ReversedHandlers.InvokeAsync(handler => handler.LocalizedAsync(context), _logger);

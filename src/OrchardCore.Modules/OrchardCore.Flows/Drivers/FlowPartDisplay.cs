@@ -47,7 +47,7 @@ namespace OrchardCore.Flows.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FlowPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FlowPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 

@@ -239,7 +239,7 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-https://sixlabors.com/projects/imagesharp/
+<https://sixlabors.com/projects/imagesharp/>
 
 Copyright 2012 James South
 Licensed under the Apache License, Version 2.0

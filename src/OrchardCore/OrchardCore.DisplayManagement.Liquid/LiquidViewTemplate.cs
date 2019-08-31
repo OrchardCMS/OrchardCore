@@ -105,7 +105,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var fileProviderAccessor = services.GetRequiredService<ILiquidViewFileProviderAccessor>();
             var isDevelopment = services.GetRequiredService<IHostingEnvironment>().IsDevelopment();
 
-            var template = Parse(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
+            var template = await ParseAsync(path, fileProviderAccessor.FileProvider, Cache, isDevelopment);
 
             var context = new TemplateContext();
             await context.ContextualizeAsync(page, (object)page.Model);
@@ -114,9 +114,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             await template.RenderAsync(options, services, page.Output, HtmlEncoder.Default, context);
         }
 
-        public static LiquidViewTemplate Parse(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
+        public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
         {
-            return cache.GetOrCreate(path, entry =>
+            return cache.GetOrCreateAsync(path, async entry =>
             {
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
                 var fileInfo = fileProvider.GetFileInfo(path);
@@ -130,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     using (var sr = new StreamReader(stream))
                     {
-                        if (TryParse(sr.ReadToEnd(), out var template, out var errors))
+                        if (TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                         {
                             return template;
                         }
@@ -293,7 +293,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (viewContext == null)
             {
-                var actionContext = GetActionContext(services);
+                var actionContext = await GetActionContextAsync(services);
                 viewContext = GetViewContext(services, actionContext);
 
                 // If there was no 'ViewContext' but a 'DisplayContext'.
@@ -345,7 +345,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             context.CultureInfo = CultureInfo.CurrentUICulture;
         }
 
-        private static ActionContext GetActionContext(IServiceProvider services)
+        private async static Task<ActionContext> GetActionContextAsync(IServiceProvider services)
         {
             var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
 
@@ -362,7 +362,15 @@ namespace OrchardCore.DisplayManagement.Liquid
             var pipeline = shellContext?.Pipeline as ShellRequestPipeline;
             routeData.Routers.Add(pipeline?.Router ?? new RouteCollection());
 
-            return new ActionContext(httpContext, routeData, new ActionDescriptor());
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewResultFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnResultExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static ViewContext GetViewContext(IServiceProvider services, ActionContext actionContext)
