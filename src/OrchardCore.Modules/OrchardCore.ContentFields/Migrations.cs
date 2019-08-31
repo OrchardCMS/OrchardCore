@@ -311,54 +311,6 @@ namespace OrchardCore.ContentFields
                 .CreateIndex("IDX_TimeFieldIndex_Time", "Time")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(YoutubeFieldIndex), table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
-                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<bool>("Published", column => column.Nullable())
-                .Column<bool>("Latest", column => column.Nullable())
-                .Column<string>("EmbeddedAddress", column => column.Nullable().WithLength(4000))
-                .Column<string>("RawAddress", column => column.Nullable().WithLength(4000))
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_ContentItemId", "ContentItemId")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_ContentItemVersionId", "ContentItemVersionId")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_EmbeddedAddress", "EmbeddedAddress")
-            );
-
-            SchemaBuilder.AlterTable(nameof(YoutubeFieldIndex), table => table
-                .CreateIndex("IDX_YoutubeFieldIndex_RawAddress", "RawAddress")
-            );
-
             SchemaBuilder.CreateMapIndexTable(nameof(LinkFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
