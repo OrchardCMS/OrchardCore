@@ -232,7 +232,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<string>("SelectedContentItemId", column => column.WithLength(255))
+                .Column<string>("SelectedContentItemId", column => column.WithLength(26))
             );
 
             SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
