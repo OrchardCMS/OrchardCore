@@ -11,5 +11,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(ContentUpdatedEvent);
+        public override LocalizedString DisplayText => T["Content Updated Event"];
     }
 }

@@ -217,7 +217,7 @@ namespace OrchardCore.ContentManagement
 
         ContentTypeDefinition Build(ContentTypeDefinitionRecord source)
         {
-            if(source == null)
+            if (source == null)
             {
                 return null;
             }

@@ -19,7 +19,7 @@ namespace OrchardCore.Title
         private readonly ILogger<Migrations> _logger;
 
         public Migrations(
-            IContentDefinitionManager contentDefinitionManager, 
+            IContentDefinitionManager contentDefinitionManager,
             ISession session,
             ILogger<Migrations> logger)
         {
@@ -38,7 +38,7 @@ namespace OrchardCore.Title
 
             return 2;
         }
-        
+
         public async Task<int> UpdateFrom1()
         {
             // This code can be removed in RC
@@ -47,17 +47,17 @@ namespace OrchardCore.Title
 
             var lastDocumentId = 0;
 
-            for(;;)
+            for (; ; )
             {
                 var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
-                
+
                 if (!contentItemVersions.Any())
                 {
                     // No more content item version to process
                     break;
                 }
 
-                foreach(var contentItemVersion in contentItemVersions)
+                foreach (var contentItemVersion in contentItemVersions)
                 {
                     if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
@@ -70,7 +70,7 @@ namespace OrchardCore.Title
                 }
 
                 await _session.CommitAsync();
-            } 
+            }
 
             bool UpdateTitle(JToken content)
             {
@@ -78,8 +78,8 @@ namespace OrchardCore.Title
 
                 if (content.Type == JTokenType.Object)
                 {
-                    var title = content["TitlePart"] ? ["Title"]?.Value<string>();
-                    
+                    var title = content["TitlePart"]?["Title"]?.Value<string>();
+
                     if (!String.IsNullOrWhiteSpace(title))
                     {
                         content["DisplayText"] = title;

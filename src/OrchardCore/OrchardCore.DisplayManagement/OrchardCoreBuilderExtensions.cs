@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -42,8 +41,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Filters.Add(typeof(ModelBinderAccessorFilter));
                         options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(SiteViewResultFilter));
+                        options.Filters.Add(typeof(RazorViewResultFilter));
                     });
+
+                    // Used as a service when we create a fake 'ActionContext'.
+                    services.AddScoped<IAsyncViewResultFilter, RazorViewResultFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
