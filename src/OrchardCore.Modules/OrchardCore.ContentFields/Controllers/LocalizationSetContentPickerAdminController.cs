@@ -2,17 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Admin;
-using OrchardCore.ContentManagement.Records;
-using YesSql;
-using YesSql.Services;
-using OrchardCore.Modules;
-using OrchardCore.ContentFields.Services;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentLocalization;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.Modules;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Controllers
 {

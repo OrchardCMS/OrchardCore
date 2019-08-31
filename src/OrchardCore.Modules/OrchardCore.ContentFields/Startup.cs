@@ -120,6 +120,7 @@ namespace OrchardCore.ContentFields
             );
         }
     }
+
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
