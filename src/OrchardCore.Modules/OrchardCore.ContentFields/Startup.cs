@@ -117,6 +117,7 @@ namespace OrchardCore.ContentFields
             );
         }
     }
+
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
@@ -128,12 +129,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "SearchLocalizationSets",
                 areaName: "OrchardCore.ContentFields",
-                template: "ContentFields/SearchLocalizationSets",
+                pattern: "ContentFields/SearchLocalizationSets",
                 defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
             );
         }
