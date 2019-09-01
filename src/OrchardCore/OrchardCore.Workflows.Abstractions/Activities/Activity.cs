@@ -15,6 +15,7 @@ namespace OrchardCore.Workflows.Activities
     public abstract class Activity : Entity, IActivity
     {
         public abstract string Name { get; }
+        public abstract LocalizedString DisplayText { get; }
         public abstract LocalizedString Category { get; }
         public virtual bool HasEditor => true;
 

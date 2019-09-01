@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -78,4 +79,15 @@ namespace OrchardCore.Lists
             services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
         }
     }
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class ContentLocalizationStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
+            services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
+            services.AddScoped<IContentPartHandler, ContainedPartHandler>();
+        }
+    }
+
 }

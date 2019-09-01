@@ -6,7 +6,7 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<ContentPickerFieldSettings>();
-    var selectedItems = Html.Raw(JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
+    var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var tenantPath = Context.Request.PathBase.ToString();
@@ -14,24 +14,24 @@
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/contentPicker.js" asp-name="contentPicker" at="Foot" depends-on="vuejs, vuemultiselect"></script>
-<style asp-src="~/OrchardCore.ContentFields/Styles/contentPicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/contentPicker.css"></style>
 <script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.0/dist/vue-multiselect.min.js" asp-name="vuemultiselect" at="Foot"></script>
 <style asp-src="https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.0/dist/vue-multiselect.min.css"></style>
 <script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
 <script asp-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.min.js" debug-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" asp-name="vue-multiselect-wrapper" at="Foot" depends-on="vuejs, vuemultiselect, sortable"></script>
+<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.css"></style>
 
 <label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="content-picker-default" data-part="@partName" data-field="@fieldName">
+<div id="@vueElementId" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-tenant-path="@tenantPath" data-search-url="ContentFields/SearchContentItems?part=@partName&field=@fieldName" data-multiple="@multiple">
 
     <fieldset class="form-group">
         <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
             <draggable v-model="arrayOfItems">
                 <li v-for="(item, i) in arrayOfItems"
                     class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
-                    :key="item.contentItemId">
+                    :key="item.id">
                     <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span> <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span></div>
 
                     <div class="btn-group btn-group-sm align-items-center" role="group">
@@ -45,7 +45,7 @@
     <fieldset class="form-group">
         <div class="w-xl-50">
             <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
-            <vue-multiselect v-model="value" :options="options" track-by="contentItemId"
+            <vue-multiselect v-model="value" :options="options" track-by="id"
                              label="displayText" placeholder="@T["Type to search"]"
                              @@search-change="asyncFind" @@select="onSelect"
                              :searchable="true" :close-on-select="true" :reset-after="true"
@@ -67,6 +67,3 @@
     </fieldset>
 
 </div>
-<script at="Foot">
-    contentPickers.push(initializeContentPickerFieldEditor('@vueElementId', @selectedItems, '@tenantPath', '@partName', '@fieldName', @multiple.ToLowerInvariant()));
-</script>

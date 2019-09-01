@@ -40,6 +40,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
+        public override LocalizedString DisplayText => T["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
         public override LocalizedString Category => T["Content"];

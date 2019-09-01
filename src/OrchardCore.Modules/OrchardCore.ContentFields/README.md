@@ -10,6 +10,7 @@ This modules provides common content fields.
 | --- | --- | --- | --- |
 | `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
 | `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
+| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` | `LocalizationSetContentPickerField` | `DisplayLocalizationSetContentPickerFieldViewModel` |
 | `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
 | `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
 | `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
@@ -104,7 +105,7 @@ or, to display the UTC value before is it converted:
 }
 ```
 
-You can also render the content item as shapes: 
+Or to render the referenced content item:
 
 ```liquid
 {% assign contentItems = Model.ContentItemIds | content_item_id %}
@@ -120,6 +121,43 @@ You can also render the content item as shapes:
 }
 ```
 
+### `LocalizationSetContentPickerField`
+
+This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item. 
+This simplifies getting a content item of the correct culture on the frontend.
+
+The following example use the `localization_set` liquid filter which returns a single ContentItem 
+per set based on the request culture.
+
+#### Example
+
+```liquid
+{% assign contentItems = Model.LocalizationSets | localization_set %}
+{% for contentItem in contentItems %}
+    {{ contentItem.DisplayText }}
+{% endfor %}
+```
+
+```razor
+@model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
+@using Microsoft.AspNetCore.Localization
+
+@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+
+@{
+    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+    var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
+}
+foreach (var contentItem in contentItems)
+{
+    <span class="value">@contentItem.DisplayText</span>
+    if (contentItem != contentItems.Last())
+    {
+        <span>,</span>
+    }
+}
+
+```
 
 ## Creating Custom Fields
 
