@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,12 +60,11 @@ namespace OrchardCore.Lucene
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndicesStatus = new Dictionary<string, int>();
             var lastTaskId = Int32.MaxValue;
-            IEnumerable<LuceneIndexSettings> indexSettingsList = null;
-
+            IDictionary indexSettingsList = null;
 
             if (String.IsNullOrEmpty(indexName))
             {
-                indexSettingsList = _luceneIndexSettingsService.List();
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexInBackgroundTask).ToImmutableDictionary(x => x.IndexName, x => x);
 
                 if (indexSettingsList == null)
                 {
@@ -71,8 +72,9 @@ namespace OrchardCore.Lucene
                 }
 
                 // Find the lowest task id to process
-                foreach (var indexSetting in indexSettingsList)
+                foreach (DictionaryEntry item in indexSettingsList)
                 {
+                    var indexSetting = item.Value as LuceneIndexSettings;
                     var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
                     lastTaskId = Math.Min(lastTaskId, taskId);
                     allIndicesStatus.Add(indexSetting.IndexName, taskId);
@@ -80,7 +82,7 @@ namespace OrchardCore.Lucene
             }
             else
             {
-                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName);
+                indexSettingsList = _luceneIndexSettingsService.List().Where(x => x.IndexName == indexName).ToImmutableDictionary(x => x.IndexName, x => x);
 
                 if (indexSettingsList == null)
                 {
@@ -117,17 +119,9 @@ namespace OrchardCore.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    if (indexName != null)
+                    foreach (DictionaryEntry item in indexSettingsList)
                     {
-                        indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
-                    }
-                    else
-                    {
-                        indexSettingsList = indexSettingsList.Where(x => x.IndexInBackgroundTask);
-                    }
-
-                    foreach (var indexSettings in indexSettingsList)
-                    {
+                        var indexSettings = item.Value as LuceneIndexSettings;
                         if (indexSettings.IndexedContentTypes.Length == 0)
                         {
                             continue;
