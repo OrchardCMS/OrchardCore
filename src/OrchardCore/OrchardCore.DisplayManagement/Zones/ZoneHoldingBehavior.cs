@@ -97,31 +97,6 @@ namespace OrchardCore.DisplayManagement.Zones
             ((dynamic)_parent)[name] = value;
             return true;
         }
-
-        public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
-        {
-
-            if (indexes.Count() == 1)
-            {
-                var key = Convert.ToString(indexes.First());
-
-                return TryGetMemberImpl(key, out result);
-            }
-
-            return base.TryGetIndex(binder, indexes, out result);
-        }
-
-        public override bool TrySetIndex(System.Dynamic.SetIndexBinder binder, object[] indexes, object value)
-        {
-            if (indexes.Count() == 1)
-            {
-                var key = Convert.ToString(indexes.First());
-
-                return TrySetMemberImpl(key, value);
-            }
-
-            return base.TrySetIndex(binder, indexes, value);
-        }
     }
 
     /// <remarks>
