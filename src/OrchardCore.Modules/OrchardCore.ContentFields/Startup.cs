@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
@@ -117,6 +120,7 @@ namespace OrchardCore.ContentFields
             );
         }
     }
+
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
@@ -136,6 +140,24 @@ namespace OrchardCore.ContentFields
                 template: "ContentFields/SearchLocalizationSets",
                 defaults: new { controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets" }
             );
+        }
+    }
+
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
+    public class IndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
         }
     }
 }
