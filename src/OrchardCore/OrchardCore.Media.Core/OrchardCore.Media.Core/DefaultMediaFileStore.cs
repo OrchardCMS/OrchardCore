@@ -13,13 +13,13 @@ namespace OrchardCore.Media.Core
 
         public DefaultMediaFileStore(
             IFileStore fileStore,
-            string requestBaseUrl,
+            string requestBasePath,
             string cdnBaseUrl)
         {
             _fileStore = fileStore;
 
             // Ensure trailing slash removed.
-            _requestBasePath = requestBaseUrl.TrimEnd('/'); ;
+            _requestBasePath = requestBasePath.TrimEnd('/');
 
             // Media options configuration ensures any trailing slash is removed.
             _cdnBaseUrl = cdnBaseUrl;
@@ -59,11 +59,6 @@ namespace OrchardCore.Media.Core
         {
             return _fileStore.MoveFileAsync(oldPath, newPath);
         }
-
-        //public Task MoveDirectoryAsync(string oldPath, string newPath)
-        //{
-        //    return _fileStore.MoveDirectoryAsync(oldPath, newPath);
-        //}
 
         public Task CopyFileAsync(string srcPath, string dstPath)
         {

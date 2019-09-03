@@ -25,7 +25,6 @@ namespace OrchardCore.FileStorage.AzureBlob
             else
             {
                 _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
-
             }
         }
 
