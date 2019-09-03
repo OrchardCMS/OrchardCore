@@ -10,7 +10,7 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider, IMediaFileStoreCache
+    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider
     {
         /// <summary>
         /// The path in the wwwroot folder containing the asset cache.

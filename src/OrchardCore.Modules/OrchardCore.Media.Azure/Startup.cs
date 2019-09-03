@@ -71,7 +71,7 @@ namespace OrchardCore.Media.Azure
 
                 // Register the media cache file provider as a file store cache provider.
                 services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
-                    (IMediaFileStoreCache)serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
+                    serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
                 // Replace the default media file store with a blob file store.
                 services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
