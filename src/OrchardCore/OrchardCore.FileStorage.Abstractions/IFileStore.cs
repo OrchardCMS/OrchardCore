@@ -112,7 +112,7 @@ namespace OrchardCore.FileStorage
         /// If the specified path contains one or more directories, then those directories are
         /// created if they do not already exist.
         /// </remarks>
-        Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false);
+        Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
     }
 
     public static class IFileStoreExtensions

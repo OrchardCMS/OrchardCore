@@ -80,9 +80,9 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetFileStreamAsync(fileStoreEntry);
         }
 
-        public Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
+        public Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
-            return _fileStore.CreateFileFromStream(path, inputStream, overwrite);
+            return _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
         }
 
         public string MapPathToPublicUrl(string path)

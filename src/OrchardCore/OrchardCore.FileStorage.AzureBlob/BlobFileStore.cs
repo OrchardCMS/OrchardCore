@@ -70,7 +70,9 @@ namespace OrchardCore.FileStorage.AzureBlob
             var blob = GetBlobReference(path);
 
             if (!await blob.ExistsAsync())
+            {
                 return null;
+            }
 
             await blob.FetchAttributesAsync();
 
@@ -85,6 +87,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             {
                 return new BlobDirectory(path, _clock.UtcNow);
             }
+
             return null;
         }
 
@@ -120,7 +123,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                         case CloudBlockBlob blobItem:
                             // Ignore directory marker files.
                             if (includeSubDirectories || itemName != _directoryMarkerFileName)
+                            {
                                 results.Add(new BlobFile(itemPath, blobItem));
+                            }
                             break;
                     }
                 }
@@ -129,8 +134,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
             while (continuationToken != null);
 
-            return
-                results
+            return results
                     .OrderByDescending(x => x.IsDirectory)
                     .ToArray();
         }
@@ -144,24 +148,28 @@ namespace OrchardCore.FileStorage.AzureBlob
             var blob = GetBlobReference(path);
 
             if (await blob.ExistsAsync())
+            {
                 throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
+            }
 
             await CreateDirectoryAsync(path);
 
             return true;
         }
 
-        public async Task<bool> TryDeleteFileAsync(string path)
+        public Task<bool> TryDeleteFileAsync(string path)
         {
             var blob = GetBlobReference(path);
 
-            return await blob.DeleteIfExistsAsync();
+            return blob.DeleteIfExistsAsync();
         }
 
         public async Task<bool> TryDeleteDirectoryAsync(string path)
         {
             if (String.IsNullOrEmpty(path))
+            {
                 throw new FileStoreException("Cannot delete the root directory.");
+            }
 
             var blobDirectory = GetBlobDirectoryReference(path);
 
@@ -204,24 +212,36 @@ namespace OrchardCore.FileStorage.AzureBlob
         public async Task CopyFileAsync(string srcPath, string dstPath)
         {
             if (srcPath == dstPath)
+            {
                 throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
+            }
 
             var oldBlob = GetBlobReference(srcPath);
             var newBlob = GetBlobReference(dstPath);
 
             if (!await oldBlob.ExistsAsync())
+            {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
+            }
 
             if (await newBlob.ExistsAsync())
+            {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
+            }
 
-            var operationId = await newBlob.StartCopyAsync(oldBlob);
+            await newBlob.StartCopyAsync(oldBlob);
 
             while (newBlob.CopyState.Status == CopyStatus.Pending)
+            {
                 await Task.Delay(250);
+                // Need to fetch or CopyState will never update.
+                await newBlob.FetchAttributesAsync();
+            }
 
             if (newBlob.CopyState.Status != CopyStatus.Success)
+            {
                 throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {newBlob.CopyState.Status} and description {newBlob.CopyState.StatusDescription}.");
+            }
         }
 
         public async Task<Stream> GetFileStreamAsync(string path)
@@ -229,28 +249,34 @@ namespace OrchardCore.FileStorage.AzureBlob
             var blob = GetBlobReference(path);
 
             if (!await blob.ExistsAsync())
+            {
                 throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
+            }
 
             return await blob.OpenReadAsync();
         }
 
         // Reduces the need to call blob.FetchAttributes, and blob.ExistsAsync,
         // as Azure Storage Library will perform these actions on OpenReadAsync(). 
-        public async Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             var blobFile = fileStoreEntry as BlobFile;
             if (blobFile == null || blobFile.BlobReference == null)
+            {
                 throw new FileStoreException("Cannot get file stream because the file does not exist.");
+            }
 
-            return await blobFile.BlobReference.OpenReadAsync();
+            return blobFile.BlobReference.OpenReadAsync();
         }
 
-        public async Task CreateFileFromStream(string path, Stream inputStream, bool overwrite = false)
+        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var blob = GetBlobReference(path);
 
             if (!overwrite && await blob.ExistsAsync())
+            {
                 throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+            }
 
             _contentTypeProvider.TryGetContentType(path, out var contentType);
 
@@ -275,14 +301,13 @@ namespace OrchardCore.FileStorage.AzureBlob
             return blobDirectory;
         }
 
-        private async Task CreateDirectoryAsync(string path)
+        private Task CreateDirectoryAsync(string path)
         {
             var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
 
-
             // Create a directory marker file to make this directory appear when
             // listing directories.
-            await placeholderBlob.UploadTextAsync(
+            return placeholderBlob.UploadTextAsync(
                 "This is a directory marker file created by Orchard Core. It is safe to delete it.");
         }
 
