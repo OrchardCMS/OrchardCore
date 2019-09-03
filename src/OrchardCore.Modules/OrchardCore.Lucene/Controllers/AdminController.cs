@@ -158,7 +158,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a reset on the index.</strong>", model.IndexName]);
+            _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
 
             return RedirectToAction("Index");
         }
