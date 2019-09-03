@@ -7,16 +7,17 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentFields.ViewModels;
 
-namespace OrchardCore.Content.Controllers
+namespace OrchardCore.ContentFields.Controllers
 {
     [Admin]
-    public class ContentPickerController : Controller
+    public class ContentPickerAdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
 
-        public ContentPickerController(
+        public ContentPickerAdminController(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentPickerResultProvider> resultProviders
             )
@@ -25,7 +26,7 @@ namespace OrchardCore.Content.Controllers
             _resultProviders = resultProviders;
         }
 
-        public async Task<IActionResult> List(string part, string field, string query)
+        public async Task<IActionResult> SearchContentItems(string part, string field, string query)
         {
             if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
             {
@@ -55,7 +56,7 @@ namespace OrchardCore.Content.Controllers
                 PartFieldDefinition = partFieldDefinition
             });
 
-            return new ObjectResult(results);
+            return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
         }
     }
 }

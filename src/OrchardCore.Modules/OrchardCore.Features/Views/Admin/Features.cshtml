@@ -32,15 +32,15 @@
         </div>
     </div>
     @{
-        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).ToList(); //.OrderBy(f => f.Descriptor.Category, new DoghouseComparer("Core"))
+        var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
             if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
             {
                 continue;
             }
-            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value; //LocalizedString.TextOrDefault(featureGroup.First().Descriptor.Category, T("Uncategorized"));
-            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString())); //Html.Encode(categoryName.ToString().HtmlClassify()));
+            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
             if (featureGroup == featureGroups.First())
             {
                 categoryClassName += " first";

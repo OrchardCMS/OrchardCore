@@ -30,6 +30,7 @@ namespace OrchardCore.ReCaptcha.Workflows
         }
 
         public override string Name => nameof(ValidateReCaptchaTask);
+        public override LocalizedString DisplayText => T["Validate ReCaptcha Task"];
         public override LocalizedString Category => T["Validation"];
         public override bool HasEditor => false;
 

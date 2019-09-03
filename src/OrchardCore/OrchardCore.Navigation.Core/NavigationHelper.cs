@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 
@@ -72,7 +73,9 @@ namespace OrchardCore.Navigation
             MarkAsSelectedIfMatchesRouteOrUrl(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
+            {
                 menuItemShape.Classes.Add(className);
+            }
 
             return menuItemShape;
         }
@@ -83,23 +86,19 @@ namespace OrchardCore.Navigation
             bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
 
             // if route match failed, try comparing URL strings, if
-            if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href != "#")
+            if (!match && !String.IsNullOrWhiteSpace(menuItem.Href) && menuItem.Href[0] == '/')
             {
-                string url = menuItem.Href;
-                if (menuItem.Href.Contains("~/"))
+                PathString path = menuItem.Href.TrimEnd('/');
+
+                if (viewContext.HttpContext.Request.PathBase.HasValue)
                 {
-                    url = url.Replace("~/", viewContext.HttpContext.Request.PathBase);
-                }
-                else
-                {
-                    if(viewContext.HttpContext.Request.PathBase != null)
+                    if (path.StartsWithSegments(viewContext.HttpContext.Request.PathBase, StringComparison.OrdinalIgnoreCase, out var remaining))
                     {
-                        url = menuItem.Href.Replace(viewContext.HttpContext.Request.PathBase, "");
+                        path = remaining;
                     }
-                    
                 }
 
-                match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);
+                match = viewContext.HttpContext.Request.Path.StartsWithSegments(path, StringComparison.OrdinalIgnoreCase);
             }
 
             menuItemShape.Selected = match;
@@ -199,7 +198,4 @@ namespace OrchardCore.Navigation
             return result;
         }
     }
-
-
-
 }

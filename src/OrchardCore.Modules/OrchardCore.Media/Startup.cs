@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -194,12 +195,19 @@ namespace OrchardCore.Media
             // ImageSharp before the static file provider
             app.UseImageSharp();
 
+            // Use the same cache control header as ImageSharp does for resized images.
+            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(_maxBrowserCacheDays).TotalSeconds.ToString();
+
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure
                 RequestPath = AssetsRequestPath,
                 FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                }
             });
         }
 
