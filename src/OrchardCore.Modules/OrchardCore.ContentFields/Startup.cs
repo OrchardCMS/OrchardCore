@@ -144,6 +144,7 @@ namespace OrchardCore.ContentFields
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL")]
+    [RequireFeatures("OrchardCore.ContentFields")]
     public class IndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

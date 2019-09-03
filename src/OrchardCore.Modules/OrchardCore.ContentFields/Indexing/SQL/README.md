@@ -187,7 +187,7 @@ From Liquid you will require to create a SQL Query in Orchard Core to retrieve t
 
 ```SQL
 SELECT * FROM TextFieldIndex
-WHERE ContentType = "Acme" AND ContentField = "Country"
+WHERE ContentType = 'Acme' AND ContentField = 'Country'
 ```
 
 In our Liquid template we will now retrieve these records.
