@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -202,30 +203,14 @@ namespace OrchardCore.Navigation
                 url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (!string.IsNullOrEmpty(url) &&
-                actionContext?.HttpContext != null &&
-                !(url.StartsWith("/") ||
-                Schemes.Any(scheme => url.StartsWith(scheme + ":"))))
+            if (!string.IsNullOrEmpty(url) && url[0] != '/' && url[0] != '#' && !Schemes.Any(scheme => url.StartsWith(scheme + ":")))
             {
                 if (url.StartsWith("~/"))
                 {
-                    if (!String.IsNullOrEmpty(_shellSettings.RequestUrlPrefix))
-                    {
-                        url = _shellSettings.RequestUrlPrefix + "/" + url.Substring(2);
-                    }
-                    else
-                    {
-                        url = url.Substring(2);
-                    }
+                    url = url.Substring(2);
                 }
 
-                if (!url.StartsWith("#"))
-                {
-                    var appPath = actionContext.HttpContext.Request.PathBase.ToString();
-                    if (appPath == "/")
-                        appPath = "";
-                    url = appPath + "/" + url;
-                }
+                url = actionContext.HttpContext.Request.PathBase + new PathString("/" + url);
             }
 
             return url;
