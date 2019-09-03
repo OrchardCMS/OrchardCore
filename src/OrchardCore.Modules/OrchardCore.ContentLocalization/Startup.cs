@@ -39,6 +39,8 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
+            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
+            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -58,9 +60,6 @@ namespace OrchardCore.ContentLocalization
             {
                 options.RequestCultureProviders.Insert(0, new ContentRequestCultureProvider());
             });
-
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
-            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -86,16 +85,12 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
-
     [RequireFeatures("OrchardCore.Liquid")]
-    public class LocalizationLiquidStartup : StartupBase
+    public class LiquidStartup : StartupBase
     {
-        static LocalizationLiquidStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
-        }
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
             services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
     }

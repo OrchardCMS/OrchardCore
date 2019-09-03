@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Activities
         private IStringLocalizer T { get; }
 
         public override string Name => nameof(CorrelateTask);
+        public override LocalizedString DisplayText => T["Correlate Task"];
         public override LocalizedString Category => T["Primitives"];
 
         public WorkflowExpression<string> Value

@@ -4,6 +4,7 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
 <script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
@@ -24,11 +25,17 @@
             element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
             forceSync: true,
             toolbar: simplemdeToolbar,
-            autoDownloadFontAwesome :false
+            autoDownloadFontAwesome: false
         });
 
         simplemde.codemirror.on('change', function () {
             $(document).trigger('contentpreview:render');
         });
+
+        @if(culture.IsRightToLeft())
+        {
+            <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
+$('.CodeMirror').attr('style', 'text-align:right');</text>
+        }
     });
 </script>
