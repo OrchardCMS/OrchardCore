@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Models
@@ -6,7 +6,7 @@ namespace OrchardCore.Roles.Models
     public class RolesDocument
     {
         public int Id { get; set; }
-        public ImmutableArray<Role> Roles { get; set; } = ImmutableArray.Create<Role>();
+        public List<Role> Roles { get; } = new List<Role>();
         public int Serial { get; set; }
     }
 }
