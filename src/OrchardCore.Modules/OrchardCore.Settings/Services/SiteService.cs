@@ -64,6 +64,7 @@ namespace OrchardCore.Settings.Services
                     {
                         SiteSalt = Guid.NewGuid().ToString("N"),
                         SiteName = "My Orchard Project Application",
+                        PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
                         PageSize = 10,
                         MaxPageSize = 100,
                         MaxPagedCount = 0,
@@ -96,6 +97,7 @@ namespace OrchardCore.Settings.Services
             var existing = ScopedCache.SiteSettings;
 
             existing.BaseUrl = site.BaseUrl;
+            existing.PageTitleFormat = site.PageTitleFormat;
             existing.Calendar = site.Calendar;
             existing.HomeRoute = site.HomeRoute;
             existing.MaxPagedCount = site.MaxPagedCount;
