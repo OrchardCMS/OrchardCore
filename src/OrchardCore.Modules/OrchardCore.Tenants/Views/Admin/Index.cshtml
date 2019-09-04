@@ -6,26 +6,6 @@
 
 @{
     var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase.ToString();
-
-    List<SelectListItem> tenantStates = new List<SelectListItem>()
-    {
-        new SelectListItem() { Text = T["All states"].Value, Value = TenantsFilter.All.ToString() },
-        new SelectListItem() { Text = T["Running"].Value, Value = TenantsFilter.Running.ToString() },
-        new SelectListItem() { Text = T["Disabled"].Value, Value = TenantsFilter.Disabled.ToString() },
-        new SelectListItem() { Text = T["Uninitialized"].Value, Value = TenantsFilter.Uninitialized.ToString() }
-    };
-
-    List<SelectListItem> tenantSorts = new List<SelectListItem>()
-    {
-        new SelectListItem() { Text = T["Sort by name"].Value, Value = TenantsOrder.Name.ToString() },
-        new SelectListItem() { Text = T["Sort by state"].Value, Value = TenantsOrder.State.ToString() }
-    };
-
-    List<SelectListItem> tenantActions = new List<SelectListItem>()
-    {
-        new SelectListItem() { Text = T["Disable"].Value, Value = BulkAction.Disable.ToString() },
-        new SelectListItem() { Text = T["Enable"].Value, Value = BulkAction.Enable.ToString() }
-    };
 }
 
 @functions
@@ -66,13 +46,21 @@
                 <label for="filterResults" class="label col-form-label">@T["Filter:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select id="filterResults" class="form-control" asp-for="Options.Filter" asp-items="@tenantStates"></select>
+                <select id="filterResults" class="form-control" asp-for="Options.Filter">
+                    <option value="@TenantsFilter.All.ToString()">@T["All states"]</option>
+                    <option value="@TenantsFilter.Running.ToString()">@T["Running"]</option>
+                    <option value="@TenantsFilter.Disabled.ToString()">@T["Disabled"]</option>
+                    <option value="@TenantsFilter.Uninitialized.ToString()">@T["Uninitialized"]</option>
+                </select>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
                 <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2 my-2 my-lg-0" type="text" placeholder="@T["Search"]" autofocus="autofocus">
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select id="orderResults" class="form-control" asp-for="Options.OrderBy" asp-items="@tenantSorts"></select>
+                <select id="orderResults" class="form-control" asp-for="Options.OrderBy">
+                    <option value="@TenantsOrder.Name.ToString()">@T["Sort by name"]</option>
+                    <option value="@TenantsOrder.State.ToString()">@T["Sort by state"]</option>
+                </select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-secondary">@T["Search"]</button>
@@ -88,7 +76,10 @@
                 <label for="bulkAction" class="label col-form-label">@T["Actions:"]</label>
             </div>
             <div class="col-md-3 col-xl-2 form-group">
-                <select class="form-control" name="bulkAction" asp-items="@tenantActions"></select>
+                <select class="form-control" name="bulkAction">
+                    <option value="@BulkAction.Disable.ToString()">@T["Disable"]</option>
+                    <option value="@BulkAction.Enable.ToString()">@T["Enable"]</option>
+                </select>
             </div>
             <div class="col-md-2 col-xl-1 form-group">
                 <button type="submit" class="btn btn-secondary">@T["Apply"]</button>
