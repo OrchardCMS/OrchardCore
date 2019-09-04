@@ -228,10 +228,10 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "BlogPost",
-              "Name": "BlogPost",
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
               "Settings": {
-                "Position": "2"
+                "Position": "0"
               }
             },
             {
@@ -253,6 +253,13 @@
               }
             },
             {
+              "PartName": "BlogPost",
+              "Name": "BlogPost",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
               "PartName": "MarkdownBodyPart",
               "Name": "MarkdownBodyPart",
               "Settings": {
@@ -266,13 +273,6 @@
                   "Template": null
                 },
                 "Editor": "Wysiwyg"
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "0"
               }
             }
           ]
@@ -291,8 +291,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Blog",
-              "Name": "Blog",
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
               "Settings": {
                 "Position": "0"
               }
@@ -301,7 +301,7 @@
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Position": "2",
+                "Position": "1",
                 "ContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
@@ -313,6 +313,20 @@
                 "Pattern": "{{ ContentItem | display_text | slugify }}",
                 "AllowCustomPath": "True",
                 "ShowHomepageOption": "True"
+              }
+            },
+            {
+              "PartName": "Blog",
+              "Name": "Blog",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "Position": "3"
               }
             },
             {
@@ -332,20 +346,6 @@
                 "ContainedContentTypes": [
                   "BlogPost"
                 ]
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "1"
-              }
-            },
-            {
-              "PartName": "HtmlBodyPart",
-              "Name": "HtmlBodyPart",
-              "Settings": {
-                "Position": "3"
               }
             }
           ]
@@ -567,6 +567,30 @@
       ],
       "ContentParts": [
         {
+          "Name": "Blog",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "DisplayName": "Cover Image",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false
+              }
+            }
+          ]
+        },
+        {
           "Name": "BlogPost",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
@@ -575,6 +599,24 @@
               "Name": "Subtitle",
               "Settings": {
                 "DisplayName": "Subtitle"
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "DisplayName": "Cover Image",
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Hint": null,
+                "Required": true,
+                "Multiple": false
               }
             }
           ]
@@ -749,7 +791,7 @@
         {
           "ContentType": "Blog",
           "ContentItemId": "[js: variables('blogContentItemId')]",
-          "DisplayText":  "Blog",
+          "DisplayText": "Blog",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
@@ -763,7 +805,14 @@
           "AutoroutePart": {
             "Path": "blog"
           },
-          "ListPart": {}
+          "ListPart": {},
+          "Blog": {
+            "Image": {
+              "Paths": [
+                "home-bg.jpg"
+              ]
+            }
+          }
         },
         {
           "ContentType": "BlogPost",
@@ -789,6 +838,11 @@
           "BlogPost": {
             "Subtitle": {
               "Text": "Problems look mighty small from 150 miles up"
+            },
+            "Image": {
+              "Paths": [
+                "post-bg.jpg"
+              ]
             }
           }
         },
