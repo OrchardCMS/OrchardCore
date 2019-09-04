@@ -3,17 +3,17 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <fieldset class="form-group" asp-validation-class-for="SiteKey">
-    <label asp-for="SiteKey">@T["Site Key"]</label>
+    <label asp-for="SiteKey">@T["Site key"]</label>
     <input asp-for="SiteKey" class="form-control" type="text" />
     <span asp-validation-for="SiteKey"></span>
-    <span class="hint">@T["Your Google's reCaptcha Site Key."]</span>
+    <span class="hint">@T["Your Google's reCaptcha site key."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="SecretKey">
-    <label asp-for="SecretKey">@T["Secret Key"]</label>
+    <label asp-for="SecretKey">@T["Secret key"]</label>
     <input asp-for="SecretKey" class="form-control" type="text" />
     <span asp-validation-for="SecretKey"></span>
-    <span class="hint">@T["Your Google's reCaptcha Secret Key."]</span>
+    <span class="hint">@T["Your Google's reCaptcha secret key."]</span>
 </fieldset>
 
 <fieldset class="form-group">

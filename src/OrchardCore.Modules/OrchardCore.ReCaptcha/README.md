@@ -1,0 +1,31 @@
+# ReCaptcha
+
+The OrhcardCore.ReCaptcha module can be used to prevent robots access to your OrchardCore website.
+
+There are four features in the module;
+
+## Configuration
+In order to activate the ReCaptcha functionality, you have to create an account with Google and enter the secret and site key in the Admin section.
+You can sign up here; https://developers.google.com/recaptcha/
+
+### Users protection
+You can enable this feature in the admin section and your login pages will be protected against robots.
+The feature will use the IP address of the request to count the number of login attempts. 
+When the threshold for login attempts are broken, a captcha is shown on the login page preventing robots from making any further requests.
+
+### Forms
+You can add a validate forms with a captcha by including the recaptcha field when you design a form.
+
+### Workflow
+You can add a validate ReCaptcha task in your workflow.
+You can use this to validate the captcha that you show on your OrchardCore.Forms form.
+
+### Manual validation
+You can decorate your controllers with [ValidateReCaptcha] attribute.
+This attribute works in tandem with the <recaptcha /> HTML element, both need to be cofigured.
+The standard mode is PreventAbuse, this will show the captcha when a robot is suspected.
+The mode AlwaysShow, always shows the captcha on the page.
+
+## Extending the module
+If you have requirements that you have to protect against robots using another method then IP address,
+you can create your own implementation of the IDetectRobots interface and it will join the robot detectors.
