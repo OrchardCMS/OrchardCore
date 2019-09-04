@@ -68,7 +68,12 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
+        public Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
+        {
+            return GetOrCreateShellContextAsync(settings, false);
+        }
+
+        private async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings, bool reloadSettings)
         {
             ShellContext shell = null;
 
@@ -84,10 +89,14 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
+                            if (reloadSettings && settings.State != TenantState.Initializing)
+                            {
+                                settings = _shellSettingsManager.LoadSettings(settings.Name);
+                            }
+
                             shell = await CreateShellContextAsync(settings);
                             AddAndRegisterShell(shell);
                         }
-
                     }
                     finally
                     {
@@ -339,7 +348,7 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            return GetOrCreateShellContextAsync(settings);
+            return GetOrCreateShellContextAsync(settings, true);
         }
 
         public IEnumerable<ShellContext> ListShellContexts()

@@ -283,8 +283,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
 
-                _shellSettingsManager.SaveSettings(shellSettings);
-                var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
                 return RedirectToAction(nameof(Index));
             }

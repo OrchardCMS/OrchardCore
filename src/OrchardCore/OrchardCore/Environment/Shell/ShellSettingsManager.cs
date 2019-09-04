@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Shell
                 .Build();
 
             var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
-            
+
             var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
             var allSettings = new List<ShellSettings>();
@@ -104,6 +104,27 @@ namespace OrchardCore.Environment.Shell
             };
 
             return allSettings;
+        }
+
+        public ShellSettings LoadSettings(string tenant)
+        {
+            var tenantsSettings = new ConfigurationBuilder()
+                .AddSources(_settingsSources)
+                .Build();
+
+            var tenantSettings = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddConfiguration(_configuration.GetSection(tenant))
+                .AddConfiguration(tenantsSettings.GetSection(tenant))
+                .Build();
+
+            var settings = new ShellConfiguration(tenantSettings);
+            var configuration = new ShellConfiguration(tenant, _configBuilderFactory);
+
+            return new ShellSettings(settings, configuration)
+            {
+                Name = tenant,
+            };
         }
 
         public void SaveSettings(ShellSettings settings)
