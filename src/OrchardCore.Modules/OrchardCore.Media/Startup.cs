@@ -146,7 +146,7 @@ namespace OrchardCore.Media
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
-            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>();
+            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
             // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
@@ -159,12 +159,12 @@ namespace OrchardCore.Media
             app.UseImageSharp();
 
             // Use the same cache control header as ImageSharp does for resized images.
-            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(_maxBrowserCacheDays).TotalSeconds.ToString();
+            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxBrowserCacheDays).TotalSeconds.ToString();
 
             app.UseStaticFiles(new StaticFileOptions
             {
                 // The tenant's prefix is already implied by the infrastructure.
-                RequestPath = mediaOptions.Value.AssetsRequestPath,
+                RequestPath = mediaOptions.AssetsRequestPath,
                 FileProvider = mediaFileProvider,
                 ServeUnknownFileTypes = true,
                 OnPrepareResponse = ctx =>
