@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters;
-using OrchardCore.ReCaptcha.ActionFilters.Abuse;
+using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ResourceManagement;
 
@@ -36,7 +36,6 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
             var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
             var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
             var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
