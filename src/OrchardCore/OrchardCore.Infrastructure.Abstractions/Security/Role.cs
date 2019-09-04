@@ -1,11 +1,11 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace OrchardCore.Security
 {
-    public class Role: IRole
+    public class Role : IRole
     {
         public string RoleName { get; set; }
         public string NormalizedRoleName { get; set; }
-        public ImmutableArray<RoleClaim> RoleClaims { get; set; } = ImmutableArray<RoleClaim>.Empty;
+        public List<RoleClaim> RoleClaims { get; } = new List<RoleClaim>();
     }
 }

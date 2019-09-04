@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Models;
@@ -34,7 +33,7 @@ namespace OrchardCore.Users.Services
             {
                 UserName = userName,
                 Email = email,
-                RoleNames = ImmutableArray.Create("Administrator"),
+                RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
 
