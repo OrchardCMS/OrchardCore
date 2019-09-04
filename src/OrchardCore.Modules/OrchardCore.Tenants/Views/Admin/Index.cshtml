@@ -104,7 +104,7 @@
                     <div class="form-group col-xl-9 mb-xl-n1">
                         <div class="input-group input-group-sm">
                             <button type="submit" class="btn btn-sm btn-secondary">@T["Apply"]</button>
-                            <a asp-route-action="Create" class="btn btn-sm btn-primary" role="button" style="position:absolute;right:0">@T["Add Tenant"]</a>
+                            <a asp-route-action="Create" class="btn btn-sm btn-secondary" role="button" style="position:absolute;right:0">@T["Add Tenant"]</a>
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                         {
-                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
                         @if (entry.ShellSettings.State == TenantState.Disabled)
                         {
@@ -136,7 +136,7 @@
                         {
                             <a class="btn btn-success btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
                         }
-                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                     <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
                     <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
@@ -144,7 +144,7 @@
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
-                                <span class="badge badge-dark">@T["Disabled"]</span>
+                                <span class="badge badge-danger">@T["Disabled"]</span>
                                 break;
                             case TenantState.Initializing:
                                 <span class="badge badge-info">@T["Initializing"]</span>
@@ -156,7 +156,7 @@
                                 <span class="badge badge-success">@T["Running"]</span>
                                 break;
                             case TenantState.Uninitialized:
-                                <span class="badge badge-primary">@T["Uninitialized"]</span>
+                                <span class="badge badge-secondary">@T["Uninitialized"]</span>
                                 break;
                         }
                     </div>
