@@ -113,9 +113,9 @@
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
-                    <h5>
-                        <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
-                        <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
+                    <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
+                    <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
+                    <div class="metadata">
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
@@ -134,7 +134,7 @@
                                 <span class="badge badge-primary">@T["Uninitialized"]</span>
                                 break;
                         }
-                    </h5>
+                    </div>
                 </div>
             </li>
         }
