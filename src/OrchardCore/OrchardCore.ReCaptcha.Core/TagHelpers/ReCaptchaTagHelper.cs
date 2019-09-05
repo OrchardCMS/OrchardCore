@@ -68,7 +68,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
                                               .GetAwaiter()
                                               .GetResult();
 
-            var cultureInfo = CultureInfo.GetCulture(culture);
+            var cultureInfo = CultureInfo.GetCultureInfo(culture);
             var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
 
             builder.Attributes.Add("src", settingsUrl);
