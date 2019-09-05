@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata
 {
@@ -53,6 +54,37 @@ namespace OrchardCore.ContentManagement.Metadata
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
             manager.StorePartDefinition(builder.Build());
+        }
+
+        public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
+            where TPart : ContentPart where TSettings : class
+        {
+            var contentTypes = manager.ListTypeDefinitions();
+
+            foreach (var contentType in contentTypes)
+            {
+                var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == typeof(TPart).Name);
+                if (partDefinition != null)
+                {
+                    var existingSettings = partDefinition.Settings.ToObject<TSettings>();
+
+                    // Remove existing properties from JObject
+                    var properties = typeof(TSettings).GetProperties();
+                    foreach (var property in properties)
+                    {
+                        partDefinition.Settings.Remove(property.Name);
+                    }
+
+                    // Apply existing settings to type definition WithSettings<T>
+                    manager.AlterTypeDefinition(contentType.Name, typeBuilder =>
+                    {
+                        typeBuilder.WithPart(partDefinition.Name, partBuilder =>
+                        {
+                            partBuilder.WithSettings(existingSettings);
+                        });
+                    });
+                }
+            }
         }
     }
 }

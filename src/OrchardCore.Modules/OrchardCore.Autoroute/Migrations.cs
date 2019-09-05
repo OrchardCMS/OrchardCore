@@ -1,5 +1,6 @@
 using System.Linq;
 using OrchardCore.Autoroute.Drivers;
+using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -38,34 +39,7 @@ namespace OrchardCore.Autoroute
 
         public int UpdateFrom1()
         {
-            // TODO Wrap this whole method in an extension on IContentDefinitionManager with TPart, TSettings.
-            var contentTypes = _contentDefinitionManager.ListTypeDefinitions();
-
-            foreach (var contentType in contentTypes)
-            {
-                var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == "AutoroutePart");
-                if (partDefinition != null)
-                {
-                    //TODO for others this may need to check if the existing settings have some value.
-                    var existingSettings = partDefinition.Settings.ToObject<AutoroutePartSettings>();
-
-                    // Remove existing properties from JObject
-                    var properties = typeof(AutoroutePartSettings).GetProperties();
-                    foreach (var property in properties)
-                    {
-                        partDefinition.Settings.Remove(property.Name);
-                    }
-
-                    // Apply existing settings to type definition WithSettings<T>
-                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, typeBuilder =>
-                    {
-                        typeBuilder.WithPart(partDefinition.Name, partBuilder =>
-                        {
-                            partBuilder.WithSettings(existingSettings);
-                        });
-                    });
-                }
-            }
+            _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
 
             return 2;
         }
