@@ -1,7 +1,7 @@
 using OrchardCore.ContentManagement;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Title.Model
+namespace OrchardCore.Title.Models
 {
     public class TitlePart : ContentPart
     {

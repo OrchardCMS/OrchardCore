@@ -1,6 +1,6 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Liquid.Model
+namespace OrchardCore.Liquid.Models
 {
     public class LiquidPart : ContentPart
     {

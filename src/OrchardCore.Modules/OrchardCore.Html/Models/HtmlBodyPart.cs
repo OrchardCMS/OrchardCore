@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Html.Model
+namespace OrchardCore.Html.Models
 {
     public class HtmlBodyPart : ContentPart
     {
