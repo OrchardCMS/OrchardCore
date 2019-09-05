@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using OrchardCore.Indexing;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.Indexing
 {
