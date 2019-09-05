@@ -893,6 +893,19 @@
       ]
     },
     {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "home-bg.jpg",
+          "SourcePath": "../wwwroot/img/home-bg.jpg"
+        },
+        {
+          "TargetPath": "post-bg.jpg",
+          "SourcePath": "../wwwroot/img/post-bg.jpg"
+        }
+      ]
+    },
+    {
       "name": "layers",
       "Layers": [
         {
