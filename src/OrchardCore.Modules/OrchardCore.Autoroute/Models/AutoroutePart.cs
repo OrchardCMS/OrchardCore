@@ -1,6 +1,6 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Autoroute.Model
+namespace OrchardCore.Autoroute.Models
 {
     public class AutoroutePart : ContentPart
     {
