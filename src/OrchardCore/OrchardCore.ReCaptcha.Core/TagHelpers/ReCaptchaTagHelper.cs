@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
@@ -21,14 +23,16 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger<ReCaptchaTagHelper> _logger;
+        private readonly ILocalizationService _localizationService;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger)
+        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
+            _localizationService = localizationService;
         }
 
         [HtmlAttributeName("mode")]
@@ -59,7 +63,15 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             var builder = new TagBuilder("script");
-            builder.Attributes.Add("src", _settings.ReCaptchaScriptUri);
+
+            var culture = _localizationService.GetDefaultCultureAsync()
+                                              .GetAwaiter()
+                                              .GetResult();
+
+            var cultureInfo = new CultureInfo(culture);
+            var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
+
+            builder.Attributes.Add("src", settingsUrl);
             _resourceManager.RegisterFootScript(builder);
         }
     }
