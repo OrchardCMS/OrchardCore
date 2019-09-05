@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
