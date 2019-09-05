@@ -3,7 +3,7 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 
 namespace OrchardCore.Liquid.Handlers
 {

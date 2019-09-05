@@ -13,7 +13,7 @@ using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
-using OrchardCore.Liquid.Model;
+using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Modules;
 
