@@ -1,7 +1,7 @@
 {% zone "Header" %}
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="masthead" style="background-image: url('{{ Model.ContentItem.Content.BlogPost.Image.Paths[0] | asset_url }}')">
+    <header class="masthead" style="background-image: url('{{ Model.ContentItem.Content.BlogPost.Image.Paths.first | asset_url }}')">
         <div class="overlay"></div>
         <div class="container">
             <div class="row">
