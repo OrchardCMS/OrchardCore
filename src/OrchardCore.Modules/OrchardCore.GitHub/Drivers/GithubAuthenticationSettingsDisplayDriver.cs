@@ -6,13 +6,13 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Github.Settings;
-using OrchardCore.Github.ViewModels;
+using OrchardCore.GitHub.Settings;
+using OrchardCore.GitHub.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Github.Drivers
+namespace OrchardCore.GitHub.Drivers
 {
-    public class GithubAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GithubAuthenticationSettings>
+    public class GitHubAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GitHubAuthenticationSettings>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -20,7 +20,7 @@ namespace OrchardCore.Github.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public GithubAuthenticationSettingsDisplayDriver(
+        public GitHubAuthenticationSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
@@ -34,20 +34,20 @@ namespace OrchardCore.Github.Drivers
             _shellSettings = shellSettings;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GithubAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(GitHubAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubAuthentication))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
             {
                 return null;
             }
 
-            return Initialize<GithubAuthenticationSettingsViewModel>("GithubAuthenticationSettings_Edit", model =>
+            return Initialize<GitHubAuthenticationSettingsViewModel>("GitHubAuthenticationSettings_Edit", model =>
             {
                 model.ClientID = settings.ClientID;
                 if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(GithubConstants.Features.GithubAuthentication);
+                    var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
                     model.ClientSecret = protector.Unprotect(settings.ClientSecret);
                 }
                 else
@@ -58,25 +58,25 @@ namespace OrchardCore.Github.Drivers
                 {
                     model.CallbackUrl = settings.CallbackPath;
                 }
-            }).Location("Content:5").OnGroup(GithubConstants.Features.GithubAuthentication);
+            }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GithubAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == GithubConstants.Features.GithubAuthentication)
+            if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGithubAuthentication))
+                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
                 {
                     return null;
                 }
 
-                var model = new GithubAuthenticationSettingsViewModel();
+                var model = new GitHubAuthenticationSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(GithubConstants.Features.GithubAuthentication);
+                    var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
 
                     settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);

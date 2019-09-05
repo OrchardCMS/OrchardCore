@@ -3,22 +3,22 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 
-namespace OrchardCore.Github.Configuration
+namespace OrchardCore.GitHub.Configuration
 {
     /// <summary>
     /// Configuration options for <see cref="MicrosoftAccountHandler"/>.
     /// </summary>
-    public class GithubOptions : OAuthOptions
+    public class GitHubOptions : OAuthOptions
     {
         /// <summary>
         /// Initializes a new <see cref="MicrosoftAccountOptions"/>.
         /// </summary>
-        public GithubOptions()
+        public GitHubOptions()
         {
             CallbackPath = new PathString("/signin-github");
-            AuthorizationEndpoint = GithubDefaults.AuthorizationEndpoint;
-            TokenEndpoint = GithubDefaults.TokenEndpoint;
-            UserInformationEndpoint = GithubDefaults.UserInformationEndpoint;
+            AuthorizationEndpoint = GitHubDefaults.AuthorizationEndpoint;
+            TokenEndpoint = GitHubDefaults.TokenEndpoint;
+            UserInformationEndpoint = GitHubDefaults.UserInformationEndpoint;
 
             
             ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");

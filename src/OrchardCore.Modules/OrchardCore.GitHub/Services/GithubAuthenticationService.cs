@@ -1,48 +1,45 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Github.Settings;
+using OrchardCore.GitHub.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Github.Services
+namespace OrchardCore.GitHub.Services
 {
-    public class GithubAuthenticationService : IGithubAuthenticationService
+    public class GitHubAuthenticationService : IGitHubAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<GithubAuthenticationService> T;
+        private readonly IStringLocalizer<GitHubAuthenticationService> T;
         private readonly ShellSettings _shellSettings;
 
-        public GithubAuthenticationService(
+        public GitHubAuthenticationService(
             ISiteService siteService,
             ShellSettings shellSettings,
-            IStringLocalizer<GithubAuthenticationService> stringLocalizer)
+            IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
         {
             _shellSettings = shellSettings;
             _siteService = siteService;
             T = stringLocalizer;
         }
 
-        public async Task<GithubAuthenticationSettings> GetSettingsAsync()
+        public async Task<GitHubAuthenticationSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GithubAuthenticationSettings>();
+            return container.As<GitHubAuthenticationSettings>();
         }
 
-        public async Task UpdateSettingsAsync(GithubAuthenticationSettings settings)
+        public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
             var container = await _siteService.GetSiteSettingsAsync();
-            container.Alter<GithubAuthenticationSettings>(nameof(GithubAuthenticationSettings), aspect =>
+            container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
             {
                 aspect.ClientID = settings.ClientID;
                 aspect.ClientSecret = settings.ClientSecret;
@@ -51,7 +48,7 @@ namespace OrchardCore.Github.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public IEnumerable<ValidationResult> ValidateSettings(GithubAuthenticationSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
         {
             if (settings == null)
             {

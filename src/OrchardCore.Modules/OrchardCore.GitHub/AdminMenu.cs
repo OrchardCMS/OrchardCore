@@ -6,15 +6,15 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Github
+namespace OrchardCore.GitHub
 {
-    [Feature(GithubConstants.Features.GithubAuthentication)]
-    public class AdminMenuGithubLogin : INavigationProvider
+    [Feature(GitHubConstants.Features.GitHubAuthentication)]
+    public class AdminMenuGitHubLogin : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
 
-        public AdminMenuGithubLogin(
-            IStringLocalizer<AdminMenuGithubLogin> localizer,
+        public AdminMenuGitHubLogin(
+            IStringLocalizer<AdminMenuGitHubLogin> localizer,
             ShellDescriptor shellDescriptor)
         {
             T = localizer;
@@ -27,11 +27,11 @@ namespace OrchardCore.Github
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Github"], "15", settings => settings
+                builder.Add(T["GitHub"], "15", settings => settings
                         .AddClass("github").Id("github")
-                        .Add(T["Github Authentication"], "10", client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GithubConstants.Features.GithubAuthentication })
-                            .Permission(Permissions.ManageGithubAuthentication)
+                        .Add(T["GitHub Authentication"], "10", client => client
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
+                            .Permission(Permissions.ManageGitHubAuthentication)
                             .LocalNav())
                     );
             }
