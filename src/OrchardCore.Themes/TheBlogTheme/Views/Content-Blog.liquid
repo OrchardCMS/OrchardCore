@@ -17,5 +17,6 @@
 {% endzone %}
 
 {% shape_remove_item Model.Content "HtmlBodyPart" %}
+{% shape_remove_item Model.Content "Blog-Image" %}
 
 {{ Model.Content | shape_render }}
