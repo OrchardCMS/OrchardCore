@@ -167,7 +167,7 @@ namespace OrchardCore.Tenants.Controllers
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
                 var shellSettings = allSettings
-                    .Where(x => string.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
+                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
                 if (shellSettings == null)
@@ -175,39 +175,23 @@ namespace OrchardCore.Tenants.Controllers
                     break;
                 }
 
-                switch (model.BulkAction.ToString())
+                var action = model.BulkAction.ToString().ToLower();
+
+                switch (model.BulkAction)
                 {
-                    case "Disable":
-                        if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                    case BulkAction.Disable:
+                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
-                            _notifier.Warning(H["You cannot disable the default tenant."]);
-                        }
-                        else if (shellSettings.State != TenantState.Running)
-                        {
-                            _notifier.Warning(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
+                            _notifier.Warning(H["You can't disable the default tenant."]);
                         }
                         else
                         {
-                            shellSettings.State = TenantState.Disabled;
-                            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                            await UpdateShellSettingsAsync(shellSettings, action);
                         }
 
                         break;
-
-                    case "Enable":
-                        if (shellSettings.State != TenantState.Disabled)
-                        {
-                            _notifier.Warning(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
-                        }
-                        else
-                        {
-                            shellSettings.State = TenantState.Running;
-                            await _shellHost.UpdateShellSettingsAsync(shellSettings);
-                        }
-
-                        break;
-
-                    default:
+                    case BulkAction.Enable:
+                        await UpdateShellSettingsAsync(shellSettings, action);
                         break;
                 }
             }
@@ -566,6 +550,27 @@ namespace OrchardCore.Tenants.Controllers
         private bool IsDefaultShell()
         {
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task UpdateShellSettingsAsync(ShellSettings settings, string action)
+        {
+            switch (settings.State)
+            {
+                case TenantState.Running:
+                    _notifier.Warning(H["The tenant '{0}' is already {1}.", settings.Name, action]);
+                    break;
+                case TenantState.Disabled:
+                    settings.State = TenantState.Disabled;
+                    await _shellHost.UpdateShellSettingsAsync(settings);
+                    _notifier.Success(H["The tenant '{0}' is {1}.", settings.Name, action]);
+                    break;
+                case TenantState.Uninitialized:
+                case TenantState.Initializing:
+                case TenantState.Invalid:
+                default:
+                    _notifier.Error(H["Unable to {0} the tenant '{1}'.", action.Remove(action.Last()), settings.Name]);
+                    break;
+            }
         }
     }
 }
