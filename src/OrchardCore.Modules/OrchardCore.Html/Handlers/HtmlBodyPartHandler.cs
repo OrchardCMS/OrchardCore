@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 
 namespace OrchardCore.Html.Handlers

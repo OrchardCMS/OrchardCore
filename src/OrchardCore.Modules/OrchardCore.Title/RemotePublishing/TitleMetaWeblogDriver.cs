@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 using OrchardCore.MetaWeblog;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 
 namespace OrchardCore.Title.RemotePublishing
 {

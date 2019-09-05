@@ -7,7 +7,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Title.Drivers;
 using OrchardCore.Title.Indexing;
-using OrchardCore.Title.Model;
+using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title

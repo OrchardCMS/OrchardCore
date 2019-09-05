@@ -8,7 +8,7 @@ using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
 using OrchardCore.Autoroute.Liquid;
-using OrchardCore.Autoroute.Model;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;

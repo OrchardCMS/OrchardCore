@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
-using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;

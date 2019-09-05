@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
