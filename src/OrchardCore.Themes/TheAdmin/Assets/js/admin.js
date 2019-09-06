@@ -1,4 +1,4 @@
-function confirmDialog(title, message, handler) {
+function confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, handler) {
     if (title === undefined) {
         title = $('#confirmRemoveModalMetadata').data('title');
     }
@@ -7,21 +7,37 @@ function confirmDialog(title, message, handler) {
         message = $('#confirmRemoveModalMetadata').data('message');
     }
 
+    if (okText === undefined) {
+        okText = $('#confirmRemoveModalMetadata').data('ok');
+    }
+
+    if (cancelText === undefined) {
+        cancelText = $('#confirmRemoveModalMetadata').data('cancel');
+    }
+
+    if (okCssClass === undefined) {
+        okCssClass = $('#confirmRemoveModalMetadata').data('okClass');
+    }
+
+    if (cancelCssClass === undefined) {
+        cancelCssClass = $('#confirmRemoveModalMetadata').data('cancelClass');
+    }
+
     $(`<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">`+ title + `</h5>
+                    <h5 class="modal-title">${title}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>`+ message + `</p>
+                    <p>${message}</p>
                 </div>
                 <div class="modal-footer">
-                    <button id="modalOkButton" type="button" class="btn btn-danger">`+ $('#confirmRemoveModalMetadata').data('ok') + `</button>
-                    <button id="modalCancelButton" type="button" class="btn btn-secondary" data-dismiss="modal">`+ $('#confirmRemoveModalMetadata').data('cancel') + `</button>
+                    <button id="modalOkButton" type="button" class="btn ${okCssClass}">${okText}</button>
+                    <button id="modalCancelButton" type="button" class="btn ${cancelCssClass}" data-dismiss="modal">${cancelText}</button>
                 </div>
             </div>
         </div>
@@ -59,7 +75,11 @@ $(function () {
         // use a custom message if its set in data-message
         var title = $(this).data('title');
         var message = $(this).data('message');
-        confirmDialog(title, message, r => {
+        var okText = $(this).data('ok');
+        var cancelText = $(this).data('cancel');
+        var okCssClass = $(this).data('okClass');
+        var cancelCssClass = $(this).data('cancelClass');
+        confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
             if (r) {
                 var url = $(this).attr('href');
                 if (url == undefined) {
@@ -99,10 +119,14 @@ $(function () {
 
             var title = _this.data("title");
             var unsafeUrlPrompt = _this.data("unsafe-url");
+            var okText = $(this).data('ok');
+            var cancelText = $(this).data('cancel');
+            var okCssClass = $(this).data('okClass');
+            var cancelCssClass = $(this).data('cancelClass');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog(title, unsafeUrlPrompt, resp => {
-                    if (resp) {
+                confirmDialog(title, unsafeUrlPrompt, okText, cancelText, okCssClass, cancelCssClass, r => {
+                    if (r) {
                         form.submit();
                     }
                 });
@@ -114,7 +138,11 @@ $(function () {
                 // use a custom message if its set in data-message
                 var title = $(this).data('title');
                 var message = $(this).data('message');
-                confirmDialog(title, message, r => {
+                var okText = $(this).data('ok');
+                var cancelText = $(this).data('cancel');
+                var okCssClass = $(this).data('okClass');
+                var cancelCssClass = $(this).data('cancelClass');
+                confirmDialog(title, message, okText, cancelText, okCssClass, cancelCssClass, r => {
                     if (r) {
                         form.submit();
                     }
