@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Html.Drivers;
 using OrchardCore.Html.Handlers;
 using OrchardCore.Html.Indexing;
-using OrchardCore.Html.Model;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.ContentManagement;

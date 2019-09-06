@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Liquid;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 
 namespace OrchardCore.Markdown.GraphQL
 {

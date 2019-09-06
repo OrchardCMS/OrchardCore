@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Markdown.Model;
+using OrchardCore.Markdown.Models;
 
 namespace OrchardCore.Markdown.Settings
 {
