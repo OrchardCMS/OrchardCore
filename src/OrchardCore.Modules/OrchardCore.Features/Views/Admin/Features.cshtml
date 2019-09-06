@@ -67,7 +67,7 @@
                     var features = featureGroup.OrderBy(f => f.Descriptor.Name);
                     var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
                 }
-                <h2 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h2>
+                <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
                 <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
                         foreach (var feature in features)
@@ -97,12 +97,12 @@
                                         {
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" class="custom-control-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
-                                                <label class="custom-control-label h5" for="@feature.Descriptor.Id">@featureName</label>
+                                                <label class="custom-control-label h6" for="@feature.Descriptor.Id">@featureName</label>
                                             </div>
                                         }
                                         else
                                         {
-                                            <h5>@featureName</h5>
+                                            <h6>@featureName</h6>
                                         }
 
                                         <p class="text-muted">@feature.Descriptor.Description</p>
