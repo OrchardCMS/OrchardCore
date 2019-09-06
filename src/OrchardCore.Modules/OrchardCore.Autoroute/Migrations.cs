@@ -1,6 +1,4 @@
-using System.Linq;
 using OrchardCore.Autoroute.Drivers;
-using OrchardCore.Autoroute.Model;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -34,9 +32,11 @@ namespace OrchardCore.Autoroute
                 .CreateIndex("IDX_AutoroutePartIndex_ContentItemId", "ContentItemId")
             );
 
-            return 1;
+            // Return 2 to shortcut the second migration on new content definition schemas.
+            return 2;
         }
 
+        // Migrate PartSettings. This only needs to run on old content definition schemas.
         public int UpdateFrom1()
         {
             _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();

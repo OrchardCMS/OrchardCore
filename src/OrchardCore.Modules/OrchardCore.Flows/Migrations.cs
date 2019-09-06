@@ -1,6 +1,7 @@
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
+using OrchardCore.Flows.Models;
 
 namespace OrchardCore.Flows
 {
@@ -29,7 +30,16 @@ namespace OrchardCore.Flows
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item."));
 
-            return 2;
+            // Return 3 to shortcut the third migration on new content definition schemas.
+            return 3;
+        }
+
+        // Migrate PartSettings. This only needs to run on old content definition schemas.
+        public int UpdateFrom2()
+        {
+            _contentDefinitionManager.MigratePartSettings<BagPart, BagPartSettings>();
+
+            return 3;
         }
     }
 }
