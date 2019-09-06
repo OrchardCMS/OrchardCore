@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -38,7 +39,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         [HtmlAttributeName("mode")]
         public ReCaptchaMode Mode { get; set; }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
             var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
@@ -47,7 +48,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
             if (isConfigured && (robotDetected || alwaysShow))
             {
-                ShowCaptcha(output);
+                await ShowCaptcha(output);
             }
             else
             {
@@ -55,7 +56,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             }
         }
 
-        private void ShowCaptcha(TagHelperOutput output)
+        private async Task ShowCaptcha(TagHelperOutput output)
         {
             output.TagName = "div";
             output.Attributes.SetAttribute("class", "g-recaptcha");
@@ -64,9 +65,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
             var builder = new TagBuilder("script");
 
-            var culture = _localizationService.GetDefaultCultureAsync()
-                                              .GetAwaiter()
-                                              .GetResult();
+            var culture = await _localizationService.GetDefaultCultureAsync();
 
             var cultureInfo = CultureInfo.GetCultureInfo(culture);
             var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
